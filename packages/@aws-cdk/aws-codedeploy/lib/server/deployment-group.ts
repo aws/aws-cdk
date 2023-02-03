@@ -68,7 +68,7 @@ class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implemen
     });
 
     this.application = props.application;
-    this.deploymentConfig = props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
+    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
   }
 }
 
@@ -255,7 +255,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this.application = props.application || new ServerApplication(this, 'Application', {
       applicationName: props.deploymentGroupName === cdk.PhysicalName.GENERATE_IF_NEEDED ? cdk.PhysicalName.GENERATE_IF_NEEDED : undefined,
     });
-    this.deploymentConfig = props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
+    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole'));
     this._autoScalingGroups = props.autoScalingGroups || [];

@@ -691,7 +691,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.FlowLog",
+                  "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
                 }
               }
@@ -709,6 +709,14 @@
                 "id": "IAMRole",
                 "path": "FlowLogsTestStack/FlowLogsCW/IAMRole",
                 "children": {
+                  "ImportIAMRole": {
+                    "id": "ImportIAMRole",
+                    "path": "FlowLogsTestStack/FlowLogsCW/IAMRole/ImportIAMRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "FlowLogsTestStack/FlowLogsCW/IAMRole/Resource",
@@ -853,7 +861,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.FlowLog",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },
@@ -1142,7 +1150,7 @@
                 "path": "FlowLogs/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.154"
+                  "version": "10.1.216"
                 }
               },
               "DeployAssert": {
@@ -1188,7 +1196,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.154"
+          "version": "10.1.216"
         }
       }
     },

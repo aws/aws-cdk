@@ -4841,14 +4841,14 @@
         "Description": "The description of the data source.",
         "DynamoDBConfig": "AWS Region and TableName for an Amazon DynamoDB table in your account.",
         "ElasticsearchConfig": "AWS Region and Endpoints for an Amazon OpenSearch Service domain in your account.\n\nAs of September 2021, Amazon Elasticsearch Service is Amazon OpenSearch Service . This property is deprecated. For new data sources, use *OpenSearchServiceConfig* to specify an OpenSearch Service data source.",
-        "EventBridgeConfig": "",
+        "EventBridgeConfig": "An EventBridge configuration that contains a valid ARN of an event bus.",
         "HttpConfig": "Endpoints for an HTTP data source.",
         "LambdaConfig": "An ARN of a Lambda function in valid ARN format. This can be the ARN of a Lambda function that exists in the current account or in another account.",
         "Name": "Friendly name for you to identify your AppSync data source after creation.",
         "OpenSearchServiceConfig": "AWS Region and Endpoints for an Amazon OpenSearch Service domain in your account.",
         "RelationalDatabaseConfig": "Relational Database configuration of the relational database data source.",
-        "ServiceRoleArn": "The AWS Identity and Access Management service role ARN for the data source. The system assumes this role when accessing the data source.\n\nRequired if `Type` is specified as `AWS_LAMBDA` , `AMAZON_DYNAMODB` , `AMAZON_ELASTICSEARCH` , or `AMAZON_OPENSEARCH_SERVICE` .",
-        "Type": "The type of the data source.\n\n- *AWS_LAMBDA* : The data source is an AWS Lambda function.\n- *AMAZON_DYNAMODB* : The data source is an Amazon DynamoDB table.\n- *AMAZON_ELASTICSEARCH* : The data source is an Amazon OpenSearch Service domain.\n- *AMAZON_OPENSEARCH_SERVICE* : The data source is an Amazon OpenSearch Service domain.\n- *NONE* : There is no data source. This type is used when you wish to invoke a GraphQL operation without connecting to a data source, such as performing data transformation with resolvers or triggering a subscription to be invoked from a mutation.\n- *HTTP* : The data source is an HTTP endpoint.\n- *RELATIONAL_DATABASE* : The data source is a relational database."
+        "ServiceRoleArn": "The AWS Identity and Access Management service role ARN for the data source. The system assumes this role when accessing the data source.\n\nRequired if `Type` is specified as `AWS_LAMBDA` , `AMAZON_DYNAMODB` , `AMAZON_ELASTICSEARCH` , `AMAZON_EVENTBRIDGE` , or `AMAZON_OPENSEARCH_SERVICE` .",
+        "Type": "The type of the data source.\n\n- *AWS_LAMBDA* : The data source is an AWS Lambda function.\n- *AMAZON_DYNAMODB* : The data source is an Amazon DynamoDB table.\n- *AMAZON_ELASTICSEARCH* : The data source is an Amazon OpenSearch Service domain.\n- *AMAZON_EVENTBRIDGE* : The data source is an Amazon EventBridge event bus.\n- *AMAZON_OPENSEARCH_SERVICE* : The data source is an Amazon OpenSearch Service domain.\n- *NONE* : There is no data source. This type is used when you wish to invoke a GraphQL operation without connecting to a data source, such as performing data transformation with resolvers or triggering a subscription to be invoked from a mutation.\n- *HTTP* : The data source is an HTTP endpoint.\n- *RELATIONAL_DATABASE* : The data source is a relational database."
       }
     },
     "AWS::AppSync::DataSource.AuthorizationConfig": {
@@ -4897,9 +4897,9 @@
     },
     "AWS::AppSync::DataSource.EventBridgeConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The data source. This can be an API destination, resource, or AWS service.",
       "properties": {
-        "EventBusArn": ""
+        "EventBusArn": "The event bus pipeline's ARN. For more information about event buses, see [EventBridge event buses](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html) ."
       }
     },
     "AWS::AppSync::DataSource.HttpConfig": {
@@ -8568,7 +8568,7 @@
       },
       "description": "Creates a new event data store.",
       "properties": {
-        "AdvancedEventSelectors": "The advanced event selectors to use to select the events for the data store. You can configure up to five advanced event selectors for each event data store.\n\nFor more information about how to use advanced event selectors to log CloudTrail events, see [Log events by using advanced event selectors](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html#creating-data-event-selectors-advanced) in the CloudTrail User Guide.\n\nFor more information about how to use advanced event selectors to include AWS Config configuration items in your event data store, see [Create an event data store for AWS Config configuration items](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/lake-cli-create-eds-config.html) in the CloudTrail User Guide.",
+        "AdvancedEventSelectors": "The advanced event selectors to use to select the events for the data store. You can configure up to five advanced event selectors for each event data store.\n\nFor more information about how to use advanced event selectors to log CloudTrail events, see [Log events by using advanced event selectors](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html#creating-data-event-selectors-advanced) in the CloudTrail User Guide.\n\nFor more information about how to use advanced event selectors to include AWS Config configuration items in your event data store, see [Create an event data store for AWS Config configuration items](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-lake-cli.html#lake-cli-create-eds-config) in the CloudTrail User Guide.\n\nFor more information about how to use advanced event selectors to include non- AWS events in your event data store, see [Create an integration to log events from outside AWS](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-lake-cli.html#lake-cli-create-integration) in the CloudTrail User Guide.",
         "KmsKeyId": "Specifies the AWS KMS key ID to use to encrypt the events delivered by CloudTrail. The value can be an alias name prefixed by `alias/` , a fully specified ARN to an alias, a fully specified ARN to a key, or a globally unique identifier.\n\n> Disabling or deleting the KMS key, or removing CloudTrail permissions on the key, prevents CloudTrail from logging events to the event data store, and prevents users from querying the data in the event data store that was encrypted with the key. After you associate an event data store with a KMS key, the KMS key cannot be removed or changed. Before you disable or delete a KMS key that you are using with an event data store, delete or back up your event data store. \n\nCloudTrail also supports AWS KMS multi-Region keys. For more information about multi-Region keys, see [Using multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nExamples:\n\n- `alias/MyAliasName`\n- `arn:aws:kms:us-east-2:123456789012:alias/MyAliasName`\n- `arn:aws:kms:us-east-2:123456789012:key/12345678-1234-1234-1234-123456789012`\n- `12345678-1234-1234-1234-123456789012`",
         "MultiRegionEnabled": "Specifies whether the event data store includes events from all regions, or only from the region in which the event data store is created.",
         "Name": "The name of the event data store.",
@@ -8592,7 +8592,7 @@
       "properties": {
         "EndsWith": "An operator that includes events that match the last few characters of the event record field specified as the value of `Field` .",
         "Equals": "An operator that includes events that match the exact value of the event record field specified as the value of `Field` . This is the only valid operator that you can use with the `readOnly` , `eventCategory` , and `resources.type` fields.",
-        "Field": "A field in a CloudTrail event record on which to filter events to be logged. For event data stores for AWS Config configuration items, the field is used only for selecting configuration items as filtering is not supported.\n\nFor CloudTrail event records, supported fields include `readOnly` , `eventCategory` , `eventSource` (for management events), `eventName` , `resources.type` , and `resources.ARN` .\n\nFor AWS Config configuration item records, the only supported field is `eventCategory` .\n\n- *`readOnly`* - Optional. Can be set to `Equals` a value of `true` or `false` . If you do not add this field, CloudTrail logs both `read` and `write` events. A value of `true` logs only `read` events. A value of `false` logs only `write` events.\n- *`eventSource`* - For filtering management events only. This can be set only to `NotEquals` `kms.amazonaws.com` .\n- *`eventName`* - Can use any operator. You can use it to \ufb01lter in or \ufb01lter out any data event logged to CloudTrail, such as `PutBucket` or `GetSnapshotBlock` . You can have multiple values for this \ufb01eld, separated by commas.\n- *`eventCategory`* - This is required and must be set to `Equals` . For CloudTrail event records, the value must be `Management` or `Data` . For AWS Config configuration item records, the value must be `ConfigurationItem` .\n- *`resources.type`* - This \ufb01eld is required for CloudTrail data events. `resources.type` can only use the `Equals` operator, and the value can be one of the following:\n\n- `AWS::S3::Object`\n- `AWS::Lambda::Function`\n- `AWS::DynamoDB::Table`\n- `AWS::S3Outposts::Object`\n- `AWS::ManagedBlockchain::Node`\n- `AWS::S3ObjectLambda::AccessPoint`\n- `AWS::EC2::Snapshot`\n- `AWS::S3::AccessPoint`\n- `AWS::DynamoDB::Stream`\n- `AWS::Glue::Table`\n- `AWS::FinSpace::Environment`\n- `AWS::SageMaker::ExperimentTrialComponent`\n- `AWS::SageMaker::FeatureGroup`\n\nYou can have only one `resources.type` \ufb01eld per selector. To log data events on more than one resource type, add another selector.\n- *`resources.ARN`* - You can use any operator with `resources.ARN` , but if you use `Equals` or `NotEquals` , the value must exactly match the ARN of a valid resource of the type you've speci\ufb01ed in the template as the value of resources.type. For example, if resources.type equals `AWS::S3::Object` , the ARN must be in one of the following formats. To log all data events for all objects in a specific S3 bucket, use the `StartsWith` operator, and include only the bucket ARN as the matching value.\n\nThe trailing slash is intentional; do not exclude it. Replace the text between less than and greater than symbols (<>) with resource-specific information.\n\n- `arn:<partition>:s3:::<bucket_name>/`\n- `arn:<partition>:s3:::<bucket_name>/<object_path>/`\n\nWhen `resources.type` equals `AWS::S3::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in one of the following formats. To log events on all objects in an S3 access point, we recommend that you use only the access point ARN, don\u2019t include the object path, and use the `StartsWith` or `NotStartsWith` operators.\n\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>`\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>/object/<object_path>`\n\nWhen resources.type equals `AWS::Lambda::Function` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:lambda:<region>:<account_ID>:function:<function_name>`\n\nWhen resources.type equals `AWS::DynamoDB::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>`\n\nWhen `resources.type` equals `AWS::S3Outposts::Object` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-outposts:<region>:<account_ID>:<object_path>`\n\nWhen `resources.type` equals `AWS::ManagedBlockchain::Node` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:managedblockchain:<region>:<account_ID>:nodes/<node_ID>`\n\nWhen `resources.type` equals `AWS::S3ObjectLambda::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-object-lambda:<region>:<account_ID>:accesspoint/<access_point_name>`\n\nWhen `resources.type` equals `AWS::EC2::Snapshot` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:ec2:<region>::snapshot/<snapshot_ID>`\n\nWhen `resources.type` equals `AWS::DynamoDB::Stream` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>/stream/<date_time>`\n\nWhen `resources.type` equals `AWS::Glue::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:glue:<region>:<account_ID>:table/<database_name>/<table_name>`\n\nWhen `resources.type` equals `AWS::FinSpace::Environment` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:finspace:<region>:<account_ID>:environment/<environment_ID>`\n\nWhen `resources.type` equals `AWS::SageMaker::ExperimentTrialComponent` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:experiment-trial-component/<experiment_trial_component_name>`\n\nWhen `resources.type` equals `AWS::SageMaker::FeatureGroup` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:feature-group/<feature_group_name>`",
+        "Field": "A field in a CloudTrail event record on which to filter events to be logged. For event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the field is used only for selecting events as filtering is not supported.\n\nFor CloudTrail event records, supported fields include `readOnly` , `eventCategory` , `eventSource` (for management events), `eventName` , `resources.type` , and `resources.ARN` .\n\nFor event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the only supported field is `eventCategory` .\n\n- *`readOnly`* - Optional. Can be set to `Equals` a value of `true` or `false` . If you do not add this field, CloudTrail logs both `read` and `write` events. A value of `true` logs only `read` events. A value of `false` logs only `write` events.\n- *`eventSource`* - For filtering management events only. This can be set only to `NotEquals` `kms.amazonaws.com` .\n- *`eventName`* - Can use any operator. You can use it to \ufb01lter in or \ufb01lter out any data event logged to CloudTrail, such as `PutBucket` or `GetSnapshotBlock` . You can have multiple values for this \ufb01eld, separated by commas.\n- *`eventCategory`* - This is required and must be set to `Equals` .\n\n- For CloudTrail event records, the value must be `Management` or `Data` .\n- For AWS Config configuration items, the value must be `ConfigurationItem` .\n- For Audit Manager evidence, the value must be `Evidence` .\n- For non- AWS events, the value must be `ActivityAuditLog` .\n- *`resources.type`* - This \ufb01eld is required for CloudTrail data events. `resources.type` can only use the `Equals` operator, and the value can be one of the following:\n\n- `AWS::CloudTrail::Channel`\n- `AWS::S3::Object`\n- `AWS::Lambda::Function`\n- `AWS::DynamoDB::Table`\n- `AWS::S3Outposts::Object`\n- `AWS::ManagedBlockchain::Node`\n- `AWS::S3ObjectLambda::AccessPoint`\n- `AWS::EC2::Snapshot`\n- `AWS::S3::AccessPoint`\n- `AWS::DynamoDB::Stream`\n- `AWS::Glue::Table`\n- `AWS::FinSpace::Environment`\n- `AWS::SageMaker::ExperimentTrialComponent`\n- `AWS::SageMaker::FeatureGroup`\n\nYou can have only one `resources.type` \ufb01eld per selector. To log data events on more than one resource type, add another selector.\n- *`resources.ARN`* - You can use any operator with `resources.ARN` , but if you use `Equals` or `NotEquals` , the value must exactly match the ARN of a valid resource of the type you've speci\ufb01ed in the template as the value of resources.type. For example, if resources.type equals `AWS::S3::Object` , the ARN must be in one of the following formats. To log all data events for all objects in a specific S3 bucket, use the `StartsWith` operator, and include only the bucket ARN as the matching value.\n\nThe trailing slash is intentional; do not exclude it. Replace the text between less than and greater than symbols (<>) with resource-specific information.\n\n- `arn:<partition>:s3:::<bucket_name>/`\n- `arn:<partition>:s3:::<bucket_name>/<object_path>/`\n\nWhen `resources.type` equals `AWS::S3::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in one of the following formats. To log events on all objects in an S3 access point, we recommend that you use only the access point ARN, don\u2019t include the object path, and use the `StartsWith` or `NotStartsWith` operators.\n\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>`\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>/object/<object_path>`\n\nWhen resources.type equals `AWS::Lambda::Function` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:lambda:<region>:<account_ID>:function:<function_name>`\n\nWhen resources.type equals `AWS::DynamoDB::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>`\n\nWhen resources.type equals `AWS::CloudTrail::Channel` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cloudtrail:<region>:<account_ID>:channel/<channel_UUID>`\n\nWhen `resources.type` equals `AWS::S3Outposts::Object` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-outposts:<region>:<account_ID>:<object_path>`\n\nWhen `resources.type` equals `AWS::ManagedBlockchain::Node` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:managedblockchain:<region>:<account_ID>:nodes/<node_ID>`\n\nWhen `resources.type` equals `AWS::S3ObjectLambda::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-object-lambda:<region>:<account_ID>:accesspoint/<access_point_name>`\n\nWhen `resources.type` equals `AWS::EC2::Snapshot` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:ec2:<region>::snapshot/<snapshot_ID>`\n\nWhen `resources.type` equals `AWS::DynamoDB::Stream` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>/stream/<date_time>`\n\nWhen `resources.type` equals `AWS::Glue::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:glue:<region>:<account_ID>:table/<database_name>/<table_name>`\n\nWhen `resources.type` equals `AWS::FinSpace::Environment` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:finspace:<region>:<account_ID>:environment/<environment_ID>`\n\nWhen `resources.type` equals `AWS::SageMaker::ExperimentTrialComponent` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:experiment-trial-component/<experiment_trial_component_name>`\n\nWhen `resources.type` equals `AWS::SageMaker::FeatureGroup` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:feature-group/<feature_group_name>`",
         "NotEndsWith": "An operator that excludes events that match the last few characters of the event record field specified as the value of `Field` .",
         "NotEquals": "An operator that excludes events that match the exact value of the event record field specified as the value of `Field` .",
         "NotStartsWith": "An operator that excludes events that match the first few characters of the event record field specified as the value of `Field` .",
@@ -10706,10 +10706,10 @@
       "attributes": {
         "Ref": ""
       },
-      "description": "",
+      "description": "The approved origin for the instance.",
       "properties": {
-        "InstanceId": "",
-        "Origin": ""
+        "InstanceId": "The Amazon Resource Name (ARN) of the instance.\n\n*Minimum* : `1`\n\n*Maximum* : `100`",
+        "Origin": "Domain name to be added to the allow-list of the instance.\n\n*Maximum* : `267`"
       }
     },
     "AWS::Connect::ContactFlow": {
@@ -10864,14 +10864,14 @@
     },
     "AWS::Connect::IntegrationAssociation": {
       "attributes": {
-        "IntegrationAssociationId": "",
+        "IntegrationAssociationId": "Identifier of the association with an Amazon Connect instance.",
         "Ref": ""
       },
-      "description": "Creates an AWS resource association with an Amazon Connect instance.",
+      "description": "Specifies the association of an AWS resource such as Lex bot (both v1 and v2) and Lambda function with an Amazon Connect instance.",
       "properties": {
-        "InstanceId": "The identifier of the Amazon Connect instance. You can find the instanceId in the ARN of the instance.",
-        "IntegrationArn": "The Amazon Resource Name (ARN) for the AppIntegration.",
-        "IntegrationType": "The integration type."
+        "InstanceId": "The Amazon Resource Name (ARN) of the instance.\n\n*Minimum* : `1`\n\n*Maximum* : `100`",
+        "IntegrationArn": "ARN of the integration being associated with the instance.\n\n*Minimum* : `1`\n\n*Maximum* : `140`",
+        "IntegrationType": "Specifies the integration type to be associated with the instance.\n\n*Allowed Values* : `LEX_BOT` | `LAMBDA_FUNCTION`"
       }
     },
     "AWS::Connect::PhoneNumber": {
@@ -11017,13 +11017,13 @@
     },
     "AWS::Connect::SecurityKey": {
       "attributes": {
-        "AssociationId": "",
+        "AssociationId": "An `AssociationId` is automatically generated when a storage config is associated with an instance.",
         "Ref": ""
       },
-      "description": "Configuration information of the security key.",
+      "description": "The security key for the instance.\n\n> Only two security keys are allowed per Amazon Connect instance.",
       "properties": {
-        "InstanceId": "",
-        "Key": "The key of the security key."
+        "InstanceId": "The Amazon Resource Name (ARN) of the instance.\n\n*Minimum* : `1`\n\n*Maximum* : `100`",
+        "Key": "A valid security key in PEM format.\n\n*Minimum* : `1`\n\n*Maximum* : `1024`"
       }
     },
     "AWS::Connect::TaskTemplate": {
@@ -14538,7 +14538,7 @@
         "SubnetId": "[EC2-VPC] The ID of the subnet to launch the instance into.\n\nIf you specify a network interface, you must specify any subnets as part of the network interface.",
         "Tags": "The tags to add to the instance. These tags are not applied to the EBS volumes, such as the root volume.",
         "Tenancy": "The tenancy of the instance (if the instance is running in a VPC). An instance with a tenancy of `dedicated` runs on single-tenant hardware.",
-        "UserData": "The user data script to make available to the instance. For more information, see [Run commands on your Linux instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) and [Run commands on your Windows instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html) . If you are using a command line tool, base64-encoding is performed for you, and you can load the text from a file. Otherwise, you must provide base64-encoded text. User data is limited to 16 KB.",
+        "UserData": "The user data script to make available to the instance. User data is limited to 16 KB. You must provide base64-encoded text. For more information, see [Fn::Base64](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-base64.html) .\n\nUser data runs only at instance launch. For more information, see [Run commands on your Linux instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) and [Run commands on your Windows instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html) .",
         "Volumes": "The volumes to attach to the instance."
       }
     },
@@ -30416,7 +30416,7 @@
         "CatalogId": "The identifier for the Data Catalog . By default, it is the account ID of the caller.",
         "DatabaseName": "The name of the database for the table. Unique to a Data Catalog. A database is a set of associated table definitions organized into a logical group. You can Grant and Revoke database privileges to a principal.",
         "Name": "The name of the table.",
-        "TableWildcard": "A wildcard object representing every table under a database.\n\nAt least one of `TableResource$Name` or `TableResource$TableWildcard` is required."
+        "TableWildcard": "A wildcard object representing every table under a database.This is an object with no properties that effectively behaves as a true or false depending on whether not it is passed as a parameter. The valid inputs for a property with this type in either yaml or json is null or {}.\n\nAt least one of `TableResource$Name` or `TableResource$TableWildcard` is required."
       }
     },
     "AWS::LakeFormation::TagAssociation.TableWithColumnsResource": {
@@ -30650,7 +30650,7 @@
         "FunctionName": "The name of the Lambda function, up to 64 characters in length. If you don't specify a name, AWS CloudFormation generates one.\n\nIf you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
         "Handler": "The name of the method within your code that Lambda calls to run your function. Handler is required if the deployment package is a .zip file archive. The format includes the file name. It can also include namespaces and other qualifiers, depending on the runtime. For more information, see [Lambda programming model](https://docs.aws.amazon.com/lambda/latest/dg/foundation-progmodel.html) .",
         "ImageConfig": "Configuration values that override the container image Dockerfile settings. For more information, see [Container image settings](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html#images-parms) .",
-        "KmsKeyArn": "The ARN of the AWS Key Management Service ( AWS KMS ) key that's used to encrypt your function's environment variables. If it's not provided, Lambda uses a default service key.",
+        "KmsKeyArn": "The ARN of the AWS Key Management Service ( AWS KMS ) customer managed key that's used to encrypt your function's [environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-encryption) . When [Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart-security.html) is activated, this key is also used to encrypt your function's snapshot. If you don't provide a customer managed key, Lambda uses a default service key.",
         "Layers": "A list of [function layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) to add to the function's execution environment. Specify each layer by its ARN, including the version.",
         "MemorySize": "The amount of [memory available to the function](https://docs.aws.amazon.com/lambda/latest/dg/configuration-function-common.html#configuration-memory-console) at runtime. Increasing the function memory also increases its CPU allocation. The default value is 128 MB. The value can be any multiple of 1 MB.",
         "PackageType": "The type of deployment package. Set to `Image` for container image and set `Zip` for .zip file archive.",
@@ -30853,16 +30853,16 @@
         "Arn": "The Amazon Resource Name (ARN) of the bot.",
         "Id": "The unique identifier of the bot."
       },
-      "description": "> Amazon Lex V2 is the only supported version in AWS CloudFormation . \n\nSpecifies an Amazon Lex conversational bot.\n\nYou must configure an intent based on the AMAZON.FallbackIntent built-in intent. If you don't add one, creating the bot will fail.",
+      "description": "> Amazon Lex V2 is the only supported version in AWS CloudFormation . \n\nSpecifies an Amazon Lex conversational bot.\n\nYou must configure an intent based on the `AMAZON.FallbackIntent` built-in intent. If you don't add one, creating the bot will fail.",
       "properties": {
         "AutoBuildBotLocales": "Indicates whether Amazon Lex V2 should automatically build the locales for the bot after a change.",
         "BotFileS3Location": "The Amazon S3 location of files used to import a bot. The files must be in the import format specified in [JSON format for importing and exporting](https://docs.aws.amazon.com/lexv2/latest/dg/import-export-format.html) in the *Amazon Lex developer guide.*",
         "BotLocales": "A list of locales for the bot.",
         "BotTags": "A list of tags to add to the bot. You can only add tags when you import a bot. You can't use the `UpdateBot` operation to update tags. To update tags, use the `TagResource` operation.",
-        "DataPrivacy": "Provides information on additional privacy protections Amazon Lex should use with the bot's data.",
+        "DataPrivacy": "",
         "Description": "The description of the version.",
         "IdleSessionTTLInSeconds": "The time, in seconds, that Amazon Lex should keep information about a user's conversation with the bot.\n\nA user interaction remains active for the amount of time specified. If no conversation occurs during this time, the session expires and Amazon Lex deletes any data provided before the timeout.\n\nYou can specify between 60 (1 minute) and 86,400 (24 hours) seconds.",
-        "Name": "The name of the field to filter the list of bots.",
+        "Name": "The name of the bot locale.",
         "RoleArn": "The Amazon Resource Name (ARN) of the IAM role used to build and run the bot.",
         "TestBotAliasSettings": "Specifies configuration settings for the alias used to test the bot. If the `TestBotAliasSettings` property is not specified, the settings are configured with default values.",
         "TestBotAliasTags": "A list of tags to add to the test alias for a bot. You can only add tags when you import a bot. You can't use the `UpdateAlias` operation to update tags. To update tags on the test alias, use the `TagResource` operation."
@@ -30870,57 +30870,57 @@
     },
     "AWS::Lex::Bot.AdvancedRecognitionSetting": {
       "attributes": {},
-      "description": "Specifies settings that enable advanced audio recognition for slot values.",
+      "description": "Provides settings that enable advanced recognition settings for slot values.",
       "properties": {
-        "AudioRecognitionStrategy": "Specifies that Amazon Lex should use slot values as a custom vocabulary when recognizing user utterances."
+        "AudioRecognitionStrategy": "Enables using the slot values as a custom vocabulary for recognizing user utterances."
       }
     },
     "AWS::Lex::Bot.AllowedInputTypes": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the allowed input types.",
       "properties": {
-        "AllowAudioInput": "",
-        "AllowDTMFInput": ""
+        "AllowAudioInput": "Indicates whether audio input is allowed.",
+        "AllowDTMFInput": "Indicates whether DTMF input is allowed."
       }
     },
     "AWS::Lex::Bot.AudioAndDTMFInputSpecification": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the audio and DTMF input specification.",
       "properties": {
-        "AudioSpecification": "",
-        "DTMFSpecification": "",
-        "StartTimeoutMs": ""
+        "AudioSpecification": "Specifies the settings on audio input.",
+        "DTMFSpecification": "Specifies the settings on DTMF input.",
+        "StartTimeoutMs": "Time for which a bot waits before assuming that the customer isn't going to speak or press a key. This timeout is shared between Audio and DTMF inputs."
       }
     },
     "AWS::Lex::Bot.AudioLogDestination": {
       "attributes": {},
-      "description": "Specifies the location of audio log files collected when conversation logging is enabled for a bot.",
+      "description": "The location of audio log files collected when conversation logging is enabled for a bot.",
       "properties": {
         "S3Bucket": "Specifies the Amazon S3 bucket where the audio files are stored."
       }
     },
     "AWS::Lex::Bot.AudioLogSetting": {
       "attributes": {},
-      "description": "Specifies settings for logging the audio of conversations between Amazon Lex and a user. You specify whether to log audio and the Amazon S3 bucket where the audio file is stored.",
+      "description": "Settings for logging audio of conversations between Amazon Lex and a user. You specify whether to log audio and the Amazon S3 bucket where the audio file is stored.",
       "properties": {
         "Destination": "Specifies the location of the audio log files collected when conversation logging is enabled for a bot.",
-        "Enabled": "Specifies whether audio logging is enabled for the bot."
+        "Enabled": "Determines whether audio logging in enabled for the bot."
       }
     },
     "AWS::Lex::Bot.AudioSpecification": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the audio input specifications.",
       "properties": {
-        "EndTimeoutMs": "",
-        "MaxLengthMs": ""
+        "EndTimeoutMs": "Time for which a bot waits after the customer stops speaking to assume the utterance is finished.",
+        "MaxLengthMs": "Time for how long Amazon Lex waits before speech input is truncated and the speech is returned to application."
       }
     },
     "AWS::Lex::Bot.BotAliasLocaleSettings": {
       "attributes": {},
-      "description": "Specifies settings that are unique to a locale. For example, you can use a different Lambda function for each locale.",
+      "description": "Specifies settings that are unique to a locale. For example, you can use different Lambda function depending on the bot's locale.",
       "properties": {
-        "CodeHookSpecification": "Specifies the Lambda function to use in this locale.",
-        "Enabled": "Specifies whether the locale is enabled for the bot. If the value is false, the locale isn't available for use."
+        "CodeHookSpecification": "Specifies the Lambda function that should be used in the locale.",
+        "Enabled": "Determines whether the locale is enabled for the bot. If the value is `false` , the locale isn't available for use."
       }
     },
     "AWS::Lex::Bot.BotAliasLocaleSettingsItem": {
@@ -30939,71 +30939,71 @@
         "Description": "A description of the bot locale. Use this to help identify the bot locale in lists.",
         "Intents": "One or more intents defined for the locale.",
         "LocaleId": "The identifier of the language and locale that the bot will be used in. The string must match one of the supported locales.",
-        "NluConfidenceThreshold": "Determines the threshold where Amazon Lex will insert the AMAZON.FallbackIntent, AMAZON.KendraSearchIntent, or both when returning alternative intents. You must configure an AMAZON.FallbackIntent. AMAZON.KendraSearchIntent is only inserted if it is configured for the bot.",
+        "NluConfidenceThreshold": "Determines the threshold where Amazon Lex will insert the `AMAZON.FallbackIntent` , `AMAZON.KendraSearchIntent` , or both when returning alternative intents. You must configure an `AMAZON.FallbackIntent` . `AMAZON.KendraSearchIntent` is only inserted if it is configured for the bot.",
         "SlotTypes": "One or more slot types defined for the locale.",
-        "VoiceSettings": "Identifies the Amazon Polly voice used for audio interaction with the user."
+        "VoiceSettings": "Defines settings for using an Amazon Polly voice to communicate with a user."
       }
     },
     "AWS::Lex::Bot.Button": {
       "attributes": {},
       "description": "Describes a button to use on a response card used to gather slot values from a user.",
       "properties": {
-        "Text": "The text that appears on the button. Use this to tell the user the value that is returned when they choose this button.",
+        "Text": "The text that appears on the button. Use this to tell the user what value is returned when they choose this button.",
         "Value": "The value returned to Amazon Lex when the user chooses this button. This must be one of the slot values configured for the slot."
       }
     },
     "AWS::Lex::Bot.CloudWatchLogGroupLogDestination": {
       "attributes": {},
-      "description": "Specifies the Amazon CloudWatch Logs log group where text and metadata logs are delivered. The log group must exist before you enable logging.",
+      "description": "The Amazon CloudWatch Logs log group where the text and metadata logs are delivered. The log group must exist before you enable logging.",
       "properties": {
-        "CloudWatchLogGroupArn": "Specifies the Amazon Resource Name (ARN) of the log group where text and metadata logs are delivered.",
-        "LogPrefix": "Specifies the prefix of the log stream name within the log group that you specified."
+        "CloudWatchLogGroupArn": "The Amazon Resource Name (ARN) of the log group where text and metadata logs are delivered.",
+        "LogPrefix": "The prefix of the log stream name within the log group that you specified"
       }
     },
     "AWS::Lex::Bot.CodeHookSpecification": {
       "attributes": {},
-      "description": "Specifies information about code hooks that Amazon Lex calls during a conversation.",
+      "description": "Contains information about code hooks that Amazon Lex calls during a conversation.",
       "properties": {
         "LambdaCodeHook": "Specifies a Lambda function that verifies requests to a bot or fulfills the user's request to a bot."
       }
     },
     "AWS::Lex::Bot.Condition": {
       "attributes": {},
-      "description": "",
+      "description": "Provides an expression that evaluates to true or false.",
       "properties": {
-        "ExpressionString": ""
+        "ExpressionString": "The expression string that is evaluated."
       }
     },
     "AWS::Lex::Bot.ConditionalBranch": {
       "attributes": {},
-      "description": "",
+      "description": "A set of actions that Amazon Lex should run if the condition is matched.",
       "properties": {
-        "Condition": "",
-        "Name": "",
-        "NextStep": "",
-        "Response": ""
+        "Condition": "Contains the expression to evaluate. If the condition is true, the branch's actions are taken.",
+        "Name": "The name of the branch.",
+        "NextStep": "The next step in the conversation.",
+        "Response": "Specifies a list of message groups that Amazon Lex uses to respond the user input."
       }
     },
     "AWS::Lex::Bot.ConditionalSpecification": {
       "attributes": {},
-      "description": "",
+      "description": "Provides a list of conditional branches. Branches are evaluated in the order that they are entered in the list. The first branch with a condition that evaluates to true is executed. The last branch in the list is the default branch. The default branch should not have any condition expression. The default branch is executed if no other branch has a matching condition.",
       "properties": {
-        "ConditionalBranches": "",
-        "DefaultBranch": "",
-        "IsActive": ""
+        "ConditionalBranches": "A list of conditional branches. A conditional branch is made up of a condition, a response and a next step. The response and next step are executed when the condition is true.",
+        "DefaultBranch": "The conditional branch that should be followed when the conditions for other branches are not satisfied. A conditional branch is made up of a condition, a response and a next step.",
+        "IsActive": "Determines whether a conditional branch is active. When `IsActive` is false, the conditions are not evaluated."
       }
     },
     "AWS::Lex::Bot.ConversationLogSettings": {
       "attributes": {},
-      "description": "Specifies settings that manage logging that saves audio, text, and metadata for the conversations with your users.",
+      "description": "Configures conversation logging that saves audio, text, and metadata for the conversations with your users.",
       "properties": {
-        "AudioLogSettings": "Specifies the Amazon S3 settings for logging audio to an S3 bucket.",
-        "TextLogSettings": "Specifies settings to enable text conversation logs. You specify the Amazon CloudWatch Logs log group and whether logs should be stored for an alias."
+        "AudioLogSettings": "The Amazon S3 settings for logging audio to an S3 bucket.",
+        "TextLogSettings": "The Amazon CloudWatch Logs settings for logging text and metadata."
       }
     },
     "AWS::Lex::Bot.CustomPayload": {
       "attributes": {},
-      "description": "A custom response string that Amazon Lex sends to your application. You define the content and structure of the string.",
+      "description": "A custom response string that Amazon Lex sends to your application. You define the content and structure the string.",
       "properties": {
         "Value": "The string that is sent to your application."
       }
@@ -31025,70 +31025,70 @@
     },
     "AWS::Lex::Bot.DTMFSpecification": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the DTMF input specifications.",
       "properties": {
-        "DeletionCharacter": "",
-        "EndCharacter": "",
-        "EndTimeoutMs": "",
-        "MaxLength": ""
+        "DeletionCharacter": "The DTMF character that clears the accumulated DTMF digits and immediately ends the input.",
+        "EndCharacter": "The DTMF character that immediately ends input. If the user does not press this character, the input ends after the end timeout.",
+        "EndTimeoutMs": "How long the bot should wait after the last DTMF character input before assuming that the input has concluded.",
+        "MaxLength": "The maximum number of DTMF digits allowed in an utterance."
       }
     },
     "AWS::Lex::Bot.DataPrivacy": {
       "attributes": {},
-      "description": "",
+      "description": "Provides information on additional privacy protections Amazon Lex should use with the bot's data.",
       "properties": {
-        "ChildDirected": ""
+        "ChildDirected": "For each Amazon Lex bot created with the Amazon Lex Model Building Service, you must specify whether your use of Amazon Lex is related to a website, program, or other application that is directed or targeted, in whole or in part, to children under age 13 and subject to the Children's Online Privacy Protection Act (COPPA) by specifying `true` or `false` in the `childDirected` field. By specifying `true` in the `childDirected` field, you confirm that your use of Amazon Lex *is* related to a website, program, or other application that is directed or targeted, in whole or in part, to children under age 13 and subject to COPPA. By specifying `false` in the `childDirected` field, you confirm that your use of Amazon Lex *is not* related to a website, program, or other application that is directed or targeted, in whole or in part, to children under age 13 and subject to COPPA. You may not specify a default value for the `childDirected` field that does not accurately reflect whether your use of Amazon Lex is related to a website, program, or other application that is directed or targeted, in whole or in part, to children under age 13 and subject to COPPA. If your use of Amazon Lex relates to a website, program, or other application that is directed in whole or in part, to children under age 13, you must obtain any required verifiable parental consent under COPPA. For information regarding the use of Amazon Lex in connection with websites, programs, or other applications that are directed or targeted, in whole or in part, to children under age 13, see the [Amazon Lex FAQ](https://docs.aws.amazon.com/lex/faqs#data-security) ."
       }
     },
     "AWS::Lex::Bot.DefaultConditionalBranch": {
       "attributes": {},
-      "description": "",
+      "description": "A set of actions that Amazon Lex should run if none of the other conditions are met.",
       "properties": {
-        "NextStep": "",
-        "Response": ""
+        "NextStep": "The next step in the conversation.",
+        "Response": "Specifies a list of message groups that Amazon Lex uses to respond the user input."
       }
     },
     "AWS::Lex::Bot.DialogAction": {
       "attributes": {},
-      "description": "",
+      "description": "Defines the action that the bot executes at runtime when the conversation reaches this step.",
       "properties": {
-        "SlotToElicit": "",
-        "SuppressNextMessage": "",
-        "Type": ""
+        "SlotToElicit": "If the dialog action is `ElicitSlot` , defines the slot to elicit from the user.",
+        "SuppressNextMessage": "When true the next message for the intent is not used.",
+        "Type": "The action that the bot should execute."
       }
     },
     "AWS::Lex::Bot.DialogCodeHookInvocationSetting": {
       "attributes": {},
-      "description": "",
+      "description": "Settings that specify the dialog code hook that is called by Amazon Lex at a step of the conversation.",
       "properties": {
-        "EnableCodeHookInvocation": "",
-        "InvocationLabel": "",
-        "IsActive": "",
-        "PostCodeHookSpecification": ""
+        "EnableCodeHookInvocation": "Indicates whether a Lambda function should be invoked for the dialog.",
+        "InvocationLabel": "A label that indicates the dialog step from which the dialog code hook is happening.",
+        "IsActive": "Determines whether a dialog code hook is used when the intent is activated.",
+        "PostCodeHookSpecification": "Contains the responses and actions that Amazon Lex takes after the Lambda function is complete."
       }
     },
     "AWS::Lex::Bot.DialogCodeHookSetting": {
       "attributes": {},
-      "description": "Specifies whether an intent uses the dialog code hook during conversations with a user.",
+      "description": "Settings that determine the Lambda function that Amazon Lex uses for processing user responses.",
       "properties": {
-        "Enabled": "Indicates whether an intent uses the dialog code hook during a conversation with a user."
+        "Enabled": "Enables the dialog code hook so that it processes user requests."
       }
     },
     "AWS::Lex::Bot.DialogState": {
       "attributes": {},
-      "description": "",
+      "description": "The current state of the conversation with the user.",
       "properties": {
-        "DialogAction": "",
-        "Intent": "",
-        "SessionAttributes": ""
+        "DialogAction": "Defines the action that the bot executes at runtime when the conversation reaches this step.",
+        "Intent": "Override settings to configure the intent state.",
+        "SessionAttributes": "Map of key/value pairs representing session-specific context information. It contains application information passed between Amazon Lex and a client application."
       }
     },
     "AWS::Lex::Bot.ElicitationCodeHookInvocationSetting": {
       "attributes": {},
-      "description": "",
+      "description": "Settings that specify the dialog code hook that is called by Amazon Lex between eliciting slot values.",
       "properties": {
-        "EnableCodeHookInvocation": "",
-        "InvocationLabel": ""
+        "EnableCodeHookInvocation": "Indicates whether a Lambda function should be invoked for the dialog.",
+        "InvocationLabel": "A label that indicates the dialog step from which the dialog code hook is happening."
       }
     },
     "AWS::Lex::Bot.ExternalSourceSetting": {
@@ -31102,9 +31102,9 @@
       "attributes": {},
       "description": "Determines if a Lambda function should be invoked for a specific intent.",
       "properties": {
-        "Enabled": "Indicates whether a Lambda function should be invoked for fulfill a specific intent.",
+        "Enabled": "Indicates whether a Lambda function should be invoked to fulfill a specific intent.",
         "FulfillmentUpdatesSpecification": "Provides settings for update messages sent to the user for long-running Lambda fulfillment functions. Fulfillment updates can be used only with streaming conversations.",
-        "IsActive": "",
+        "IsActive": "Determines whether the fulfillment code hook is used. When `active` is false, the code hook doesn't run.",
         "PostFulfillmentStatusSpecification": "Provides settings for messages sent to the user for after the Lambda fulfillment function completes. Post-fulfillment messages can be sent for both streaming and non-streaming conversations."
       }
     },
@@ -31114,23 +31114,23 @@
       "properties": {
         "AllowInterrupt": "Determines whether the user can interrupt the start message while it is playing.",
         "DelayInSeconds": "The delay between when the Lambda fulfillment function starts running and the start message is played. If the Lambda function returns before the delay is over, the start message isn't played.",
-        "MessageGroups": "One to 5 message groups that contain start messages. Amazon Lex chooses one of the messages to play to the user."
+        "MessageGroups": "1 - 5 message groups that contain start messages. Amazon Lex chooses one of the messages to play to the user."
       }
     },
     "AWS::Lex::Bot.FulfillmentUpdateResponseSpecification": {
       "attributes": {},
-      "description": "Provides information for updating the user on the progress of fulfilling an intent.",
+      "description": "Provides settings for a message that is sent periodically to the user while a fulfillment Lambda function is running.",
       "properties": {
         "AllowInterrupt": "Determines whether the user can interrupt an update message while it is playing.",
-        "FrequencyInSeconds": "The frequency that a message is sent to the user. When the period ends, Amazon Lex chooses a message from the message groups and plays it to the user. If the fulfillment Lambda function returns before the first period ends, an update message is not played to the user.",
-        "MessageGroups": "One to 5 message groups that contain update messages. Amazon Lex chooses one of the messages to play to the user."
+        "FrequencyInSeconds": "The frequency that a message is sent to the user. When the period ends, Amazon Lex chooses a message from the message groups and plays it to the user. If the fulfillment Lambda returns before the first period ends, an update message is not played to the user.",
+        "MessageGroups": "1 - 5 message groups that contain update messages. Amazon Lex chooses one of the messages to play to the user."
       }
     },
     "AWS::Lex::Bot.FulfillmentUpdatesSpecification": {
       "attributes": {},
       "description": "Provides information for updating the user on the progress of fulfilling an intent.",
       "properties": {
-        "Active": "Determines whether fulfillment updates are sent to the user. When this field is true, updates are sent.\n\nIf the active field is set to true, the `startResponse` , `updateResponse` , and `timeoutInSeconds` fields are required.",
+        "Active": "Determines whether fulfillment updates are sent to the user. When this field is true, updates are sent.\n\nIf the `active` field is set to true, the `startResponse` , `updateResponse` , and `timeoutInSeconds` fields are required.",
         "StartResponse": "Provides configuration information for the message sent to users when the fulfillment Lambda functions starts running.",
         "TimeoutInSeconds": "The length of time that the fulfillment Lambda function should run before it times out.",
         "UpdateResponse": "Provides configuration information for messages sent periodically to the user while the fulfillment Lambda function is running."
@@ -31138,25 +31138,25 @@
     },
     "AWS::Lex::Bot.GrammarSlotTypeSetting": {
       "attributes": {},
-      "description": "Settings required for a slot type based on a grammar that you provide.",
+      "description": "Settings requried for a slot type based on a grammar that you provide.",
       "properties": {
         "Source": "The source of the grammar used to create the slot type."
       }
     },
     "AWS::Lex::Bot.GrammarSlotTypeSource": {
       "attributes": {},
-      "description": "Describes the Amazon S3 bucket name and location for the grammar that is the source of the slot type.",
+      "description": "Describes the Amazon S3 bucket name and location for the grammar that is the source for the slot type.",
       "properties": {
-        "KmsKeyArn": "The AWS Key Management Service key required to decrypt the contents of the grammar, if any.",
-        "S3BucketName": "The name of the S3 bucket that contains the grammar source.",
-        "S3ObjectKey": "The path to the grammar in the S3 bucket."
+        "KmsKeyArn": "The AWS KMS key required to decrypt the contents of the grammar, if any.",
+        "S3BucketName": "The name of the Amazon S3 bucket that contains the grammar source.",
+        "S3ObjectKey": "The path to the grammar in the Amazon S3 bucket."
       }
     },
     "AWS::Lex::Bot.ImageResponseCard": {
       "attributes": {},
       "description": "A card that is shown to the user by a messaging platform. You define the contents of the card, the card is displayed by the platform.\n\nWhen you use a response card, the response from the user is constrained to the text associated with a button on the card.",
       "properties": {
-        "Buttons": "A list of buttons that should be displayed on the response card. The arrangement of the buttons is determined by the platform that displays the buttons.",
+        "Buttons": "A list of buttons that should be displayed on the response card. The arrangement of the buttons is determined by the platform that displays the button.",
         "ImageUrl": "The URL of an image to display on the response card. The image URL must be publicly available so that the platform displaying the response card has access to the image.",
         "Subtitle": "The subtitle to display on the response card. The format of the subtitle is determined by the platform displaying the response card.",
         "Title": "The title to display on the response card. The format of the title is determined by the platform displaying the response card."
@@ -31164,17 +31164,17 @@
     },
     "AWS::Lex::Bot.InitialResponseSetting": {
       "attributes": {},
-      "description": "",
+      "description": "Configuration setting for a response sent to the user before Amazon Lex starts eliciting slots.",
       "properties": {
-        "CodeHook": "",
-        "Conditional": "",
-        "InitialResponse": "",
-        "NextStep": ""
+        "CodeHook": "Settings that specify the dialog code hook that is called by Amazon Lex at a step of the conversation.",
+        "Conditional": "Provides a list of conditional branches. Branches are evaluated in the order that they are entered in the list. The first branch with a condition that evaluates to true is executed. The last branch in the list is the default branch. The default branch should not have any condition expression. The default branch is executed if no other branch has a matching condition.",
+        "InitialResponse": "Specifies a list of message groups that Amazon Lex uses to respond the user input.",
+        "NextStep": "The next step in the conversation."
       }
     },
     "AWS::Lex::Bot.InputContext": {
       "attributes": {},
-      "description": "The name of a context that must be active for an intent to be selected by Amazon Lex .",
+      "description": "The name of a context that must be active for an intent to be selected by Amazon Lex.",
       "properties": {
         "Name": "The name of the context."
       }
@@ -31186,11 +31186,11 @@
         "Description": "A description of the intent. Use the description to help identify the intent in lists.",
         "DialogCodeHook": "Specifies that Amazon Lex invokes the alias Lambda function for each user input. You can invoke this Lambda function to personalize user interaction.",
         "FulfillmentCodeHook": "Specifies that Amazon Lex invokes the alias Lambda function when the intent is ready for fulfillment. You can invoke this function to complete the bot's transaction with the user.",
-        "InitialResponseSetting": "",
+        "InitialResponseSetting": "Configuration setting for a response sent to the user before Amazon Lex starts eliciting slots.",
         "InputContexts": "A list of contexts that must be active for this intent to be considered by Amazon Lex .",
         "IntentClosingSetting": "Sets the response that Amazon Lex sends to the user when the intent is closed.",
         "IntentConfirmationSetting": "Provides prompts that Amazon Lex sends to the user to confirm the completion of an intent. If the user answers \"no,\" the settings contain a statement that is sent to the user to end the intent.",
-        "KendraConfiguration": "Configuration information required to use the AMAZON.KendraSearchIntent intent to connect to an Amazon Kendra index. The AMAZON.KendraSearchIntent intent is called when Amazon Lex can't determine another intent to invoke.",
+        "KendraConfiguration": "Provides configuration information for the AMAZON.KendraSearchIntent intent. When you use this intent, Amazon Lex searches the specified Amazon Kendra index and returns documents from the index that match the user's utterance.",
         "Name": "The name of the intent. Intent names must be unique within the locale that contains the intent and can't match the name of any built-in intent.",
         "OutputContexts": "A list of contexts that the intent activates when it is fulfilled.",
         "ParentIntentSignature": "A unique identifier for the built-in intent to base this intent on.",
@@ -31204,36 +31204,36 @@
       "description": "Provides a statement the Amazon Lex conveys to the user when the intent is successfully fulfilled.",
       "properties": {
         "ClosingResponse": "The response that Amazon Lex sends to the user when the intent is complete.",
-        "Conditional": "",
-        "IsActive": "Specifies whether an intent's closing response is used. When this field is false, the closing response isn't sent to the user and no closing input from the user is used. If the IsActive field isn't specified, the default is true.",
-        "NextStep": ""
+        "Conditional": "A list of conditional branches associated with the intent's closing response. These branches are executed when the `nextStep` attribute is set to `EvalutateConditional` .",
+        "IsActive": "Specifies whether an intent's closing response is used. When this field is false, the closing response isn't sent to the user. If the `IsActive` field isn't specified, the default is true.",
+        "NextStep": "Specifies the next step that the bot executes after playing the intent's closing response."
       }
     },
     "AWS::Lex::Bot.IntentConfirmationSetting": {
       "attributes": {},
       "description": "Provides a prompt for making sure that the user is ready for the intent to be fulfilled.",
       "properties": {
-        "CodeHook": "",
-        "ConfirmationConditional": "",
-        "ConfirmationNextStep": "",
-        "ConfirmationResponse": "",
-        "DeclinationConditional": "",
-        "DeclinationNextStep": "",
-        "DeclinationResponse": "When the user answers \"no\" to the question defined in PromptSpecification, Amazon Lex responds with this response to acknowledge that the intent was canceled.",
-        "ElicitationCodeHook": "",
-        "FailureConditional": "",
-        "FailureNextStep": "",
-        "FailureResponse": "",
-        "IsActive": "Specifies whether the intent's confirmation is sent to the user. When this field is false, confirmation and declination responses aren't sent and processing continues as if the responses aren't present. If the active field isn't specified, the default is true.",
-        "PromptSpecification": "Prompts the user to confirm the intent. This question should have a yes or no answer."
+        "CodeHook": "The `DialogCodeHookInvocationSetting` object associated with intent's confirmation step. The dialog code hook is triggered based on these invocation settings when the confirmation next step or declination next step or failure next step is `InvokeDialogCodeHook` .",
+        "ConfirmationConditional": "A list of conditional branches to evaluate after the intent is closed.",
+        "ConfirmationNextStep": "Specifies the next step that the bot executes when the customer confirms the intent.",
+        "ConfirmationResponse": "Specifies a list of message groups that Amazon Lex uses to respond the user input.",
+        "DeclinationConditional": "A list of conditional branches to evaluate after the intent is declined.",
+        "DeclinationNextStep": "Specifies the next step that the bot executes when the customer declines the intent.",
+        "DeclinationResponse": "When the user answers \"no\" to the question defined in `promptSpecification` , Amazon Lex responds with this response to acknowledge that the intent was canceled.",
+        "ElicitationCodeHook": "The `DialogCodeHookInvocationSetting` used when the code hook is invoked during confirmation prompt retries.",
+        "FailureConditional": "Provides a list of conditional branches. Branches are evaluated in the order that they are entered in the list. The first branch with a condition that evaluates to true is executed. The last branch in the list is the default branch. The default branch should not have any condition expression. The default branch is executed if no other branch has a matching condition.",
+        "FailureNextStep": "The next step to take in the conversation if the confirmation step fails.",
+        "FailureResponse": "Specifies a list of message groups that Amazon Lex uses to respond the user input when the intent confirmation fails.",
+        "IsActive": "Specifies whether the intent's confirmation is sent to the user. When this field is false, confirmation and declination responses aren't sent. If the `IsActive` field isn't specified, the default is true.",
+        "PromptSpecification": "Prompts the user to confirm the intent. This question should have a yes or no answer.\n\nAmazon Lex uses this prompt to ensure that the user acknowledges that the intent is ready for fulfillment. For example, with the `OrderPizza` intent, you might want to confirm that the order is correct before placing it. For other intents, such as intents that simply respond to user questions, you might not need to ask the user for confirmation before providing the information."
       }
     },
     "AWS::Lex::Bot.IntentOverride": {
       "attributes": {},
-      "description": "",
+      "description": "Override settings to configure the intent state.",
       "properties": {
-        "Name": "",
-        "Slots": ""
+        "Name": "The name of the intent. Only required when you're switching intents.",
+        "Slots": "A map of all of the slot value overrides for the intent. The name of the slot maps to the value of the slot. Slots that are not included in the map aren't overridden."
       }
     },
     "AWS::Lex::Bot.KendraConfiguration": {
@@ -31241,7 +31241,7 @@
       "description": "Provides configuration information for the AMAZON.KendraSearchIntent intent. When you use this intent, Amazon Lex searches the specified Amazon Kendra index and returns documents from the index that match the user's utterance.",
       "properties": {
         "KendraIndex": "The Amazon Resource Name (ARN) of the Amazon Kendra index that you want the AMAZON.KendraSearchIntent intent to search. The index must be in the same account and Region as the Amazon Lex bot.",
-        "QueryFilterString": "A query filter that Amazon Lex sends to Amazon Kendra to filter the response from a query. The filter is in the format defined by Amazon Kendra.",
+        "QueryFilterString": "A query filter that Amazon Lex sends to Amazon Kendra to filter the response from a query. The filter is in the format defined by Amazon Kendra. For more information, see [Filtering queries](https://docs.aws.amazon.com/kendra/latest/dg/filtering.html) .",
         "QueryFilterStringEnabled": "Determines whether the AMAZON.KendraSearchIntent intent uses a custom query string to query the Amazon Kendra index."
       }
     },
@@ -31249,8 +31249,8 @@
       "attributes": {},
       "description": "Specifies a Lambda function that verifies requests to a bot or fulfills the user's request to a bot.",
       "properties": {
-        "CodeHookInterfaceVersion": "Specifies the version of the request-response that you want Amazon Lex to use to invoke your Lambda function.",
-        "LambdaArn": "Specifies the Amazon Resource Name (ARN) of the Lambda function."
+        "CodeHookInterfaceVersion": "The version of the request-response that you want Amazon Lex to use to invoke your Lambda function.",
+        "LambdaArn": "The Amazon Resource Name (ARN) of the Lambda function."
       }
     },
     "AWS::Lex::Bot.Message": {
@@ -31260,7 +31260,7 @@
         "CustomPayload": "A message in a custom format defined by the client application.",
         "ImageResponseCard": "A message that defines a response card that the client application can show to the user.",
         "PlainTextMessage": "A message in plain text format.",
-        "SSMLMessage": "A message in Speech Synthesis Markup Language (SSML) format."
+        "SSMLMessage": "A message in Speech Synthesis Markup Language (SSML)."
       }
     },
     "AWS::Lex::Bot.MessageGroup": {
@@ -31275,14 +31275,14 @@
       "attributes": {},
       "description": "Indicates whether a slot can return multiple values.",
       "properties": {
-        "AllowMultipleValues": "Indicates whether a slot can return multiple values. When true, the slot may return more than one value in a response. When false, the slot returns only a single value. If AllowMultipleValues is not set, the default value is false.\n\nMulti-value slots are only available in the en-US locale."
+        "AllowMultipleValues": "Indicates whether a slot can return multiple values. When `true` , the slot may return more than one value in a response. When `false` , the slot returns only a single value.\n\nMulti-value slots are only available in the en-US locale. If you set this value to `true` in any other locale, Amazon Lex throws a `ValidationException` .\n\nIf the `allowMutlipleValues` is not set, the default value is `false` ."
       }
     },
     "AWS::Lex::Bot.ObfuscationSetting": {
       "attributes": {},
       "description": "Determines whether Amazon Lex obscures slot values in conversation logs.",
       "properties": {
-        "ObfuscationSettingType": "Value that determines whether Amazon Lex obscures slot values in conversation logs. The default is to obscure the values."
+        "ObfuscationSettingType": "Value that determines whether Amazon Lex obscures slot values in conversation logs. The default is to obscure the values. The valid values are `None` and `DefaultObfuscation.`"
       }
     },
     "AWS::Lex::Bot.OutputContext": {
@@ -31303,42 +31303,42 @@
     },
     "AWS::Lex::Bot.PostDialogCodeHookInvocationSpecification": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies next steps to run after the dialog code hook finishes.",
       "properties": {
-        "FailureConditional": "",
-        "FailureNextStep": "",
-        "FailureResponse": "",
-        "SuccessConditional": "",
-        "SuccessNextStep": "",
-        "SuccessResponse": "",
-        "TimeoutConditional": "",
-        "TimeoutNextStep": "",
-        "TimeoutResponse": ""
+        "FailureConditional": "A list of conditional branches to evaluate after the dialog code hook throws an exception or returns with the `State` field of the `Intent` object set to `Failed` .",
+        "FailureNextStep": "Specifies the next step the bot runs after the dialog code hook throws an exception or returns with the `State` field of the `Intent` object set to `Failed` .",
+        "FailureResponse": "Specifies a list of message groups that Amazon Lex uses to respond the user input when the code hook fails.",
+        "SuccessConditional": "A list of conditional branches to evaluate after the dialog code hook finishes successfully.",
+        "SuccessNextStep": "Specifics the next step the bot runs after the dialog code hook finishes successfully.",
+        "SuccessResponse": "Specifies a list of message groups that Amazon Lex uses to respond when the code hook succeeds.",
+        "TimeoutConditional": "A list of conditional branches to evaluate if the code hook times out.",
+        "TimeoutNextStep": "Specifies the next step that the bot runs when the code hook times out.",
+        "TimeoutResponse": "Specifies a list of message groups that Amazon Lex uses to respond to the user input when the code hook times out."
       }
     },
     "AWS::Lex::Bot.PostFulfillmentStatusSpecification": {
       "attributes": {},
-      "description": "Provides a setting that determines whether the post-fulfillment response is sent to the user. For more information, see [Post-fulfillment response](https://docs.aws.amazon.com/lex/latest/dg/streaming-progress.html#progress-complete) in the *Amazon Lex developer guide* .",
+      "description": "Provides a setting that determines whether the post-fulfillment response is sent to the user. For more information, see [](https://docs.aws.amazon.com/lexv2/latest/dg/streaming-progress.html#progress-complete)",
       "properties": {
-        "FailureConditional": "",
-        "FailureNextStep": "",
+        "FailureConditional": "A list of conditional branches to evaluate after the fulfillment code hook throws an exception or returns with the `State` field of the `Intent` object set to `Failed` .",
+        "FailureNextStep": "Specifies the next step the bot runs after the fulfillment code hook throws an exception or returns with the `State` field of the `Intent` object set to `Failed` .",
         "FailureResponse": "Specifies a list of message groups that Amazon Lex uses to respond when fulfillment isn't successful.",
-        "SuccessConditional": "",
-        "SuccessNextStep": "",
+        "SuccessConditional": "A list of conditional branches to evaluate after the fulfillment code hook finishes successfully.",
+        "SuccessNextStep": "Specifies the next step in the conversation that Amazon Lex invokes when the fulfillment code hook completes successfully.",
         "SuccessResponse": "Specifies a list of message groups that Amazon Lex uses to respond when the fulfillment is successful.",
-        "TimeoutConditional": "",
-        "TimeoutNextStep": "",
+        "TimeoutConditional": "A list of conditional branches to evaluate if the fulfillment code hook times out.",
+        "TimeoutNextStep": "Specifies the next step that the bot runs when the fulfillment code hook times out.",
         "TimeoutResponse": "Specifies a list of message groups that Amazon Lex uses to respond when fulfillment isn't completed within the timeout period."
       }
     },
     "AWS::Lex::Bot.PromptAttemptSpecification": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the settings on a prompt attempt.",
       "properties": {
-        "AllowInterrupt": "",
-        "AllowedInputTypes": "",
-        "AudioAndDTMFInputSpecification": "",
-        "TextInputSpecification": ""
+        "AllowInterrupt": "Indicates whether the user can interrupt a speech prompt attempt from the bot.",
+        "AllowedInputTypes": "Indicates the allowed input types of the prompt attempt.",
+        "AudioAndDTMFInputSpecification": "Specifies the settings on audio and DTMF input.",
+        "TextInputSpecification": "Specifies the settings on text input."
       }
     },
     "AWS::Lex::Bot.PromptSpecification": {
@@ -31346,27 +31346,27 @@
       "description": "Specifies a list of message groups that Amazon Lex sends to a user to elicit a response.",
       "properties": {
         "AllowInterrupt": "Indicates whether the user can interrupt a speech prompt from the bot.",
-        "MaxRetries": "The maximum number of times the bot tries to elicit a response from the user using this prompt",
-        "MessageGroupsList": "A collection of responses that Amazon Lex can send to the user. Amazon Lex chooses the actual response to send at runtime.",
-        "MessageSelectionStrategy": "",
-        "PromptAttemptsSpecification": ""
+        "MaxRetries": "The maximum number of times the bot tries to elicit a response from the user using this prompt.",
+        "MessageGroupsList": "A collection of messages that Amazon Lex can send to the user. Amazon Lex chooses the actual message to send at runtime.",
+        "MessageSelectionStrategy": "Indicates how a message is selected from a message group among retries.",
+        "PromptAttemptsSpecification": "Specifies the advanced settings on each attempt of the prompt."
       }
     },
     "AWS::Lex::Bot.ResponseSpecification": {
       "attributes": {},
-      "description": "Specifies a list of message groups that Amazon Lex uses to respond to user input.",
+      "description": "Specifies a list of message groups that Amazon Lex uses to respond the user input.",
       "properties": {
-        "AllowInterrupt": "Indicates whether the user can interrupt a speech response from Amazon Lex .",
+        "AllowInterrupt": "Indicates whether the user can interrupt a speech response from Amazon Lex.",
         "MessageGroupsList": "A collection of responses that Amazon Lex can send to the user. Amazon Lex chooses the actual response to send at runtime."
       }
     },
     "AWS::Lex::Bot.S3BucketLogDestination": {
       "attributes": {},
-      "description": "Specifies an Amazon S3 bucket for logging audio conversations.",
+      "description": "Specifies an Amazon S3 bucket for logging audio conversations",
       "properties": {
-        "KmsKeyArn": "Specifies the Amazon Resource Name (ARN) of an AWS Key Management Service key for encrypting audio log files stored in an Amazon S3 bucket.",
-        "LogPrefix": "Specifies the Amazon S3 prefix to assign to audio log files.",
-        "S3BucketArn": "Specifies the Amazon Resource Name (ARN) of the Amazon S3 bucket where audio files are stored."
+        "KmsKeyArn": "The Amazon Resource Name (ARN) of an AWS Key Management Service (KMS) key for encrypting audio log files stored in an Amazon S3 bucket.",
+        "LogPrefix": "The S3 prefix to assign to audio log files.",
+        "S3BucketArn": "The Amazon Resource Name (ARN) of an Amazon S3 bucket where audio log files are stored."
       }
     },
     "AWS::Lex::Bot.S3Location": {
@@ -31387,9 +31387,9 @@
     },
     "AWS::Lex::Bot.SampleUtterance": {
       "attributes": {},
-      "description": "A sample utterance that invokes and intent or responds to a slot elicitation prompt.",
+      "description": "A sample utterance that invokes an intent or respond to a slot elicitation prompt.",
       "properties": {
-        "Utterance": "The sample utterance that Amazon Lex uses to build its machine-learning model to recognize intents."
+        "Utterance": "A sample utterance that invokes an intent or respond to a slot elicitation prompt."
       }
     },
     "AWS::Lex::Bot.SampleValue": {
@@ -31401,43 +31401,43 @@
     },
     "AWS::Lex::Bot.SentimentAnalysisSettings": {
       "attributes": {},
-      "description": "",
+      "description": "Determines whether Amazon Lex will use Amazon Comprehend to detect the sentiment of user utterances.",
       "properties": {
-        "DetectSentiment": ""
+        "DetectSentiment": "Sets whether Amazon Lex uses Amazon Comprehend to detect the sentiment of user utterances."
       }
     },
     "AWS::Lex::Bot.SessionAttribute": {
       "attributes": {},
-      "description": "",
+      "description": "A key/value pair representing session-specific context information. It contains application information passed between Amazon Lex V2 and a client application.",
       "properties": {
-        "Key": "",
-        "Value": ""
+        "Key": "The name of the session attribute.",
+        "Value": "The session-specific context information for the session attribute."
       }
     },
     "AWS::Lex::Bot.Slot": {
       "attributes": {},
       "description": "Specifies the definition of a slot. Amazon Lex elicits slot values from uses to fulfill the user's intent.",
       "properties": {
-        "Description": "A description of the slot type.",
-        "MultipleValuesSetting": "Determines whether the slot can return multiple values to the application.",
-        "Name": "The name of the slot.",
+        "Description": "The description of the slot.",
+        "MultipleValuesSetting": "Indicates whether a slot can return multiple values.",
+        "Name": "The name given to the slot.",
         "ObfuscationSetting": "Determines whether the contents of the slot are obfuscated in Amazon CloudWatch Logs logs. Use obfuscated slots to protect information such as personally identifiable information (PII) in logs.",
         "SlotTypeName": "The name of the slot type that this slot is based on. The slot type defines the acceptable values for the slot.",
-        "ValueElicitationSetting": "Determines the slot resolution strategy that Amazon Lex uses to return slot type values. The field can be set to one of the following values:\n\n- OriginalValue - Returns the value entered by the user, if the user value is similar to a slot value.\n- TopResolution - If there is a resolution list for the slot, return the first value in the resolution list as the slot type value. If there is no resolution list, null is returned.\n\nIf you don't specify the valueSelectionStrategy, the default is OriginalValue."
+        "ValueElicitationSetting": "Determines the slot resolution strategy that Amazon Lex uses to return slot type values. The field can be set to one of the following values:\n\n- ORIGINAL_VALUE - Returns the value entered by the user, if the user value is similar to a slot value.\n- TOP_RESOLUTION - If there is a resolution list for the slot, return the first value in the resolution list as the slot type value. If there is no resolution list, null is returned.\n\nIf you don't specify the `valueSelectionStrategy` , the default is `ORIGINAL_VALUE` ."
       }
     },
     "AWS::Lex::Bot.SlotCaptureSetting": {
       "attributes": {},
-      "description": "",
+      "description": "Settings used when Amazon Lex successfully captures a slot value from a user.",
       "properties": {
-        "CaptureConditional": "",
-        "CaptureNextStep": "",
-        "CaptureResponse": "",
-        "CodeHook": "",
-        "ElicitationCodeHook": "",
-        "FailureConditional": "",
-        "FailureNextStep": "",
-        "FailureResponse": ""
+        "CaptureConditional": "A list of conditional branches to evaluate after the slot value is captured.",
+        "CaptureNextStep": "Specifies the next step that the bot runs when the slot value is captured before the code hook times out.",
+        "CaptureResponse": "Specifies a list of message groups that Amazon Lex uses to respond the user input.",
+        "CodeHook": "Code hook called after Amazon Lex successfully captures a slot value.",
+        "ElicitationCodeHook": "Code hook called when Amazon Lex doesn't capture a slot value.",
+        "FailureConditional": "A list of conditional branches to evaluate when the slot value isn't captured.",
+        "FailureNextStep": "Specifies the next step that the bot runs when the slot value code is not recognized.",
+        "FailureResponse": "Specifies a list of message groups that Amazon Lex uses to respond the user input when the slot fails to be captured."
       }
     },
     "AWS::Lex::Bot.SlotDefaultValue": {
@@ -31449,16 +31449,16 @@
     },
     "AWS::Lex::Bot.SlotDefaultValueSpecification": {
       "attributes": {},
-      "description": "Defines a list of values that Amazon Lex should use as the default value for a slot.",
+      "description": "The default value to use when a user doesn't provide a value for a slot.",
       "properties": {
         "DefaultValueList": "A list of default values. Amazon Lex chooses the default value to use in the order that they are presented in the list."
       }
     },
     "AWS::Lex::Bot.SlotPriority": {
       "attributes": {},
-      "description": "Sets the priority that Amazon Lex should use when eliciting slots values from a user.",
+      "description": "Sets the priority that Amazon Lex should use when eliciting slot values from a user.",
       "properties": {
-        "Priority": "The priority that Amazon Lex should apply to the slot.",
+        "Priority": "The priority that a slot should be elicited.",
         "SlotName": "The name of the slot."
       }
     },
@@ -31469,14 +31469,14 @@
         "Description": "A description of the slot type. Use the description to help identify the slot type in lists.",
         "ExternalSourceSetting": "Sets the type of external information used to create the slot type.",
         "Name": "The name of the slot type. A slot type name must be unique withing the account.",
-        "ParentSlotTypeSignature": "The built-in slot type used as a parent of this slot type. When you define a parent slot type, the new slot type has the configuration of the parent lot type.\n\nOnly AMAZON.AlphaNumeric is supported.",
+        "ParentSlotTypeSignature": "The built-in slot type used as a parent of this slot type. When you define a parent slot type, the new slot type has the configuration of the parent lot type.\n\nOnly `AMAZON.AlphaNumeric` is supported.",
         "SlotTypeValues": "A list of SlotTypeValue objects that defines the values that the slot type can take. Each value can have a list of synonyms, additional values that help train the machine learning model about the values that it resolves for the slot.",
-        "ValueSelectionSetting": "Determines the slot resolution strategy that Amazon Lex uses to return slot type values. The field can be set to one of the following values:\n\n- OriginalValue - Returns the value entered by the user, if the user value is similar to a slot value.\n- TopResolution - If there is a resolution list for the slot, return the first value in the resolution list as the slot type value. If there is no resolution list, null is returned.\n\nIf you don't specify the valueSelectionStrategy, the default is OriginalValue."
+        "ValueSelectionSetting": "Determines the slot resolution strategy that Amazon Lex uses to return slot type values. The field can be set to one of the following values:\n\n- `ORIGINAL_VALUE` - Returns the value entered by the user, if the user value is similar to the slot value.\n- `TOP_RESOLUTION` - If there is a resolution list for the slot, return the first value in the resolution list as the slot type value. If there is no resolution list, null is returned.\n\nIf you don't specify the `valueSelectionStrategy` , the default is `ORIGINAL_VALUE` ."
       }
     },
     "AWS::Lex::Bot.SlotTypeValue": {
       "attributes": {},
-      "description": "Each slot type can have a set of values. The `SlotTypeValue` represents a value that the slot type can take.",
+      "description": "Each slot type can have a set of values. Each `SlotTypeValue` represents a value that the slot type can take.",
       "properties": {
         "SampleValue": "The value of the slot type entry.",
         "Synonyms": "Additional values related to the slot type entry."
@@ -31484,54 +31484,54 @@
     },
     "AWS::Lex::Bot.SlotValue": {
       "attributes": {},
-      "description": "",
+      "description": "The value to set in a slot.",
       "properties": {
-        "InterpretedValue": ""
+        "InterpretedValue": "The value that Amazon Lex determines for the slot. The actual value depends on the setting of the value selection strategy for the bot. You can choose to use the value entered by the user, or you can have Amazon Lex choose the first value in the `resolvedValues` list."
       }
     },
     "AWS::Lex::Bot.SlotValueElicitationSetting": {
       "attributes": {},
-      "description": "Settings that you can use for eliciting a slot value.",
+      "description": "Specifies the elicitation setting details for constituent sub slots of a composite slot.",
       "properties": {
         "DefaultValueSpecification": "A list of default values for a slot. Default values are used when Amazon Lex hasn't determined a value for a slot. You can specify default values from context variables, session attributes, and defined values.",
         "PromptSpecification": "The prompt that Amazon Lex uses to elicit the slot value from the user.",
-        "SampleUtterances": "If you know a specific pattern that users might respond to an Amazon Lex request for a slot value, you can provide those utterances to improve accuracy. This is optional. In most cases Amazon Lex is capable of understanding user utterances.",
-        "SlotCaptureSetting": "",
+        "SampleUtterances": "If you know a specific pattern that users might respond to an Amazon Lex request for a slot value, you can provide those utterances to improve accuracy. This is optional. In most cases, Amazon Lex is capable of understanding user utterances.",
+        "SlotCaptureSetting": "Specifies the settings that Amazon Lex uses when a slot value is successfully entered by a user.",
         "SlotConstraint": "Specifies whether the slot is required or optional.",
         "WaitAndContinueSpecification": "Specifies the prompts that Amazon Lex uses while a bot is waiting for customer input."
       }
     },
     "AWS::Lex::Bot.SlotValueOverride": {
       "attributes": {},
-      "description": "",
+      "description": "The slot values that Amazon Lex uses when it sets slot values in a dialog step.",
       "properties": {
-        "Shape": "",
-        "Value": "",
-        "Values": ""
+        "Shape": "When the shape value is `List` , it indicates that the `values` field contains a list of slot values. When the value is `Scalar` , it indicates that the `value` field contains a single value.",
+        "Value": "The current value of the slot.",
+        "Values": "A list of one or more values that the user provided for the slot. For example, for a slot that elicits pizza toppings, the values might be \"pepperoni\" and \"pineapple.\""
       }
     },
     "AWS::Lex::Bot.SlotValueOverrideMap": {
       "attributes": {},
-      "description": "",
+      "description": "Maps a slot name to the [SlotValueOverride](https://docs.aws.amazon.com/lexv2/latest/APIReference/API_SlotValueOverride.html) object.",
       "properties": {
-        "SlotName": "",
-        "SlotValueOverride": ""
+        "SlotName": "The name of the slot.",
+        "SlotValueOverride": "The SlotValueOverride object to which the slot name will be mapped."
       }
     },
     "AWS::Lex::Bot.SlotValueRegexFilter": {
       "attributes": {},
       "description": "Provides a regular expression used to validate the value of a slot.",
       "properties": {
-        "Pattern": "A regular expression used to validate the value of a slot.\n\nUse a standard regular expression. Amazon Lex supports the following characters in the regular expression:\n\n- A-Z, a-z\n- 0-9\n- Unicode characters (\"\\u<Unicode>\")\n\nRepresent Unicode characters with four digits, for example \"]u0041\" or \"\\u005A\".\n\nThe following regular expression operators are not supported:\n\n- Infinite repeaters: *, +, or {x,} with no upper bound\n- Wild card (.)"
+        "Pattern": "A regular expression used to validate the value of a slot.\n\nUse a standard regular expression. Amazon Lex supports the following characters in the regular expression:\n\n- A-Z, a-z\n- 0-9\n- Unicode characters (\"\\u<Unicode>\")\n\nRepresent Unicode characters with four digits, for example \"\\u0041\" or \"\\u005A\".\n\nThe following regular expression operators are not supported:\n\n- Infinite repeaters: *, +, or {x,} with no upper bound.\n- Wild card (.)"
       }
     },
     "AWS::Lex::Bot.SlotValueSelectionSetting": {
       "attributes": {},
       "description": "Contains settings used by Amazon Lex to select a slot value.",
       "properties": {
-        "AdvancedRecognitionSetting": "Specifies settings that enable advanced recognition settings for slot values. You can use this to enable using slot values as a custom vocabulary for recognizing user utterances.",
+        "AdvancedRecognitionSetting": "Provides settings that enable advanced recognition settings for slot values.",
         "RegexFilter": "A regular expression used to validate the value of a slot.",
-        "ResolutionStrategy": "Determines the slot resolution strategy that Amazon Lex uses to return slot type values. The field can be set to one of the following values:\n\n- OriginalValue - Returns the value entered by the user, if the user value is similar to a slot value.\n- TopResolution - If there is a resolution list for the slot, return the first value in the resolution list as the slot type value. If there is no resolution list, null is returned.\n\nIf you don't specify the valueSelectionStrategy, the default is OriginalValue."
+        "ResolutionStrategy": "Determines the slot resolution strategy that Amazon Lex uses to return slot type values. The field can be set to one of the following values:\n\n- `ORIGINAL_VALUE` - Returns the value entered by the user, if the user value is similar to the slot value.\n- `TOP_RESOLUTION` - If there is a resolution list for the slot, return the first value in the resolution list as the slot type value. If there is no resolution list, null is returned.\n\nIf you don't specify the `valueSelectionStrategy` , the default is `ORIGINAL_VALUE` ."
       }
     },
     "AWS::Lex::Bot.StillWaitingResponseSpecification": {
@@ -31540,7 +31540,7 @@
       "properties": {
         "AllowInterrupt": "Indicates that the user can interrupt the response by speaking while the message is being played.",
         "FrequencyInSeconds": "How often a message should be sent to the user. Minimum of 1 second, maximum of 5 minutes.",
-        "MessageGroupsList": "A collection of responses that Amazon Lex can send to the user. Amazon Lex chooses the actual response to send at runtime.",
+        "MessageGroupsList": "One or more message groups, each containing one or more messages, that define the prompts that Amazon Lex sends to the user.",
         "TimeoutInSeconds": "If Amazon Lex waits longer than this length of time for a response, it will stop sending messages."
       }
     },
@@ -31556,32 +31556,32 @@
     },
     "AWS::Lex::Bot.TextInputSpecification": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the text input specifications.",
       "properties": {
-        "StartTimeoutMs": ""
+        "StartTimeoutMs": "Time for which a bot waits before re-prompting a customer for text input."
       }
     },
     "AWS::Lex::Bot.TextLogDestination": {
       "attributes": {},
-      "description": "Specifies the Amazon CloudWatch Logs destination log group for conversation text logs.",
+      "description": "Defines the Amazon CloudWatch Logs destination log group for conversation text logs.",
       "properties": {
-        "CloudWatch": "Specifies the Amazon CloudWatch Logs log group where text and metadata logs are delivered."
+        "CloudWatch": "Defines the Amazon CloudWatch Logs log group where text and metadata logs are delivered."
       }
     },
     "AWS::Lex::Bot.TextLogSetting": {
       "attributes": {},
-      "description": "Specifies settings to enable conversation logs.",
+      "description": "Defines settings to enable text conversation logs.",
       "properties": {
         "Destination": "Specifies the Amazon CloudWatch Logs destination log group for conversation text logs.",
-        "Enabled": "Specifies whether conversation logs should be stored for an alias."
+        "Enabled": "Determines whether conversation logs should be stored for an alias."
       }
     },
     "AWS::Lex::Bot.VoiceSettings": {
       "attributes": {},
-      "description": "Identifies the Amazon Polly voice used for audio interaction with the user.",
+      "description": "Defines settings for using an Amazon Polly voice to communicate with a user.",
       "properties": {
-        "Engine": "",
-        "VoiceId": "The Amazon Polly voice used for voice interaction with the user."
+        "Engine": "Indicates the type of Amazon Polly voice that Amazon Lex should use for voice interaction with the user. For more information, see the [`engine` parameter of the `SynthesizeSpeech` operation](https://docs.aws.amazon.com/polly/latest/dg/API_SynthesizeSpeech.html#polly-SynthesizeSpeech-request-Engine) in the *Amazon Polly developer guide* .\n\nIf you do not specify a value, the default is `standard` .",
+        "VoiceId": "The identifier of the Amazon Polly voice to use."
       }
     },
     "AWS::Lex::Bot.WaitAndContinueSpecification": {
@@ -31589,7 +31589,7 @@
       "description": "Specifies the prompts that Amazon Lex uses while a bot is waiting for customer input.",
       "properties": {
         "ContinueResponse": "The response that Amazon Lex sends to indicate that the bot is ready to continue the conversation.",
-        "IsActive": "Specifies whether the bot will wait for a user to respond. When this field is false, wait and continue responses for a slot aren't used and the bot expects an appropriate response within the configured timeout. If the IsActive field isn't specified, the default is true.",
+        "IsActive": "Specifies whether the bot will wait for a user to respond. When this field is false, wait and continue responses for a slot aren't used. If the `IsActive` field isn't specified, the default is true.",
         "StillWaitingResponse": "A response that Amazon Lex sends periodically to the user to indicate that the bot is still waiting for input from the user.",
         "WaitingResponse": "The response that Amazon Lex sends to indicate that the bot is waiting for the conversation to continue."
       }
@@ -31602,7 +31602,7 @@
       },
       "description": "> Amazon Lex V2 is the only supported version in AWS CloudFormation . \n\nSpecifies an alias for the specified version of a bot. Use an alias to enable you to change the version of a bot without updating applications that use the bot.\n\nFor example, you can specify an alias called \"PROD\" that your applications use to call the Amazon Lex bot.",
       "properties": {
-        "BotAliasLocaleSettings": "Maps configuration information to a specific locale. You can use this parameter to specify a specific Lambda function to run different functions in different locales.",
+        "BotAliasLocaleSettings": "",
         "BotAliasName": "The name of the bot alias.",
         "BotAliasTags": "An array of key-value pairs to apply to this resource.\n\nYou can only add tags when you specify an alias.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
         "BotId": "The unique identifier of the bot.",
@@ -31632,7 +31632,7 @@
       "description": "Specifies settings that are unique to a locale. For example, you can use different Lambda function depending on the bot's locale.",
       "properties": {
         "CodeHookSpecification": "Specifies the Lambda function that should be used in the locale.",
-        "Enabled": "Determines whether the locale is enabled for the bot. If the value is false, the locale isn't available for use."
+        "Enabled": "Determines whether the locale is enabled for the bot. If the value is `false` , the locale isn't available for use."
       }
     },
     "AWS::Lex::BotAlias.BotAliasLocaleSettingsItem": {
@@ -31648,7 +31648,7 @@
       "description": "The Amazon CloudWatch Logs log group where the text and metadata logs are delivered. The log group must exist before you enable logging.",
       "properties": {
         "CloudWatchLogGroupArn": "The Amazon Resource Name (ARN) of the log group where text and metadata logs are delivered.",
-        "LogPrefix": "The prefix of the log stream name within the log group that you specified."
+        "LogPrefix": "The prefix of the log stream name within the log group that you specified"
       }
     },
     "AWS::Lex::BotAlias.CodeHookSpecification": {
@@ -31678,16 +31678,16 @@
       "attributes": {},
       "description": "Specifies an Amazon S3 bucket for logging audio conversations",
       "properties": {
-        "KmsKeyArn": "The Amazon Resource Name (ARN) of an AWS Key Management Service key for encrypting audio log files stored in an S3 bucket.",
+        "KmsKeyArn": "The Amazon Resource Name (ARN) of an AWS Key Management Service (KMS) key for encrypting audio log files stored in an Amazon S3 bucket.",
         "LogPrefix": "The S3 prefix to assign to audio log files.",
         "S3BucketArn": "The Amazon Resource Name (ARN) of an Amazon S3 bucket where audio log files are stored."
       }
     },
     "AWS::Lex::BotAlias.SentimentAnalysisSettings": {
       "attributes": {},
-      "description": "",
+      "description": "Determines whether Amazon Lex will use Amazon Comprehend to detect the sentiment of user utterances.",
       "properties": {
-        "DetectSentiment": ""
+        "DetectSentiment": "Sets whether Amazon Lex uses Amazon Comprehend to detect the sentiment of user utterances."
       }
     },
     "AWS::Lex::BotAlias.TextLogDestination": {
@@ -31699,7 +31699,7 @@
     },
     "AWS::Lex::BotAlias.TextLogSetting": {
       "attributes": {},
-      "description": "Defines settings to enable conversation logs.",
+      "description": "Defines settings to enable text conversation logs.",
       "properties": {
         "Destination": "Defines the Amazon CloudWatch Logs destination log group for conversation text logs.",
         "Enabled": "Determines whether conversation logs should be stored for an alias."
@@ -45504,7 +45504,7 @@
       "attributes": {},
       "description": "The security configuration for `OnlineStore` .",
       "properties": {
-        "KmsKeyId": "The ID of the AWS Key Management Service ( AWS KMS) key that SageMaker Feature Store uses to encrypt the Amazon S3 objects at rest using Amazon S3 server-side encryption.\n\nThe caller (either IAM user or IAM role) of `CreateFeatureGroup` must have below permissions to the `OnlineStore` `KmsKeyId` :\n\n- `\"kms:Encrypt\"`\n- `\"kms:Decrypt\"`\n- `\"kms:DescribeKey\"`\n- `\"kms:CreateGrant\"`\n- `\"kms:RetireGrant\"`\n- `\"kms:ReEncryptFrom\"`\n- `\"kms:ReEncryptTo\"`\n- `\"kms:GenerateDataKey\"`\n- `\"kms:ListAliases\"`\n- `\"kms:ListGrants\"`\n- `\"kms:RevokeGrant\"`\n\nThe caller (either IAM user or IAM role) to all DataPlane operations ( `PutRecord` , `GetRecord` , `DeleteRecord` ) must have the following permissions to the `KmsKeyId` :\n\n- `\"kms:Decrypt\"`"
+        "KmsKeyId": "The ID of the AWS Key Management Service ( AWS KMS) key that SageMaker Feature Store uses to encrypt the Amazon S3 objects at rest using Amazon S3 server-side encryption.\n\nThe caller (either IAM user or IAM role) of `CreateFeatureGroup` must have below permissions to the `OnlineStore` `KmsKeyId` :\n\n- `\"kms:Encrypt\"`\n- `\"kms:Decrypt\"`\n- `\"kms:DescribeKey\"`\n- `\"kms:CreateGrant\"`\n- `\"kms:RetireGrant\"`\n- `\"kms:ReEncryptFrom\"`\n- `\"kms:ReEncryptTo\"`\n- `\"kms:GenerateDataKey\"`\n- `\"kms:ListAliases\"`\n- `\"kms:ListGrants\"`\n- `\"kms:RevokeGrant\"`\n\nThe caller (either user or IAM role) to all DataPlane operations ( `PutRecord` , `GetRecord` , `DeleteRecord` ) must have the following permissions to the `KmsKeyId` :\n\n- `\"kms:Decrypt\"`"
       }
     },
     "AWS::SageMaker::FeatureGroup.S3StorageConfig": {
@@ -45570,7 +45570,7 @@
         "ImageConfig": "Specifies whether the model container is in Amazon ECR or a private Docker registry accessible from your Amazon Virtual Private Cloud (VPC). For information about storing containers in a private Docker registry, see [Use a Private Docker Registry for Real-Time Inference Containers](https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-containers-inference-private.html)",
         "InferenceSpecificationName": "The inference specification name in the model package version.",
         "Mode": "Whether the container hosts a single model or multiple models.",
-        "ModelDataUrl": "The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix). The S3 path is required for SageMaker built-in algorithms, but not if you use your own algorithms. For more information on built-in algorithms, see [Common Parameters](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-algo-docker-registry-paths.html) .\n\n> The model artifacts must be in an S3 bucket that is in the same region as the model or endpoint you are creating. \n\nIf you provide a value for this parameter, SageMaker uses AWS Security Token Service to download model artifacts from the S3 path you provide. AWS STS is activated in your IAM user account by default. If you previously deactivated AWS STS for a region, you need to reactivate AWS STS for that region. For more information, see [Activating and Deactivating AWS STS in an AWS Region](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html) in the *AWS Identity and Access Management User Guide* .\n\n> If you use a built-in algorithm to create a model, SageMaker requires that you provide a S3 path to the model artifacts in `ModelDataUrl` .",
+        "ModelDataUrl": "The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix). The S3 path is required for SageMaker built-in algorithms, but not if you use your own algorithms. For more information on built-in algorithms, see [Common Parameters](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-algo-docker-registry-paths.html) .\n\n> The model artifacts must be in an S3 bucket that is in the same region as the model or endpoint you are creating. \n\nIf you provide a value for this parameter, SageMaker uses AWS Security Token Service to download model artifacts from the S3 path you provide. AWS STS is activated in your user account by default. If you previously deactivated AWS STS for a region, you need to reactivate AWS STS for that region. For more information, see [Activating and Deactivating AWS STS in an AWS Region](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html) in the *AWS Identity and Access Management User Guide* .\n\n> If you use a built-in algorithm to create a model, SageMaker requires that you provide a S3 path to the model artifacts in `ModelDataUrl` .",
         "ModelPackageName": "The name or Amazon Resource Name (ARN) of the model package to use to create the model.",
         "MultiModelConfig": "Specifies additional configuration for multi-model endpoints."
       }
@@ -47264,7 +47264,7 @@
       "properties": {
         "Description": "The description of the provisioning artifact, including how it differs from the previous provisioning artifact.",
         "DisableTemplateValidation": "If set to true, AWS Service Catalog stops validating the specified provisioning artifact even if it is invalid.",
-        "Info": "Specify the template source with one of the following options, but not both. Keys accepted: [ `LoadTemplateFromURL` , `ImportFromPhysicalId` ]\n\nThe URL of the AWS CloudFormation template in Amazon S3 or GitHub in JSON format. Specify the URL in JSON format as follows:\n\n`\"LoadTemplateFromURL\": \"https://s3.amazonaws.com/cf-templates-ozkq9d3hgiq2-us-east-1/...\"`\n\n`ImportFromPhysicalId` : The physical id of the resource that contains the template. Currently only supports AWS CloudFormation stack arn. Specify the physical id in JSON format as follows: `ImportFromPhysicalId: \u201carn:aws:cloudformation:[us-east-1]:[accountId]:stack/[StackName]/[resourceId]`",
+        "Info": "Specify the template source with one of the following options, but not both. Keys accepted: [ `LoadTemplateFromURL` , `ImportFromPhysicalId` ]\n\nThe URL of the AWS CloudFormation template in Amazon S3 in JSON format. Specify the URL in JSON format as follows:\n\n`\"LoadTemplateFromURL\": \"https://s3.amazonaws.com/cf-templates-ozkq9d3hgiq2-us-east-1/...\"`\n\n`ImportFromPhysicalId` : The physical id of the resource that contains the template. Currently only supports AWS CloudFormation stack arn. Specify the physical id in JSON format as follows: `ImportFromPhysicalId: \u201carn:aws:cloudformation:[us-east-1]:[accountId]:stack/[StackName]/[resourceId]`",
         "Name": "The name of the provisioning artifact (for example, v1 v2beta). No spaces are allowed."
       }
     },
@@ -47283,7 +47283,7 @@
         "PathId": "The path identifier of the product. This value is optional if the product has a default path, and required if the product has more than one path. To list the paths for a product, use [ListLaunchPaths](https://docs.aws.amazon.com/servicecatalog/latest/dg/API_ListLaunchPaths.html) .\n\n> You must provide the name or ID, but not both.",
         "PathName": "The name of the path. This value is optional if the product has a default path, and required if the product has more than one path. To list the paths for a product, use [ListLaunchPaths](https://docs.aws.amazon.com/servicecatalog/latest/dg/API_ListLaunchPaths.html) .\n\n> You must provide the name or ID, but not both.",
         "ProductId": "The product identifier.\n\n> You must specify either the ID or the name of the product, but not both.",
-        "ProductName": "A user-friendly name for the provisioned product. This value must be unique for the AWS account and cannot be updated after the product is provisioned.\n\nEach time a stack is created or updated, if `ProductName` is provided it will successfully resolve to `ProductId` as long as only one product exists in the account or Region with that `ProductName` .\n\n> You must specify either the name or the ID of the product, but not both.",
+        "ProductName": "The name of the Service Catalog product.\n\nEach time a stack is created or updated, if `ProductName` is provided it will successfully resolve to `ProductId` as long as only one product exists in the account or Region with that `ProductName` .\n\n> You must specify either the name or the ID of the product, but not both.",
         "ProvisionedProductName": "A user-friendly name for the provisioned product. This value must be unique for the AWS account and cannot be updated after the product is provisioned.",
         "ProvisioningArtifactId": "The identifier of the provisioning artifact (also known as a version).\n\n> You must specify either the ID or the name of the provisioning artifact, but not both.",
         "ProvisioningArtifactName": "The name of the provisioning artifact (also known as a version) for the product. This name must be unique for the product.\n\n> You must specify either the name or the ID of the provisioning artifact, but not both. You must also specify either the name or the ID of the product, but not both.",
@@ -47371,12 +47371,12 @@
       "attributes": {
         "Ref": "`Ref` returns a unique identifier for the association."
       },
-      "description": "Associates the specified principal ARN with the specified portfolio.",
+      "description": "Associates the specified principal ARN with the specified portfolio.\n\nIf you share the portfolio with principal name sharing enabled, the `PrincipalARN` association is included in the share.\n\nThe `PortfolioID` , `PrincipalARN` , and `PrincipalType` parameters are required.\n\nYou can associate a maximum of 10 Principals with a portfolio using `PrincipalType` as `IAM_PATTERN`\n\n> When you associate a principal with portfolio, a potential privilege escalation path may occur when that portfolio is then shared with other accounts. For a user in a recipient account who is *not* an Service Catalog Admin, but still has the ability to create Principals (Users/Groups/Roles), that user could create a role that matches a principal name association for the portfolio. Although this user may not know which principal names are associated through Service Catalog, they may be able to guess the user. If this potential escalation path is a concern, then Service Catalog recommends using `PrincipalType` as `IAM` . With this configuration, the `PrincipalARN` must already exist in the recipient account before it can be associated.",
       "properties": {
         "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
         "PortfolioId": "The portfolio identifier.",
-        "PrincipalARN": "The ARN of the principal (IAM user, role, or group).",
-        "PrincipalType": "The principal type. The supported value is `IAM` ."
+        "PrincipalARN": "The ARN of the principal (IAM user, role, or group). This field allows an ARN with no `accountID` if `PrincipalType` is `IAM_PATTERN` .\n\nYou can associate multiple `IAM` patterns even if the account has no principal with that name. This is useful in Principal Name Sharing if you want to share a principal without creating it in the account that owns the portfolio.",
+        "PrincipalType": "The principal type. The supported value is `IAM` if you use a fully defined ARN, or `IAM_PATTERN` if you use an ARN with no `accountID` ."
       }
     },
     "AWS::ServiceCatalog::PortfolioProductAssociation": {
@@ -49265,7 +49265,7 @@
     },
     "AWS::WAFv2::RuleGroup.RateBasedStatement": {
       "attributes": {},
-      "description": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
+      "description": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specifies the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
       "properties": {
         "AggregateKeyType": "Setting that indicates how to aggregate the request counts. The options are the following:\n\n- IP - Aggregate the request counts on the IP address from the web request origin.\n- FORWARDED_IP - Aggregate the request counts on the first IP address in an HTTP header. If you use this, configure the `ForwardedIPConfig` , to specify the header to use.",
         "ForwardedIPConfig": "The configuration for inspecting IP addresses in an HTTP header that you specify, instead of using the IP address that's reported by the web request origin. Commonly, this is the X-Forwarded-For (XFF) header, but you can specify any header name.\n\n> If the specified header isn't present in the request, AWS WAF doesn't apply the rule to the web request at all. \n\nThis is required if `AggregateKeyType` is set to `FORWARDED_IP` .",
@@ -49360,7 +49360,7 @@
         "LabelMatchStatement": "A rule statement to match against labels that have been added to the web request by rules that have already run in the web ACL.\n\nThe label match statement provides the label or namespace string to search for. The label string can represent a part or all of the fully qualified label name that had been added to the web request. Fully qualified labels have a prefix, optional namespaces, and label name. The prefix identifies the rule group or web ACL context of the rule that added the label. If you do not provide the fully qualified name in your label match string, AWS WAF performs the search for labels that were added in the same context as the label match statement.",
         "NotStatement": "A logical rule statement used to negate the results of another rule statement. You provide one `Statement` within the `NotStatement` .",
         "OrStatement": "A logical rule statement used to combine other rule statements with OR logic. You provide more than one `Statement` within the `OrStatement` .",
-        "RateBasedStatement": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
+        "RateBasedStatement": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specifies the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
         "RegexMatchStatement": "A rule statement used to search web request components for a match against a single regular expression.",
         "RegexPatternSetReferenceStatement": "A rule statement used to search web request components for matches with regular expressions. To use this, create a `RegexPatternSet` that specifies the expressions that you want to detect, then use the ARN of that set in this statement. A web request matches the pattern set rule statement if the request component matches any of the patterns in the set.\n\nEach regex pattern set rule statement references a regex pattern set. You create and maintain the set independent of your rules. This allows you to use the single set in multiple rules. When you update the referenced set, AWS WAF automatically updates all rules that reference it.",
         "SizeConstraintStatement": "A rule statement that compares a number of bytes against the size of a request component, using a comparison operator, such as greater than (>) or less than (<). For example, you can use a size constraint statement to look for query strings that are longer than 100 bytes.\n\nIf you configure AWS WAF to inspect the request body, AWS WAF inspects only the first 8192 bytes (8 KB). If the request body for your web requests never exceeds 8192 bytes, you could use a size constraint statement to block requests that have a request body greater than 8192 bytes.\n\nIf you choose URI for the value of Part of the request to filter on, the slash (/) in the URI counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
@@ -49724,7 +49724,7 @@
     },
     "AWS::WAFv2::WebACL.RateBasedStatement": {
       "attributes": {},
-      "description": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
+      "description": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specifies the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
       "properties": {
         "AggregateKeyType": "Setting that indicates how to aggregate the request counts. The options are the following:\n\n- IP - Aggregate the request counts on the IP address from the web request origin.\n- FORWARDED_IP - Aggregate the request counts on the first IP address in an HTTP header. If you use this, configure the `ForwardedIPConfig` , to specify the header to use.",
         "ForwardedIPConfig": "The configuration for inspecting IP addresses in an HTTP header that you specify, instead of using the IP address that's reported by the web request origin. Commonly, this is the X-Forwarded-For (XFF) header, but you can specify any header name.\n\n> If the specified header isn't present in the request, AWS WAF doesn't apply the rule to the web request at all. \n\nThis is required if `AggregateKeyType` is set to `FORWARDED_IP` .",
@@ -49838,7 +49838,7 @@
         "ManagedRuleGroupStatement": "A rule statement used to run the rules that are defined in a managed rule group. To use this, provide the vendor name and the name of the rule group in this statement.\n\nYou cannot nest a `ManagedRuleGroupStatement` , for example for use inside a `NotStatement` or `OrStatement` . It can only be referenced as a top-level statement within a rule.",
         "NotStatement": "A logical rule statement used to negate the results of another rule statement. You provide one `Statement` within the `NotStatement` .",
         "OrStatement": "A logical rule statement used to combine other rule statements with OR logic. You provide more than one `Statement` within the `OrStatement` .",
-        "RateBasedStatement": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specified the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
+        "RateBasedStatement": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specifies the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
         "RegexMatchStatement": "A rule statement used to search web request components for a match against a single regular expression.",
         "RegexPatternSetReferenceStatement": "A rule statement used to search web request components for matches with regular expressions. To use this, create a `RegexPatternSet` that specifies the expressions that you want to detect, then use the ARN of that set in this statement. A web request matches the pattern set rule statement if the request component matches any of the patterns in the set.\n\nEach regex pattern set rule statement references a regex pattern set. You create and maintain the set independent of your rules. This allows you to use the single set in multiple rules. When you update the referenced set, AWS WAF automatically updates all rules that reference it.",
         "RuleGroupReferenceStatement": "A rule statement used to run the rules that are defined in a `RuleGroup` . To use this, create a rule group with your rules, then provide the ARN of the rule group in this statement.\n\nYou cannot nest a `RuleGroupReferenceStatement` , for example for use inside a `NotStatement` or `OrStatement` . You can only use a rule group reference statement at the top level inside a web ACL.",
