@@ -8,7 +8,7 @@ export class DataSetContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightDataSetContextQuery): Promise<cxapi.DataSetContextResponse> {
+  async getValue(args: cxschema.QuickSightDataSetContextQuery): Promise<cxapi.QuickSightContextResponse.DataSet> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
@@ -24,6 +24,35 @@ export class DataSetContextProviderPlugin implements ContextProviderPlugin {
     }).promise();
 
     const dataSet = response.DataSet;
+
+    if (!dataSet) {
+      throw new Error(`No DataSet found in account ${args.account} with id ${args.dataSetId}`);
+    }
+
+    return dataSet;
+  }
+}
+
+export class DataSetPermissionsContextProviderPlugin implements ContextProviderPlugin {
+  constructor(private readonly aws: SdkProvider) {
+  }
+
+  async getValue(args: cxschema.QuickSightDataSetContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
+
+    const options = { assumeRoleArn: args.lookupRoleArn };
+
+    const quickSight = (await this.aws.forEnvironment(
+      cxapi.EnvironmentUtils.make(args.account, args.region),
+      Mode.ForReading,
+      options,
+    )).sdk.quickSight();
+
+    const response = await quickSight.describeDataSetPermissions({
+      AwsAccountId: args.account,
+      DataSetId: args.dataSetId,
+    }).promise();
+
+    const dataSet = response.Permissions;
 
     if (!dataSet) {
       throw new Error(`No DataSet found in account ${args.account} with id ${args.dataSetId}`);

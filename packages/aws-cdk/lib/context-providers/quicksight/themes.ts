@@ -8,7 +8,7 @@ export class ThemeContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightThemeContextQuery): Promise<cxapi.ThemeContextResponse> {
+  async getValue(args: cxschema.QuickSightThemeContextQuery): Promise<cxapi.QuickSightContextResponse.Theme> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
@@ -24,6 +24,35 @@ export class ThemeContextProviderPlugin implements ContextProviderPlugin {
     }).promise();
 
     const theme = response.Theme;
+
+    if (!theme) {
+      throw new Error(`No Theme found in account ${args.account} with id ${args.themeId}`);
+    }
+
+    return theme;
+  }
+}
+
+export class ThemePermissionsContextProviderPlugin implements ContextProviderPlugin {
+  constructor(private readonly aws: SdkProvider) {
+  }
+
+  async getValue(args: cxschema.QuickSightThemeContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
+
+    const options = { assumeRoleArn: args.lookupRoleArn };
+
+    const quickSight = (await this.aws.forEnvironment(
+      cxapi.EnvironmentUtils.make(args.account, args.region),
+      Mode.ForReading,
+      options,
+    )).sdk.quickSight();
+
+    const response = await quickSight.describeThemePermissions({
+      AwsAccountId: args.account,
+      ThemeId: args.themeId,
+    }).promise();
+
+    const theme = response.Permissions;
 
     if (!theme) {
       throw new Error(`No Theme found in account ${args.account} with id ${args.themeId}`);

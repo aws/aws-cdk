@@ -1,6 +1,6 @@
-import { ArnFormat, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
-//import * as cr from '@aws-cdk/custom-resources';
-import { QuickSight } from 'aws-sdk';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { QsFunctions } from './qs-functions';
 import { CfnDataSet } from './quicksight.generated';
@@ -251,78 +251,73 @@ export class DataSet extends Resource {
 
     class Import extends DataSetBase {
 
-      private _dataSet: QuickSight.DataSet | undefined;
-      private get dataSet(): QuickSight.DataSet {
+      private _dataSet: cxapi.DataSetContextResponse | undefined;
+      private get dataSet(): cxapi.DataSetContextResponse {
 
         if (!this._dataSet) {
-          let dataSet: QuickSight.DataSet = {};
+          let contextProps: cxschema.QuickSightDataSetContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            dataSetId: dataSetId,
+          };
 
-          DataSet.quickSight.describeDataSet({
-            AwsAccountId: Stack.of(scope).account,
-            DataSetId: dataSetId,
-          },
-          function (err, data) {
-            if (!err && data.DataSet) {
-              dataSet = data.DataSet;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('DataSet does not exist.');
-            }
-          });
+          this._dataSet = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER,
+            props: contextProps,
+            dummyValue: undefined,
+          }).value;
 
-          this._dataSet = dataSet;
+          if (!this._dataSet) {
+            throw Error(`No DataSet found in account ${contextProps.account} with id ${contextProps.dataSetId}`);
+          }
         }
 
         return this._dataSet;
       }
 
-      private _dataSetPermissions: QuickSight.ResourcePermission[] | undefined;
-      private get dataSetPermissions(): QuickSight.ResourcePermission[] {
+      private _dataSetPermissions: cxapi.ResourcePermissionListContextResponse | undefined;
+      private get dataSetPermissions(): cxapi.ResourcePermissionListContextResponse {
 
         if (!this._dataSetPermissions) {
-          let permissions: QuickSight.ResourcePermission[] = [];
+          let contextProps: cxschema.QuickSightDataSetContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            dataSetId: dataSetId,
+          };
 
-          DataSet.quickSight.describeDataSetPermissions({
-            AwsAccountId: Stack.of(scope).account,
-            DataSetId: dataSetId,
-          },
-          function (err, data) {
-            if (!err && data.Permissions) {
-              permissions = data.Permissions;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Permissions does not exist.');
-            }
-          });
+          this._dataSetPermissions = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._dataSetPermissions = permissions;
+          if (!this._dataSetPermissions) {
+            this._dataSetPermissions = [];
+          }
         }
 
         return this._dataSetPermissions;
       }
 
-      private _dataSetTags: QuickSight.Tag[] | undefined;
-      private get dataSetTags(): QuickSight.Tag[] {
+      private _dataSetTags: cxapi.TagListContextResponse | undefined;
+      private get dataSetTags(): cxapi.TagListContextResponse {
 
         if (!this._dataSetTags) {
-          let tags: QuickSight.Tag[] = [];
+          let contextProps: cxschema.QuickSightTagsContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            resourceArn: this.dataSetArn,
+          };
 
-          DataSet.quickSight.listTagsForResource({
-            ResourceArn: this.dataSetArn,
-          },
-          function (err, data) {
-            if (!err && data.Tags) {
-              tags = data.Tags;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Tags does not exist.');
-            }
-          });
+          this._dataSetTags = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_TAGS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._dataSetTags = tags;
+          if (!this._dataSetTags) {
+            this._dataSetTags = [];
+          }
         }
 
         return this._dataSetTags;
@@ -467,8 +462,6 @@ export class DataSet extends Resource {
       region: Stack.of(scope).region,
     });
   }
-
-  private static quickSight: QuickSight = new QuickSight;
 
   // Common QuickSight Resource properties
   /**

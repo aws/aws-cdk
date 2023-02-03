@@ -8,7 +8,7 @@ export class AnalysisContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightAnalysisContextQuery): Promise<cxapi.AnalysisContextResponse> {
+  async getValue(args: cxschema.QuickSightAnalysisContextQuery): Promise<cxapi.QuickSightContextResponse.Analysis> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
@@ -24,6 +24,35 @@ export class AnalysisContextProviderPlugin implements ContextProviderPlugin {
     }).promise();
 
     const analysis = response.Analysis;
+
+    if (!analysis) {
+      throw new Error(`No Analysis found in account ${args.account} with id ${args.analysisId}`);
+    }
+
+    return analysis;
+  }
+}
+
+export class AnalysisPermissionsContextProviderPlugin implements ContextProviderPlugin {
+  constructor(private readonly aws: SdkProvider) {
+  }
+
+  async getValue(args: cxschema.QuickSightAnalysisContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
+
+    const options = { assumeRoleArn: args.lookupRoleArn };
+
+    const quickSight = (await this.aws.forEnvironment(
+      cxapi.EnvironmentUtils.make(args.account, args.region),
+      Mode.ForReading,
+      options,
+    )).sdk.quickSight();
+
+    const response = await quickSight.describeAnalysisPermissions({
+      AwsAccountId: args.account,
+      AnalysisId: args.analysisId,
+    }).promise();
+
+    const analysis = response.Permissions;
 
     if (!analysis) {
       throw new Error(`No Analysis found in account ${args.account} with id ${args.analysisId}`);

@@ -4,3 +4,4 @@ export * from './templates';
 export * from './dashboards';
 export * from './analyses';
 export * from './themes';
+export * from './tags';

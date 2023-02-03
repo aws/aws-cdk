@@ -1,9 +1,8 @@
-import { ArnFormat, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
-//import * as cr from '@aws-cdk/custom-resources';
-import { QuickSight } from 'aws-sdk';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { DataSet, IDataSet } from './data-set';
-//import { QsFunctions } from './qs-functions';
 import { CfnDashboard } from './quicksight.generated';
 import { ITemplate, Template } from './template';
 import { Theme, ITheme } from './theme';
@@ -191,78 +190,73 @@ export class Dashboard extends Resource {
 
     class Import extends DashboardBase {
 
-      private _dashboard: QuickSight.Dashboard | undefined;
-      private get dashboard(): QuickSight.Dashboard {
+      private _dashboard: cxapi.DashboardContextResponse | undefined;
+      private get dashboard(): cxapi.DashboardContextResponse {
 
         if (!this._dashboard) {
-          let dashboard: QuickSight.Dashboard = {};
+          let contextProps: cxschema.QuickSightDashboardContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            dashboardId: dashboardId,
+          };
 
-          Dashboard.quickSight.describeDashboard({
-            AwsAccountId: Stack.of(scope).account,
-            DashboardId: dashboardId,
-          },
-          function (err, data) {
-            if (!err && data.Dashboard) {
-              dashboard = data.Dashboard;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Dashboard does not exist.');
-            }
-          });
+          this._dashboard = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_DASHBOARD_PROVIDER,
+            props: contextProps,
+            dummyValue: undefined,
+          }).value;
 
-          this._dashboard = dashboard;
+          if (!this._dashboard) {
+            throw Error(`No Dashboard found in account ${contextProps.account} with id ${contextProps.dashboardId}`);
+          }
         }
 
         return this._dashboard;
       }
 
-      private _dashboardPermissions: QuickSight.ResourcePermission[] | undefined;
-      private get dashboardPermissions(): QuickSight.ResourcePermission[] {
+      private _dashboardPermissions: cxapi.ResourcePermissionListContextResponse | undefined;
+      private get dashboardPermissions(): cxapi.ResourcePermissionListContextResponse {
 
         if (!this._dashboardPermissions) {
-          let permissions: QuickSight.ResourcePermission[] = [];
+          let contextProps: cxschema.QuickSightDashboardContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            dashboardId: dashboardId,
+          };
 
-          Dashboard.quickSight.describeDashboardPermissions({
-            AwsAccountId: Stack.of(scope).account,
-            DashboardId: dashboardId,
-          },
-          function (err, data) {
-            if (!err && data.Permissions) {
-              permissions = data.Permissions;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Permissions does not exist.');
-            }
-          });
+          this._dashboardPermissions = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_DASHBOARD_PERMISSIONS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._dashboardPermissions = permissions;
+          if (!this._dashboardPermissions) {
+            this._dashboardPermissions = [];
+          }
         }
 
         return this._dashboardPermissions;
       }
 
-      private _dashboardTags: QuickSight.Tag[] | undefined;
-      private get dashboardTags(): QuickSight.Tag[] {
+      private _dashboardTags: cxapi.TagListContextResponse | undefined;
+      private get dashboardTags(): cxapi.TagListContextResponse {
 
         if (!this._dashboardTags) {
-          let tags: QuickSight.Tag[] = [];
+          let contextProps: cxschema.QuickSightTagsContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            resourceArn: this.dashboardArn,
+          };
 
-          Dashboard.quickSight.listTagsForResource({
-            ResourceArn: this.dashboardArn,
-          },
-          function (err, data) {
-            if (!err && data.Tags) {
-              tags = data.Tags;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Tags does not exist.');
-            }
-          });
+          this._dashboardTags = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_TAGS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._dashboardTags = tags;
+          if (!this._dashboardTags) {
+            this._dashboardTags = [];
+          }
         }
 
         return this._dashboardTags;
@@ -366,8 +360,6 @@ export class Dashboard extends Resource {
       region: Stack.of(scope).region,
     });
   }
-
-  private static quickSight: QuickSight = new QuickSight;
 
   // Common QuickSight Resource properties
   /**

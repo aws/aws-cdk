@@ -8,7 +8,7 @@ export class DataSourceContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightDataSourceContextQuery): Promise<cxapi.DataSourceContextResponse> {
+  async getValue(args: cxschema.QuickSightDataSourceContextQuery): Promise<cxapi.QuickSightContextResponse.DataSource> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
@@ -24,6 +24,35 @@ export class DataSourceContextProviderPlugin implements ContextProviderPlugin {
     }).promise();
 
     const dataSource = response.DataSource;
+
+    if (!dataSource) {
+      throw new Error(`No DataSource found in account ${args.account} with id ${args.dataSourceId}`);
+    }
+
+    return dataSource;
+  }
+}
+
+export class DataSourcePermissionsContextProviderPlugin implements ContextProviderPlugin {
+  constructor(private readonly aws: SdkProvider) {
+  }
+
+  async getValue(args: cxschema.QuickSightDataSourceContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
+
+    const options = { assumeRoleArn: args.lookupRoleArn };
+
+    const quickSight = (await this.aws.forEnvironment(
+      cxapi.EnvironmentUtils.make(args.account, args.region),
+      Mode.ForReading,
+      options,
+    )).sdk.quickSight();
+
+    const response = await quickSight.describeDataSourcePermissions({
+      AwsAccountId: args.account,
+      DataSourceId: args.dataSourceId,
+    }).promise();
+
+    const dataSource = response.Permissions;
 
     if (!dataSource) {
       throw new Error(`No DataSource found in account ${args.account} with id ${args.dataSourceId}`);

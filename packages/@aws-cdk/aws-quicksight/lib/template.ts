@@ -1,10 +1,9 @@
-import { ArnFormat, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
-//import * as cr from '@aws-cdk/custom-resources';
-import { QuickSight } from 'aws-sdk';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { Analysis, IAnalysis } from './analysis';
 import { DataSet, IDataSet } from './data-set';
-//import { QsFunctions } from './qs-functions';
 import { CfnTemplate } from './quicksight.generated';
 
 /**
@@ -159,78 +158,73 @@ export class Template extends Resource {
 
     class Import extends TemplateBase {
 
-      private _template: QuickSight.Template | undefined;
-      private get template(): QuickSight.Template {
+      private _template: cxapi.TemplateContextResponse | undefined;
+      private get template(): cxapi.TemplateContextResponse {
 
         if (!this._template) {
-          let template: QuickSight.Template = {};
+          let contextProps: cxschema.QuickSightTemplateContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            templateId: templateId,
+          };
 
-          Template.quickSight.describeTemplate({
-            AwsAccountId: Stack.of(scope).account,
-            TemplateId: templateId,
-          },
-          function (err, data) {
-            if (!err && data.Template) {
-              template = data.Template;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Template does not exist.');
-            }
-          });
+          this._template = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER,
+            props: contextProps,
+            dummyValue: undefined,
+          }).value;
 
-          this._template = template;
+          if (!this._template) {
+            throw Error(`No Template found in account ${contextProps.account} with id ${contextProps.templateId}`);
+          }
         }
 
         return this._template;
       }
 
-      private _templatePermissions: QuickSight.ResourcePermission[] | undefined;
-      private get templatePermissions(): QuickSight.ResourcePermission[] {
+      private _templatePermissions: cxapi.ResourcePermissionListContextResponse | undefined;
+      private get templatePermissions(): cxapi.ResourcePermissionListContextResponse {
 
         if (!this._templatePermissions) {
-          let permissions: QuickSight.ResourcePermission[] = [];
+          let contextProps: cxschema.QuickSightTemplateContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            templateId: templateId,
+          };
 
-          Template.quickSight.describeTemplatePermissions({
-            AwsAccountId: Stack.of(scope).account,
-            TemplateId: templateId,
-          },
-          function (err, data) {
-            if (!err && data.Permissions) {
-              permissions = data.Permissions;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Permissions does not exist.');
-            }
-          });
+          this._templatePermissions = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._templatePermissions = permissions;
+          if (!this._templatePermissions) {
+            this._templatePermissions = [];
+          }
         }
 
         return this._templatePermissions;
       }
 
-      private _templateTags: QuickSight.Tag[] | undefined;
-      private get templateTags(): QuickSight.Tag[] {
+      private _templateTags: cxapi.TagListContextResponse | undefined;
+      private get templateTags(): cxapi.TagListContextResponse {
 
         if (!this._templateTags) {
-          let tags: QuickSight.Tag[] = [];
+          let contextProps: cxschema.QuickSightTagsContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            resourceArn: this.templateArn,
+          };
 
-          Template.quickSight.listTagsForResource({
-            ResourceArn: this.templateArn,
-          },
-          function (err, data) {
-            if (!err && data.Tags) {
-              tags = data.Tags;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Tags does not exist.');
-            }
-          });
+          this._templateTags = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_TAGS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._templateTags = tags;
+          if (!this._templateTags) {
+            this._templateTags = [];
+          }
         }
 
         return this._templateTags;
@@ -326,8 +320,6 @@ export class Template extends Resource {
       region: Stack.of(scope).region,
     });
   }
-
-  private static quickSight: QuickSight = new QuickSight;
 
   // Common QuickSight Resource properties
   /**

@@ -1,6 +1,6 @@
-import { ArnFormat, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
-//import * as cr from '@aws-cdk/custom-resources';
-import { QuickSight } from 'aws-sdk';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { QsFunctions } from './qs-functions';
 import { CfnTheme } from './quicksight.generated';
@@ -166,78 +166,73 @@ export class Theme extends Resource {
 
     class Import extends ThemeBase {
 
-      private _theme: QuickSight.Theme | undefined;
-      private get theme(): QuickSight.Theme {
+      private _theme: cxapi.ThemeContextResponse | undefined;
+      private get theme(): cxapi.ThemeContextResponse {
 
         if (!this._theme) {
-          let theme: QuickSight.Theme = {};
+          let contextProps: cxschema.QuickSightThemeContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            themeId: themeId,
+          };
 
-          Theme.quickSight.describeTheme({
-            AwsAccountId: Stack.of(scope).account,
-            ThemeId: themeId,
-          },
-          function (err, data) {
-            if (!err && data.Theme) {
-              theme = data.Theme;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Theme does not exist.');
-            }
-          });
+          this._theme = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER,
+            props: contextProps,
+            dummyValue: undefined,
+          }).value;
 
-          this._theme = theme;
+          if (!this._theme) {
+            throw Error(`No Theme found in account ${contextProps.account} with id ${contextProps.themeId}`);
+          }
         }
 
         return this._theme;
       }
 
-      private _themePermissions: QuickSight.ResourcePermission[] | undefined;
-      private get themePermissions(): QuickSight.ResourcePermission[] {
+      private _themePermissions: cxapi.ResourcePermissionListContextResponse | undefined;
+      private get themePermissions(): cxapi.ResourcePermissionListContextResponse {
 
         if (!this._themePermissions) {
-          let permissions: QuickSight.ResourcePermission[] = [];
+          let contextProps: cxschema.QuickSightThemeContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            themeId: themeId,
+          };
 
-          Theme.quickSight.describeThemePermissions({
-            AwsAccountId: Stack.of(scope).account,
-            ThemeId: themeId,
-          },
-          function (err, data) {
-            if (!err && data.Permissions) {
-              permissions = data.Permissions;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Permissions does not exist.');
-            }
-          });
+          this._themePermissions = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._themePermissions = permissions;
+          if (!this._themePermissions) {
+            this._themePermissions = [];
+          }
         }
 
         return this._themePermissions;
       }
 
-      private _themeTags: QuickSight.Tag[] | undefined;
-      private get themeTags(): QuickSight.Tag[] {
+      private _themeTags: cxapi.TagListContextResponse | undefined;
+      private get themeTags(): cxapi.TagListContextResponse {
 
         if (!this._themeTags) {
-          let tags: QuickSight.Tag[] = [];
+          let contextProps: cxschema.QuickSightTagsContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            resourceArn: this.themeArn,
+          };
 
-          Theme.quickSight.listTagsForResource({
-            ResourceArn: this.themeArn,
-          },
-          function (err, data) {
-            if (!err && data.Tags) {
-              tags = data.Tags;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Tags does not exist.');
-            }
-          });
+          this._themeTags = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_TAGS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._themeTags = tags;
+          if (!this._themeTags) {
+            this._themeTags = [];
+          }
         }
 
         return this._themeTags;
@@ -324,8 +319,6 @@ export class Theme extends Resource {
       region: Stack.of(scope).region,
     });
   }
-
-  private static quickSight: QuickSight = new QuickSight;
 
   // Common QuickSight Resource properties
   /**

@@ -8,7 +8,7 @@ export class DashboardContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightDashboardContextQuery): Promise<cxapi.DashboardContextResponse> {
+  async getValue(args: cxschema.QuickSightDashboardContextQuery): Promise<cxapi.QuickSightContextResponse.Dashboard> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
@@ -24,6 +24,35 @@ export class DashboardContextProviderPlugin implements ContextProviderPlugin {
     }).promise();
 
     const dashboard = response.Dashboard;
+
+    if (!dashboard) {
+      throw new Error(`No Dashboard found in account ${args.account} with id ${args.dashboardId}`);
+    }
+
+    return dashboard;
+  }
+}
+
+export class DashboardPermissionsContextProviderPlugin implements ContextProviderPlugin {
+  constructor(private readonly aws: SdkProvider) {
+  }
+
+  async getValue(args: cxschema.QuickSightDashboardContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
+
+    const options = { assumeRoleArn: args.lookupRoleArn };
+
+    const quickSight = (await this.aws.forEnvironment(
+      cxapi.EnvironmentUtils.make(args.account, args.region),
+      Mode.ForReading,
+      options,
+    )).sdk.quickSight();
+
+    const response = await quickSight.describeDashboardPermissions({
+      AwsAccountId: args.account,
+      DashboardId: args.dashboardId,
+    }).promise();
+
+    const dashboard = response.Permissions;
 
     if (!dashboard) {
       throw new Error(`No Dashboard found in account ${args.account} with id ${args.dashboardId}`);

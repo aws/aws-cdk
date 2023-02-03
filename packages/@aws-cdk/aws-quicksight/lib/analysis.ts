@@ -1,9 +1,8 @@
-import { ArnFormat, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
-//import * as cr from '@aws-cdk/custom-resources';
-import { QuickSight } from 'aws-sdk';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { DataSet, IDataSet } from './data-set';
-//import { QsFunctions } from './qs-functions';
 import { CfnAnalysis } from './quicksight.generated';
 import { ITemplate } from './template';
 import { ITheme, Theme } from './theme';
@@ -165,78 +164,73 @@ export class Analysis extends Resource {
 
     class Import extends AnalysisBase {
 
-      private _analysis: QuickSight.Analysis | undefined;
-      private get analysis(): QuickSight.Analysis {
+      private _analysis: cxapi.AnalysisContextResponse | undefined;
+      private get analysis(): cxapi.AnalysisContextResponse {
 
         if (!this._analysis) {
-          let analysis: QuickSight.Analysis = {};
+          let contextProps: cxschema.QuickSightAnalysisContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            analysisId: analysisId,
+          };
 
-          Analysis.quickSight.describeAnalysis({
-            AwsAccountId: Stack.of(scope).account,
-            AnalysisId: analysisId,
-          },
-          function (err, data) {
-            if (!err && data.Analysis) {
-              analysis = data.Analysis;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Analysis does not exist.');
-            }
-          });
+          this._analysis = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER,
+            props: contextProps,
+            dummyValue: undefined,
+          }).value;
 
-          this._analysis = analysis;
+          if (!this._analysis) {
+            throw Error(`No Analysis found in account ${contextProps.account} with id ${contextProps.analysisId}`);
+          }
         }
 
         return this._analysis;
       }
 
-      private _analysisPermissions: QuickSight.ResourcePermission[] | undefined;
-      private get analysisPermissions(): QuickSight.ResourcePermission[] {
+      private _analysisPermissions: cxapi.ResourcePermissionListContextResponse | undefined;
+      private get analysisPermissions(): cxapi.ResourcePermissionListContextResponse {
 
         if (!this._analysisPermissions) {
-          let permissions: QuickSight.ResourcePermission[] = [];
+          let contextProps: cxschema.QuickSightAnalysisContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            analysisId: analysisId,
+          };
 
-          Analysis.quickSight.describeAnalysisPermissions({
-            AwsAccountId: Stack.of(scope).account,
-            AnalysisId: analysisId,
-          },
-          function (err, data) {
-            if (!err && data.Permissions) {
-              permissions = data.Permissions;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Permissions does not exist.');
-            }
-          });
+          this._analysisPermissions = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._analysisPermissions = permissions;
+          if (!this._analysisPermissions) {
+            this._analysisPermissions = [];
+          }
         }
 
         return this._analysisPermissions;
       }
 
-      private _analysisTags: QuickSight.Tag[] | undefined;
-      private get analysisTags(): QuickSight.Tag[] {
+      private _analysisTags: cxapi.TagListContextResponse | undefined;
+      private get analysisTags(): cxapi.TagListContextResponse {
 
         if (!this._analysisTags) {
-          let tags: QuickSight.Tag[] = [];
+          let contextProps: cxschema.QuickSightTagsContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            resourceArn: this.analysisArn,
+          };
 
-          Analysis.quickSight.listTagsForResource({
-            ResourceArn: this.analysisArn,
-          },
-          function (err, data) {
-            if (!err && data.Tags) {
-              tags = data.Tags;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Tags does not exist.');
-            }
-          });
+          this._analysisTags = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_TAGS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._analysisTags = tags;
+          if (!this._analysisTags) {
+            this._analysisTags = [];
+          }
         }
 
         return this._analysisTags;
@@ -318,8 +312,6 @@ export class Analysis extends Resource {
       region: Stack.of(scope).region,
     });
   }
-
-  private static quickSight: QuickSight = new QuickSight;
 
   // Common QuickSight Resource properties
   /**

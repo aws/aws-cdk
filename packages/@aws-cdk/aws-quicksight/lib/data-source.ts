@@ -1,6 +1,6 @@
-import { ArnFormat, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
-//import * as cr from '@aws-cdk/custom-resources';
-import { QuickSight } from 'aws-sdk';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { QsFunctions } from './qs-functions';
 import { CfnDataSource } from './quicksight.generated';
@@ -268,78 +268,73 @@ export class DataSource extends Resource {
   public static fromId(scope: Construct, id: string, dataSourceId: string): IDataSource {
     class Import extends DataSourceBase {
 
-      private _dataSource: QuickSight.DataSource | undefined;
-      private get dataSource(): QuickSight.DataSource {
+      private _dataSource: cxapi.DataSourceContextResponse | undefined;
+      private get dataSource(): cxapi.DataSourceContextResponse {
 
         if (!this._dataSource) {
-          let dataSource: QuickSight.DataSource = {};
+          let contextProps: cxschema.QuickSightDataSourceContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            dataSourceId: dataSourceId,
+          };
 
-          DataSource.quickSight.describeDataSource({
-            AwsAccountId: Stack.of(scope).account,
-            DataSourceId: dataSourceId,
-          },
-          function (err, data) {
-            if (!err && data.DataSource) {
-              dataSource = data.DataSource;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('DataSource does not exist.');
-            }
-          });
+          this._dataSource = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER,
+            props: contextProps,
+            dummyValue: undefined,
+          }).value;
 
-          this._dataSource = dataSource;
+          if (!this._dataSource) {
+            throw Error(`No DataSource found in account ${contextProps.account} with id ${contextProps.dataSourceId}`);
+          }
         }
 
         return this._dataSource;
       }
 
-      private _dataSourcePermissions: QuickSight.ResourcePermission[] | undefined;
-      private get dataSourcePermissions(): QuickSight.ResourcePermission[] {
+      private _dataSourcePermissions: cxapi.ResourcePermissionListContextResponse | undefined;
+      private get dataSourcePermissions(): cxapi.ResourcePermissionListContextResponse {
 
         if (!this._dataSourcePermissions) {
-          let permissions: QuickSight.ResourcePermission[] = [];
+          let contextProps: cxschema.QuickSightDataSourceContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            dataSourceId: dataSourceId,
+          };
 
-          DataSource.quickSight.describeDataSourcePermissions({
-            AwsAccountId: Stack.of(scope).account,
-            DataSourceId: dataSourceId,
-          },
-          function (err, data) {
-            if (!err && data.Permissions) {
-              permissions = data.Permissions;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Permissions does not exist.');
-            }
-          });
+          this._dataSourcePermissions = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._dataSourcePermissions = permissions;
+          if (!this._dataSourcePermissions) {
+            this._dataSourcePermissions = [];
+          }
         }
 
         return this._dataSourcePermissions;
       }
 
-      private _dataSourceTags: QuickSight.Tag[] | undefined;
-      private get dataSourceTags(): QuickSight.Tag[] {
+      private _dataSourceTags: cxapi.TagListContextResponse | undefined;
+      private get dataSourceTags(): cxapi.TagListContextResponse {
 
         if (!this._dataSourceTags) {
-          let tags: QuickSight.Tag[] = [];
+          let contextProps: cxschema.QuickSightTagsContextQuery = {
+            account: Stack.of(scope).account,
+            region: Stack.of(scope).region,
+            resourceArn: this.dataSourceArn,
+          };
 
-          DataSource.quickSight.listTagsForResource({
-            ResourceArn: this.dataSourceArn,
-          },
-          function (err, data) {
-            if (!err && data.Tags) {
-              tags = data.Tags;
-            } else if (err) {
-              throw new Error(err.message);
-            } else {
-              throw new Error('Tags does not exist.');
-            }
-          });
+          this._dataSourceTags = ContextProvider.getValue(scope, {
+            provider: cxschema.ContextProvider.QUICKSIGHT_TAGS_PROVIDER,
+            props: contextProps,
+            dummyValue: [],
+          }).value;
 
-          this._dataSourceTags = tags;
+          if (!this._dataSourceTags) {
+            this._dataSourceTags = [];
+          }
         }
 
         return this._dataSourceTags;
@@ -460,8 +455,6 @@ export class DataSource extends Resource {
       region: Stack.of(scope).region,
     });
   }
-
-  private static quickSight: QuickSight = new QuickSight;
 
   // Common QuickSight Resource properties
   /**
