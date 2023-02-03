@@ -222,7 +222,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     this.alarms = props.alarms || [];
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
-    this.deploymentConfig = props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE;
+    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
 
     if (cdk.Resource.isOwnedResource(props.service)) {
       const cfnSvc = (props.service as ecs.BaseService).node.defaultChild as ecs.CfnService;
@@ -358,6 +358,6 @@ class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements 
     });
 
     this.application = props.application;
-    this.deploymentConfig = props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE;
+    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
   }
 }
