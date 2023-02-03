@@ -2820,11 +2820,16 @@ export enum ObjectLockMode {
 /**
  * The default retention settings for an S3 Object Lock configuration.
  *
- * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-bucket-config-defaults
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html
  */
 export class ObjectLockRetention {
   /**
    * Configure for Governance retention for a specified duration.
+   *
+   * With governance mode, you protect objects against being deleted by most users, but you can
+   * still grant some users permission to alter the retention settings or delete the object if
+   * necessary. You can also use governance mode to test retention-period settings before
+   * creating a compliance-mode retention period.
    *
    * @param duration the length of time for which objects should retained
    * @returns the ObjectLockRetention configuration
@@ -2835,6 +2840,10 @@ export class ObjectLockRetention {
 
   /**
    * Configure for Compliance retention for a specified duration.
+   *
+   * When an object is locked in compliance mode, its retention mode can't be changed, and
+   * its retention period can't be shortened. Compliance mode helps ensure that an object
+   * version can't be overwritten or deleted for the duration of the retention period.
    *
    * @param duration the length of time for which objects should be retained
    * @returns the ObjectLockRetention configuration
@@ -2856,12 +2865,14 @@ export class ObjectLockRetention {
   public readonly mode: ObjectLockMode;
 
   private constructor(mode: ObjectLockMode, duration: Duration) {
+    // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
     if (duration.toDays() > 365 * 100) {
       throw new Error('Object Lock retention duration must be less than 100 years');
     }
     if (duration.toDays() < 1) {
       throw new Error('Object Lock retention duration must be at least 1 day');
     }
+
     this.mode = mode;
     this.duration = duration;
   }
