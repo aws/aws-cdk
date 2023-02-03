@@ -1698,7 +1698,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow(/Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
+    }).toThrow(/Stack "Stack2" cannot reference [^ ]+ in stack "Stack1"/);
   });
 
   test('urlSuffix does not imply a stack dependency', () => {
