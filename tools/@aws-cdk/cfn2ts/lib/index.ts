@@ -46,7 +46,7 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
   for (const scope of scopes) {
     const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
     const module = pkglint.createModuleDefinitionFromCfnNamespace(scope);
-    const packagePath = path.join(outPath, module.moduleName);
+    const packagePath = path.join(outPath, module.moduleName, 'lib');
 
     if (Object.keys(spec.ResourceTypes).length === 0) {
       throw new Error(`No resource was found for scope ${scope}`);
@@ -74,7 +74,7 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
     // Create index.ts file if needed
     if (!fs.existsSync(path.join(packagePath, 'index.ts'))) {
       const lines = [`// ${scope} CloudFormation Resources:`];
-      lines.push(...outputFiles.map((f) => `export * from './${f.replace('.ts', '')}'`));
+      lines.push(...outputFiles.map((f) => `export * from './lib/${f.replace('.ts', '')}'`));
 
       await fs.writeFile(path.join(packagePath, 'index.ts'), lines.join('\n') + '\n');
     }
