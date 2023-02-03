@@ -1147,13 +1147,16 @@ Default Capacity Provider Strategy can be added by using the method addDefaultCa
 ```ts
 declare const capacityProvider: ecs.CapacityProvider;
 
-new ecs.Cluster(stack, 'EC2CPCluster', {
-  vpc,
-  defaultCapacityProviderStrategy: [
-    { capacityProvider: capacityProvider.capacityProviderName, base: 1, weight: 1 },
-    { capacityProvider: 'FARGATE_SPOT', weight: 1 },
-  ],
+const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+  enableFargateCapacityProviders: true,
 });
+cluster.addAsgCapacityProvider(capacityProvider);
+
+cluster.addDefaultCapacityProviderStrategy([
+  { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+  { capacityProvider: 'FARGATE_SPOT' },
+  { capacityProvider: capacityProvider.capacityProviderName },
+]);
 ```
 
 ## Elastic Inference Accelerators

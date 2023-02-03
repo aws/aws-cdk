@@ -2225,7 +2225,6 @@ describe('cluster', () => {
       enableManagedTerminationProtection: false,
     });
 
-    // Ensure not added twice
     cluster.addAsgCapacityProvider(capacityProvider);
 
     // THEN
@@ -2243,6 +2242,51 @@ describe('cluster', () => {
       DefaultCapacityProviderStrategy: [
         { CapacityProvider: 'FARGATE', Base: 10, Weight: 50 },
         { CapacityProvider: 'FARGATE_SPOT' },
+      ],
+    });
+  });
+
+  test('can add ASG default capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    cluster.addDefaultCapacityProviderStrategy([
+      { capacityProvider: capacityProvider.capacityProviderName },
+    ]);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
+      Cluster: {
+        Ref: 'EcsCluster97242B84',
+      },
+      CapacityProviders: [
+        {
+          Ref: 'providerD3FF4D3A',
+        },
+      ],
+      DefaultCapacityProviderStrategy: [
+        {
+          CapacityProvider: {
+            Ref: 'providerD3FF4D3A',
+          },
+        },
       ],
     });
   });
