@@ -3,8 +3,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 const srcDir = path.join(__dirname, '..', 'lib');
-const modulesGenerated = await generateAll(srcDir, {
-  coreImport: 'aws-cdk-lib',
+generateAll(srcDir, {
+  coreImport: '../../core',
 });
 
 const awsCdkLibDir = path.join(__dirname, '..');
