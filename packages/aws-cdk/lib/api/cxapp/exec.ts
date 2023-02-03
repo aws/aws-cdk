@@ -91,20 +91,29 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   return { assembly, lock: await writerLock.convertToReaderLock() };
 
   async function exec(commandAndArgs: string | string[]) {
-    const cmdAndArgs = Array.isArray(commandAndArgs) ? commandAndArgs : [commandAndArgs];
+    let cmdAndArgs: string[];
+    if (Array.isArray(commandAndArgs)) {
+      // If the command and arguments are passed in as an array, we can safely wrap the command in quotes to avoid
+      // issues with paths containing characters like spaces.
+      cmdAndArgs = [
+        `"${commandAndArgs[0]}"`,
+        ...commandAndArgs.slice(1)
+      ];
+    } else {
+      cmdAndArgs = [commandAndArgs];
+    }
     return new Promise<void>((ok, fail) => {
       // We use a slightly lower-level interface to:
       //
       // - Pass arguments in an array instead of a string, to get around a
       //   number of quoting issues introduced by the intermediate shell layer
-      //   (which would be different between Linux and Windows). The command
-      //   must be quoted to handle spaces or other such characters in it.
+      //   (which would be different between Linux and Windows).
       //
       // - Inherit stderr from controlling terminal. We don't use the captured value
       //   anyway, and if the subprocess is printing to it for debugging purposes the
       //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
       //   processes like Maven.
-      const proc = childProcess.spawn(`"${cmdAndArgs[0]}"`, cmdAndArgs.slice(1), {
+      const proc = childProcess.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), {
         stdio: ['ignore', 'inherit', 'inherit'],
         detached: false,
         shell: true,

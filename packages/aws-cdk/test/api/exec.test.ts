@@ -142,6 +142,7 @@ test('the application set in --app is executed', async () => {
   config.settings.set(['app'], 'cloud-executable');
   mockSpawn({
     commandLine: 'cloud-executable',
+    expectQuotedCommand: true,
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -167,7 +168,9 @@ test('the application set in --app is executed with arguments', async () => {
   // GIVEN
   config.settings.set(['app'], 'cloud-executable an-arg');
   mockSpawn({
-    commandLine: 'cloud-executable an-arg',
+    commandLine: 'cloud-executable',
+    expectQuotedCommand: true,
+    args: ['an-arg'],
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -181,7 +184,9 @@ test('application set in --app as `*.js` always uses handler on windows', async 
   sinon.stub(process, 'platform').value('win32');
   config.settings.set(['app'], 'windows.js');
   mockSpawn({
-    commandLine: process.execPath + ' windows.js',
+    commandLine: process.execPath,
+    expectQuotedCommand: true,
+    args: ['windows.js'],
     sideEffect: () => writeOutputAssembly(),
   });
 
