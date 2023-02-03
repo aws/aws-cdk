@@ -1,5 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as helperFunctions from './helper-functions';
 import { Mode } from '../../api/aws-auth/credentials';
 import { SdkProvider } from '../../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../../api/plugin';
@@ -29,7 +30,7 @@ export class DataSourceContextProviderPlugin implements ContextProviderPlugin {
       throw new Error(`No DataSource found in account ${args.account} with id ${args.dataSourceId}`);
     }
 
-    return dataSource;
+    return helperFunctions.mapToCamelCase(dataSource) as cxapi.QuickSightContextResponse.DataSource;
   }
 }
 
@@ -58,6 +59,6 @@ export class DataSourcePermissionsContextProviderPlugin implements ContextProvid
       throw new Error(`No DataSource found in account ${args.account} with id ${args.dataSourceId}`);
     }
 
-    return dataSource;
+    return helperFunctions.arrayToCamelCase(dataSource) as cxapi.QuickSightContextResponse.ResourcePermissionList;
   }
 }

@@ -1,8 +1,7 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
-import { QsFunctions } from './qs-functions';
 import { CfnDataSet } from './quicksight.generated';
 
 /**
@@ -251,8 +250,8 @@ export class DataSet extends Resource {
 
     class Import extends DataSetBase {
 
-      private _dataSet: cxapi.DataSetContextResponse | undefined;
-      private get dataSet(): cxapi.DataSetContextResponse {
+      private _dataSet: cxapi.QuickSightContextResponse.DataSet | undefined;
+      private get dataSet(): cxapi.QuickSightContextResponse.DataSet {
 
         if (!this._dataSet) {
           let contextProps: cxschema.QuickSightDataSetContextQuery = {
@@ -275,8 +274,8 @@ export class DataSet extends Resource {
         return this._dataSet;
       }
 
-      private _dataSetPermissions: cxapi.ResourcePermissionListContextResponse | undefined;
-      private get dataSetPermissions(): cxapi.ResourcePermissionListContextResponse {
+      private _dataSetPermissions: cxapi.QuickSightContextResponse.ResourcePermissionList | undefined;
+      private get dataSetPermissions(): cxapi.QuickSightContextResponse.ResourcePermissionList {
 
         if (!this._dataSetPermissions) {
           let contextProps: cxschema.QuickSightDataSetContextQuery = {
@@ -299,8 +298,8 @@ export class DataSet extends Resource {
         return this._dataSetPermissions;
       }
 
-      private _dataSetTags: cxapi.TagListContextResponse | undefined;
-      private get dataSetTags(): cxapi.TagListContextResponse {
+      private _dataSetTags: cxapi.QuickSightContextResponse.TagList | undefined;
+      private get dataSetTags(): cxapi.QuickSightContextResponse.TagList {
 
         if (!this._dataSetTags) {
           let contextProps: cxschema.QuickSightTagsContextQuery = {
@@ -326,22 +325,11 @@ export class DataSet extends Resource {
       public readonly ingestionWaitPolicy = undefined;
 
       public get dataSetName() {
-        return this.dataSet.Name;
+        return this.dataSet.name;
       }
 
       public get permissions() {
-        let permissions: CfnDataSet.ResourcePermissionProperty[] = [];
-
-        this.dataSetPermissions.forEach(function(value: any) {
-          if (value.Principal && value.Actions) {
-            permissions.push({
-              principal: value.Principal,
-              actions: value.Actions,
-            });
-          }
-        });
-
-        return permissions;
+        return this.dataSetPermissions;
       }
 
       public get tags() {
@@ -359,101 +347,43 @@ export class DataSet extends Resource {
       }
 
       public get dataSetArn() {
-        return this.dataSet.Arn ?? '';
+        return this.dataSet.arn ?? '';
       }
 
       public get resourceId(): string {
-        return this.dataSet.DataSetId ?? '';
+        return this.dataSet.dataSetId ?? '';
       }
 
       public get columnGroups() {
-        let columnGroups: CfnDataSet.ColumnGroupProperty[] = [];
-
-        this.dataSet.ColumnGroups?.forEach(function(value: any) {
-          if (value.GeoSpatialColumnGroup) {
-            columnGroups.push({
-              geoSpatialColumnGroup: {
-                columns: value.GeoSpatialColumnGroup.Columns,
-                countryCode: value.GeoSpatialColumnGroup.CountryCode,
-                name: value.GeoSpatialColumnGroup.Name,
-              },
-            });
-          }
-        });
-
-        return columnGroups;
+        return this.dataSet.columnGroups;
       }
 
       public get columnLevelPermissionRules() {
-        let columnLevelPermissionRules: CfnDataSet.ColumnLevelPermissionRuleProperty[] = [];
-
-        this.dataSet.ColumnLevelPermissionRules?.forEach(function(value: any) {
-          columnLevelPermissionRules.push({
-            columnNames: value.ColumnNames,
-            principals: value.Principals,
-          });
-        });
-
-        return columnLevelPermissionRules;
+        return this.dataSet.columnLevelPermissionRules;
       }
 
       public get dataSetUsageConfiguration() {
-        let dataSetUsageConfiguration: CfnDataSet.DataSetUsageConfigurationProperty | undefined;
-
-        if (this.dataSet.DataSetUsageConfiguration) {
-          dataSetUsageConfiguration = QsFunctions.mapToCamelCase(this.dataSet.DataSetUsageConfiguration);
-        };
-
-        return dataSetUsageConfiguration;
+        return this.dataSet.dataSetUsageConfiguration;
       }
 
       public get fieldFolders() {
-        let fieldFolders: { [key: string]: CfnDataSet.FieldFolderProperty } = {};
-
-        if (this.dataSet.FieldFolders) {
-          fieldFolders = QsFunctions.mapToCamelCase(this.dataSet.FieldFolders) as { [key: string]: CfnDataSet.FieldFolderProperty };
-        }
-
-        return fieldFolders;
+        return this.dataSet.fieldFolders;
       }
 
       public get importMode() {
-        return this.dataSet.ImportMode;
+        return this.dataSet.importMode;
       }
 
       public get logicalTableMap() {
-        let logicalTableMap: { [key: string]: CfnDataSet.LogicalTableProperty } = {};
-
-        if (this.dataSet.LogicalTableMap) {
-          logicalTableMap = QsFunctions.mapToCamelCase(this.dataSet.LogicalTableMap, [[]]) as { [key: string]: CfnDataSet.LogicalTableProperty };
-        }
-
-        return logicalTableMap;
+        return this.dataSet.logicalTableMap;
       }
 
       public get physicalTableMap() {
-        let physicalTableMap: { [key: string]: CfnDataSet.PhysicalTableProperty } = {};
-
-        if (this.dataSet.PhysicalTableMap) {
-          physicalTableMap = QsFunctions.mapToCamelCase(this.dataSet.PhysicalTableMap, [[]]) as { [key: string]: CfnDataSet.PhysicalTableProperty };
-        }
-
-        return physicalTableMap;
+        return this.dataSet.physicalTableMap;
       }
 
       public get rowLevelPermissionDataSet() {
-        let rowLevelPermissionDataSet: CfnDataSet.RowLevelPermissionDataSetProperty | undefined;
-
-        if (this.dataSet.RowLevelPermissionDataSet) {
-          rowLevelPermissionDataSet = {
-            arn: this.dataSet.RowLevelPermissionDataSet.Arn,
-            formatVersion: this.dataSet.RowLevelPermissionDataSet.FormatVersion,
-            namespace: this.dataSet.RowLevelPermissionDataSet.Namespace,
-            permissionPolicy: this.dataSet.RowLevelPermissionDataSet.PermissionPolicy,
-          };
-        }
-
-        return rowLevelPermissionDataSet;
+        return this.dataSet.rowLevelPermissionDataSet;
       }
     }
 

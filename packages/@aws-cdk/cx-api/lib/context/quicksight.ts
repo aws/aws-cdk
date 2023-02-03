@@ -5,69 +5,69 @@ export namespace QuickSightContextResponse {
   /**
      * The OpenSearch domain.
      */
-    readonly Domain: Domain;
+    readonly domain: Domain;
   }
   export interface AmazonOpenSearchParameters {
   /**
      * The OpenSearch domain.
      */
-    readonly Domain: Domain;
+    readonly domain: Domain;
   }
   export interface Analysis {
   /**
      * The ID of the analysis.
      */
-    readonly AnalysisId?: ShortRestrictiveResourceId;
+    readonly analysisId?: ShortRestrictiveResourceId;
     /**
      * The Amazon Resource Name (ARN) of the analysis.
      */
-    readonly Arn?: Arn;
+    readonly arn?: Arn;
     /**
      * The descriptive name of the analysis.
      */
-    readonly Name?: AnalysisName;
+    readonly name?: AnalysisName;
     /**
      * Status associated with the analysis.
      */
-    readonly Status?: ResourceStatus;
+    readonly status?: ResourceStatus;
     /**
      * Errors associated with the analysis.
      */
-    readonly Errors?: AnalysisErrorList;
+    readonly errors?: AnalysisErrorList;
     /**
      * The ARNs of the datasets of the analysis.
      */
-    readonly DataSetArns?: DataSetArnsList;
+    readonly dataSetArns?: DataSetArnsList;
     /**
      * The ARN of the theme of the analysis.
      */
-    readonly ThemeArn?: Arn;
+    readonly themeArn?: Arn;
     /**
      * The time that the analysis was created.
      */
-    readonly CreatedTime?: Timestamp;
+    readonly createdTime?: Timestamp;
     /**
      * The time that the analysis was last updated.
      */
-    readonly LastUpdatedTime?: Timestamp;
+    readonly lastUpdatedTime?: Timestamp;
     /**
      * A list of the associated sheets with the unique identifier and name of each sheet.
      */
-    readonly Sheets?: SheetList;
+    readonly sheets?: SheetList;
   }
   export interface AnalysisError {
   /**
      * The type of the analysis error.
      */
-    readonly Type?: AnalysisErrorType;
+    readonly type?: AnalysisErrorType;
     /**
      * The message associated with the analysis error.
      */
-    readonly Message?: NonEmptyString;
+    readonly message?: NonEmptyString;
     /**
      *
      */
-    readonly ViolatedEntities?: EntityList;
+    readonly violatedEntities?: EntityList;
   }
   export type AnalysisErrorList = AnalysisError[];
   export type AnalysisErrorType = 'ACCESS_DENIED'|'SOURCE_NOT_FOUND'|'DATA_SET_NOT_FOUND'|'INTERNAL_FAILURE'|'PARAMETER_VALUE_INCOMPATIBLE'|'PARAMETER_TYPE_INVALID'|'PARAMETER_NOT_FOUND'|'COLUMN_TYPE_MISMATCH'|'COLUMN_GEOGRAPHIC_ROLE_MISMATCH'|'COLUMN_REPLACEMENT_MISSING'|string;
@@ -77,81 +77,81 @@ export namespace QuickSightContextResponse {
   /**
      * The workgroup that Amazon Athena uses.
      */
-    readonly WorkGroup?: WorkGroup;
+    readonly workGroup?: WorkGroup;
     /**
      * Use the RoleArn structure to override an account-wide role for a specific Athena data source. For example, say an account administrator has turned off all Athena access with an account-wide role. The administrator can then use RoleArn to bypass the account-wide role and allow Athena access for the single Athena data source that is specified in the structure, even if the account-wide role forbidding Athena access is still active.
      */
-    readonly RoleArn?: RoleArn;
+    readonly roleArn?: RoleArn;
   }
   export interface AuroraParameters {
   /**
      * Host.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * Port.
      */
-    readonly Port: Port;
+    readonly port: Port;
     /**
      * Database.
      */
-    readonly Database: Database;
+    readonly database: Database;
   }
   export interface AuroraPostgreSqlParameters {
   /**
      * The Amazon Aurora PostgreSQL-Compatible host to connect to.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * The port that Amazon Aurora PostgreSQL is listening on.
      */
-    readonly Port: Port;
+    readonly port: Port;
     /**
      * The Amazon Aurora PostgreSQL database to connect to.
      */
-    readonly Database: Database;
+    readonly database: Database;
   }
   export interface AwsIotAnalyticsParameters {
   /**
      * Dataset name.
      */
-    readonly DataSetName: DataSetName;
+    readonly dataSetName: DataSetName;
   }
   export type Boolean = boolean;
   export interface BorderStyle {
   /**
      * The option to enable display of borders for visuals.
      */
-    readonly Show?: Boolean;
+    readonly show?: Boolean;
   }
   export interface CalculatedColumn {
   /**
      * Column name.
      */
-    readonly ColumnName: ColumnName;
+    readonly columnName: ColumnName;
     /**
      * A unique ID to identify a calculated column. During a dataset update, if the column ID of a calculated column matches that of an existing calculated column, Amazon QuickSight preserves the existing calculated column.
      */
-    readonly ColumnId: ColumnId;
+    readonly columnId: ColumnId;
     /**
      * An expression that defines the calculated column.
      */
-    readonly Expression: Expression;
+    readonly expression: Expression;
   }
   export type CalculatedColumnList = CalculatedColumn[];
   export interface CastColumnTypeOperation {
   /**
      * Column name.
      */
-    readonly ColumnName: ColumnName;
+    readonly columnName: ColumnName;
     /**
      * New column data type.
      */
-    readonly NewColumnType: ColumnDataType;
+    readonly newColumnType: ColumnDataType;
     /**
      * When casting a column from string to datetime type, you can supply a string in a format supported by Amazon QuickSight to denote the source data format.
      */
-    readonly Format?: TypeCastFormat;
+    readonly format?: TypeCastFormat;
   }
   export type Catalog = string;
   export type ClusterId = string;
@@ -161,20 +161,20 @@ export namespace QuickSightContextResponse {
   /**
      * The text of a description for a column.
      */
-    readonly Text?: ColumnDescriptiveText;
+    readonly text?: ColumnDescriptiveText;
   }
   export type ColumnDescriptiveText = string;
   export interface ColumnGroup {
   /**
      * Geospatial column group that denotes a hierarchy.
      */
-    readonly GeoSpatialColumnGroup?: GeoSpatialColumnGroup;
+    readonly geoSpatialColumnGroup?: GeoSpatialColumnGroup;
   }
   export interface ColumnGroupColumnSchema {
   /**
      * The name of the column group's column schema.
      */
-    readonly Name?: String;
+    readonly name?: String;
   }
   export type ColumnGroupColumnSchemaList = ColumnGroupColumnSchema[];
   export type ColumnGroupList = ColumnGroup[];
@@ -183,11 +183,11 @@ export namespace QuickSightContextResponse {
   /**
      * The name of the column group schema.
      */
-    readonly Name?: String;
+    readonly name?: String;
     /**
      * A structure containing the list of schemas for column group columns.
      */
-    readonly ColumnGroupColumnSchemaList?: ColumnGroupColumnSchemaList;
+    readonly columnGroupColumnSchemaList?: ColumnGroupColumnSchemaList;
   }
   export type ColumnGroupSchemaList = ColumnGroupSchema[];
   export type ColumnId = string;
@@ -195,11 +195,11 @@ export namespace QuickSightContextResponse {
   /**
      * An array of Amazon Resource Names (ARNs) for Amazon QuickSight users or groups.
      */
-    readonly Principals?: PrincipalList;
+    readonly principals?: PrincipalList;
     /**
      * An array of column names.
      */
-    readonly ColumnNames?: ColumnNameList;
+    readonly columnNames?: ColumnNameList;
   }
   export type ColumnLevelPermissionRuleList = ColumnLevelPermissionRule[];
   export type ColumnList = ColumnName[];
@@ -209,26 +209,26 @@ export namespace QuickSightContextResponse {
   /**
      * The name of the column schema.
      */
-    readonly Name?: String;
+    readonly name?: String;
     /**
      * The data type of the column schema.
      */
-    readonly DataType?: String;
+    readonly dataType?: String;
     /**
      * The geographic role of the column schema.
      */
-    readonly GeographicRole?: String;
+    readonly geographicRole?: String;
   }
   export type ColumnSchemaList = ColumnSchema[];
   export interface ColumnTag {
   /**
      * A geospatial role for a column.
      */
-    readonly ColumnGeographicRole?: GeoSpatialDataRole;
+    readonly columnGeographicRole?: GeoSpatialDataRole;
     /**
      * A description for a column.
      */
-    readonly ColumnDescription?: ColumnDescription;
+    readonly columnDescription?: ColumnDescription;
   }
   export type ColumnTagList = ColumnTag[];
   export type ColumnTagName = 'COLUMN_GEOGRAPHIC_ROLE'|'COLUMN_DESCRIPTION'|string;
@@ -237,70 +237,70 @@ export namespace QuickSightContextResponse {
   /**
      * Calculated columns to create.
      */
-    readonly Columns: CalculatedColumnList;
+    readonly columns: CalculatedColumnList;
   }
   export interface CustomSql {
   /**
      * The Amazon Resource Name (ARN) of the data source.
      */
-    readonly DataSourceArn: Arn;
+    readonly dataSourceArn: Arn;
     /**
      * A display name for the SQL query result.
      */
-    readonly Name: CustomSqlName;
+    readonly name: CustomSqlName;
     /**
      * The SQL query.
      */
-    readonly SqlQuery: SqlQuery;
+    readonly sqlQuery: SqlQuery;
     /**
      * The column schema from the SQL query result set.
      */
-    readonly Columns?: InputColumnList;
+    readonly columns: InputColumnList; // ORIGINALLY readonly columns?: InputColumnList;
   }
   export type CustomSqlName = string;
   export interface Dashboard {
   /**
      * Dashboard ID.
      */
-    readonly DashboardId?: ShortRestrictiveResourceId;
+    readonly dashboardId?: ShortRestrictiveResourceId;
     /**
      * The Amazon Resource Name (ARN) of the resource.
      */
-    readonly Arn?: Arn;
+    readonly arn?: Arn;
     /**
      * A display name for the dashboard.
      */
-    readonly Name?: DashboardName;
+    readonly name?: DashboardName;
     /**
      * Version.
      */
-    readonly Version?: DashboardVersion;
+    readonly version?: DashboardVersion;
     /**
      * The time that this dashboard was created.
      */
-    readonly CreatedTime?: Timestamp;
+    readonly createdTime?: Timestamp;
     /**
      * The last time that this dashboard was published.
      */
-    readonly LastPublishedTime?: Timestamp;
+    readonly lastPublishedTime?: Timestamp;
     /**
      * The last time that this dashboard was updated.
      */
-    readonly LastUpdatedTime?: Timestamp;
+    readonly lastUpdatedTime?: Timestamp;
   }
   export interface DashboardError {
   /**
      * Type.
      */
-    readonly Type?: DashboardErrorType;
+    readonly type?: DashboardErrorType;
     /**
      * Message.
      */
-    readonly Message?: NonEmptyString;
+    readonly message?: NonEmptyString;
     /**
      *
      */
-    readonly ViolatedEntities?: EntityList;
+    readonly violatedEntities?: EntityList;
   }
   export type DashboardErrorList = DashboardError[];
   export type DashboardErrorType = 'ACCESS_DENIED'|'SOURCE_NOT_FOUND'|'DATA_SET_NOT_FOUND'|'INTERNAL_FAILURE'|'PARAMETER_VALUE_INCOMPATIBLE'|'PARAMETER_TYPE_INVALID'|'PARAMETER_NOT_FOUND'|'COLUMN_TYPE_MISMATCH'|'COLUMN_GEOGRAPHIC_ROLE_MISMATCH'|'COLUMN_REPLACEMENT_MISSING'|string;
@@ -309,138 +309,138 @@ export namespace QuickSightContextResponse {
   /**
      * The time that this dashboard version was created.
      */
-    readonly CreatedTime?: Timestamp;
+    readonly createdTime?: Timestamp;
     /**
      * Errors associated with this dashboard version.
      */
-    readonly Errors?: DashboardErrorList;
+    readonly errors?: DashboardErrorList;
     /**
      * Version number for this version of the dashboard.
      */
-    readonly VersionNumber?: VersionNumber;
+    readonly versionNumber?: VersionNumber;
     /**
      * The HTTP status of the request.
      */
-    readonly Status?: ResourceStatus;
+    readonly status?: ResourceStatus;
     /**
      * The Amazon Resource Name (ARN) of the resource.
      */
-    readonly Arn?: Arn;
+    readonly arn?: Arn;
     /**
      * Source entity ARN.
      */
-    readonly SourceEntityArn?: Arn;
+    readonly sourceEntityArn?: Arn;
     /**
      * The Amazon Resource Numbers (ARNs) for the datasets that are associated with this version of the dashboard.
      */
-    readonly DataSetArns?: DataSetArnsList;
+    readonly dataSetArns?: DataSetArnsList;
     /**
      * Description.
      */
-    readonly Description?: VersionDescription;
+    readonly description?: VersionDescription;
     /**
      * The ARN of the theme associated with a version of the dashboard.
      */
-    readonly ThemeArn?: Arn;
+    readonly themeArn?: Arn;
     /**
      * A list of the associated sheets with the unique identifier and name of each sheet.
      */
-    readonly Sheets?: SheetList;
+    readonly sheets?: SheetList;
   }
   export interface DataColorPalette {
   /**
      * The hexadecimal codes for the colors.
      */
-    readonly Colors?: ColorList;
+    readonly colors?: ColorList;
     /**
      * The minimum and maximum hexadecimal codes that describe a color gradient.
      */
-    readonly MinMaxGradient?: ColorList;
+    readonly minMaxGradient?: ColorList;
     /**
      * The hexadecimal code of a color that applies to charts where a lack of data is highlighted.
      */
-    readonly EmptyFillColor?: HexColor;
+    readonly emptyFillColor?: HexColor;
   }
   export interface DataSet {
   /**
      * The Amazon Resource Name (ARN) of the resource.
      */
-    readonly Arn?: Arn;
+    readonly arn?: Arn;
     /**
      * The ID of the dataset.
      */
-    readonly DataSetId?: ResourceId;
+    readonly dataSetId?: ResourceId;
     /**
      * A display name for the dataset.
      */
-    readonly Name?: ResourceName;
+    readonly name?: ResourceName;
     /**
      * The time that this dataset was created.
      */
-    readonly CreatedTime?: Timestamp;
+    readonly createdTime?: Timestamp;
     /**
      * The last time that this dataset was updated.
      */
-    readonly LastUpdatedTime?: Timestamp;
+    readonly lastUpdatedTime?: Timestamp;
     /**
      * Declares the physical tables that are available in the underlying data sources.
      */
-    readonly PhysicalTableMap?: PhysicalTableMap;
+    readonly physicalTableMap?: PhysicalTableMap;
     /**
      * Configures the combination and transformation of the data from the physical tables.
      */
-    readonly LogicalTableMap?: LogicalTableMap;
+    readonly logicalTableMap?: LogicalTableMap;
     /**
      * The list of columns after all transforms. These columns are available in templates, analyses, and dashboards.
      */
-    readonly OutputColumns?: OutputColumnList;
+    readonly outputColumns?: OutputColumnList;
     /**
      * A value that indicates whether you want to import the data into SPICE.
      */
-    readonly ImportMode?: DataSetImportMode;
+    readonly importMode?: DataSetImportMode;
     /**
      * The amount of SPICE capacity used by this dataset. This is 0 if the dataset isn't imported into SPICE.
      */
-    readonly ConsumedSpiceCapacityInBytes?: Long;
+    readonly consumedSpiceCapacityInBytes?: Long;
     /**
      * Groupings of columns that work together in certain Amazon QuickSight features. Currently, only geospatial hierarchy is supported.
      */
-    readonly ColumnGroups?: ColumnGroupList;
+    readonly columnGroups?: ColumnGroupList;
     /**
      * The folder that contains fields and nested subfolders for your dataset.
      */
-    readonly FieldFolders?: FieldFolderMap;
+    readonly fieldFolders?: FieldFolderMap;
     /**
      * The row-level security configuration for the dataset.
      */
-    readonly RowLevelPermissionDataSet?: RowLevelPermissionDataSet;
+    readonly rowLevelPermissionDataSet?: RowLevelPermissionDataSet;
     /**
      * The element you can use to define tags for row-level security.
      */
-    readonly RowLevelPermissionTagConfiguration?: RowLevelPermissionTagConfiguration;
+    readonly rowLevelPermissionTagConfiguration?: RowLevelPermissionTagConfiguration;
     /**
      * A set of one or more definitions of a  ColumnLevelPermissionRule .
      */
-    readonly ColumnLevelPermissionRules?: ColumnLevelPermissionRuleList;
+    readonly columnLevelPermissionRules?: ColumnLevelPermissionRuleList;
     /**
      * The usage configuration to apply to child datasets that reference this dataset as a source.
      */
-    readonly DataSetUsageConfiguration?: DataSetUsageConfiguration;
+    readonly dataSetUsageConfiguration?: DataSetUsageConfiguration;
   }
   export type DataSetArnsList = Arn[];
   export interface DataSetConfiguration {
   /**
      * Placeholder.
      */
-    readonly Placeholder?: String;
+    readonly placeholder?: String;
     /**
      * Dataset schema.
      */
-    readonly DataSetSchema?: DataSetSchema;
+    readonly dataSetSchema?: DataSetSchema;
     /**
      * A structure containing the list of column group schemas.
      */
-    readonly ColumnGroupSchemaList?: ColumnGroupSchemaList;
+    readonly columnGroupSchemaList?: ColumnGroupSchemaList;
   }
   export type DataSetConfigurationList = DataSetConfiguration[];
   export type DataSetImportMode = 'SPICE'|'DIRECT_QUERY'|string;
@@ -449,176 +449,176 @@ export namespace QuickSightContextResponse {
   /**
      * A structure containing the list of column schemas.
      */
-    readonly ColumnSchemaList?: ColumnSchemaList;
+    readonly columnSchemaList?: ColumnSchemaList;
   }
   export interface DataSetUsageConfiguration {
   /**
      * An option that controls whether a child dataset of a direct query can use this dataset as a source.
      */
-    readonly DisableUseAsDirectQuerySource?: Boolean;
+    readonly disableUseAsDirectQuerySource?: Boolean;
     /**
      * An option that controls whether a child dataset that's stored in QuickSight can use this dataset as a source.
      */
-    readonly DisableUseAsImportedSource?: Boolean;
+    readonly disableUseAsImportedSource?: Boolean;
   }
   export interface DataSource {
   /**
      * The Amazon Resource Name (ARN) of the data source.
      */
-    readonly Arn?: Arn;
+    readonly arn?: Arn;
     /**
      * The ID of the data source. This ID is unique per Amazon Web Services Region for each Amazon Web Services account.
      */
-    readonly DataSourceId?: ResourceId;
+    readonly dataSourceId?: ResourceId;
     /**
      * A display name for the data source.
      */
-    readonly Name?: ResourceName;
+    readonly name?: ResourceName;
     /**
      * The type of the data source. This type indicates which database engine the data source connects to.
      */
-    readonly Type?: DataSourceType;
+    readonly type?: DataSourceType;
     /**
      * The HTTP status of the request.
      */
-    readonly Status?: ResourceStatus;
+    readonly status?: ResourceStatus;
     /**
      * The time that this data source was created.
      */
-    readonly CreatedTime?: Timestamp;
+    readonly createdTime?: Timestamp;
     /**
      * The last time that this data source was updated.
      */
-    readonly LastUpdatedTime?: Timestamp;
+    readonly lastUpdatedTime?: Timestamp;
     /**
      * The parameters that Amazon QuickSight uses to connect to your underlying source. This is a variant type structure. For this structure to be valid, only one of the attributes can be non-null.
      */
-    readonly DataSourceParameters?: DataSourceParameters;
+    readonly dataSourceParameters?: DataSourceParameters;
     /**
      * A set of alternate data source parameters that you want to share for the credentials stored with this data source. The credentials are applied in tandem with the data source parameters when you copy a data source by using a create or update request. The API operation compares the DataSourceParameters structure that's in the request with the structures in the AlternateDataSourceParameters allow list. If the structures are an exact match, the request is allowed to use the credentials from this existing data source. If the AlternateDataSourceParameters list is null, the Credentials originally used with this DataSourceParameters are automatically allowed.
      */
-    readonly AlternateDataSourceParameters?: DataSourceParametersList;
+    readonly alternateDataSourceParameters?: DataSourceParametersList;
     /**
      * The VPC connection information. You need to use this parameter only when you want Amazon QuickSight to use a VPC connection when connecting to your underlying source.
      */
-    readonly VpcConnectionProperties?: VpcConnectionProperties;
+    readonly vpcConnectionProperties?: VpcConnectionProperties;
     /**
      * Secure Socket Layer (SSL) properties that apply when Amazon QuickSight connects to your underlying source.
      */
-    readonly SslProperties?: SslProperties;
+    readonly sslProperties?: SslProperties;
     /**
      * Error information from the last update or the creation of the data source.
      */
-    readonly ErrorInfo?: DataSourceErrorInfo;
+    readonly errorInfo?: DataSourceErrorInfo;
     /**
      * The Amazon Resource Name (ARN) of the secret associated with the data source in Amazon Secrets Manager.
      */
-    readonly SecretArn?: SecretArn;
+    readonly secretArn?: SecretArn;
   }
   export interface DataSourceErrorInfo {
   /**
      * Error type.
      */
-    readonly Type?: DataSourceErrorInfoType;
+    readonly type?: DataSourceErrorInfoType;
     /**
      * Error message.
      */
-    readonly Message?: String;
+    readonly message?: String;
   }
   export type DataSourceErrorInfoType = 'ACCESS_DENIED'|'COPY_SOURCE_NOT_FOUND'|'TIMEOUT'|'ENGINE_VERSION_NOT_SUPPORTED'|'UNKNOWN_HOST'|'GENERIC_SQL_FAILURE'|'CONFLICT'|'UNKNOWN'|string;
   export interface DataSourceParameters {
   /**
      * The parameters for OpenSearch.
      */
-    readonly AmazonElasticsearchParameters?: AmazonElasticsearchParameters;
+    readonly amazonElasticsearchParameters?: AmazonElasticsearchParameters;
     /**
      * The parameters for Amazon Athena.
      */
-    readonly AthenaParameters?: AthenaParameters;
+    readonly athenaParameters?: AthenaParameters;
     /**
      * The parameters for Amazon Aurora MySQL.
      */
-    readonly AuroraParameters?: AuroraParameters;
+    readonly auroraParameters?: AuroraParameters;
     /**
      * The parameters for Amazon Aurora.
      */
-    readonly AuroraPostgreSqlParameters?: AuroraPostgreSqlParameters;
+    readonly auroraPostgreSqlParameters?: AuroraPostgreSqlParameters;
     /**
      * The parameters for IoT Analytics.
      */
-    readonly AwsIotAnalyticsParameters?: AwsIotAnalyticsParameters;
+    readonly awsIotAnalyticsParameters?: AwsIotAnalyticsParameters;
     /**
      * The parameters for Jira.
      */
-    readonly JiraParameters?: JiraParameters;
+    readonly jiraParameters?: JiraParameters;
     /**
      * The parameters for MariaDB.
      */
-    readonly MariaDbParameters?: MariaDbParameters;
+    readonly mariaDbParameters?: MariaDbParameters;
     /**
      * The parameters for MySQL.
      */
-    readonly MySqlParameters?: MySqlParameters;
+    readonly mySqlParameters?: MySqlParameters;
     /**
      * The parameters for Oracle.
      */
-    readonly OracleParameters?: OracleParameters;
+    readonly oracleParameters?: OracleParameters;
     /**
      * The parameters for PostgreSQL.
      */
-    readonly PostgreSqlParameters?: PostgreSqlParameters;
+    readonly postgreSqlParameters?: PostgreSqlParameters;
     /**
      * The parameters for Presto.
      */
-    readonly PrestoParameters?: PrestoParameters;
+    readonly prestoParameters?: PrestoParameters;
     /**
      * The parameters for Amazon RDS.
      */
-    readonly RdsParameters?: RdsParameters;
+    readonly rdsParameters?: RdsParameters;
     /**
      * The parameters for Amazon Redshift.
      */
-    readonly RedshiftParameters?: RedshiftParameters;
+    readonly redshiftParameters?: RedshiftParameters;
     /**
      * The parameters for S3.
      */
-    readonly S3Parameters?: S3Parameters;
+    readonly s3Parameters?: S3Parameters;
     /**
      * The parameters for ServiceNow.
      */
-    readonly ServiceNowParameters?: ServiceNowParameters;
+    readonly serviceNowParameters?: ServiceNowParameters;
     /**
      * The parameters for Snowflake.
      */
-    readonly SnowflakeParameters?: SnowflakeParameters;
+    readonly snowflakeParameters?: SnowflakeParameters;
     /**
      * The parameters for Spark.
      */
-    readonly SparkParameters?: SparkParameters;
+    readonly sparkParameters?: SparkParameters;
     /**
      * The parameters for SQL Server.
      */
-    readonly SqlServerParameters?: SqlServerParameters;
+    readonly sqlServerParameters?: SqlServerParameters;
     /**
      * The parameters for Teradata.
      */
-    readonly TeradataParameters?: TeradataParameters;
+    readonly teradataParameters?: TeradataParameters;
     /**
      * The parameters for Twitter.
      */
-    readonly TwitterParameters?: TwitterParameters;
+    readonly twitterParameters?: TwitterParameters;
     /**
      * The parameters for OpenSearch.
      */
-    readonly AmazonOpenSearchParameters?: AmazonOpenSearchParameters;
+    readonly amazonOpenSearchParameters?: AmazonOpenSearchParameters;
     /**
      * The parameters for Exasol.
      */
-    readonly ExasolParameters?: ExasolParameters;
+    readonly exasolParameters?: ExasolParameters;
     /**
      * The required parameters that are needed to connect to a Databricks data source.
      */
-    readonly DatabricksParameters?: DatabricksParameters;
+    readonly databricksParameters?: DatabricksParameters;
   }
   export type DataSourceParametersList = DataSourceParameters[];
   export type DataSourceType = 'ADOBE_ANALYTICS'|'AMAZON_ELASTICSEARCH'|'ATHENA'|'AURORA'|'AURORA_POSTGRESQL'|'AWS_IOT_ANALYTICS'|'GITHUB'|'JIRA'|'MARIADB'|'MYSQL'|'ORACLE'|'POSTGRESQL'|'PRESTO'|'REDSHIFT'|'S3'|'SALESFORCE'|'SERVICENOW'|'SNOWFLAKE'|'SPARK'|'SQLSERVER'|'TERADATA'|'TWITTER'|'TIMESTREAM'|'AMAZON_OPENSEARCH'|'EXASOL'|'DATABRICKS'|string;
@@ -627,15 +627,15 @@ export namespace QuickSightContextResponse {
   /**
      * The host name of the Databricks data source.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * The port for the Databricks data source.
      */
-    readonly Port: Port;
+    readonly port: Port;
     /**
      * The HTTP path of the Databricks data source.
      */
-    readonly SqlEndpointPath: SqlEndpointPath;
+    readonly sqlEndpointPath: SqlEndpointPath;
   }
   export type Delimiter = string;
   export type Domain = string;
@@ -643,18 +643,18 @@ export namespace QuickSightContextResponse {
   /**
      * The hierarchical path of the entity within the analysis, template, or dashboard definition tree.
      */
-    readonly Path?: NonEmptyString;
+    readonly path?: NonEmptyString;
   }
   export type EntityList = Entity[];
   export interface ExasolParameters {
   /**
      * The hostname or IP address of the Exasol data source.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * The port for the Exasol data source.
      */
-    readonly Port: Port;
+    readonly port: Port;
   }
   export type Expression = string;
   export interface FieldFolder {
@@ -674,29 +674,29 @@ export namespace QuickSightContextResponse {
   /**
      * An expression that must evaluate to a Boolean value. Rows for which the expression evaluates to true are kept in the dataset.
      */
-    readonly ConditionExpression: Expression;
+    readonly conditionExpression: Expression;
   }
   export type FolderColumnList = String[];
   export interface Font {
   /**
      * Determines the font family settings.
      */
-    readonly FontFamily?: String;
+    readonly fontFamily?: String;
   }
   export type FontList = Font[];
   export interface GeoSpatialColumnGroup {
   /**
      * A display name for the hierarchy.
      */
-    readonly Name: ColumnGroupName;
+    readonly name: ColumnGroupName;
     /**
      * Country code.
      */
-    readonly CountryCode?: GeoSpatialCountryCode;
+    readonly countryCode?: GeoSpatialCountryCode;
     /**
      * Columns in this hierarchy.
      */
-    readonly Columns: ColumnList;
+    readonly columns: ColumnList;
   }
   export type GeoSpatialCountryCode = 'US'|string;
   export type GeoSpatialDataRole = 'COUNTRY'|'STATE'|'COUNTY'|'CITY'|'POSTCODE'|'LONGITUDE'|'LATITUDE'|string;
@@ -704,7 +704,7 @@ export namespace QuickSightContextResponse {
   /**
      * This Boolean value controls whether to display a gutter space between sheet tiles.
      */
-    readonly Show?: Boolean;
+    readonly show?: Boolean;
   }
   export type HexColor = string;
   export type Host = string;
@@ -712,11 +712,11 @@ export namespace QuickSightContextResponse {
   /**
      * The name of this column in the underlying data source.
      */
-    readonly Name: ColumnName;
+    readonly name: ColumnName;
     /**
      * The data type of the column.
      */
-    readonly Type: InputColumnDataType;
+    readonly type: InputColumnDataType;
   }
   export type InputColumnDataType = 'STRING'|'INTEGER'|'DECIMAL'|'DATETIME'|'BIT'|'BOOLEAN'|'JSON'|string;
   export type InputColumnList = InputColumn[];
@@ -725,54 +725,54 @@ export namespace QuickSightContextResponse {
   /**
      * The base URL of the Jira site.
      */
-    readonly SiteBaseUrl: SiteBaseUrl;
+    readonly siteBaseUrl: SiteBaseUrl;
   }
   export interface JoinInstruction {
   /**
      * The operand on the left side of a join.
      */
-    readonly LeftOperand: LogicalTableId;
+    readonly leftOperand: LogicalTableId;
     /**
      * The operand on the right side of a join.
      */
-    readonly RightOperand: LogicalTableId;
+    readonly rightOperand: LogicalTableId;
     /**
      * Join key properties of the left operand.
      */
-    readonly LeftJoinKeyProperties?: JoinKeyProperties;
+    readonly leftJoinKeyProperties?: JoinKeyProperties;
     /**
      * Join key properties of the right operand.
      */
-    readonly RightJoinKeyProperties?: JoinKeyProperties;
+    readonly rightJoinKeyProperties?: JoinKeyProperties;
     /**
      * The type of join that it is.
      */
-    readonly Type: JoinType;
+    readonly type: JoinType;
     /**
      * The join instructions provided in the ON clause of a join.
      */
-    readonly OnClause: OnClause;
+    readonly onClause: OnClause;
   }
   export interface JoinKeyProperties {
   /**
      * A value that indicates that a row in a table is uniquely identified by the columns in a join key. This is used by Amazon QuickSight to optimize query performance.
      */
-    readonly UniqueKey?: Boolean;
+    readonly uniqueKey?: Boolean;
   }
   export type JoinType = 'INNER'|'OUTER'|'LEFT'|'RIGHT'|string;
   export interface LogicalTable {
   /**
      * A display name for the logical table.
      */
-    readonly Alias: LogicalTableAlias;
+    readonly alias: LogicalTableAlias;
     /**
      * Transform operations that act on this logical table. For this structure to be valid, only one of the attributes can be non-null.
      */
-    readonly DataTransforms?: TransformOperationList;
+    readonly dataTransforms?: TransformOperationList;
     /**
      * Source of this logical table.
      */
-    readonly Source: LogicalTableSource;
+    readonly source: LogicalTableSource;
   }
   export type LogicalTableAlias = string;
   export type LogicalTableId = string;
@@ -781,60 +781,60 @@ export namespace QuickSightContextResponse {
   /**
      * Specifies the result of a join of two logical tables.
      */
-    readonly JoinInstruction?: JoinInstruction;
+    readonly joinInstruction?: JoinInstruction;
     /**
      * Physical table ID.
      */
-    readonly PhysicalTableId?: PhysicalTableId;
+    readonly physicalTableId?: PhysicalTableId;
     /**
      * The Amazon Resource Number (ARN) of the parent dataset.
      */
-    readonly DataSetArn?: Arn;
+    readonly dataSetArn?: Arn;
   }
   export type Long = number;
   export interface ManifestFileLocation {
   /**
      * Amazon S3 bucket.
      */
-    readonly Bucket: S3Bucket;
+    readonly bucket: S3Bucket;
     /**
      * Amazon S3 key that identifies an object.
      */
-    readonly Key: S3Key;
+    readonly key: S3Key;
   }
   export interface MarginStyle {
   /**
      * This Boolean value controls whether to display sheet margins.
      */
-    readonly Show?: Boolean;
+    readonly show?: Boolean;
   }
   export interface MariaDbParameters {
   /**
      * Host.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * Port.
      */
-    readonly Port: Port;
+    readonly port: Port;
     /**
      * Database.
      */
-    readonly Database: Database;
+    readonly database: Database;
   }
   export interface MySqlParameters {
   /**
      * Host.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * Port.
      */
-    readonly Port: Port;
+    readonly port: Port;
     /**
      * Database.
      */
-    readonly Database: Database;
+    readonly database: Database;
   }
   export type Namespace = string;
   export type NonEmptyString = string;
@@ -844,44 +844,44 @@ export namespace QuickSightContextResponse {
   /**
      * An Oracle host.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * Port.
      */
-    readonly Port: Port;
+    readonly port: Port;
     /**
      * Database.
      */
-    readonly Database: Database;
+    readonly database: Database;
   }
   export interface OutputColumn {
   /**
      * A display name for the dataset.
      */
-    readonly Name?: ColumnName;
+    readonly name?: ColumnName;
     /**
      * A description for a column.
      */
-    readonly Description?: ColumnDescriptiveText;
+    readonly description?: ColumnDescriptiveText;
     /**
      * Type.
      */
-    readonly Type?: ColumnDataType;
+    readonly type?: ColumnDataType;
   }
   export type OutputColumnList = OutputColumn[];
   export interface PhysicalTable {
   /**
      * A physical table type for relational data sources.
      */
-    readonly RelationalTable?: RelationalTable;
+    readonly relationalTable?: RelationalTable;
     /**
      * A physical table type built from the results of the custom SQL query.
      */
-    readonly CustomSql?: CustomSql;
+    readonly customSql?: CustomSql;
     /**
      * A physical table type for as S3 data source.
      */
-    readonly S3Source?: S3Source;
+    readonly s3Source?: S3Source;
   }
   export type PhysicalTableId = string;
   export type PhysicalTableMap = {[key: string]: PhysicalTable};
@@ -891,29 +891,29 @@ export namespace QuickSightContextResponse {
   /**
      * Host.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * Port.
      */
-    readonly Port: Port;
+    readonly port: Port;
     /**
      * Database.
      */
-    readonly Database: Database;
+    readonly database: Database;
   }
   export interface PrestoParameters {
   /**
      * Host.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * Port.
      */
-    readonly Port: Port;
+    readonly port: Port;
     /**
      * Catalog.
      */
-    readonly Catalog: Catalog;
+    readonly catalog: Catalog;
   }
   export type Principal = string;
   export type PrincipalList = String[];
@@ -921,7 +921,7 @@ export namespace QuickSightContextResponse {
   /**
      * Projected columns.
      */
-    readonly ProjectedColumns: ProjectedColumnList;
+    readonly projectedColumns: ProjectedColumnList;
   }
   export type ProjectedColumnList = String[];
   export type Query = string;
@@ -929,51 +929,51 @@ export namespace QuickSightContextResponse {
   /**
      * Instance ID.
      */
-    readonly InstanceId: InstanceId;
+    readonly instanceId: InstanceId;
     /**
      * Database.
      */
-    readonly Database: Database;
+    readonly database: Database;
   }
   export interface RedshiftParameters {
   /**
      * Host. This field can be blank if ClusterId is provided.
      */
-    readonly Host?: Host;
+    readonly host?: Host;
     /**
      * Port. This field can be blank if the ClusterId is provided.
      */
-    readonly Port?: OptionalPort;
+    readonly port?: OptionalPort;
     /**
      * Database.
      */
-    readonly Database: Database;
+    readonly database: Database;
     /**
      * Cluster ID. This field can be blank if the Host and Port are provided.
      */
-    readonly ClusterId?: ClusterId;
+    readonly clusterId?: ClusterId;
   }
   export interface RelationalTable {
   /**
      * The Amazon Resource Name (ARN) for the data source.
      */
-    readonly DataSourceArn: Arn;
+    readonly dataSourceArn: Arn;
     /**
      * The catalog associated with a table.
      */
-    readonly Catalog?: RelationalTableCatalog;
+    readonly catalog?: RelationalTableCatalog;
     /**
      * The schema name. This name applies to certain relational database engines.
      */
-    readonly Schema?: RelationalTableSchema;
+    readonly schema?: RelationalTableSchema;
     /**
      * The name of the relational table.
      */
-    readonly Name: RelationalTableName;
+    readonly name: RelationalTableName;
     /**
      * The column schema of the table.
      */
-    readonly InputColumns: InputColumnList;
+    readonly inputColumns: InputColumnList;
   }
   export type RelationalTableCatalog = string;
   export type RelationalTableName = string;
@@ -982,11 +982,11 @@ export namespace QuickSightContextResponse {
   /**
      * The name of the column to be renamed.
      */
-    readonly ColumnName: ColumnName;
+    readonly columnName: ColumnName;
     /**
      * The new name for the column.
      */
-    readonly NewColumnName: ColumnName;
+    readonly newColumnName: ColumnName;
   }
   export type ResourceId = string;
   export type ResourceName = string;
@@ -994,11 +994,11 @@ export namespace QuickSightContextResponse {
   /**
      * The Amazon Resource Name (ARN) of the principal. This can be one of the readonly following:   The ARN of an Amazon QuickSight user or group associated with a data source or dataset. (This is common.)   The ARN of an Amazon QuickSight user, group, or namespace associated with an analysis, dashboard, template, or theme. (This is common.)   The ARN of an Amazon Web Services account readonly root: This is an IAM ARN rather than a QuickSight ARN. Use this option only to share resources (templates) across Amazon Web Services accounts. (This is less common.)
      */
-    readonly Principal: Principal;
+    readonly principal: Principal;
     /**
      * The IAM action to grant or revoke permissions on.
      */
-    readonly Actions: ActionList;
+    readonly actions: ActionList;
   }
   export type ResourcePermissionList = ResourcePermission[];
   export type ResourceStatus = 'CREATION_IN_PROGRESS'|'CREATION_SUCCESSFUL'|'CREATION_FAILED'|'UPDATE_IN_PROGRESS'|'UPDATE_SUCCESSFUL'|'UPDATE_FAILED'|'DELETED'|string;
@@ -1007,23 +1007,23 @@ export namespace QuickSightContextResponse {
   /**
      * The namespace associated with the dataset that contains permissions for RLS.
      */
-    readonly Namespace?: Namespace;
+    readonly namespace?: Namespace;
     /**
      * The Amazon Resource Name (ARN) of the dataset that contains permissions for RLS.
      */
-    readonly Arn: Arn;
+    readonly arn: Arn;
     /**
      * The type of permissions to use when interpreting the permissions for RLS. DENY_ACCESS is included for backward compatibility only.
      */
-    readonly PermissionPolicy: RowLevelPermissionPolicy;
+    readonly permissionPolicy: RowLevelPermissionPolicy;
     /**
      * The user or group rules associated with the dataset that contains permissions for RLS. By default, FormatVersion is VERSION_1. When FormatVersion is VERSION_1, UserName and GroupName are required. When FormatVersion is VERSION_2, UserARN and GroupARN are required, and Namespace must not exist.
      */
-    readonly FormatVersion?: RowLevelPermissionFormatVersion;
+    readonly formatVersion?: RowLevelPermissionFormatVersion;
     /**
      * The status of the row-level security permission dataset. If enabled, the status is ENABLED. If disabled, the status is DISABLED.
      */
-    readonly Status?: Status;
+    readonly status?: Status;
   }
   export type RowLevelPermissionFormatVersion = 'VERSION_1'|'VERSION_2'|string;
   export type RowLevelPermissionPolicy = 'GRANT_ACCESS'|'DENY_ACCESS'|string;
@@ -1031,30 +1031,30 @@ export namespace QuickSightContextResponse {
   /**
      * The status of row-level security tags. If enabled, the status is ENABLED. If disabled, the status is DISABLED.
      */
-    readonly Status?: Status;
+    readonly status?: Status;
     /**
      * A set of rules associated with row-level security, such as the tag names and columns that they are assigned to.
      */
-    readonly TagRules: RowLevelPermissionTagRuleList;
+    readonly tagRules: RowLevelPermissionTagRuleList;
   }
   export type RowLevelPermissionTagDelimiter = string;
   export interface RowLevelPermissionTagRule {
   /**
      * The unique key for a tag.
      */
-    readonly TagKey: SessionTagKey;
+    readonly tagKey: SessionTagKey;
     /**
      * The column name that a tag key is assigned to.
      */
-    readonly ColumnName: String;
+    readonly columnName: String;
     /**
      * A string that you want to use to delimit the values when you pass the values at run time. For example, you can delimit the values with a comma.
      */
-    readonly TagMultiValueDelimiter?: RowLevelPermissionTagDelimiter;
+    readonly tagMultiValueDelimiter?: RowLevelPermissionTagDelimiter;
     /**
      * A string that you want to use to filter by all the values in a column in the dataset and don’t want to list the values one by one. For example, you can use an asterisk as your match all value.
      */
-    readonly MatchAllValue?: SessionTagValue;
+    readonly matchAllValue?: SessionTagValue;
   }
   export type RowLevelPermissionTagRuleList = RowLevelPermissionTagRule[];
   export type S3Bucket = string;
@@ -1063,28 +1063,28 @@ export namespace QuickSightContextResponse {
   /**
      * Location of the Amazon S3 manifest file. This is NULL if the manifest file was uploaded into Amazon QuickSight.
      */
-    readonly ManifestFileLocation: ManifestFileLocation;
+    readonly manifestFileLocation: ManifestFileLocation;
   }
   export interface S3Source {
   /**
      * The Amazon Resource Name (ARN) for the data source.
      */
-    readonly DataSourceArn: Arn;
+    readonly dataSourceArn: Arn;
     /**
      * Information about the format for the S3 source file or files.
      */
-    readonly UploadSettings?: UploadSettings;
+    readonly uploadSettings?: UploadSettings;
     /**
      * A physical table type for an S3 data source.  For files that aren't JSON, only STRING data types are supported in input columns.
      */
-    readonly InputColumns: InputColumnList;
+    readonly inputColumns: InputColumnList;
   }
   export type SecretArn = string;
   export interface ServiceNowParameters {
   /**
      * URL of the base site.
      */
-    readonly SiteBaseUrl: SiteBaseUrl;
+    readonly siteBaseUrl: SiteBaseUrl;
   }
   export type SessionTagKey = string;
   export type SessionTagValue = string;
@@ -1092,11 +1092,11 @@ export namespace QuickSightContextResponse {
   /**
      * The unique identifier associated with a sheet.
      */
-    readonly SheetId?: ShortRestrictiveResourceId;
+    readonly sheetId?: ShortRestrictiveResourceId;
     /**
      * The name of a sheet. This name is displayed on the sheet's tab in the Amazon QuickSight console.
      */
-    readonly Name?: SheetName;
+    readonly name?: SheetName;
   }
   export type SheetList = Sheet[];
   export type SheetName = string;
@@ -1104,11 +1104,11 @@ export namespace QuickSightContextResponse {
   /**
      * The display options for tiles.
      */
-    readonly Tile?: TileStyle;
+    readonly tile?: TileStyle;
     /**
      * The layout options for tiles.
      */
-    readonly TileLayout?: TileLayoutStyle;
+    readonly tileLayout?: TileLayoutStyle;
   }
   export type ShortRestrictiveResourceId = string;
   export type SiteBaseUrl = string;
@@ -1116,25 +1116,25 @@ export namespace QuickSightContextResponse {
   /**
      * Host.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * Database.
      */
-    readonly Database: Database;
+    readonly database: Database;
     /**
      * Warehouse.
      */
-    readonly Warehouse: Warehouse;
+    readonly warehouse: Warehouse;
   }
   export interface SparkParameters {
   /**
      * Host.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * Port.
      */
-    readonly Port: Port;
+    readonly port: Port;
   }
   export type SqlEndpointPath = string;
   export type SqlQuery = string;
@@ -1142,21 +1142,21 @@ export namespace QuickSightContextResponse {
   /**
      * Host.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * Port.
      */
-    readonly Port: Port;
+    readonly port: Port;
     /**
      * Database.
      */
-    readonly Database: Database;
+    readonly database: Database;
   }
   export interface SslProperties {
   /**
      * A Boolean option to control whether SSL should be disabled.
      */
-    readonly DisableSsl?: Boolean;
+    readonly disableSsl?: Boolean;
   }
   export type Status = 'ENABLED'|'DISABLED'|string;
   export type String = string;
@@ -1164,21 +1164,21 @@ export namespace QuickSightContextResponse {
   /**
      * Tag key.
      */
-    readonly Key: TagKey;
+    readonly key: TagKey;
     /**
      * Tag value.
      */
-    readonly Value: TagValue;
+    readonly value: TagValue;
   }
   export interface TagColumnOperation {
   /**
      * The column that this operation acts on.
      */
-    readonly ColumnName: ColumnName;
+    readonly columnName: ColumnName;
     /**
      * The dataset column tag, currently only used for geospatial type tagging.  This is not tags for the Amazon Web Services tagging feature.
      */
-    readonly Tags: ColumnTagList;
+    readonly tags: ColumnTagList;
   }
   export type TagKey = string;
   export type TagList = Tag[];
@@ -1187,41 +1187,41 @@ export namespace QuickSightContextResponse {
   /**
      * The Amazon Resource Name (ARN) of the template.
      */
-    readonly Arn?: Arn;
+    readonly arn?: Arn;
     /**
      * The display name of the template.
      */
-    readonly Name?: TemplateName;
+    readonly name?: TemplateName;
     /**
      * A structure describing the versions of the template.
      */
-    readonly Version?: TemplateVersion;
+    readonly version?: TemplateVersion;
     /**
      * The ID for the template. This is unique per Amazon Web Services Region for each Amazon Web Services account.
      */
-    readonly TemplateId?: ShortRestrictiveResourceId;
+    readonly templateId?: ShortRestrictiveResourceId;
     /**
      * Time when this was last updated.
      */
-    readonly LastUpdatedTime?: Timestamp;
+    readonly lastUpdatedTime?: Timestamp;
     /**
      * Time when this was created.
      */
-    readonly CreatedTime?: Timestamp;
+    readonly createdTime?: Timestamp;
   }
   export interface TemplateError {
   /**
      * Type of error.
      */
-    readonly Type?: TemplateErrorType;
+    readonly type?: TemplateErrorType;
     /**
      * Description of the error type.
      */
-    readonly Message?: NonEmptyString;
+    readonly message?: NonEmptyString;
     /**
      * An error path that shows which entities caused the template error.
      */
-    readonly ViolatedEntities?: EntityList;
+    readonly violatedEntities?: EntityList;
   }
   export type TemplateErrorList = TemplateError[];
   export type TemplateErrorType = 'SOURCE_NOT_FOUND'|'DATA_SET_NOT_FOUND'|'INTERNAL_FAILURE'|'ACCESS_DENIED'|string;
@@ -1230,106 +1230,106 @@ export namespace QuickSightContextResponse {
   /**
      * The time that this template version was created.
      */
-    readonly CreatedTime?: Timestamp;
+    readonly createdTime?: Timestamp;
     /**
      * Errors associated with this template version.
      */
-    readonly Errors?: TemplateErrorList;
+    readonly errors?: TemplateErrorList;
     /**
      * The version number of the template version.
      */
-    readonly VersionNumber?: VersionNumber;
+    readonly versionNumber?: VersionNumber;
     /**
      * The status that is associated with the template.    CREATION_IN_PROGRESS     CREATION_SUCCESSFUL     CREATION_FAILED     UPDATE_IN_PROGRESS     UPDATE_SUCCESSFUL     UPDATE_FAILED     DELETED
      */
-    readonly Status?: ResourceStatus;
+    readonly status?: ResourceStatus;
     /**
      * Schema of the dataset identified by the placeholder. Any dashboard created from this template should be bound to new datasets matching the same schema described through this API operation.
      */
-    readonly DataSetConfigurations?: DataSetConfigurationList;
+    readonly dataSetConfigurations?: DataSetConfigurationList;
     /**
      * The description of the template.
      */
-    readonly Description?: VersionDescription;
+    readonly description?: VersionDescription;
     /**
      * The Amazon Resource Name (ARN) of an analysis or template that was used to create this template.
      */
-    readonly SourceEntityArn?: Arn;
+    readonly sourceEntityArn?: Arn;
     /**
      * The ARN of the theme associated with this version of the template.
      */
-    readonly ThemeArn?: Arn;
+    readonly themeArn?: Arn;
     /**
      * A list of the associated sheets with the unique identifier and name of each sheet.
      */
-    readonly Sheets?: SheetList;
+    readonly sheets?: SheetList;
   }
   export interface TeradataParameters {
   /**
      * Host.
      */
-    readonly Host: Host;
+    readonly host: Host;
     /**
      * Port.
      */
-    readonly Port: Port;
+    readonly port: Port;
     /**
      * Database.
      */
-    readonly Database: Database;
+    readonly database: Database;
   }
   export type TextQualifier = 'DOUBLE_QUOTE'|'SINGLE_QUOTE'|string;
   export interface Theme {
   /**
      * The Amazon Resource Name (ARN) of the theme.
      */
-    readonly Arn?: Arn;
+    readonly arn?: Arn;
     /**
      * The name that the user gives to the theme.
      */
-    readonly Name?: ThemeName;
+    readonly name?: ThemeName;
     /**
      * The identifier that the user gives to the theme.
      */
-    readonly ThemeId?: ShortRestrictiveResourceId;
-    readonly Version?: ThemeVersion;
+    readonly themeId?: ShortRestrictiveResourceId;
+    readonly version?: ThemeVersion;
     /**
      * The date and time that the theme was created.
      */
-    readonly CreatedTime?: Timestamp;
+    readonly createdTime?: Timestamp;
     /**
      * The date and time that the theme was last updated.
      */
-    readonly LastUpdatedTime?: Timestamp;
+    readonly lastUpdatedTime?: Timestamp;
     /**
      * The type of theme, based on how it was created. Valid values readonly include: QUICKSIGHT and CUSTOM.
      */
-    readonly Type?: ThemeType;
+    readonly type?: ThemeType;
   }
   export interface ThemeConfiguration {
   /**
      * Color properties that apply to chart data colors.
      */
-    readonly DataColorPalette?: DataColorPalette;
+    readonly dataColorPalette?: DataColorPalette;
     /**
      * Color properties that apply to the UI and to charts, excluding the colors that apply to data.
      */
-    readonly UIColorPalette?: UIColorPalette;
+    readonly uIColorPalette?: UIColorPalette;
     /**
      * Display options related to sheets.
      */
-    readonly Sheet?: SheetStyle;
-    readonly Typography?: Typography;
+    readonly sheet?: SheetStyle;
+    readonly typography?: Typography;
   }
   export interface ThemeError {
   /**
      * The type of error.
      */
-    readonly Type?: ThemeErrorType;
+    readonly type?: ThemeErrorType;
     /**
      * The error message.
      */
-    readonly Message?: NonEmptyString;
+    readonly message?: NonEmptyString;
   }
   export type ThemeErrorList = ThemeError[];
   export type ThemeErrorType = 'INTERNAL_FAILURE'|string;
@@ -1339,195 +1339,195 @@ export namespace QuickSightContextResponse {
   /**
      * The version number of the theme.
      */
-    readonly VersionNumber?: VersionNumber;
+    readonly versionNumber?: VersionNumber;
     /**
      * The Amazon Resource Name (ARN) of the resource.
      */
-    readonly Arn?: Arn;
+    readonly arn?: Arn;
     /**
      * The description of the theme.
      */
-    readonly Description?: VersionDescription;
+    readonly description?: VersionDescription;
     /**
      * The Amazon QuickSight-defined ID of the theme that a custom theme inherits from. All themes initially inherit from a default Amazon QuickSight theme.
      */
-    readonly BaseThemeId?: ShortRestrictiveResourceId;
+    readonly baseThemeId?: ShortRestrictiveResourceId;
     /**
      * The date and time that this theme version was created.
      */
-    readonly CreatedTime?: Timestamp;
+    readonly createdTime?: Timestamp;
     /**
      * The theme configuration, which contains all the theme display properties.
      */
-    readonly Configuration?: ThemeConfiguration;
+    readonly configuration?: ThemeConfiguration;
     /**
      * Errors associated with the theme.
      */
-    readonly Errors?: ThemeErrorList;
+    readonly errors?: ThemeErrorList;
     /**
      * The status of the theme version.
      */
-    readonly Status?: ResourceStatus;
+    readonly status?: ResourceStatus;
   }
   export interface TileLayoutStyle {
   /**
      * The gutter settings that apply between tiles.
      */
-    readonly Gutter?: GutterStyle;
+    readonly gutter?: GutterStyle;
     /**
      * The margin settings that apply around the outside edge of sheets.
      */
-    readonly Margin?: MarginStyle;
+    readonly margin?: MarginStyle;
   }
   export interface TileStyle {
   /**
      * The border around a tile.
      */
-    readonly Border?: BorderStyle;
+    readonly border?: BorderStyle;
   }
   export type Timestamp = Date;
   export interface TransformOperation {
   /**
      * An operation that projects columns. Operations that come after a projection can only refer to projected columns.
      */
-    readonly ProjectOperation?: ProjectOperation;
+    readonly projectOperation?: ProjectOperation;
     /**
      * An operation that filters rows based on some condition.
      */
-    readonly FilterOperation?: FilterOperation;
+    readonly filterOperation?: FilterOperation;
     /**
      * An operation that creates calculated columns. Columns created in one such operation form a lexical closure.
      */
-    readonly CreateColumnsOperation?: CreateColumnsOperation;
+    readonly createColumnsOperation?: CreateColumnsOperation;
     /**
      * An operation that renames a column.
      */
-    readonly RenameColumnOperation?: RenameColumnOperation;
+    readonly renameColumnOperation?: RenameColumnOperation;
     /**
      * A transform operation that casts a column to a different type.
      */
-    readonly CastColumnTypeOperation?: CastColumnTypeOperation;
+    readonly castColumnTypeOperation?: CastColumnTypeOperation;
     /**
      * An operation that tags a column with additional information.
      */
-    readonly TagColumnOperation?: TagColumnOperation;
-    readonly UntagColumnOperation?: UntagColumnOperation;
+    readonly tagColumnOperation?: TagColumnOperation;
+    readonly untagColumnOperation?: UntagColumnOperation;
   }
   export type TransformOperationList = TransformOperation[];
   export interface TwitterParameters {
   /**
      * Twitter query string.
      */
-    readonly Query: Query;
+    readonly query: Query;
     /**
      * Maximum number of rows to query Twitter.
      */
-    readonly MaxRows: PositiveInteger;
+    readonly maxRows: PositiveInteger;
   }
   export type TypeCastFormat = string;
   export interface Typography {
   /**
      * Determines the list of font families.
      */
-    readonly FontFamilies?: FontList;
+    readonly fontFamilies?: FontList;
   }
   export interface UIColorPalette {
   /**
      * The color of text and other foreground elements that appear over the primary background regions, such as grid lines, borders, table banding, icons, and so on.
      */
-    readonly PrimaryForeground?: HexColor;
+    readonly primaryForeground?: HexColor;
     /**
      * The background color that applies to visuals and other high emphasis UI.
      */
-    readonly PrimaryBackground?: HexColor;
+    readonly primaryBackground?: HexColor;
     /**
      * The foreground color that applies to any sheet title, sheet control text, or UI that appears over the secondary background.
      */
-    readonly SecondaryForeground?: HexColor;
+    readonly secondaryForeground?: HexColor;
     /**
      * The background color that applies to the sheet background and sheet controls.
      */
-    readonly SecondaryBackground?: HexColor;
+    readonly secondaryBackground?: HexColor;
     /**
      * This color is that applies to selected states and buttons.
      */
-    readonly Accent?: HexColor;
+    readonly accent?: HexColor;
     /**
      * The foreground color that applies to any text or other elements that appear over the accent color.
      */
-    readonly AccentForeground?: HexColor;
+    readonly accentForeground?: HexColor;
     /**
      * The color that applies to error messages.
      */
-    readonly Danger?: HexColor;
+    readonly danger?: HexColor;
     /**
      * The foreground color that applies to any text or other elements that appear over the error color.
      */
-    readonly DangerForeground?: HexColor;
+    readonly dangerForeground?: HexColor;
     /**
      * This color that applies to warning and informational messages.
      */
-    readonly Warning?: HexColor;
+    readonly warning?: HexColor;
     /**
      * The foreground color that applies to any text or other elements that appear over the warning color.
      */
-    readonly WarningForeground?: HexColor;
+    readonly warningForeground?: HexColor;
     /**
      * The color that applies to success messages, for example the check mark for a successful download.
      */
-    readonly Success?: HexColor;
+    readonly success?: HexColor;
     /**
      * The foreground color that applies to any text or other elements that appear over the success color.
      */
-    readonly SuccessForeground?: HexColor;
+    readonly successForeground?: HexColor;
     /**
      * The color that applies to the names of fields that are identified as dimensions.
      */
-    readonly Dimension?: HexColor;
+    readonly dimension?: HexColor;
     /**
      * The foreground color that applies to any text or other elements that appear over the dimension color.
      */
-    readonly DimensionForeground?: HexColor;
+    readonly dimensionForeground?: HexColor;
     /**
      * The color that applies to the names of fields that are identified as measures.
      */
-    readonly Measure?: HexColor;
+    readonly measure?: HexColor;
     /**
      * The foreground color that applies to any text or other elements that appear over the measure color.
      */
-    readonly MeasureForeground?: HexColor;
+    readonly measureForeground?: HexColor;
   }
   export interface UntagColumnOperation {
   /**
      * The column that this operation acts on.
      */
-    readonly ColumnName: ColumnName;
+    readonly columnName: ColumnName;
     /**
      * The column tags to remove from this column.
      */
-    readonly TagNames: ColumnTagNames;
+    readonly tagNames: ColumnTagNames;
   }
   export interface UploadSettings {
   /**
      * File format.
      */
-    readonly Format?: FileFormat;
+    readonly format?: FileFormat;
     /**
      * A row number to start reading data from.
      */
-    readonly StartFromRow?: PositiveInteger;
+    readonly startFromRow?: PositiveInteger;
     /**
      * Whether the file has a header row, or the files each have a header row.
      */
-    readonly ContainsHeader?: Boolean;
+    readonly containsHeader?: Boolean;
     /**
      * Text qualifier.
      */
-    readonly TextQualifier?: TextQualifier;
+    readonly textQualifier?: TextQualifier;
     /**
      * The delimiter between values in the file.
      */
-    readonly Delimiter?: Delimiter;
+    readonly delimiter?: Delimiter;
   }
   export type VersionDescription = string;
   export type VersionNumber = number;
@@ -1535,7 +1535,7 @@ export namespace QuickSightContextResponse {
   /**
      * The Amazon Resource Name (ARN) for the VPC connection.
      */
-    readonly VpcConnectionArn: Arn;
+    readonly vpcConnectionArn: Arn;
   }
   export type Warehouse = string;
   export type WorkGroup = string;

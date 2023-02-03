@@ -1,6 +1,6 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { DataSet, IDataSet } from './data-set';
 import { CfnAnalysis } from './quicksight.generated';
@@ -164,8 +164,8 @@ export class Analysis extends Resource {
 
     class Import extends AnalysisBase {
 
-      private _analysis: cxapi.AnalysisContextResponse | undefined;
-      private get analysis(): cxapi.AnalysisContextResponse {
+      private _analysis: cxapi.QuickSightContextResponse.Analysis | undefined;
+      private get analysis(): cxapi.QuickSightContextResponse.Analysis {
 
         if (!this._analysis) {
           let contextProps: cxschema.QuickSightAnalysisContextQuery = {
@@ -188,8 +188,8 @@ export class Analysis extends Resource {
         return this._analysis;
       }
 
-      private _analysisPermissions: cxapi.ResourcePermissionListContextResponse | undefined;
-      private get analysisPermissions(): cxapi.ResourcePermissionListContextResponse {
+      private _analysisPermissions: cxapi.QuickSightContextResponse.ResourcePermissionList | undefined;
+      private get analysisPermissions(): cxapi.QuickSightContextResponse.ResourcePermissionList {
 
         if (!this._analysisPermissions) {
           let contextProps: cxschema.QuickSightAnalysisContextQuery = {
@@ -212,8 +212,8 @@ export class Analysis extends Resource {
         return this._analysisPermissions;
       }
 
-      private _analysisTags: cxapi.TagListContextResponse | undefined;
-      private get analysisTags(): cxapi.TagListContextResponse {
+      private _analysisTags: cxapi.QuickSightContextResponse.TagList | undefined;
+      private get analysisTags(): cxapi.QuickSightContextResponse.TagList {
 
         if (!this._analysisTags) {
           let contextProps: cxschema.QuickSightTagsContextQuery = {
@@ -237,22 +237,11 @@ export class Analysis extends Resource {
       }
 
       public get analysisName() {
-        return this.analysis.Name;
+        return this.analysis.name;
       }
 
       public get permissions() {
-        let permissions: CfnAnalysis.ResourcePermissionProperty[] = [];
-
-        this.analysisPermissions.forEach(function(value: any) {
-          if (value.Principal && value.Actions) {
-            permissions.push({
-              principal: value.Principal,
-              actions: value.Actions,
-            });
-          }
-        });
-
-        return permissions;
+        return this.analysisPermissions;
       }
 
       public get tags() {
@@ -270,11 +259,11 @@ export class Analysis extends Resource {
       }
 
       public get analysisArn() {
-        return this.analysis.Arn ?? '';
+        return this.analysis.arn ?? '';
       }
 
       public get resourceId(): string {
-        return this.analysis.AnalysisId ?? '';
+        return this.analysis.analysisId ?? '';
       }
 
       // Analysis specific properties
@@ -295,7 +284,7 @@ export class Analysis extends Resource {
       public get dataSets(): IDataSet[] {
         if (!this._dataSets) {
           let dataSets: IDataSet[] = [];
-          this.analysis.DataSetArns?.forEach(function(value: any) {
+          this.analysis.dataSetArns?.forEach(function(value: any) {
             let dataSetId: string = value.split('/')[1];
             dataSets.push(DataSet.fromId(scope, dataSetId, dataSetId));
           });

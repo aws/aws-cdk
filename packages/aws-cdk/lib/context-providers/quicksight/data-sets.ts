@@ -1,5 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as helperFunctions from './helper-functions';
 import { Mode } from '../../api/aws-auth/credentials';
 import { SdkProvider } from '../../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../../api/plugin';
@@ -29,7 +30,7 @@ export class DataSetContextProviderPlugin implements ContextProviderPlugin {
       throw new Error(`No DataSet found in account ${args.account} with id ${args.dataSetId}`);
     }
 
-    return dataSet;
+    return helperFunctions.mapToCamelCase(dataSet, [['LogicalTableMap'], ['PhysicalTableMap']]) as cxapi.QuickSightContextResponse.DataSet;
   }
 }
 
@@ -58,6 +59,6 @@ export class DataSetPermissionsContextProviderPlugin implements ContextProviderP
       throw new Error(`No DataSet found in account ${args.account} with id ${args.dataSetId}`);
     }
 
-    return dataSet;
+    return helperFunctions.arrayToCamelCase(dataSet) as cxapi.QuickSightContextResponse.ResourcePermissionList;
   }
 }

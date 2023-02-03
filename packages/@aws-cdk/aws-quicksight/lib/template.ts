@@ -1,6 +1,6 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { Analysis, IAnalysis } from './analysis';
 import { DataSet, IDataSet } from './data-set';
@@ -158,8 +158,8 @@ export class Template extends Resource {
 
     class Import extends TemplateBase {
 
-      private _template: cxapi.TemplateContextResponse | undefined;
-      private get template(): cxapi.TemplateContextResponse {
+      private _template: cxapi.QuickSightContextResponse.Template | undefined;
+      private get template(): cxapi.QuickSightContextResponse.Template {
 
         if (!this._template) {
           let contextProps: cxschema.QuickSightTemplateContextQuery = {
@@ -182,8 +182,8 @@ export class Template extends Resource {
         return this._template;
       }
 
-      private _templatePermissions: cxapi.ResourcePermissionListContextResponse | undefined;
-      private get templatePermissions(): cxapi.ResourcePermissionListContextResponse {
+      private _templatePermissions: cxapi.QuickSightContextResponse.ResourcePermissionList | undefined;
+      private get templatePermissions(): cxapi.QuickSightContextResponse.ResourcePermissionList {
 
         if (!this._templatePermissions) {
           let contextProps: cxschema.QuickSightTemplateContextQuery = {
@@ -206,8 +206,8 @@ export class Template extends Resource {
         return this._templatePermissions;
       }
 
-      private _templateTags: cxapi.TagListContextResponse | undefined;
-      private get templateTags(): cxapi.TagListContextResponse {
+      private _templateTags: cxapi.QuickSightContextResponse.TagList | undefined;
+      private get templateTags(): cxapi.QuickSightContextResponse.TagList {
 
         if (!this._templateTags) {
           let contextProps: cxschema.QuickSightTagsContextQuery = {
@@ -231,22 +231,11 @@ export class Template extends Resource {
       }
 
       public get templateName() {
-        return this.template.Name;
+        return this.template.name;
       }
 
       public get permissions() {
-        let permissions: CfnTemplate.ResourcePermissionProperty[] = [];
-
-        this.templatePermissions.forEach(function(value: any) {
-          if (value.Principal && value.Actions) {
-            permissions.push({
-              principal: value.Principal,
-              actions: value.Actions,
-            });
-          }
-        });
-
-        return permissions;
+        return this.templatePermissions;
       }
 
       public get tags() {
@@ -264,22 +253,22 @@ export class Template extends Resource {
       }
 
       public get templateArn() {
-        return this.template.Arn ?? '';
+        return this.template.arn ?? '';
       }
 
       public get resourceId(): string {
-        return this.template.TemplateId ?? '';
+        return this.template.templateId ?? '';
       }
 
       public get versionDescription() {
-        return this.template.Version?.Description;
+        return this.template.version?.description;
       };
 
       private _sourceEntity: ITemplate | IAnalysis | undefined;
       public get sourceEntity() {
         if (!this._sourceEntity) {
-          let splitArn = Stack.of(scope).splitArn(this.template.Version?.SourceEntityArn ?? '', ArnFormat.SLASH_RESOURCE_NAME);
-          let sourceEntityId: string = this.template.Version?.SourceEntityArn?.split('/')[1] ?? '';
+          let splitArn = Stack.of(scope).splitArn(this.template.version?.sourceEntityArn ?? '', ArnFormat.SLASH_RESOURCE_NAME);
+          let sourceEntityId: string = this.template.version?.sourceEntityArn?.split('/')[1] ?? '';
 
           if (splitArn.resource == 'analysis') {
 
@@ -301,7 +290,7 @@ export class Template extends Resource {
         if (!this._placeholders) {
           let placeholders: IDataSet[] = [];
 
-          this.template.Version?.DataSetConfigurations?.forEach(function(value: any) {
+          this.template.version?.dataSetConfigurations?.forEach(function(value: any) {
             if (value.Placeholder) {
               let placeholderId: string = value.Placeholder.split('/')[1];
               placeholders.push(DataSet.fromId(scope, placeholderId, placeholderId));

@@ -1,8 +1,7 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
-import { QsFunctions } from './qs-functions';
 import { CfnTheme } from './quicksight.generated';
 
 /**
@@ -166,8 +165,8 @@ export class Theme extends Resource {
 
     class Import extends ThemeBase {
 
-      private _theme: cxapi.ThemeContextResponse | undefined;
-      private get theme(): cxapi.ThemeContextResponse {
+      private _theme: cxapi.QuickSightContextResponse.Theme | undefined;
+      private get theme(): cxapi.QuickSightContextResponse.Theme {
 
         if (!this._theme) {
           let contextProps: cxschema.QuickSightThemeContextQuery = {
@@ -190,8 +189,8 @@ export class Theme extends Resource {
         return this._theme;
       }
 
-      private _themePermissions: cxapi.ResourcePermissionListContextResponse | undefined;
-      private get themePermissions(): cxapi.ResourcePermissionListContextResponse {
+      private _themePermissions: cxapi.QuickSightContextResponse.ResourcePermissionList | undefined;
+      private get themePermissions(): cxapi.QuickSightContextResponse.ResourcePermissionList {
 
         if (!this._themePermissions) {
           let contextProps: cxschema.QuickSightThemeContextQuery = {
@@ -214,8 +213,8 @@ export class Theme extends Resource {
         return this._themePermissions;
       }
 
-      private _themeTags: cxapi.TagListContextResponse | undefined;
-      private get themeTags(): cxapi.TagListContextResponse {
+      private _themeTags: cxapi.QuickSightContextResponse.TagList | undefined;
+      private get themeTags(): cxapi.QuickSightContextResponse.TagList {
 
         if (!this._themeTags) {
           let contextProps: cxschema.QuickSightTagsContextQuery = {
@@ -239,22 +238,11 @@ export class Theme extends Resource {
       }
 
       public get themeName() {
-        return this.theme.Name;
+        return this.theme.name;
       }
 
       public get permissions() {
-        let permissions: CfnTheme.ResourcePermissionProperty[] = [];
-
-        this.themePermissions.forEach(function(value: any) {
-          if (value.Principal && value.Actions) {
-            permissions.push({
-              principal: value.Principal,
-              actions: value.Actions,
-            });
-          }
-        });
-
-        return permissions;
+        return this.themePermissions;
       }
 
       public get tags() {
@@ -272,41 +260,27 @@ export class Theme extends Resource {
       }
 
       public get themeArn() {
-        return this.theme.Arn ?? '';
+        return this.theme.arn ?? '';
       }
 
       public get resourceId(): string {
-        return this.theme.ThemeId ?? '';
+        return this.theme.themeId ?? '';
       }
 
       // Theme specific properties
 
       public get configuration() {
-        let configuration: CfnTheme.ThemeConfigurationProperty | undefined;
-
-        if (this.theme.Version?.Configuration) {
-          configuration = QsFunctions.mapToCamelCase(this.theme.Version.Configuration);
-        }
-
-        return configuration;
+        return this.theme.version?.configuration;
       }
 
       public get versionDescription() {
-        let versionDescription: string;
-
-        if (this.theme.Version?.Description) {
-          versionDescription = this.theme.Version.Description;
-        } else {
-          versionDescription = '';
-        }
-
-        return versionDescription;
+        return this.theme.version?.description ?? '';
       }
 
       private _baseTheme: ITheme | undefined;
       public get baseTheme(): ITheme {
         if (!this._baseTheme) {
-          let baseThemeId: string = this.theme.Version?.BaseThemeId ?? '';
+          let baseThemeId: string = this.theme.version?.baseThemeId ?? '';
           this._baseTheme = Theme.fromId(scope, baseThemeId, baseThemeId);
         }
 

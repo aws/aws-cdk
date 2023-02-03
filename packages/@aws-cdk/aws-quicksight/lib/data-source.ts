@@ -1,8 +1,7 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
-import { QsFunctions } from './qs-functions';
 import { CfnDataSource } from './quicksight.generated';
 
 /**
@@ -268,8 +267,8 @@ export class DataSource extends Resource {
   public static fromId(scope: Construct, id: string, dataSourceId: string): IDataSource {
     class Import extends DataSourceBase {
 
-      private _dataSource: cxapi.DataSourceContextResponse | undefined;
-      private get dataSource(): cxapi.DataSourceContextResponse {
+      private _dataSource: cxapi.QuickSightContextResponse.DataSource | undefined;
+      private get dataSource(): cxapi.QuickSightContextResponse.DataSource {
 
         if (!this._dataSource) {
           let contextProps: cxschema.QuickSightDataSourceContextQuery = {
@@ -292,8 +291,8 @@ export class DataSource extends Resource {
         return this._dataSource;
       }
 
-      private _dataSourcePermissions: cxapi.ResourcePermissionListContextResponse | undefined;
-      private get dataSourcePermissions(): cxapi.ResourcePermissionListContextResponse {
+      private _dataSourcePermissions: cxapi.QuickSightContextResponse.ResourcePermissionList | undefined;
+      private get dataSourcePermissions(): cxapi.QuickSightContextResponse.ResourcePermissionList {
 
         if (!this._dataSourcePermissions) {
           let contextProps: cxschema.QuickSightDataSourceContextQuery = {
@@ -316,8 +315,8 @@ export class DataSource extends Resource {
         return this._dataSourcePermissions;
       }
 
-      private _dataSourceTags: cxapi.TagListContextResponse | undefined;
-      private get dataSourceTags(): cxapi.TagListContextResponse {
+      private _dataSourceTags: cxapi.QuickSightContextResponse.TagList | undefined;
+      private get dataSourceTags(): cxapi.QuickSightContextResponse.TagList {
 
         if (!this._dataSourceTags) {
           let contextProps: cxschema.QuickSightTagsContextQuery = {
@@ -346,15 +345,15 @@ export class DataSource extends Resource {
       public readonly credentials = undefined;
 
       public get resourceId() {
-        return this.dataSource.DataSourceId ?? '';
+        return this.dataSource.dataSourceId ?? '';
       }
 
       public get dataSourceName() {
-        return this.dataSource.Name;
+        return this.dataSource.name;
       }
 
       public get dataSourceArn() {
-        return this.dataSource.Arn ?? '';
+        return this.dataSource.arn ?? '';
       }
 
       public get tags() {
@@ -372,81 +371,35 @@ export class DataSource extends Resource {
       }
 
       public get permissions() {
-        let permissions: CfnDataSource.ResourcePermissionProperty[] = [];
-
-        this.dataSourcePermissions.forEach(function(value: any) {
-          if (value.Principal && value.Actions) {
-            permissions.push({
-              principal: value.Principal,
-              actions: value.Actions,
-            });
-          }
-        });
-
-        return permissions;
+        return this.dataSourcePermissions;
       }
 
       public get dataSourceParameters() {
-        let dataSourceParameters: CfnDataSource.DataSourceParametersProperty | undefined;
-
-        if (this.dataSource.DataSourceParameters) {
-          dataSourceParameters = QsFunctions.mapToCamelCase(this.dataSource.DataSourceParameters);
-        }
-
-        return dataSourceParameters;
+        return this.dataSource.dataSourceParameters;
       }
 
       public get alternateDataSourceParameters() {
-        let alternateDataSourceParameters: CfnDataSource.DataSourceParametersProperty[] = [];
-
-        this.dataSource.AlternateDataSourceParameters?.forEach(function(value: any) {
-          alternateDataSourceParameters.push(QsFunctions.mapToCamelCase(value));
-        });
-
-        return alternateDataSourceParameters;
+        return this.dataSource.alternateDataSourceParameters;
       }
 
       public get errorInfo() {
-        let errorInfo: CfnDataSource.DataSourceErrorInfoProperty | undefined;
-
-        if (this.dataSource.ErrorInfo) {
-          errorInfo = {
-            message: this.dataSource.ErrorInfo.Message,
-            type: this.dataSource.ErrorInfo.Type,
-          };
-        }
-
-        return errorInfo;
+        return this.dataSource.errorInfo;
       }
 
       public get vpcConnectionProperties() {
-        let vpcConnectionProperties: CfnDataSource.VpcConnectionPropertiesProperty | undefined;
-
-        if (this.dataSource.VpcConnectionProperties?.VpcConnectionArn) {
-          vpcConnectionProperties = {
-            vpcConnectionArn: this.dataSource.VpcConnectionProperties.VpcConnectionArn,
-          };
-        }
-
-        return vpcConnectionProperties;
+        return this.dataSource.vpcConnectionProperties;
       }
 
       public get sslProperties() {
-        let sslProperties: CfnDataSource.SslPropertiesProperty | undefined;
-
-        if (this.dataSource.SslProperties) {
-          sslProperties = QsFunctions.mapToCamelCase(this.dataSource.SslProperties);
-        }
-
-        return sslProperties;
+        return this.dataSource.sslProperties;
       }
 
       public get type() {
-        return this.dataSource.Type;
+        return this.dataSource.type;
       }
 
       public get credentialsSecret() {
-        return this.dataSource.SecretArn;
+        return this.dataSource.secretArn;
       }
     }
 

@@ -1,5 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as helperFunctions from './helper-functions';
 import { Mode } from '../../api/aws-auth/credentials';
 import { SdkProvider } from '../../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../../api/plugin';
@@ -29,7 +30,7 @@ export class AnalysisContextProviderPlugin implements ContextProviderPlugin {
       throw new Error(`No Analysis found in account ${args.account} with id ${args.analysisId}`);
     }
 
-    return analysis;
+    return helperFunctions.mapToCamelCase(analysis) as cxapi.QuickSightContextResponse.Analysis;
   }
 }
 
@@ -58,6 +59,6 @@ export class AnalysisPermissionsContextProviderPlugin implements ContextProvider
       throw new Error(`No Analysis found in account ${args.account} with id ${args.analysisId}`);
     }
 
-    return analysis;
+    return helperFunctions.arrayToCamelCase(analysis) as cxapi.QuickSightContextResponse.ResourcePermissionList;
   }
 }

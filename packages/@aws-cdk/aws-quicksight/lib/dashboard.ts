@@ -1,6 +1,6 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ArnFormat, ContextProvider, Resource, IResource, Stack, Tag } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { DataSet, IDataSet } from './data-set';
 import { CfnDashboard } from './quicksight.generated';
@@ -190,8 +190,8 @@ export class Dashboard extends Resource {
 
     class Import extends DashboardBase {
 
-      private _dashboard: cxapi.DashboardContextResponse | undefined;
-      private get dashboard(): cxapi.DashboardContextResponse {
+      private _dashboard: cxapi.QuickSightContextResponse.Dashboard | undefined;
+      private get dashboard(): cxapi.QuickSightContextResponse.Dashboard {
 
         if (!this._dashboard) {
           let contextProps: cxschema.QuickSightDashboardContextQuery = {
@@ -214,8 +214,8 @@ export class Dashboard extends Resource {
         return this._dashboard;
       }
 
-      private _dashboardPermissions: cxapi.ResourcePermissionListContextResponse | undefined;
-      private get dashboardPermissions(): cxapi.ResourcePermissionListContextResponse {
+      private _dashboardPermissions: cxapi.QuickSightContextResponse.ResourcePermissionList | undefined;
+      private get dashboardPermissions(): cxapi.QuickSightContextResponse.ResourcePermissionList {
 
         if (!this._dashboardPermissions) {
           let contextProps: cxschema.QuickSightDashboardContextQuery = {
@@ -238,8 +238,8 @@ export class Dashboard extends Resource {
         return this._dashboardPermissions;
       }
 
-      private _dashboardTags: cxapi.TagListContextResponse | undefined;
-      private get dashboardTags(): cxapi.TagListContextResponse {
+      private _dashboardTags: cxapi.QuickSightContextResponse.TagList | undefined;
+      private get dashboardTags(): cxapi.QuickSightContextResponse.TagList {
 
         if (!this._dashboardTags) {
           let contextProps: cxschema.QuickSightTagsContextQuery = {
@@ -263,22 +263,11 @@ export class Dashboard extends Resource {
       }
 
       public get dashboardName() {
-        return this.dashboard.Name;
+        return this.dashboard.name;
       }
 
       public get permissions() {
-        let permissions: CfnDashboard.ResourcePermissionProperty[] = [];
-
-        this.dashboardPermissions.forEach(function(value: any) {
-          if (value.Principal && value.Actions) {
-            permissions.push({
-              principal: value.Principal,
-              actions: value.Actions,
-            });
-          }
-        });
-
-        return permissions;
+        return this.dashboardPermissions;
       }
 
       public get tags() {
@@ -296,11 +285,11 @@ export class Dashboard extends Resource {
       }
 
       public get dashboardArn() {
-        return this.dashboard.Arn ?? '';
+        return this.dashboard.arn ?? '';
       }
 
       public get resourceId(): string {
-        return this.dashboard.DashboardId ?? '';
+        return this.dashboard.dashboardId ?? '';
       }
 
       // Dashboard specific properties
@@ -308,14 +297,7 @@ export class Dashboard extends Resource {
       public readonly dashboardPublishOptions? = undefined;
 
       public get versionDescription() {
-        let versionDescription: string;
-        if (this.dashboard.Version?.Description) {
-          versionDescription = this.dashboard.Version?.Description;
-        } else {
-          versionDescription = '';
-        }
-
-        return versionDescription;
+        return this.dashboard.version?.description ?? '';
       };
 
       private _dataSets: IDataSet[] | undefined;
@@ -323,7 +305,7 @@ export class Dashboard extends Resource {
         if (!this._dataSets) {
           let dataSets: IDataSet[] = [];
 
-          this.dashboard.Version?.DataSetArns?.forEach(function (value: any) {
+          this.dashboard.version?.dataSetArns?.forEach(function (value: any) {
             let dataSetId: string = value.split('/')[1];
             dataSets.push(DataSet.fromId(scope, dataSetId, dataSetId));
           });
@@ -337,7 +319,7 @@ export class Dashboard extends Resource {
       private _sourceTemplate: ITemplate | undefined;
       public get sourceTemplate() {
         if (!this._sourceTemplate) {
-          let templateId: string = this.dashboard.Version?.SourceEntityArn?.split('/')[1] ?? '';
+          let templateId: string = this.dashboard.version?.sourceEntityArn?.split('/')[1] ?? '';
           this._sourceTemplate = Template.fromId(scope, templateId, templateId);
         }
 
@@ -347,7 +329,7 @@ export class Dashboard extends Resource {
       private _theme: ITheme | undefined;
       public get theme() {
         if (!this._theme) {
-          let themeId: string = this.dashboard.Version?.ThemeArn?.split('/')[1] ?? '';
+          let themeId: string = this.dashboard.version?.themeArn?.split('/')[1] ?? '';
           this._theme = Theme.fromId(scope, themeId, themeId);
         }
 

@@ -1,5 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as helperFunctions from './helper-functions';
 import { Mode } from '../../api/aws-auth/credentials';
 import { SdkProvider } from '../../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../../api/plugin';
@@ -28,6 +29,6 @@ export class QuickSightTagsContextProviderPlugin implements ContextProviderPlugi
       throw new Error(`No resource found with arn ${args.resourceArn}`);
     }
 
-    return tags;
+    return helperFunctions.arrayToCamelCase(tags) as cxapi.QuickSightContextResponse.TagList;
   }
 }
