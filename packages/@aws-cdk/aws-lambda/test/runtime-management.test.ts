@@ -61,7 +61,6 @@ describe('runtime', () => {
         UpdateRuntimeOn: 'Manual',
       },
     });
-
   });
 
 });
