@@ -107,37 +107,29 @@ new cloud9.Ec2Environment(this, 'C9Env', {
 
 ## Specifying Owners
 
-`Owner` is a user that owns a Cloud9 environment . `Owner` has their own access permissions, resources. And we can specify an `Owner`in an Ec2 environment which could be of two types, 1. AccountRoot and 2. Iam User. It allows AWS to determine who has permissions to manage the environment, either an IAM user or the account root user
+Every Cloud9 Environment has an **owner**. An owner has full control over the environment, and can invite additional members to the environment for collaboration purposes. For more information, see [Working with shared environments in AWS Cloud9](https://docs.aws.amazon.com/cloud9/latest/user-guide/share-environment.html)).
 
-### AccountRoot
+By default, the owner will be the identity that creates the Environment, which is most likely your CloudFormation Execution Role when the Environment is created using CloudFormation. Provider a value for the `owner` property to assign a different owner, either a specific IAM User or the AWS Account Root User.
+
+`Owner` is a user that owns a Cloud9 environment . `Owner` has their own access permissions, resources. And we can specify an `Owner`in an Ec2 environment which could be of two types, 1. AccountRoot and 2. Iam User. It allows AWS to determine who has permissions to manage the environment, either an IAM user or the account root user (but using the account root user is not recommended, see [environment sharing best practices](https://docs.aws.amazon.com/cloud9/latest/user-guide/share-environment.html#share-environment-best-practices)).
+
+### To specify the AWS Account Root User as the environment owner, use `Owner.accountRoot()`
 
 ```ts
 new cloud9.Ec2Environment(this, 'C9Env', {
   // provides root account id.
-  owner: cloud9.Owner.AccountRoot('root account id')
+  owner: cloud9.Owner.AccountRoot('111111111')
 })
 ```
 
-### Iam User
+### To specify a specific IAM User as the environment owner, use `Owner.user()`. The user should have the `AWSCloud9Administrator` managed policy
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 
 const user = new iam.User(stack, 'User');
-// provides an iam user.
+user.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCloud9Administrator'));
 new cloud9.Ec2Environment(this, 'C9Env', {
   owner: cloud9.Owner.User(user)
 })
-```
-
-### create a new Cloud9 environment with an owner as an Iam User
-
-```ts
-const user = new iam.User(stack, 'User');
-declare const vpc: ec2.Vpc;
-new cloud9.Ec2Environment(this, 'C9Env', {
-  vpc,
-  imageId: cloud9.ImageId.AMAZON_LINUX_2,
-  owner: cloud9.Owner.User(user)
-});
 ```

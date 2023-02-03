@@ -61,7 +61,9 @@ export interface Ec2EnvironmentProps {
   /**
    * Owner of the environment.
    *
-   * @default - If this value is not specified, the owner defaults to this environment's creator
+   * The owner has full control of the environment and can invite additional members.
+   *
+   * @default - The identity that CloudFormation executes under will be the owner
    */
   readonly owner?: Owner;
 
@@ -143,6 +145,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
     }
     return new Import(scope, id);
   }
+
   /**
    * The environment name of this Cloud9 environment
    *
@@ -226,13 +229,13 @@ export class CloneRepository {
 }
 
 /**
- * The class for different types of owners
+ * An environment owner
  *
  *
  */
 export class Owner {
   /**
-   * import from Owner Iuser
+   * Make an IAM user the environment owner
    *
    * User need to have AWSCloud9Administrator permissions
    * @see https://docs.aws.amazon.com/cloud9/latest/user-guide/share-environment.html#share-environment-about
@@ -245,7 +248,7 @@ export class Owner {
 
 
   /**
-   * import from Owner account root
+   * Make the Account Root User the environment owner (not recommended)
    *
    * @param accountId the AccountId to use as the environment owner.
    */
