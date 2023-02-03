@@ -66,6 +66,7 @@ export interface ISDK {
   codeBuild(): AWS.CodeBuild
   cloudWatchLogs(): AWS.CloudWatchLogs;
   appsync(): AWS.AppSync;
+  quickSight(): AWS.QuickSight;
 }
 
 /**
@@ -214,6 +215,10 @@ export class SDK implements ISDK {
 
   public appsync(): AWS.AppSync {
     return this.wrapServiceErrorHandling(new AWS.AppSync(this.config));
+  }
+
+  public quickSight(): AWS.QuickSight {
+    return this.wrapServiceErrorHandling(new AWS.QuickSight(this.config));
   }
 
   public async currentAccount(): Promise<Account> {

@@ -58,6 +58,36 @@ export enum ContextProvider {
    * A plugin provider (the actual plugin name will be in the properties)
    */
   PLUGIN = 'plugin',
+
+  /**
+   * QuickSight Data Source provider
+   */
+  QUICKSIGHT_DATA_SOURCE_PROVIDER = 'quicksight-data-source-provider',
+
+  /**
+   * QuickSight DataSet provider
+   */
+  QUICKSIGHT_DATA_SET_PROVIDER = 'quicksight-data-set-provider',
+
+  /**
+   * QuickSight Template provider
+   */
+  QUICKSIGHT_TEMPLATE_PROVIDER = 'quicksight-template-provider',
+
+  /**
+   * QuickSight Dashboard provider
+   */
+  QUICKSIGHT_DASHBOARD_PROVIDER = 'quicksight-dashboard-provider',
+
+  /**
+   * QuickSight Analysis provider
+   */
+  QUICKSIGHT_ANALYSIS_PROVIDER = 'quicksight-analysis-provider',
+
+  /**
+   * QuickSight Theme provider
+   */
+  QUICKSIGHT_THEME_PROVIDER = 'quicksight-theme-provider',
 }
 
 /**
@@ -486,6 +516,163 @@ export interface PluginContextQuery {
   [key: string]: any;
 }
 
+
+/**
+ * TODO
+ */
+export interface QuickSightDataSourceContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly dataSourceId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightDataSetContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly dataSetId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightTemplateContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly templateId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightDashboardContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly dashboardId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightAnalysisContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly analysisId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightThemeContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly themeId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   */
+  readonly lookupRoleArn?: string;
+}
+
 export type ContextQueryProperties = AmiContextQuery
 | AvailabilityZonesContextQuery
 | HostedZoneContextQuery
@@ -496,5 +683,11 @@ export type ContextQueryProperties = AmiContextQuery
 | LoadBalancerListenerContextQuery
 | SecurityGroupContextQuery
 | KeyContextQuery
-| PluginContextQuery;
+| PluginContextQuery
+| QuickSightDataSourceContextQuery
+| QuickSightDataSetContextQuery
+| QuickSightTemplateContextQuery
+| QuickSightDashboardContextQuery
+| QuickSightAnalysisContextQuery
+| QuickSightThemeContextQuery;
 
