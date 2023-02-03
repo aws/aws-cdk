@@ -109,11 +109,11 @@ declare const fn: lambda.Function;
 // color: 'red' or 'orange'
 myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
   filterPolicyWithMessageBody: {
-    background: {
-      color: sns.SubscriptionFilter.stringFilter({
+    background: sns.FilterOrPolicy.policy({
+      color: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
         allowlist: ['red', 'orange'],
-      }),
-    },
+      })),
+    }),
   },
 }));
 ```

@@ -17,7 +17,7 @@ export interface SubscriptionProps {
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicyWithMessageBody?: sns.SubscriptionFilterPolicyWithMessageBody;
+  readonly filterPolicyWithMessageBody?: { [attribute: string]: sns.FilterOrPolicy };
   /**
    * Queue to be used as dead letter queue.
    * If not passed no dead letter queue is enabled.

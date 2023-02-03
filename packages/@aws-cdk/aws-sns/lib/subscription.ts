@@ -44,7 +44,7 @@ export interface SubscriptionOptions {
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicyWithMessageBody? : SubscriptionFilterPolicyWithMessageBody;
+  readonly filterPolicyWithMessageBody? : {[attribute: string]: FilterOrPolicy };
 
   /**
    * The region where the topic resides, in the case of cross-region subscriptions
@@ -93,7 +93,7 @@ export class Subscription extends Resource {
 
   private readonly filterPolicy?: { [attribute: string]: any[] };
 
-  private readonly filterPolicyWithMessageBody?: SubscriptionFilterPolicyArrayWithMessageBody;
+  private readonly filterPolicyWithMessageBody? : {[attribute: string]: FilterOrPolicy };
 
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
@@ -129,7 +129,7 @@ export class Subscription extends Resource {
       if (Object.keys(props.filterPolicyWithMessageBody).length > 5) {
         throw new Error('A filter policy can have a maximum of 5 attribute names.');
       }
-      this.filterPolicyWithMessageBody = this.buildFilterPolicyWithMessageBody(props.filterPolicyWithMessageBody);
+      this.filterPolicyWithMessageBody = this.buildFilterPolicyWithMessageBody(props.filterPolicyWithMessageBody, {});
     }
 
     if (props.protocol === SubscriptionProtocol.FIREHOSE && !props.subscriptionRoleArn) {
@@ -151,19 +151,23 @@ export class Subscription extends Resource {
 
   }
 
-  private buildFilterPolicyWithMessageBody(filterPolicy: any, depth = 1, totalCombinationValues = [1]): SubscriptionFilterPolicyArrayWithMessageBody {
-    for (const [key, value] of Object.entries(filterPolicy)) {
-      if (value instanceof SubscriptionFilter) {
-        filterPolicy[key] = value.conditions;
-        totalCombinationValues[0] *= value.conditions.length * depth;
-      } else if (!(value instanceof Array)) {
-        this.buildFilterPolicyWithMessageBody(value, depth + 1, totalCombinationValues);
+  private buildFilterPolicyWithMessageBody(filterPolicy: any, result: any, depth = 1, totalCombinationValues = [1]): any {
+    for (const [key, filterOrPolicy] of Object.entries(JSON.parse(JSON.stringify(filterPolicy)))) {
+      if (filterOrPolicy && typeof filterOrPolicy === 'object' && 'conditions' in filterOrPolicy) {
+        const filter = filterOrPolicy as { conditions: any[]};
+        if (Array.isArray(filter.conditions)) {
+          result[key] = filter.conditions;
+          totalCombinationValues[0] *= filter.conditions.length * depth;
+          continue;
+        }
       }
+      result[key] = filterOrPolicy;
+      this.buildFilterPolicyWithMessageBody(filterOrPolicy, result[key], depth + 1, totalCombinationValues);
     }
     if (totalCombinationValues[0] > 150) {
       throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 150.`);
     }
-    return filterPolicy;
+    return result;
   };
 
   private buildDeadLetterQueue(props: SubscriptionProps) {
@@ -247,15 +251,42 @@ export enum SubscriptionProtocol {
 }
 
 /**
- * The filter policy after it has had filters transformed by SubscriptionFilter
+ * Class used for nested Filter Policies using Filter Policy Scope MessageBody
  */
-interface SubscriptionFilterPolicyArrayWithMessageBody {
-  [attribute: string]: any[] | SubscriptionFilterPolicyArrayWithMessageBody;
+export class FilterOrPolicy {
+  /**
+   * Returns the SubscriptionFilter
+   * @param filter
+   * @returns FilterOrPolicy
+   */
+  public static filter(filter: SubscriptionFilter) {
+    return new FilterOrPolicy(filter);
+  }
+  /**
+   * Returns a FilterPolicy
+   * @param policy
+   * @returns FilterOrPolicy
+   */
+  public static policy(policy: { [attribute: string]: FilterOrPolicy }) {
+    return new FilterOrPolicy(policy);
+  }
+  /**
+   * Returns the transformed SubscriptionFilter array
+   * @param filter
+   * @returns
+   */
+  public static transformedFilter(filter: any[]) {
+    return new FilterOrPolicy(filter);
+  }
+
+  private constructor(private readonly json: any) {}
+
+  /**
+   * Overrides toJSON method
+   * @returns json object of FilterOrPolicy
+   */
+  public toJSON() {
+    return this.json;
+  }
 }
 
-/**
- * The filter policy that allows for nested subscription filter policies. This is accomplished via recursive types.
- */
-export interface SubscriptionFilterPolicyWithMessageBody {
-  [attribute: string]: SubscriptionFilter | SubscriptionFilterPolicyWithMessageBody;
-}

@@ -162,19 +162,19 @@ describe('Subscription', () => {
     new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
       filterPolicyWithMessageBody: {
-        background: {
-          color: sns.SubscriptionFilter.stringFilter({
+        background: sns.FilterOrPolicy.policy({
+          color: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
             allowlist: ['red', 'green'],
             denylist: ['white', 'orange'],
-          }),
-        },
-        price: sns.SubscriptionFilter.numericFilter({
+          })),
+        }),
+        price: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.numericFilter({
           allowlist: [100, 200],
           between: { start: 300, stop: 350 },
           greaterThan: 500,
           lessThan: 1000,
           betweenStrict: { start: 2000, stop: 3000 },
-        }),
+        })),
       },
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
@@ -336,8 +336,8 @@ describe('Subscription', () => {
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
       filterPolicyWithMessageBody: {
-        a: { b: new sns.SubscriptionFilter([...Array.from(Array(10).keys())]) },
-        c: { d: new sns.SubscriptionFilter([...Array.from(Array(5).keys())]) },
+        a: sns.FilterOrPolicy.policy({ b: sns.FilterOrPolicy.filter(new sns.SubscriptionFilter([...Array.from(Array(10).keys())])) }),
+        c: sns.FilterOrPolicy.policy({ d: sns.FilterOrPolicy.filter(new sns.SubscriptionFilter([...Array.from(Array(5).keys())])) }),
       },
     })).toThrow(/\(200\) must not exceed 150/);
 

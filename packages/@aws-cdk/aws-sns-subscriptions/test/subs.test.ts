@@ -1936,15 +1936,15 @@ test('with filter policy scope MessageBody', () => {
 
   topic.addSubscription(new subs.LambdaSubscription(fction, {
     filterPolicyWithMessageBody: {
-      color: {
-        background: sns.SubscriptionFilter.stringFilter({
+      color: sns.FilterOrPolicy.policy({
+        background: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
           allowlist: ['red'],
           matchPrefixes: ['bl', 'ye'],
-        }),
-      },
-      size: sns.SubscriptionFilter.stringFilter({
-        denylist: ['small', 'medium'],
+        })),
       }),
+      size: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
+        denylist: ['small', 'medium'],
+      })),
     },
   }));
 
