@@ -231,12 +231,14 @@ const amplifyApp = new amplify.App(this, 'App', {
 });
 ```
 
-## Add a Framework property to your Branch
+## Adding Platform and Framework properties to your Amplify App
 
 Use the `framework` property on `BranchOptions` to pass in an optional value for the framework:
 
 ```ts
-declare const amplifyApp: amplify.App;
+const amplifyApp = new amplify.App(this, 'App', {
+  platform: amplify.Platform.WEB,
+});
 amplifyApp.addBranch('feature/next', {
   framework: 'ExampleFramework',
 });
