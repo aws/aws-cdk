@@ -642,9 +642,28 @@ test('Create Cluster without Roles', () => {
           Principal: { Service: 'elasticmapreduce.amazonaws.com' },
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
+          Condition: {
+            StringEquals: {
+              'aws:RequestTag/for-use-with-amazon-emr-managed-policies': 'true',
+            },
+          },
         },
       ],
     },
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/service-role/AmazonEMRServicePolicy_v2',
+          ],
+        ],
+      },
+    ],
   });
 
   // The stack renders the ec2.amazonaws.com Service principal id with a

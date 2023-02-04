@@ -341,7 +341,11 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   private createServiceRole(): iam.IRole {
     return new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com', {
+        conditions: {
+          StringEquals: { 'aws:RequestTag/for-use-with-amazon-emr-managed-policies': 'true' },
+        },
+      }),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEMRServicePolicy_v2')],
     });
   }
