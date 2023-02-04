@@ -97,7 +97,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       // issues with paths containing characters like spaces.
       cmdAndArgs = [
         `"${commandAndArgs[0]}"`,
-        ...commandAndArgs.slice(1)
+        ...commandAndArgs.slice(1),
       ];
     } else {
       cmdAndArgs = [commandAndArgs];
