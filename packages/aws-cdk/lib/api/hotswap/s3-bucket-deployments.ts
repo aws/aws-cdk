@@ -1,6 +1,6 @@
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, HotswappableChangeCandidate } from './common';
+import { ChangeHotswapResult, HotswappableChangeCandidate, reportNonHotswappableResource } from './common';
 
 /**
  * This means that the value is required to exist by CloudFormation's Custom Resource API (or our S3 Bucket Deployment Lambda's API)
@@ -65,26 +65,20 @@ async function changeIsForS3DeployCustomResourcePolicy(
 ): Promise<ChangeHotswapResult> {
   const roles = change.newValue.Properties?.Roles;
   if (!roles) {
-    return [{
-      hotswappable: false,
-      rejectedChanges: ['Roles'],
-      logicalId: iamPolicyLogicalId,
-      reason: 'This IAM Policy does not have have any Roles',
-      resourceType: change.newValue.Type,
-    }];
+    return reportNonHotswappableResource(
+      change,
+      'This IAM Policy does not have have any Roles',
+    );
   }
 
   for (const role of roles) {
     const roleArn = await evaluateCfnTemplate.evaluateCfnExpression(role);
     const roleLogicalId = await evaluateCfnTemplate.findLogicalIdForPhysicalName(roleArn);
     if (!roleLogicalId) {
-      return [{
-        hotswappable: false,
-        reason: `could not find logicalId for role with name '${roleArn}'`,
-        rejectedChanges: [],
-        logicalId: 'could not be found',
-        resourceType: change.newValue.Type,
-      }];
+      return reportNonHotswappableResource(
+        change,
+        `could not find logicalId for role with name '${roleArn}'`,
+      );
     }
 
     const roleRefs = evaluateCfnTemplate.findReferencesTo(roleLogicalId);
@@ -95,33 +89,24 @@ async function changeIsForS3DeployCustomResourcePolicy(
           // If S3Deployment -> Lambda -> Role and IAM::Policy -> Role, then this IAM::Policy change is an
           // artifact of old-style synthesis
           if (lambdaRef.Type !== 'Custom::CDKBucketDeployment') {
-            return [{
-              hotswappable: false,
-              reason: `found an AWS::IAM::Policy that has Role '${roleLogicalId}' that is referred to by AWS::Lambda::Function '${roleRef.LogicalId}' that is referred to by ${lambdaRef.Type} '${lambdaRef.LogicalId}', which does not have type 'Custom::CDKBucketDeployment'`,
-              rejectedChanges: [],
-              logicalId: iamPolicyLogicalId,
-              resourceType: change.newValue.Type,
-            }];
+            return reportNonHotswappableResource(
+              change,
+              `found an AWS::IAM::Policy that has Role '${roleLogicalId}' that is referred to by AWS::Lambda::Function '${roleRef.LogicalId}' that is referred to by ${lambdaRef.Type} '${lambdaRef.LogicalId}', which does not have type 'Custom::CDKBucketDeployment'`,
+            );
           }
         }
       } else if (roleRef.Type === 'AWS::IAM::Policy') {
         if (roleRef.LogicalId !== iamPolicyLogicalId) {
-          return [{
-            hotswappable: false,
-            reason: `found an AWS::IAM::Policy that has Role '${roleLogicalId}' that is referred to by AWS::IAM::Policy '${roleRef.LogicalId}' that is not the policy of the s3 bucket deployment`,
-            rejectedChanges: [],
-            logicalId: roleRef.LogicalId,
-            resourceType: change.newValue.Type,
-          }];
+          return reportNonHotswappableResource(
+            change,
+            `found an AWS::IAM::Policy that has Role '${roleLogicalId}' that is referred to by AWS::IAM::Policy '${roleRef.LogicalId}' that is not the policy of the s3 bucket deployment`,
+          );
         }
       } else {
-        return [{
-          hotswappable: false,
-          reason: `found a reference to the role '${roleLogicalId}' that is not of type AWS::Lambda::Function or AWS::IAM::Policy, so the bucket deployment cannot be hotswapped`,
-          rejectedChanges: [],
-          logicalId: roleRef.LogicalId,
-          resourceType: change.newValue.Type,
-        }];
+        return reportNonHotswappableResource(
+          change,
+          `found a resource which refers to the role '${roleLogicalId}' that is not of type AWS::Lambda::Function or AWS::IAM::Policy, so the bucket deployment cannot be hotswapped`,
+        );
       }
     }
   }

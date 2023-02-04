@@ -139,8 +139,7 @@ export type PropDiffs = Record<string, cfn_diff.PropertyDifference<any>>;
 
 export class ClassifiedChanges {
   public constructor(
-    public readonly logicalId: string,
-    public readonly type: string,
+    public readonly change: HotswappableChangeCandidate,
     public readonly hotswappableProps: PropDiffs,
     public readonly nonHotswappableProps: PropDiffs,
   ) { }
@@ -150,9 +149,8 @@ export class ClassifiedChanges {
     if (nonHotswappablePropNames.length > 0) {
       reportNonHotswappableChange(
         ret,
-        nonHotswappablePropNames,
-        this.logicalId,
-        this.type,
+        this.change,
+        this.nonHotswappableProps,
         `resource properties '${nonHotswappablePropNames}' are not hotswappable on this resource type`,
       );
     }
@@ -178,14 +176,13 @@ export function classifyChanges(
     }
   }
 
-  return new ClassifiedChanges(xs.logicalId, xs.newValue.Type, hotswappableProps, nonHotswappableProps);
+  return new ClassifiedChanges(xs, hotswappableProps, nonHotswappableProps);
 }
 
 export function reportNonHotswappableChange(
   ret: ChangeHotswapResult,
-  nonHotswappablePropNames: string[],
-  logicalId: string,
-  type: string,
+  change: HotswappableChangeCandidate,
+  nonHotswappableProps?: PropDiffs,
   reason?: string,
   hotswapOnlyVisible?: boolean,
 ): void {
@@ -195,10 +192,23 @@ export function reportNonHotswappableChange(
   }
   ret.push({
     hotswappable: false,
-    rejectedChanges: nonHotswappablePropNames,
-    logicalId: logicalId,
-    resourceType: type,
+    rejectedChanges: Object.keys(nonHotswappableProps ?? change.propertyUpdates),
+    logicalId: change.logicalId,
+    resourceType: change.newValue.Type,
     reason,
     hotswapOnlyVisible: hotswapOnlyVisibility,
   });
+}
+
+export function reportNonHotswappableResource(
+  change: HotswappableChangeCandidate,
+  reason?: string,
+): ChangeHotswapResult {
+  return [{
+    hotswappable: false,
+    rejectedChanges: Object.keys(change.propertyUpdates),
+    logicalId: change.logicalId,
+    resourceType: change.newValue.Type,
+    reason,
+  }];
 }

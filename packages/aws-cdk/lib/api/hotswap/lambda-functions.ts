@@ -3,7 +3,7 @@ import * as AWS from 'aws-sdk';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
 import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, PropDiffs, reportNonHotswappableChange } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, PropDiffs } from './common';
 
 // namespace object imports won't work in the bundle for function exports
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -29,7 +29,7 @@ export async function isHotswappableLambdaFunctionChange(
 
   // we handle Aliases specially too
   if (change.newValue.Type === 'AWS::Lambda::Alias') {
-    return classifyAliasChanges(change, logicalId);
+    return classifyAliasChanges(change);
   }
 
   if (change.newValue.Type !== 'AWS::Lambda::Function') {
@@ -133,16 +133,13 @@ export async function isHotswappableLambdaFunctionChange(
 /**
  * Determines which changes to this Alias are hotswappable or not
  */
-function classifyAliasChanges(change: HotswappableChangeCandidate, logicalId: string): ChangeHotswapResult {
-  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['FunctionVersion']);
+function classifyAliasChanges(change: HotswappableChangeCandidate): ChangeHotswapResult {
   const ret: ChangeHotswapResult = [];
+  const classifiedChanges = classifyChanges(change, ['FunctionVersion']);
+  classifiedChanges.reportNonHotswappablePropertyChanges(ret);
 
-  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
-  if (nonHotswappablePropNames.length > 0) {
-    reportNonHotswappableChange(ret, nonHotswappablePropNames, logicalId, change.newValue.Type);
-  }
-
-  if (Object.keys(hotswappableProps).length > 0) {
+  const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
+  if (namesOfHotswappableChanges.length > 0) {
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,

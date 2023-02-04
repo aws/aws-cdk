@@ -13,13 +13,11 @@ export async function isHotswappableAppSyncChange(
   }
 
   const ret: ChangeHotswapResult = [];
-  // TODO: helper
   if (isResolver && change.newValue.Properties?.Kind === 'PIPELINE') {
     reportNonHotswappableChange(
       ret,
-      Object.keys(change.propertyUpdates),
-      logicalId,
-      change.newValue.Type,
+      change,
+      undefined,
       'Pipeline resolvers cannot be hotswapped since they reference the FunctionId of the underlying functions, which cannot be resolved',
     );
     return ret;

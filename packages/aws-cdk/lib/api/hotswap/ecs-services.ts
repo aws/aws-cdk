@@ -32,13 +32,13 @@ export async function isHotswappableEcsServiceChange(
   if (ecsServicesReferencingTaskDef.length === 0) {
     // if there are no resources referencing the TaskDefinition,
     // hotswap is not possible in FALL_BACK mode
-    reportNonHotswappableChange(ret, ['ECS Service'], logicalId, change.newValue.Type, 'No ECS services reference the changed task definition', false);
+    reportNonHotswappableChange(ret, change, undefined, 'No ECS services reference the changed task definition', false);
   } if (resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
     // if something besides an ECS Service is referencing the TaskDefinition,
     // hotswap is not possible in FALL_BACK mode
     const nonEcsServiceTaskDefRefs = resourcesReferencingTaskDef.filter(r => r.Type !== 'AWS::ECS::Service');
     for (const taskRef of nonEcsServiceTaskDefRefs) {
-      reportNonHotswappableChange(ret, [], taskRef.LogicalId, taskRef.Type, `A resource that is not an ECS Service was found referencing the changed TaskDefinition '${logicalId}'`);
+      reportNonHotswappableChange(ret, change, undefined, `A resource '${taskRef.LogicalId}' with Type '${taskRef.Type}' that is not an ECS Service was found referencing the changed TaskDefinition '${logicalId}'`);
     }
   }
 

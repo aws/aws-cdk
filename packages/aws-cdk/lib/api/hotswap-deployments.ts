@@ -125,22 +125,22 @@ async function classifyResourceChanges(
       continue;
     }
 
-    const resourceHotswapEvaluation = isCandidateForHotswapping(change, logicalId);
+    const hotswappableChangeCandidate = isCandidateForHotswapping(change, logicalId);
     // we don't need to run this through the detector functions, we can already judge this
-    if ('hotswappable' in resourceHotswapEvaluation) {
-      if (!resourceHotswapEvaluation.hotswappable) {
-        nonHotswappableResources.push(resourceHotswapEvaluation);
+    if ('hotswappable' in hotswappableChangeCandidate) {
+      if (!hotswappableChangeCandidate.hotswappable) {
+        nonHotswappableResources.push(hotswappableChangeCandidate);
       }
 
       continue;
     }
 
-    const resourceType: string = resourceHotswapEvaluation.newValue.Type;
+    const resourceType: string = hotswappableChangeCandidate.newValue.Type;
     if (resourceType in RESOURCE_DETECTORS) {
       // run detector functions lazily to prevent unhandled promise rejections
-      promises.push(() => RESOURCE_DETECTORS[resourceType](logicalId, resourceHotswapEvaluation, evaluateCfnTemplate));
+      promises.push(() => RESOURCE_DETECTORS[resourceType](logicalId, hotswappableChangeCandidate, evaluateCfnTemplate));
     } else {
-      reportNonHotswappableChange(nonHotswappableResources, Object.keys(change.propertyUpdates), logicalId, change.newValue!.Type);
+      reportNonHotswappableChange(nonHotswappableResources, hotswappableChangeCandidate, undefined, 'This resource type is not supported for hotswap deployments');
     }
   }
 
