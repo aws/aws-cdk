@@ -436,7 +436,7 @@ export interface BucketAttributes {
    *
    * @default false
    *
-   * @deprecated not needed to specify anymore - proper website url format is derived from the bucket region.
+   * Not needed to specify anymore - proper website url format is derived from the bucket region.
    * If specified though, old behaviour is applied and format is not derived from the region.
    */
   readonly bucketWebsiteNewUrlFormat?: boolean;
