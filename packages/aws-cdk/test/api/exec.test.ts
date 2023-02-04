@@ -156,6 +156,7 @@ test('the application set in --app is executed as-is if it contains a filename t
   config.settings.set(['app'], 'does-not-exist');
   mockSpawn({
     commandLine: 'does-not-exist',
+    expectQuotedCommand: true,
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -200,6 +201,7 @@ test('application set in --app is `*.js` and executable', async () => {
   config.settings.set(['app'], 'executable-app.js');
   mockSpawn({
     commandLine: 'executable-app.js',
+    expectQuotedCommand: true,
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -230,6 +232,7 @@ test('cli does not throw when the `build` script succeeds', async () => {
   },
   {
     commandLine: 'executable-app.js',
+    expectQuotedCommand: true,
     sideEffect: () => writeOutputAssembly(),
   });
 
