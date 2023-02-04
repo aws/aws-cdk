@@ -514,7 +514,7 @@ various provider types (ordered from low-level to high-level):
 
 Legend:
 
-- **Compute type**: which type of compute can is used to execute the handler.
+- **Compute type**: which type of compute can be used to execute the handler.
 - **Error Handling**: whether errors thrown by handler code are automatically
   trapped and a FAILED response is submitted to CloudFormation. If this is
   "Manual", developers must take care of trapping errors. Otherwise, events
