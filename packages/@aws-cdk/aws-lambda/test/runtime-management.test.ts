@@ -11,9 +11,7 @@ describe('runtime', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      runtimeManagement: {
-        mode: lambda.UpdateRuntimeOn.AUTO,
-      },
+      runtimeManagementMode: lambda.RuntimeManagementMode.AUTO,
     });
     // WHEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -30,9 +28,7 @@ describe('runtime', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      runtimeManagement: {
-        mode: lambda.UpdateRuntimeOn.FUNCTION_UPDATE,
-      },
+      runtimeManagementMode: lambda.RuntimeManagementMode.FUNCTION_UPDATE,
     });
     // WHEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -49,10 +45,9 @@ describe('runtime', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      runtimeManagement: {
-        arn: 'arn:aws:lambda:ap-northeast-1::runtime:07a48df201798d627f2b950f03bb227aab4a655a1d019c3296406f95937e2525',
-        mode: lambda.UpdateRuntimeOn.MANUAL,
-      },
+      runtimeManagementMode: lambda.RuntimeManagementMode.manual(
+        'arn:aws:lambda:ap-northeast-1::runtime:07a48df201798d627f2b950f03bb227aab4a655a1d019c3296406f95937e2525',
+      ),
     });
     // WHEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {

@@ -1050,7 +1050,18 @@ For more information, see [Runtime management controls](https://docs.aws.amazon.
 
 ```ts
 new Function(stack, 'Lambda', {
-  runtimeManagementMode: UpdateRuntimeOn.AUTO,
+  runtimeManagementMode: RuntimeManagementMode.AUTO,
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+If you want to set the "Manual" setting, using the ARN of the runtime version as the argument.
+
+```ts
+new Function(stack, 'Lambda', {
+  runtimeManagementMode: RuntimeManagementMode.manual('runtimeVersion-arn'),
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
