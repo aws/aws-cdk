@@ -1,4 +1,4 @@
-# Amazon OpenSearch Service (legacy Elasticsearch) Construct Library
+# Amazon OpenSearch Service Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

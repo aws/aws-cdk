@@ -2,7 +2,7 @@ on:
   schedule:
     # Cron format: min hr day month dow
     - cron: "0 0 * * *"
-  workflow_dispatch:    
+  workflow_dispatch:
 jobs:
   close-stale-prs:
     permissions:
@@ -23,5 +23,5 @@ jobs:
           important-checks-regex: AutoBuildv2Project1C6BFA3F
           warn-message: This PR has been in the STATE state for 3 weeks, and looks abandoned. To keep this PR from being closed, please continue work on it. If not, it will automatically be closed in a week.
           close-message: This PR has been deemed to be abandoned, and will be automatically closed. Please create a new PR for these changes if you think this decision has been made in error.
-          skip-labels: contribution/core
+          skip-labels: contribution/core, pr-linter/do-not-close
           close-label: closed-for-staleness
