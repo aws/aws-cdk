@@ -1,3 +1,142 @@
+# CloudFormation Resource Specification v109.0.0
+
+## New Resource Types
+
+* AWS::CloudTrail::Channel
+* AWS::CloudTrail::ResourcePolicy
+* AWS::EC2::IPAMPoolCidr
+* AWS::EC2::IPAMResourceDiscovery
+* AWS::EC2::IPAMResourceDiscoveryAssociation
+* AWS::Omics::AnnotationStore
+* AWS::Omics::ReferenceStore
+* AWS::Omics::RunGroup
+* AWS::Omics::SequenceStore
+* AWS::Omics::VariantStore
+* AWS::Omics::Workflow
+* AWS::SageMaker::ModelCard
+* AWS::SimSpaceWeaver::Simulation
+
+## Attribute Changes
+
+* AWS::AmplifyUIBuilder::Component AppId (__deleted__)
+* AWS::AmplifyUIBuilder::Component EnvironmentName (__deleted__)
+* AWS::AmplifyUIBuilder::Theme AppId (__deleted__)
+* AWS::AmplifyUIBuilder::Theme CreatedAt (__deleted__)
+* AWS::AmplifyUIBuilder::Theme EnvironmentName (__deleted__)
+* AWS::AmplifyUIBuilder::Theme ModifiedAt (__deleted__)
+* AWS::OpsWorksCM::Server Id (__deleted__)
+* AWS::OpsWorksCM::Server ServerName (__added__)
+* AWS::RDS::DBProxyEndpoint TargetRole (__added__)
+
+## Property Changes
+
+* AWS::AmplifyUIBuilder::Component AppId (__added__)
+* AWS::AmplifyUIBuilder::Component EnvironmentName (__added__)
+* AWS::AmplifyUIBuilder::Theme AppId (__added__)
+* AWS::AmplifyUIBuilder::Theme EnvironmentName (__added__)
+* AWS::AppConfig::Deployment KmsKeyIdentifier (__added__)
+* AWS::EC2::IPAM DefaultResourceDiscoveryAssociationId (__added__)
+* AWS::EC2::IPAM DefaultResourceDiscoveryId (__added__)
+* AWS::EC2::IPAM ResourceDiscoveryAssociationCount (__added__)
+* AWS::EC2::IPAMPool PublicIpSource (__added__)
+* AWS::NetworkManager::ConnectPeer ConnectAttachmentId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkManager::ConnectPeer InsideCidrBlocks.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkManager::ConnectPeer PeerAddress.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkManager::SiteToSiteVpnAttachment CoreNetworkId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkManager::SiteToSiteVpnAttachment VpnConnectionArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpsWorksCM::Server ServerName (__deleted__)
+* AWS::RDS::DBProxyEndpoint TargetRole (__deleted__)
+* AWS::RDS::DBProxyTargetGroup DBProxyName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RolesAnywhere::CRL CrlData.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RolesAnywhere::CRL Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RolesAnywhere::Profile Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RolesAnywhere::Profile RoleArns.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RolesAnywhere::TrustAnchor Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RolesAnywhere::TrustAnchor Source.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SNS::Topic TracingConfig (__added__)
+
+## Property Type Changes
+
+* AWS::WAFv2::RuleGroup.Allow (__removed__)
+* AWS::WAFv2::RuleGroup.Block (__removed__)
+* AWS::WAFv2::RuleGroup.Captcha (__removed__)
+* AWS::WAFv2::RuleGroup.Challenge (__removed__)
+* AWS::WAFv2::RuleGroup.Count (__removed__)
+* AWS::ConnectCampaigns::Campaign.AnswerMachineDetectionConfig (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfigurationSessionBackup (__added__)
+* AWS::WAFv2::RuleGroup.AllowAction (__added__)
+* AWS::WAFv2::RuleGroup.BlockAction (__added__)
+* AWS::WAFv2::RuleGroup.CaptchaAction (__added__)
+* AWS::WAFv2::RuleGroup.ChallengeAction (__added__)
+* AWS::WAFv2::RuleGroup.CountAction (__added__)
+* AWS::AmplifyUIBuilder::Form.FieldInputConfig IsArray (__added__)
+* AWS::AmplifyUIBuilder::Form.SectionalElement Excluded (__added__)
+* AWS::ConnectCampaigns::Campaign.OutboundCallConfig AnswerMachineDetectionConfig (__added__)
+* AWS::IoT::TopicRule.CloudwatchLogsAction BatchMode (__added__)
+* AWS::NetworkFirewall::Firewall.SubnetMapping IPAddressType (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration SessionBackup (__added__)
+* AWS::RDS::DBProxy.AuthFormat UserName (__deleted__)
+* AWS::WAFv2::RuleGroup.RuleAction Allow.Type (__changed__)
+  * Old: Allow
+  * New: AllowAction
+* AWS::WAFv2::RuleGroup.RuleAction Block.Type (__changed__)
+  * Old: Block
+  * New: BlockAction
+* AWS::WAFv2::RuleGroup.RuleAction Captcha.Type (__changed__)
+  * Old: Captcha
+  * New: CaptchaAction
+* AWS::WAFv2::RuleGroup.RuleAction Challenge.Type (__changed__)
+  * Old: Challenge
+  * New: ChallengeAction
+* AWS::WAFv2::RuleGroup.RuleAction Count.Type (__changed__)
+  * Old: Count
+  * New: CountAction
+
+
+
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api Models.PrimitiveItemType (__changed__)
+  * Old: String
+  * New: Map
+
+## Property Type Changes
+
+
 
 # CloudFormation Resource Specification (us-west-2) v109.0.0
 
