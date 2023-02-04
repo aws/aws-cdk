@@ -22,6 +22,40 @@ describe('MSK Cluster', () => {
     vpc = new ec2.Vpc(stack, 'Vpc');
   });
 
+  const kafkaVersions = [
+    { parameter: msk.KafkaVersion.V1_1_1, cfnValue: '1.1.1' },
+    { parameter: msk.KafkaVersion.V2_2_1, cfnValue: '2.2.1' },
+    { parameter: msk.KafkaVersion.V2_3_1, cfnValue: '2.3.1' },
+    { parameter: msk.KafkaVersion.V2_4_1_1, cfnValue: '2.4.1.1' },
+    { parameter: msk.KafkaVersion.V2_5_1, cfnValue: '2.5.1' },
+    { parameter: msk.KafkaVersion.V2_6_0, cfnValue: '2.6.0' },
+    { parameter: msk.KafkaVersion.V2_6_1, cfnValue: '2.6.1' },
+    { parameter: msk.KafkaVersion.V2_6_2, cfnValue: '2.6.2' },
+    { parameter: msk.KafkaVersion.V2_6_3, cfnValue: '2.6.3' },
+    { parameter: msk.KafkaVersion.V2_7_0, cfnValue: '2.7.0' },
+    { parameter: msk.KafkaVersion.V2_7_1, cfnValue: '2.7.1' },
+    { parameter: msk.KafkaVersion.V2_7_2, cfnValue: '2.7.2' },
+    { parameter: msk.KafkaVersion.V2_8_0, cfnValue: '2.8.0' },
+    { parameter: msk.KafkaVersion.V2_8_1, cfnValue: '2.8.1' },
+    { parameter: msk.KafkaVersion.V3_1_1, cfnValue: '3.1.1' },
+    { parameter: msk.KafkaVersion.V3_2_0, cfnValue: '3.2.0' },
+    { parameter: msk.KafkaVersion.V3_3_1, cfnValue: '3.3.1' },
+  ];
+  test.each(kafkaVersions)('created with expected Kafka version $cfnValue', ({ parameter, cfnValue: expectedCfnValue }) => {
+    new msk.Cluster(stack, 'Cluster', {
+      clusterName: 'cluster',
+      kafkaVersion: parameter,
+      vpc,
+    });
+
+    Template.fromStack(stack).hasResource(
+      'AWS::MSK::Cluster', {},
+    );
+    Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+      KafkaVersion: expectedCfnValue,
+    });
+  });
+
   test('created with default properties', () => {
     new msk.Cluster(stack, 'Cluster', {
       clusterName: 'cluster',
