@@ -804,6 +804,62 @@ describe('cluster', () => {
 
   });
 
+  testDeprecated('configures Initialize-ECSAgent with additional flags', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('WindowsAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: new ecs.EcsOptimizedAmi({
+        windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
+      }),
+      awsVpcAdditionalLocalRoutes: ['10.1.0.0/16', '10.2.0.0/16'],
+      awsVpcBlockIMDS: true,
+      enableTaskENI: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
+      InstanceType: 't2.micro',
+      IamInstanceProfile: {
+        Ref: 'EcsClusterWindowsAutoScalingGroupInstanceProfile65DFA6BB',
+      },
+      SecurityGroups: [
+        {
+          'Fn::GetAtt': [
+            'EcsClusterWindowsAutoScalingGroupInstanceSecurityGroupDA468DF1',
+            'GroupId',
+          ],
+        },
+      ],
+      UserData: {
+        'Fn::Base64': {
+          'Fn::Join': [
+            '',
+            [
+              '<powershell>Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache\nImport-Module ECSTools\n[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "',
+              {
+                Ref: 'EcsCluster97242B84',
+              },
+              "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", '[\"json-file\",\"awslogs\"]', \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_TASK_IAM_ROLE\", \"true\", \"Machine\")\nInitialize-ECSAgent -Cluster '",
+              {
+                Ref: 'EcsCluster97242B84',
+              },
+              "' -EnableTaskIAMRole -EnableTaskENI -AwsvpcBlockIMDS -AwsvpcAdditionalLocalRoutes '[\"10.1.0.0/16\",\"10.2.0.0/16\"]'</powershell>",
+            ],
+          ],
+        },
+      },
+    });
+
+
+  });
+
   /*
    * TODO:v2.0.0 BEGINNING OF OBSOLETE BLOCK
    */
@@ -2670,5 +2726,69 @@ describe('Accessing container instance role', function () {
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('enabling enableTaskENI, awsVpcBlockIMDS creates the correct user data command', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+      enableTaskENI: true,
+      awsVpcBlockIMDS: true,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_ENABLE_TASK_ENI=true >> /etc/ecs/ecs.config');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('disabling enableTaskENI, awsVpcBlockIMDS creates the correct user data command', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+      enableTaskENI: false,
+      awsVpcBlockIMDS: false,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_ENABLE_TASK_ENI=false >> /etc/ecs/ecs.config');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=false >> /etc/ecs/ecs.config');
+  });
+
+  test('setting awsVpcAdditionalLocalRoutes creates the correct user data command', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+      awsVpcAdditionalLocalRoutes: ['10.1.0.0/16', '10.2.0.0/16'],
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_ADDITIONAL_LOCAL_ROUTES=["10.1.0.0/16","10.2.0.0/16"] >> /etc/ecs/ecs.config');
   });
 });

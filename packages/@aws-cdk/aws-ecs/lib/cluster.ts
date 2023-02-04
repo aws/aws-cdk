@@ -432,13 +432,28 @@ export class Cluster extends Resource implements ICluster {
         default:
           // Amazon ECS-optimized AMI for Amazon Linux 2
           autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+          let awsVpcBlockImds = options.awsVpcBlockIMDS === true;
           if (!options.canContainersAccessInstanceRole) {
             // Deny containers access to instance metadata service
             // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
             autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
             autoScalingGroup.addUserData('sudo service iptables save');
             // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
+            awsVpcBlockImds = true;
+          }
+          if (awsVpcBlockImds) {
             autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+          } else if (options.awsVpcBlockIMDS === false ) {
+            autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=false >> /etc/ecs/ecs.config');
+          }
+
+          if (options.awsVpcAdditionalLocalRoutes && options.awsVpcAdditionalLocalRoutes.length > 0) {
+            const formattedRoutes = options.awsVpcAdditionalLocalRoutes.map(route => `"${route}"`).join(',');
+            autoScalingGroup.addUserData(`echo ECS_AWSVPC_ADDITIONAL_LOCAL_ROUTES=[${formattedRoutes}] >> /etc/ecs/ecs.config`);
+          }
+
+          if (typeof options.enableTaskENI === 'boolean') {
+            autoScalingGroup.addUserData(`echo ECS_ENABLE_TASK_ENI=${String(options.enableTaskENI)} >> /etc/ecs/ecs.config`);
           }
 
           if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
@@ -536,12 +551,31 @@ export class Cluster extends Resource implements ICluster {
       autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_SPOT_INSTANCE_DRAINING", "true", "Machine")');
     }
 
+    const commandArguments: string[] = [];
     // enable task iam role
     if (!options.canContainersAccessInstanceRole) {
       autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")');
-      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole`);
-    } else {
+      commandArguments.push('-EnableTaskIAMRole');
+    }
+    // Allow Task ENI for awsvpc mode
+    if (options.enableTaskENI) {
+      commandArguments.push('-EnableTaskENI');
+    }
+    // Block IMDS access in awsvpc mode
+    if (options.awsVpcBlockIMDS) {
+      commandArguments.push('-AwsvpcBlockIMDS');
+    }
+    // Add additional local routes
+    const additionalRoutes = options.awsVpcAdditionalLocalRoutes;
+    if (additionalRoutes && additionalRoutes.length > 0 ) {
+      const formatted = additionalRoutes.map(route => `"${route}"`).join(',');
+      commandArguments.push(`-AwsvpcAdditionalLocalRoutes '[${formatted}]'`);
+    }
+
+    if (commandArguments.length === 0) {
       autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
+    } else {
+      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' ${commandArguments.join(' ')}`);
     }
   }
 
@@ -853,6 +887,26 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default - Automatically determined from `machineImage`, if available, otherwise `MachineImageType.AMAZON_LINUX_2`.
    */
   readonly machineImageType?: MachineImageType;
+  /**
+   * Enables the use of an ENI for task networking when the task uses awsvpc networking
+   * mode.
+   *
+   * @default - Value configured in the `machineImage`
+   */
+  readonly enableTaskENI?: boolean;
+  /**
+   * Blocks access to IMDS from the task when using awsvpc networking mode.
+   *
+   * @default - Enabled if `machineImageType` is `AMAZON_LINUX_2` otherwise the ECS agent configuration in the image will be used.
+   */
+  readonly awsVpcBlockIMDS?: boolean;
+  /**
+   * The provided local routes will use the host bridge instead of the ENI when
+   * a task is in awsvpc networking mode
+   *
+   * @default - Value configured in the `machineImage`
+   */
+  readonly awsVpcAdditionalLocalRoutes?: string[];
 }
 
 /**
