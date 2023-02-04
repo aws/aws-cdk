@@ -23,8 +23,7 @@ import {
 } from '@aws-cdk/core';
 import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as regionInfo from '@aws-cdk/region-info';
-import { regionsBefore, RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN } from '@aws-cdk/region-info/lib/aws-entities';
+import * as regionInformation from '@aws-cdk/region-info';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -32,7 +31,7 @@ import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
-import { parseBucketArn, parseBucketName } from './util';
+import { parseBucketArn, parseBucketName, buildbucketWebsiteUrl } from './util';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
@@ -1615,30 +1614,21 @@ export class Bucket extends BucketBase {
     }
     Bucket.validateBucketName(bucketName);
 
-    const _regionInfo = regionInfo.RegionInfo.get(region);
-    const oldUrlFormatRegions = new Set(regionsBefore(RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN));
+    const regionInfo = regionInformation.RegionInfo.get(region);
 
     const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
-      ? !oldUrlFormatRegions.has(region)
+      ? regionInfo.hasRegionNewWebsiteUrlFormat()
       : attrs.bucketWebsiteNewUrlFormat;
 
-    let bucketWebsiteUrlFormat: (bucketWebsiteNewUrlFormat: boolean) => string =
-      function (bucketWebsiteNewUrlFormat): string {
-        return bucketWebsiteNewUrlFormat ? `s3-website.${region}.${urlSuffix}` : `s3-website-${region}.${urlSuffix}`;
-      };
+    let bucketWebsiteUrl = attrs.bucketWebsiteNewUrlFormat === undefined
+      ? regionInfo.s3StaticWebsiteEndpoint
+      : buildbucketWebsiteUrl(attrs.bucketWebsiteNewUrlFormat, region, urlSuffix);
 
-    let bucketWebsiteUrl: () => string =
-      function (): string {
-        if (attrs.bucketWebsiteNewUrlFormat === undefined) {
-          return _regionInfo.s3StaticWebsiteEndpoint !== undefined
-            ? _regionInfo.s3StaticWebsiteEndpoint
-            : bucketWebsiteUrlFormat(!oldUrlFormatRegions.has(region));
-        } else {
-          return bucketWebsiteUrlFormat(attrs.bucketWebsiteNewUrlFormat);
-        }
-      };
+    if (bucketWebsiteUrl === undefined) {
+      bucketWebsiteUrl = buildbucketWebsiteUrl(newUrlFormat, region, urlSuffix);
+    }
 
-    const websiteDomain = `${bucketName}.` + bucketWebsiteUrl();
+    const websiteDomain = `${bucketName}.` + bucketWebsiteUrl;
 
     class Import extends BucketBase {
       public readonly bucketName = bucketName!;

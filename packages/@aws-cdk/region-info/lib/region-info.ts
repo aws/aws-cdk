@@ -1,4 +1,4 @@
-import { partitionInformation } from './aws-entities';
+import { partitionInformation, regionsBefore, RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN } from './aws-entities';
 import { Fact, FactName } from './fact';
 
 /**
@@ -177,5 +177,12 @@ export class RegionInfo {
    */
   public adotLambdaLayerArn(type: string, version: string, architecture: string): string | undefined {
     return Fact.find(this.name, FactName.adotLambdaLayer(type, version, architecture));
+  }
+
+  /**
+   * Returns true if the region supports the new S3 static website url format, that is `s3-website.REGION.s3.amazonaws.com`
+   */
+  public hasRegionNewWebsiteUrlFormat(): boolean {
+    return !new Set(regionsBefore(RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN)).has(this.name);
   }
 }
