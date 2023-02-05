@@ -707,11 +707,11 @@ export class AuroraPostgresEngineVersion {
   /** Version "12.10". */
   public static readonly VER_12_10 = AuroraPostgresEngineVersion.of('12.10', '12', { s3Import: true, s3Export: true, lambda: true });
   /** Version "12.11". */
-  public static readonly VER_12_11 = AuroraPostgresEngineVersion.of('12.11', '12', { s3Import: true, s3Export: true, lambda: true  });
+  public static readonly VER_12_11 = AuroraPostgresEngineVersion.of('12.11', '12', { s3Import: true, s3Export: true, lambda: true });
   /** Version "12.12". */
-  public static readonly VER_12_12 = AuroraPostgresEngineVersion.of('12.12', '12', { s3Import: true, s3Export: true, lambda: true  });
+  public static readonly VER_12_12 = AuroraPostgresEngineVersion.of('12.12', '12', { s3Import: true, s3Export: true, lambda: true });
   /** Version "12.13". */
-  public static readonly VER_12_13 = AuroraPostgresEngineVersion.of('12.13', '12', { s3Import: true, s3Export: true, lambda: true  });
+  public static readonly VER_12_13 = AuroraPostgresEngineVersion.of('12.13', '12', { s3Import: true, s3Export: true, lambda: true });
   /** Version "13.3". */
   public static readonly VER_13_3 = AuroraPostgresEngineVersion.of('13.3', '13', { s3Import: true, s3Export: true, lambda: true });
   /** Version "13.4". */

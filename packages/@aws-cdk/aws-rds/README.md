@@ -543,6 +543,39 @@ new rds.DatabaseCluster(this, 'dbcluster', {
 });
 ```
 
+## Enabling Lambda Intregration
+
+RDS clusters support invoking lambda functions from within a PostgreSQL or MySQL instance. In order to invoke a lambda function, a role must be provided to control which lambda functions can be invoked.
+
+To enable this functionality, set the `lambdaInvocationRole` property.
+
+You can read more about invoking a lambda function here:
+
+* [Aurora MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.Lambda.html)
+* [Aurora PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/PostgreSQL-Lambda.html)
+
+The following snippet sets up a database cluster with a lambda invocation role provided:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const associatedRole = new Role(this, 'AssociatedRole', {
+  assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+});
+
+declare const fn: lambda.Function;
+
+fn.grantInvoke(associatedRole)
+
+new rds.DatabaseCluster(this, 'dbcluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  instanceProps: {
+    vpc,
+  },
+  lambdaInvocationRole: associatedRole,
+});
+```
+
 ## Creating a Database Proxy
 
 Amazon RDS Proxy sits between your application and your relational database to efficiently manage
