@@ -304,6 +304,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       buildSpec: projectBuildSpec,
       role: this.props.role,
       timeout: projectOptions.timeout,
+      logging: projectOptions.logging,
     });
 
     if (this.props.additionalDependable) {
