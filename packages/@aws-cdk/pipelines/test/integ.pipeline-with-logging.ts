@@ -16,10 +16,6 @@ const app = new cdk.App({
 });
 const stack = new Stack(app, 'LoggingPipelineStack');
 
-// const bucket = new s3.Bucket(stack, 'MyLogsBucket', {
-//   removalPolicy: cdk.RemovalPolicy.DESTROY,
-// });
-
 const logGroup = new logs.LogGroup(stack, 'LogGroup', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
