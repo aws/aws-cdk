@@ -1,4 +1,4 @@
-import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, LegacyStackSynthesizer, NestedStack, Stack } from '@aws-cdk/core';
+import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, LegacyStackSynthesizer, NestedStack, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
@@ -70,6 +70,30 @@ describe('Template', () => {
           Foo: {
             Type: 'Foo::Bar',
             Properties: { Baz: 'Qux' },
+          },
+        },
+      });
+    });
+
+
+    test('nested stack inside a Stage in an App', () => {
+      const app = new App();
+      const stage = new Stage(app, 'Stage');
+      const stack = new Stack(stage);
+      const nested = new NestedStack(stack, 'MyNestedStack');
+      new CfnResource(nested, 'Bar', {
+        type: 'Bar::Baz',
+        properties: {
+          Qux: 'Foo',
+        },
+      });
+      const template = Template.fromStack(nested);
+
+      expect(template.toJSON()).toEqual({
+        Resources: {
+          Bar: {
+            Type: 'Bar::Baz',
+            Properties: { Qux: 'Foo' },
           },
         },
       });
