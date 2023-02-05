@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { App, Duration, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import { MockIntegration, PassthroughBehavior, RestApi } from '../../lib';
 import { RequestAuthorizer } from '../../lib/authorizers';
 import { IdentitySource } from '../../lib/authorizers/identity-source';
@@ -24,7 +24,11 @@ const restapi = new RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 const authorizer = new RequestAuthorizer(stack, 'MyAuthorizer', {
   handler: authorizerFn,
   identitySources: [IdentitySource.header('Authorization'), IdentitySource.queryString('allow')],
-  resultsCacheTtl: Duration.minutes(5),
+});
+
+const secondAuthorizer = new RequestAuthorizer(stack, 'MySecondAuthorizer', {
+  handler: authorizerFn,
+  identitySources: [IdentitySource.header('Authorization'), IdentitySource.queryString('allow')],
 });
 
 restapi.root.addMethod('ANY', new MockIntegration({
@@ -40,4 +44,19 @@ restapi.root.addMethod('ANY', new MockIntegration({
     { statusCode: '200' },
   ],
   authorizer,
+});
+
+restapi.root.resourceForPath('auth').addMethod('ANY', new MockIntegration({
+  integrationResponses: [
+    { statusCode: '200' },
+  ],
+  passthroughBehavior: PassthroughBehavior.NEVER,
+  requestTemplates: {
+    'application/json': '{ "statusCode": 200 }',
+  },
+}), {
+  methodResponses: [
+    { statusCode: '200' },
+  ],
+  authorizer: secondAuthorizer,
 });
