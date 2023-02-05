@@ -1,6 +1,7 @@
+import { CfnFunction } from './lambda.generated';
+
 /**
  * Specify the runtime update mode.
- * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-runtimemanagementconfig.html#cfn-lambda-function-runtimemanagementconfig-updateruntimeon
  */
 export class RuntimeManagementMode {
   /**
@@ -23,24 +24,24 @@ export class RuntimeManagementMode {
    * you can use this mode to roll back your function to an earlier runtime version.
    */
   public static manual(arn: string): RuntimeManagementMode {
-    return new RuntimeManagementMode(arn);
+    return new RuntimeManagementMode('Manual', arn);
   }
 
   /**
-   * RuntimeManagementConfig.UpdateRuntimeOn
+   * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-runtimemanagementconfig.html
    */
-  readonly mode: string;
-  /**
-   * RuntimeManagementConfig.RuntimeVersionArn
-   */
-  readonly arn?: string;
+  readonly runtimeManagementConfig: CfnFunction.RuntimeManagementConfigProperty;
 
-  protected constructor(public readonly value: string) {
-    if (value.startsWith('arn:')) {
-      this.arn = value;
-      this.mode = 'Manual';
+  protected constructor(public readonly mode: string, public readonly arn?: string) {
+    if (arn) {
+      this.runtimeManagementConfig = {
+        runtimeVersionArn: arn,
+        updateRuntimeOn: mode,
+      };
     } else {
-      this.mode = value;
+      this.runtimeManagementConfig = {
+        updateRuntimeOn: mode,
+      };
     }
   }
 }

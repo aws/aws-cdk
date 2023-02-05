@@ -786,20 +786,6 @@ export class Function extends FunctionBase {
       throw new Error(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`);
     }
 
-    let rmc = undefined;
-    if (props.runtimeManagementMode) {
-      if (props.runtimeManagementMode.arn) {
-        rmc = {
-          runtimeVersionArn: props.runtimeManagementMode.arn,
-          updateRuntimeOn: props.runtimeManagementMode.mode,
-        };
-      } else {
-        rmc = {
-          updateRuntimeOn: props.runtimeManagementMode.mode,
-        };
-      }
-    }
-
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -835,7 +821,7 @@ export class Function extends FunctionBase {
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
-      runtimeManagementConfig: rmc,
+      runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
