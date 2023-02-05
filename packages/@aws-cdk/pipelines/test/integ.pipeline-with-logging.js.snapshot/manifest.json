@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ef71b4b02792dbccb299b30e1186788e498e0ff5afae4dd07a3645348575125e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d99681b07ca842e41d76f0e1de1c36e98184be62476be52ea702af467851166d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,12 +33,6 @@
         "LoggingPipelineStack.assets"
       ],
       "metadata": {
-        "/LoggingPipelineStack/MyLogsBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLogsBucket57652DD1"
-          }
-        ],
         "/LoggingPipelineStack/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -93,24 +87,6 @@
             "data": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
           }
         ],
-        "/LoggingPipelineStack/Pipeline/Pipeline/MyWave/PostStep/PostStep/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWavePostStepRole440B3F64"
-          }
-        ],
-        "/LoggingPipelineStack/Pipeline/Pipeline/MyWave/PostStep/PostStep/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWavePostStepRoleDefaultPolicyF4712C0D"
-          }
-        ],
-        "/LoggingPipelineStack/Pipeline/Pipeline/MyWave/PostStep/PostStep/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWavePostStepF4CC34B8"
-          }
-        ],
         "/LoggingPipelineStack/Pipeline/CodeBuildActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -141,6 +117,12 @@
             "data": "PipelineUpdatePipelineSelfMutationDAA41400"
           }
         ],
+        "/LoggingPipelineStack/Exports/Output{\"Ref\":\"PipelineBuildSynthCdkBuildProject6BEFA8E6\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefPipelineBuildSynthCdkBuildProject6BEFA8E65A914708"
+          }
+        ],
         "/LoggingPipelineStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -151,6 +133,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyLogsBucket57652DD1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLogsBucket57652DD1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "PipelineMyWavePostStepRole440B3F64": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineMyWavePostStepRole440B3F64",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "PipelineMyWavePostStepRoleDefaultPolicyF4712C0D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineMyWavePostStepRoleDefaultPolicyF4712C0D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "PipelineMyWavePostStepF4CC34B8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineMyWavePostStepF4CC34B8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -172,7 +190,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/09f29f7ebe8b7593140814d393b86b9778dbd156558bd366262767e00c1a712e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -185,9 +203,34 @@
         }
       },
       "dependencies": [
+        "LoggingPipelineStack",
         "PipelineLoggingTestDefaultTestDeployAssert13FCCE41.assets"
       ],
       "metadata": {
+        "/PipelineLoggingTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetProjects"
+          }
+        ],
+        "/PipelineLoggingTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetProjects"
+          }
+        ],
+        "/PipelineLoggingTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/PipelineLoggingTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
         "/PipelineLoggingTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

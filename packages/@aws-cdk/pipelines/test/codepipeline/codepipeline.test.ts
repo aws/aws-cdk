@@ -2,6 +2,8 @@ import { Template, Annotations, Match } from '@aws-cdk/assertions';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import { Pipeline } from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
+import { LogGroup } from '@aws-cdk/aws-logs';
+import { Bucket } from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Stack } from '@aws-cdk/core';
@@ -389,6 +391,47 @@ test('action name is calculated properly if it has cross-stack dependencies', ()
         Match.objectLike({ Name: 'Stack1.S1', RunOrder: 4 }),
       ]),
     }]),
+  });
+});
+
+test('Support logging setting from codeBuildDefaults', () => {
+  // GIVEN
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const bucket = new Bucket(pipelineStack, 'MyLogsBucket');
+  const logGroup = new LogGroup(pipelineStack, 'LogGroup', {
+    logGroupName: 'TestLogGroup',
+  });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    codeBuildDefaults: {
+      logging: {
+        cloudWatch: {
+          logGroup: logGroup,
+          prefix: 'prefix',
+          enabled: true,
+        },
+        s3: {
+          encrypted: true,
+          bucket: bucket,
+          prefix: 'test',
+          enabled: true,
+        },
+      },
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodeBuild::Project', {
+    LogsConfig: Match.objectLike({
+      CloudWatchLogs: Match.objectLike({
+        Status: 'ENABLED',
+        StreamName: 'prefix',
+      }),
+      S3Logs: Match.objectLike({
+        EncryptionDisabled: true,
+        Status: 'ENABLED',
+      }),
+    }),
   });
 });
 

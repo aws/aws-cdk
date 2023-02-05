@@ -1,7 +1,7 @@
 {
   "version": "29.0.0",
   "files": {
-    "ef71b4b02792dbccb299b30e1186788e498e0ff5afae4dd07a3645348575125e": {
+    "d99681b07ca842e41d76f0e1de1c36e98184be62476be52ea702af467851166d": {
       "source": {
         "path": "LoggingPipelineStack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ef71b4b02792dbccb299b30e1186788e498e0ff5afae4dd07a3645348575125e.json",
+          "objectKey": "d99681b07ca842e41d76f0e1de1c36e98184be62476be52ea702af467851166d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
