@@ -1,14 +1,16 @@
 /// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import { GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
 import * as logs from '@aws-cdk/aws-logs';
-// import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import { ExpectedResult } from '@aws-cdk/integ-tests';
 import * as pipelines from '../lib';
 
-
+/*
+ * Stack verification steps:
+ * * aws codebuild batch-get-projects --names <synth codebuild project name> : should return correct cloudwatchlog settings
+ */
 const app = new cdk.App({
   context: {
     '@aws-cdk/core:newStyleStackSynthesis': '1',
