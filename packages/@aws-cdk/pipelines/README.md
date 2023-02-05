@@ -728,6 +728,8 @@ of properties that allow you to customize various aspects of the projects:
 ```ts
 declare const vpc: ec2.Vpc;
 declare const mySecurityGroup: ec2.SecurityGroup;
+declare const bucket: s3.Bucket;
+declare const logGroup: logs.LogGroup;
 new pipelines.CodeBuildStep('Synth', {
   // ...standard ShellStep props...
   commands: [/* ... */],
@@ -764,6 +766,21 @@ new pipelines.CodeBuildStep('Synth', {
   rolePolicyStatements: [
     new iam.PolicyStatement({ /* ... */ }),
   ],
+
+  // Control logging options
+  logging: {
+    cloudWatch: {
+      logGroup: logGroup,
+      prefix: 'prefix',
+      enabled: true,
+    },
+    s3: {
+      encrypted: true,
+      bucket: bucket,
+      prefix: 's3prefix',
+      enabled: true,
+    },
+  },
 });
 ```
 
