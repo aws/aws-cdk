@@ -381,6 +381,110 @@ describe('bucket', () => {
     });
   });
 
+  test('bucket with object lock enabled but no retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: Match.absent(),
+    });
+  });
+
+  test('object lock defaults to disabled', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket');
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: Match.absent(),
+    });
+  });
+
+  test('object lock defaults to enabled when default retention is specified', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(7 * 365)),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'GOVERNANCE',
+            Days: 7 * 365,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock enabled with governance retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(1)),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'GOVERNANCE',
+            Days: 1,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock enabled with compliance retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.compliance(cdk.Duration.days(1)),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'COMPLIANCE',
+            Days: 1,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock disabled throws error with retention set', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: false,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(1)),
+    })).toThrow('Object Lock must be enabled to configure default retention settings');
+  });
+
+  test('bucket with object lock requires duration than one day', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(0)),
+    })).toThrow('Object Lock retention duration must be at least 1 day');
+  });
+
+  // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
+  test('bucket with object lock requires duration less than 100 years', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(365 * 101)),
+    })).toThrow('Object Lock retention duration must be less than 100 years');
+  });
+
   test('bucket with block public access set to BlockAll', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
