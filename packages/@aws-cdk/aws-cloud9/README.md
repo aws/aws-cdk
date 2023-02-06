@@ -116,9 +116,12 @@ By default, the owner will be the identity that creates the Environment, which i
 ### To specify the AWS Account Root User as the environment owner, use `Owner.accountRoot()`
 
 ```ts
+declare const vpc: ec2.Vpc;
 new cloud9.Ec2Environment(this, 'C9Env', {
-  // provides root account id.
-  owner: cloud9.Owner.AccountRoot('111111111')
+  vpc,
+  imageId: cloud9.ImageId.AMAZON_LINUX_2,
+
+  owner: cloud9.Owner.accountRoot('111111111')
 })
 ```
 
@@ -127,9 +130,13 @@ new cloud9.Ec2Environment(this, 'C9Env', {
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 
-const user = new iam.User(stack, 'User');
+const user = new iam.User(this, 'user');
 user.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCloud9Administrator'));
+declare const vpc: ec2.Vpc;
 new cloud9.Ec2Environment(this, 'C9Env', {
-  owner: cloud9.Owner.User(user)
+  vpc,
+  imageId: cloud9.ImageId.AMAZON_LINUX_2,
+
+  owner: cloud9.Owner.user(user)
 })
 ```
