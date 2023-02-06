@@ -8,7 +8,6 @@ import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { LITERAL_STRING_KEY, mergePrincipal } from './private/util';
 import { ISamlProvider } from './saml-provider';
-import { Aws } from '../../../aws-cdk-lib';
 
 /**
  * Any object that has an associated principal that a permission can be granted to
@@ -737,7 +736,7 @@ export class SamlConsolePrincipal extends SamlPrincipal {
     super(samlProvider, {
       ...conditions,
       StringEquals: {
-        'SAML:aud': `https://signin.${Aws.URL_SUFFIX}/saml`,
+        'SAML:aud': cdk.Aws.PARTITION==='aws-cn'? 'https://signin.amazonaws.cn/saml': `https://signin.${cdk.Aws.URL_SUFFIX}/saml`,
       },
     });
   }
