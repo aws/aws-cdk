@@ -330,8 +330,31 @@ new logs.QueryDefinition(this, 'QueryDefinition', {
   queryDefinitionName: 'MyQuery',
   queryString: new logs.QueryString({
     fields: ['@timestamp', '@message'],
+    parse: '@message "[*] *" as loggingType, loggingMessage',
+    filter: 'loggingType = "ERROR"',
     sort: '@timestamp desc',
     limit: 20,
+  }),
+});
+```
+
+Query strings can also be constructed with multiple parse and filter statements if these are provided as an array.
+
+Example:
+
+```ts
+new logs.QueryDefinition(this, 'QueryDefinition', {
+  queryDefinitionName: 'MyQuery',
+  queryString: new logs.QueryString({
+    fields: ['@timestamp', '@message'],
+    parse: [
+      '@message "[*] *" as loggingType, loggingMessage',
+      '@message "<*>: *" as differentLoggingType, differentLoggingMessage',
+    ],
+    filter: [
+      'loggingType = "ERROR"',
+      'loggingMessage = "A very strange error occurred!"',
+    ]
   }),
 });
 ```
