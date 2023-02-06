@@ -168,7 +168,7 @@ test('SAML principal', () => {
             StringEquals: {
               'SAML:aud': {
                 'Fn::Join': ['', ['https://signin.', { Ref: 'AWS::URLSuffix' }, '/saml']],
-              }
+              },
             },
           },
           Effect: 'Allow',
