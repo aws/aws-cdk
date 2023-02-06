@@ -1,10 +1,10 @@
 import { RegionInfo } from '@aws-cdk/region-info';
 import { IConstruct } from 'constructs';
+import { Architecture } from './architecture';
+import { IFunction } from './function-base';
 import { Stack } from '../../core/lib/stack';
 import { Token } from '../../core/lib/token';
 import { FactName } from '../../region-info/lib/fact';
-import { Architecture } from './architecture';
-import { IFunction } from './function-base';
 
 /**
  * The type of ADOT Lambda layer

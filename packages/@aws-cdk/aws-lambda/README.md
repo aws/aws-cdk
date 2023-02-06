@@ -1042,3 +1042,28 @@ new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
 ```
+
+## Runtime updates
+
+Lambda runtime management controls help reduce the risk of impact to your workloads in the rare event of a runtime version incompatibility.
+For more information, see [Runtime management controls](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html#runtime-management-controls)
+
+```ts
+new Function(stack, 'Lambda', {
+  runtimeManagementMode: RuntimeManagementMode.AUTO,
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+If you want to set the "Manual" setting, using the ARN of the runtime version as the argument.
+
+```ts
+new Function(stack, 'Lambda', {
+  runtimeManagementMode: RuntimeManagementMode.manual('runtimeVersion-arn'),
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
