@@ -1401,9 +1401,33 @@ export interface BucketProps {
   /**
    * Whether this bucket should have versioning turned on or not.
    *
-   * @default false
+   * @default false (unless object lock is enabled, then true)
    */
   readonly versioned?: boolean;
+
+  /**
+   * Enable object lock on the bucket.
+   *
+   * Enabling object lock for existing buckets is not supported. Object lock must be
+   * enabled when the bucket is created.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-bucket-config-enable
+   *
+   * @default false, unless objectLockDefaultRetention is set (then, true)
+   */
+  readonly objectLockEnabled?: boolean;
+
+  /**
+   * The default retention mode and rules for S3 Object Lock.
+   *
+   * Default retention can be configured after a bucket is created if the bucket already
+   * has object lock enabled. Enabling object lock for existing buckets is not supported.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-bucket-config-enable
+   *
+   * @default no default retention period
+   */
+  readonly objectLockDefaultRetention?: ObjectLockRetention;
 
   /**
    * Whether this bucket should send notifications to Amazon EventBridge or not.
@@ -1787,6 +1811,8 @@ export class Bucket extends BucketBase {
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
 
+    const objectLockConfiguration = this.parseObjectLockConfig(props);
+
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
@@ -1802,6 +1828,8 @@ export class Bucket extends BucketBase {
       ownershipControls: this.parseOwnershipControls(props),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
+      objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
+      objectLockConfiguration: objectLockConfiguration,
     });
     this._resource = resource;
 
@@ -2164,6 +2192,27 @@ export class Bucket extends BucketBase {
     });
   }
 
+  private parseObjectLockConfig(props: BucketProps): CfnBucket.ObjectLockConfigurationProperty | undefined {
+    const { objectLockEnabled, objectLockDefaultRetention } = props;
+
+    if (!objectLockDefaultRetention) {
+      return undefined;
+    }
+    if (objectLockEnabled === false && objectLockDefaultRetention) {
+      throw new Error('Object Lock must be enabled to configure default retention settings');
+    }
+
+    return {
+      objectLockEnabled: 'Enabled',
+      rule: {
+        defaultRetention: {
+          days: objectLockDefaultRetention.duration.toDays(),
+          mode: objectLockDefaultRetention.mode,
+        },
+      },
+    };
+  }
+
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
     if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirect && !props.websiteRoutingRules) {
       return undefined;
@@ -2231,7 +2280,7 @@ export class Bucket extends BucketBase {
         effect: iam.Effect.ALLOW,
         principals: [new iam.ServicePrincipal('logging.s3.amazonaws.com')],
         actions: ['s3:PutObject'],
-        resources: [this.arnForObjects(prefix ? `${prefix}*`: '*')],
+        resources: [this.arnForObjects(prefix ? `${prefix}*` : '*')],
         conditions: conditions,
       }));
     } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
@@ -2740,6 +2789,93 @@ export interface RoutingRule {
    * @default - No condition
    */
   readonly condition?: RoutingRuleCondition;
+}
+
+/**
+ * Modes in which S3 Object Lock retention can be configured.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes
+ */
+export enum ObjectLockMode {
+  /**
+   * The Governance retention mode.
+   *
+   * With governance mode, you protect objects against being deleted by most users, but you can
+   * still grant some users permission to alter the retention settings or delete the object if
+   * necessary. You can also use governance mode to test retention-period settings before
+   * creating a compliance-mode retention period.
+   */
+  GOVERNANCE = 'GOVERNANCE',
+
+  /**
+   * The Compliance retention mode.
+   *
+   * When an object is locked in compliance mode, its retention mode can't be changed, and
+   * its retention period can't be shortened. Compliance mode helps ensure that an object
+   * version can't be overwritten or deleted for the duration of the retention period.
+   */
+  COMPLIANCE = 'COMPLIANCE',
+}
+
+/**
+ * The default retention settings for an S3 Object Lock configuration.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html
+ */
+export class ObjectLockRetention {
+  /**
+   * Configure for Governance retention for a specified duration.
+   *
+   * With governance mode, you protect objects against being deleted by most users, but you can
+   * still grant some users permission to alter the retention settings or delete the object if
+   * necessary. You can also use governance mode to test retention-period settings before
+   * creating a compliance-mode retention period.
+   *
+   * @param duration the length of time for which objects should retained
+   * @returns the ObjectLockRetention configuration
+   */
+  public static governance(duration: Duration): ObjectLockRetention {
+    return new ObjectLockRetention(ObjectLockMode.GOVERNANCE, duration);
+  }
+
+  /**
+   * Configure for Compliance retention for a specified duration.
+   *
+   * When an object is locked in compliance mode, its retention mode can't be changed, and
+   * its retention period can't be shortened. Compliance mode helps ensure that an object
+   * version can't be overwritten or deleted for the duration of the retention period.
+   *
+   * @param duration the length of time for which objects should be retained
+   * @returns the ObjectLockRetention configuration
+   */
+  public static compliance(duration: Duration): ObjectLockRetention {
+    return new ObjectLockRetention(ObjectLockMode.COMPLIANCE, duration);
+  }
+
+  /**
+   * The default period for which objects should be retained.
+   */
+  public readonly duration: Duration;
+
+  /**
+   * The retention mode to use for the object lock configuration.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes
+   */
+  public readonly mode: ObjectLockMode;
+
+  private constructor(mode: ObjectLockMode, duration: Duration) {
+    // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
+    if (duration.toDays() > 365 * 100) {
+      throw new Error('Object Lock retention duration must be less than 100 years');
+    }
+    if (duration.toDays() < 1) {
+      throw new Error('Object Lock retention duration must be at least 1 day');
+    }
+
+    this.mode = mode;
+    this.duration = duration;
+  }
 }
 
 /**
