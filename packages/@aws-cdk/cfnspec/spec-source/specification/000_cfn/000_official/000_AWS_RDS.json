@@ -1,5 +1,5 @@
 {
-  "$version": "106.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::RDS::DBCluster.DBClusterRole": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-dbclusterrole.html",
@@ -29,6 +29,23 @@
         },
         "Port": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-endpoint.html#cfn-rds-dbcluster-endpoint-port",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::RDS::DBCluster.MasterUserSecret": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html",
+      "Properties": {
+        "KmsKeyId": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html#cfn-rds-dbcluster-masterusersecret-kmskeyid",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "SecretArn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html#cfn-rds-dbcluster-masterusersecret-secretarn",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -104,6 +121,23 @@
         }
       }
     },
+    "AWS::RDS::DBInstance.CertificateDetails": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbinstance-certificatedetails.html",
+      "Properties": {
+        "CAIdentifier": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbinstance-certificatedetails.html#cfn-rds-dbinstance-certificatedetails-caidentifier",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "ValidTill": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbinstance-certificatedetails.html#cfn-rds-dbinstance-certificatedetails-validtill",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::RDS::DBInstance.DBInstanceRole": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbinstance-dbinstancerole.html",
       "Properties": {
@@ -138,6 +172,23 @@
         },
         "Port": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbinstance-endpoint.html#cfn-rds-dbinstance-endpoint-port",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::RDS::DBInstance.MasterUserSecret": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbinstance-masterusersecret.html",
+      "Properties": {
+        "KmsKeyId": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbinstance-masterusersecret.html#cfn-rds-dbinstance-masterusersecret-kmskeyid",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "SecretArn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbinstance-masterusersecret.html#cfn-rds-dbinstance-masterusersecret-secretarn",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -190,12 +241,6 @@
         },
         "SecretArn": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbproxy-authformat.html#cfn-rds-dbproxy-authformat-secretarn",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        },
-        "UserName": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbproxy-authformat.html#cfn-rds-dbproxy-authformat-username",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -385,6 +430,9 @@
         "Endpoint.Port": {
           "PrimitiveType": "String"
         },
+        "MasterUserSecret.SecretArn": {
+          "PrimitiveType": "String"
+        },
         "ReadEndpoint.Address": {
           "PrimitiveType": "String"
         }
@@ -553,10 +601,22 @@
           "Required": false,
           "UpdateType": "Immutable"
         },
+        "ManageMasterUserPassword": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html#cfn-rds-dbcluster-managemasteruserpassword",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "MasterUserPassword": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html#cfn-rds-dbcluster-masteruserpassword",
           "PrimitiveType": "String",
           "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "MasterUserSecret": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html#cfn-rds-dbcluster-masterusersecret",
+          "Required": false,
+          "Type": "MasterUserSecret",
           "UpdateType": "Mutable"
         },
         "MasterUsername": {
@@ -742,6 +802,12 @@
     },
     "AWS::RDS::DBInstance": {
       "Attributes": {
+        "CertificateDetails.CAIdentifier": {
+          "PrimitiveType": "String"
+        },
+        "CertificateDetails.ValidTill": {
+          "PrimitiveType": "String"
+        },
         "DBInstanceArn": {
           "PrimitiveType": "String"
         },
@@ -758,6 +824,9 @@
           "PrimitiveType": "String"
         },
         "Endpoint.Port": {
+          "PrimitiveType": "String"
+        },
+        "MasterUserSecret.SecretArn": {
           "PrimitiveType": "String"
         }
       },
@@ -804,6 +873,18 @@
         "CACertificateIdentifier": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-cacertificateidentifier",
           "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "CertificateDetails": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-certificatedetails",
+          "Required": false,
+          "Type": "CertificateDetails",
+          "UpdateType": "Mutable"
+        },
+        "CertificateRotationRestart": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-certificaterotationrestart",
+          "PrimitiveType": "Boolean",
           "Required": false,
           "UpdateType": "Mutable"
         },
@@ -961,10 +1042,22 @@
           "Required": false,
           "UpdateType": "Mutable"
         },
+        "ManageMasterUserPassword": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-managemasteruserpassword",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "MasterUserPassword": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-masteruserpassword",
           "PrimitiveType": "String",
           "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "MasterUserSecret": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-masterusersecret",
+          "Required": false,
+          "Type": "MasterUserSecret",
           "UpdateType": "Mutable"
         },
         "MasterUsername": {
@@ -1292,6 +1385,9 @@
         "IsDefault": {
           "PrimitiveType": "Boolean"
         },
+        "TargetRole": {
+          "PrimitiveType": "String"
+        },
         "VpcId": {
           "PrimitiveType": "String"
         }
@@ -1317,12 +1413,6 @@
           "Required": false,
           "Type": "List",
           "UpdateType": "Mutable"
-        },
-        "TargetRole": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxyendpoint.html#cfn-rds-dbproxyendpoint-targetrole",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Immutable"
         },
         "VpcSecurityGroupIds": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxyendpoint.html#cfn-rds-dbproxyendpoint-vpcsecuritygroupids",
@@ -1376,7 +1466,7 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxytargetgroup.html#cfn-rds-dbproxytargetgroup-dbproxyname",
           "PrimitiveType": "String",
           "Required": true,
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         },
         "TargetGroupName": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxytargetgroup.html#cfn-rds-dbproxytargetgroup-targetgroupname",

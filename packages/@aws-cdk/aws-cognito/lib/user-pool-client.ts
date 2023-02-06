@@ -464,6 +464,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
           policy: AwsCustomResourcePolicy.fromSdkCalls({
             resources: [this.userPool.userPoolArn],
           }),
+          // APIs are available in 2.1055.0
+          installLatestAwsSdk: false,
         },
       ).getResponseField('UserPoolClient.ClientSecret'));
     }

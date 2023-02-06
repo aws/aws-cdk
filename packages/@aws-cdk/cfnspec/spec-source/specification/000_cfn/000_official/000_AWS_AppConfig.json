@@ -1,5 +1,5 @@
 {
-  "$version": "106.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::AppConfig::Application.Tags": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-application-tags.html",
@@ -238,6 +238,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-environmentid",
           "PrimitiveType": "String",
           "Required": true,
+          "UpdateType": "Immutable"
+        },
+        "KmsKeyIdentifier": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-kmskeyidentifier",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Immutable"
         },
         "Tags": {

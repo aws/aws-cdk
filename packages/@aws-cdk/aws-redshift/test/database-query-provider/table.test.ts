@@ -135,38 +135,17 @@ describe('create', () => {
     }));
   });
 
-  test('serializes comments in statement', async () => {
+  test('serializes table comment in statement', async () => {
     const event = baseEvent;
     const newResourceProperties: ResourcePropertiesType = {
       ...resourceProperties,
-      tableColumns: [
-        { name: 'col1', dataType: 'varchar(4)', comment: 'comment' },
-      ],
+      tableComment: 'table comment',
     };
 
     await manageTable(newResourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(4))`,
-    }));
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `COMMENT ON COLUMN ${tableNamePrefix}${requestIdTruncated}.col1 IS 'comment'`,
-    }));
-  });
-
-  test('serializes encoding in statement', async () => {
-    const event = baseEvent;
-    const newResourceProperties: ResourcePropertiesType = {
-      ...resourceProperties,
-      tableColumns: [
-        { name: 'col1', dataType: 'varchar(4)', encoding: ColumnEncoding.RAW },
-      ],
-    };
-
-    await manageTable(newResourceProperties, event);
-
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(4) ENCODE RAW)`,
+      Sql: `COMMENT ON TABLE ${tableNamePrefix}${requestIdTruncated} IS 'table comment'`,
     }));
   });
 });
@@ -537,6 +516,43 @@ describe('update', () => {
     });
   });
 
+  describe('table comment', () => {
+    test('does not replace if comment added on table', async () => {
+      const newComment = 'newComment';
+      const newResourceProperties = {
+        ...resourceProperties,
+        tableComment: newComment,
+      };
+
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `COMMENT ON TABLE ${physicalResourceId} IS '${newComment}'`,
+      }));
+    });
+
+    test('does not replace if comment removed on table', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableComment: 'oldComment',
+        },
+      };
+      const newResourceProperties = {
+        ...resourceProperties,
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `COMMENT ON TABLE ${physicalResourceId} IS NULL`,
+      }));
+    });
+  });
+
   describe('column comment', () => {
     test('does not replace if comment added on column', async () => {
       const newComment = 'newComment';
@@ -572,7 +588,7 @@ describe('update', () => {
   });
 
   describe('column encoding', () => {
-    test('does not replace if encoding added', async () => {
+    test('does not replace if encoding added on column', async () => {
       const newResourceProperties = {
         ...resourceProperties,
         tableColumns: [{ name: 'col1', dataType: 'varchar(1)', encoding: ColumnEncoding.RAW }],
@@ -586,7 +602,7 @@ describe('update', () => {
       }));
     });
 
-    test('does not replace if encoding removed', async () => {
+    test('does not replace if encoding removed on column', async () => {
       const newEvent = {
         ...event,
         OldResourceProperties: {

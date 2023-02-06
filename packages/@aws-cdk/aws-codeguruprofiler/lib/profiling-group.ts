@@ -25,11 +25,18 @@ export enum ComputePlatform {
 export interface IProfilingGroup extends IResource {
 
   /**
-   * A name for the profiling group.
+   * The name of the profiling group.
    *
    * @attribute
    */
   readonly profilingGroupName: string;
+
+  /**
+   * The ARN of the profiling group.
+   *
+   * @attribute
+   */
+  readonly profilingGroupArn: string;
 
   /**
    * Grant access to publish profiling information to the Profiling Group to the given identity.
@@ -158,7 +165,9 @@ export class ProfilingGroup extends ProfilingGroupBase {
       public readonly profilingGroupArn = profilingGroupArn;
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: profilingGroupArn,
+    });
   }
 
   /**

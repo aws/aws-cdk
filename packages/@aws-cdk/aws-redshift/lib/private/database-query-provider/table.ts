@@ -1,9 +1,9 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
-import { Column } from '../../table';
 import { executeStatement } from './redshift-data';
 import { ClusterProps, ColumnEncoding, TableAndClusterProps, TableSortStyle } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
+import { Column } from '../../table';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
@@ -66,6 +66,10 @@ async function createTable(
       await executeStatement(`COMMENT ON COLUMN ${tableName}.${column.name} IS '${column.comment}'`, tableAndClusterProps);
     }
   }
+  if (tableAndClusterProps.tableComment) {
+    await executeStatement(`COMMENT ON TABLE ${tableName} IS '${tableAndClusterProps.tableComment}'`, tableAndClusterProps);
+  }
+
   return tableName;
 }
 
@@ -161,6 +165,12 @@ async function updateTable(
         break;
       }
     }
+  }
+
+  const oldComment = oldResourceProperties.tableComment;
+  const newComment = tableAndClusterProps.tableComment;
+  if (oldComment !== newComment) {
+    alterationStatements.push(`COMMENT ON TABLE ${tableName} IS ${newComment ? `'${newComment}'` : 'NULL'}`);
   }
 
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));

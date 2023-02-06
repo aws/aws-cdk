@@ -200,16 +200,17 @@ new Table(this, 'Table', {
 });
 ```
 
-Table columns can be configured to contain comments:
+Tables and their respective columns can be configured to contain comments:
 
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', comment: 'This is a comment' }, 
-    { name: 'col2', dataType: 'float', comment: 'This is a another comment' }
+    { name: 'col1', dataType: 'varchar(4)', comment: 'This is a column comment' }, 
+    { name: 'col2', dataType: 'float', comment: 'This is a another column comment' }
   ],
   cluster: cluster,
   databaseName: 'databaseName',
+  comment: 'This is a table comment',
 });
 ```
 
@@ -423,3 +424,48 @@ new Cluster(this, 'Redshift', {
 ```
 
 If enhanced VPC routing is not enabled, Amazon Redshift routes traffic through the internet, including traffic to other services within the AWS network.
+
+## Default IAM role
+
+Some Amazon Redshift features require Amazon Redshift to access other AWS services on your behalf. For your Amazon Redshift clusters to act on your behalf, you supply security credentials to your clusters. The preferred method to supply security credentials is to specify an AWS Identity and Access Management (IAM) role.
+
+When you create an IAM role and set it as the default for the cluster using console, you don't have to provide the IAM role's Amazon Resource Name (ARN) to perform authentication and authorization.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const defaultRole = new iam.Role(this, 'DefaultRole', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+},
+);
+
+new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    roles: [defaultRole],
+    defaultRole: defaultRole,
+});
+```
+
+A default role can also be added to a cluster using the `addDefaultIamRole` method.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const defaultRole = new iam.Role(this, 'DefaultRole', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+},
+);
+
+const redshiftCluster = new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    roles: [defaultRole],
+});
+
+redshiftCluster.addDefaultIamRole(defaultRole);
+```

@@ -604,3 +604,14 @@ const listener = elbv2.NetworkListener.fromLookup(this, 'ALBListener', {
   listenerPort: 12345,
 });
 ```
+
+## Metrics
+
+You may create metrics for each Load Balancer through the `metrics` attribute:
+
+```ts
+declare const alb: elbv2.IApplicationLoadBalancer;
+
+const albMetrics: elbv2.IApplicationLoadBalancerMetrics = alb.metrics;
+const metricConnectionCount: cloudwatch.Metric = albMetrics.activeConnectionCount();
+```

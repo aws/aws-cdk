@@ -132,6 +132,13 @@ export interface TableProps extends DatabaseOptions {
    * @default cdk.RemovalPolicy.Retain
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
+     * A comment to attach to the table.
+     *
+     * @default - no comment
+     */
+  readonly tableComment?: string;
 }
 
 /**
@@ -249,6 +256,7 @@ export class Table extends TableBase {
         tableColumns: this.tableColumns,
         distStyle: props.distStyle,
         sortStyle: props.sortStyle ?? this.getDefaultSortStyle(props.tableColumns),
+        tableComment: props.tableComment,
       },
     });
 
