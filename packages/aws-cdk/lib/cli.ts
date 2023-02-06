@@ -144,15 +144,15 @@ async function parseCommandLineArguments(args: string[]) {
       .option('hotswap', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
-          'which skips CloudFormation and updates the resources directly, ' +
-          'and falls back to a full deployment if that is not possible. ' +
-          'Do not use this in production environments',
-      })
-      .option('hotswap-only', {
-        type: 'boolean',
-        desc: "Attempts to perform a 'hotswap' deployment, " +
           'but does not fall back to a full deployment if that is not possible. ' +
           'Instead, changes to any non-hotswappable properties are ignored.' +
+          'Do not use this in production environments',
+      })
+      .option('hotswap-fallback', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'which skips CloudFormation and updates the resources directly, ' +
+          'and falls back to a full deployment if that is not possible. ' +
           'Do not use this in production environments',
       })
       .option('watch', {
@@ -230,9 +230,15 @@ async function parseCommandLineArguments(args: string[]) {
       .option('hotswap', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
-          'which skips CloudFormation and updates the resources directly, ' +
-          'and falls back to a full deployment if that is not possible. ' +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
           "'true' by default, use --no-hotswap to turn off",
+      })
+      .option('hotswap-fallback', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'which skips CloudFormation and updates the resources directly, ' +
+          'and falls back to a full deployment if that is not possible.',
       })
       .options('logs', {
         type: 'boolean',
@@ -556,7 +562,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: determineHotswapMode(args.hotswap, args.hotswapOnly),
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
@@ -579,11 +585,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'watch':
-        let hotswap = determineHotswapMode(args.hotswap, args.hotswapOnly);
-        if (hotswap === undefined) {
-          hotswap = HotswapMode.FALL_BACK;
-        }
-
         return cli.watch({
           selector,
           // parameters: parameterMap,
@@ -599,7 +600,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: determineHotswapMode(args.hotswap, args.hotswapOnly),
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback, true),
           traceLogs: args.logs,
           concurrency: args.concurrency,
         });
@@ -718,20 +719,18 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
-function determineHotswapMode(hotswap?: boolean, hotswapOnly?: boolean): HotswapMode {
-  if (hotswap && hotswapOnly) {
-    throw new Error('Can not supply both --hotswap and --hotswap-only at the same time');
-  } else if (!hotswap && !hotswapOnly) {
-    if (hotswap === false || hotswapOnly === false) {
-      return HotswapMode.FULL_DEPLOYMENT;
-    }
+function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {
+  if (hotswap && hotswapFallback) {
+    throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
+  } else if (!hotswap && !hotswapFallback) {
+    return watch ? HotswapMode.FALL_BACK : HotswapMode.FULL_DEPLOYMENT;
   }
 
   let hotswapMode: HotswapMode;
   if (hotswap) {
-    hotswapMode = HotswapMode.FALL_BACK;
-  } else /*if (hotswapOnly)*/ {
     hotswapMode = HotswapMode.HOTSWAP_ONLY;
+  } else /*if (hotswapFallback)*/ {
+    hotswapMode = HotswapMode.FALL_BACK;
   }
 
   return hotswapMode;

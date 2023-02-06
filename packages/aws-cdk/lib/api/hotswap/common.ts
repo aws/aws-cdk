@@ -147,11 +147,12 @@ export class ClassifiedChanges {
   public reportNonHotswappablePropertyChanges(ret: ChangeHotswapResult):void {
     const nonHotswappablePropNames = Object.keys(this.nonHotswappableProps);
     if (nonHotswappablePropNames.length > 0) {
+      const tagOnlyChange = nonHotswappablePropNames.length === 1 && nonHotswappablePropNames[0] === 'Tags';
       reportNonHotswappableChange(
         ret,
         this.change,
         this.nonHotswappableProps,
-        `resource properties '${nonHotswappablePropNames}' are not hotswappable on this resource type`,
+        tagOnlyChange ? 'Tags are not hotswappable' : `resource properties '${nonHotswappablePropNames}' are not hotswappable on this resource type`,
       );
     }
   }
