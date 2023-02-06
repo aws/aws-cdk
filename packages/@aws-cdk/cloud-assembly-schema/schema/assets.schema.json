@@ -169,6 +169,17 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "cacheFrom": {
+                    "description": "Cache from options to pass to the `docker build` command. (Default - no cache from options are passed to the build command)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "cacheTo": {
+                    "description": "Cache to options to pass to the `docker build` command. (Default - no cache to options are passed to the build command)",
+                    "type": "string"
                 }
             }
         },
