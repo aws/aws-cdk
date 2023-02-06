@@ -245,6 +245,32 @@ cluster.addCapacity('graviton-cluster', {
 });
 ```
 
+### Windows Instances
+
+To launch instances running windows, you can use the Amazon ECS-optimized
+AMIs.
+
+```ts
+declare const cluster: ecs.Cluster;
+cluster.addCapacity('windowsCapacity', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c5.large'),
+  machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
+})
+```
+
+To configure the hosts to allow for `awsvpc` networking set the `enableTaskENI` to `true`:
+
+```ts
+declare const cluster: ecs.Cluster;
+cluster.addCapacity('windowsCapacity', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c5.large'),
+  machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
+  enableTaskENI: true
+})
+```
+
 ### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.

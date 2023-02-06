@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "DifferentOptions/DefaultTest": {
+      "stacks": [
+        "all-enabled"
+      ],
+      "assertionStack": "DifferentOptions/DefaultTest/DeployAssert",
+      "assertionStackName": "DifferentOptionsDefaultTestDeployAssert4EC2BBAD"
+    }
+  }
+}
