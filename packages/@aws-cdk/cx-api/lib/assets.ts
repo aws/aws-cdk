@@ -16,6 +16,8 @@ export const ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY = 'aws:asset:docker
 export const ASSET_RESOURCE_METADATA_PROPERTY_KEY = 'aws:asset:property';
 export const ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY = 'aws:asset:is-bundled';
 export const ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY = 'aws:asset:docker-outputs';
+export const ASSET_RESOURCE_METADATA_DOCKER_CACHE_FROM_KEY = 'aws:asset:docker-cache-from';
+export const ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY = 'aws:asset:docker-cache-to';
 
 /**
  * Separator string that separates the prefix separator from the object key separator.

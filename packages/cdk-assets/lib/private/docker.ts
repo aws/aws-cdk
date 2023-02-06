@@ -18,6 +18,8 @@ interface BuildOptions {
   readonly networkMode?: string;
   readonly platform?: string;
   readonly outputs?: string[];
+  readonly cacheFrom?: string[];
+  readonly cacheTo?: string;
 }
 
 export interface DockerCredentialsConfig {
@@ -60,6 +62,8 @@ export class Docker {
       ...options.networkMode ? ['--network', options.networkMode] : [],
       ...options.platform ? ['--platform', options.platform] : [],
       ...options.outputs ? options.outputs.map(output => [`--output=${output}`]) : [],
+      ...options.cacheFrom ? options.cacheFrom.map(cacheFrom => [`--cache-from ${cacheFrom}`]) : [],
+      ...options.cacheTo ? [`--cache-to ${options.cacheTo}`] : [],
       '.',
     ];
     await this.execute(buildCommand, { cwd: options.directory });

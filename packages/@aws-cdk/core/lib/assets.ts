@@ -229,6 +229,18 @@ export interface DockerImageAssetSource {
    */
   readonly dockerOutputs?: string[];
 
+  /**
+   * Cache from options to pass to the `docker build` command.
+   * @default - no cache from args are passed
+   */
+  readonly dockerCacheFrom?: string[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   * @default - no cache to args are passed
+   */
+  readonly dockerCacheTo?: string;
+
 }
 
 /**

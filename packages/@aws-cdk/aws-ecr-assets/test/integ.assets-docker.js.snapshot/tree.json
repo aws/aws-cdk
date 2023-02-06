@@ -236,6 +236,14 @@
               "version": "0.0.0"
             }
           },
+          "ImageUri4": {
+            "id": "ImageUri4",
+            "path": "integ-assets-docker/ImageUri5",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "integ-assets-docker/BootstrapVersion",

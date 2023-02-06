@@ -212,6 +212,22 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
    */
   readonly outputs?: string[];
+
+  /**
+   * Cache from options to pass to the `docker build` command.
+   *
+   * @default - no cache from options are passed to the build command
+   * @see https://docs.docker.com/build/cache/backends/
+   */
+  readonly cacheFrom?: string[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   *
+   * @default - no cache to options are passed to the build command
+   * @see https://docs.docker.com/build/cache/backends/
+   */
+  readonly cacheTo?: string;
 }
 
 /**
@@ -286,6 +302,16 @@ export class DockerImageAsset extends Construct implements IAsset {
    * Outputs to pass to the `docker build` command.
    */
   private readonly dockerOutputs?: string[];
+
+  /**
+   * Cache from options to pass to the `docker build` command.
+   */
+  private readonly dockerCacheFrom?: string[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   */
+  private readonly dockerCacheTo?: string;
 
   /**
    * Docker target to build to
@@ -376,6 +402,8 @@ export class DockerImageAsset extends Construct implements IAsset {
     this.dockerBuildArgs = props.buildArgs;
     this.dockerBuildTarget = props.target;
     this.dockerOutputs = props.outputs;
+    this.dockerCacheFrom = props.cacheFrom;
+    this.dockerCacheTo = props.cacheTo;
 
     const location = stack.synthesizer.addDockerImageAsset({
       directoryName: this.assetPath,
@@ -386,6 +414,8 @@ export class DockerImageAsset extends Construct implements IAsset {
       networkMode: props.networkMode?.mode,
       platform: props.platform?.platform,
       dockerOutputs: this.dockerOutputs,
+      dockerCacheFrom: this.dockerCacheFrom,
+      dockerCacheTo: this.dockerCacheTo,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
@@ -423,6 +453,8 @@ export class DockerImageAsset extends Construct implements IAsset {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY] = this.dockerOutputs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_FROM_KEY] = this.dockerCacheFrom;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY] = this.dockerCacheTo;
   }
 
 }

@@ -88,6 +88,22 @@ export interface DockerImageSource {
    * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
    */
   readonly dockerOutputs?: string[];
+
+  /**
+   * Cache from options to pass to the `docker build` command.
+   *
+   * @default - no cache from options are passed to the build command
+   * @see https://docs.docker.com/build/cache/backends/
+   */
+  readonly cacheFrom?: string[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   *
+   * @default - no cache to options are passed to the build command
+   * @see https://docs.docker.com/build/cache/backends/
+   */
+  readonly cacheTo?: string;
 }
 
 /**
