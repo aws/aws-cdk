@@ -94,7 +94,7 @@ vpc.publicSubnets.forEach((subnet, idx) => {
   cfnSubnet.ipv6CidrBlock = cdk.Fn.select(idx, ipv6Cidrs);
 
   // The subnet depends on the ipv6 cidr being allocated.
-  cfnSubnet.addDependsOn(ipv6Block);
+  cfnSubnet.addDependency(ipv6Block);
 
   group1.node.addDependency(subnet);
   group2.node.addDependency(subnet);

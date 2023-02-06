@@ -148,3 +148,14 @@ incompatible-argument:@aws-cdk/aws-route53-targets.InterfaceVpcEndpointTarget.<i
 # to allow the CLI to skip validating the bootstrap stack when the stack is not needed
 changed-type:@aws-cdk/cx-api.AssetManifestArtifact.requiresBootstrapStackVersion
 
+# removed mistyped ec2 instance class
+removed:aws-cdk-lib.aws_ec2.InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWITH
+
+# added new required property StackOutputsMap
+strengthened:@aws-cdk/pipelines.ProduceActionOptions
+strengthened:aws-cdk-lib.pipelines.ProduceActionOptions
+
+# reverted a change that broke deployments for anyone using Triggers
+removed:aws-cdk-lib.triggers.InvocationType
+removed:aws-cdk-lib.triggers.TriggerProps.invocationType
+removed:aws-cdk-lib.triggers.TriggerProps.timeout

@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::Lightsail::Bucket.AccessRules": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-bucket-accessrules.html",
@@ -276,6 +276,23 @@
       "Properties": {
         "SnapshotTimeOfDay": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-disk-autosnapshotaddon.html#cfn-lightsail-disk-autosnapshotaddon-snapshottimeofday",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::Lightsail::Disk.Location": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-disk-location.html",
+      "Properties": {
+        "AvailabilityZone": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-disk-location.html#cfn-lightsail-disk-location-availabilityzone",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "RegionName": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-disk-location.html#cfn-lightsail-disk-location-regionname",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -619,6 +636,7 @@
         },
         "CidrListAliases": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-instance-port.html#cfn-lightsail-instance-port-cidrlistaliases",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -626,6 +644,7 @@
         },
         "Cidrs": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-instance-port.html#cfn-lightsail-instance-port-cidrs",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -645,6 +664,7 @@
         },
         "Ipv6Cidrs": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-instance-port.html#cfn-lightsail-instance-port-ipv6cidrs",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -1051,6 +1071,15 @@
         "IsAttached": {
           "PrimitiveType": "Boolean"
         },
+        "Location": {
+          "Type": "Location"
+        },
+        "Location.AvailabilityZone": {
+          "PrimitiveType": "String"
+        },
+        "Location.RegionName": {
+          "PrimitiveType": "String"
+        },
         "Path": {
           "PrimitiveType": "String"
         },
@@ -1068,6 +1097,7 @@
       "Properties": {
         "AddOns": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-disk.html#cfn-lightsail-disk-addons",
+          "DuplicatesAllowed": true,
           "ItemType": "AddOn",
           "Required": false,
           "Type": "List",
@@ -1233,6 +1263,7 @@
       "Properties": {
         "AddOns": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-instance.html#cfn-lightsail-instance-addons",
+          "DuplicatesAllowed": true,
           "ItemType": "AddOn",
           "Required": false,
           "Type": "List",
@@ -1274,10 +1305,22 @@
           "Required": false,
           "UpdateType": "Mutable"
         },
+        "Location": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-instance.html#cfn-lightsail-instance-location",
+          "Required": false,
+          "Type": "Location",
+          "UpdateType": "Mutable"
+        },
         "Networking": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-instance.html#cfn-lightsail-instance-networking",
           "Required": false,
           "Type": "Networking",
+          "UpdateType": "Mutable"
+        },
+        "State": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-instance.html#cfn-lightsail-instance-state",
+          "Required": false,
+          "Type": "State",
           "UpdateType": "Mutable"
         },
         "Tags": {

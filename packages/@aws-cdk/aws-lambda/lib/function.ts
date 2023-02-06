@@ -9,6 +9,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
+import { AdotInstrumentationConfig } from './adot-layers';
 import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -251,6 +252,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly insightsVersion?: LambdaInsightsVersion;
 
   /**
+   * Specify the configuration of AWS Distro for OpenTelemetry (ADOT) instrumentation
+   * @see https://aws-otel.github.io/docs/getting-started/lambda
+   *
+   * @default - No ADOT instrumentation
+   */
+  readonly adotInstrumentation?: AdotInstrumentationConfig;
+
+  /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
    * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
    * that can be used by multiple functions.
@@ -427,7 +436,7 @@ export class Function extends FunctionBase {
 
     cfn.overrideLogicalId(Lazy.uncachedString({
       produce: () => {
-        const hash = calculateFunctionHash(this);
+        const hash = calculateFunctionHash(this, this.hashMixins.join(''));
         const logicalId = trimFromStart(originalLogicalId, 255 - 32);
         return `${logicalId}${hash}`;
       },
@@ -655,6 +664,7 @@ export class Function extends FunctionBase {
   private _currentVersion?: Version;
 
   private _architecture?: Architecture;
+  private hashMixins = new Array<string>();
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -794,7 +804,6 @@ export class Function extends FunctionBase {
       } : undefined,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),
-      tracingConfig: this.buildTracingConfig(props),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
       imageConfig: undefinedIfNoKeys({
         command: code.image?.cmd,
@@ -806,6 +815,10 @@ export class Function extends FunctionBase {
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
     });
+
+    if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
+      resource.tracingConfig = this.buildTracingConfig(props.tracing ?? Tracing.ACTIVE);
+    }
 
     resource.node.addDependency(this.role);
 
@@ -888,6 +901,8 @@ export class Function extends FunctionBase {
 
     // Configure Lambda insights
     this.configureLambdaInsights(props);
+
+    this.configureAdotInstrumentation(props);
   }
 
   /**
@@ -924,6 +939,31 @@ export class Function extends FunctionBase {
     }
     this.environment[key] = { value, ...options };
     return this;
+  }
+
+  /**
+   * Mix additional information into the hash of the Version object
+   *
+   * The Lambda Function construct does its best to automatically create a new
+   * Version when anything about the Function changes (its code, its layers,
+   * any of the other properties).
+   *
+   * However, you can sometimes source information from places that the CDK cannot
+   * look into, like the deploy-time values of SSM parameters. In those cases,
+   * the CDK would not force the creation of a new Version object when it actually
+   * should.
+   *
+   * This method can be used to invalidate the current Version object. Pass in
+   * any string into this method, and make sure the string changes when you know
+   * a new Version needs to be created.
+   *
+   * This method may be called more than once.
+   */
+  public invalidateVersionBasedOn(x: string) {
+    if (Token.isUnresolved(x)) {
+      throw new Error('invalidateVersionOn: input may not contain unresolved tokens');
+    }
+    this.hashMixins.push(x);
   }
 
   /**
@@ -1076,6 +1116,31 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
   }
 
+  /**
+   * Add an AWS Distro for OpenTelemetry Lambda layer.
+   *
+   * @param props properties for the ADOT instrumentation
+   */
+  private configureAdotInstrumentation(props: FunctionProps): void {
+
+    if (props.adotInstrumentation === undefined) {
+      return;
+    }
+
+    if (props.runtime === Runtime.FROM_IMAGE) {
+      throw new Error("ADOT Lambda layer can't be configured with container image package type");
+    }
+
+    // This is not the complete list of incompatible runtimes and layer types. We are only
+    // checking for common mistakes on a best-effort basis.
+    if (this.runtime === Runtime.GO_1_X) {
+      throw new Error('Runtime go1.x is not supported by the ADOT Lambda Go SDK');
+    }
+
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerVersion._bind(this).arn));
+    this.addEnvironment('AWS_LAMBDA_EXEC_WRAPPER', props.adotInstrumentation.execWrapper);
+  }
+
   private renderLayers() {
     if (!this._layers || this._layers.length === 0) {
       return undefined;
@@ -1225,8 +1290,8 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
   }
 
-  private buildTracingConfig(props: FunctionProps) {
-    if (props.tracing === undefined || props.tracing === Tracing.DISABLED) {
+  private buildTracingConfig(tracing: Tracing) {
+    if (tracing === undefined || tracing === Tracing.DISABLED) {
       return undefined;
     }
 
@@ -1236,7 +1301,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }));
 
     return {
-      mode: props.tracing,
+      mode: tracing,
     };
   }
 

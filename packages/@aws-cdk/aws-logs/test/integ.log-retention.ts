@@ -11,6 +11,12 @@ class LogRetentionIntegStack extends Stack {
       retention: RetentionDays.ONE_DAY,
       removalPolicy: RemovalPolicy.DESTROY,
     });
+
+    new LogRetention(this, 'MyLambda2', {
+      logGroupName: 'logRetentionLogGroup2',
+      retention: RetentionDays.ONE_DAY,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
   }
 }
 

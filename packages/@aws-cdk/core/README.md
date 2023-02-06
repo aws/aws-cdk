@@ -460,6 +460,10 @@ A stack dependency has the following implications:
     automatically deploy `stackB`.
   - `stackB`'s deployment will be performed *before* `stackA`'s deployment.
 
+### CfnResource Dependencies
+
+To make declaring dependencies between `CfnResource` objects easier, you can declare dependencies from one `CfnResource` object on another by using the `cfnResource1.addDependency(cfnResource2)` method. This method will work for resources both within the same stack and across stacks as it detects the relative location of the two resources and adds the dependency either to the resource or between the relevant stacks, as appropriate. If more complex logic is in needed, you can similarly remove, replace, or view dependencies between `CfnResource` objects with the `CfnResource` `removeDependency`, `replaceDependency`, and `obtainDependencies` methods, respectively.
+
 ## Custom Resources
 
 Custom Resources are CloudFormation resources that are implemented by arbitrary
@@ -510,7 +514,7 @@ various provider types (ordered from low-level to high-level):
 
 Legend:
 
-- **Compute type**: which type of compute can is used to execute the handler.
+- **Compute type**: which type of compute can be used to execute the handler.
 - **Error Handling**: whether errors thrown by handler code are automatically
   trapped and a FAILED response is submitted to CloudFormation. If this is
   "Manual", developers must take care of trapping errors. Otherwise, events
@@ -885,16 +889,58 @@ rawBucket.cfnOptions.metadata = {
 ```
 
 Resource dependencies (the `DependsOn` attribute) is modified using the
-`cfnResource.addDependsOn` method:
+`cfnResource.addDependency` method:
 
 ```ts
 const resourceA = new CfnResource(this, 'ResourceA', resourceProps);
 const resourceB = new CfnResource(this, 'ResourceB', resourceProps);
 
-resourceB.addDependsOn(resourceA);
+resourceB.addDependency(resourceA);
 ```
 
 [cfn-resource-attributes]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
+
+#### CreationPolicy
+
+Some resources support a [CreationPolicy][creation-policy] to be specified as a CfnOption.
+
+The creation policy is invoked only when AWS CloudFormation creates the associated resource. Currently, the only AWS CloudFormation resources that support creation policies are `CfnAutoScalingGroup`, `CfnInstance`, `CfnWaitCondition` and `CfnFleet`.
+
+The `CfnFleet` resource from the `aws-appstream` module supports specifying `startFleet` as
+a property of the creationPolicy on the resource options. Setting it to true will make AWS CloudFormation wait until the fleet is started before continuing with the creation of
+resources that depend on the fleet resource.
+
+```ts
+const fleet = new CfnFleet(stack, 'Fleet', {
+  instanceType: 'stream.standard.small',
+  name: 'Fleet',
+  computeCapacity: {
+    desiredInstances: 1,
+  },
+  imageName: 'AppStream-AmazonLinux2-09-21-2022',
+});
+fleet.cfnOptions.creationPolicy = {
+  startFleet: true,
+};
+```
+
+The properties passed to the level 2 constructs `AutoScalingGroup` and `Instance` from the
+`aws-ec2` module abstract what is passed into the `CfnOption` properties `resourceSignal` and
+`autoScalingCreationPolicy`, but when using level 1 constructs you can specify these yourself.
+
+The CfnWaitCondition resource from the `aws-cloudformation` module suppports the `resourceSignal`.
+The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation will wait for
+3 success signals to occur within 15 minutes before the status of the resource will be set to 
+`CREATE_COMPLETE`.
+
+```ts
+resource.cfnOptions.resourceSignal = {
+  count: 3,
+  timeout: 'PR15M',
+}
+```
+
+[creation-policy]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
 
 ### Intrinsic Functions and Condition Expressions
 

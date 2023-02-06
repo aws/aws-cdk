@@ -2264,6 +2264,60 @@ describe('import', () => {
       });
     });
 
+    test('if an encryption key is included, encrypt/decrypt permissions are added to the principal for grantStreamRead', () => {
+      const stack = new Stack();
+
+      const tableName = 'MyTable';
+      const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
+      const encryptionKey = new kms.Key(stack, 'Key', {
+        enableKeyRotation: true,
+      });
+
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName, tableStreamArn, encryptionKey });
+
+      const role = new iam.Role(stack, 'NewRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+
+      expect(table.grantStreamRead(role)).toBeDefined();
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              'Action': 'dynamodb:ListStreams',
+              'Effect': 'Allow',
+              'Resource': '*',
+            },
+            {
+              'Action': [
+                'kms:Decrypt',
+                'kms:DescribeKey',
+              ],
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': [
+                  'Key961B73FD',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              'Action': [
+                'dynamodb:DescribeStream',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+              ],
+              'Effect': 'Allow',
+              'Resource': 'arn:foo:bar:baz:TrustMeThisIsATableStream',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        Roles: [stack.resolve(role.roleName)],
+      });
+    });
+
     test('creates the correct index grant if indexes have been provided when importing', () => {
       const stack = new Stack();
 

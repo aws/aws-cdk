@@ -1,6 +1,6 @@
 import { Template, Match } from '@aws-cdk/assertions';
 import * as route53 from '@aws-cdk/aws-route53';
-import { Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Aws, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { Certificate, CertificateValidation } from '../lib';
 
 test('apex domain selection by default', () => {
@@ -91,6 +91,37 @@ test('throws when domain name is longer than 64 characters', () => {
   }).toThrow(/Domain name must be 64 characters or less/);
 });
 
+test('does not throw when domain name is longer than 64 characters with tokens', () => {
+  const stack = new Stack();
+  const embededToken = Aws.REGION;
+  const baseDomain = 'a'.repeat(65-embededToken.length);
+  const domainName = `${embededToken}${baseDomain}`;
+  new Certificate(stack, 'Certificate', {
+    domainName,
+    validation: CertificateValidation.fromEmail({
+      [domainName]: 'example.com',
+    }),
+  });
+
+  const domainNameJoin = {
+    'Fn::Join': [
+      '',
+      [
+        {
+          Ref: 'AWS::Region',
+        },
+        baseDomain,
+      ],
+    ],
+  };
+  Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+    DomainName: domainNameJoin,
+    DomainValidationOptions: [{
+      DomainName: domainNameJoin,
+      ValidationDomain: 'example.com',
+    }],
+  });
+});
 
 test('needs validation domain supplied if domain contains a token', () => {
   const stack = new Stack();

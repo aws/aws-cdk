@@ -239,3 +239,7 @@ export function withMocked<A extends object, K extends keyof A, B>(obj: A, key: 
 function isPromise<A>(object: any): object is Promise<A> {
   return Promise.resolve(object) === object;
 }
+
+export async function sleep(ms: number) {
+  return new Promise(ok => setTimeout(ok, ms));
+}

@@ -34,7 +34,7 @@ export interface CodeDeployEcsContainerImageInput {
 }
 
 /**
- * Construction properties of the {@link CodeDeployEcsDeployAction CodeDeploy ECS deploy CodePipeline Action}.
+ * Construction properties of the `CodeDeployEcsDeployAction CodeDeploy ECS deploy CodePipeline Action`.
  */
 export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**

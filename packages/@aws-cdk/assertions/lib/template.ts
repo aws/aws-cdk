@@ -97,7 +97,7 @@ export class Template {
    * Assert that a resource of the given type and properties exists in the
    * CloudFormation template.
    * By default, performs partial matching on the `Properties` key of the resource, via the
-   * `Match.objectLike()`. To configure different behavour, use other matchers in the `Match` class.
+   * `Match.objectLike()`. To configure different behavior, use other matchers in the `Match` class.
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param props the 'Properties' section of the resource as should be expected in the template.
    */
@@ -112,7 +112,7 @@ export class Template {
    * Assert that a resource of the given type and given definition exists in the
    * CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
-   * To configure different behavour, use other matchers in the `Match` class.
+   * To configure different behavior, use other matchers in the `Match` class.
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param props the entire definition of the resource as should be expected in the template.
    */
@@ -138,7 +138,7 @@ export class Template {
    * Assert that all resources of the given type contain the given definition in the
    * CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
-   * To configure different behavour, use other matchers in the `Match` class.
+   * To configure different behavior, use other matchers in the `Match` class.
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param props the entire definition of the resources as they should be expected in the template.
    */
@@ -153,7 +153,7 @@ export class Template {
    * Assert that all resources of the given type contain the given properties
    * CloudFormation template.
    * By default, performs partial matching on the `Properties` key of the resource, via the
-   * `Match.objectLike()`. To configure different behavour, use other matchers in the `Match` class.
+   * `Match.objectLike()`. To configure different behavior, use other matchers in the `Match` class.
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param props the 'Properties' section of the resource as should be expected in the template.
    */
@@ -192,7 +192,7 @@ export class Template {
   /**
    * Assert that an Output with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
-   * To configure different behavour, use other matchers in the `Match` class.
+   * To configure different behavior, use other matchers in the `Match` class.
    * @param logicalId the name of the output. Provide `'*'` to match all outputs in the template.
    * @param props the output as should be expected in the template.
    */
@@ -217,7 +217,7 @@ export class Template {
   /**
    * Assert that a Mapping with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
-   * To configure different behavour, use other matchers in the `Match` class.
+   * To configure different behavior, use other matchers in the `Match` class.
    * @param logicalId the name of the mapping. Provide `'*'` to match all mappings in the template.
    * @param props the output as should be expected in the template.
    */
@@ -242,7 +242,7 @@ export class Template {
   /**
    * Assert that a Condition with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
-   * To configure different behavour, use other matchers in the `Match` class.
+   * To configure different behavior, use other matchers in the `Match` class.
    * @param logicalId the name of the mapping. Provide `'*'` to match all conditions in the template.
    * @param props the output as should be expected in the template.
    */

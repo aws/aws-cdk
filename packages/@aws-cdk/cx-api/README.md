@@ -120,3 +120,22 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy`
+
+Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+rather than using the canned \`LogDeliveryWrite\` ACL. ACLs do not work when Object Ownership is
+enabled on the bucket.
+
+This flag uses a Bucket Policy statement to allow Server Access Log delivery, following best
+practices for S3.
+
+https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true
+  }
+}
+```

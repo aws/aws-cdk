@@ -161,7 +161,7 @@ export interface SecretProps {
    * to the CloudFormation template (via the AWS Console, SDKs, or CLI).
    *
    * Specifies text data that you want to encrypt and store in this new version of the secret.
-   * May be a simple string value. To provide a string representation of JSON structure, use {@link SecretProps.secretObjectValue} instead.
+   * May be a simple string value. To provide a string representation of JSON structure, use `SecretProps.secretObjectValue` instead.
    *
    * Only one of `secretStringBeta1`, `secretStringValue`, 'secretObjectValue', and `generateSecretString` can be provided.
    *
@@ -179,7 +179,7 @@ export interface SecretProps {
    * to the CloudFormation template (via the AWS Console, SDKs, or CLI).
    *
    * Specifies a JSON object that you want to encrypt and store in this new version of the secret.
-   * To specify a simple string value instead, use {@link SecretProps.secretStringValue}
+   * To specify a simple string value instead, use `SecretProps.secretStringValue`
    *
    * Only one of `secretStringBeta1`, `secretStringValue`, 'secretObjectValue', and `generateSecretString` can be provided.
    *

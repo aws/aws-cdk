@@ -230,10 +230,10 @@ export interface OnCommitOptions extends events.OnEventOptions {
  * Represents a reference to a CodeCommit Repository.
  *
  * If you want to create a new Repository managed alongside your CDK code,
- * use the {@link Repository} class.
+ * use the `Repository` class.
  *
  * If you want to reference an already existing Repository,
- * use the {@link Repository.import} method.
+ * use the `Repository.import` method.
  */
 abstract class RepositoryBase extends Resource implements IRepository {
   /** The ARN of this Repository. */

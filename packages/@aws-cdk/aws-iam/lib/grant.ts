@@ -24,6 +24,13 @@ export interface CommonGrantOptions {
    * The resource ARNs to grant to
    */
   readonly resourceArns: string[];
+
+  /**
+   * Any conditions to attach to the grant
+   *
+   * @default - No conditions
+   */
+  readonly conditions?: Record<string, Record<string, unknown>>;
 }
 
 /**
@@ -160,6 +167,7 @@ export class Grant implements IDependable {
     const statement = new PolicyStatement({
       actions: options.actions,
       resources: options.resourceArns,
+      conditions: options.conditions,
     });
 
     const addedToPrincipal = options.grantee.grantPrincipal.addToPrincipalPolicy(statement);
@@ -224,16 +232,26 @@ export class Grant implements IDependable {
   /**
    * The statement that was added to the principal's policy
    *
-   * Can be accessed to (e.g.) add additional conditions to the statement.
+   * @deprecated Use `principalStatements` instead
    */
   public readonly principalStatement?: PolicyStatement;
 
   /**
+   * The statements that were added to the principal's policy
+   */
+  public readonly principalStatements = new Array<PolicyStatement>();
+
+  /**
    * The statement that was added to the resource policy
    *
-   * Can be accessed to (e.g.) add additional conditions to the statement.
+   * @deprecated Use `resourceStatements` instead
    */
   public readonly resourceStatement?: PolicyStatement;
+
+  /**
+   * The statements that were added to the principal's policy
+   */
+  public readonly resourceStatements = new Array<PolicyStatement>();
 
   /**
    * The options originally used to set this result
@@ -243,14 +261,26 @@ export class Grant implements IDependable {
    */
   private readonly options: CommonGrantOptions;
 
+  private readonly dependables = new Array<IDependable>();
+
   private constructor(props: GrantProps) {
     this.options = props.options;
     this.principalStatement = props.principalStatement;
     this.resourceStatement = props.resourceStatement;
+    if (this.principalStatement) {
+      this.principalStatements.push(this.principalStatement);
+    }
+    if (this.resourceStatement) {
+      this.resourceStatements.push(this.resourceStatement);
+    }
+    if (props.policyDependable) {
+      this.dependables.push(props.policyDependable);
+    }
 
+    const self = this;
     Dependable.implement(this, {
       get dependencyRoots() {
-        return props.policyDependable ? Dependable.of(props.policyDependable).dependencyRoots : [];
+        return Array.from(new Set(self.dependables.flatMap(d => Dependable.of(d).dependencyRoots)));
       },
     });
   }
@@ -281,6 +311,24 @@ export class Grant implements IDependable {
     for (const construct of constructs) {
       construct.node.addDependency(this);
     }
+  }
+
+  /**
+   * Combine two grants into a new one
+   */
+  public combine(rhs: Grant) {
+    const combinedPrinc = [...this.principalStatements, ...rhs.principalStatements];
+    const combinedRes = [...this.resourceStatements, ...rhs.resourceStatements];
+
+    const ret = new Grant({
+      options: this.options,
+      principalStatement: combinedPrinc[0],
+      resourceStatement: combinedRes[0],
+    });
+    ret.principalStatements.splice(0, ret.principalStatements.length, ...combinedPrinc);
+    ret.resourceStatements.splice(0, ret.resourceStatements.length, ...combinedRes);
+    ret.dependables.push(...this.dependables, ...rhs.dependables);
+    return ret;
   }
 }
 

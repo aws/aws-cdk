@@ -50,6 +50,111 @@ deliver inexpensive, resilient game hosting for your players
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project. It allows you to define components for your matchmaking
 configuration or game server fleet management system.
 
+## GameLift FlexMatch
+
+### Defining a Matchmaking configuration
+
+FlexMatch is available both as a GameLift game hosting solution (including
+Realtime Servers) and as a standalone matchmaking service. To set up a
+FlexMatch matchmaker to process matchmaking requests, you have to create a
+matchmaking configuration based on a RuleSet.
+
+More details about matchmaking ruleSet are covered [below](#matchmaking-ruleset).
+
+There is two types of Matchmaking configuration:
+
+Through a game session queue system to let FlexMatch forms matches and uses the specified GameLift queue to start a game session for the match.
+
+```ts
+declare const queue: gamelift.GameSessionQueue;
+declare const ruleSet: gamelift.MatchmakingRuleSet;
+
+new gamelift.QueuedMatchmakingConfiguration(this, 'QueuedMatchmakingConfiguration', {
+  matchmakingConfigurationName: 'test-queued-config-name',
+  gameSessionQueues: [queue],
+  ruleSet: ruleSet,
+});
+```
+
+Or through a standalone version to let FlexMatch forms matches and returns match information in an event.
+
+```ts
+declare const ruleSet: gamelift.MatchmakingRuleSet;
+
+new gamelift.StandaloneMatchmakingConfiguration(this, 'StandaloneMatchmaking', {
+  matchmakingConfigurationName: 'test-standalone-config-name',
+  ruleSet: ruleSet,
+});
+```
+
+
+More details about Game session queue are covered [below](#game-session-queue).
+
+### Matchmaking RuleSet
+
+Every FlexMatch matchmaker must have a rule set. The rule set determines the
+two key elements of a match: your game's team structure and size, and how to
+group players together for the best possible match.
+
+For example, a rule set might describe a match like this: Create a match with
+two teams of four to eight players each, one team is the cowboy and the other
+team the aliens. A team can have novice and experienced players, but the
+average skill of the two teams must be within 10 points of each other. If no
+match is made after 30 seconds, gradually relax the skill requirements.
+
+```ts
+new gamelift.MatchmakingRuleSet(this, 'RuleSet', {
+  matchmakingRuleSetName: 'my-test-ruleset',
+  content: gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset/ruleset.json')),
+});
+```
+
+### FlexMatch Monitoring
+
+You can monitor GameLift FlexMatch activity for matchmaking configurations and
+matchmaking rules using Amazon CloudWatch. These statistics are used to provide
+a historical perspective on how your Gamelift FlexMatch solution is performing.
+
+#### FlexMatch Metrics
+
+GameLift FlexMatch sends metrics to CloudWatch so that you can collect and
+analyze the activity of your matchmaking solution, including match acceptance
+workflow, ticket consumtion.
+
+You can then use CloudWatch alarms to alert you, for example, when matches has
+been rejected (potential matches that were rejected by at least one player
+since the last report) exceed a certain thresold which could means that you may
+have an issue in your matchmaking rules.
+
+CDK provides methods for accessing GameLift FlexMatch metrics with default configuration,
+such as `metricRuleEvaluationsPassed`, or `metricRuleEvaluationsFailed` (see
+[`IMatchmakingRuleSet`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-gamelift.IMatchmakingRuleSet.html)
+for a full list). CDK also provides a generic `metric` method that can be used
+to produce metric configurations for any metric provided by GameLift FlexMatch;
+the configurations are pre-populated with the correct dimensions for the
+matchmaking configuration.
+
+```ts
+declare const matchmakingRuleSet: gamelift.MatchmakingRuleSet;
+// Alarm that triggers when the per-second average of not placed matches exceed 10%
+const ruleEvaluationRatio = new cloudwatch.MathExpression({
+  expression: '1 - (ruleEvaluationsPassed / ruleEvaluationsFailed)',
+  usingMetrics: {
+    ruleEvaluationsPassed: matchmakingRuleSet.metricRuleEvaluationsPassed({ statistic: cloudwatch.Statistic.SUM }),
+    ruleEvaluationsFailed: matchmakingRuleSet.metric('ruleEvaluationsFailed'),
+  },
+});
+new cloudwatch.Alarm(this, 'Alarm', {
+  metric: ruleEvaluationRatio,
+  threshold: 0.1,
+  evaluationPeriods: 3,
+});
+```
+
+See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/gamelift/latest/developerguide/monitoring-cloudwatch.html)
+in the *Amazon GameLift Developer Guide*.
+
+
 ## GameLift Hosting
 
 ### Uploading builds and scripts to GameLift
@@ -344,7 +449,7 @@ in the *Amazon GameLift Developer Guide*.
 GameLift is integrated with CloudWatch, so you can monitor the performance of
 your game servers via logs and metrics.
 
-#### Metrics
+#### Fleet Metrics
 
 GameLift Fleet sends metrics to CloudWatch so that you can collect and analyze
 the activity of your Fleet, including game  and player sessions and server
@@ -380,6 +485,65 @@ new cloudwatch.Alarm(this, 'Alarm', {
 ```
 
 See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/gamelift/latest/developerguide/monitoring-cloudwatch.html)
+in the *Amazon GameLift Developer Guide*.
+
+## Game session queue
+
+The game session queue is the primary mechanism for processing new game session
+requests and locating available game servers to host them. Although it is
+possible to request a new game session be hosted on specific fleet or location.
+
+The `GameSessionQueue` resource creates a placement queue that processes requests for
+new game sessions. A queue uses FleetIQ algorithms to determine the best placement
+locations and find an available game server, then prompts the game server to start a
+new game session. Queues can have destinations (GameLift fleets or aliases), which
+determine where the queue can place new game sessions. A queue can have destinations
+with varied fleet type (Spot and On-Demand), instance type, and AWS Region.
+
+```ts
+declare const fleet: gamelift.BuildFleet;
+declare const alias: gamelift.Alias;
+
+const queue = new gamelift.GameSessionQueue(this, 'GameSessionQueue', {
+  gameSessionQueueName: 'my-queue-name',
+  destinations: [fleet]
+});
+queue.addDestination(alias);
+```
+
+A more complex configuration can also be definied to override how FleetIQ algorithms prioritize game session placement in order to favour a destination based on `Cost`, `Latency`, `Destination order`or `Location`.
+
+```ts
+declare const fleet: gamelift.BuildFleet;
+declare const topic: sns.Topic;
+
+new gamelift.GameSessionQueue(this, 'MyGameSessionQueue', {
+      gameSessionQueueName: 'test-gameSessionQueue',
+      customEventData: 'test-event-data',
+      allowedLocations: ['eu-west-1', 'eu-west-2'],
+      destinations: [fleet],
+      notificationTarget: topic,
+      playerLatencyPolicies: [{
+        maximumIndividualPlayerLatency: Duration.millis(100),
+        policyDuration: Duration.seconds(300),
+      }],
+      priorityConfiguration: {
+        locationOrder: [
+          'eu-west-1',
+          'eu-west-2',
+        ],
+        priorityOrder: [
+          gamelift.PriorityType.LATENCY,
+          gamelift.PriorityType.COST,
+          gamelift.PriorityType.DESTINATION,
+          gamelift.PriorityType.LOCATION,
+        ],
+      },
+      timeout: Duration.seconds(300),
+    });
+```
+
+See [Setting up GameLift queues for game session placement](https://docs.aws.amazon.com/gamelift/latest/developerguide/realtime-script-uploading.html)
 in the *Amazon GameLift Developer Guide*.
 
 ## GameLift FleetIQ
@@ -517,7 +681,7 @@ new gamelift.GameServerGroup(this, 'GameServerGroup', {
 });
 ```
 
-### Monitoring
+### FleetIQ Monitoring
 
 GameLift FleetIQ sends metrics to CloudWatch so that you can collect and
 analyze the activity of your Game server fleet, including the number of

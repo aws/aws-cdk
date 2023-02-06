@@ -6,8 +6,8 @@ import { IOpenIdConnectProvider } from './oidc-provider';
 import { PolicyDocument } from './policy-document';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
+import { LITERAL_STRING_KEY, mergePrincipal } from './private/util';
 import { ISamlProvider } from './saml-provider';
-import { LITERAL_STRING_KEY, mergePrincipal } from './util';
 
 /**
  * Any object that has an associated principal that a permission can be granted to
@@ -116,7 +116,7 @@ export class ComparablePrincipal {
  */
 export interface IAssumeRolePrincipal extends IPrincipal {
   /**
-   * Add the princpial to the AssumeRolePolicyDocument
+   * Add the principal to the AssumeRolePolicyDocument
    *
    * Add the statements to the AssumeRolePolicyDocument necessary to give this principal
    * permissions to assume the given role.

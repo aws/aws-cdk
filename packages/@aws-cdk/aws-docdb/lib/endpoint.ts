@@ -35,7 +35,7 @@ export class Endpoint {
    * The port number of the endpoint.
    *
    * This can potentially be a CDK token. If you need to embed the port in a string (e.g. instance user data script),
-   * use {@link Endpoint.portAsString}.
+   * use `Endpoint.portAsString`.
    */
   public readonly port: number;
 

@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
-import { CfnEventBus } from './events.generated';
+import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
 
 /**
  * Interface which all EventBus based classes MUST implement
@@ -309,6 +309,8 @@ export class EventBus extends EventBusBase {
    */
   public readonly eventSourceName?: string;
 
+  private policy?: EventBusPolicy;
+
   constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
       Lazy.string({ produce: () => Names.uniqueId(this) }),
@@ -332,6 +334,28 @@ export class EventBus extends EventBusBase {
     this.eventBusPolicy = eventBus.attrPolicy;
     this.eventSourceName = eventBus.eventSourceName;
   }
+
+  /**
+   * Adds a statement to the IAM resource policy associated with this event bus.
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (statement.sid == null) {
+      throw new Error('Event Bus policy statements must have a sid');
+    }
+
+    if (this.policy) {
+      // The policy can contain only one statement
+      return { statementAdded: false };
+    }
+
+    this.policy = new EventBusPolicy(this, 'Policy', {
+      eventBus: this,
+      statement: statement.toJSON(),
+      statementId: statement.sid,
+    });
+
+    return { statementAdded: true, policyDependable: this.policy };
+  }
 }
 
 class ImportedEventBus extends EventBusBase {
@@ -339,6 +363,7 @@ class ImportedEventBus extends EventBusBase {
   public readonly eventBusName: string;
   public readonly eventBusPolicy: string;
   public readonly eventSourceName?: string;
+
   constructor(scope: Construct, id: string, attrs: EventBusAttributes) {
     const arnParts = Stack.of(scope).splitArn(attrs.eventBusArn, ArnFormat.SLASH_RESOURCE_NAME);
     super(scope, id, {
@@ -350,5 +375,52 @@ class ImportedEventBus extends EventBusBase {
     this.eventBusName = attrs.eventBusName;
     this.eventBusPolicy = attrs.eventBusPolicy;
     this.eventSourceName = attrs.eventSourceName;
+  }
+}
+
+/**
+ * Properties to associate Event Buses with a policy
+ */
+export interface EventBusPolicyProps {
+  /**
+   * The event bus to which the policy applies
+   */
+  readonly eventBus: IEventBus;
+
+  /**
+   * An IAM Policy Statement to apply to the Event Bus
+   */
+  readonly statement: iam.PolicyStatement;
+
+  /**
+   * An identifier string for the external account that
+   * you are granting permissions to.
+   */
+  readonly statementId: string;
+}
+
+/**
+ * The policy for an Event Bus
+ *
+ * Policies define the operations that are allowed on this resource.
+ *
+ * You almost never need to define this construct directly.
+ *
+ * All AWS resources that support resource policies have a method called
+ * `addToResourcePolicy()`, which will automatically create a new resource
+ * policy if one doesn't exist yet, otherwise it will add to the existing
+ * policy.
+ *
+ * Prefer to use `addToResourcePolicy()` instead.
+ */
+export class EventBusPolicy extends Resource {
+  constructor(scope: Construct, id: string, props: EventBusPolicyProps) {
+    super(scope, id);
+
+    new CfnEventBusPolicy(this, 'Resource', {
+      statementId: props.statementId!,
+      statement: props.statement,
+      eventBusName: props.eventBus.eventBusName,
+    });
   }
 }

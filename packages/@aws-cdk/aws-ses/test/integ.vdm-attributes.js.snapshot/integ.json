@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "VdmAttribtuesInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-ses-vdm-attributes"
+      ],
+      "assertionStack": "VdmAttribtuesInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "VdmAttribtuesIntegDefaultTestDeployAssert44077E00"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::MediaTailor::PlaybackConfiguration.AdMarkerPassthrough": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediatailor-playbackconfiguration-admarkerpassthrough.html",
@@ -182,6 +182,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediatailor-playbackconfiguration.html#cfn-mediatailor-playbackconfiguration-dashconfiguration",
           "Required": false,
           "Type": "DashConfiguration",
+          "UpdateType": "Mutable"
+        },
+        "HlsConfiguration": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediatailor-playbackconfiguration.html#cfn-mediatailor-playbackconfiguration-hlsconfiguration",
+          "Required": false,
+          "Type": "HlsConfiguration",
           "UpdateType": "Mutable"
         },
         "LivePreRollConfiguration": {

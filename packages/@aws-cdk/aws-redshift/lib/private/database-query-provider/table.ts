@@ -60,6 +60,11 @@ async function createTable(
   }
 
   await executeStatement(statement, tableAndClusterProps);
+
+  if (tableAndClusterProps.tableComment) {
+    await executeStatement(`COMMENT ON TABLE ${tableName} IS '${tableAndClusterProps.tableComment}'`, tableAndClusterProps);
+  }
+
   return tableName;
 }
 
@@ -88,8 +93,11 @@ async function updateTable(
   }
 
   const oldTableColumns = oldResourceProperties.tableColumns;
-  if (!oldTableColumns.every(oldColumn => tableColumns.some(column => column.name === oldColumn.name && column.dataType === oldColumn.dataType))) {
-    return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
+  const columnDeletions = oldTableColumns.filter(oldColumn => (
+    tableColumns.every(column => oldColumn.name !== column.name)
+  ));
+  if (columnDeletions.length > 0) {
+    alterationStatements.push(...columnDeletions.map(column => `ALTER TABLE ${tableName} DROP COLUMN ${column.name}`));
   }
 
   const columnAdditions = tableColumns.filter(column => {
@@ -138,6 +146,12 @@ async function updateTable(
         break;
       }
     }
+  }
+
+  const oldComment = oldResourceProperties.tableComment;
+  const newComment = tableAndClusterProps.tableComment;
+  if (oldComment !== newComment) {
+    alterationStatements.push(`COMMENT ON TABLE ${tableName} IS ${newComment ? `'${newComment}'` : 'NULL'}`);
   }
 
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));

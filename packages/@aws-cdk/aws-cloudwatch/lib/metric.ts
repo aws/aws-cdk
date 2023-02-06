@@ -38,6 +38,8 @@ export interface CommonMetricOptions {
    * - "tcNN.NN" | "tc(NN.NN%:NN.NN%)"
    * - "tsNN.NN" | "ts(NN.NN%:NN.NN%)"
    *
+   * Use the factory functions on the `Stats` object to construct valid input strings.
+   *
    * @default Average
    */
   readonly statistic?: string;
@@ -587,7 +589,7 @@ export class MathExpression implements IMetric {
 
     const warnings = [];
 
-    if (missingIdentifiers.length > 0) {
+    if (!this.expression.toUpperCase().match('\\s*SELECT\\s.*') && missingIdentifiers.length > 0) {
       warnings.push(`Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`);
     }
 

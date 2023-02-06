@@ -155,10 +155,10 @@ export interface VpcContextResponse {
    * The subnet groups discovered for the given VPC.
    * Unlike the above properties, this will include asymmetric subnets,
    * if the VPC has any.
-   * This property will only be populated if {@link VpcContextQuery.returnAsymmetricSubnets}
+   * This property will only be populated if `VpcContextQuery.returnAsymmetricSubnets`
    * is true.
    *
-   * @default - no subnet groups will be returned unless {@link VpcContextQuery.returnAsymmetricSubnets} is true
+   * @default - no subnet groups will be returned unless `VpcContextQuery.returnAsymmetricSubnets` is true
    */
   readonly subnetGroups?: VpcSubnetGroup[];
 

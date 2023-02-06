@@ -1,5 +1,3 @@
-import { Statistic } from '../metric-types';
-
 export interface SimpleStatistic {
   type: 'simple';
   statistic: Statistic;
@@ -66,4 +64,39 @@ export function normalizeStatistic(stat: string): string {
     // floating point rounding issues, return as-is but lowercase the p.
     return stat.toLowerCase();
   }
+}
+
+/**
+ * Enum for simple statistics
+ *
+ * (This is a private copy of the type in `metric-types.ts`; this type should always
+ * been private, the public one has been deprecated and isn't used anywhere).
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html
+ */
+export enum Statistic {
+  /**
+   * The count (number) of data points used for the statistical calculation.
+   */
+  SAMPLE_COUNT = 'SampleCount',
+
+  /**
+   * The value of Sum / SampleCount during the specified period.
+   */
+  AVERAGE = 'Average',
+  /**
+   * All values submitted for the matching metric added together.
+   * This statistic can be useful for determining the total volume of a metric.
+   */
+  SUM = 'Sum',
+  /**
+   * The lowest value observed during the specified period.
+   * You can use this value to determine low volumes of activity for your application.
+   */
+  MINIMUM = 'Minimum',
+  /**
+   * The highest value observed during the specified period.
+   * You can use this value to determine high volumes of activity for your application.
+   */
+  MAXIMUM = 'Maximum',
 }

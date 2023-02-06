@@ -12,7 +12,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
-    schema: new appsync.Schema({
+    schema: new appsync.SchemaFile({
       filePath: path.join(__dirname, 'appsync.test.graphql'),
     }),
   });

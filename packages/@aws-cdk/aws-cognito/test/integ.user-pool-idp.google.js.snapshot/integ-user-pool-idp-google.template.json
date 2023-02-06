@@ -69,6 +69,18 @@
     }
    }
   },
+  "GoogleClientSecretValueD28C3034": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {
+     "ExcludePunctuation": true,
+     "PasswordLength": 20
+    },
+    "Name": "GoogleClientSecretValueName"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "googleDB2C5242": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
@@ -86,7 +98,18 @@
     },
     "ProviderDetails": {
      "client_id": "google-client-id",
-     "client_secret": "google-client-secret",
+     "client_secret": {
+      "Fn::Join": [
+       "",
+       [
+        "{{resolve:secretsmanager:",
+        {
+         "Ref": "GoogleClientSecretValueD28C3034"
+        },
+        ":SecretString:::}}"
+       ]
+      ]
+     },
      "authorize_scopes": "profile"
     }
    }

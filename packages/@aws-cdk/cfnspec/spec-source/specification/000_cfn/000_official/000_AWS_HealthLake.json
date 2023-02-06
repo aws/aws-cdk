@@ -1,6 +1,23 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
+    "AWS::HealthLake::FHIRDatastore.CreatedAt": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-createdat.html",
+      "Properties": {
+        "Nanos": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-createdat.html#cfn-healthlake-fhirdatastore-createdat-nanos",
+          "PrimitiveType": "Integer",
+          "Required": true,
+          "UpdateType": "Mutable"
+        },
+        "Seconds": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-createdat.html#cfn-healthlake-fhirdatastore-createdat-seconds",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::HealthLake::FHIRDatastore.KmsEncryptionConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-kmsencryptionconfig.html",
       "Properties": {
@@ -44,6 +61,15 @@
   "ResourceTypes": {
     "AWS::HealthLake::FHIRDatastore": {
       "Attributes": {
+        "CreatedAt": {
+          "Type": "CreatedAt"
+        },
+        "CreatedAt.Nanos": {
+          "PrimitiveType": "Integer"
+        },
+        "CreatedAt.Seconds": {
+          "PrimitiveType": "String"
+        },
         "DatastoreArn": {
           "PrimitiveType": "String"
         },
@@ -85,6 +111,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-tags",
+          "DuplicatesAllowed": true,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",

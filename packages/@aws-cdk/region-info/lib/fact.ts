@@ -191,4 +191,16 @@ export class FactName {
   public static servicePrincipal(service: string): string {
     return `service-principal:${service.replace(/\.amazonaws\.com(\.cn)?$/, '')}`;
   }
+
+  /**
+   * The ARN of Amazon Distro for OpenTelemetry (ADOT) Lambda layer for a given lambda type, version and architecture.
+   *
+   * @param type the type of the ADOT lambda layer
+   * @param version the layer version.
+   * @param architecture the Lambda Function architecture (e.g. 'x86_64' or 'arm64')
+   */
+  public static adotLambdaLayer(type: string, version: string, architecture: string): string {
+    const suffix = type + '_' + version.split('.').join('_') + '_' + architecture;
+    return `adot-lambda-layer:${suffix}`;
+  }
 }

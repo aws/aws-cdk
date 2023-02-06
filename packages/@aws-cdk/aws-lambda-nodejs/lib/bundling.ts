@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { PackageInstallation } from './package-installation';
-import { PackageManager } from './package-manager';
+import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
 
@@ -43,6 +43,11 @@ export interface BundlingProps extends BundlingOptions {
    */
   readonly preCompilation?: boolean
 
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 }
 
 /**
@@ -73,10 +78,17 @@ export class Bundling implements cdk.BundlingOptions {
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
+  public readonly entrypoint?: string[]
   public readonly command: string[];
+  public readonly volumes?: cdk.DockerVolume[];
+  public readonly volumesFrom?: string[];
   public readonly environment?: { [key: string]: string };
   public readonly workingDirectory: string;
+  public readonly user?: string;
+  public readonly securityOpt?: string;
+  public readonly network?: string;
   public readonly local?: cdk.ILocalBundling;
+  public readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 
   private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
@@ -137,11 +149,18 @@ export class Bundling implements cdk.BundlingOptions {
       tscRunner: 'tsc', // tsc is installed globally in the docker image
       osPlatform: 'linux', // linux docker image
     });
-    this.command = ['bash', '-c', bundlingCommand];
+    this.command = props.command ?? ['bash', '-c', bundlingCommand];
     this.environment = props.environment;
     // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
     // and we want to force npx to use the globally installed esbuild.
-    this.workingDirectory = '/';
+    this.workingDirectory = props.workingDirectory ?? '/';
+    this.entrypoint = props.entrypoint;
+    this.volumes = props.volumes;
+    this.volumesFrom = props.volumesFrom;
+    this.user = props.user;
+    this.securityOpt = props.securityOpt;
+    this.network = props.network;
+    this.bundlingFileAccess = props.bundlingFileAccess;
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
@@ -217,12 +236,16 @@ export class Bundling implements cdk.BundlingOptions {
 
       const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
 
+      const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
+
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
+        isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), ''): '', // Ensure node_modules directory is installed locally by creating local 'pnpm-workspace.yaml' file
         osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies }),
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
+        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml')) : '', // Remove '.modules.yaml' file which changes on each deployment
       ]);
     }
 
@@ -298,13 +321,20 @@ interface BundlingCommandOptions {
 class OsCommand {
   constructor(private readonly osPlatform: NodeJS.Platform) {}
 
-  public writeJson(filePath: string, data: any): string {
-    const stringifiedData = JSON.stringify(data);
+  public write(filePath: string, data: string): string {
     if (this.osPlatform === 'win32') {
-      return `echo ^${stringifiedData}^ > "${filePath}"`;
+      if (!data) { // if `data` is empty, echo a blank line, otherwise the file will contain a `^` character
+        return `echo. > "${filePath}"`;
+      }
+      return `echo ^${data}^ > "${filePath}"`;
     }
 
-    return `echo '${stringifiedData}' > "${filePath}"`;
+    return `echo '${data}' > "${filePath}"`;
+  }
+
+  public writeJson(filePath: string, data: any): string {
+    const stringifiedData = JSON.stringify(data);
+    return this.write(filePath, stringifiedData);
   }
 
   public copy(src: string, dest: string): string {
@@ -317,6 +347,14 @@ class OsCommand {
 
   public changeDirectory(dir: string): string {
     return `cd "${dir}"`;
+  }
+
+  public remove(filePath: string): string {
+    if (this.osPlatform === 'win32') {
+      return `del "${filePath}"`;
+    }
+
+    return `rm "${filePath}"`;
   }
 }
 
@@ -379,5 +417,5 @@ function isSdkV2Runtime(runtime: Runtime): boolean {
     Runtime.NODEJS_14_X,
     Runtime.NODEJS_16_X,
   ];
-  return sdkV2RuntimeList.includes(runtime);
+  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
 }

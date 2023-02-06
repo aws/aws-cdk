@@ -1,4 +1,4 @@
-import { filterLogicalId, formatFailure, matchSection } from './section';
+import { filterLogicalId, matchSection, formatSectionMatchFailure } from './section';
 import { Template } from './template';
 
 export function findMappings(template: Template, logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
@@ -15,17 +15,9 @@ export function findMappings(template: Template, logicalId: string, props: any =
 export function hasMapping(template: Template, logicalId: string, props: any): string | void {
   const section: { [key: string]: {} } = template.Mappings ?? {};
   const result = matchSection(filterLogicalId(section, logicalId), props);
-
   if (result.match) {
     return;
   }
 
-  if (result.closestResult === undefined) {
-    return 'No mappings found in the template';
-  }
-
-  return [
-    `Template has ${result.analyzedCount} mappings, but none match as expected.`,
-    formatFailure(result.closestResult),
-  ].join('\n');
+  return formatSectionMatchFailure(`mappings with logicalId ${logicalId}`, result);
 }
