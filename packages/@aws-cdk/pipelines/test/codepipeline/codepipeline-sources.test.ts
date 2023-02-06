@@ -288,3 +288,54 @@ test('pass role to s3 codepipeline source', () => {
     }]),
   });
 });
+
+type SourceFactory = (stack: Stack) => cdkp.CodePipelineSource;
+
+test.each([
+  ['CodeCommit', (stack) => {
+    const repo = new ccommit.Repository(stack, 'Repo', {
+      repositoryName: 'MyRepo',
+    });
+    return cdkp.CodePipelineSource.codeCommit(repo, 'main', {
+      actionName: 'ConfiguredName',
+    });
+  }],
+  ['S3', (stack) => {
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    return cdkp.CodePipelineSource.s3(bucket, 'thefile.zip', {
+      actionName: 'ConfiguredName',
+    });
+  }],
+  ['ECR', (stack) => {
+    const repository = new ecr.Repository(stack, 'Repository', { repositoryName: 'namespace/repo' });
+    return cdkp.CodePipelineSource.ecr(repository, {
+      actionName: 'ConfiguredName',
+    });
+  }],
+  ['GitHub', () => {
+    return cdkp.CodePipelineSource.gitHub('owner/repo', 'main', {
+      actionName: 'ConfiguredName',
+    });
+  }],
+  ['CodeStar', () => {
+    return cdkp.CodePipelineSource.connection('owner/repo', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-west-2:123456789012:connection/39e4c34d-e13a-4e94-a886',
+      actionName: 'ConfiguredName',
+    });
+  }],
+] as Array<[string, SourceFactory]>)('can configure actionName for %s', (_name: string, fac: SourceFactory) => {
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: fac(pipelineStack),
+  });
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Source',
+      Actions: [
+        Match.objectLike({
+          Name: 'ConfiguredName',
+        }),
+      ],
+    }]),
+  });
+});
