@@ -1154,7 +1154,7 @@ cluster.addAsgCapacityProvider(capacityProvider);
 
 cluster.addDefaultCapacityProviderStrategy([
   { capacityProvider: 'FARGATE', base: 10, weight: 50 },
-  { capacityProvider: 'FARGATE_SPOT' },
+  { capacityProvider: 'FARGATE_SPOT', weight: 50 },
   { capacityProvider: capacityProvider.capacityProviderName },
 ]);
 ```
