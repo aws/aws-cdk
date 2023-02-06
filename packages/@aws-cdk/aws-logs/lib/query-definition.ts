@@ -16,18 +16,21 @@ export interface QueryStringProps {
   readonly fields?: string[];
 
   /**
-  * Extracts data from a log field and creates one or more ephemeral fields that you can process further in the query.
+  * One or more statements for parsing data from a log field and creating ephemeral fields that can
+  * be processed further in the query. Each statement provided generates a separate parse line in
+  * the query string.
   *
   * @default - no parse in QueryString
   */
-  readonly parse?: string;
+  readonly parse?: string | string[];
 
   /**
-  * Filters the results of a query that's based on one or more conditions.
+  * One or more statements for filtering the results of a query based on a boolean expression. Each
+  * statement provided generates a separate filter line in the query string.
   *
   * @default - no filter in QueryString
   */
-  readonly filter?: string;
+  readonly filter?: string | string[];
 
   /**
   * Uses log field values to calculate aggregate statistics.
@@ -58,23 +61,13 @@ export interface QueryStringProps {
   readonly display?: string;
 }
 
-interface QueryStringMap {
-  readonly fields?: string,
-  readonly parse?: string,
-  readonly filter?: string,
-  readonly stats?: string,
-  readonly sort?: string,
-  readonly limit?: Number,
-  readonly display?: string,
-}
-
 /**
  * Define a QueryString
  */
 export class QueryString {
   private readonly fields?: string[];
-  private readonly parse?: string;
-  private readonly filter?: string;
+  private readonly parse?: string | string[];
+  private readonly filter?: string | string[];
   private readonly stats?: string;
   private readonly sort?: string;
   private readonly limit?: Number;
@@ -94,26 +87,46 @@ export class QueryString {
   * String representation of this QueryString.
   */
   public toString(): string {
-    return noUndef({
-      fields: this.fields !== undefined ? this.fields.join(', ') : this.fields,
-      parse: this.parse,
-      filter: this.filter,
-      stats: this.stats,
-      sort: this.sort,
-      limit: this.limit,
-      display: this.display,
-    }).join('\n| ');
+    return [
+      ...this.buildQueryLines('fields', this.fields?.join(', ')),
+      ...this.buildQueryLines('parse', this.parse),
+      ...this.buildQueryLines('filter', this.filter),
+      ...this.buildQueryLines('stats', this.stats),
+      ...this.buildQueryLines('sort', this.sort),
+      ...this.buildQueryLines('limit', this.limit?.toString()),
+      ...this.buildQueryLines('display', this.display),
+    ].filter(
+      (queryLine) => queryLine !== undefined && queryLine.length > 0,
+    ).join('\n| ');
   }
-}
 
-function noUndef(x: QueryStringMap): string[] {
-  const ret: string[] = [];
-  for (const [key, value] of Object.entries(x)) {
-    if (value !== undefined) {
-      ret.push(`${key} ${value}`);
+  /**
+   * Build an array of query lines given a command and statement(s).
+   *
+   * @param command a query command
+   * @param statements one or more query statements for the specified command, or undefined
+   * @returns an array of the query string lines generated from the provided command and statements
+   */
+  buildQueryLines(command: string, statements: string[] | string | undefined): string[] {
+    if (statements === undefined) {
+      return [];
     }
+
+    return (typeof statements === 'string' ? [statements] : statements).map(
+      (statement: string | undefined): string => this.buildQueryLine(command, statement!),
+    );
   }
-  return ret;
+
+  /**
+   * Build a single query line given a command and statement.
+   *
+   * @param command a query command
+   * @param statement a single query statement
+   * @returns a single query string line generated from the provided command and statement
+   */
+  buildQueryLine(command: string, statement: string): string {
+    return statement ? `${command} ${statement}` : '';
+  }
 }
 
 /**

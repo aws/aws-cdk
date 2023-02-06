@@ -75,4 +75,33 @@ describe('query definition', () => {
       QueryString: 'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| filter loggingType = "ERROR"\n| sort @timestamp desc\n| limit 20\n| display loggingMessage',
     });
   });
+
+  test('create a query definition with multiple statements for supported commands', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new QueryDefinition(stack, 'QueryDefinition', {
+      queryDefinitionName: 'MyQuery',
+      queryString: new QueryString({
+        fields: ['@timestamp', '@message'],
+        parse: [
+          '@message "[*] *" as loggingType, loggingMessage',
+          '@message "<*>: *" as differentLoggingType, differentLoggingMessage',
+        ],
+        filter: [
+          'loggingType = "ERROR"',
+          'loggingMessage = "A very strange error occurred!"',
+        ],
+        sort: '@timestamp desc',
+        limit: 20,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::QueryDefinition', {
+      Name: 'MyQuery',
+      QueryString: 'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| parse @message "<*>: *" as differentLoggingType, differentLoggingMessage\n| filter loggingType = "ERROR"\n| filter loggingMessage = "A very strange error occurred!"\n| sort @timestamp desc\n| limit 20',
+    });
+  });
 });
