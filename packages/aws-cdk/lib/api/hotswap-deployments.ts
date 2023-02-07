@@ -74,9 +74,7 @@ export async function tryHotswapDeployment(
     stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStackNames,
   );
 
-  if (nonHotswappableChanges.length > 0) {
-    logNonHotswappableChanges(nonHotswappableChanges, hotswapMode);
-  }
+  logNonHotswappableChanges(nonHotswappableChanges, hotswapMode);
 
   // preserve classic hotswap behavior
   if (hotswapMode === HotswapMode.FALL_BACK) {
@@ -347,6 +345,9 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: Hotswappable
 }
 
 function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[], hotswapMode: HotswapMode): void {
+  if (nonHotswappableChanges.length === 0) {
+    return;
+  }
   /**
    * EKS Services can have a task definition that doesn't refer to the task definition being updated.
    * We have to log this as a non-hotswappable change to the task definition, but when we do,
@@ -361,7 +362,11 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
       return;
     }
   }
-  print('\n%s %s', chalk.red('⚠️'), chalk.red('The following non-hotswappable changes were found:'));
+  if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
+    print('\n%s %s', chalk.red('⚠️'), chalk.red('The following non-hotswappable changes were found. To reconcile these using CloudFormation, specify --hotswap-fallback'));
+  } else {
+    print('\n%s %s', chalk.red('⚠️'), chalk.red('The following non-hotswappable changes were found:'));
+  }
 
   for (const change of nonHotswappableChanges) {
     change.rejectedChanges.length > 0 ?

@@ -181,13 +181,12 @@ export class CdkToolkit {
     }
 
     if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
-      warning('⚠️ The --hotswap and --hotswap-only flags deliberately introduce CloudFormation drift to speed up deployments');
+      warning('⚠️ The --hotswap and --hotswap-fallback flags deliberately introduce CloudFormation drift to speed up deployments');
       warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
     }
 
     const stacks = stackCollection.stackArtifacts;
     const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
-
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
@@ -777,7 +776,7 @@ export class CdkToolkit {
       cloudWatchLogMonitor,
       cacheCloudAssembly: false,
       hotswap: options.hotswap,
-      extraUserAgent: `cdk-watch/hotswap-${options.hotswap ? 'on' : 'off'}`,
+      extraUserAgent: `cdk-watch/hotswap-${options.hotswap !== HotswapMode.FALL_BACK ? 'on' : 'off'}`,
       concurrency: options.concurrency,
     };
 
@@ -951,7 +950,7 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - FALL_BACK for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
+   * @default - `HotswapMode.FALL_BACK` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
    */
   readonly hotswap: HotswapMode;
 

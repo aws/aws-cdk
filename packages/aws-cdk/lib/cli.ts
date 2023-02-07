@@ -723,7 +723,11 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
   if (hotswap && hotswapFallback) {
     throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
   } else if (!hotswap && !hotswapFallback) {
-    return watch ? HotswapMode.FALL_BACK : HotswapMode.FULL_DEPLOYMENT;
+    if (hotswap === undefined && hotswapFallback === undefined) {
+      return watch ? HotswapMode.HOTSWAP_ONLY : HotswapMode.FULL_DEPLOYMENT;
+    } else if (hotswap === false || hotswapFallback === false) {
+      return HotswapMode.FULL_DEPLOYMENT;
+    }
   }
 
   let hotswapMode: HotswapMode;
