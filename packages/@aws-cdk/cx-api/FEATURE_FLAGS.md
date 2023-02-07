@@ -17,7 +17,7 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
-| [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | V2·NEXT | (default) |
+| [@aws-cdk/aws-route53-patterns:useCertificate](#aws-cdkaws-route53-patternsusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | (fix) |
@@ -75,7 +75,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
-    "@aws-cdk/aws-route53-patters:useCertificate": true,
+    "@aws-cdk/aws-route53-patterns:useCertificate": true,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false
   }
 }
@@ -306,7 +306,7 @@ Encryption can also be configured explicitly using the `encrypted` property.
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
 
 
-### @aws-cdk/aws-route53-patters:useCertificate
+### @aws-cdk/aws-route53-patterns:useCertificate
 
 *Use the official `Certificate` resource instead of `DnsValidatedCertificate`* (default)
 

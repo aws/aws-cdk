@@ -5,7 +5,7 @@ import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
 import { BlockPublicAccess, Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
 import { ArnFormat, RemovalPolicy, Stack, Token, FeatureFlags } from '@aws-cdk/core';
 import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
-import { ROUTE53_PATTERNS_USE_CERTIFICATE } from '@aws-cdk/cx-api';
+import { ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERS_USE_CERTIFICATE } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
 /**
@@ -149,7 +149,8 @@ export class HttpsRedirect extends Construct {
    * on the CloudFront distribution before the old one is deleted.
    */
   private createCertificate(domainNames: string[], zone: IHostedZone): ICertificate {
-    const useCertificate = FeatureFlags.of(this).isEnabled(ROUTE53_PATTERNS_USE_CERTIFICATE);
+    const useCertificate = FeatureFlags.of(this).isEnabled(ROUTE53_PATTERNS_USE_CERTIFICATE) ||
+      FeatureFlags.of(this).isEnabled(ROUTE53_PATTERS_USE_CERTIFICATE);
     if (useCertificate) {
       // this preserves backwards compatibility. Previously the certificate was always created in `this` scope
       // so we need to keep the name the same

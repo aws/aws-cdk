@@ -3,7 +3,7 @@ import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { HostedZone } from '@aws-cdk/aws-route53';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from '@aws-cdk/core';
-import { ROUTE53_PATTERNS_USE_CERTIFICATE } from '@aws-cdk/cx-api';
+import { ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERS_USE_CERTIFICATE } from '@aws-cdk/cx-api';
 import { HttpsRedirect } from '../lib';
 
 testDeprecated('create HTTPS redirect', () => {
@@ -155,7 +155,7 @@ test('throws when certificate in region other than us-east-1 is supplied', () =>
   }).toThrow(/The certificate must be in the us-east-1 region and the certificate you provided is in us-east-2./);
 });
 
-describe('Uses Certificate when @aws-cdk/aws-route53-patters:useCertificate=true', () => {
+describe('Uses Certificate when @aws-cdk/aws-route53-patterns:useCertificate=true', () => {
   test('explicit different region', () => {
     // GIVEN
     const app = new App({
@@ -292,6 +292,43 @@ describe('Uses Certificate when @aws-cdk/aws-route53-patters:useCertificate=true
         }),
       });
 
-    }).toThrow(/When @aws-cdk\/aws-route53-patters:useCertificate is enabled, a region must be defined on the Stack/);
+    }).toThrow(/When @aws-cdk\/aws-route53-patterns:useCertificate is enabled, a region must be defined on the Stack/);
+  });
+
+  test('use of deprecated @aws-cdk/aws-route53-patters:useCertificate flag', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        [ROUTE53_PATTERS_USE_CERTIFICATE]: true,
+      },
+    });
+
+    // WHEN
+    const stack = new Stack(app, 'test', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    new HttpsRedirect(stack, 'Redirect', {
+      recordNames: ['foo.example.com'],
+      targetDomain: 'bar.example.com',
+      zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'ID',
+        zoneName: 'example.com',
+      }),
+    });
+
+    // THEN
+    const certStack = app.node.tryFindChild(`certificate-redirect-stack-${stack.node.addr}`);
+    expect(certStack).toBeUndefined();
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'foo.example.com',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerCertificate: {
+          AcmCertificateArn: {
+            Ref: 'RedirectRedirectCertificateB4F2F130',
+          },
+        },
+      },
+    });
   });
 });
