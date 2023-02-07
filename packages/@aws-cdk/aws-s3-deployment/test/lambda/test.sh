@@ -19,4 +19,5 @@ cp -f ${scriptdir}/../../lib/lambda/* $PWD
 cp -f ${scriptdir}/* $PWD
 
 # this will run our tests inside the right environment
-docker build .
+DOCKER_CMD=${CDK_DOCKER:-docker}
+$DOCKER_CMD build .
