@@ -249,7 +249,7 @@ class S3Destination extends FlowLogDestination {
     let s3Bucket: s3.IBucket;
     if (this.props.s3Bucket === undefined) {
       s3Bucket = new s3.Bucket(scope, 'Bucket', {
-        encryption: s3.BucketEncryption.UNENCRYPTED,
+        encryption: s3.BucketEncryption.S3_MANAGED,
         removalPolicy: RemovalPolicy.RETAIN,
       });
     } else {
