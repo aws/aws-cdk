@@ -1,8 +1,9 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Token, Stack, ArnFormat, Arn, Fn, Aws } from '@aws-cdk/core';
+import { Token, Stack, ArnFormat, Arn, Fn, Aws, IResource } from '@aws-cdk/core';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
+import { IPredefinedDeploymentConfig } from './predefined-deployment-config';
 
 export function arnForApplication(stack: Stack, applicationName: string): string {
   return stack.formatArn({
@@ -18,11 +19,11 @@ export function nameFromDeploymentGroupArn(deploymentGroupArn: string): string {
   return Fn.select(1, Fn.split('/', components.resourceName ?? ''));
 }
 
-export function arnForDeploymentConfig(name: string): string {
+export function arnForDeploymentConfig(name: string, resource?: IResource): string {
   return Arn.format({
     partition: Aws.PARTITION,
-    account: Aws.ACCOUNT_ID,
-    region: Aws.REGION,
+    account: resource?.env.account ?? Aws.ACCOUNT_ID,
+    region: resource?.env.region ?? Aws.REGION,
     service: 'codedeploy',
     resource: 'deploymentconfig',
     resourceName: name,
@@ -41,10 +42,14 @@ CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
     };
 }
 
-export function deploymentConfig(name: string): IBaseDeploymentConfig {
+export function deploymentConfig(name: string): IBaseDeploymentConfig & IPredefinedDeploymentConfig {
   return {
     deploymentConfigName: name,
     deploymentConfigArn: arnForDeploymentConfig(name),
+    bindEnvironment: (resource) => ({
+      deploymentConfigName: name,
+      deploymentConfigArn: arnForDeploymentConfig(name, resource),
+    }),
   };
 }
 
