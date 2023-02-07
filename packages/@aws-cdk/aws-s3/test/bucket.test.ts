@@ -702,9 +702,9 @@ describe('bucket', () => {
       });
     });
 
-    test('import can explicitly set bucket region', () => {
+    test('import can explicitly set bucket region with different suffix than stack', () => {
       const stack = new cdk.Stack(undefined, undefined, {
-        env: { region: 'us-east-1' },
+        env: { region: 'cn-north-1' },
       });
 
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
