@@ -18,8 +18,23 @@ export class CheckovValiation implements IValidation {
    * TODO docs
    */
   async validate(context: ValidationContext): Promise<void> {
-    // TODO: check whether checkov is installed
+    if (!this.isCheckovInstalled()) {
+      throw new Error('Checkov is not installed. Install it by running "pip install checkov".');
+    }
 
+    await this.checkPolicies(context);
+  }
+
+  private isCheckovInstalled(): boolean {
+    const { status } = sync('checkov', ['--version'], {
+      encoding: 'utf-8',
+      stdio: 'pipe',
+    });
+
+    return status === 0;
+  }
+
+  private async checkPolicies(context: ValidationContext): Promise<void> {
     const flags = [
       '-f',
       context.templatePath,
