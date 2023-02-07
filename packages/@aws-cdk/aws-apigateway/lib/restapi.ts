@@ -261,6 +261,18 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
    */
   readonly apiDefinition: ApiDefinition;
+
+  /**
+   * A nullable integer that is used to enable compression (with non-negative
+   * between 0 and 10485760 (10M) bytes, inclusive) or disable compression
+   * (when undefined) on an API. When compression is enabled, compression or
+   * decompression is not applied on the payload if the payload size is
+   * smaller than this value. Setting it to zero allows compression for any
+   * payload size.
+   *
+   * @default - Compression is disabled.
+   */
+  readonly minimumCompressionSize?: number;
 }
 
 /**
@@ -648,6 +660,7 @@ export class SpecRestApi extends RestApiBase {
       name: this.restApiName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
+      minimumCompressionSize: props.minimumCompressionSize,
       body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),

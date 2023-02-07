@@ -1026,6 +1026,30 @@ describe('restapi', () => {
       Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
       Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Account', 0);
     });
+
+    test('SpecRestApi minimumCompressionSize test', () => {
+      // GIVEN
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+        },
+      });
+
+      const stack = new Stack(app);
+      const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+        minimumCompressionSize: 10485760,
+      });
+
+      // WHEN
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        Name: 'SpecRestApi',
+        MinimumCompressionSize: 10485760,
+      });
+    });
   });
 
   describe('Metrics', () => {
