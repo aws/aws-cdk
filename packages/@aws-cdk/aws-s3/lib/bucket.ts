@@ -1975,6 +1975,10 @@ export class Bucket extends BucketBase {
       encryptionType = props.encryptionKey ? BucketEncryption.KMS : BucketEncryption.S3_MANAGED;
     }
 
+    if (encryptionType === BucketEncryption.UNENCRYPTED) {
+      encryptionType = BucketEncryption.S3_MANAGED;
+    }
+
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
@@ -2379,6 +2383,13 @@ export class Bucket extends BucketBase {
  * What kind of server-side encryption to apply to this bucket
  */
 export enum BucketEncryption {
+  /**
+   * Objects in the bucket are not encrypted.
+   *
+   * @deprecated use `BucketEncryption.S3_MANAGED`
+  */
+  UNENCRYPTED = 'UNENCRYPTED',
+
   /**
    * Server-side KMS encryption with a master key managed by KMS.
    */
