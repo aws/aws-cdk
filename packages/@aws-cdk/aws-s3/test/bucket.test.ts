@@ -2,6 +2,7 @@ import { EOL } from 'os';
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
@@ -805,9 +806,9 @@ describe('bucket', () => {
       });
     });
 
-    test('import can explicitly set bucket region', () => {
+    test('import can explicitly set bucket region with different suffix than stack', () => {
       const stack = new cdk.Stack(undefined, undefined, {
-        env: { region: 'us-east-1' },
+        env: { region: 'cn-north-1' },
       });
 
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
@@ -815,8 +816,59 @@ describe('bucket', () => {
         region: 'eu-west-1',
       });
 
-      expect(bucket.bucketRegionalDomainName).toEqual(`mybucket.s3.eu-west-1.${stack.urlSuffix}`);
-      expect(bucket.bucketWebsiteDomainName).toEqual(`mybucket.s3-website-eu-west-1.${stack.urlSuffix}`);
+      expect(bucket.bucketRegionalDomainName).toEqual('mybucket.s3.eu-west-1.amazonaws.com');
+      expect(bucket.bucketWebsiteDomainName).toEqual('mybucket.s3-website-eu-west-1.amazonaws.com');
+    });
+
+    test('new bucketWebsiteUrl format for specific region', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.us-east-2.amazonaws.com');
+    });
+
+    test('new bucketWebsiteUrl format for specific region with cn suffix', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'cn-north-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.cn-north-1.amazonaws.com.cn');
+    });
+
+
+    testDeprecated('new bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+        bucketWebsiteNewUrlFormat: true,
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.us-east-1.amazonaws.com');
+    });
+
+    testDeprecated('old bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+        bucketWebsiteNewUrlFormat: false,
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website-us-east-2.amazonaws.com');
     });
 
     test('import needs to specify a valid bucket name', () => {
@@ -2026,10 +2078,14 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'http://my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'http://my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
@@ -2037,14 +2093,17 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
-
     });
     test('exports the WebsiteURL for imported buckets with url', () => {
       const stack = new cdk.Stack();
