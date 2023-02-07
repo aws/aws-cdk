@@ -38,7 +38,3 @@ export function parseBucketName(construct: IConstruct, props: BucketAttributes):
   // no bucket name is okay since it's optional.
   return undefined;
 }
-
-export function buildbucketWebsiteUrl(bucketWebsiteNewUrlFormat: boolean, region: string, urlSuffix: string): string {
-  return `s3-website${bucketWebsiteNewUrlFormat ? '.' : '-'}${region}.${urlSuffix}`;
-}
