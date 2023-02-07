@@ -409,14 +409,14 @@ export interface BucketAttributes {
   /**
    * The domain name of the bucket.
    *
-   * @default Inferred from bucket name
+   * @default - Inferred from bucket name
    */
   readonly bucketDomainName?: string;
 
   /**
    * The website URL of the bucket (if static web hosting is enabled).
    *
-   * @default Inferred from bucket name
+   * @default - Inferred from bucket name and region
    */
   readonly bucketWebsiteUrl?: string;
 
@@ -431,16 +431,22 @@ export interface BucketAttributes {
   readonly bucketDualStackDomainName?: string;
 
   /**
-   * The format of the website URL of the bucket. This should be true for
+   * Force the format of the website URL of the bucket. This should be true for
    * regions launched since 2014.
    *
-   * @default false
+   * @default - inferred from available region information, `false` otherwise
    *
-   * Not needed to specify anymore - proper website url format is derived from the bucket region.
-   * If specified though, old behaviour is applied and format is not derived from the region.
+   * @deprecated The correct website url format can be inferred automatically from the bucket `region`.
+   * Always provide the bucket region if the `bucketWebsiteUrl` will be used.
+   * Alternatively provide the full `bucketWebsiteUrl` manually.
    */
   readonly bucketWebsiteNewUrlFormat?: boolean;
 
+  /**
+   * KMS encryption key associated with this bucket.
+   *
+   * @default - no encryption key
+   */
   readonly encryptionKey?: kms.IKey;
 
   /**
@@ -459,6 +465,8 @@ export interface BucketAttributes {
 
   /**
    * The region this existing bucket is in.
+   * Features that require the region (e.g. `bucketWebsiteUrl`) won't fully work
+   * if the region cannot be correctly inferred.
    *
    * @default - it's assumed the bucket is in the same region as the scope it's being imported into
    */

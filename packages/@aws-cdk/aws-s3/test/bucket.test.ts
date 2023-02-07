@@ -2,6 +2,7 @@ import { EOL } from 'os';
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
@@ -739,7 +740,8 @@ describe('bucket', () => {
       expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.cn-north-1.amazonaws.com.cn');
     });
 
-    test('new bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+
+    testDeprecated('new bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { region: 'us-east-1' },
       });
@@ -752,7 +754,7 @@ describe('bucket', () => {
       expect(bucket.bucketWebsiteUrl).toEqual(`http://mybucket.s3-website.us-east-1.${stack.urlSuffix}`);
     });
 
-    test('old bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+    testDeprecated('old bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { region: 'us-east-2' },
       });
