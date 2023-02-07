@@ -11,6 +11,9 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
     * refer to it in the [AWS CDK Toolkit](https://docs.aws.amazon.com/cdk/v2/guide/cli.html).
     *
     * @default - ApplicationAssociatorStack
+    * @deprecated - Use `stackName` instead to control the name of the stack. The default name is
+    *               Application-${applicationIdentifier}-Stack, where `applicationIdentifier` is application name for
+    *               CreateTargetApplication or application id for ExistingTargetApplication
     */
   readonly stackId?: string;
 }
