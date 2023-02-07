@@ -27,7 +27,7 @@ export class ThemeContextProviderPlugin implements ContextProviderPlugin {
     const theme = response.Theme;
 
     if (!theme) {
-      throw new Error(`No Theme found in account ${args.account} with id ${args.themeId}`);
+      throw new Error(`No Theme found in account ${args.account} and region ${args.region} with id ${args.themeId}`);
     }
 
     return helperFunctions.mapToCamelCase(theme) as cxapi.QuickSightContextResponse.Analysis;
@@ -56,7 +56,7 @@ export class ThemePermissionsContextProviderPlugin implements ContextProviderPlu
     const theme = response.Permissions;
 
     if (!theme) {
-      throw new Error(`No Theme found in account ${args.account} with id ${args.themeId}`);
+      throw new Error(`No Theme found in account ${args.account} and region ${args.region} with id ${args.themeId}`);
     }
 
     return helperFunctions.arrayToCamelCase(theme) as cxapi.QuickSightContextResponse.ResourcePermissionList;

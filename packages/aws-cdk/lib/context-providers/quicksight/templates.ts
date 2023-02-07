@@ -27,7 +27,7 @@ export class TemplateContextProviderPlugin implements ContextProviderPlugin {
     const template = response.Template;
 
     if (!template) {
-      throw new Error(`No Template found in account ${args.account} with id ${args.templateId}`);
+      throw new Error(`No Template found in account ${args.account} and region ${args.region} with id ${args.templateId}`);
     }
 
     return helperFunctions.mapToCamelCase(template) as cxapi.QuickSightContextResponse.Template;
@@ -56,7 +56,7 @@ export class TemplatePermissionsContextProviderPlugin implements ContextProvider
     const template = response.Permissions;
 
     if (!template) {
-      throw new Error(`No Template found in account ${args.account} with id ${args.templateId}`);
+      throw new Error(`No Template found in account ${args.account} and region ${args.region} with id ${args.templateId}`);
     }
 
     return helperFunctions.arrayToCamelCase(template) as cxapi.QuickSightContextResponse.ResourcePermissionList;

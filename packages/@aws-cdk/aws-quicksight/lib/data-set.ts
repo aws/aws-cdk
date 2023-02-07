@@ -267,7 +267,7 @@ export class DataSet extends Resource {
           }).value;
 
           if (!this._dataSet) {
-            throw Error(`No DataSet found in account ${contextProps.account} with id ${contextProps.dataSetId}`);
+            throw Error(`No DataSet found in account ${contextProps.account} and region ${contextProps.region} with id ${contextProps.dataSetId}`);
           }
         }
 

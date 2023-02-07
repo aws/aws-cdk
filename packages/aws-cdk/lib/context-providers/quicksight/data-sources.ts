@@ -27,7 +27,7 @@ export class DataSourceContextProviderPlugin implements ContextProviderPlugin {
     const dataSource = response.DataSource;
 
     if (!dataSource) {
-      throw new Error(`No DataSource found in account ${args.account} with id ${args.dataSourceId}`);
+      throw new Error(`No DataSource found in account ${args.account} and region ${args.region} with id ${args.dataSourceId}`);
     }
 
     return helperFunctions.mapToCamelCase(dataSource) as cxapi.QuickSightContextResponse.DataSource;
@@ -56,7 +56,7 @@ export class DataSourcePermissionsContextProviderPlugin implements ContextProvid
     const dataSource = response.Permissions;
 
     if (!dataSource) {
-      throw new Error(`No DataSource found in account ${args.account} with id ${args.dataSourceId}`);
+      throw new Error(`No DataSource found in account ${args.account} and region ${args.region} with id ${args.dataSourceId}`);
     }
 
     return helperFunctions.arrayToCamelCase(dataSource) as cxapi.QuickSightContextResponse.ResourcePermissionList;

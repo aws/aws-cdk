@@ -96,13 +96,13 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
+    "aws-sdk": "^2.1242.0",
     "constructs": "^10.0.0"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "aws-sdk": "^2.1242.0",
     "constructs": "^10.0.0"
   },
   "peerDependencies": {
@@ -111,9 +111,6 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "constructs": "^10.0.0"
   },
-  "bundledDependencies": [
-    "aws-sdk"
-  ],
   "engines": {
     "node": ">= 14.15.0"
   },

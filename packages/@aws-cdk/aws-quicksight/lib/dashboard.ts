@@ -207,7 +207,7 @@ export class Dashboard extends Resource {
           }).value;
 
           if (!this._dashboard) {
-            throw Error(`No Dashboard found in account ${contextProps.account} with id ${contextProps.dashboardId}`);
+            throw Error(`No Dashboard found in account ${contextProps.account} and region ${contextProps.region} with id ${contextProps.dashboardId}`);
           }
         }
 

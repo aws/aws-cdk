@@ -181,7 +181,7 @@ export class Analysis extends Resource {
           }).value;
 
           if (!this._analysis) {
-            throw Error(`No Analysis found in account ${contextProps.account} with id ${contextProps.analysisId}`);
+            throw Error(`No Analysis found in account ${contextProps.account} and region ${contextProps.region} with id ${contextProps.analysisId}`);
           }
         }
 

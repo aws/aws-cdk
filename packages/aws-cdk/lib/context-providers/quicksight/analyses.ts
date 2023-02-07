@@ -27,7 +27,7 @@ export class AnalysisContextProviderPlugin implements ContextProviderPlugin {
     const analysis = response.Analysis;
 
     if (!analysis) {
-      throw new Error(`No Analysis found in account ${args.account} with id ${args.analysisId}`);
+      throw new Error(`No Analysis found in account ${args.account} and region ${args.region} with id ${args.analysisId}`);
     }
 
     return helperFunctions.mapToCamelCase(analysis) as cxapi.QuickSightContextResponse.Analysis;
@@ -56,7 +56,7 @@ export class AnalysisPermissionsContextProviderPlugin implements ContextProvider
     const analysis = response.Permissions;
 
     if (!analysis) {
-      throw new Error(`No Analysis found in account ${args.account} with id ${args.analysisId}`);
+      throw new Error(`No Analysis found in account ${args.account} and region ${args.region} with id ${args.analysisId}`);
     }
 
     return helperFunctions.arrayToCamelCase(analysis) as cxapi.QuickSightContextResponse.ResourcePermissionList;

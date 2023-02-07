@@ -27,7 +27,7 @@ export class DataSetContextProviderPlugin implements ContextProviderPlugin {
     const dataSet = response.DataSet;
 
     if (!dataSet) {
-      throw new Error(`No DataSet found in account ${args.account} with id ${args.dataSetId}`);
+      throw new Error(`No DataSet found in account ${args.account} and region ${args.region} with id ${args.dataSetId}`);
     }
 
     return helperFunctions.mapToCamelCase(dataSet, [['LogicalTableMap'], ['PhysicalTableMap']]) as cxapi.QuickSightContextResponse.DataSet;
@@ -56,7 +56,7 @@ export class DataSetPermissionsContextProviderPlugin implements ContextProviderP
     const dataSet = response.Permissions;
 
     if (!dataSet) {
-      throw new Error(`No DataSet found in account ${args.account} with id ${args.dataSetId}`);
+      throw new Error(`No DataSet found in account ${args.account} and region ${args.region} with id ${args.dataSetId}`);
     }
 
     return helperFunctions.arrayToCamelCase(dataSet) as cxapi.QuickSightContextResponse.ResourcePermissionList;

@@ -175,7 +175,7 @@ export class Template extends Resource {
           }).value;
 
           if (!this._template) {
-            throw Error(`No Template found in account ${contextProps.account} with id ${contextProps.templateId}`);
+            throw Error(`No Template found in account ${contextProps.account} and region ${contextProps.region} with id ${contextProps.templateId}`);
           }
         }
 

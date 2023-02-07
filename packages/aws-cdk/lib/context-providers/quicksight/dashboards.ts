@@ -27,7 +27,7 @@ export class DashboardContextProviderPlugin implements ContextProviderPlugin {
     const dashboard = response.Dashboard;
 
     if (!dashboard) {
-      throw new Error(`No Dashboard found in account ${args.account} with id ${args.dashboardId}`);
+      throw new Error(`No Dashboard found in account ${args.account} and region ${args.region} with id ${args.dashboardId}`);
     }
 
     return helperFunctions.mapToCamelCase(dashboard) as cxapi.QuickSightContextResponse.Dashboard;
@@ -56,7 +56,7 @@ export class DashboardPermissionsContextProviderPlugin implements ContextProvide
     const dashboard = response.Permissions;
 
     if (!dashboard) {
-      throw new Error(`No Dashboard found in account ${args.account} with id ${args.dashboardId}`);
+      throw new Error(`No Dashboard found in account ${args.account} and region ${args.region} with id ${args.dashboardId}`);
     }
 
     return helperFunctions.arrayToCamelCase(dashboard) as cxapi.QuickSightContextResponse.ResourcePermissionList;

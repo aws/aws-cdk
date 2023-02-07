@@ -182,7 +182,7 @@ export class Theme extends Resource {
           }).value;
 
           if (!this._theme) {
-            throw Error(`No Theme found in account ${contextProps.account} with id ${contextProps.themeId}`);
+            throw Error(`No Theme found in account ${contextProps.account} and region ${contextProps.region} with id ${contextProps.themeId}`);
           }
         }
 

@@ -284,7 +284,7 @@ export class DataSource extends Resource {
           }).value;
 
           if (!this._dataSource) {
-            throw Error(`No DataSource found in account ${contextProps.account} with id ${contextProps.dataSourceId}`);
+            throw Error(`No DataSource found in account ${contextProps.account} and region ${contextProps.region} with id ${contextProps.dataSourceId}`);
           }
         }
 
