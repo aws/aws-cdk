@@ -1,7 +1,7 @@
 {
-  "version": "22.0.0",
+  "version": "29.0.0",
   "files": {
-    "820155cafe83250de59eadcf51df6ea51dbf430ef2ad1d8315b693f5b51137c3": {
+    "1afcf428e4ea134c4d7a718ae5357f1b81acf2e6d206618afe8443428b3c3208": {
       "source": {
         "path": "integ-cloudtrail-defaults.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "820155cafe83250de59eadcf51df6ea51dbf430ef2ad1d8315b693f5b51137c3.json",
+          "objectKey": "1afcf428e4ea134c4d7a718ae5357f1b81acf2e6d206618afe8443428b3c3208.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

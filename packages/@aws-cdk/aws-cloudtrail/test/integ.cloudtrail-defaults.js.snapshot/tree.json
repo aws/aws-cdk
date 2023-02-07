@@ -21,7 +21,17 @@
                     "path": "integ-cloudtrail-defaults/Trail/S3/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                      "aws:cdk:cloudformation:props": {}
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "AES256"
+                              }
+                            }
+                          ]
+                        }
+                      }
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.CfnBucket",
@@ -204,7 +214,7 @@
                 "path": "CloudTrailDefaultsTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "version": "10.1.237"
                 }
               },
               "DeployAssert": {
@@ -250,7 +260,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.237"
         }
       }
     },

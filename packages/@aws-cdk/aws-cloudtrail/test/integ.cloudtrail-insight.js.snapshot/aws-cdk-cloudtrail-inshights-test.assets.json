@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "29.0.0",
   "files": {
     "33e2651435a0d472a75c1e033c9832b21321d9e56711926b04c5705e5f63874c": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "9e54867c184c79374c51ba171db494a5736a30294e618efa94e199b94e58868e": {
+    "53ab97488753899efb5c6b4a90fdb86e143f48bf427cb4d6cbf9608d5b6b4593": {
       "source": {
         "path": "aws-cdk-cloudtrail-inshights-test.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9e54867c184c79374c51ba171db494a5736a30294e618efa94e199b94e58868e.json",
+          "objectKey": "53ab97488753899efb5c6b4a90fdb86e143f48bf427cb4d6cbf9608d5b6b4593.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
