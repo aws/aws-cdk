@@ -11,7 +11,7 @@ const stack = new Stack(app, 'aws-cdk-cloudtrail-inshights-test');
 const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
 const Trailbucket = new s3.Bucket(stack, 'S3', {
-  encryption: s3.BucketEncryption.UNENCRYPTED,
+  encryption: s3.BucketEncryption.S3_MANAGED,
   removalPolicy: RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
