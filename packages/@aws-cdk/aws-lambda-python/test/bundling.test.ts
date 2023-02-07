@@ -189,7 +189,7 @@ test('Bundling a function with poetry dependencies', () => {
   expect(files).toContain('.ignorefile');
 });
 
-test('Bundling a function with poetry and assetExcludes', () => {
+test('Bundling a function with poetry and poetryAssetExcludes', () => {
   const entry = path.join(__dirname, 'lambda-handler-poetry');
 
   Bundling.bundle({
@@ -197,7 +197,7 @@ test('Bundling a function with poetry and assetExcludes', () => {
     runtime: Runtime.PYTHON_3_9,
     architecture: Architecture.X86_64,
     outputPathSuffix: 'python',
-    assetExcludes: ['.ignorefile'],
+    poetryAssetExcludes: ['.ignorefile'],
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
@@ -211,7 +211,7 @@ test('Bundling a function with poetry and assetExcludes', () => {
 
 });
 
-test('Bundling a function with poetry and no assetExcludes', () => {
+test('Bundling a function with poetry and no poetryAssetExcludes', () => {
   const entry = path.join(__dirname, 'lambda-handler-poetry');
 
   Bundling.bundle({
