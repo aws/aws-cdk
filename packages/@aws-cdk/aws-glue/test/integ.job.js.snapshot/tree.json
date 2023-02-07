@@ -190,7 +190,17 @@
                     "path": "aws-glue-job/EtlJob2.0/SparkUIBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                      "aws:cdk:cloudformation:props": {}
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "AES256"
+                              }
+                            }
+                          ]
+                        }
+                      }
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.CfnBucket",
@@ -203,13 +213,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Codebeaf1c9f157c9b396ec6972f85317dbc": {
-                "id": "Codebeaf1c9f157c9b396ec6972f85317dbc",
-                "path": "aws-glue-job/EtlJob2.0/Codebeaf1c9f157c9b396ec6972f85317dbc",
+              "Code0060a58c27c53e4568740cb7a8508e53": {
+                "id": "Code0060a58c27c53e4568740cb7a8508e53",
+                "path": "aws-glue-job/EtlJob2.0/Code0060a58c27c53e4568740cb7a8508e53",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-job/EtlJob2.0/Codebeaf1c9f157c9b396ec6972f85317dbc/Stage",
+                    "path": "aws-glue-job/EtlJob2.0/Code0060a58c27c53e4568740cb7a8508e53/Stage",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.AssetStaging",
                       "version": "0.0.0"
@@ -217,7 +227,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-job/EtlJob2.0/Codebeaf1c9f157c9b396ec6972f85317dbc/AssetBucket",
+                    "path": "aws-glue-job/EtlJob2.0/Code0060a58c27c53e4568740cb7a8508e53/AssetBucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.BucketBase",
                       "version": "0.0.0"
@@ -730,7 +740,17 @@
                     "path": "aws-glue-job/EtlJob3.0/SparkUIBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                      "aws:cdk:cloudformation:props": {}
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "AES256"
+                              }
+                            }
+                          ]
+                        }
+                      }
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.CfnBucket",
@@ -1244,7 +1264,17 @@
                     "path": "aws-glue-job/EtlJob4.0/SparkUIBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                      "aws:cdk:cloudformation:props": {}
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "AES256"
+                              }
+                            }
+                          ]
+                        }
+                      }
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.CfnBucket",
@@ -1977,7 +2007,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.209"
+          "version": "10.1.237"
         }
       }
     },

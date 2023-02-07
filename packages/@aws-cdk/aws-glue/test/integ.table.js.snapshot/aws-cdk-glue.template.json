@@ -2,6 +2,17 @@
  "Resources": {
   "DataBucketE3889A50": {
    "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    }
+   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -30,7 +41,7 @@
      "Name": "avro_table",
      "Parameters": {
       "classification": "avro",
-      "has_encrypted_data": false
+      "has_encrypted_data": true
      },
      "PartitionKeys": [
       {
@@ -100,7 +111,7 @@
      "Name": "csv_table",
      "Parameters": {
       "classification": "csv",
-      "has_encrypted_data": false
+      "has_encrypted_data": true
      },
      "PartitionKeys": [
       {
@@ -170,7 +181,7 @@
      "Name": "json_table",
      "Parameters": {
       "classification": "json",
-      "has_encrypted_data": false
+      "has_encrypted_data": true
      },
      "PartitionKeys": [
       {
@@ -240,7 +251,7 @@
      "Name": "parquet_table",
      "Parameters": {
       "classification": "parquet",
-      "has_encrypted_data": false
+      "has_encrypted_data": true
      },
      "PartitionKeys": [
       {
@@ -425,6 +436,17 @@
   },
   "MyPartitionFilteredTableBucket6ACAA137": {
    "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    }
+   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -442,7 +464,7 @@
      "Name": "partition_filtered_table",
      "Parameters": {
       "classification": "json",
-      "has_encrypted_data": false,
+      "has_encrypted_data": true,
       "partition_filtering.enabled": true
      },
      "StorageDescriptor": {
