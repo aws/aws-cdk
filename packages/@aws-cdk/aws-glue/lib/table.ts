@@ -46,6 +46,9 @@ export interface ITable extends IResource {
  * @see https://docs.aws.amazon.com/athena/latest/ug/encryption.html
  */
 export enum TableEncryption {
+  /**
+   * @deprecated use `TableEncryption.S3_MANAGED`
+   */
   UNENCRYPTED = 'Unencrypted',
 
   /**
@@ -155,7 +158,7 @@ export interface TableProps {
    * If you choose `SSE-KMS`, you *can* provide an un-managed KMS key with `encryptionKey`.
    * If you choose `CSE-KMS`, you *must* provide an un-managed KMS key with `encryptionKey`.
    *
-   * @default Unencrypted
+   * @default Managed
    */
   readonly encryption?: TableEncryption;
 
@@ -317,7 +320,7 @@ export class Table extends Resource implements ITable {
 
         parameters: {
           'classification': props.dataFormat.classificationString?.value,
-          'has_encrypted_data': this.encryption !== TableEncryption.UNENCRYPTED,
+          'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
         },
         storageDescriptor: {
@@ -505,16 +508,17 @@ const encryptionMappings = {
   [TableEncryption.S3_MANAGED]: s3.BucketEncryption.S3_MANAGED,
   [TableEncryption.KMS_MANAGED]: s3.BucketEncryption.KMS_MANAGED,
   [TableEncryption.KMS]: s3.BucketEncryption.KMS,
-  [TableEncryption.CLIENT_SIDE_KMS]: s3.BucketEncryption.UNENCRYPTED,
-  [TableEncryption.UNENCRYPTED]: s3.BucketEncryption.UNENCRYPTED,
+  [TableEncryption.CLIENT_SIDE_KMS]: s3.BucketEncryption.S3_MANAGED,
+  [TableEncryption.UNENCRYPTED]: s3.BucketEncryption.S3_MANAGED,
 };
 
 // create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.
 function createBucket(table: Table, props: TableProps) {
-  const encryption = props.encryption || TableEncryption.UNENCRYPTED;
+  const encryption = props.encryption || TableEncryption.S3_MANAGED;
   let bucket = props.bucket;
 
-  if (bucket && (encryption !== TableEncryption.UNENCRYPTED && encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
+  if (bucket && (encryption !== TableEncryption.CLIENT_SIDE_KMS
+    && encryption !== TableEncryption.S3_MANAGED && encryption !== TableEncryption.UNENCRYPTED)) {
     throw new Error('you can not specify encryption settings if you also provide a bucket');
   }
 
