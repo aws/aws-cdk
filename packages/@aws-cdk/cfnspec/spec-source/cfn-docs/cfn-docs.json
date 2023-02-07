@@ -5591,7 +5591,7 @@
         "AssessmentName": "The name of the assessment that's associated with the delegation.",
         "Comment": "The comment that's related to the delegation.",
         "ControlSetId": "The identifier for the control set that's associated with the delegation.",
-        "CreatedBy": "The IAM user or role that created the delegation.\n\n*Minimum* : `1`\n\n*Maximum* : `100`\n\n*Pattern* : `^[a-zA-Z0-9-_()\\\\[\\\\]\\\\s]+$`",
+        "CreatedBy": "The user or role that created the delegation.\n\n*Minimum* : `1`\n\n*Maximum* : `100`\n\n*Pattern* : `^[a-zA-Z0-9-_()\\\\[\\\\]\\\\s]+$`",
         "CreationTime": "Specifies when the delegation was created.",
         "Id": "The unique identifier for the delegation.",
         "LastUpdated": "Specifies when the delegation was last updated.",
@@ -8558,6 +8558,37 @@
         "Enabled": "This field is `true` if any of the AWS accounts have public keys that CloudFront can use to verify the signatures of signed URLs and signed cookies. If not, this field is `false` ."
       }
     },
+    "AWS::CloudTrail::Channel": {
+      "attributes": {
+        "ChannelArn": "`Ref` returns the ARN of the CloudTrail channel, such as `arn:aws:cloudtrail:us-east-2:123456789012:channel/01234567890` .",
+        "Channels": "`Ref` returns the names of CloudTrail channels.",
+        "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, `Ref` returns the resource name."
+      },
+      "description": "Contains information about a returned CloudTrail channel.",
+      "properties": {
+        "Channel": "Contains information about a returned CloudTrail channel.",
+        "Destinations": "One or more event data stores to which events arriving through a channel will be logged.",
+        "Name": "The name of the channel.",
+        "Source": "The name of the partner or external event source. You cannot change this name after you create the channel. A maximum of one channel is allowed per source.\n\nA source can be either `Custom` for all valid non- AWS events, or the name of a partner event source. For information about the source names for available partners, see [Additional information about integration partners](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-event-data-store-integration.html#cloudtrail-lake-partner-information) in the CloudTrail User Guide.",
+        "Tags": "A list of tags."
+      }
+    },
+    "AWS::CloudTrail::Channel.Channel": {
+      "attributes": {},
+      "description": "Contains information about a returned CloudTrail channel.",
+      "properties": {
+        "ChannelArn": "The Amazon Resource Name (ARN) of a channel.",
+        "Name": "The name of the CloudTrail channel. For service-linked channels, the name is `aws-service-channel/service-name/custom-suffix` where `service-name` represents the name of the AWS service that created the channel and `custom-suffix` represents the suffix created by the AWS service."
+      }
+    },
+    "AWS::CloudTrail::Channel.Destination": {
+      "attributes": {},
+      "description": "Contains information about the destination receiving events.",
+      "properties": {
+        "Location": "For channels used for a CloudTrail Lake integration, the location is the ARN of an event data store that receives events from a channel. For service-linked channels, the location is the name of the AWS service.",
+        "Type": "The type of destination for events arriving from a channel. For channels used for a CloudTrail Lake integration, the value is `EventDataStore` . For service-linked channels, the value is `AWS_SERVICE` ."
+      }
+    },
     "AWS::CloudTrail::EventDataStore": {
       "attributes": {
         "CreatedTimestamp": "`Ref` returns the time stamp of the creation of the event data store, such as `1248496624` .",
@@ -8597,6 +8628,16 @@
         "NotEquals": "An operator that excludes events that match the exact value of the event record field specified as the value of `Field` .",
         "NotStartsWith": "An operator that excludes events that match the first few characters of the event record field specified as the value of `Field` .",
         "StartsWith": "An operator that includes events that match the first few characters of the event record field specified as the value of `Field` ."
+      }
+    },
+    "AWS::CloudTrail::ResourcePolicy": {
+      "attributes": {
+        "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, `Ref` returns the resource. The resource is a combination of the resource-based policy document and the channel ARN."
+      },
+      "description": "Attaches a resource-based permission policy to a CloudTrail channel that is used for an integration with an event source outside of AWS . For more information about resource-based policies, see [CloudTrail resource-based policy examples](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/security_iam_resource-based-policy-examples.html) in the *CloudTrail User Guide* .",
+      "properties": {
+        "ResourceArn": "The Amazon Resource Name (ARN) of the CloudTrail channel attached to the resource-based policy. The following is the format of a resource ARN: `arn:aws:cloudtrail:us-east-2:123456789012:channel/MyChannel` .",
+        "ResourcePolicy": "A JSON-formatted string for an AWS resource-based policy.\n\nThe following are requirements for the resource policy:\n\n- Contains only one action: cloudtrail-data:PutAuditEvents\n- Contains at least one statement. The policy can have a maximum of 20 statements.\n- Each statement contains at least one principal. A statement can have a maximum of 50 principals."
       }
     },
     "AWS::CloudTrail::Trail": {
@@ -13229,12 +13270,12 @@
       "description": "Information about a filter used to specify which AWS resources are analyzed for anomalous behavior by DevOps Guru.",
       "properties": {
         "CloudFormation": "Information about AWS CloudFormation stacks. You can use up to 500 stacks to specify which AWS resources in your account to analyze. For more information, see [Stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html) in the *AWS CloudFormation User Guide* .",
-        "Tags": "The AWS tags used to filter the resources in the resource collection.\n\nTags help you identify and organize your AWS resources. Many AWS services support tagging, so you can assign the same tag to resources from different services to indicate that the resources are related. For example, you can assign the same tag to an Amazon DynamoDB table resource that you assign to an AWS Lambda function. For more information about using tags, see the [Tagging best practices](https://docs.aws.amazon.com/https://d1.awsstatic.com/whitepapers/aws-tagging-best-practices.pdf) whitepaper.\n\nEach AWS tag has two parts.\n\n- A tag *key* (for example, `CostCenter` , `Environment` , `Project` , or `Secret` ). Tag *keys* are case-sensitive.\n- An optional field known as a tag *value* (for example, `111122223333` , `Production` , or a team name). Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive.\n\nTogether these are known as *key* - *value* pairs.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `DevOps-Guru-deployment-application` or `devops-guru-rds-application` . When you create a *key* , the case of characters in the *key* can be whatever you choose. After you create a *key* , it is case-sensitive. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` , and these act as two different *keys* . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` ."
+        "Tags": "The AWS tags used to filter the resources in the resource collection.\n\nTags help you identify and organize your AWS resources. Many AWS services support tagging, so you can assign the same tag to resources from different services to indicate that the resources are related. For example, you can assign the same tag to an Amazon DynamoDB table resource that you assign to an AWS Lambda function. For more information about using tags, see the [Tagging best practices](https://docs.aws.amazon.com/https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/tagging-best-practices.html) whitepaper.\n\nEach AWS tag has two parts.\n\n- A tag *key* (for example, `CostCenter` , `Environment` , `Project` , or `Secret` ). Tag *keys* are case-sensitive.\n- An optional field known as a tag *value* (for example, `111122223333` , `Production` , or a team name). Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive.\n\nTogether these are known as *key* - *value* pairs.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `DevOps-Guru-deployment-application` or `devops-guru-rds-application` . When you create a *key* , the case of characters in the *key* can be whatever you choose. After you create a *key* , it is case-sensitive. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` , and these act as two different *keys* . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` ."
       }
     },
     "AWS::DevOpsGuru::ResourceCollection.TagCollection": {
       "attributes": {},
-      "description": "A collection of AWS tags.\n\nTags help you identify and organize your AWS resources. Many AWS services support tagging, so you can assign the same tag to resources from different services to indicate that the resources are related. For example, you can assign the same tag to an Amazon DynamoDB table resource that you assign to an AWS Lambda function. For more information about using tags, see the [Tagging best practices](https://docs.aws.amazon.com/https://d1.awsstatic.com/whitepapers/aws-tagging-best-practices.pdf) whitepaper.\n\nEach AWS tag has two parts.\n\n- A tag *key* (for example, `CostCenter` , `Environment` , `Project` , or `Secret` ). Tag *keys* are case-sensitive.\n- An optional field known as a tag *value* (for example, `111122223333` , `Production` , or a team name). Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive.\n\nTogether these are known as *key* - *value* pairs.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `DevOps-Guru-deployment-application` or `devops-guru-rds-application` . When you create a *key* , the case of characters in the *key* can be whatever you choose. After you create a *key* , it is case-sensitive. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` , and these act as two different *keys* . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` .",
+      "description": "A collection of AWS tags.\n\nTags help you identify and organize your AWS resources. Many AWS services support tagging, so you can assign the same tag to resources from different services to indicate that the resources are related. For example, you can assign the same tag to an Amazon DynamoDB table resource that you assign to an AWS Lambda function. For more information about using tags, see the [Tagging best practices](https://docs.aws.amazon.com/https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/tagging-best-practices.html) whitepaper.\n\nEach AWS tag has two parts.\n\n- A tag *key* (for example, `CostCenter` , `Environment` , `Project` , or `Secret` ). Tag *keys* are case-sensitive.\n- An optional field known as a tag *value* (for example, `111122223333` , `Production` , or a team name). Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive.\n\nTogether these are known as *key* - *value* pairs.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `DevOps-Guru-deployment-application` or `devops-guru-rds-application` . When you create a *key* , the case of characters in the *key* can be whatever you choose. After you create a *key* , it is case-sensitive. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` , and these act as two different *keys* . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` .",
       "properties": {
         "AppBoundaryKey": "An AWS tag *key* that is used to identify the AWS resources that DevOps Guru analyzes. All AWS resources in your account and Region tagged with this *key* make up your DevOps Guru application and analysis boundary.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `DevOps-Guru-deployment-application` or `devops-guru-rds-application` . When you create a *key* , the case of characters in the *key* can be whatever you choose. After you create a *key* , it is case-sensitive. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` , and these act as two different *keys* . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` .",
         "TagValues": "The values in an AWS tag collection.\n\nThe tag's *value* is an optional field used to associate a string with the tag *key* (for example, `111122223333` , `Production` , or a team name). The *key* and *value* are the tag's *key* pair. Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive. You can specify a maximum of 256 characters for a tag value."
@@ -13890,7 +13931,7 @@
     },
     "AWS::EC2::CapacityReservationFleet.TagSpecification": {
       "attributes": {},
-      "description": "The tags to apply to a resource when the resource is being created.\n\n> The `Valid Values` lists all the resource types that can be tagged. However, the action you're using might not support tagging all of these resource types. If you try to tag a resource type that is unsupported for the action you're using, you'll get an error.",
+      "description": "The tags to apply to a resource when the resource is being created. When you specify a tag, you must specify the resource type to tag, otherwise the request will fail.\n\n> The `Valid Values` lists all the resource types that can be tagged. However, the action you're using might not support tagging all of these resource types. If you try to tag a resource type that is unsupported for the action you're using, you'll get an error.",
       "properties": {
         "ResourceType": "The type of resource to tag on creation. Specify `capacity-reservation-fleet` .\n\nTo tag a resource after it has been created, see [CreateTags](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateTags.html) .",
         "Tags": "The tags to apply to the resource."
@@ -14003,7 +14044,7 @@
     },
     "AWS::EC2::ClientVpnEndpoint.TagSpecification": {
       "attributes": {},
-      "description": "The tags to apply to a resource when the resource is being created.\n\n> The `Valid Values` lists all the resource types that can be tagged. However, the action you're using might not support tagging all of these resource types. If you try to tag a resource type that is unsupported for the action you're using, you'll get an error.",
+      "description": "The tags to apply to a resource when the resource is being created. When you specify a tag, you must specify the resource type to tag, otherwise the request will fail.\n\n> The `Valid Values` lists all the resource types that can be tagged. However, the action you're using might not support tagging all of these resource types. If you try to tag a resource type that is unsupported for the action you're using, you'll get an error.",
       "properties": {
         "ResourceType": "The type of resource to tag.",
         "Tags": "The tags to apply to the resource."
@@ -14305,7 +14346,7 @@
         "NetworkBorderGroup": "A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. Use this parameter to limit the IP address to this location. IP addresses cannot move between network border groups.\n\nUse [DescribeAvailabilityZones](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeAvailabilityZones.html) to view the network border groups.\n\nYou cannot use a network border group with EC2 Classic. If you attempt this operation on EC2 Classic, you receive an `InvalidParameterCombination` error.",
         "PublicIpv4Pool": "The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool.\n\n> Updates to the `PublicIpv4Pool` property may require *some interruptions* . Updates on an EIP reassociates the address on its associated resource.",
         "Tags": "Any tags assigned to the Elastic IP address.\n\n> Updates to the `Tags` property may require *some interruptions* . Updates on an EIP reassociates the address on its associated resource.",
-        "TransferAddress": "The Elastic IP address you are accepting for transfer."
+        "TransferAddress": "The Elastic IP address you are accepting for transfer. You can only accept one transferred address. For more information on Elastic IP address transfers, see [Transfer Elastic IP addresses](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-eips.html#transfer-EIPs-intro) in the *Amazon Virtual Private Cloud User Guide* ."
       }
     },
     "AWS::EC2::EIPAssociation": {
@@ -14460,6 +14501,7 @@
         "IpamScopeId": "The ID of the scope in which you would like to create the IPAM pool.",
         "Locale": "The locale of the IPAM pool. In IPAM, the locale is the AWS Region where you want to make an IPAM pool available for allocations. Only resources in the same Region as the locale of the pool can get IP address allocations from the pool. You can only allocate a CIDR for a VPC, for example, from an IPAM pool that shares a locale with the VPC\u2019s Region. Note that once you choose a Locale for a pool, you cannot modify it. If you choose an AWS Region for locale that has not been configured as an operating Region for the IPAM, you'll get an error.",
         "ProvisionedCidrs": "Information about the CIDRs provisioned to an IPAM pool.",
+        "PublicIpSource": "The IP address source for pools in the public scope. Only used for provisioning IP address CIDRs to pools in the public scope. Default is `BYOIP` . For more information, see [Create IPv6 pools](https://docs.aws.amazon.com//vpc/latest/ipam/intro-create-ipv6-pools.html) in the *Amazon VPC IPAM User Guide* . By default, you can add only one Amazon-provided IPv6 CIDR block to a top-level IPv6 pool. For information on increasing the default limit, see [Quotas for your IPAM](https://docs.aws.amazon.com//vpc/latest/ipam/quotas-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "PubliclyAdvertisable": "Determines if a pool is publicly advertisable. This option is not available for pools with AddressFamily set to `ipv4` .",
         "SourceIpamPoolId": "The ID of the source IPAM pool. You can use this option to create an IPAM pool within an existing source pool.",
         "Tags": "The key/value combination of a tag assigned to the resource. Use the tag key in the filter name and the tag value as the filter value. For example, to find all resources that have a tag with the key `Owner` and the value `TeamA` , specify `tag:Owner` for the filter name and `TeamA` for the filter value."
@@ -14467,9 +14509,63 @@
     },
     "AWS::EC2::IPAMPool.ProvisionedCidr": {
       "attributes": {},
-      "description": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` .",
+      "description": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` .\n\n> This resource type does not allow you to provision a CIDR using the netmask length. To provision a CIDR using netmask length, use [AWS::EC2::IPAMPoolCidr](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampoolcidr.html) .",
       "properties": {
         "Cidr": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` ."
+      }
+    },
+    "AWS::EC2::IPAMPoolCidr": {
+      "attributes": {
+        "IpamPoolCidrId": "The IPAM pool CIDR ID.",
+        "Ref": "`Ref` returns the IPAM pool ID and IPAM pool CIDR ID in the following format: `ipam-pool-01123456|ipam-pool-cidr-0123456` .",
+        "State": "The state of the CIDR."
+      },
+      "description": "A CIDR provisioned to an IPAM pool.",
+      "properties": {
+        "Cidr": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` .",
+        "IpamPoolId": "The ID of the IPAM pool.",
+        "NetmaskLength": "The netmask length of the CIDR you'd like to provision to a pool. Can be used for provisioning Amazon-provided IPv6 CIDRs to top-level pools and for provisioning CIDRs to pools with source pools. Cannot be used to provision BYOIP CIDRs to top-level pools. \"NetmaskLength\" or \"Cidr\" is required."
+      }
+    },
+    "AWS::EC2::IPAMResourceDiscovery": {
+      "attributes": {
+        "IpamResourceDiscoveryArn": "The resource discovery ARN.",
+        "IpamResourceDiscoveryId": "The resource discovery ID.",
+        "IpamResourceDiscoveryRegion": "The resource discovery Region.",
+        "IsDefault": "Defines if the resource discovery is the default. The default resource discovery is the resource discovery automatically created when you create an IPAM.",
+        "OwnerId": "The owner ID.",
+        "Ref": "`Ref` returns the resource discovery ID. For example: `ipam-res-disco-111122223333` .",
+        "State": "The resource discovery's state.\n\n- `create-in-progress` - Resource discovery is being created.\n- `create-complete` - Resource discovery creation is complete.\n- `create-failed` - Resource discovery creation has failed.\n- `modify-in-progress` - Resource discovery is being modified.\n- `modify-complete` - Resource discovery modification is complete.\n- `modify-failed` - Resource discovery modification has failed.\n- `delete-in-progress` - Resource discovery is being deleted.\n- `delete-complete` - Resource discovery deletion is complete.\n- `delete-failed` - Resource discovery deletion has failed.\n- `isolate-in-progress` - AWS account that created the resource discovery has been removed and the resource discovery is being isolated.\n- `isolate-complete` - Resource discovery isolation is complete.\n- `restore-in-progress` - AWS account that created the resource discovery and was isolated has been restored."
+      },
+      "description": "A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.",
+      "properties": {
+        "Description": "The resource discovery description.",
+        "OperatingRegions": "The operating Regions for the resource discovery. Operating Regions are AWS Regions where the IPAM is allowed to manage IP address CIDRs. IPAM only discovers and monitors resources in the AWS Regions you select as operating Regions.",
+        "Tags": "A tag is a label that you assign to an AWS resource. Each tag consists of a key and an optional value. You can use tags to search and filter your resources or track your AWS costs."
+      }
+    },
+    "AWS::EC2::IPAMResourceDiscovery.IpamOperatingRegion": {
+      "attributes": {},
+      "description": "The operating Regions for an IPAM. Operating Regions are AWS Regions where the IPAM is allowed to manage IP address CIDRs. IPAM only discovers and monitors resources in the AWS Regions you select as operating Regions.\n\nFor more information about operating Regions, see [Create an IPAM](https://docs.aws.amazon.com//vpc/latest/ipam/create-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+      "properties": {
+        "RegionName": "The name of the operating Region."
+      }
+    },
+    "AWS::EC2::IPAMResourceDiscoveryAssociation": {
+      "attributes": {
+        "IpamResourceDiscoveryAssociationArn": "The resource discovery association ARN.",
+        "IpamResourceDiscoveryAssociationId": "The resource discovery association ID.",
+        "IsDefault": "Defines if the resource discovery is the default. When you create an IPAM, a default resource discovery is created for your IPAM and it's associated with your IPAM.",
+        "OwnerId": "The owner ID.",
+        "Ref": "`Ref` returns the resource discovery ID. For example: `ipam-res-disco-111122223333` .",
+        "State": "The lifecycle state of the association when you associate or disassociate a resource discovery.\n\n- `associate-in-progress` - Resource discovery is being associated.\n- `associate-complete` - Resource discovery association is complete.\n- `associate-failed` - Resource discovery association has failed.\n- `disassociate-in-progress` - Resource discovery is being disassociated.\n- `disassociate-complete` - Resource discovery disassociation is complete.\n- `disassociate-failed` - Resource discovery disassociation has failed.\n- `isolate-in-progress` - AWS account that created the resource discovery association has been removed and the resource discovery associatation is being isolated.\n- `isolate-complete` - Resource discovery isolation is complete..\n- `restore-in-progress` - Resource discovery is being restored.",
+        "Status": "The resource discovery status.\n\n- `active` : The connection or permissions required to read the results of the resource discovery are intact.\n- `not-found` : The connection or permissions required to read the results of the resource discovery are broken. This may happen if the owner of the resource discovery stopped sharing it or deleted the resource discovery. Verify the resource discovery still exists and the AWS RAM resource share is still in tact."
+      },
+      "description": "An IPAM resource discovery association. An associated resource discovery is a resource discovery that has been associated with an IPAM. IPAM aggregates the resource CIDRs discovered by the associated resource discovery.",
+      "properties": {
+        "IpamId": "The IPAM ID.",
+        "IpamResourceDiscoveryId": "The resource discovery ID.",
+        "Tags": "A tag is a label that you assign to an AWS resource. Each tag consists of a key and an optional value. You can use tags to search and filter your resources or track your AWS costs."
       }
     },
     "AWS::EC2::IPAMScope": {
@@ -15147,11 +15243,11 @@
       "properties": {
         "AllocationId": "[Public NAT gateway only] The allocation ID of the Elastic IP address that's associated with the NAT gateway. This property is required for a public NAT gateway and cannot be specified with a private NAT gateway.",
         "ConnectivityType": "Indicates whether the NAT gateway supports public or private connectivity. The default is public connectivity.",
-        "MaxDrainDurationSeconds": "",
+        "MaxDrainDurationSeconds": "The maximum amount of time to wait (in seconds) before forcibly releasing the IP addresses if connections are still in progress. Default value is 350 seconds.",
         "PrivateIpAddress": "The private IPv4 address to assign to the NAT gateway. If you don't provide an address, a private IPv4 address will be automatically assigned.",
-        "SecondaryAllocationIds": "",
-        "SecondaryPrivateIpAddressCount": "",
-        "SecondaryPrivateIpAddresses": "",
+        "SecondaryAllocationIds": "Secondary EIP allocation IDs. For more information about secondary addresses, see [Create a NAT gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating) in the *Amazon Virtual Private Cloud User Guide* .",
+        "SecondaryPrivateIpAddressCount": "[Private NAT gateway only] The number of secondary private IPv4 addresses you want to assign to the NAT gateway. For more information about secondary addresses, see [Create a NAT gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating) in the *Amazon Virtual Private Cloud User Guide* .\n\n> `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be set at the same time.",
+        "SecondaryPrivateIpAddresses": "Secondary private IPv4 addresses. For more information about secondary addresses, see [Create a NAT gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating) in the *Amazon Virtual Private Cloud User Guide* .\n\n> `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be set at the same time.",
         "SubnetId": "The ID of the subnet in which the NAT gateway is located.",
         "Tags": "The tags for the NAT gateway."
       }
@@ -16649,7 +16745,7 @@
         "SnapshotId": "The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size.",
         "Tags": "The tags to apply to the volume during creation.",
         "Throughput": "The throughput to provision for a volume, with a maximum of 1,000 MiB/s.\n\nThis parameter is valid only for `gp3` volumes. The default value is 125.\n\nValid Range: Minimum value of 125. Maximum value of 1000.",
-        "VolumeType": "The volume type. This parameter can be one of the following values:\n\n- General Purpose SSD: `gp2` | `gp3`\n- Provisioned IOPS SSD: `io1` | `io2`\n- Throughput Optimized HDD: `st1`\n- Cold HDD: `sc1`\n- Magnetic: `standard`\n\n> Throughput Optimized HDD ( `st1` ) and Cold HDD ( `sc1` ) volumes can't be used as boot volumes. \n\nFor more information, see [Amazon EBS volume types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html) in the *Amazon Elastic Compute Cloud User Guide* .\n\nDefault: `gp2`"
+        "VolumeType": "The volume type. This parameter can be one of the following values:\n\n- General Purpose SSD: `gp2` | `gp3`\n- Provisioned IOPS SSD: `io1` | `io2`\n- Throughput Optimized HDD: `st1`\n- Cold HDD: `sc1`\n- Magnetic: `standard`\n\nFor more information, see [Amazon EBS volume types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html) in the *Amazon Elastic Compute Cloud User Guide* .\n\nDefault: `gp2`"
       }
     },
     "AWS::EC2::VolumeAttachment": {
@@ -19464,7 +19560,7 @@
         "HealthCheckPort": "The port the load balancer uses when performing health checks on targets. If the protocol is HTTP, HTTPS, TCP, TLS, UDP, or TCP_UDP, the default is `traffic-port` , which is the port on which each target receives traffic from the load balancer. If the protocol is GENEVE, the default is port 80.",
         "HealthCheckProtocol": "The protocol the load balancer uses when performing health checks on targets. For Application Load Balancers, the default is HTTP. For Network Load Balancers and Gateway Load Balancers, the default is TCP. The TCP protocol is not supported for health checks if the protocol of the target group is HTTP or HTTPS. The GENEVE, TLS, UDP, and TCP_UDP protocols are not supported for health checks.",
         "HealthCheckTimeoutSeconds": "The amount of time, in seconds, during which no response from a target means a failed health check. The range is 2\u2013120 seconds. For target groups with a protocol of HTTP, the default is 6 seconds. For target groups with a protocol of TCP, TLS or HTTPS, the default is 10 seconds. For target groups with a protocol of GENEVE, the default is 5 seconds. If the target type is `lambda` , the default is 30 seconds.",
-        "HealthyThresholdCount": "The number of consecutive health check successes required before considering a target healthy. The range is 2-10. If the target group protocol is TCP, TCP_UDP, UDP, TLS, HTTP or HTTPS, the default is 5. For target groups with a protocol of GENEVE, the default is 3. If the target type is `lambda` , the default is 5.",
+        "HealthyThresholdCount": "The number of consecutive health check successes required before considering a target healthy. The range is 2-10. If the target group protocol is TCP, TCP_UDP, UDP, TLS, HTTP or HTTPS, the default is 5. For target groups with a protocol of GENEVE, the default is 5. If the target type is `lambda` , the default is 5.",
         "IpAddressType": "The type of IP address used for this target group. The possible values are `ipv4` and `ipv6` . This is an optional parameter. If not specified, the IP address type defaults to `ipv4` .",
         "Matcher": "[HTTP/HTTPS health checks] The HTTP or gRPC codes to use when checking for a successful response from a target. For target groups with a protocol of TCP, TCP_UDP, UDP or TLS the range is 200-599. For target groups with a protocol of HTTP or HTTPS, the range is 200-499. For target groups with a protocol of GENEVE, the range is 200-399.",
         "Name": "The name of the target group.\n\nThis name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.",
@@ -19475,7 +19571,7 @@
         "TargetGroupAttributes": "The attributes.",
         "TargetType": "The type of target that you must specify when registering targets with this target group. You can't specify targets for a target group using more than one target type.\n\n- `instance` - Register targets by instance ID. This is the default value.\n- `ip` - Register targets by IP address. You can specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.\n- `lambda` - Register a single Lambda function as a target.\n- `alb` - Register a single Application Load Balancer as a target.",
         "Targets": "The targets.",
-        "UnhealthyThresholdCount": "The number of consecutive health check failures required before considering a target unhealthy. The range is 2-10. If the target group protocol is TCP, TCP_UDP, UDP, TLS, HTTP or HTTPS, the default is 2. For target groups with a protocol of GENEVE, the default is 3. If the target type is `lambda` , the default is 5.",
+        "UnhealthyThresholdCount": "The number of consecutive health check failures required before considering a target unhealthy. The range is 2-10. If the target group protocol is TCP, TCP_UDP, UDP, TLS, HTTP or HTTPS, the default is 2. For target groups with a protocol of GENEVE, the default is 2. If the target type is `lambda` , the default is 5.",
         "VpcId": "The identifier of the virtual private cloud (VPC). If the target is a Lambda function, this parameter does not apply. Otherwise, this parameter is required."
       }
     },
@@ -30352,7 +30448,7 @@
     },
     "AWS::LakeFormation::Resource": {
       "attributes": {},
-      "description": "The `AWS::LakeFormation::Resource` represents the data (  buckets and folders) that is being registered with AWS Lake Formation . During a stack operation, AWS CloudFormation calls the AWS Lake Formation [`RegisterResource`](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-credential-vending.html#aws-lake-formation-api-credential-vending-RegisterResource) API operation to register the resource. To remove a `Resource` type, AWS CloudFormation calls the AWS Lake Formation [`DeregisterResource`](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-credential-vending.html#aws-lake-formation-api-credential-vending-DeregisterResource) API operation.",
+      "description": "The `AWS::LakeFormation::Resource` represents the data (  buckets and folders) that is being registered with AWS Lake Formation . During a stack operation, AWS CloudFormation calls the AWS Lake Formation [`RegisterResource`](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-credential-vending.html#aws-lake-formation-api-credential-vending-RegisterResource) API operation to register the resource. To remove a `Resource` type, AWS CloudFormation calls the AWS Lake Formation [`DeregisterResource`](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-credential-vending.html#aws-lake-formation-api-credential-vending-DeregisterResource) API operation.\n\n> `AWS::LakeFormation::Resource` is a legacy resource that doesn't support the `UPDATE` operation. Changes to the resource will require an explicit deletion and recreation to apply new properties.",
       "properties": {
         "ResourceArn": "The Amazon Resource Name (ARN) of the resource.",
         "RoleArn": "The IAM role that registered a resource.",
@@ -36740,26 +36836,6 @@
         "Tags": "The list of key-value tags that changed for the segment."
       }
     },
-    "AWS::NetworkManager::TransitGatewayPeering": {
-      "attributes": {
-        "CoreNetworkArn": "The ARN of the core network.",
-        "CreatedAt": "The timestamp when the core network peering was created.",
-        "EdgeLocation": "The edge location for the peer.",
-        "OwnerAccountId": "The ID of the account owner.",
-        "PeeringId": "The ID of the peering.",
-        "PeeringType": "The peering type. This will be `TRANSIT_GATEWAY` .",
-        "Ref": "`Ref` returns the `peeringId` . For example: `peering-01234ab1234a12a12` .",
-        "ResourceArn": "The ARN of the resource peered to a core network.",
-        "State": "The current state of the peer. This can be `CREATING` | `FAILED` | `AVAILABLE` | `DELETING` .",
-        "TransitGatewayPeeringAttachmentId": "The ID of the peering attachment."
-      },
-      "description": "Creates a transit gateway peering connection.",
-      "properties": {
-        "CoreNetworkId": "The ID of the core network.",
-        "Tags": "The list of key-value tags associated with the peering.",
-        "TransitGatewayArn": "The ARN of the transit gateway."
-      }
-    },
     "AWS::NetworkManager::TransitGatewayRegistration": {
       "attributes": {
         "Ref": "`Ref` returns the ID of the global network and the ARN of the transit gateway. For example: `global-network-01231231231231231|arn:aws:ec2:us-west-2:123456789012:transit-gateway/tgw-123abc05e04123abc` ."
@@ -37036,6 +37112,185 @@
         "Name": "A name for the sink.",
         "Policy": "The IAM policy that grants permissions to source accounts to link to this sink. The policy can grant permission in the following ways:\n\n- Include organization IDs or organization paths to permit all accounts in an organization\n- Include account IDs to permit the specified accounts",
         "Tags": "An array of key-value pairs to apply to the sink.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
+      }
+    },
+    "AWS::Omics::AnnotationStore": {
+      "attributes": {
+        "CreationTime": "When the store was created.",
+        "Id": "The store's ID.",
+        "Ref": "`Ref` returns the details of this resource. For example:\n\n`{ \"Ref\": \"AnnotationStore.Id\" }` `Ref` returns the id for the annotation store.",
+        "Status": "The store's status.",
+        "StatusMessage": "The store's status message.",
+        "StoreArn": "The store's ARN.",
+        "StoreSizeBytes": "The store's size in bytes.",
+        "UpdateTime": "When the store was updated."
+      },
+      "description": "Creates an annotation store.",
+      "properties": {
+        "Description": "A description for the store.",
+        "Name": "The name of the Annotation Store.",
+        "Reference": "The genome reference for the store's annotations.",
+        "SseConfig": "The store's server-side encryption (SSE) settings.",
+        "StoreFormat": "The annotation file format of the store.",
+        "StoreOptions": "File parsing options for the annotation store.",
+        "Tags": "Tags for the store."
+      }
+    },
+    "AWS::Omics::AnnotationStore.ReferenceItem": {
+      "attributes": {},
+      "description": "A genome reference.",
+      "properties": {
+        "ReferenceArn": "The reference's ARN."
+      }
+    },
+    "AWS::Omics::AnnotationStore.SseConfig": {
+      "attributes": {},
+      "description": "Server-side encryption (SSE) settings for a store.",
+      "properties": {
+        "KeyArn": "An encryption key ARN.",
+        "Type": "The encryption type."
+      }
+    },
+    "AWS::Omics::AnnotationStore.StoreOptions": {
+      "attributes": {},
+      "description": "The store's file parsing options.",
+      "properties": {
+        "TsvStoreOptions": "Formatting options for a TSV file."
+      }
+    },
+    "AWS::Omics::AnnotationStore.TsvStoreOptions": {
+      "attributes": {},
+      "description": "The store's parsing options.",
+      "properties": {
+        "AnnotationType": "The store's annotation type.",
+        "FormatToHeader": "The store's header key to column name mapping.",
+        "Schema": "The schema of an annotation store."
+      }
+    },
+    "AWS::Omics::ReferenceStore": {
+      "attributes": {
+        "Arn": "",
+        "CreationTime": "When the store was created.",
+        "Ref": "`Ref` returns the details of this resource. For example:\n\n`{ \"Ref\": \"ReferenceStore.Arn\" }` `Ref` returns the arn for the reference store.",
+        "ReferenceStoreId": "The store's ID."
+      },
+      "description": "Creates a reference store.",
+      "properties": {
+        "Description": "A description for the store.",
+        "Name": "A name for the store.",
+        "SseConfig": "Server-side encryption (SSE) settings for the store.",
+        "Tags": "Tags for the store."
+      }
+    },
+    "AWS::Omics::ReferenceStore.SseConfig": {
+      "attributes": {},
+      "description": "Server-side encryption (SSE) settings for a store.",
+      "properties": {
+        "KeyArn": "An encryption key ARN.",
+        "Type": "The encryption type."
+      }
+    },
+    "AWS::Omics::RunGroup": {
+      "attributes": {
+        "Arn": "The run group's ARN.",
+        "CreationTime": "When the run group was created.",
+        "Id": "The run group's ID.",
+        "Ref": "`Ref` returns the details of this resource. For example:\n\n`{ \"Ref\": \"RunGroup.CreationTime\" }` `Ref` returns the timestamp for a run group."
+      },
+      "description": "Creates a run group.",
+      "properties": {
+        "MaxCpus": "The group's maximum CPU count setting.",
+        "MaxDuration": "The group's maximum duration setting in minutes.",
+        "MaxRuns": "The group's maximum concurrent run setting.",
+        "Name": "The group's name.",
+        "Tags": "Tags for the group."
+      }
+    },
+    "AWS::Omics::SequenceStore": {
+      "attributes": {
+        "Arn": "The store's ARN.",
+        "CreationTime": "When the store was created.",
+        "Ref": "`Ref` returns the details of this resource. For example:\n\n`{ \"Ref\": \"SequenceStore.CreationTime\" }` `Ref` returns the timestamp for when the sequence store was created.",
+        "SequenceStoreId": "The store's ID."
+      },
+      "description": "Creates a sequence store.",
+      "properties": {
+        "Description": "A description for the store.",
+        "Name": "A name for the store.",
+        "SseConfig": "Server-side encryption (SSE) settings for the store.",
+        "Tags": "Tags for the store."
+      }
+    },
+    "AWS::Omics::SequenceStore.SseConfig": {
+      "attributes": {},
+      "description": "Server-side encryption (SSE) settings for a store.",
+      "properties": {
+        "KeyArn": "An encryption key ARN.",
+        "Type": "The encryption type."
+      }
+    },
+    "AWS::Omics::VariantStore": {
+      "attributes": {
+        "CreationTime": "When the store was created.",
+        "Id": "The store's ID.",
+        "Ref": "`Ref` returns the details of this resource. For example:\n\n`{ \"Ref\": \"VariantStore.Status\" }`\n\nFor the Amazon Omics resource `VariantStore.Status` , `Ref` returns the status of the variant store.",
+        "Status": "The store's status.",
+        "StatusMessage": "The store's status message.",
+        "StoreArn": "The store's ARN.",
+        "StoreSizeBytes": "The store's size in bytes.",
+        "UpdateTime": "When the store was updated."
+      },
+      "description": "Create a store for variant data.",
+      "properties": {
+        "Description": "A description for the store.",
+        "Name": "A name for the store.",
+        "Reference": "The genome reference for the store's variants.",
+        "SseConfig": "Server-side encryption (SSE) settings for the store.",
+        "Tags": "Tags for the store."
+      }
+    },
+    "AWS::Omics::VariantStore.ReferenceItem": {
+      "attributes": {},
+      "description": "The read set's genome reference ARN.",
+      "properties": {
+        "ReferenceArn": "The reference's ARN."
+      }
+    },
+    "AWS::Omics::VariantStore.SseConfig": {
+      "attributes": {},
+      "description": "Server-side encryption (SSE) settings for a store.",
+      "properties": {
+        "KeyArn": "An encryption key ARN.",
+        "Type": "The encryption type."
+      }
+    },
+    "AWS::Omics::Workflow": {
+      "attributes": {
+        "Arn": "The ARN for the workflow.",
+        "CreationTime": "When the workflow was created.",
+        "Id": "The workflow's ID.",
+        "Ref": "`Ref` returns the details of this resource. For example:\n\n`{ \"Ref\": \"Workflow.Type\" }` `Ref` returns the type of workflow.",
+        "Status": "The workflow's status.",
+        "Type": "The workflow's type."
+      },
+      "description": "Creates a workflow.",
+      "properties": {
+        "DefinitionUri": "The URI of a definition for the workflow.",
+        "Description": "The parameter's description.",
+        "Engine": "An engine for the workflow.",
+        "Main": "The path of the main definition file for the workflow.",
+        "Name": "The workflow's name.",
+        "ParameterTemplate": "The workflow's parameter template.",
+        "StorageCapacity": "A storage capacity for the workflow in gigabytes.",
+        "Tags": "Tags for the workflow."
+      }
+    },
+    "AWS::Omics::Workflow.WorkflowParameter": {
+      "attributes": {},
+      "description": "A workflow parameter.",
+      "properties": {
+        "Description": "The parameter's description.",
+        "Optional": "Whether the parameter is optional."
       }
     },
     "AWS::OpenSearchServerless::AccessPolicy": {
@@ -39411,7 +39666,7 @@
         "DataSetArns": "The ARNs of the datasets of the analysis.",
         "LastUpdatedTime": "The time that the analysis was last updated."
       },
-      "description": "Creates an analysis in Amazon QuickSight.",
+      "description": "Creates an analysis in Amazon QuickSight. Analyses can be created either from a template or from an `AnalysisDefinition` .",
       "properties": {
         "AnalysisId": "The ID for the analysis that you're creating. This ID displays in the URL of the analysis.",
         "AwsAccountId": "The ID of the AWS account where you are creating an analysis.",
@@ -39419,7 +39674,7 @@
         "Name": "A descriptive name for the analysis that you're creating. This name displays for the analysis in the Amazon QuickSight console.",
         "Parameters": "The parameter names and override values that you want to use. An analysis can have any parameter type, and some parameters might accept multiple values.",
         "Permissions": "A structure that describes the principals and the resource-level permissions on an analysis. You can use the `Permissions` structure to grant permissions by providing a list of AWS Identity and Access Management (IAM) action information for each principal listed by Amazon Resource Name (ARN).\n\nTo specify no permissions, omit `Permissions` .",
-        "SourceEntity": "A source entity to use for the analysis that you're creating. This metadata structure contains details that describe a source template and one or more datasets.",
+        "SourceEntity": "A source entity to use for the analysis that you're creating. This metadata structure contains details that describe a source template and one or more datasets.\n\nEither a `SourceEntity` or a `Definition` must be provided in order for the request to be valid.",
         "Tags": "Contains a map of the key-value pairs for the resource tag or tags assigned to the analysis.",
         "ThemeArn": "The ARN for the theme to apply to the analysis that you're creating. To see the theme in the Amazon QuickSight console, make sure that you have access to it."
       }
@@ -40230,12 +40485,12 @@
         "Version.ThemeArn": "",
         "Version.VersionNumber": ""
       },
-      "description": "Creates a template from an existing Amazon QuickSight analysis or template. You can use the resulting template to create a dashboard.\n\nA *template* is an entity in Amazon QuickSight that encapsulates the metadata required to create an analysis and that you can use to create s dashboard. A template adds a layer of abstraction by using placeholders to replace the dataset associated with the analysis. You can use templates to create dashboards by replacing dataset placeholders with datasets that follow the same schema that was used to create the source analysis and template.",
+      "description": "Creates a template either from a `TemplateDefinition` or from an existing Amazon QuickSight analysis or template. You can use the resulting template to create additional dashboards, templates, or analyses.\n\nA *template* is an entity in Amazon QuickSight that encapsulates the metadata required to create an analysis and that you can use to create s dashboard. A template adds a layer of abstraction by using placeholders to replace the dataset associated with the analysis. You can use templates to create dashboards by replacing dataset placeholders with datasets that follow the same schema that was used to create the source analysis and template.",
       "properties": {
         "AwsAccountId": "The ID for the AWS account that the group is in. You use the ID for the AWS account that contains your Amazon QuickSight account.",
         "Name": "A display name for the template.",
         "Permissions": "A list of resource permissions to be set on the template.",
-        "SourceEntity": "The entity that you are using as a source when you create the template. In `SourceEntity` , you specify the type of object you're using as source: `SourceTemplate` for a template or `SourceAnalysis` for an analysis. Both of these require an Amazon Resource Name (ARN). For `SourceTemplate` , specify the ARN of the source template. For `SourceAnalysis` , specify the ARN of the source analysis. The `SourceTemplate` ARN can contain any AWS account and any Amazon QuickSight-supported AWS Region .\n\nUse the `DataSetReferences` entity within `SourceTemplate` or `SourceAnalysis` to list the replacement datasets for the placeholders listed in the original. The schema in each dataset must match its placeholder.",
+        "SourceEntity": "The entity that you are using as a source when you create the template. In `SourceEntity` , you specify the type of object you're using as source: `SourceTemplate` for a template or `SourceAnalysis` for an analysis. Both of these require an Amazon Resource Name (ARN). For `SourceTemplate` , specify the ARN of the source template. For `SourceAnalysis` , specify the ARN of the source analysis. The `SourceTemplate` ARN can contain any AWS account and any Amazon QuickSight-supported AWS Region .\n\nUse the `DataSetReferences` entity within `SourceTemplate` or `SourceAnalysis` to list the replacement datasets for the placeholders listed in the original. The schema in each dataset must match its placeholder.\n\nEither a `SourceEntity` or a `Definition` must be provided in order for the request to be valid.",
         "Tags": "Contains a map of the key-value pairs for the resource tag or tags assigned to the resource.",
         "TemplateId": "An ID for the template that you want to create. This template is unique per AWS Region ; in each AWS account.",
         "VersionDescription": "A description of the current template version being created. This API operation creates the first version of the template. Every time `UpdateTemplate` is called, a new version is created. Each version of the template maintains a description of the version in the `VersionDescription` field."
@@ -40686,7 +40941,7 @@
         "CopyTagsToSnapshot": "A value that indicates whether to copy tags from the DB instance to snapshots of the DB instance. By default, tags are not copied.\n\n*Amazon Aurora*\n\nNot applicable. Copying tags to snapshots is managed by the DB cluster. Setting this value for an Aurora DB instance has no effect on the DB cluster setting.",
         "CustomIAMInstanceProfile": "The instance profile associated with the underlying Amazon EC2 instance of an RDS Custom DB instance. The instance profile must meet the following requirements:\n\n- The profile must exist in your account.\n- The profile must have an IAM role that Amazon EC2 has permissions to assume.\n- The instance profile name and the associated IAM role name must start with the prefix `AWSRDSCustom` .\n\nFor the list of permissions required for the IAM role, see [Configure IAM and your VPC](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/custom-setup-orcl.html#custom-setup-orcl.iam-vpc) in the *Amazon RDS User Guide* .\n\nThis setting is required for RDS Custom.",
         "DBClusterIdentifier": "The identifier of the DB cluster that the instance will belong to.",
-        "DBClusterSnapshotIdentifier": "The identifier for the RDS for MySQL Multi-AZ DB cluster snapshot to restore from.\n\nFor more information on Multi-AZ DB clusters, see [Multi-AZ deployments with two readable standby DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts.html) in the *Amazon RDS User Guide* .\n\nConstraints:\n\n- Must match the identifier of an existing Multi-AZ DB cluster snapshot.\n- Can't be specified when `DBSnapshotIdentifier` is specified.\n- Must be specified when `DBSnapshotIdentifier` isn't specified.\n- If you are restoring from a shared manual Multi-AZ DB cluster snapshot, the `DBClusterSnapshotIdentifier` must be the ARN of the shared snapshot.\n- Can't be the identifier of an Aurora DB cluster snapshot.\n- Can't be the identifier of an RDS for PostgreSQL Multi-AZ DB cluster snapshot.",
+        "DBClusterSnapshotIdentifier": "The identifier for the RDS for MySQL Multi-AZ DB cluster snapshot to restore from.\n\nFor more information on Multi-AZ DB clusters, see [Multi-AZ DB cluster deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts.html) in the *Amazon RDS User Guide* .\n\nConstraints:\n\n- Must match the identifier of an existing Multi-AZ DB cluster snapshot.\n- Can't be specified when `DBSnapshotIdentifier` is specified.\n- Must be specified when `DBSnapshotIdentifier` isn't specified.\n- If you are restoring from a shared manual Multi-AZ DB cluster snapshot, the `DBClusterSnapshotIdentifier` must be the ARN of the shared snapshot.\n- Can't be the identifier of an Aurora DB cluster snapshot.\n- Can't be the identifier of an RDS for PostgreSQL Multi-AZ DB cluster snapshot.",
         "DBInstanceClass": "The compute and memory capacity of the DB instance, for example, `db.m4.large` . Not all DB instance classes are available in all AWS Regions, or for all database engines.\n\nFor the full list of DB instance classes, and availability for your engine, see [DB Instance Class](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html) in the *Amazon RDS User Guide.* For more information about DB instance class pricing and AWS Region support for DB instance classes, see [Amazon RDS Pricing](https://docs.aws.amazon.com/rds/pricing/) .",
         "DBInstanceIdentifier": "A name for the DB instance. If you specify a name, AWS CloudFormation converts it to lowercase. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the DB instance. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\nFor information about constraints that apply to DB instance identifiers, see [Naming constraints in Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.Constraints) in the *Amazon RDS User Guide* .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
         "DBName": "The meaning of this parameter differs according to the database engine you use.\n\n> If you specify the `[DBSnapshotIdentifier](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-dbsnapshotidentifier)` property, this property only applies to RDS for Oracle. \n\n*Amazon Aurora*\n\nNot applicable. The database name is managed by the DB cluster.\n\n*MySQL*\n\nThe name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance.\n\nConstraints:\n\n- Must contain 1 to 64 letters or numbers.\n- Can't be a word reserved by the specified database engine\n\n*MariaDB*\n\nThe name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance.\n\nConstraints:\n\n- Must contain 1 to 64 letters or numbers.\n- Can't be a word reserved by the specified database engine\n\n*PostgreSQL*\n\nThe name of the database to create when the DB instance is created. If this parameter is not specified, the default `postgres` database is created in the DB instance.\n\nConstraints:\n\n- Must begin with a letter. Subsequent characters can be letters, underscores, or digits (0-9).\n- Must contain 1 to 63 characters.\n- Can't be a word reserved by the specified database engine\n\n*Oracle*\n\nThe Oracle System ID (SID) of the created DB instance. If you specify `null` , the default value `ORCL` is used. You can't specify the string NULL, or any other reserved word, for `DBName` .\n\nDefault: `ORCL`\n\nConstraints:\n\n- Can't be longer than 8 characters\n\n*SQL Server*\n\nNot applicable. Must be null.",
@@ -41098,7 +41353,7 @@
         "MaintenanceTrackName": "An optional parameter for the name of the maintenance track for the cluster. If you don't provide a maintenance track name, the cluster is assigned to the `current` track.",
         "ManualSnapshotRetentionPeriod": "The default number of days to retain a manual snapshot. If the value is -1, the snapshot is retained indefinitely. This setting doesn't change the retention period of existing snapshots.\n\nThe value must be either -1 or an integer between 1 and 3,653.",
         "MasterUserPassword": "The password associated with the admin user account for the cluster that is being created.\n\nConstraints:\n\n- Must be between 8 and 64 characters in length.\n- Must contain at least one uppercase letter.\n- Must contain at least one lowercase letter.\n- Must contain one number.\n- Can be any printable ASCII character (ASCII code 33-126) except `'` (single quote), `\"` (double quote), `\\` , `/` , or `@` .",
-        "MasterUsername": "The user name associated with the admin user account for the cluster that is being created.\n\nConstraints:\n\n- Must be 1 - 128 alphanumeric characters. The user name can't be `PUBLIC` .\n- First character must be a letter.\n- Cannot be a reserved word. A list of reserved words can be found in [Reserved Words](https://docs.aws.amazon.com/redshift/latest/dg/r_pg_keywords.html) in the Amazon Redshift Database Developer Guide.",
+        "MasterUsername": "The user name associated with the admin user account for the cluster that is being created.\n\nConstraints:\n\n- Must be 1 - 128 alphanumeric characters or hyphens. The user name can't be `PUBLIC` .\n- Must contain only lowercase letters, numbers, underscore, plus sign, period (dot), at symbol (@), or hyphen.\n- The first character must be a letter.\n- Must not contain a colon (:) or a slash (/).\n- Cannot be a reserved word. A list of reserved words can be found in [Reserved Words](https://docs.aws.amazon.com/redshift/latest/dg/r_pg_keywords.html) in the Amazon Redshift Database Developer Guide.",
         "NodeType": "The node type to be provisioned for the cluster. For information about node types, go to [Working with Clusters](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#how-many-nodes) in the *Amazon Redshift Cluster Management Guide* .\n\nValid Values: `ds2.xlarge` | `ds2.8xlarge` | `dc1.large` | `dc1.8xlarge` | `dc2.large` | `dc2.8xlarge` | `ra3.xlplus` | `ra3.4xlarge` | `ra3.16xlarge`",
         "NumberOfNodes": "The number of compute nodes in the cluster. This parameter is required when the *ClusterType* parameter is specified as `multi-node` .\n\nFor information about determining how many nodes you need, go to [Working with Clusters](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#how-many-nodes) in the *Amazon Redshift Cluster Management Guide* .\n\nIf you don't specify this parameter, you get a single-node cluster. When requesting a multi-node cluster, you must specify the number of nodes that you want in the cluster.\n\nDefault: `1`\n\nConstraints: Value must be at least 1 and no more than 100.",
         "OwnerAccount": "The AWS account used to create or copy the snapshot. Required if you are restoring a snapshot you do not own, optional if you own the snapshot.",
@@ -41112,7 +41367,7 @@
         "SnapshotCopyGrantName": "The name of the snapshot copy grant.",
         "SnapshotCopyManual": "Indicates whether to apply the snapshot retention period to newly copied manual snapshots instead of automated snapshots.",
         "SnapshotCopyRetentionPeriod": "The number of days to retain automated snapshots in the destination AWS Region after they are copied from the source AWS Region .\n\nBy default, this only changes the retention period of copied automated snapshots.\n\nIf you decrease the retention period for automated snapshots that are copied to a destination AWS Region , Amazon Redshift deletes any existing automated snapshots that were copied to the destination AWS Region and that fall outside of the new retention period.\n\nConstraints: Must be at least 1 and no more than 35 for automated snapshots.\n\nIf you specify the `manual` option, only newly copied manual snapshots will have the new retention period.\n\nIf you specify the value of -1 newly copied manual snapshots are retained indefinitely.\n\nConstraints: The number of days must be either -1 or an integer between 1 and 3,653 for manual snapshots.",
-        "SnapshotIdentifier": "The name of the snapshot from which to create the new cluster. This parameter isn't case sensitive. You can specify this parameter or `snapshotArn` , but not both.\n\nExample: `my-snapshot-id`",
+        "SnapshotIdentifier": "The name of the snapshot from which to create the new cluster. This parameter isn't case sensitive. You must specify this parameter or `snapshotArn` , but not both.\n\nExample: `my-snapshot-id`",
         "Tags": "A list of tag instances.",
         "VpcSecurityGroupIds": "A list of Virtual Private Cloud (VPC) security groups to be associated with the cluster.\n\nDefault: The default VPC security group is associated with the cluster."
       }
@@ -41247,7 +41502,7 @@
       },
       "description": "Describes an endpoint authorization for authorizing Redshift-managed VPC endpoint access to a cluster across AWS accounts .",
       "properties": {
-        "Account": "The A AWS account ID of either the cluster owner (grantor) or grantee. If `Grantee` parameter is true, then the `Account` value is of the grantor.",
+        "Account": "The AWS account ID of either the cluster owner (grantor) or grantee. If `Grantee` parameter is true, then the `Account` value is of the grantor.",
         "ClusterIdentifier": "The cluster identifier.",
         "Force": "Indicates whether to force the revoke action. If true, the Redshift-managed VPC endpoints associated with the endpoint authorization are also deleted.",
         "VpcIds": "The virtual private cloud (VPC) identifiers to grant access to."
@@ -45489,7 +45744,7 @@
         "DataCatalogConfig": "The meta data of the Glue table that is autogenerated when an `OfflineStore` is created.",
         "DisableGlueTableCreation": "Set to `True` to disable the automatic creation of an AWS Glue table when configuring an `OfflineStore` .",
         "S3StorageConfig": "The Amazon Simple Storage (Amazon S3) location of `OfflineStore` .",
-        "TableFormat": "Format for the offline store table. Supported formats are Glue (Default) and [Apache Iceberg](https://docs.aws.amazon.com/https://iceberg.apache.org/) ."
+        "TableFormat": ""
       }
     },
     "AWS::SageMaker::FeatureGroup.OnlineStoreConfig": {
@@ -45570,7 +45825,7 @@
         "ImageConfig": "Specifies whether the model container is in Amazon ECR or a private Docker registry accessible from your Amazon Virtual Private Cloud (VPC). For information about storing containers in a private Docker registry, see [Use a Private Docker Registry for Real-Time Inference Containers](https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-containers-inference-private.html)",
         "InferenceSpecificationName": "The inference specification name in the model package version.",
         "Mode": "Whether the container hosts a single model or multiple models.",
-        "ModelDataUrl": "The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix). The S3 path is required for SageMaker built-in algorithms, but not if you use your own algorithms. For more information on built-in algorithms, see [Common Parameters](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-algo-docker-registry-paths.html) .\n\n> The model artifacts must be in an S3 bucket that is in the same region as the model or endpoint you are creating. \n\nIf you provide a value for this parameter, SageMaker uses AWS Security Token Service to download model artifacts from the S3 path you provide. AWS STS is activated in your user account by default. If you previously deactivated AWS STS for a region, you need to reactivate AWS STS for that region. For more information, see [Activating and Deactivating AWS STS in an AWS Region](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html) in the *AWS Identity and Access Management User Guide* .\n\n> If you use a built-in algorithm to create a model, SageMaker requires that you provide a S3 path to the model artifacts in `ModelDataUrl` .",
+        "ModelDataUrl": "The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix). The S3 path is required for SageMaker built-in algorithms, but not if you use your own algorithms. For more information on built-in algorithms, see [Common Parameters](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-algo-docker-registry-paths.html) .\n\n> The model artifacts must be in an S3 bucket that is in the same region as the model or endpoint you are creating. \n\nIf you provide a value for this parameter, SageMaker uses AWS Security Token Service to download model artifacts from the S3 path you provide. AWS STS is activated in your AWS account by default. If you previously deactivated AWS STS for a region, you need to reactivate AWS STS for that region. For more information, see [Activating and Deactivating AWS STS in an AWS Region](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html) in the *AWS Identity and Access Management User Guide* .\n\n> If you use a built-in algorithm to create a model, SageMaker requires that you provide a S3 path to the model artifacts in `ModelDataUrl` .",
         "ModelPackageName": "The name or Amazon Resource Name (ARN) of the model package to use to create the model.",
         "MultiModelConfig": "Specifies additional configuration for multi-model endpoints."
       }
@@ -45792,6 +46047,174 @@
       "properties": {
         "SecurityGroupIds": "The VPC security group IDs, in the form sg-xxxxxxxx. Specify the security groups for the VPC that is specified in the `Subnets` field.",
         "Subnets": "The ID of the subnets in the VPC to which you want to connect your training job or model. For information about the availability of specific instance types, see [Supported Instance Types and Availability Zones](https://docs.aws.amazon.com/sagemaker/latest/dg/instance-types-az.html) ."
+      }
+    },
+    "AWS::SageMaker::ModelCard": {
+      "attributes": {
+        "ModelCardArn": "The Amazon Resource Number (ARN) of the model card. For example, `arn:aws:sagemaker:us-west-2:012345678901:modelcard/examplemodelcard` .",
+        "Ref": "`Ref` returns the model card name.\n\nFor more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "Creates an Amazon SageMaker Model Card.\n\nFor information about how to use model cards, see [Amazon SageMaker Model Card](https://docs.aws.amazon.com/sagemaker/latest/dg/model-cards.html) .",
+      "properties": {
+        "Content": "The content of the model card. Content uses the [model card JSON schema](https://docs.aws.amazon.com/sagemaker/latest/dg/model-cards.html#model-cards-json-schema) .",
+        "ModelCardName": "The unique name of the model card.",
+        "ModelCardStatus": "The approval status of the model card within your organization. Different organizations might have different criteria for model card review and approval.\n\n- `Draft` : The model card is a work in progress.\n- `PendingReview` : The model card is pending review.\n- `Approved` : The model card is approved.\n- `Archived` : The model card is archived. No more updates should be made to the model card, but it can still be exported.",
+        "SecurityConfig": "The security configuration used to protect model card data.",
+        "Tags": "Key-value pairs used to manage metadata for the model card."
+      }
+    },
+    "AWS::SageMaker::ModelCard.AdditionalInformation": {
+      "attributes": {},
+      "description": "Additional information about the model.",
+      "properties": {
+        "CaveatsAndRecommendations": "Caveats and recommendations for those who might use this model in their applications.",
+        "CustomDetails": "Any additional information to document about the model.",
+        "EthicalConsiderations": "Any ethical considerations documented by the model card author."
+      }
+    },
+    "AWS::SageMaker::ModelCard.BusinessDetails": {
+      "attributes": {},
+      "description": "Information about how the model supports business goals.",
+      "properties": {
+        "BusinessProblem": "The specific business problem that the model is trying to solve.",
+        "BusinessStakeholders": "The relevant stakeholders for the model.",
+        "LineOfBusiness": "The broader business need that the model is serving."
+      }
+    },
+    "AWS::SageMaker::ModelCard.Content": {
+      "attributes": {},
+      "description": "The content of the model card. It follows the [model card json schema](https://docs.aws.amazon.com/sagemaker/latest/dg/model-cards.html#model-cards-json-schema) .",
+      "properties": {
+        "AdditionalInformation": "Additional information about the model.",
+        "BusinessDetails": "Information about how the model supports business goals.",
+        "EvaluationDetails": "An overview about the model's evaluation.",
+        "IntendedUses": "The intended usage of the model.",
+        "ModelOverview": "An overview about the model",
+        "TrainingDetails": "An overview about model training."
+      }
+    },
+    "AWS::SageMaker::ModelCard.EvaluationDetail": {
+      "attributes": {},
+      "description": "The evaluation details of the model.",
+      "properties": {
+        "Datasets": "The location of the datasets used to evaluate the model.",
+        "EvaluationJobArn": "The Amazon Resource Name (ARN) of the evaluation job.",
+        "EvaluationObservation": "Any observations made during the model evaluation.",
+        "Metadata": "Additional attributes associated with the evaluation results.",
+        "MetricGroups": "An evaluation Metric Group object.",
+        "Name": "The evaluation job name."
+      }
+    },
+    "AWS::SageMaker::ModelCard.Function": {
+      "attributes": {},
+      "description": "Function details.",
+      "properties": {
+        "Condition": "An optional description of any conditions of your objective function metric.",
+        "Facet": "The metric of the model's objective function. For example, *loss* or *rmse* . The following list shows examples of the values that you can specify for the metric:\n\n- `ACCURACY`\n- `AUC`\n- `LOSS`\n- `MAE`\n- `RMSE`",
+        "Function": "The optimization direction of the model's objective function. You must specify one of the following values:\n\n- `Maximize`\n- `Minimize`"
+      }
+    },
+    "AWS::SageMaker::ModelCard.InferenceEnvironment": {
+      "attributes": {},
+      "description": "An overview of a model's inference environment.",
+      "properties": {
+        "ContainerImage": "The container used to run the inference environment."
+      }
+    },
+    "AWS::SageMaker::ModelCard.IntendedUses": {
+      "attributes": {},
+      "description": "The intended uses of a model.",
+      "properties": {
+        "ExplanationsForRiskRating": "An explanation of why your organization categorizes the model with its risk rating.",
+        "FactorsAffectingModelEfficiency": "Factors affecting model efficacy.",
+        "IntendedUses": "The intended use cases for the model.",
+        "PurposeOfModel": "The general purpose of the model.",
+        "RiskRating": "Your organization's risk rating. You can specify one the following values as the risk rating:\n\n- High\n- Medium\n- Low\n- Unknown"
+      }
+    },
+    "AWS::SageMaker::ModelCard.MetricGroup": {
+      "attributes": {},
+      "description": "A group of metric data that you use to initialize a metric group object.",
+      "properties": {
+        "MetricData": "A list of metric objects. The `MetricDataItems` list can have one of the following values:\n\n- `bar_chart_metric`\n- `matrix_metric`\n- `simple_metric`\n- `linear_graph_metric`\n\nFor more information about the metric schema, see the definition section of the [model card JSON schema](https://docs.aws.amazon.com/sagemaker/latest/dg/model-cards.html#model-cards-json-schema) .",
+        "Name": "The metric group name."
+      }
+    },
+    "AWS::SageMaker::ModelCard.ModelOverview": {
+      "attributes": {},
+      "description": "An overview about the model.",
+      "properties": {
+        "AlgorithmType": "The algorithm used to solve the problem.",
+        "InferenceEnvironment": "An overview about model inference.",
+        "ModelArtifact": "The location of the model artifact.",
+        "ModelCreator": "The creator of the model.",
+        "ModelDescription": "A description of the model.",
+        "ModelId": "The SageMaker Model ARN or non- SageMaker Model ID.",
+        "ModelName": "The name of the model.",
+        "ModelOwner": "The owner of the model.",
+        "ModelVersion": "The version of the model.",
+        "ProblemType": "The problem being solved with the model."
+      }
+    },
+    "AWS::SageMaker::ModelCard.ObjectiveFunction": {
+      "attributes": {},
+      "description": "The function that is optimized during model training.",
+      "properties": {
+        "Function": "A function object that details optimization direction, metric, and additional descriptions.",
+        "Notes": "Notes about the object function, including other considerations for possible objective functions."
+      }
+    },
+    "AWS::SageMaker::ModelCard.SecurityConfig": {
+      "attributes": {},
+      "description": "The security configuration used to protect model card data.",
+      "properties": {
+        "KmsKeyId": "A AWS Key Management Service [key ID](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id-key-id) used to encrypt a model card."
+      }
+    },
+    "AWS::SageMaker::ModelCard.TrainingDetails": {
+      "attributes": {},
+      "description": "The training details of the model",
+      "properties": {
+        "ObjectiveFunction": "The function that is optimized during model training.",
+        "TrainingJobDetails": "Details about any associated training jobs.",
+        "TrainingObservations": "Any observations about training."
+      }
+    },
+    "AWS::SageMaker::ModelCard.TrainingEnvironment": {
+      "attributes": {},
+      "description": "SageMaker training image.",
+      "properties": {
+        "ContainerImage": "SageMaker inference image URI."
+      }
+    },
+    "AWS::SageMaker::ModelCard.TrainingHyperParameter": {
+      "attributes": {},
+      "description": "A hyper parameter that was configured in training the model.",
+      "properties": {
+        "Name": "The name of the hyper parameter.",
+        "Value": "The value specified for the hyper parameter."
+      }
+    },
+    "AWS::SageMaker::ModelCard.TrainingJobDetails": {
+      "attributes": {},
+      "description": "The overview of a training job.",
+      "properties": {
+        "HyperParameters": "The hyper parameters used in the training job.",
+        "TrainingArn": "The SageMaker training job Amazon Resource Name (ARN)",
+        "TrainingDatasets": "The location of the datasets used to train the model.",
+        "TrainingEnvironment": "The SageMaker training job image URI.",
+        "TrainingMetrics": "The SageMaker training job results.",
+        "UserProvidedHyperParameters": "Additional hyper parameters that you've specified when training the model.",
+        "UserProvidedTrainingMetrics": "Custom training job results."
+      }
+    },
+    "AWS::SageMaker::ModelCard.TrainingMetric": {
+      "attributes": {},
+      "description": "A result from a SageMaker training job.",
+      "properties": {
+        "Name": "The name of the result from the SageMaker training job.",
+        "Notes": "Any additional notes describing the result of the training job.",
+        "Value": "The value of a result from the SageMaker training job."
       }
     },
     "AWS::SageMaker::ModelExplainabilityJobDefinition": {
@@ -47133,18 +47556,18 @@
       "attributes": {
         "Ref": "When you pass the logical ID of an `AWS::SecretsManager::RotationSchedule` resource to the intrinsic `Ref` function, the function returns the ARN of the secret being configured, such as:\n\n*arn:aws:secretsmanager: us-west-2* : *123456789012* :secret: *my-path/my-secret-name* - *1a2b3c*\n\nYou can use the ARN to reference a secret you create in one part of the stack template from within the definition of another resource later, in the same template. You typically do this when you define the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource type.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "Sets the rotation schedule and Lambda rotation function for a secret. For more information, see [How rotation works](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_how.html) . For the rotation function, you have two options:\n\n- You can create a new rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) by using `HostedRotationLambda` .\n- You can choose an existing rotation function by using `RotationLambdaARN` .\n\nFor Amazon RDS , Amazon Redshift , Amazon DocumentDB secrets, if you define both the secret and the database or service in the AWS CloudFormation template, then you need to define the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource to populate the secret with the connection details of the database or service before you attempt to configure rotation.",
+      "description": "Sets the rotation schedule and Lambda rotation function for a secret. For more information, see [How rotation works](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_how.html) .\n\nFor Amazon RDS master user credentials, see [AWS::RDS::DBCluster MasterUserSecret](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html) .\n\nFor the rotation function, you have two options:\n\n- You can create a new rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) by using `HostedRotationLambda` .\n- You can choose an existing rotation function by using `RotationLambdaARN` .\n\nFor database secrets, if you define both the secret and the database or service in the AWS CloudFormation template, then you need to define the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource to populate the secret with the connection details of the database or service before you attempt to configure rotation.",
       "properties": {
-        "HostedRotationLambda": "Creates a new Lambda rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) . To use a rotation function that already exists, specify `RotationLambdaARN` instead.",
+        "HostedRotationLambda": "Creates a new Lambda rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) . To use a rotation function that already exists, specify `RotationLambdaARN` instead.\n\nFor Amazon RDS master user credentials, see [AWS::RDS::DBCluster MasterUserSecret](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html) .",
         "RotateImmediatelyOnUpdate": "Specifies whether to rotate the secret immediately or wait until the next scheduled rotation window. The rotation schedule is defined in `RotationRules` .\n\nIf you don't immediately rotate the secret, Secrets Manager tests the rotation configuration by running the [`testSecret` step](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_how.html) of the Lambda rotation function. The test creates an `AWSPENDING` version of the secret and then removes it.\n\nIf you don't specify this value, then by default, Secrets Manager rotates the secret immediately.\n\nRotation is an asynchronous process. For more information, see [How rotation works](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_how.html) .",
-        "RotationLambdaARN": "The ARN of an existing Lambda rotation function. To specify a rotation function that is also defined in this template, use the [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function.\n\nTo create a new rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) , specify `HostedRotationLambda` instead.",
+        "RotationLambdaARN": "The ARN of an existing Lambda rotation function. To specify a rotation function that is also defined in this template, use the [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function.\n\nFor Amazon RDS master user credentials, see [AWS::RDS::DBCluster MasterUserSecret](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html) .\n\nTo create a new rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) , specify `HostedRotationLambda` instead.",
         "RotationRules": "A structure that defines the rotation configuration for this secret.",
         "SecretId": "The ARN or name of the secret to rotate.\n\nTo reference a secret also created in this template, use the [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function with the secret's logical ID."
       }
     },
     "AWS::SecretsManager::RotationSchedule.HostedRotationLambda": {
       "attributes": {},
-      "description": "Creates a new Lambda rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) .\n\nYou must specify `Transform: AWS::SecretsManager-2020-07-23` at the beginning of the CloudFormation template.",
+      "description": "Creates a new Lambda rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) .\n\nYou must specify `Transform: AWS::SecretsManager-2020-07-23` at the beginning of the CloudFormation template.\n\nFor Amazon RDS master user credentials, see [AWS::RDS::DBCluster MasterUserSecret](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html) .",
       "properties": {
         "ExcludeCharacters": "A string of the characters that you don't want in the password.",
         "KmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the secret. If you don't specify this value, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.",
@@ -47171,7 +47594,7 @@
       "attributes": {
         "Ref": "When you pass the logical ID of an `AWS::SecretsManager::Secret` resource to the intrinsic `Ref` function, the function returns the ARN of the secret configured such as:\n\n`arn:aws:secretsmanager:us-west-2:123456789012:secret:my-path/my-secret-name-1a2b3c`\n\nIf you know the ARN of a secret, you can reference a secret you created in one part of the stack template from within the definition of another resource in the same template. You typically use the `Ref` function with the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource type to get references to both the secret and its associated database.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "Creates a new secret. A *secret* can be a password, a set of credentials such as a user name and password, an OAuth token, or other secret information that you store in an encrypted form in Secrets Manager.\n\nTo retrieve a secret in a CloudFormation template, use a *dynamic reference* . For more information, see [Retrieve a secret in an AWS CloudFormation resource](https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html) .\n\nA common scenario is to first create a secret with `GenerateSecretString` , which generates a password, and then use a dynamic reference to retrieve the username and password from the secret to use as credentials for a new database. Follow these steps, as shown in the examples below:\n\n- Define the secret without referencing the service or database. You can't reference the service or database because it doesn't exist yet. The secret must contain a username and password.\n- Next, define the service or database. Include the reference to the secret to use stored credentials to define the database admin user and password.\n- Finally, define a `SecretTargetAttachment` resource type to finish configuring the secret with the required database engine type and the connection details of the service or database. The rotation function requires the details, if you attach one later by defining a [AWS::SecretsManager::RotationSchedule](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-rotationschedule.html) resource type.\n\nFor information about creating a secret in the console, see [Create a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html) . For information about creating a secret using the CLI or SDK, see [CreateSecret](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_CreateSecret.html) .\n\nFor information about retrieving a secret in code, see [Retrieve secrets from Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html) .\n\n> Do not create a dynamic reference using a backslash `(\\)` as the final value. AWS CloudFormation cannot resolve those references, which causes a resource failure.",
+      "description": "Creates a new secret. A *secret* can be a password, a set of credentials such as a user name and password, an OAuth token, or other secret information that you store in an encrypted form in Secrets Manager.\n\nFor Amazon RDS master user credentials, see [AWS::RDS::DBCluster MasterUserSecret](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html) .\n\nTo retrieve a secret in a CloudFormation template, use a *dynamic reference* . For more information, see [Retrieve a secret in an AWS CloudFormation resource](https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html) .\n\nA common scenario is to first create a secret with `GenerateSecretString` , which generates a password, and then use a dynamic reference to retrieve the username and password from the secret to use as credentials for a new database. Follow these steps, as shown in the examples below:\n\n- Define the secret without referencing the service or database. You can't reference the service or database because it doesn't exist yet. The secret must contain a username and password.\n- Next, define the service or database. Include the reference to the secret to use stored credentials to define the database admin user and password.\n- Finally, define a `SecretTargetAttachment` resource type to finish configuring the secret with the required database engine type and the connection details of the service or database. The rotation function requires the details, if you attach one later by defining a [AWS::SecretsManager::RotationSchedule](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-rotationschedule.html) resource type.\n\nFor information about creating a secret in the console, see [Create a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html) . For information about creating a secret using the CLI or SDK, see [CreateSecret](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_CreateSecret.html) .\n\nFor information about retrieving a secret in code, see [Retrieve secrets from Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html) .\n\n> Do not create a dynamic reference using a backslash `(\\)` as the final value. AWS CloudFormation cannot resolve those references, which causes a resource failure.",
       "properties": {
         "Description": "The description of the secret.",
         "GenerateSecretString": "A structure that specifies how to generate a password to encrypt and store in the secret. To include a specific string in the secret, use `SecretString` instead. If you omit both `GenerateSecretString` and `SecretString` , you create an empty secret.\n\nWe recommend that you specify the maximum length and include every character type that the system you are generating a password for can support.",
@@ -47210,7 +47633,7 @@
       "attributes": {
         "Ref": "When you pass the logical ID of an `AWS::SecretsManager::SecretTargetAttachment` resource to the intrinsic `Ref` function, the function returns the ARN of the secret, such as:\n\n`arn:aws:secretsmanager:us-west-2:123456789012:secret:my-path/my-secret-name-1a2b3c`\n\nYou can use the ARN to reference a secret you created in one part of the stack template from within the definition of another resource from a different part of the same template.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "The `AWS::SecretsManager::SecretTargetAttachment` resource completes the final link between a Secrets Manager secret and the associated database by adding the database connection information to the secret JSON. If you want to turn on automatic rotation for a database credential secret, the secret must contain the database connection information. For more information, see [JSON structure of Secrets Manager database credential secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_secret_json_structure.html) .",
+      "description": "The `AWS::SecretsManager::SecretTargetAttachment` resource completes the final link between a Secrets Manager secret and the associated database by adding the database connection information to the secret JSON. If you want to turn on automatic rotation for a database credential secret, the secret must contain the database connection information. For more information, see [JSON structure of Secrets Manager database credential secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_secret_json_structure.html) .\n\nFor Amazon RDS master user credentials, see [AWS::RDS::DBCluster MasterUserSecret](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html) .",
       "properties": {
         "SecretId": "The ARN or name of the secret. To reference a secret also created in this template, use the see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function with the secret's logical ID.",
         "TargetId": "The ID of the database or cluster.",
@@ -47716,6 +48139,26 @@
       "properties": {
         "Type": "The time unit for signature validity: DAYS | MONTHS | YEARS.",
         "Value": "The numerical value of the time unit for signature validity."
+      }
+    },
+    "AWS::SimSpaceWeaver::Simulation": {
+      "attributes": {
+        "DescribePayload": "The JSON blob that the [DescribeSimulation](https://docs.aws.amazon.com/simspaceweaver/latest/APIReference/API_DescribeSimulation.html) action returns.",
+        "Ref": "`Ref` returns the name of the `Simulation` . For example, `MyTestSimulation_22-12-15_12_00_00` ."
+      },
+      "description": "Use the `AWS::SimSpaceWeaver::Simulation` resource to specify a simulation that AWS CloudFormation starts in the AWS Cloud , in your AWS account . In the resource properties section of your template, provide the name of an existing IAM role configured with the proper permissions, and the name of an existing Amazon S3 bucket. Your account must have permissions to read the Amazon S3 bucket. The Amazon S3 bucket must contain a valid schema. The schema must refer to simulation assets that are already uploaded to the AWS Cloud . For more information, see the [detailed tutorial](https://docs.aws.amazon.com/simspaceweaver/latest/userguide/getting-started_detailed.html) in the *AWS SimSpace Weaver User Guide* .",
+      "properties": {
+        "Name": "The name of the simulation.",
+        "RoleArn": "The Amazon Resource Name (ARN) of the AWS Identity and Access Management ( IAM ) role that the simulation assumes to perform actions. For more information about ARNs, see [Amazon Resource Names (ARNs)](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) in the *AWS General Reference* . For more information about IAM roles, see [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html) in the *AWS Identity and Access Management User Guide* .",
+        "SchemaS3Location": "The location of the simulation schema in Amazon Simple Storage Service ( Amazon S3 ). For more information about Amazon S3 , see the [*Amazon Simple Storage Service User Guide*](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html) ."
+      }
+    },
+    "AWS::SimSpaceWeaver::Simulation.S3Location": {
+      "attributes": {},
+      "description": "A location in Amazon Simple Storage Service ( Amazon S3 ) where SimSpace Weaver stores simulation data, such as your app .zip files and schema file. For more information about Amazon S3 , see the [*Amazon Simple Storage Service User Guide*](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html) .",
+      "properties": {
+        "BucketName": "The name of an Amazon S3 bucket. For more information about buckets, see [Creating, configuring, and working with Amazon S3 buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-buckets-s3.html) in the *Amazon Simple Storage Service User Guide* .",
+        "ObjectKey": "The key name of an object in Amazon S3 . For more information about Amazon S3 objects and object keys, see [Uploading, downloading, and working with objects in Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/uploading-downloading-objects.html) in the *Amazon Simple Storage Service User Guide* ."
       }
     },
     "AWS::StepFunctions::Activity": {
@@ -48294,7 +48737,7 @@
         "Arn": "The Amazon Resource Name associated with the user, in the form `arn:aws:transfer:region: *account-id* :user/ *server-id* / *username*` .\n\nAn example of a user ARN is: `arn:aws:transfer:us-east-1:123456789012:user/user1` .",
         "Ref": "`Ref` returns the username, such as `transfer_user` .",
         "ServerId": "The ID of the server to which the user is attached.\n\nAn example `ServerId` is `s-01234567890abcdef` .",
-        "UserName": "A unique string that identifies a user account associated with a server.\n\nAn example `UserName` is `transfer-user-1` ."
+        "UserName": "A unique string that identifies a Transfer Family user account associated with a server.\n\nAn example `UserName` is `transfer-user-1` ."
       },
       "description": "The `AWS::Transfer::User` resource creates a user and associates them with an existing server. You can only create and associate users with servers that have the `IdentityProviderType` set to `SERVICE_MANAGED` . Using parameters for `CreateUser` , you can specify the user name, set the home directory, store the user's public key, and assign the user's AWS Identity and Access Management (IAM) role. You can also optionally add a session policy, and assign metadata with tags that can be used to group and search for users.",
       "properties": {
@@ -48329,7 +48772,7 @@
     },
     "AWS::Transfer::User.SshPublicKey": {
       "attributes": {},
-      "description": "Provides information about the public Secure Shell (SSH) key that is associated with a user account for the specific file transfer protocol-enabled server (as identified by `ServerId` ). The information returned includes the date the key was imported, the public key contents, and the public key ID. A user can store more than one SSH public key associated with their user name on a specific server.\n\n*SshPublicKeyBody*\n\nSpecifies the content of the SSH public key as specified by the `PublicKeyId` .\n\nAWS Transfer Family accepts RSA, ECDSA, and ED25519 keys.\n\nType: String\n\nLength Constraints: Maximum length of 2048.\n\nRequired: Yes",
+      "description": "Provides information about the public Secure Shell (SSH) key that is associated with a Transfer Family user account for the specific file transfer protocol-enabled server (as identified by `ServerId` ). The information returned includes the date the key was imported, the public key contents, and the public key ID. A user can store more than one SSH public key associated with their user name on a specific server.\n\n*SshPublicKeyBody*\n\nSpecifies the content of the SSH public key as specified by the `PublicKeyId` .\n\nAWS Transfer Family accepts RSA, ECDSA, and ED25519 keys.\n\nType: String\n\nLength Constraints: Maximum length of 2048.\n\nRequired: Yes",
       "properties": {}
     },
     "AWS::Transfer::Workflow": {
