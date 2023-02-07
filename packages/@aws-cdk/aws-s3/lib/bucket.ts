@@ -1650,7 +1650,8 @@ export class Bucket extends BucketBase {
     const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
     const newEndpoint = `s3-website.${region}.${urlSuffix}`;
 
-    let staticDomainEndpoint = regionInfo.s3StaticWebsiteEndpoint ?? oldEndpoint;
+    let staticDomainEndpoint = regionInfo.s3StaticWebsiteEndpoint
+      ?? Lazy.string({ produce: () => stack.regionalFact(regionInformation.FactName.S3_STATIC_WEBSITE_ENDPOINT, newEndpoint) });
 
     // Deprecated use of bucketWebsiteNewUrlFormat
     if (attrs.bucketWebsiteNewUrlFormat !== undefined) {
@@ -1667,7 +1668,7 @@ export class Bucket extends BucketBase {
       public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
       public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
-      public readonly bucketWebsiteNewUrlFormat = attrs.bucketWebsiteNewUrlFormat;
+      public readonly bucketWebsiteNewUrlFormat = attrs.bucketWebsiteNewUrlFormat ?? false;
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly isWebsite = attrs.isWebsite ?? false;
       public policy?: BucketPolicy = undefined;

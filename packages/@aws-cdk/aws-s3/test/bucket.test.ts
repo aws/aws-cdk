@@ -2078,10 +2078,14 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'http://my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'http://my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
@@ -2089,14 +2093,17 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
-
     });
     test('exports the WebsiteURL for imported buckets with url', () => {
       const stack = new cdk.Stack();
