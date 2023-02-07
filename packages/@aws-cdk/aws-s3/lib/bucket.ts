@@ -1647,21 +1647,17 @@ export class Bucket extends BucketBase {
     }
     Bucket.validateBucketName(bucketName);
 
-    function bucketStaticWebsiteEndpoint(): string {
-      const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
-      const newEndpoint = `s3-website.${region}.${urlSuffix}`;
+    const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
+    const newEndpoint = `s3-website.${region}.${urlSuffix}`;
 
-      // Deprecated use of bucketWebsiteNewUrlFormat
-      if (attrs.bucketWebsiteNewUrlFormat !== undefined) {
-        return attrs.bucketWebsiteNewUrlFormat
-          ? newEndpoint
-          : oldEndpoint;
-      }
+    let staticDomainEndpoint = regionInfo.s3StaticWebsiteEndpoint ?? oldEndpoint;
 
-      return regionInfo.s3StaticWebsiteEndpoint ?? oldEndpoint;
+    // Deprecated use of bucketWebsiteNewUrlFormat
+    if (attrs.bucketWebsiteNewUrlFormat !== undefined) {
+      staticDomainEndpoint = attrs.bucketWebsiteNewUrlFormat ? newEndpoint : oldEndpoint;
     }
 
-    const websiteDomain = `${bucketName}.` + bucketStaticWebsiteEndpoint();
+    const websiteDomain = `${bucketName}.${staticDomainEndpoint}`;
 
     class Import extends BucketBase {
       public readonly bucketName = bucketName!;
