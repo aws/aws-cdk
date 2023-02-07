@@ -1330,7 +1330,7 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - `Kms` if `encryptionKey` is specified, or `Unencrypted` otherwise.
+   * @default - `Kms` if `encryptionKey` is specified, or `Managed` otherwise.
    */
   readonly encryption?: BucketEncryption;
 
@@ -1338,8 +1338,7 @@ export interface BucketProps {
    * External KMS key to use for bucket encryption.
    *
    * The 'encryption' property must be either not specified or set to "Kms".
-   * An error will be emitted if encryption is set to "Unencrypted" or
-   * "Managed".
+   * An error will be emitted if encryption is set to "Managed".
    *
    * @default - If encryption is set to "Kms" and this property is undefined,
    * a new KMS key will be created and associated with this bucket.
@@ -1973,7 +1972,7 @@ export class Bucket extends BucketBase {
     // default based on whether encryptionKey is specified
     let encryptionType = props.encryption;
     if (encryptionType === undefined) {
-      encryptionType = props.encryptionKey ? BucketEncryption.KMS : BucketEncryption.UNENCRYPTED;
+      encryptionType = props.encryptionKey ? BucketEncryption.KMS : BucketEncryption.S3_MANAGED;
     }
 
     // if encryption key is set, encryption must be set to KMS.
@@ -1984,10 +1983,6 @@ export class Bucket extends BucketBase {
     // if bucketKeyEnabled is set, encryption must be set to KMS.
     if (props.bucketKeyEnabled && ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED].includes(encryptionType)) {
       throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
-    }
-
-    if (encryptionType === BucketEncryption.UNENCRYPTED) {
-      return { bucketEncryption: undefined, encryptionKey: undefined };
     }
 
     if (encryptionType === BucketEncryption.KMS) {
@@ -2384,11 +2379,6 @@ export class Bucket extends BucketBase {
  * What kind of server-side encryption to apply to this bucket
  */
 export enum BucketEncryption {
-  /**
-   * Objects in the bucket are not encrypted.
-   */
-  UNENCRYPTED = 'UNENCRYPTED',
-
   /**
    * Server-side KMS encryption with a master key managed by KMS.
    */

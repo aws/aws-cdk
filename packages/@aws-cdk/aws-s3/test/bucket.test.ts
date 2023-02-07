@@ -36,23 +36,6 @@ describe('bucket', () => {
     }).toThrow(/bucketName: 5 should be a string/);
   });
 
-  test('bucket without encryption', () => {
-    const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.UNENCRYPTED,
-    });
-
-    Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
-        },
-      },
-    });
-  });
-
   test('bucket with managed encryption', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
@@ -208,12 +191,12 @@ describe('bucket', () => {
     })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
   });
 
-  test('fails if encryption key is used with encryption set to unencrypted', () => {
+  test('fails if encryption key is used with encryption set to s3 managed', () => {
     const stack = new cdk.Stack();
     const myKey = new kms.Key(stack, 'MyKey');
 
     expect(() => new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.UNENCRYPTED,
+      encryption: s3.BucketEncryption.S3_MANAGED,
       encryptionKey: myKey,
     })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
   });
@@ -333,7 +316,7 @@ describe('bucket', () => {
     }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3_MANAGED)");
     expect(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: UNENCRYPTED)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3_MANAGED)");
 
   });
 
@@ -579,7 +562,7 @@ describe('bucket', () => {
 
     test('addPermission creates a bucket policy', () => {
       const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
 
       bucket.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['foo'],
@@ -593,6 +576,17 @@ describe('bucket', () => {
             'Type': 'AWS::S3::Bucket',
             'DeletionPolicy': 'Retain',
             'UpdateReplacePolicy': 'Retain',
+            'Properties': {
+              'BucketEncryption': {
+                'ServerSideEncryptionConfiguration': [
+                  {
+                    'ServerSideEncryptionByDefault': {
+                      'SSEAlgorithm': 'AES256',
+                    },
+                  },
+                ],
+              },
+            },
           },
           'MyBucketPolicyE7FBAC7B': {
             'Type': 'AWS::S3::BucketPolicy',
@@ -620,7 +614,7 @@ describe('bucket', () => {
     test('forBucket returns a permission statement associated with the bucket\'s ARN', () => {
       const stack = new cdk.Stack();
 
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
 
       const x = new iam.PolicyStatement({
         resources: [bucket.bucketArn],
@@ -639,7 +633,7 @@ describe('bucket', () => {
     test('arnForObjects returns a permission statement associated with objects in the bucket', () => {
       const stack = new cdk.Stack();
 
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
 
       const p = new iam.PolicyStatement({
         resources: [bucket.arnForObjects('hello/world')],
@@ -664,7 +658,7 @@ describe('bucket', () => {
 
       const stack = new cdk.Stack();
 
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
 
       const user = new iam.User(stack, 'MyUser');
       const team = new iam.Group(stack, 'MyTeam');
@@ -701,7 +695,7 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
-      encryption: s3.BucketEncryption.UNENCRYPTED,
+      encryption: s3.BucketEncryption.S3_MANAGED,
     });
 
     Template.fromStack(stack).templateMatches({
