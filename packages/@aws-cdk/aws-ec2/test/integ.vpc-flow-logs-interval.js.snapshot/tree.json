@@ -659,6 +659,15 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                           "aws:cdk:cloudformation:props": {
+                            "bucketEncryption": {
+                              "serverSideEncryptionConfiguration": [
+                                {
+                                  "serverSideEncryptionByDefault": {
+                                    "sseAlgorithm": "AES256"
+                                  }
+                                }
+                              ]
+                            },
                             "tags": [
                               {
                                 "key": "Name",
@@ -843,7 +852,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.FlowLog",
                   "version": "0.0.0"
                 }
               },
@@ -892,7 +901,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-ec2.FlowLog",
                   "version": "0.0.0"
                 }
               }
@@ -1062,7 +1071,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ec2.FlowLog",
               "version": "0.0.0"
             }
           },
@@ -1076,6 +1085,15 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    },
                     "tags": [
                       {
                         "key": "aws-cdk:auto-delete-objects",
@@ -1371,7 +1389,7 @@
                 "path": "FlowLogs/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.216"
+                  "version": "10.1.237"
                 }
               },
               "DeployAssert": {
@@ -1417,7 +1435,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.216"
+          "version": "10.1.237"
         }
       }
     },

@@ -358,6 +358,15 @@
   "VPCFlowLogsS3BucketFB7DC2BE": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
     "Tags": [
      {
       "Key": "Name",
@@ -510,6 +519,15 @@
   "VPCFlowLogsS3WithDestinationOptionsBucket1B7AC456": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
     "Tags": [
      {
       "Key": "Name",
