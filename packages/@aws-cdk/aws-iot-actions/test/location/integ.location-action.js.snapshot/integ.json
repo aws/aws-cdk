@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "location-integtest/DefaultTest": {
+      "stacks": [
+        "test-location-action-stack"
+      ],
+      "assertionStack": "location-integtest/DefaultTest/DeployAssert",
+      "assertionStackName": "locationintegtestDefaultTestDeployAssert2D1452E3"
+    }
+  }
+}

@@ -96,6 +96,7 @@
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-location": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
@@ -113,6 +114,7 @@
     "@aws-cdk/aws-iotevents": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
+    "@aws-cdk/aws-location": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
@@ -135,5 +137,10 @@
   "publishConfig": {
     "tag": "next"
   },
-  "private": true
+  "private": true,
+  "pkglint": {
+    "exclude": [
+      "no-experimental-dependencies"
+    ]
+  }
 }

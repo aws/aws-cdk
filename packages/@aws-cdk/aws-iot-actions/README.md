@@ -33,6 +33,7 @@ Currently supported are:
 - Publish messages on SNS topics
 - Write messages into columns of DynamoDB
 - Put messages IoT Events input
+- Write message into Amazon Location Tracker
 
 ## Republish a message to another MQTT topic
 
@@ -325,6 +326,30 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
       messageId: '${payload.transactionId}', // optional property, default is a new UUID
       role: role, // optional property, default is a new UUID
     }),
+  ],
+});
+```
+
+## Write attribute of message to Amazon Location Tracker
+
+The code snippet below creates an AWS IoT rule that writes all or part of an 
+MQTT message to Amazon Location Tracker using the LocationAction action.
+
+```ts
+import { CfnTracker } from '@aws-cdk/aws-location';
+
+declare const tracker: CfnTracker;
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT * FROM 'device/+/data'",
+  ),
+  actions: [
+    new actions.LocationAction(tracker, { 
+      deviceId: '${deviceId}',
+      latitude: '${latitude}',
+      longitude: '${longitude}',
+    })
   ],
 });
 ```

@@ -1,0 +1,246 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "test-location-action-stack": {
+        "id": "test-location-action-stack",
+        "path": "test-location-action-stack",
+        "children": {
+          "TopicRule": {
+            "id": "TopicRule",
+            "path": "test-location-action-stack/TopicRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-location-action-stack/TopicRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
+                  "aws:cdk:cloudformation:props": {
+                    "topicRulePayload": {
+                      "actions": [
+                        {
+                          "location": {
+                            "deviceId": "${deviceId}",
+                            "latitude": "${latitude}",
+                            "longitude": "${longitude}",
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "TopicRuleTopicRuleActionRole246C4F77",
+                                "Arn"
+                              ]
+                            },
+                            "trackerName": "myTracker",
+                            "timestamp": "2023-02-07T21:42:25.443Z"
+                          }
+                        }
+                      ],
+                      "awsIotSqlVersion": "2016-03-23",
+                      "sql": "SELECT * FROM 'device/+/data'"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iot.CfnTopicRule",
+                  "version": "0.0.0"
+                }
+              },
+              "TopicRuleActionRole": {
+                "id": "TopicRuleActionRole",
+                "path": "test-location-action-stack/TopicRule/TopicRuleActionRole",
+                "children": {
+                  "ImportTopicRuleActionRole": {
+                    "id": "ImportTopicRuleActionRole",
+                    "path": "test-location-action-stack/TopicRule/TopicRuleActionRole/ImportTopicRuleActionRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-location-action-stack/TopicRule/TopicRuleActionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "iot.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "test-location-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "test-location-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "geo:BatchUpdateDevicePosition",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyTracker",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
+                            "roles": [
+                              {
+                                "Ref": "TopicRuleTopicRuleActionRole246C4F77"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot.TopicRule",
+              "version": "0.0.0"
+            }
+          },
+          "MyTracker": {
+            "id": "MyTracker",
+            "path": "test-location-action-stack/MyTracker",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Location::Tracker",
+              "aws:cdk:cloudformation:props": {
+                "trackerName": "myTracker"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-location.CfnTracker",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "test-location-action-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "test-location-action-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "location-integtest": {
+        "id": "location-integtest",
+        "path": "location-integtest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "location-integtest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "location-integtest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.237"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "location-integtest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "location-integtest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "location-integtest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.237"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
