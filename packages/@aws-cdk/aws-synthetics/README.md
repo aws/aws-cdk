@@ -115,7 +115,7 @@ If you want the canary to run just once upon deployment, you can use `Schedule.o
 
 You can specify whether the AWS CloudFormation is to also delete the Lambda functions and layers used by this canary, when the canary is deleted.
 
-This can be provisioned by setting the `DeleteLambdaResourcesOnCanaryDeletion` property to `true` when we define the canary.
+This can be provisioned by setting the `enableAutoDeleteLambdas` property to `true` when we define the canary.
 
 ```ts
 const stack = new Stack();
@@ -130,8 +130,8 @@ const canary = new synthetics.Canary(stack, 'Canary', {
 });
 ```
 
-Even when set to `true` there are resources such as S3 buckets/logs that do NOT get deleted and are to be deleted manually.
-
+Synthetic Canaries create additional resources under the hood beyond Lambda functions. Setting `enableAutoDeleteLambdas: true` will take care of
+cleaning up Lambda functions on deletion, but you still have to manually delete other resources like S3 buckets and CloudWatch logs.
 
 ### Configuring the Canary Script
 
