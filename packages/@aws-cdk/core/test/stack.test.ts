@@ -2231,7 +2231,6 @@ describe('regionalFact', () => {
       },
     });
   });
-
 });
 
 class StackWithPostProcessor extends Stack {
