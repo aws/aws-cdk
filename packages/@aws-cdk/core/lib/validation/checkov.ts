@@ -5,6 +5,9 @@ import { IValidationPlugin, IValidation, ValidationContext, ValidationReport } f
 import { FileAssetSource } from '../assets';
 import { ISynthesisSession } from '../stack-synthesizers';
 
+// NOTE: This class will eventually move out to a separate repository, but we're
+// keeping it here for now to make it easier to iterate on.
+
 // Design decisions:
 // * We don't want to install checkov as a dependency of the CDK, so we'll just
 //   shell out to it.
