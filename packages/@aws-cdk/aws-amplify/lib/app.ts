@@ -67,6 +67,15 @@ export interface ISourceCodeProvider {
 }
 
 /**
+ * The platform for the Amplify app.
+ */
+export enum AppPlatforms {
+  WEB = 'WEB',
+  WEB_COMPUTE = 'WEB_COMPUTE',
+  WEB_DYNAMIC = 'WEB_DYNAMIC',
+}
+
+/**
  * Properties for an App
  */
 export interface AppProps {
@@ -159,6 +168,16 @@ export interface AppProps {
    * @default - a new role is created
    */
   readonly role?: iam.IRole;
+
+  /**
+   *  The platform for the Amplify app.
+   *  For a static app, set the platform type to WEB.
+   *  For a dynamic server-side rendered (SSR) app, set the platform type to WEB_COMPUTE.
+   *  For an app requiring Amplify Hosting's original SSR support only, set the platform type to WEB_DYNAMIC.
+   *
+   * @default WEB
+   */
+  readonly platform?: AppPlatforms;
 }
 
 /**
@@ -249,6 +268,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
       customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
+      platform: props.platform,
     });
 
     this.appId = app.attrAppId;

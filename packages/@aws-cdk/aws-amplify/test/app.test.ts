@@ -3,6 +3,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import { SecretValue, Stack } from '@aws-cdk/core';
 import * as amplify from '../lib';
+import { AppPlatforms } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -440,5 +441,22 @@ test('with custom headers', () => {
         ],
       ],
     },
+  });
+});
+
+test('with WEB_COMPUTE platform', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+    platform: AppPlatforms.WEB_COMPUTE
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Platform: "WEB_COMPUTE",
   });
 });
