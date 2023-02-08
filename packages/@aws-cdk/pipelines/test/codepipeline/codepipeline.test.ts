@@ -392,6 +392,40 @@ test('action name is calculated properly if it has cross-stack dependencies', ()
   });
 });
 
+test('synths with change set approvers', () => {
+  // GIVEN
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+  // WHEN
+  const csApproval = new cdkp.ManualApprovalStep('ChangeSetApproval');
+
+  // The issue we were diagnosing only manifests if the stacks don't have
+  // a dependency on each other
+  const stage = new TwoStackApp(app, 'TheApp', { withDependency: false });
+  pipeline.addStage(stage, {
+    stackSteps: [
+      { stack: stage.stack1, changeSet: [csApproval] },
+      { stack: stage.stack2, changeSet: [csApproval] },
+    ],
+  });
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'TheApp',
+      Actions: Match.arrayWith([
+        Match.objectLike({ Name: 'Stack1.Prepare', RunOrder: 1 }),
+        Match.objectLike({ Name: 'Stack2.Prepare', RunOrder: 1 }),
+        Match.objectLike({ Name: 'Stack1.ChangeSetApproval', RunOrder: 2 }),
+        Match.objectLike({ Name: 'Stack1.Deploy', RunOrder: 3 }),
+        Match.objectLike({ Name: 'Stack2.Deploy', RunOrder: 3 }),
+      ]),
+    }]),
+  });
+});
+
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
   reuseCrossRegionSupportStacks?: boolean;
 }
