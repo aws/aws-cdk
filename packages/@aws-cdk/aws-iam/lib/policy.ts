@@ -4,6 +4,7 @@ import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
+import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
@@ -100,7 +101,7 @@ export interface PolicyProps {
  * Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
-export class Policy extends Resource implements IPolicy {
+export class Policy extends Resource implements IPolicy, IGrantable {
 
   /**
    * Import a policy in this app based on its name
@@ -117,6 +118,8 @@ export class Policy extends Resource implements IPolicy {
    * The policy document.
    */
   public readonly document = new PolicyDocument();
+
+  public readonly grantPrincipal: IPrincipal;
 
   private readonly _policyName: string;
   private readonly roles = new Array<IRole>();
@@ -177,6 +180,8 @@ export class Policy extends Resource implements IPolicy {
     if (props.statements) {
       props.statements.forEach(p => this.addStatements(p));
     }
+
+    this.grantPrincipal = new PolicyGrantPrincipal(this);
 
     this.node.addValidation({ validate: () => this.validatePolicy() });
   }
@@ -258,5 +263,32 @@ export class Policy extends Resource implements IPolicy {
    */
   private get isAttached() {
     return this.groups.length + this.users.length + this.roles.length > 0;
+  }
+}
+
+class PolicyGrantPrincipal implements IPrincipal {
+  public readonly assumeRoleAction = 'sts:AssumeRole';
+  public readonly grantPrincipal: IPrincipal;
+  public readonly principalAccount?: string;
+
+  constructor(private _policy: Policy) {
+    this.grantPrincipal = this;
+    this.principalAccount = _policy.env.account;
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    // This property is referenced to add policy statements as a resource-based policy.
+    // We should fail because a policy cannot be used as a principal of a policy document.
+    // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
+    throw new Error(`Cannot use a Policy '${this._policy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    this._policy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this._policy };
   }
 }

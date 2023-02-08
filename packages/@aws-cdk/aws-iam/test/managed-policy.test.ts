@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { Group, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
+import { AddToPrincipalPolicyResult, Grant, Group, IResourceWithPolicy, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
 
 describe('managed policy', () => {
   let app: cdk.App;
@@ -612,6 +612,85 @@ describe('managed policy', () => {
         },
       },
     });
+  });
+
+  test('Policies can be granted principal permissions', () => {
+    const mp = new ManagedPolicy(stack, 'Policy', {
+      managedPolicyName: 'MyManagedPolicyName',
+    });
+    Grant.addToPrincipal({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'] });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      ManagedPolicyName: 'MyManagedPolicyName',
+      PolicyDocument: {
+        Statement: [
+          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+        ],
+        Version: '2012-10-17',
+      },
+      Path: '/',
+      Description: '',
+    });
+  });
+
+  test('addPrincipalOrResource() correctly grants Policies permissions', () => {
+    const mp = new ManagedPolicy(stack, 'Policy', {
+      managedPolicyName: 'MyManagedPolicyName',
+    });
+
+    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy');
+    Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      ManagedPolicyName: 'MyManagedPolicyName',
+      PolicyDocument: {
+        Statement: [
+          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+        ],
+        Version: '2012-10-17',
+      },
+      Path: '/',
+      Description: '',
+    });
+  });
+
+  test('Policies cannot be granted principal permissions across accounts', () => {
+    const mp = new ManagedPolicy(stack, 'Policy', {
+      managedPolicyName: 'MyManagedPolicyName',
+    });
+
+    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
+
+    expect(() => {
+      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
+    }).toThrow(/Cannot use a ManagedPolicy 'MyStack\/Policy'/);
+  });
+
+  test('Policies cannot be granted resource permissions', () => {
+    const mp = new ManagedPolicy(stack, 'Policy', {
+      managedPolicyName: 'MyManagedPolicyName',
+    });
+
+    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy');
+
+    expect(() => {
+      Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
+    }).toThrow(/Cannot use a ManagedPolicy 'MyStack\/Policy'/);
   });
 
   test('prevent creation when customizeRoles is configured', () => {
