@@ -139,7 +139,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       associateStage: false,
     });
     app.synth();
-    Annotations.fromStack(pipelineStack).hasError('*',
+    Annotations.fromStack(pipelineStack).hasWarning('*',
       'Associate Stage: SampleStage to ensure all stacks in your cdk app are associated with AppRegistry. You can use ApplicationAssociator.associateStage to associate any stage.');
   });
 
