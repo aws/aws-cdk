@@ -21,7 +21,7 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     },
-    "AvailabilityZone": "dummy1a",
+    "AvailabilityZone": "test-region-1a",
     "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -122,7 +122,7 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     },
-    "AvailabilityZone": "dummy1b",
+    "AvailabilityZone": "test-region-1b",
     "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -223,7 +223,7 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     },
-    "AvailabilityZone": "dummy1a",
+    "AvailabilityZone": "test-region-1a",
     "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
@@ -285,7 +285,7 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     },
-    "AvailabilityZone": "dummy1b",
+    "AvailabilityZone": "test-region-1b",
     "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
@@ -382,12 +382,6 @@
       "Ref": "VPCPublicSubnet2Subnet74179F39"
      }
     ],
-    "Tags": [
-     {
-      "Key": "some",
-      "Value": "tag"
-     }
-    ],
     "Type": "network"
    },
    "DependsOn": [
@@ -396,6 +390,24 @@
     "VPCPublicSubnet2DefaultRouteB7481BBA",
     "VPCPublicSubnet2RouteTableAssociation5A808732"
    ]
+  }
+ },
+ "Outputs": {
+  "NlbArn": {
+   "Value": {
+    "Ref": "LB8A12904C"
+   },
+   "Export": {
+    "Name": "NlbArn"
+   }
+  },
+  "ExportsOutputRefLB8A12904C1150D6A6": {
+   "Value": {
+    "Ref": "LB8A12904C"
+   },
+   "Export": {
+    "Name": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+   }
   }
  },
  "Parameters": {
