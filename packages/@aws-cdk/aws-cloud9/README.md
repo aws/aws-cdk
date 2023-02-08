@@ -113,7 +113,7 @@ By default, the owner will be the identity that creates the Environment, which i
 
 `Owner` is a user that owns a Cloud9 environment . `Owner` has their own access permissions, resources. And we can specify an `Owner`in an Ec2 environment which could be of two types, 1. AccountRoot and 2. Iam User. It allows AWS to determine who has permissions to manage the environment, either an IAM user or the account root user (but using the account root user is not recommended, see [environment sharing best practices](https://docs.aws.amazon.com/cloud9/latest/user-guide/share-environment.html#share-environment-best-practices)).
 
-### To specify the AWS Account Root User as the environment owner, use `Owner.accountRoot()`
+To specify the AWS Account Root User as the environment owner, use `Owner.accountRoot()`
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -125,7 +125,7 @@ new cloud9.Ec2Environment(this, 'C9Env', {
 })
 ```
 
-### To specify a specific IAM User as the environment owner, use `Owner.user()`. The user should have the `AWSCloud9Administrator` managed policy
+To specify a specific IAM User as the environment owner, use `Owner.user()`. The user should have the `AWSCloud9Administrator` managed policy
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
