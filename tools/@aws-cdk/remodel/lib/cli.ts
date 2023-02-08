@@ -2,8 +2,8 @@ import yargs from 'yargs/yargs';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as cp from 'child_process';
-import { findLibrariesToPackage, verifyDependencies, copySubmoduleExports, copyOrTransformFiles, copyLiterateSources } from '@aws-cdk/ubergen';
-import type { Config, LibraryReference, PackageJson as ubgPkgJson } from '@aws-cdk/ubergen';
+import { findLibrariesToPackage, verifyDependencies, copySubmoduleExports, transformPackage } from '@aws-cdk/ubergen';
+import type { Config, Export, LibraryReference, PackageJson as ubgPkgJson } from '@aws-cdk/ubergen';
 
 interface PackageJson extends ubgPkgJson {
   readonly scripts: { [key: string]: string };
@@ -85,7 +85,17 @@ async function makeAwsCdkLib(target: string) {
   const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
   const libRoot = path.join(awsCdkLibDir, 'lib');
   const pkgJson: PackageJson = await fs.readJson(pkgJsonPath);
-  const pkgJsonExports = pkgJson.exports ?? {};
+
+  // Update lib root for ubergen so we can nest in 'lib'
+  const newPkgJson = {
+    ...pkgJson,
+    ubergen: {
+      ...pkgJson.ubergen,
+      libRoot,
+    }
+  };
+  const pkgJsonExports = newPkgJson.exports ?? {};
+  await fs.writeFile(pkgJsonPath, JSON.stringify(newPkgJson, null, 2));
 
 
   const excludeBundled = [
@@ -95,17 +105,17 @@ async function makeAwsCdkLib(target: string) {
   ].map(x => `@aws-cdk/${x}`);
 
   const ubgConfig: Config = {
-    monoPackageRoot: target,
+    monoPackageRoot: awsCdkLibDir,
     rootPath: target,
     uberPackageJsonPath: pkgJsonPath,
     excludedPackages: ['@aws-cdk/example-construct-library', ...excludeBundled],
   };
 
-  const devDependencies = pkgJson?.devDependencies ?? {};
-  const packagesToBundle = await findLibrariesToPackage(pkgJson, ubgConfig);
-  const deprecatedPackages = await findDeprecatedPackages(pkgJson, ubgConfig);
+  const devDependencies = newPkgJson?.devDependencies ?? {};
+  const packagesToBundle = await findLibrariesToPackage(newPkgJson, ubgConfig);
+  const deprecatedPackages = await findDeprecatedPackages(newPkgJson, ubgConfig);
     
-  await verifyDependencies(pkgJson, packagesToBundle, ubgConfig);
+  await verifyDependencies(newPkgJson, packagesToBundle, ubgConfig);
 
   const indexStatements = new Array<string>();
   const lazyExports = new Array<string>();
@@ -120,9 +130,7 @@ async function makeAwsCdkLib(target: string) {
 
     // Only copy stable modules source code, L1s are built during codegen
     if (library.packageJson.stability !== 'experimental') {
-      // await fs.copy(path.join(library.root, 'lib'), libDir);
-      await copyOrTransformFiles(library.root, libDir, packagesToBundle, pkgJson, ubgConfig.monoPackageRoot);
-      await copyLiterateSources(path.join(library.root, 'test'), path.join(libDir, 'test'), packagesToBundle, pkgJson, ubgConfig.monoPackageRoot);
+      await transformPackage(library, newPkgJson, libDir, packagesToBundle, ubgConfig.monoPackageRoot);
     }
 
     if (library.shortName === 'core') {
@@ -158,10 +166,16 @@ async function makeAwsCdkLib(target: string) {
     );
   const filteredDevDeps = Object.fromEntries(filteredDevDepsEntries);
 
+  const newPkgJsonExports = formatPkgJsonExports(pkgJsonExports);
+
   await fs.writeFile(pkgJsonPath, JSON.stringify({
     ...pkgJson,
     exports: {
-      ...pkgJsonExports,
+      ...newPkgJsonExports,
+    },
+    ubergen: {
+      ...pkgJson.ubergen,
+      libRoot,
     },
     scripts: {
       ...pkgJson.scripts,
@@ -174,6 +188,15 @@ async function makeAwsCdkLib(target: string) {
     },
   }, null, 2));
 
+  const rootFiles = await fs.readdir(awsCdkLibDir);
+  await Promise.all(rootFiles.map((file: string) => {
+    if (file.endsWith('.ts')) {
+      return fs.unlink(path.join(awsCdkLibDir, file));
+    }
+
+    return Promise.resolve();
+  }));
+
   // await cleanupPackages(packagesToBundle);
   // await cleanupPackages(deprecatedPackages);
 }
@@ -183,6 +206,34 @@ async function makeAwsCdkLib(target: string) {
 //     await fs.remove(library.root);
 //   }
 // }
+
+function formatPkgJsonExports(exports: Record<string, Export>): Record<string, Export> {
+  const format = (str: string) => {
+    const split = str.split(/.(.*)/s);
+    const newVal = ['./lib', split[1]].join('');
+    return newVal;
+  }
+
+  const dontFormat = ['./package.json', './.jsii', './warnings.jsii.js'];
+  const entries = Object.entries(exports).map(([k, v]) => {
+    if (typeof v === 'string') {
+      const newValue = dontFormat.includes(v) ? v : format(v);
+      return [k, newValue]
+    }
+
+    const nested = Object.entries(v).map(([k, v]) => {
+      if (v) {
+        return [k, format(v)]
+      }
+
+      else return [k, v];
+    });
+
+    return [k, Object.fromEntries(nested)];
+  });
+
+  return Object.fromEntries(entries);
+}
 
 export async function runBuild(target: string) {
   const awsCdkLibDir = path.join(target, 'packages', 'aws-cdk-lib');

@@ -39,7 +39,7 @@ export interface LibraryReference {
   readonly shortName: string;
 }
 
-type Export = string | {
+export type Export = string | {
   readonly types?: string;
   readonly import?: string;
   readonly require?: string;
