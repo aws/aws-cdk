@@ -5,6 +5,7 @@ import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
+import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
@@ -100,7 +101,7 @@ export interface ManagedPolicyProps {
  * Managed policy
  *
  */
-export class ManagedPolicy extends Resource implements IManagedPolicy {
+export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantable {
   /**
    * Import a customer managed policy from the managedPolicyName.
    *
@@ -202,6 +203,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
    */
   public readonly path: string;
 
+  public readonly grantPrincipal: IPrincipal;
+
   private readonly roles = new Array<IRole>();
   private readonly users = new Array<IUser>();
   private readonly groups = new Array<IGroup>();
@@ -263,6 +266,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
       props.statements.forEach(p => this.addStatements(p));
     }
 
+    this.grantPrincipal = new ManagedPolicyGrantPrincipal(this);
+
     this.node.addValidation({ validate: () => this.validateManagedPolicy() });
   }
 
@@ -314,5 +319,32 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
       });
     }
     return result;
+  }
+}
+
+class ManagedPolicyGrantPrincipal implements IPrincipal {
+  public readonly assumeRoleAction = 'sts:AssumeRole';
+  public readonly grantPrincipal: IPrincipal;
+  public readonly principalAccount?: string;
+
+  constructor(private _managedPolicy: ManagedPolicy) {
+    this.grantPrincipal = this;
+    this.principalAccount = _managedPolicy.env.account;
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    // This property is referenced to add policy statements as a resource-based policy.
+    // We should fail because a managed policy cannot be used as a principal of a policy document.
+    // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
+    throw new Error(`Cannot use a ManagedPolicy '${this._managedPolicy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    this._managedPolicy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this._managedPolicy };
   }
 }
