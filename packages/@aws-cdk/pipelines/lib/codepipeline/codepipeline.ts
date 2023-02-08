@@ -1,10 +1,11 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnCapabilities, Duration, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
@@ -432,6 +433,10 @@ export class CodePipeline extends PipelineBase {
     this._cloudAssemblyFileSet = graphFromBp.cloudAssemblyFileSet;
 
     this.pipelineStagesAndActionsFromGraph(graphFromBp);
+
+    // Write a dotfile for the pipeline layout
+    const dotFile = `${Names.uniqueId(this)}.dot`;
+    fs.writeFileSync(path.join(this.myCxAsmRoot, dotFile), graphFromBp.graph.renderDot().replace(/input\.dot/, dotFile), { encoding: 'utf-8' });
   }
 
   private get myCxAsmRoot(): string {
