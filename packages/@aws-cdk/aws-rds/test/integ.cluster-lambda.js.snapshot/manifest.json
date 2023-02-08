@@ -1,0 +1,751 @@
+{
+  "version": "29.0.0",
+  "artifacts": {
+    "Aurora.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Aurora.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "Aurora": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Aurora.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/79b11864eed08accaf1d02d07c1c9c7f19ae60af82c5345ba14525048094ae35.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Aurora.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Aurora.assets"
+      ],
+      "metadata": {
+        "/Aurora/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/Aurora/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/Aurora/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/Aurora/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/Aurora/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/Aurora/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/Aurora/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/Aurora/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/Aurora/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/Aurora/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/Aurora/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/Aurora/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/Aurora/AssociatedRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssociatedRole824CFCD3"
+          }
+        ],
+        "/Aurora/DatabaseCluster/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSubnets7FAE1846"
+          }
+        ],
+        "/Aurora/DatabaseCluster/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSecurityGroupCBE34284"
+          }
+        ],
+        "/Aurora/DatabaseCluster/ClusterParameterGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterClusterParameterGroup008AB55D"
+          }
+        ],
+        "/Aurora/DatabaseCluster/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSecret3F333A5B"
+          }
+        ],
+        "/Aurora/DatabaseCluster/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSecretAttachmentB8BF2F7B"
+          }
+        ],
+        "/Aurora/DatabaseCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster68FC2945"
+          }
+        ],
+        "/Aurora/DatabaseCluster/Instance1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterInstance1C566869D"
+          }
+        ],
+        "/Aurora/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Aurora/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Aurora"
+    },
+    "AuroraMySQLVersion.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AuroraMySQLVersion.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AuroraMySQLVersion": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AuroraMySQLVersion.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5d61e74d2348e4a6b4e50ebdd1bd11fda78ade4a25e3f8883072d51ceb10e53.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AuroraMySQLVersion.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AuroraMySQLVersion.assets"
+      ],
+      "metadata": {
+        "/AuroraMySQLVersion/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/AuroraMySQLVersion/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/AuroraMySQLVersion/AssociatedRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssociatedRole824CFCD3"
+          }
+        ],
+        "/AuroraMySQLVersion/DatabaseCluster/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSubnets7FAE1846"
+          }
+        ],
+        "/AuroraMySQLVersion/DatabaseCluster/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSecurityGroupCBE34284"
+          }
+        ],
+        "/AuroraMySQLVersion/DatabaseCluster/ClusterParameterGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterClusterParameterGroup008AB55D"
+          }
+        ],
+        "/AuroraMySQLVersion/DatabaseCluster/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSecret3F333A5B"
+          }
+        ],
+        "/AuroraMySQLVersion/DatabaseCluster/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSecretAttachmentB8BF2F7B"
+          }
+        ],
+        "/AuroraMySQLVersion/DatabaseCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster68FC2945"
+          }
+        ],
+        "/AuroraMySQLVersion/DatabaseCluster/Instance1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterInstance1C566869D"
+          }
+        ],
+        "/AuroraMySQLVersion/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AuroraMySQLVersion/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AuroraMySQLVersion"
+    },
+    "AuroraPostgreSQLVersion.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AuroraPostgreSQLVersion.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AuroraPostgreSQLVersion": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AuroraPostgreSQLVersion.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dce7ba0034aedf95527a4f3cf672cd9736473f37a46aa1b17524274ed54a7b74.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AuroraPostgreSQLVersion.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AuroraPostgreSQLVersion.assets"
+      ],
+      "metadata": {
+        "/AuroraPostgreSQLVersion/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/AssociatedRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssociatedRole824CFCD3"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/DatabaseCluster/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSubnets7FAE1846"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/DatabaseCluster/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSecurityGroupCBE34284"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/DatabaseCluster/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSecret3F333A5B"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/DatabaseCluster/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterSecretAttachmentB8BF2F7B"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/DatabaseCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster68FC2945"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/DatabaseCluster/Instance1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterInstance1C566869D"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AuroraPostgreSQLVersion/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AuroraPostgreSQLVersion"
+    },
+    "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD.assets"
+      ],
+      "metadata": {
+        "/InstanceUpdateBehaviorTests/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/InstanceUpdateBehaviorTests/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "InstanceUpdateBehaviorTests/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

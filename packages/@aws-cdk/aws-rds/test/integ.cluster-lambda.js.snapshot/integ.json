@@ -1,0 +1,14 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "InstanceUpdateBehaviorTests/DefaultTest": {
+      "stacks": [
+        "Aurora",
+        "AuroraMySQLVersion",
+        "AuroraPostgreSQLVersion"
+      ],
+      "assertionStack": "InstanceUpdateBehaviorTests/DefaultTest/DeployAssert",
+      "assertionStackName": "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD"
+    }
+  }
+}
