@@ -4,6 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { AwsCustomResource, PhysicalResourceId, AwsCustomResourcePolicy } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -305,6 +306,14 @@ export interface ClusterProps {
   readonly roles?: iam.IRole[];
 
   /**
+   * A single AWS Identity and Access Management (IAM) role to be used as the default role for the cluster.
+   * The default role must be included in the roles list.
+   *
+   * @default - No default role is specified for the cluster.
+   */
+  readonly defaultRole?: iam.IRole;
+
+  /**
    * Name of a database which is automatically created inside the cluster
    *
    * @default - default_db
@@ -575,6 +584,15 @@ export class Cluster extends ClusterBase {
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
+
+    // Add default role if specified and also available in the roles list
+    if (props.defaultRole) {
+      if (props.roles?.some(x => x === props.defaultRole)) {
+        this.addDefaultIamRole(props.defaultRole);
+      } else {
+        throw new Error('Default role must be included in role list.');
+      }
+    }
   }
 
   /**
@@ -661,5 +679,58 @@ export class Cluster extends ClusterBase {
     } else {
       throw new Error('Cannot add a parameter to an imported parameter group.');
     }
+  }
+
+  /**
+   * Adds default IAM role to cluster. The default IAM role must be already associated to the cluster to be added as the default role.
+   *
+   * @param defaultIamRole the IAM role to be set as the default role
+   */
+  public addDefaultIamRole(defaultIamRole: iam.IRole): void {
+    // Get list of IAM roles attached to cluster
+    const clusterRoleList = this.cluster.iamRoles ?? [];
+
+    // Check to see if default role is included in list of cluster IAM roles
+    var roleAlreadyOnCluster = false;
+    for (var i = 0; i < clusterRoleList.length; i++) {
+      if (clusterRoleList[i] == defaultIamRole.roleArn) {
+        roleAlreadyOnCluster = true;
+        break;
+      }
+    }
+    if (!roleAlreadyOnCluster) {
+      throw new Error('Default role must be associated to the Redshift cluster to be set as the default role.');
+    }
+
+    // On UPDATE or CREATE define the default IAM role. On DELETE, remove the default IAM role
+    const defaultRoleCustomResource = new AwsCustomResource(this, 'default-role', {
+      onUpdate: {
+        service: 'Redshift',
+        action: 'modifyClusterIamRoles',
+        parameters: {
+          ClusterIdentifier: this.cluster.ref,
+          DefaultIamRoleArn: defaultIamRole.roleArn,
+        },
+        physicalResourceId: PhysicalResourceId.of(
+          `${defaultIamRole.roleArn}-${this.cluster.ref}`,
+        ),
+      },
+      onDelete: {
+        service: 'Redshift',
+        action: 'modifyClusterIamRoles',
+        parameters: {
+          ClusterIdentifier: this.cluster.ref,
+          DefaultIamRoleArn: '',
+        },
+        physicalResourceId: PhysicalResourceId.of(
+          `${defaultIamRole.roleArn}-${this.cluster.ref}`,
+        ),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+    });
+
+    defaultIamRole.grantPassRole(defaultRoleCustomResource.grantPrincipal);
   }
 }
