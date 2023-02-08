@@ -461,9 +461,9 @@ export class BucketDeployment extends Construct {
    * bucket deployment has happened before the next operation is started, pass the other construct
    * a reference to `deployment.deployedBucket`.
    *
-   * Note this is only a reference to the original destination bucket and some features are not available.
-   * To access the original destination bucket after the deployment has been completed,
-   * add a dependency on the bucket deployment: `otherResource.node.addDependency(deployment)`
+   * Note that this only returns an immutable reference to the destination bucket.
+   * If sequenced access to the original destination bucket is required, you may add a dependency
+   * on the bucket deployment instead: `otherResource.node.addDependency(deployment)`
    */
   public get deployedBucket(): s3.IBucket {
     this.requestDestinationArn = true;
