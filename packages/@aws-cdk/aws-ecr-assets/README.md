@@ -57,7 +57,7 @@ values that can change between different machines to maintain a consistent
 asset hash.
 
 Additionally, you can supply `buildSecrets`. Your system must have Buildkit
-enabled.
+enabled, see https://docs.docker.com/build/buildkit/.
 
 ```ts
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';

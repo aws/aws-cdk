@@ -180,7 +180,9 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
   /**
    * Build secrets.
    *
-   * Docker BuildKit must enabled to use build secrets.
+   * Docker BuildKit must be enabled to use build secrets.
+   *
+   * @see https://docs.docker.com/build/buildkit/
    *
    * @default - no build secrets
    *
@@ -469,20 +471,20 @@ function validateProps(props: DockerImageAssetProps) {
   validateBuildSecrets(props.buildSecrets);
 }
 
-function validateBuildArgs(buildArgs?: { [key: string]: string }) {
-  for (const [key, value] of Object.entries(buildArgs || {})) {
+function validateBuildProps(buildPropName: string, buildProps?: { [key: string]: string }) {
+  for (const [key, value] of Object.entries(buildProps || {})) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
-      throw new Error('Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment');
+      throw new Error(`Cannot use tokens in keys or values of "${buildPropName}" since they are needed before deployment`);
     }
   }
 }
 
+function validateBuildArgs(buildArgs?: { [key: string]: string }) {
+  validateBuildProps('buildArgs', buildArgs);
+}
+
 function validateBuildSecrets(buildSecrets?: { [key: string]: string }) {
-  for (const [key, value] of Object.entries(buildSecrets || {})) {
-    if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
-      throw new Error('Cannot use tokens in keys or values of "buildSecrets" since they are needed before deployment');
-    }
-  }
+  validateBuildProps('buildSecrets', buildSecrets);
 }
 
 function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefined {
