@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack } from '@aws-cdk/core';
+import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, CfnResource } from '@aws-cdk/core';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { CfnFlowLog } from './ec2.generated';
@@ -252,7 +252,6 @@ class S3Destination extends FlowLogDestination {
         encryption: s3.BucketEncryption.UNENCRYPTED,
         removalPolicy: RemovalPolicy.RETAIN,
       });
-
     } else {
       s3Bucket = this.props.s3Bucket;
     }
@@ -689,6 +688,18 @@ export class FlowLog extends FlowLogBase {
       logFormat: customLogFormat,
       logDestination,
     });
+
+    // VPC service implicitly tries to create a bucket policy when adding a vpc flow log.
+    // To avoid the race condition, we add an explicit dependency here.
+    if (this.bucket?.policy?.node.defaultChild instanceof CfnResource) {
+      flowLog.addDependency(this.bucket?.policy.node.defaultChild);
+    }
+
+    // we must remove a flow log configuration first before deleting objects.
+    const deleteObjects = this.bucket?.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node.defaultChild;
+    if (deleteObjects instanceof CfnResource) {
+      flowLog.addDependency(deleteObjects);
+    }
 
     this.flowLogId = flowLog.ref;
     this.node.defaultChild = flowLog;
