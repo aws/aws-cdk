@@ -33,7 +33,7 @@ function addExportsToPackageJson(modules: ModuleDefinition[]) {
 }
 
 function addModulesToIndexFile(modules: ModuleDefinition[]) {
-  const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
+  const topLevelIndexFilePath = path.join(srcDir, 'index.ts');
   const topLevelIndexFileEntries: string[] = [];
   if (fs.existsSync(topLevelIndexFilePath)) {
     topLevelIndexFileEntries.push(...(fs.readFileSync(topLevelIndexFilePath)).toString('utf-8').split('\n'));
@@ -42,7 +42,7 @@ function addModulesToIndexFile(modules: ModuleDefinition[]) {
   modules.forEach((module) => {
     // Add export to top-level index.ts if it's not there yet.
     if (!topLevelIndexFileEntries.find(e => e.includes(module.moduleName))) {
-      topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './lib/${module.moduleName}';`);
+      topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './${module.moduleName}';`);
     }
   });
 

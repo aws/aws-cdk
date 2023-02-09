@@ -6,6 +6,7 @@ import { AugmentationGenerator } from './augmentation-generator';
 import { CannedMetricsGenerator } from './canned-metrics-generator';
 import CodeGenerator, { CodeGeneratorOptions } from './codegen';
 import { packageName } from './genspec';
+import { ModuleDefinition } from '@aws-cdk/pkglint';
 
 export default async function(scopes: string | string[], outPath: string, options: CodeGeneratorOptions = { }): Promise<void> {
   if (outPath !== '.') { await fs.mkdirp(outPath); }
@@ -40,14 +41,9 @@ export default async function(scopes: string | string[], outPath: string, option
   }
 }
 
-export interface GeneratedModule {
-  module: pkglint.ModuleDefinition;
-  directory: string;
-}
-
-export async function generateAll(outPath: string, options: CodeGeneratorOptions): Promise<GeneratedModule[]> {
+export async function generateAll(outPath: string, options: CodeGeneratorOptions): Promise<ModuleDefinition[]> {
   const scopes = cfnSpec.namespaces();
-  const modules = new Array<GeneratedModule>();
+  const modules = new Array<ModuleDefinition>();
 
   for (const scope of scopes) {
     const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
@@ -55,10 +51,7 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
     const packagePath = path.join(outPath, module.moduleName);
     const libPath = path.join(packagePath, 'lib');
 
-    modules.push({
-      module,
-      directory: packagePath,
-    });
+    modules.push(module);
 
     if (Object.keys(spec.ResourceTypes).length === 0) {
       throw new Error(`No resource was found for scope ${scope}`);
