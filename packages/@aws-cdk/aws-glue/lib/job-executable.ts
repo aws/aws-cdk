@@ -95,12 +95,12 @@ export enum PythonVersion {
  */
 export class JobType {
   /**
-   * Command for running a Glue ETL job.
+   * Command for running a Glue Spark job.
    */
   public static readonly ETL = new JobType('glueetl');
 
   /**
-   * Command for running a Glue streaming job.
+   * Command for running a Glue Spark streaming job.
    */
   public static readonly STREAMING = new JobType('gluestreaming');
 
@@ -108,6 +108,11 @@ export class JobType {
    * Command for running a Glue python shell job.
    */
   public static readonly PYTHON_SHELL = new JobType('pythonshell');
+
+  /**
+   * Command for running a Glue Ray job.
+   */
+  public static readonly RAY = new JobType('glueray');
 
   /**
    * Custom type name
@@ -212,6 +217,11 @@ export interface PythonSparkJobExecutableProps extends SharedSparkJobExecutableP
 export interface PythonShellExecutableProps extends SharedJobExecutableProps, PythonExecutableProps {}
 
 /**
+ * Props for creating a Python Ray job executable
+ */
+export interface PythonRayExecutableProps extends SharedJobExecutableProps, PythonExecutableProps {}
+
+/**
  * The executable properties related to the Glue job's GlueVersion, JobType and code
  */
 export class JobExecutable {
@@ -282,6 +292,19 @@ export class JobExecutable {
   }
 
   /**
+   * Create Python executable props for Ray jobs.
+   *
+   * @param props Ray Job props.
+   */
+  public static pythonRay(props: PythonRayExecutableProps): JobExecutable {
+    return new JobExecutable({
+      ...props,
+      type: JobType.RAY,
+      language: JobLanguage.PYTHON,
+    });
+  }
+
+  /**
    * Create a custom JobExecutable.
    *
    * @param config custom job executable configuration.
@@ -297,8 +320,16 @@ export class JobExecutable {
       if (config.language !== JobLanguage.PYTHON) {
         throw new Error('Python shell requires the language to be set to Python');
       }
-      if ([GlueVersion.V0_9, GlueVersion.V2_0, GlueVersion.V3_0, GlueVersion.V4_0].includes(config.glueVersion)) {
+      if ([GlueVersion.V0_9, GlueVersion.V3_0, GlueVersion.V4_0].includes(config.glueVersion)) {
         throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support Python Shell`);
+      }
+    }
+    if (JobType.RAY === config.type) {
+      if (config.language !== JobLanguage.PYTHON) {
+        throw new Error('Ray requires the language to be set to Python');
+      }
+      if ([GlueVersion.V0_9, GlueVersion.V1_0, GlueVersion.V2_0, GlueVersion.V3_0].includes(config.glueVersion)) {
+        throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support Ray`);
       }
     }
     if (config.extraJarsFirst && [GlueVersion.V0_9, GlueVersion.V1_0].includes(config.glueVersion)) {
@@ -310,8 +341,11 @@ export class JobExecutable {
     if (JobLanguage.PYTHON !== config.language && config.extraPythonFiles) {
       throw new Error('extraPythonFiles is not supported for languages other than JobLanguage.PYTHON');
     }
-    if (config.pythonVersion === PythonVersion.THREE_NINE && config.type !== JobType.PYTHON_SHELL) {
-      throw new Error('Specified PythonVersion PythonVersion.THREE_NINE is only supported for JobType Python Shell');
+    if (config.pythonVersion === PythonVersion.THREE_NINE && config.type !== JobType.PYTHON_SHELL && config.type !== JobType.RAY) {
+      throw new Error('Specified PythonVersion PythonVersion.THREE_NINE is only supported for JobType Python Shell and Ray');
+    }
+    if (config.pythonVersion === PythonVersion.THREE && config.type === JobType.RAY) {
+      throw new Error('Specified PythonVersion PythonVersion.THREE is not supported for Ray');
     }
     this.config = config;
   }
