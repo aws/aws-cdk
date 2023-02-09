@@ -10,17 +10,19 @@ const modulesGenerated = await generateAll(srcDir, {
 const awsCdkLibDir = path.join(__dirname, '..');
 
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
-const pkgJson = await fs.readJson(pkgJsonPath);
+const pkgJson = fs.readJsonSync(pkgJsonPath);
 modulesGenerated.forEach((module) => {
+  // Add export to the package.json if it's not there yet.
   if (!pkgJson.exports[`./${module.moduleName}`]) {
     pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
   }
 });
+fs.writeJsonSync(pkgJsonPath, pkgJson, { spaces: 2 });
 
 const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
 const topLevelIndexFileEntries: string[] = [];
 if (fs.existsSync(topLevelIndexFilePath)) {
-  topLevelIndexFileEntries.push(...(await fs.readFile(topLevelIndexFilePath)).toString('utf-8').split('\n'));
+  topLevelIndexFileEntries.push(...(fs.readFileSync(topLevelIndexFilePath)).toString('utf-8').split('\n'));
 }
 
 modulesGenerated.forEach((module) => {
@@ -28,12 +30,6 @@ modulesGenerated.forEach((module) => {
   if (!topLevelIndexFileEntries.find(e => e.includes(module.moduleName))) {
     topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './lib/${module.moduleName}';`);
   }
-  
-  // Add export to the package.json if it's not there yet.
-  if (!pkgJson.exports[`./${module.moduleName}`]) {
-    pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
-  }
 });
 
-await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
-await fs.writeFile(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n'));
+fs.writeFileSync(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n'));
