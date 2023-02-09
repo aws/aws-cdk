@@ -20,14 +20,16 @@ async function main() {
     coreImport: '../../core',
   });
 
-  updatePackageJsonAndIndexFiles(generated);
+  await updatePackageJsonAndIndexFiles(generated);
 }
 
-function updatePackageJsonAndIndexFiles(modules: ModuleDefinition[]) {
-  const pkgJson = fs.readJsonSync(pkgJsonPath);
+async function updatePackageJsonAndIndexFiles(modules: ModuleDefinition[]) {
+  const pkgJson = await fs.readJson(pkgJsonPath);
+
   const topLevelIndexFileEntries = new Array<string>();
   if (fs.existsSync(topLevelIndexFilePath)) {
-    topLevelIndexFileEntries.push(...(fs.readFileSync(topLevelIndexFilePath)).toString('utf-8').split('\n'));
+    const indexFile = await fs.readFile(topLevelIndexFilePath);
+    topLevelIndexFileEntries.push(...indexFile.toString('utf-8').split('\n'));
   }
 
   modules.forEach((module) => {
@@ -36,9 +38,9 @@ function updatePackageJsonAndIndexFiles(modules: ModuleDefinition[]) {
     }
     if (!topLevelIndexFileEntries.find(e => e.includes(module.moduleName))) {
       topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './${module.moduleName}';`);
-    }  
+    }
   });
 
-  fs.writeJsonSync(pkgJsonPath, pkgJson, { spaces: 2 });
-  fs.writeFileSync(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n'));
+  await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
+  await fs.writeFile(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n'));
 }
