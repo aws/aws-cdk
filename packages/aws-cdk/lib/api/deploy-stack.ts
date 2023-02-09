@@ -13,7 +13,7 @@ import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { tryHotswapDeployment } from './hotswap-deployments';
-import { ICON } from './hotswap/common';
+import { HotswapMode, ICON } from './hotswap/common';
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
@@ -175,9 +175,9 @@ export interface DeployStackOptions {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - false for regular deployments, true for 'watch' deployments
+   * @default - `HotswapMode.FULL_DEPLOYMENT` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
    */
-  readonly hotswap?: boolean;
+  readonly hotswap?: HotswapMode;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
@@ -298,10 +298,13 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     parallel: options.assetParallelism,
   });
 
-  if (options.hotswap) {
+  const hotswapMode = options.hotswap;
+  if (hotswapMode && hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
     // attempt to short-circuit the deployment if possible
     try {
-      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
+      const hotswapDeploymentResult = await tryHotswapDeployment(
+        options.sdkProvider, stackParams.values, cloudFormationStack, stackArtifact, hotswapMode,
+      );
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
       }
@@ -312,15 +315,19 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       }
       print('Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s', e.message);
     }
-    print('Falling back to doing a full deployment');
-    options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
+
+    if (hotswapMode === HotswapMode.FALL_BACK) {
+      print('Falling back to doing a full deployment');
+      options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
+    } else {
+      return { noOp: true, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
+    }
   }
 
   // could not short-circuit the deployment, perform a full CFN deploy instead
   const fullDeployment = new FullCloudFormationDeployment(options, cloudFormationStack, stackArtifact, stackParams, bodyParameter);
   return fullDeployment.performDeployment();
 }
-
 
 type CommonPrepareOptions =
   & keyof CloudFormation.CreateStackInput
