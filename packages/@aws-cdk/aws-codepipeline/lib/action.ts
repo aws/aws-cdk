@@ -20,7 +20,7 @@ export enum ActionCategory {
  * artifacts an action can have.
  *
  * The constraints for each action type are documented on the
- * {@link https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html Pipeline Structure Reference} page.
+ * [Pipeline Structure Reference](https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html) page.
  */
 export interface ActionArtifactBounds {
   readonly minInputs: number;
@@ -47,7 +47,7 @@ export interface ActionProperties {
   /**
    * The AWS region the given Action resides in.
    * Note that a cross-region Pipeline requires replication buckets to function correctly.
-   * You can provide their names with the {@link PipelineProps#crossRegionReplicationBuckets} property.
+   * You can provide their names with the `PipelineProps#crossRegionReplicationBuckets` property.
    * If you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,
    * that you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack.
    *
@@ -58,11 +58,11 @@ export interface ActionProperties {
   /**
    * The account the Action is supposed to live in.
    * For Actions backed by resources,
-   * this is inferred from the Stack {@link resource} is part of.
+   * this is inferred from the Stack `resource` is part of.
    * However, some Actions, like the CloudFormation ones,
    * are not backed by any resource, and they still might want to be cross-account.
-   * In general, a concrete Action class should specify either {@link resource},
-   * or {@link account} - but not both.
+   * In general, a concrete Action class should specify either `resource`,
+   * or `account` - but not both.
    */
   readonly account?: string;
 
@@ -131,14 +131,14 @@ export interface PipelineNotifyOnOptions extends notifications.NotificationRuleO
 /**
  * A Pipeline Action.
  * If you want to implement this interface,
- * consider extending the {@link Action} class,
+ * consider extending the `Action` class,
  * which contains some common logic.
  */
 export interface IAction {
   /**
    * The simple properties of the Action,
    * like its Owner, name, etc.
-   * Note that this accessor will be called before the {@link bind} callback.
+   * Note that this accessor will be called before the `bind` callback.
    */
   readonly actionProperties: ActionProperties;
 
@@ -146,7 +146,7 @@ export interface IAction {
    * The callback invoked when this Action is added to a Pipeline.
    *
    * @param scope the Construct tree scope the Action can use if it needs to create any resources
-   * @param stage the {@link IStage} this Action is being added to
+   * @param stage the `IStage` this Action is being added to
    * @param options additional options the Action can use,
    *   like the artifact Bucket of the pipeline it's being added to
    */
@@ -164,7 +164,7 @@ export interface IAction {
 
 /**
  * The abstract view of an AWS CodePipeline as required and used by Actions.
- * It extends {@link events.IRuleTarget},
+ * It extends `events.IRuleTarget`,
  * so this interface can be used as a Target for CloudWatch Events.
  */
 export interface IPipeline extends IResource, notifications.INotificationRuleSource {
@@ -326,7 +326,7 @@ export interface CommonActionProps {
 }
 
 /**
- * Common properties shared by all Actions whose {@link ActionProperties.owner} field is 'AWS'
+ * Common properties shared by all Actions whose `ActionProperties.owner` field is 'AWS'
  * (or unset, as 'AWS' is the default).
  */
 export interface CommonAwsActionProps extends CommonActionProps {
@@ -335,8 +335,8 @@ export interface CommonAwsActionProps extends CommonActionProps {
    * The Pipeline's Role will assume this Role
    * (the required permissions for that will be granted automatically)
    * right before executing this Action.
-   * This Action will be passed into your {@link IAction.bind}
-   * method in the {@link ActionBindOptions.role} property.
+   * This Action will be passed into your `IAction.bind`
+   * method in the `ActionBindOptions.role` property.
    *
    * @default a new Role will be generated
    */
@@ -344,14 +344,14 @@ export interface CommonAwsActionProps extends CommonActionProps {
 }
 
 /**
- * Low-level class for generic CodePipeline Actions implementing the {@link IAction} interface.
- * Contains some common logic that can be re-used by all {@link IAction} implementations.
+ * Low-level class for generic CodePipeline Actions implementing the `IAction` interface.
+ * Contains some common logic that can be re-used by all `IAction` implementations.
  * If you're writing your own Action class,
  * feel free to extend this class.
  */
 export abstract class Action implements IAction {
   /**
-   * This is a renamed version of the {@link IAction.actionProperties} property.
+   * This is a renamed version of the `IAction.actionProperties` property.
    */
   protected abstract readonly providedActionProperties: ActionProperties;
 
@@ -431,7 +431,7 @@ export abstract class Action implements IAction {
   }
 
   /**
-   * This is a renamed version of the {@link IAction.bind} method.
+   * This is a renamed version of the `IAction.bind` method.
    */
   protected abstract bound(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig;
 

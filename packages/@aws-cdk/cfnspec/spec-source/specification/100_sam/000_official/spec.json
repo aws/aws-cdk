@@ -792,7 +792,8 @@
                         "CloudWatchLogsEvent",
                         "IoTRuleEvent",
                         "AlexaSkillEvent",
-                        "EventBridgeRuleEvent"
+                        "EventBridgeRuleEvent",
+                        "HttpApiEvent"
                     ],
                     "UpdateType": "Immutable"
                 },
@@ -840,6 +841,71 @@
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "PrimitiveType": "String",
                     "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.HttpApiEvent": {
+            "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi",
+            "Properties": {
+                "ApiId": {
+                    "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Auth": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-httpapi.html",
+                    "Required": false,
+                    "Type": "HttpApiFunctionAuth",
+                    "UpdateType": "Immutable"
+                },
+                "Method": {
+                    "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Path": {
+                    "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "PayloadFormatVersion": {
+                    "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "RouteSettings": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-stage.html#cfn-apigatewayv2-stage-routesettings",
+                    "Required": false,
+                    "Type": "RouteSettings",
+                    "UpdateType": "Immutable"
+                },
+                "TimeoutInMillis": {
+                    "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.HttpApiFunctionAuth": {
+            "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-httpapifunctionauth.html",
+            "Properties": {
+                "AuthorizationScopes": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-httpapifunctionauth.html",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
+                "Authorizer": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-httpapifunctionauth.html",
+                    "PrimitiveType": "String",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 }
             }
@@ -941,6 +1007,13 @@
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
+                "FunctionResponseTypes": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
                 "StartingPosition": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis",
                     "PrimitiveType": "String",
@@ -1040,6 +1113,41 @@
                 "Required": {
                     "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-requestparameter.html#sam-function-requestparameter-required",
                     "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.RouteSettings": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-stage-routesettings.html",
+            "Properties": {
+                "DataTraceEnabled": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-stage-routesettings.html#cfn-apigatewayv2-stage-routesettings-datatraceenabled",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "DetailedMetricsEnabled": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-stage-routesettings.html#cfn-apigatewayv2-stage-routesettings-detailedmetricsenabled",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "LoggingLevel": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-stage-routesettings.html#cfn-apigatewayv2-stage-routesettings-logginglevel",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "ThrottlingBurstLimit": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-stage-routesettings.html#cfn-apigatewayv2-stage-routesettings-throttlingburstlimit",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "ThrottlingRateLimit": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-stage-routesettings.html#cfn-apigatewayv2-stage-routesettings-throttlingratelimit",
+                    "PrimitiveType": "Double",
                     "Required": false,
                     "UpdateType": "Immutable"
                 }
@@ -2107,6 +2215,12 @@
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
+                "DisableExecuteApiEndpoint": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-api.html#sam-api-disableexecuteapiendpoint",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
                 "Domain": {
                     "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-api.html#sam-api-domain",
                     "Required": false,
@@ -2141,7 +2255,7 @@
                 },
                 "Models": {
                     "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-api.html#sam-api-models",
-                    "PrimitiveItemType": "String",
+                    "PrimitiveItemType": "Map",
                     "Required": false,
                     "Type": "Map",
                     "UpdateType": "Immutable"

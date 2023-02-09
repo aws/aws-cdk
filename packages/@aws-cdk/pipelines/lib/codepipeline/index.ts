@@ -4,3 +4,4 @@ export * from './confirm-permissions-broadening';
 export * from './codepipeline';
 export * from './codepipeline-action-factory';
 export * from './codepipeline-source';
+export * from './stack-outputs-map';

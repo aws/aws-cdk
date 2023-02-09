@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 
 /**
- * The type returned from the `bind()` method in {@link IotSql}.
+ * The type returned from the `bind()` method in `IotSql`.
  */
 export interface IotSqlConfig {
   /**

@@ -3,7 +3,7 @@ import { CfnElement } from './cfn-element';
 import { ignoreEmpty } from './util';
 
 /**
- * Construction properties of {@link CfnHook}.
+ * Construction properties of `CfnHook`.
  */
 export interface CfnHookProps {
   /**

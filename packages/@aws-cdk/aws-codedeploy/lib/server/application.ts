@@ -7,11 +7,11 @@ import { arnForApplication, validateName } from '../private/utils';
  * Represents a reference to a CodeDeploy Application deploying to EC2/on-premise instances.
  *
  * If you're managing the Application alongside the rest of your CDK resources,
- * use the {@link ServerApplication} class.
+ * use the `ServerApplication` class.
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link #fromServerApplicationName} method.
+ * use the `#fromServerApplicationName` method.
  */
 export interface IServerApplication extends IResource {
   /** @attribute */
@@ -22,7 +22,7 @@ export interface IServerApplication extends IResource {
 }
 
 /**
- * Construction properties for {@link ServerApplication}.
+ * Construction properties for `ServerApplication`.
  */
 export interface ServerApplicationProps {
   /**

@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "22.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-route53-cross-account-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/58d0292c4b97227ffc0dcfa9271ea748b53700c494f20259ef95c4476e8995e0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2848d17501ab9815b2205ce07f3b5a516c0f7769410130aefa6ad18794cc2450.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,10 +51,10 @@
             "data": "ChildHostedZoneWithZoneId729259E6"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policy/Resource": [
+        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C473/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B"
+            "data": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C47314C14718"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/CrossAccountZoneDelegationCustomResource/Default": [
@@ -87,10 +81,10 @@
             "data": "ChildHostedZoneWithZoneNameBC2C15F6"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policy/Resource": [
+        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC2880782/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882"
+            "data": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC28807823206B47A"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/CrossAccountZoneDelegationCustomResource/Default": [
@@ -110,9 +104,33 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-route53-cross-account-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

@@ -145,6 +145,8 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
           // https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazoncognitouserpools.html#amazoncognitouserpools-actions-as-permissions
           resources: ['*'],
         }),
+        // APIs are available in 2.1055.0
+        installLatestAwsSdk: false,
       });
     }
     return this.cloudFrontCustomResource.getResponseField('DomainDescription.CloudFrontDistribution');
