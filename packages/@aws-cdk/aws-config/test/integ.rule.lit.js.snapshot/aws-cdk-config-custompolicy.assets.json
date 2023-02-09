@@ -1,9 +1,9 @@
 {
-  "version": "21.0.0",
+  "version": "29.0.0",
   "files": {
     "99b272ad5d23fb805d1e06b58a04179d8720a36f6aa8cf035eff419db2e87432": {
       "source": {
-        "path": "aws-cdk-config-rule-integ.template.json",
+        "path": "aws-cdk-config-custompolicy.template.json",
         "packaging": "file"
       },
       "destinations": {

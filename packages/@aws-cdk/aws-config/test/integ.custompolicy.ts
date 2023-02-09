@@ -23,11 +23,13 @@ rule checkcompliance when
 }
 `;
 
-const samplePolicyText2 = `
-rule hoge_rule_name when resourceType == "AWS::EC2::IAM" {
-  configuration.username == "sample-user"
-}
-`;
+// const samplePolicyText2 = `
+
+// rule username when
+//     resourceType == "AWS::IAM::User" {
+//       configuration.userName == "sample-user"
+//     }
+// `;
 
 new config.CustomPolicy(stack, 'Custom', {
   policyText: samplePolicyText,
@@ -37,7 +39,7 @@ new config.CustomPolicy(stack, 'Custom', {
 
 const user = new iam.User(stack, 'sample-user');
 new config.CustomPolicy(stack, 'Custom-lazy', {
-  policyText: samplePolicyText2,
+  policyText: 'lazy-create-test',
   enableDebugLog: true,
   ruleScope: config.RuleScope.fromResource(config.ResourceType.IAM_USER, user.userName),
 });
