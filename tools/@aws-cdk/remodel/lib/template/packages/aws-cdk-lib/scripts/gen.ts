@@ -11,9 +11,9 @@ const topLevelIndexFilePath = path.join(srcDir, 'index.ts');
 
 
 main()
-.then(() => process.exit(0))
-// eslint-ignore-next-line no-console
-.catch(console.error)
+  .then(() => process.exit(0))
+  // eslint-ignore-next-line no-console
+  .catch(console.error)
 
 async function main() {
   const generated = await generateAll(srcDir, {

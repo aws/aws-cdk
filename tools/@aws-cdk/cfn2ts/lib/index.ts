@@ -42,7 +42,7 @@ export default async function(scopes: string | string[], outPath: string, option
 
 export async function generateAll(outPath: string, options: CodeGeneratorOptions): Promise<pkglint.ModuleDefinition[]> {
   const scopes = cfnSpec.namespaces();
-  const modules = new Array<ModuleDefinition>();
+  const modules = new Array<pkglint.ModuleDefinition>();
 
   for (const scope of scopes) {
     const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
