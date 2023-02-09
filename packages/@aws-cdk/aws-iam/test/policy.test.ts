@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
-import { App, CfnResource, Stack } from '@aws-cdk/core';
-import { AnyPrincipal, CfnPolicy, Group, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { App, CfnResource, Resource, Stack } from '@aws-cdk/core';
+import { AddToPrincipalPolicyResult, AnyPrincipal, CfnPolicy, Grant, Group, IResourceWithPolicy, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -439,6 +439,83 @@ describe('IAM policy', () => {
     });
 
     expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
+
+  test('Policies can be granted principal permissions', () => {
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+    });
+    Grant.addToPrincipal({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'] });
+    pol.attachToUser(new User(stack, 'User'));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: 'MyPolicyName',
+      PolicyDocument: {
+        Statement: [
+          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('addPrincipalOrResource() correctly grants Policies permissions', () => {
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+    });
+    pol.attachToUser(new User(stack, 'User'));
+
+    class DummyResource extends Resource implements IResourceWithPolicy {
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy');
+    Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resource, resourceArns: ['*'] });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: 'MyPolicyName',
+      PolicyDocument: {
+        Statement: [
+          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('Policies cannot be granted principal permissions across accounts', () => {
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+    });
+
+    class DummyResource extends Resource implements IResourceWithPolicy {
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
+
+    expect(() => {
+      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
+    }).toThrow(/Cannot use a Policy 'MyStack\/Policy'/);
+  });
+
+  test('Policies cannot be granted resource permissions', () => {
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+    });
+
+    class DummyResource extends Resource implements IResourceWithPolicy {
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy');
+
+    expect(() => {
+      Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
+    }).toThrow(/Cannot use a Policy 'MyStack\/Policy'/);
   });
 });
 

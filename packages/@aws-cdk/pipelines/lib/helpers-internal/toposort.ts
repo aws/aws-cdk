@@ -9,7 +9,7 @@ export function printDependencyMap<A>(dependencies: Map<GraphNode<A>, Set<GraphN
   console.log(lines.join('\n'));
 }
 
-export function topoSort<A>(nodes: Set<GraphNode<A>>, dependencies: Map<GraphNode<A>, Set<GraphNode<A>>>): GraphNode<A>[][] {
+export function topoSort<A>(nodes: Set<GraphNode<A>>, dependencies: Map<GraphNode<A>, Set<GraphNode<A>>>, fail=true): GraphNode<A>[][] {
   const remaining = new Set<GraphNode<A>>(nodes);
 
   const ret: GraphNode<A>[][] = [];
@@ -26,7 +26,14 @@ export function topoSort<A>(nodes: Set<GraphNode<A>>, dependencies: Map<GraphNod
     // If we didn't make any progress, we got stuck
     if (selectable.length === 0) {
       const cycle = findCycle(dependencies);
-      throw new Error(`Dependency cycle in graph: ${cycle.map(n => n.id).join(' => ')}`);
+
+      if (fail) {
+        throw new Error(`Dependency cycle in graph: ${cycle.map(n => n.id).join(' => ')}`);
+      }
+
+      // If we're trying not to fail, pick one at random from the cycle and treat it
+      // as selectable, then continue.
+      selectable.push(cycle[0]);
     }
 
     ret.push(selectable);

@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "description": "Generate an uber CDK package from all individual CDK construct libraries",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",

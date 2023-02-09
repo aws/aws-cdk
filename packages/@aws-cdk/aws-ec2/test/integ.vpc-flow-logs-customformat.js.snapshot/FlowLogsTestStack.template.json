@@ -421,7 +421,11 @@
      }
     ],
     "TrafficType": "ALL"
-   }
+   },
+   "DependsOn": [
+    "BucketAutoDeleteObjectsCustomResourceBAFD23C2",
+    "BucketPolicyE9A3008A"
+   ]
   },
   "FlowLogsCWIAMRole017AD736": {
    "Type": "AWS::IAM::Role",

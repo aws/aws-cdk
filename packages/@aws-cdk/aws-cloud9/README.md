@@ -23,19 +23,19 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-AWS Cloud9 is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a 
-browser. It includes a code editor, debugger, and terminal. Cloud9 comes prepackaged with essential tools for popular 
-programming languages, including JavaScript, Python, PHP, and more, so you don’t need to install files or configure your 
-development machine to start new projects. Since your Cloud9 IDE is cloud-based, you can work on your projects from your 
-office, home, or anywhere using an internet-connected machine. Cloud9 also provides a seamless experience for developing 
-serverless applications enabling you to easily define resources, debug, and switch between local and remote execution of 
-serverless applications. With Cloud9, you can quickly share your development environment with your team, enabling you to pair 
+AWS Cloud9 is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a
+browser. It includes a code editor, debugger, and terminal. Cloud9 comes prepackaged with essential tools for popular
+programming languages, including JavaScript, Python, PHP, and more, so you don’t need to install files or configure your
+development machine to start new projects. Since your Cloud9 IDE is cloud-based, you can work on your projects from your
+office, home, or anywhere using an internet-connected machine. Cloud9 also provides a seamless experience for developing
+serverless applications enabling you to easily define resources, debug, and switch between local and remote execution of
+serverless applications. With Cloud9, you can quickly share your development environment with your team, enabling you to pair
 program and track each other's inputs in real time.
 
 
 ## Creating EC2 Environment
 
-EC2 Environments are defined with `Ec2Environment`. To create an EC2 environment in the private subnet, specify 
+EC2 Environments are defined with `Ec2Environment`. To create an EC2 environment in the private subnet, specify
 `subnetSelection` with private `subnetType`.
 
 
@@ -52,7 +52,7 @@ new cloud9.Ec2Environment(this, 'Cloud9Env2', {
   imageId: cloud9.ImageId.AMAZON_LINUX_2,
 });
 
-// or specify in a different subnetSelection 
+// or specify in a different subnetSelection
 const c9env = new cloud9.Ec2Environment(this, 'Cloud9Env3', {
   vpc,
   subnetSelection: {
@@ -103,4 +103,40 @@ new cloud9.Ec2Environment(this, 'C9Env', {
   ],
   imageId: cloud9.ImageId.AMAZON_LINUX_2,
 });
+```
+
+## Specifying Owners
+
+Every Cloud9 Environment has an **owner**. An owner has full control over the environment, and can invite additional members to the environment for collaboration purposes. For more information, see [Working with shared environments in AWS Cloud9](https://docs.aws.amazon.com/cloud9/latest/user-guide/share-environment.html)).
+
+By default, the owner will be the identity that creates the Environment, which is most likely your CloudFormation Execution Role when the Environment is created using CloudFormation. Provider a value for the `owner` property to assign a different owner, either a specific IAM User or the AWS Account Root User.
+
+`Owner` is a user that owns a Cloud9 environment . `Owner` has their own access permissions, resources. And we can specify an `Owner`in an Ec2 environment which could be of two types, 1. AccountRoot and 2. Iam User. It allows AWS to determine who has permissions to manage the environment, either an IAM user or the account root user (but using the account root user is not recommended, see [environment sharing best practices](https://docs.aws.amazon.com/cloud9/latest/user-guide/share-environment.html#share-environment-best-practices)).
+
+To specify the AWS Account Root User as the environment owner, use `Owner.accountRoot()`
+
+```ts
+declare const vpc: ec2.Vpc;
+new cloud9.Ec2Environment(this, 'C9Env', {
+  vpc,
+  imageId: cloud9.ImageId.AMAZON_LINUX_2,
+
+  owner: cloud9.Owner.accountRoot('111111111')
+})
+```
+
+To specify a specific IAM User as the environment owner, use `Owner.user()`. The user should have the `AWSCloud9Administrator` managed policy
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+
+const user = new iam.User(this, 'user');
+user.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCloud9Administrator'));
+declare const vpc: ec2.Vpc;
+new cloud9.Ec2Environment(this, 'C9Env', {
+  vpc,
+  imageId: cloud9.ImageId.AMAZON_LINUX_2,
+
+  owner: cloud9.Owner.user(user)
+})
 ```

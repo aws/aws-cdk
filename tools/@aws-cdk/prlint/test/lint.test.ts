@@ -17,7 +17,10 @@ describe('breaking changes format', () => {
       number: 1,
       title: 'chore: some title',
       body: 'BREAKING CHANGES:',
-      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     await expect(prLinter.validate()).rejects.toThrow(/'BREAKING CHANGE: ', variations are not allowed/);
@@ -29,7 +32,10 @@ describe('breaking changes format', () => {
       title: 'chore(cdk-build-tools): some title',
       body: `BREAKING CHANGE:\x20
              * **module:** another change`,
-      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     await expect(prLinter.validate()).rejects.toThrow(/description of the first breaking change should immediately follow/);
@@ -40,7 +46,10 @@ describe('breaking changes format', () => {
       number: 1,
       title: 'chore(): some title',
       body: 'BREAKING CHANGE: this breaking change',
-      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     await expect(prLinter.validate()).rejects.toThrow(/The title of this pull request must specify the module name that the first breaking change should be associated to./);
@@ -51,7 +60,10 @@ describe('breaking changes format', () => {
       number: 1,
       title: 'chore(cdk-build-tools): some title',
       body: 'BREAKING CHANGE: this breaking change',
-      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     expect(await prLinter.validate()).resolves; // not throw
@@ -65,6 +77,9 @@ describe('commit message format', () => {
       title: 'chore(s3): some title',
       body: '',
       labels: [],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     expect(await prLinter.validate()).resolves;
@@ -76,6 +91,9 @@ describe('commit message format', () => {
       title: 'fix(aws-s3): some title',
       body: '',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     await expect(prLinter.validate()).rejects.toThrow(/The title of the pull request should omit 'aws-' from the name of modified packages. Use 's3' instead of 'aws-s3'./);
@@ -87,6 +105,9 @@ describe('commit message format', () => {
       title: 'docs(s3): something aws-s3',
       body: 'something aws-s3',
       labels: [],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     expect(await prLinter.validate()).resolves;
@@ -98,6 +119,9 @@ describe('commit message format', () => {
       title: 'docs: something aws-s3',
       body: '',
       labels: [],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     expect(await prLinter.validate()).resolves;
@@ -108,7 +132,10 @@ describe('commit message format', () => {
       number: 1,
       title: `chore(${scope}): some title`,
       body: '',
-      labels: []
+      labels: [],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     expect(await prLinter.validate()).resolves;
@@ -121,7 +148,10 @@ describe('ban breaking changes in stable modules', () => {
       number: 1,
       title: 'chore(s3): some title',
       body: 'BREAKING CHANGE: this breaking change',
-      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     await expect(prLinter.validate()).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
@@ -136,7 +166,10 @@ describe('ban breaking changes in stable modules', () => {
         continued message
         * **ecs**: further breaking in ecs
       `,
-      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     await expect(prLinter.validate()).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
@@ -151,6 +184,9 @@ describe('ban breaking changes in stable modules', () => {
         continued message
       `,
       labels: [{ name: 'pr-linter/exempt-breaking-change' }],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     expect(await prLinter.validate()).resolves; // not throw
@@ -167,7 +203,10 @@ describe('ban breaking changes in stable modules', () => {
 
         BREAKING CHANGE: this breaking change
       `,
-      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }],
+      user: {
+        login: 'author',
+      },
     };
     const prLinter = configureMock(issue, undefined);
     await expect(prLinter.validate()).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
@@ -184,7 +223,10 @@ describe('integration tests required on features', () => {
 
         closes #123456789
       `,
-      labels: []
+      labels: [],
+      user: {
+        login: 'author',
+      },
     };
     const files = [
       {
@@ -210,7 +252,10 @@ describe('integration tests required on features', () => {
 
         closes #123456789
       `,
-      labels: []
+      labels: [],
+      user: {
+        login: 'author',
+      },
     };
     const files = [
       {
@@ -240,7 +285,10 @@ describe('integration tests required on features', () => {
 
         closes #123456789
       `,
-      labels: []
+      labels: [],
+      user: {
+        login: 'author',
+      },
     };
     const files = [
       {
@@ -270,7 +318,10 @@ describe('integration tests required on features', () => {
 
         closes #123456789
       `,
-      labels: []
+      labels: [],
+      user: {
+        login: 'author',
+      },
     };
     const files = [
       {
@@ -300,7 +351,10 @@ describe('integration tests required on features', () => {
 
         closes #123456789
       `,
-      labels: []
+      labels: [],
+      user: {
+        login: 'author',
+      },
     };
     const files = [
       {
@@ -330,7 +384,10 @@ describe('integration tests required on features', () => {
 
         closes #123456789
       `,
-      labels: [{ name: 'pr-linter/exempt-integ-test' }]
+      labels: [{ name: 'pr-linter/exempt-integ-test' }],
+      user: {
+        login: 'author',
+      },
     };
     const files = [
       {
@@ -353,7 +410,10 @@ describe('integration tests required on features', () => {
 
         closes #123456789
       `,
-      labels: []
+      labels: [],
+      user: {
+        login: 'author',
+      },
     };
     const files = [
       {
@@ -377,6 +437,9 @@ describe('integration tests required on features', () => {
         closes #123456789
       `,
       labels,
+      user: {
+        login: 'author',
+      },
     };
     const files = [ { filename: 'packages/aws-cdk/lib/cdk-toolkit.ts' } ];
 
@@ -391,13 +454,26 @@ describe('integration tests required on features', () => {
       await prLinter.validate();
       // THEN: no exception
     });
+
+    test('with aws-cdk-automation author', async () => {
+      // GIVEN: Remove exemption
+      labels.pop();
+      // Verify no labels added
+      expect(labels).toEqual([]);
+      issue.user.login = 'aws-cdk-automation';
+
+      // WHEN
+      const prLinter = configureMock(issue, files);
+      await prLinter.validate();
+      // THEN: no exception
+    })
   });
 });
 
 
 function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): linter.PullRequestLinter {
   const pullsClient = {
-    get(_props: { _owner: string, _repo: string, _pull_number: number }) {
+    get(_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) {
       return { data: pr };
     },
 

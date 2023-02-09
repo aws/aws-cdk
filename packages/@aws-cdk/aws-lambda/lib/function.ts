@@ -26,6 +26,7 @@ import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
+import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
 
 /**
@@ -359,6 +360,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default Architecture.X86_64
    */
   readonly architecture?: Architecture;
+
+  /**
+   * Sets the runtime management configuration for a function's version.
+   * @default Auto
+   */
+  readonly runtimeManagementMode?: RuntimeManagementMode;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -814,6 +821,7 @@ export class Function extends FunctionBase {
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
+      runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {

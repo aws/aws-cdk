@@ -410,28 +410,28 @@ describe('tests', () => {
 
     // WHEN
     const metrics = new Array<Metric>();
-    metrics.push(lb.metricActiveConnectionCount());
-    metrics.push(lb.metricClientTlsNegotiationErrorCount());
-    metrics.push(lb.metricConsumedLCUs());
-    metrics.push(lb.metricElbAuthError());
-    metrics.push(lb.metricElbAuthFailure());
-    metrics.push(lb.metricElbAuthLatency());
-    metrics.push(lb.metricElbAuthSuccess());
-    metrics.push(lb.metricHttpCodeElb(elbv2.HttpCodeElb.ELB_3XX_COUNT));
-    metrics.push(lb.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
-    metrics.push(lb.metricHttpFixedResponseCount());
-    metrics.push(lb.metricHttpRedirectCount());
-    metrics.push(lb.metricHttpRedirectUrlLimitExceededCount());
-    metrics.push(lb.metricIpv6ProcessedBytes());
-    metrics.push(lb.metricIpv6RequestCount());
-    metrics.push(lb.metricNewConnectionCount());
-    metrics.push(lb.metricProcessedBytes());
-    metrics.push(lb.metricRejectedConnectionCount());
-    metrics.push(lb.metricRequestCount());
-    metrics.push(lb.metricRuleEvaluations());
-    metrics.push(lb.metricTargetConnectionErrorCount());
-    metrics.push(lb.metricTargetResponseTime());
-    metrics.push(lb.metricTargetTLSNegotiationErrorCount());
+    metrics.push(lb.metrics.activeConnectionCount());
+    metrics.push(lb.metrics.clientTlsNegotiationErrorCount());
+    metrics.push(lb.metrics.consumedLCUs());
+    metrics.push(lb.metrics.elbAuthError());
+    metrics.push(lb.metrics.elbAuthFailure());
+    metrics.push(lb.metrics.elbAuthLatency());
+    metrics.push(lb.metrics.elbAuthSuccess());
+    metrics.push(lb.metrics.httpCodeElb(elbv2.HttpCodeElb.ELB_3XX_COUNT));
+    metrics.push(lb.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
+    metrics.push(lb.metrics.httpFixedResponseCount());
+    metrics.push(lb.metrics.httpRedirectCount());
+    metrics.push(lb.metrics.httpRedirectUrlLimitExceededCount());
+    metrics.push(lb.metrics.ipv6ProcessedBytes());
+    metrics.push(lb.metrics.ipv6RequestCount());
+    metrics.push(lb.metrics.newConnectionCount());
+    metrics.push(lb.metrics.processedBytes());
+    metrics.push(lb.metrics.rejectedConnectionCount());
+    metrics.push(lb.metrics.requestCount());
+    metrics.push(lb.metrics.ruleEvaluations());
+    metrics.push(lb.metrics.targetConnectionErrorCount());
+    metrics.push(lb.metrics.targetResponseTime());
+    metrics.push(lb.metrics.targetTLSNegotiationErrorCount());
 
     for (const metric of metrics) {
       expect(metric.namespace).toEqual('AWS/ApplicationELB');
@@ -535,6 +535,25 @@ describe('tests', () => {
     expect(alb.env.region).toEqual('us-west-2');
   });
 
+  test('imported load balancer can produce metrics', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+      loadBalancerArn: albArn,
+      securityGroupId: 'sg-1234',
+    });
+
+    // THEN
+    const metric = alb.metrics.activeConnectionCount();
+    expect(metric.namespace).toEqual('AWS/ApplicationELB');
+    expect(stack.resolve(metric.dimensions)).toEqual({
+      LoadBalancer: 'app/my-load-balancer/50dc6c495c0c9188',
+    });
+    expect(alb.env.region).toEqual('us-west-2');
+  });
+
   test('can add secondary security groups', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -610,5 +629,30 @@ describe('tests', () => {
       expect(() => loadBalancer.listeners).toThrow();
     });
 
+    test('Can create metrics for a looked-up ApplicationLoadBalancer', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      const metric = loadBalancer.metrics.activeConnectionCount();
+
+      // THEN
+      expect(metric.namespace).toEqual('AWS/ApplicationELB');
+      expect(stack.resolve(metric.dimensions)).toEqual({
+        LoadBalancer: 'application/my-load-balancer/50dc6c495c0c9188',
+      });
+    });
   });
 });

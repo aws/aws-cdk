@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "29.0.0",
   "files": {
     "33e2651435a0d472a75c1e033c9832b21321d9e56711926b04c5705e5f63874c": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "9dcef326beebc49accefb3f0f234ec72b4de2a2aa5f1dc4ed26408fcc22c1dd7": {
+    "8161ff5519d2aef653bfa7866cd056f5a3feaccfbd55708667998493d1311898": {
       "source": {
         "path": "FlowLogsTestStack.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9dcef326beebc49accefb3f0f234ec72b4de2a2aa5f1dc4ed26408fcc22c1dd7.json",
+          "objectKey": "8161ff5519d2aef653bfa7866cd056f5a3feaccfbd55708667998493d1311898.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
