@@ -1977,7 +1977,7 @@
   dependencies:
     "@types/glob" "*"
 
-"@types/aws-lambda@^8.10.109", "@types/aws-lambda@^8.10.110":
+"@types/aws-lambda@^8.10.110":
   version "8.10.110"
   resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.110.tgz#32a1f9d40b855d69830243492bbb6408098f4c88"
   integrity sha512-r6egf2Cwv/JaFTTrF9OXFVUB3j/SXTgM9BwrlbBRjWAa2Tu6GWoDoLflppAZ8uSfbUJdXvC7Br3DjuN9pQ2NUQ==
