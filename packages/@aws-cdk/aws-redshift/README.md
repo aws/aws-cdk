@@ -221,7 +221,7 @@ import { ColumnEncoding } from '@aws-cdk/aws-redshift';
 
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', encoding: ColumnEncoding.DELTA },
+    { name: 'col1', dataType: 'varchar(4)', encoding: ColumnEncoding.TEXT32K },
     { name: 'col2', dataType: 'float', encoding: ColumnEncoding.DELTA32K },
   ],
   cluster: cluster,
