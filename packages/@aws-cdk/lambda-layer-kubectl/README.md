@@ -32,4 +32,4 @@ fn.addLayers(new KubectlLayer(this, 'KubectlLayer'));
 This module bundles Kubectl v1.20.0 and the associated helm version
 To use alternative Kubectl versions, including the latest available,
 you can use the external module
-[awscdk-asset-kubectl](https://github.com/cdklabs/awscdk-asset-kubectl). 
+[awscdk-asset-kubectl](https://github.com/cdklabs/awscdk-asset-kubectl).
