@@ -18,7 +18,7 @@ import { AwsContext, withAws } from './with-aws';
  * For backwards compatibility with existing tests (so we don't have to change
  * too much) the inner block is expected to take a `TestFixture` object.
  */
-export function withCdkApp<A extends TestContext & AwsContext>(block: (context: TestFixture) => Promise<void>) {
+export function withCdkApp<A extends TestContext & AwsContext>(block: (context: TestFixture) => Promise<void>, ensureBootstrap: boolean = true) {
   return async (context: A) => {
     const randy = context.randomString;
     const stackNamePrefix = `cdktest-${randy}`;
@@ -61,7 +61,9 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
         });
       }
 
-      await ensureBootstrapped(fixture);
+      if (ensureBootstrap) {
+        await ensureBootstrapped(fixture);
+      }
 
       await block(fixture);
     } catch (e) {
@@ -130,8 +132,8 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
  * We could have put `withAws(withCdkApp(fixture => { /... actual test here.../ }))` in every
  * test declaration but centralizing it is going to make it convenient to modify in the future.
  */
-export function withDefaultFixture(block: (context: TestFixture) => Promise<void>) {
-  return withAws<TestContext>(withCdkApp(block));
+export function withDefaultFixture(block: (context: TestFixture) => Promise<void>, ensureBootstrap: boolean = true) {
+  return withAws<TestContext>(withCdkApp(block, ensureBootstrap));
   //              ^~~~~~ this is disappointing TypeScript! Feels like you should have been able to derive this.
 }
 
@@ -246,6 +248,8 @@ export class TestFixture extends ShellHelper {
     return this.cdk(['deploy',
       ...(neverRequireApproval ? ['--require-approval=never'] : []), // Default to no approval in an unattended test
       ...(options.options ?? []),
+      // use events because bar renders bad in tests
+      '--progress', 'events',
       ...this.fullStackName(stackNames)], options);
   }
 

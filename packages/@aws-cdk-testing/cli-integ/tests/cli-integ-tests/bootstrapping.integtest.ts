@@ -17,7 +17,7 @@ integTest('can bootstrap without execution', withDefaultFixture(async (fixture) 
   });
 
   expect(resp.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
-}));
+}, false));
 
 integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -35,7 +35,12 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
 
   // Deploy stack that uses file assets
   await fixture.cdkDeploy('lambda', {
-    options: ['--toolkit-stack-name', bootstrapStackName],
+    options: [
+      '--context', `bootstrapBucket=${legacyBootstrapBucketName}`,
+      '--context', 'legacySynth=true',
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+      '--toolkit-stack-name', bootstrapStackName,
+    ],
   });
 
   // Upgrade bootstrap stack to "new" style
@@ -49,11 +54,13 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
   // --force to bypass the check which says that the template hasn't changed.
   await fixture.cdkDeploy('lambda', {
     options: [
+      '--context', `bootstrapBucket=${newBootstrapBucketName}`,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
       '--toolkit-stack-name', bootstrapStackName,
       '--force',
     ],
   });
-}));
+}, false));
 
 integTest('can and deploy if omitting execution policies', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -70,7 +77,7 @@ integTest('can and deploy if omitting execution policies', withDefaultFixture(as
       '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],
   });
-}));
+}, false));
 
 integTest('deploy new style synthesis to new style bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -88,7 +95,7 @@ integTest('deploy new style synthesis to new style bootstrap', withDefaultFixtur
       '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],
   });
-}));
+}, false));
 
 integTest('deploy new style synthesis to new style bootstrap (with docker image)', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -106,7 +113,7 @@ integTest('deploy new style synthesis to new style bootstrap (with docker image)
       '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],
   });
-}));
+}, false));
 
 integTest('deploy old style synthesis to new style bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -119,10 +126,11 @@ integTest('deploy old style synthesis to new style bootstrap', withDefaultFixtur
   // Deploy stack that uses file assets
   await fixture.cdkDeploy('lambda', {
     options: [
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
       '--toolkit-stack-name', bootstrapStackName,
     ],
   });
-}));
+}, false));
 
 integTest('can create a legacy bootstrap stack with --public-access-block-configuration=false', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -138,7 +146,7 @@ integTest('can create a legacy bootstrap stack with --public-access-block-config
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
-}));
+}, false));
 
 integTest('can create multiple legacy bootstrap stacks', withDefaultFixture(async (fixture) => {
   const bootstrapStackName1 = `${fixture.bootstrapStackName}-1`;
@@ -160,7 +168,7 @@ integTest('can create multiple legacy bootstrap stacks', withDefaultFixture(asyn
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
-}));
+}, false));
 
 integTest('can dump the template, modify and use it to deploy a custom bootstrap stack', withDefaultFixture(async (fixture) => {
   let template = await fixture.cdkBootstrapModern({
@@ -186,7 +194,7 @@ integTest('can dump the template, modify and use it to deploy a custom bootstrap
     template: filename,
     cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
   });
-}));
+}, false));
 
 integTest('can use the default permissions boundary to bootstrap', withDefaultFixture(async (fixture) => {
   let template = await fixture.cdkBootstrapModern({
@@ -197,7 +205,7 @@ integTest('can use the default permissions boundary to bootstrap', withDefaultFi
   });
 
   expect(template).toContain('PermissionsBoundary');
-}));
+}, false));
 
 integTest('can use the custom permissions boundary to bootstrap', withDefaultFixture(async (fixture) => {
   let template = await fixture.cdkBootstrapModern({
@@ -208,7 +216,7 @@ integTest('can use the custom permissions boundary to bootstrap', withDefaultFix
   });
 
   expect(template).toContain('permission-boundary-name');
-}));
+}, false));
 
 integTest('switch on termination protection, switch is left alone on re-bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -227,7 +235,7 @@ integTest('switch on termination protection, switch is left alone on re-bootstra
 
   const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
   expect(response.Stacks?.[0].EnableTerminationProtection).toEqual(true);
-}));
+}, false));
 
 integTest('add tags, left alone on re-bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -248,7 +256,7 @@ integTest('add tags, left alone on re-bootstrap', withDefaultFixture(async (fixt
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
-}));
+}, false));
 
 integTest('can add tags then update tags during re-bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -271,7 +279,7 @@ integTest('can add tags then update tags during re-bootstrap', withDefaultFixtur
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'BarBaz' },
   ]);
-}));
+}, false));
 
 integTest('can deploy modern-synthesized stack even if bootstrap stack name is unknown', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -291,7 +299,7 @@ integTest('can deploy modern-synthesized stack even if bootstrap stack name is u
       '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],
   });
-}));
+}, false));
 
 integTest('create ECR with tag IMMUTABILITY to set on', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
@@ -315,5 +323,5 @@ integTest('create ECR with tag IMMUTABILITY to set on', withDefaultFixture(async
   });
 
   expect(ecrResponse.repositories?.[0].imageTagMutability).toEqual('IMMUTABLE');
-}));
+}, false));
 
