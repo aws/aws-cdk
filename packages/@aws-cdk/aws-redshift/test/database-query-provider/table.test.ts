@@ -423,7 +423,7 @@ describe('update', () => {
       }));
     });
 
-    test('replaces when differnt sortStyle: INTERLEAVED', async () => {
+    test('replaces when different sortStyle: INTERLEAVED', async () => {
       const newEvent: AWSLambda.CloudFormationCustomResourceEvent = {
         ...event,
         OldResourceProperties: {
