@@ -26,7 +26,7 @@ function addExportsToPackageJson(modules: ModuleDefinition[]) {
   modules.forEach((module) => {
     // Add export to the package.json if it's not there yet.
     if (!pkgJson.exports[`./${module.moduleName}`]) {
-      pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
+      pkgJson.exports[`./${module.moduleName}`] = `./${module.moduleName}/index.js`;
     }
   });
   fs.writeJsonSync(pkgJsonPath, pkgJson, { spaces: 2 });
