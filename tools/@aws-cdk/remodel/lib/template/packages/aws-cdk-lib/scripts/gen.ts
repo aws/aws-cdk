@@ -8,11 +8,11 @@ const srcDir = path.join(awsCdkLibDir, 'lib');
 generateAll(srcDir, {
   coreImport: '../../core',
 }).then(modulesGenerated => {
-  packageJson(modulesGenerated);
-  index(modulesGenerated);
+  addExportsToPackageJson(modulesGenerated);
+  addModulesToIndexFile(modulesGenerated);
 });
 
-function packageJson(modulesGenerated: ModuleDefinition[]) {
+function addExportsToPackageJson(modulesGenerated: ModuleDefinition[]) {
   const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
   const pkgJson = fs.readJsonSync(pkgJsonPath);
   modulesGenerated.forEach((module) => {
@@ -24,7 +24,7 @@ function packageJson(modulesGenerated: ModuleDefinition[]) {
   fs.writeJsonSync(pkgJsonPath, pkgJson, { spaces: 2 });
 }
 
-function index(modulesGenerated: ModuleDefinition[]) {
+function addModulesToIndexFile(modulesGenerated: ModuleDefinition[]) {
   const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
   const topLevelIndexFileEntries: string[] = [];
   if (fs.existsSync(topLevelIndexFilePath)) {
