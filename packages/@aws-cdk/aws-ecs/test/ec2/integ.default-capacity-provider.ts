@@ -36,7 +36,7 @@ const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {
 cluster.addAsgCapacityProvider(cp);
 cluster.addDefaultCapacityProviderStrategy([
   { capacityProvider: 'FARGATE', base: 1, weight: 1 },
-  { capacityProvider: cp.capacityProviderName },
+  { capacityProvider: 'FARGATE_SPOT' },
 ]);
 
 
