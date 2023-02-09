@@ -475,7 +475,7 @@ export class Cluster extends ClusterBase {
    *
    * **NOTE** Please do not access this directly, use the `addIamRole` method instead.
    */
-  private readonly roleArns: string[];
+  private readonly roles: iam.IRole[];
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
@@ -485,7 +485,7 @@ export class Cluster extends ClusterBase {
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     };
     this.parameterGroup = props.parameterGroup;
-    this.roleArns = props.roles?.map(role => role.roleArn) ?? [];
+    this.roles = props?.roles ? [...props.roles] : [];
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
@@ -565,7 +565,7 @@ export class Cluster extends ClusterBase {
       nodeType: props.nodeType || NodeType.DC2_LARGE,
       numberOfNodes: nodeCount,
       loggingProperties,
-      iamRoles: Lazy.list({ produce: () => this.roleArns }, { omitEmpty: true }),
+      iamRoles: Lazy.list({ produce: () => this.roles.map(role => role.roleArn) }, { omitEmpty: true }),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
@@ -696,12 +696,12 @@ export class Cluster extends ClusterBase {
    */
   public addDefaultIamRole(defaultIamRole: iam.IRole): void {
     // Get list of IAM roles attached to cluster
-    const clusterRoleList = this.roleArns ?? [];
+    const clusterRoleList = this.roles ?? [];
 
     // Check to see if default role is included in list of cluster IAM roles
     var roleAlreadyOnCluster = false;
     for (var i = 0; i < clusterRoleList.length; i++) {
-      if (clusterRoleList[i] == defaultIamRole.roleArn) {
+      if (clusterRoleList[i] === defaultIamRole) {
         roleAlreadyOnCluster = true;
         break;
       }
@@ -749,12 +749,12 @@ export class Cluster extends ClusterBase {
    * @param role the role to add
    */
   public addIamRole(role: iam.IRole): void {
-    const clusterRoleList = this.roleArns;
+    const clusterRoleList = this.roles;
 
-    if (clusterRoleList.includes(role.roleArn)) {
+    if (clusterRoleList.includes(role)) {
       throw new Error(`Role '${role.roleArn}' is already attached to the cluster`);
     }
 
-    clusterRoleList.push(role.roleArn);
+    clusterRoleList.push(role);
   }
 }
