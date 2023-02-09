@@ -34,7 +34,7 @@ async function updatePackageJsonAndIndexFiles(modules: ModuleDefinition[]) {
 
   modules.forEach((module) => {
     if (!pkgJson.exports[`./${module.moduleName}`]) {
-      pkgJson.exports[`./${module.moduleName}`] = `./${module.moduleName}/index.js`;
+      pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
     }
     if (!topLevelIndexFileEntries.find(e => e.includes(module.moduleName))) {
       topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './${module.moduleName}';`);
