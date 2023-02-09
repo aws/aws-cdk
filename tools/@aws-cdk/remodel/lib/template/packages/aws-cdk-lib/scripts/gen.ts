@@ -5,17 +5,25 @@ import * as path from 'path';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const srcDir = path.join(awsCdkLibDir, 'lib');
-generateAll(srcDir, {
-  coreImport: '../../core',
-}).then(modulesGenerated => {
-  addExportsToPackageJson(modulesGenerated);
-  addModulesToIndexFile(modulesGenerated);
-});
 
-function addExportsToPackageJson(modulesGenerated: ModuleDefinition[]) {
+main()
+  .then(() => process.exit(0))
+  // eslint-ignore-next-line no-console
+  .catch(console.error)
+
+async function main() {
+  const generated = await generateAll(srcDir, {
+    coreImport: '../../core',
+  });
+
+  addExportsToPackageJson(generated);
+  addModulesToIndexFile(generated);
+}
+
+function addExportsToPackageJson(modules: ModuleDefinition[]) {
   const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
   const pkgJson = fs.readJsonSync(pkgJsonPath);
-  modulesGenerated.forEach((module) => {
+  modules.forEach((module) => {
     // Add export to the package.json if it's not there yet.
     if (!pkgJson.exports[`./${module.moduleName}`]) {
       pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
@@ -24,14 +32,14 @@ function addExportsToPackageJson(modulesGenerated: ModuleDefinition[]) {
   fs.writeJsonSync(pkgJsonPath, pkgJson, { spaces: 2 });
 }
 
-function addModulesToIndexFile(modulesGenerated: ModuleDefinition[]) {
+function addModulesToIndexFile(modules: ModuleDefinition[]) {
   const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
   const topLevelIndexFileEntries: string[] = [];
   if (fs.existsSync(topLevelIndexFilePath)) {
     topLevelIndexFileEntries.push(...(fs.readFileSync(topLevelIndexFilePath)).toString('utf-8').split('\n'));
   }
 
-  modulesGenerated.forEach((module) => {
+  modules.forEach((module) => {
     // Add export to top-level index.ts if it's not there yet.
     if (!topLevelIndexFileEntries.find(e => e.includes(module.moduleName))) {
       topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './lib/${module.moduleName}';`);
