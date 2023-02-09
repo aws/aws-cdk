@@ -320,6 +320,7 @@ export class CodePipeline extends PipelineBase {
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
   private _synthProject?: cb.IProject;
+  private _selfMutationProject?: cb.IProject;
   private readonly selfMutation: boolean;
   private readonly useChangeSets: boolean;
   private _myCxAsmRoot?: string;
@@ -363,6 +364,22 @@ export class CodePipeline extends PipelineBase {
       throw new Error('Call pipeline.buildPipeline() before reading this property');
     }
     return this._synthProject;
+  }
+
+  /**
+   * The CodeBuild project that performs the SelfMutation
+   *
+   * Will throw an error if this is accessed before `buildPipeline()`
+   * is called.
+   *
+   * May return no value if `selfMutation` was set to `false` when
+   * the `CodePipeline` was defined.
+   */
+  public get selfMutationProject(): cb.IProject | undefined {
+    if (!this._pipeline) {
+      throw new Error('Call pipeline.buildPipeline() before reading this property');
+    }
+    return this._selfMutationProject;
   }
 
   /**
@@ -526,6 +543,9 @@ export class CodePipeline extends PipelineBase {
 
       if (nodeType === CodeBuildProjectType.SYNTH) {
         this._synthProject = result.project;
+      }
+      if (nodeType === CodeBuildProjectType.SELF_MUTATE) {
+        this._selfMutationProject = result.project;
       }
     }
 
