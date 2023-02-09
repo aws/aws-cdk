@@ -6,7 +6,6 @@ import { AugmentationGenerator } from './augmentation-generator';
 import { CannedMetricsGenerator } from './canned-metrics-generator';
 import CodeGenerator, { CodeGeneratorOptions } from './codegen';
 import { packageName } from './genspec';
-import { ModuleDefinition } from '@aws-cdk/pkglint';
 
 export default async function(scopes: string | string[], outPath: string, options: CodeGeneratorOptions = { }): Promise<void> {
   if (outPath !== '.') { await fs.mkdirp(outPath); }
@@ -41,7 +40,7 @@ export default async function(scopes: string | string[], outPath: string, option
   }
 }
 
-export async function generateAll(outPath: string, options: CodeGeneratorOptions): Promise<ModuleDefinition[]> {
+export async function generateAll(outPath: string, options: CodeGeneratorOptions): Promise<pkglint.ModuleDefinition[]> {
   const scopes = cfnSpec.namespaces();
   const modules = new Array<ModuleDefinition>();
 
