@@ -10,7 +10,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
 
 let app: TestApp;
 
@@ -467,6 +467,34 @@ test('Support logging setting from codeBuildDefaults', () => {
       }),
     }),
   });
+});
+
+test('selfMutationProject can be accessed after buildPipeline', () => {
+  // GIVEN
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+  pipeline.addStage(new StageWithStackOutput(pipelineStack, 'Stage'));
+
+  // WHEN
+  pipeline.buildPipeline();
+
+  // THEN
+  expect(pipeline.selfMutationProject).toBeTruthy();
+});
+
+test('selfMutationProject is undefined if switched off', () => {
+  // GIVEN
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    selfMutation: false,
+  });
+  pipeline.addStage(new StageWithStackOutput(pipelineStack, 'Stage'));
+
+  // WHEN
+  pipeline.buildPipeline();
+
+  // THEN
+  expect(pipeline.selfMutationProject).toBeUndefined();
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
