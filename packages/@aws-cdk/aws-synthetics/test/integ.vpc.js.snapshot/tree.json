@@ -981,7 +981,7 @@
                       ]
                     },
                     "name": "canary-vpc",
-                    "runtimeVersion": "syn-nodejs-puppeteer-3.9",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.8",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(5 minutes)"
@@ -1048,7 +1048,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.228"
+          "version": "10.1.237"
         }
       }
     },
