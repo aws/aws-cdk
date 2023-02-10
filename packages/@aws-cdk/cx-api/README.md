@@ -139,3 +139,20 @@ https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-loggi
   }
 }
 ```
+
+* `@aws-cdk/aws-rds:databaseProxyUniqueResourceName`
+
+Enable this feature flag to use unique resource names for each `DatabaseProxy`.
+
+Previously, the default behavior for `DatabaseProxy` was to use `id` of the constructor for `dbProxyName`.
+In this case, users couldn't deploy `DatabaseProxy`s that have the same `id` in the same region.
+
+This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true
+  }
+}
+```
