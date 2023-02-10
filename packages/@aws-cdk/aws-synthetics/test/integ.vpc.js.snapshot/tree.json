@@ -981,7 +981,7 @@
                       ]
                     },
                     "name": "canary-vpc",
-                    "runtimeVersion": "syn-nodejs-puppeteer-3.8",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.9",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(5 minutes)"
