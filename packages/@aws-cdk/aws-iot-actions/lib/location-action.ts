@@ -13,25 +13,25 @@ import { singletonActionRole } from './private/role';
 export enum LocationTimestampUnit {
   /**
    * SECONDS
-   * 
+   *
    */
   SECONDS='SECONDS',
 
   /**
    * MILLISECONDS
-   * 
+   *
    */
   MILLISECONDS='MILLISECONDS',
 
   /**
    * MICROSECONDS
-   * 
+   *
    */
   MICROSECONDS='MICROSECONDS',
 
   /**
    * NANOSECONDS
-   * 
+   *
    */
   NANOSECONDS='NANOSECONDS',
 }
