@@ -13,6 +13,7 @@ class TestStack extends Stack {
 
     new iam.Role(this, 'Role', {
       assumedBy: new iam.SamlConsolePrincipal(provider),
+      description: 'fix the partition issue',
     });
   }
 }

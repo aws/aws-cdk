@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "cdk-saml-provider": {
         "id": "cdk-saml-provider",
         "path": "cdk-saml-provider",
@@ -44,6 +36,14 @@
             "id": "Role",
             "path": "cdk-saml-provider/Role",
             "children": {
+              "ImportRole": {
+                "id": "ImportRole",
+                "path": "cdk-saml-provider/Role/ImportRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "cdk-saml-provider/Role/Resource",
@@ -56,7 +56,18 @@
                           "Action": "sts:AssumeRoleWithSAML",
                           "Condition": {
                             "StringEquals": {
-                              "SAML:aud": "https://signin.aws.amazon.com/saml"
+                              "SAML:aud": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "https://signin.",
+                                    {
+                                      "Ref": "AWS::URLSuffix"
+                                    },
+                                    "/saml"
+                                  ]
+                                ]
+                              }
                             }
                           },
                           "Effect": "Allow",
@@ -68,7 +79,8 @@
                         }
                       ],
                       "Version": "2012-10-17"
-                    }
+                    },
+                    "description": "fix the partition issue"
                   }
                 },
                 "constructInfo": {
@@ -81,17 +93,41 @@
               "fqn": "@aws-cdk/aws-iam.Role",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-saml-provider/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-saml-provider/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.237"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

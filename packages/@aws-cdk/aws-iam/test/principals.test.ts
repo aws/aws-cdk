@@ -166,7 +166,9 @@ test('SAML principal', () => {
           Action: 'sts:AssumeRoleWithSAML',
           Condition: {
             StringEquals: {
-              'SAML:aud': 'https://signin.aws.amazon.com/saml',
+              'SAML:aud': {
+                'Fn::Join': ['', ['https://signin.', { Ref: 'AWS::URLSuffix' }, '/saml']],
+              },
             },
           },
           Effect: 'Allow',
