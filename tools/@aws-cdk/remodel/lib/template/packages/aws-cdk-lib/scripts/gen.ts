@@ -8,8 +8,6 @@ const srcDir = path.join(awsCdkLibDir, 'lib');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
 const topLevelIndexFilePath = path.join(srcDir, 'index.ts');
 
-
-
 main()
   .then(() => process.exit(0))
   // eslint-ignore-next-line no-console
