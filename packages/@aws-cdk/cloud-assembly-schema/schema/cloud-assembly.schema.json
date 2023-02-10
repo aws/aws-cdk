@@ -457,6 +457,19 @@
                 "load-balancer",
                 "load-balancer-listener",
                 "plugin",
+                "quicksight-data-source-provider",
+                "quicksight-data-source-permissions-provider",
+                "quicksight-data-set-provider",
+                "quicksight-data-set-permissions-provider",
+                "quicksight-template-provider",
+                "quicksight-template-permissions-provider",
+                "quicksight-dashboard-provider",
+                "quicksight-dashboard-permissions-provider",
+                "quicksight-analysis-provider",
+                "quicksight-analysis-permissions-provider",
+                "quicksight-theme-provider",
+                "quicksight-theme-permissions-provider",
+                "quicksight-tags-provider",
                 "security-group",
                 "ssm",
                 "vpc-provider"
@@ -497,6 +510,27 @@
                 },
                 {
                     "$ref": "#/definitions/PluginContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/QuickSightAnalysisContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/QuickSightDashboardContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/QuickSightDataSetContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/QuickSightDataSourceContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/QuickSightTemplateContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/QuickSightThemeContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/QuickSightTagsContextQuery"
                 }
             ]
         },
@@ -868,6 +902,195 @@
             },
             "required": [
                 "pluginName"
+            ]
+        },
+        "QuickSightDataSourceContextQuery": {
+            "description": "TODO",
+            "type": "object",
+            "additionalProperties": {
+                "dataSourceId": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "account": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "TODO",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "dataSourceId",
+                "account",
+                "region"
+            ]
+        },
+        "QuickSightDataSetContextQuery": {
+            "description": "TODO",
+            "type": "object",
+            "additionalProperties": {
+                "dataSetId": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "account": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "TODO",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "dataSetId",
+                "account",
+                "region"
+            ]
+        },
+        "QuickSightTemplateContextQuery": {
+            "description": "TODO",
+            "type": "object",
+            "additionalProperties": {
+                "templateId": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "account": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "TODO",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "templateId",
+                "account",
+                "region"
+            ]
+        },
+        "QuickSightDashboardContextQuery": {
+            "description": "TODO",
+            "type": "object",
+            "additionalProperties": {
+                "dashboardId": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "account": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "TODO",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "dashboardId",
+                "account",
+                "region"
+            ]
+        },
+        "QuickSightAnalysisContextQuery": {
+            "description": "TODO",
+            "type": "object",
+            "additionalProperties": {
+                "analysisId": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "account": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "TODO",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "analysisId",
+                "account",
+                "region"
+            ]
+        },
+        "QuickSightThemeContextQuery": {
+            "description": "TODO",
+            "type": "object",
+            "additionalProperties": {
+                "themeId": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "account": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "TODO",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "themeId",
+                "account",
+                "region"
+            ]
+        },
+        "QuickSightTagsContextQuery": {
+            "description": "TODO",
+            "type": "object",
+            "additionalProperties": {
+                "resourceArn": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "account": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "TODO",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "TODO",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "resourceArn",
+                "account",
+                "region"
             ]
         },
         "RuntimeInfo": {
