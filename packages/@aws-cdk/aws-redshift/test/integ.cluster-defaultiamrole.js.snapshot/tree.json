@@ -1442,7 +1442,7 @@
                 "path": "DefaultIamRoleInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.209"
+                  "version": "10.1.235"
                 }
               },
               "DeployAssert": {
@@ -1488,7 +1488,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.209"
+          "version": "10.1.235"
         }
       }
     },
