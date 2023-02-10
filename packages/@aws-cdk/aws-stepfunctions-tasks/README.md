@@ -907,7 +907,7 @@ new tasks.GlueStartJobRun(this, 'Task', {
   arguments: sfn.TaskInput.fromObject({
     key: 'value',
   }),
-  timeout: Duration.minutes(30),
+  taskTimeout: sfn.Timeout.duration(Duration.minutes(30)),
   notifyDelayAfter: Duration.minutes(5),
 });
 ```

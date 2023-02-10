@@ -2,6 +2,7 @@ import { EOL } from 'os';
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
@@ -456,6 +457,110 @@ describe('bucket', () => {
     });
   });
 
+  test('bucket with object lock enabled but no retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: Match.absent(),
+    });
+  });
+
+  test('object lock defaults to disabled', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket');
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: Match.absent(),
+    });
+  });
+
+  test('object lock defaults to enabled when default retention is specified', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(7 * 365)),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'GOVERNANCE',
+            Days: 7 * 365,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock enabled with governance retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(1)),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'GOVERNANCE',
+            Days: 1,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock enabled with compliance retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.compliance(cdk.Duration.days(1)),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'COMPLIANCE',
+            Days: 1,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock disabled throws error with retention set', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: false,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(1)),
+    })).toThrow('Object Lock must be enabled to configure default retention settings');
+  });
+
+  test('bucket with object lock requires duration than one day', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(0)),
+    })).toThrow('Object Lock retention duration must be at least 1 day');
+  });
+
+  // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
+  test('bucket with object lock requires duration less than 100 years', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(365 * 101)),
+    })).toThrow('Object Lock retention duration must be less than 100 years');
+  });
+
   test('bucket with block public access set to BlockAll', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
@@ -776,9 +881,9 @@ describe('bucket', () => {
       });
     });
 
-    test('import can explicitly set bucket region', () => {
+    test('import can explicitly set bucket region with different suffix than stack', () => {
       const stack = new cdk.Stack(undefined, undefined, {
-        env: { region: 'us-east-1' },
+        env: { region: 'cn-north-1' },
       });
 
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
@@ -786,8 +891,59 @@ describe('bucket', () => {
         region: 'eu-west-1',
       });
 
-      expect(bucket.bucketRegionalDomainName).toEqual(`mybucket.s3.eu-west-1.${stack.urlSuffix}`);
-      expect(bucket.bucketWebsiteDomainName).toEqual(`mybucket.s3-website-eu-west-1.${stack.urlSuffix}`);
+      expect(bucket.bucketRegionalDomainName).toEqual('mybucket.s3.eu-west-1.amazonaws.com');
+      expect(bucket.bucketWebsiteDomainName).toEqual('mybucket.s3-website-eu-west-1.amazonaws.com');
+    });
+
+    test('new bucketWebsiteUrl format for specific region', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.us-east-2.amazonaws.com');
+    });
+
+    test('new bucketWebsiteUrl format for specific region with cn suffix', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'cn-north-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.cn-north-1.amazonaws.com.cn');
+    });
+
+
+    testDeprecated('new bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+        bucketWebsiteNewUrlFormat: true,
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.us-east-1.amazonaws.com');
+    });
+
+    testDeprecated('old bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+        bucketWebsiteNewUrlFormat: false,
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website-us-east-2.amazonaws.com');
     });
 
     test('import needs to specify a valid bucket name', () => {
@@ -1997,10 +2153,14 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'http://my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'http://my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
@@ -2008,14 +2168,17 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
-
     });
     test('exports the WebsiteURL for imported buckets with url', () => {
       const stack = new cdk.Stack();
