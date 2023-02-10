@@ -18,8 +18,8 @@ import { AwsContext, withAws } from './with-aws';
  * For backwards compatibility with existing tests (so we don't have to change
  * too much) the inner block is expected to take a `TestFixture` object.
  */
-export function withCdkApp<A extends TestContext & AwsContext>(block: (context: TestFixture) => Promise<void>, ensureBootstrap: boolean = true) {
-  return async (context: A) => {
+export function withCdkApp<A extends TestContext & AwsContext>(block: (context: TestFixture) => Promise<void>) {
+  return async (context: A & DisableBootstrapContext) => {
     const randy = context.randomString;
     const stackNamePrefix = `cdktest-${randy}`;
     const integTestDir = path.join(os.tmpdir(), `cdk-integ-${randy}`);
@@ -61,7 +61,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
         });
       }
 
-      if (ensureBootstrap) {
+      if (context.disableBootstrap) {
         await ensureBootstrapped(fixture);
       }
 
@@ -132,9 +132,30 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
  * We could have put `withAws(withCdkApp(fixture => { /... actual test here.../ }))` in every
  * test declaration but centralizing it is going to make it convenient to modify in the future.
  */
-export function withDefaultFixture(block: (context: TestFixture) => Promise<void>, ensureBootstrap: boolean = true) {
-  return withAws<TestContext>(withCdkApp(block, ensureBootstrap));
+export function withDefaultFixture(block: (context: TestFixture) => Promise<void>) {
+  return withAws<TestContext>(withCdkApp(block));
   //              ^~~~~~ this is disappointing TypeScript! Feels like you should have been able to derive this.
+}
+
+export interface DisableBootstrapContext {
+  /**
+   * Whether to disable creating the default bootstrap
+   * stack prior to running the test
+   *
+   * This should be set to true when running tests that
+   * explicitly create a bootstrap stack
+   *
+   * @default false
+   */
+  readonly disableBootstrap?: boolean;
+}
+
+/**
+ * To be used in place of `withDefaultFixture` when the test
+ * should not create the default bootstrap stack
+ */
+export function withoutBootstrap(block: (context: TestFixture & DisableBootstrapContext) => Promise<void>) {
+  return withAws<TestContext>(withCdkApp(block));
 }
 
 export interface CdkCliOptions extends ShellOptions {
