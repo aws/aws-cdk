@@ -6,6 +6,9 @@
 !NOTICE
 !README.md
 !scripts/
+!scripts/*.ts
+!scripts/*.sh
+scripts/*.d.ts
 
 .LAST_BUILD
 *.snk

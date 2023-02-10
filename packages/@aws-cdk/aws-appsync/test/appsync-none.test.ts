@@ -54,6 +54,20 @@ describe('None Data Source configuration', () => {
     });
   });
 
+  test('appsync data source exports sanitised name', () => {
+    // WHEN
+    const ds = api.addNoneDataSource('ds', {
+      name: 'Produce-Custom',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'NONE',
+      Name: 'ProduceCustom',
+    });
+    expect(ds.name).toBe('ProduceCustom');
+  });
+
   test('appsync configures name and description correctly', () => {
     // WHEN
     api.addNoneDataSource('ds', {
@@ -116,5 +130,3 @@ describe('adding none data source from imported api', () => {
     });
   });
 });
-
-

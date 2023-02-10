@@ -1,5 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -610,6 +611,137 @@ test('elastic ip address', () => {
     },
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
+  });
+});
+
+describe('default IAM role', () => {
+
+  test('Default role not in role list', () => {
+    // GIVEN
+    const clusterRole1 = new iam.Role(stack, 'clusterRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        roles: [clusterRole1],
+        defaultRole: defaultRole1,
+      });
+    }).toThrow(/Default role must be included in role list./);
+  });
+
+  test('throws error when default role not attached to cluster when adding default role post creation', () => {
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    expect(() => {
+      cluster.addDefaultIamRole(defaultRole1);
+    }).toThrow(/Default role must be associated to the Redshift cluster to be set as the default role./);
+  });
+});
+
+describe('IAM role', () => {
+  test('roles can be directly attached to cluster during declaration', () => {
+    // GIVEN
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      roles: [role],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      Properties: {
+        IamRoles: Match.arrayEquals([
+          { 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] },
+        ]),
+      },
+    });
+  });
+
+  test('roles can be attached to cluster after declaration', () => {
+    // GIVEN
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    // WHEN
+    cluster.addIamRole(role);
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      Properties: {
+        IamRoles: Match.arrayEquals([
+          { 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] },
+        ]),
+      },
+    });
+  });
+
+  test('roles can be attached to cluster in another stack', () => {
+    // GIVEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    const newTestStack = new cdk.Stack(stack, 'NewTestStack', { env: { account: stack.account, region: stack.region } });
+    const role = new iam.Role(newTestStack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+
+    // WHEN
+    cluster.addIamRole(role);
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      Properties: {
+        IamRoles: Match.arrayEquals([
+          { 'Fn::ImportValue': Match.stringLikeRegexp('NewTestStack:ExportsOutputFnGetAttRole*') },
+        ]),
+      },
+    });
+  });
+
+  test('throws when adding role that is already in cluster', () => {
+    // GIVEN
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      roles: [role],
+    });
+
+    expect(() =>
+      // WHEN
+      cluster.addIamRole(role),
+    // THEN
+    ).toThrow(`Role '${role.roleArn}' is already attached to the cluster`);
   });
 });
 
