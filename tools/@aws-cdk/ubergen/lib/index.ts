@@ -13,9 +13,10 @@ export interface Config {
   rootPath: string;
   uberPackageJsonPath: string;
   excludedPackages: string[];
+  skipCodeGen?: boolean;
 }
 
-export async function main(config: Config) {
+export async function main(config: Config): Promise<readonly LibraryReference[]> {
   console.log(`🌴  workspace root path is: ${config.rootPath}`);
   const uberPackageJson = await fs.readJson(config.uberPackageJsonPath) as PackageJson;
   const libraries = await findLibrariesToPackage(uberPackageJson, config);
@@ -31,6 +32,7 @@ export async function main(config: Config) {
 
   // Rewrite package.json (exports will have changed)
   await fs.writeJson(config.uberPackageJsonPath, uberPackageJson, { spaces: 2 });
+  return libraries;
 }
 
 export interface LibraryReference {
@@ -253,14 +255,14 @@ export async function verifyDependencies(packageJson: any, libraries: readonly L
 async function prepareSourceFiles(libraries: readonly LibraryReference[], packageJson: PackageJson, config: Config) {
   console.log('📝 Preparing source files...');
 
-  if (packageJson.ubergen?.excludeExperimentalModules) {
+  if (packageJson.ubergen?.excludeExperimentalModules && !config.skipCodeGen) {
     console.log('\t 👩🏻‍🔬 \'excludeExperimentalModules\' enabled. Regenerating all experimental modules as L1s using cfn2ts...');
   }
 
   const libRoot = resolveLibRoot(packageJson, config.monoPackageRoot);
 
   // Should not remove collection directory if we're currently in it. The OS would be unhappy.
-  if (libRoot !== process.cwd()) {
+  if (libRoot !== process.cwd() && libRoot !== config.monoPackageRoot) {
     await fs.remove(libRoot);
   }
 
@@ -295,7 +297,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 
   for (const library of libraries) {
     const libDir = path.join(libRoot, library.shortName);
-    const copied = await transformPackage(library, packageJson, libDir, libraries, config.monoPackageRoot);
+    const copied = await transformPackage(library, packageJson, libDir, libraries, config);
 
     if (!copied) {
       continue;
@@ -388,11 +390,12 @@ export async function transformPackage(
   uberPackageJson: PackageJson,
   destination: string,
   allLibraries: readonly LibraryReference[],
-  monoPackageRoot: string,
+  config: Config,
+  // monoPackageRoot: string,
 ) {
   await fs.mkdirp(destination);
 
-  if (uberPackageJson.ubergen?.excludeExperimentalModules && library.packageJson.stability === 'experimental') {
+  if (uberPackageJson.ubergen?.excludeExperimentalModules && library.packageJson.stability === 'experimental' && !config.skipCodeGen) {
     // when stripExperimental is enabled, we only want to add the L1s of experimental modules.
     let cfnScopes = library.packageJson['cdk-build']?.cloudformation;
 
@@ -416,10 +419,10 @@ export async function transformPackage(
         .join('\n'));
     await pkglint.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'), alphaPackageName);
 
-    await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson, monoPackageRoot);
+    await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson, config.monoPackageRoot);
   } else {
-    await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson, monoPackageRoot);
-    await copyLiterateSources(path.join(library.root, 'test'), path.join(destination, 'test'), allLibraries, uberPackageJson, monoPackageRoot);
+    await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson, config.monoPackageRoot);
+    await copyLiterateSources(path.join(library.root, 'test'), path.join(destination, 'test'), allLibraries, uberPackageJson, config.monoPackageRoot);
   }
 
   await fs.writeFile(
@@ -445,7 +448,7 @@ export async function transformPackage(
   const relativeLibRoot = uberPackageJson.ubergen?.libRoot;
   if (relativeLibRoot && relativeLibRoot !== '.') {
     await fs.writeFile(
-      path.resolve(monoPackageRoot, `${library.shortName}.ts`),
+      path.resolve(config.monoPackageRoot, `${library.shortName}.ts`),
       `export * from './${relativeLibRoot}/${library.shortName}';\n`,
       { encoding: 'utf8' },
     );

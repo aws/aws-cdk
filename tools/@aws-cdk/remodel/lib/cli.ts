@@ -1,10 +1,11 @@
 import * as cp from 'child_process';
 import * as path from 'path';
 import {
-  findLibrariesToPackage,
-  verifyDependencies,
-  copySubmoduleExports,
-  transformPackage,
+  main as ubergen,
+  // findLibrariesToPackage,
+  // verifyDependencies,
+  // copySubmoduleExports,
+  // transformPackage,
   Config,
   Export,
   LibraryReference,
@@ -71,10 +72,11 @@ export async function main() {
   // be aware of all source file moves if needed via `git move`.
   await exec(`git clone ${repoRoot} ${targetDir}`);
 
-  const templateDir = path.join(__dirname, '..', 'lib', 'template');
 
-  await copyTemplateFiles(templateDir, targetDir);
   await makeAwsCdkLib(targetDir);
+
+  const templateDir = path.join(__dirname, '..', 'lib', 'template');
+  await copyTemplateFiles(templateDir, targetDir);
 
   // await runBuild(targetDir);
 
@@ -109,6 +111,8 @@ async function makeAwsCdkLib(target: string) {
     rootPath: target,
     uberPackageJsonPath: pkgJsonPath,
     excludedPackages: ['@aws-cdk/example-construct-library', ...localDevDeps],
+    // Don't do codegen because we do it as part of the build of the package
+    skipCodeGen: true,
   };
 
   const devDependencies = pkgJson?.devDependencies ?? {};
@@ -118,37 +122,18 @@ async function makeAwsCdkLib(target: string) {
   const deprecatedPackagesName = getPackageNames(deprecatedPackages);
   const experimentalPackagesName = getPackageNames(experimentalPackages);
 
-  // Get all packages to bundle excluding deprecated and experimental ones
-  const packagesToBundle = await findLibrariesToPackage(pkgJson, {
-    ...ubgConfig,
-    excludedPackages: [
-      ...ubgConfig.excludedPackages,
-      ...deprecatedPackagesName,
-      ...experimentalPackagesName,
-    ],
-  });
-
-  await verifyDependencies(pkgJson, packagesToBundle, ubgConfig);
-
-  const indexStatements = new Array<string>();
-  const lazyExports = new Array<string>();
-
-  await createIfNoDir(libRoot);
-  // Copy each packages source to new location and copy submodule exports
-  for (const library of packagesToBundle) {
-    const libDir = path.join(libRoot, library.shortName);
-
-    // May already exist as a result of codegen
-    await createIfNoDir(libDir);
-    await transformPackage(library, pkgJson, libDir, packagesToBundle, ubgConfig.monoPackageRoot);
-    copyToExports(library, indexStatements, lazyExports, pkgJsonExports);
-  }
-
-  // make the exports.ts file pass linting
-  lazyExports.unshift('/* eslint-disable @typescript-eslint/no-require-imports */');
-
-  await fs.writeFile(path.join(libRoot, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
-  await fs.writeFile(path.join(libRoot, 'lazy-index.ts'), lazyExports.join('\n'), { encoding: 'utf8' });
+  // Call ubergen excluding all of the packages we don't want bundled. Excludes 
+  // experimental packages explicitly so it doesn't try to extract L1s from those
+  // libraries since these are handled during codegen/build.
+  const packagesToBundle = await ubergen(ubgConfig);
+  // const packagesToBundle = await ubergen({
+  //   ...ubgConfig,
+  //   excludedPackages: [
+  //     ...ubgConfig.excludedPackages,
+  //     ...deprecatedPackagesName,
+  //     ...experimentalPackagesName,
+  //   ],
+  // });
 
   // Filter out packages we are bundling from dev dependencies
   const packagesToBundleName = packagesToBundle.map(p => p.packageJson.name);
@@ -168,8 +153,8 @@ async function makeAwsCdkLib(target: string) {
   const newPkgJsonExports = formatPkgJsonExports(pkgJsonExports);
 
   // Move all source files into 'lib' to make working on package easier
+  // Exclude stuff like package.json and other config files
   const rootFiles = await fs.readdir(awsCdkLibDir);
-  // Don't move these to 'lib'
   const excludeNesting = [
     'tsconfig.json',
     '.eslintrc.js',
@@ -192,8 +177,17 @@ async function makeAwsCdkLib(target: string) {
     return fs.move(old, path.join(awsCdkLibDir, 'lib', file));
   }));
 
-  await fs.writeFile(pkgJsonPath, JSON.stringify({
+  // Create scope map for codegen usage
+  await fs.writeJson(
+    path.join(awsCdkLibDir, 'scripts', 'scope-map.json'),
+    makeScopeMap(allPackages),
+    { spaces: 2 },
+  );
+
+  await fs.writeJson(pkgJsonPath, {
     ...pkgJson,
+    main: 'lib/index.js',
+    types: 'lib/index.d.ts',
     exports: {
       ...newPkgJsonExports,
     },
@@ -210,39 +204,30 @@ async function makeAwsCdkLib(target: string) {
       ...filteredDevDeps,
       '@aws-cdk/cfn2ts': '0.0.0',
     },
-  }, null, 2));
+  }, { spaces: 2 });
+
+  // TODO: Cleanup
+  // 1. lib/aws-events-targets/build-tools, moved to gen.ts step
+  // 2. All bundled and deprecated packages
 }
 
-function copyToExports(library: LibraryReference, indexStatements: string[], lazyExports: string[], pkgJsonExports: Record<string, Export>) {
-  if (library.shortName === 'core') {
-    indexStatements.push(`export * from './${library.shortName}';`);
-    lazyExports.unshift(`export * from './${library.shortName}';`);
-  } else {
-    const exportName = library.shortName.replace(/-/g, '_');
-
-    indexStatements.push(`export * as ${exportName} from './${library.shortName}';`);
-    lazyExports.push(`Object.defineProperty(exports, '${exportName}', { get: function () { return require('./${library.shortName}'); } });`);
-  }
-  copySubmoduleExports(pkgJsonExports, library, library.shortName);
+function pathReformat(str: string): string {
+  const split = str.split(/.(.*)/s);
+  const newVal = ['./lib', split[1]].join('');
+  return newVal;
 }
 
 function formatPkgJsonExports(exports: Record<string, Export>): Record<string, Export> {
-  const format = (str: string) => {
-    const split = str.split(/.(.*)/s);
-    const newVal = ['./lib', split[1]].join('');
-    return newVal;
-  };
-
   const dontFormat = ['./package.json', './.jsii', './.warnings.jsii.js'];
   const entries = Object.entries(exports).map(([k, v]) => {
     if (typeof v === 'string') {
-      const newValue = dontFormat.includes(v) ? v : format(v);
+      const newValue = dontFormat.includes(v) ? v : pathReformat(v);
       return [k, newValue];
     }
 
     const nested = Object.entries(v).map(([nk, nv]) => {
       if (nv) {
-        return [nk, format(nv)];
+        return [nk, pathReformat(nv)];
       } else {return [nk, nv];}
     });
 
@@ -250,6 +235,21 @@ function formatPkgJsonExports(exports: Record<string, Export>): Record<string, E
   });
 
   return Object.fromEntries(entries);
+}
+
+function makeScopeMap(pkgs: LibraryReference[]) {
+  return pkgs.reduce((accum: Record<string, string[]>, { packageJson, shortName }) => {
+    const scopes = packageJson?.['cdk-build']?.cloudformation ?? [];
+    const newScopes = [
+      ...(accum[shortName] ?? []),
+      ...(typeof scopes === 'string' ? [scopes] : scopes),
+    ];
+
+    return {
+      ...accum,
+      [shortName]: newScopes,
+    }
+  }, {});
 }
 
 async function findAllPackages(config: Config): Promise<LibraryReference[]> {
@@ -276,7 +276,7 @@ async function getDeprecatedPackages(pkgs: LibraryReference[], config: Config) {
       deprecatedPackages
       && deprecatedPackages.some((packageName: string) => packageName === p.packageJson.name)
     ) return true;
-    return p.packageJson.deprecated;
+    return p.packageJson.deprecated || p.packageJson.stability === 'deprecated';
   });
 }
 
@@ -286,10 +286,4 @@ function getExperimentalPackages(pkgs: LibraryReference[]) {
 
 function getPackageNames(pkgs: LibraryReference[]) {
   return pkgs.map(p => p.packageJson.name);
-}
-
-async function createIfNoDir(dir: string) {
-  if (!fs.existsSync(dir)) {
-    await fs.mkdir(dir);
-  }
 }

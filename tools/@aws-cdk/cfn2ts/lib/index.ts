@@ -2,12 +2,17 @@ import * as path from 'path';
 import * as cfnSpec from '@aws-cdk/cfnspec';
 import * as pkglint from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
-import { AugmentationGenerator } from './augmentation-generator';
+import { AugmentationGenerator, AugmentationsGeneratorOptions } from './augmentation-generator';
 import { CannedMetricsGenerator } from './canned-metrics-generator';
 import CodeGenerator, { CodeGeneratorOptions } from './codegen';
 import { packageName } from './genspec';
 
-export default async function(scopes: string | string[], outPath: string, options: CodeGeneratorOptions = { }): Promise<void> {
+export default async function generate(
+  scopes: string | string[],
+  outPath: string,
+  options: CodeGeneratorOptions & AugmentationsGeneratorOptions = { },
+): Promise<string[]> {
+  const outputFiles: string[] = [];
   if (outPath !== '.') { await fs.mkdirp(outPath); }
 
   if (scopes === '*') {
@@ -27,82 +32,94 @@ export default async function(scopes: string | string[], outPath: string, option
     const generator = new CodeGenerator(name, spec, affix, options);
     generator.emitCode();
     await generator.save(outPath);
+    outputFiles.push(generator.outputFile);
 
-    const augs = new AugmentationGenerator(name, spec, affix);
+    const augs = new AugmentationGenerator(name, spec, affix, options);
     if (augs.emitCode()) {
       await augs.save(outPath);
-    }
-
-    const canned = new CannedMetricsGenerator(name, scope);
-    if (canned.generate()) {
-      await canned.save(outPath);
-    }
-  }
-}
-
-export async function generateAll(outPath: string, options: CodeGeneratorOptions): Promise<pkglint.ModuleDefinition[]> {
-  const scopes = cfnSpec.namespaces();
-  const modules = new Array<pkglint.ModuleDefinition>();
-
-  for (const scope of scopes) {
-    const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
-    const module = pkglint.createModuleDefinitionFromCfnNamespace(scope);
-    const packagePath = path.join(outPath, module.moduleName);
-    const libPath = path.join(packagePath, 'lib');
-
-    modules.push(module);
-
-    if (Object.keys(spec.ResourceTypes).length === 0) {
-      throw new Error(`No resource was found for scope ${scope}`);
-    }
-    const name = packageName(scope);
-    const affix = computeAffix(scope, scopes);
-
-    const generator = new CodeGenerator(name, spec, affix, options);
-    generator.emitCode();
-    await generator.save(libPath);
-    const outputFiles = [generator.outputFile];
-
-    const augs = new AugmentationGenerator(name, spec, affix);
-    if (augs.emitCode()) {
-      await augs.save(libPath);
       outputFiles.push(augs.outputFile);
     }
 
     const canned = new CannedMetricsGenerator(name, scope);
     if (canned.generate()) {
-      await canned.save(libPath);
+      await canned.save(outPath);
       outputFiles.push(canned.outputFile);
-    }
-
-    // Create index.ts file if needed
-    if (!fs.existsSync(path.join(packagePath, 'index.ts'))) {
-      const lines = [`// ${scope} CloudFormation Resources:`];
-      lines.push(...outputFiles.map((f) => `export * from './lib/${f.replace('.ts', '')}'`));
-
-      await fs.writeFile(path.join(packagePath, 'index.ts'), lines.join('\n') + '\n');
-    }
-
-    // Create .jsiirc.json file if needed
-    if (!fs.existsSync(path.join(packagePath, '.jsiirc.json'))) {
-      const jsiirc = {
-        targets: {
-          java: {
-            package: module.javaPackage,
-          },
-          dotnet: {
-            package: module.dotnetPackage,
-          },
-          python: {
-            module: module.pythonModuleName,
-          },
-        },
-      };
-      await fs.writeJson(path.join(packagePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
     }
   }
 
-  return modules;
+  return outputFiles;
+}
+
+export interface GeneratorOptions extends CodeGeneratorOptions, AugmentationsGeneratorOptions {
+
+  /**
+    * Map of CFN Scopes to modules
+    */
+  scopeMap: Record<string, string[]>;
+}
+
+export interface ModuleMap {
+  [moduleName: string]: {
+    module: pkglint.ModuleDefinition;
+    scopes: string[];
+  }
+}
+
+export async function generateAll(
+  outPath: string,
+  { scopeMap, ...options }: GeneratorOptions,
+): Promise<ModuleMap> {
+  const scopes = cfnSpec.namespaces();
+
+  const moduleMap: ModuleMap = {};
+  for (const scope of scopes) {
+    const module = pkglint.createModuleDefinitionFromCfnNamespace(scope);
+
+    const currentScopes = scopeMap[module.moduleName] ?? [];
+    const newScopes = [...currentScopes, scope];
+    // Add new modules to module map and return to caller
+    moduleMap[module.moduleName] = {
+      scopes: newScopes,
+      module,
+    };
+  }
+
+
+  await Promise.all(Object.entries(moduleMap).map(
+    async ([moduleName, { scopes: moduleScopes, module }]) => {
+      const packagePath = path.join(outPath, moduleName);
+      const sourcePath = path.join(packagePath, 'lib');
+
+      const outputFiles = await generate(moduleScopes, sourcePath, options);
+
+      if (!fs.existsSync(path.join(packagePath, 'index.ts'))) {
+        let lines = moduleScopes.map((s: string) => `// ${s} Cloudformation Resources`);
+        lines.push(...outputFiles.map((f) => `export * from './lib/${f.replace('.ts', '')}'`));
+
+        await fs.writeFile(path.join(packagePath, 'index.ts'), lines.join('\n') + '\n');
+      }
+
+      // Create .jsiirc.json file if needed
+      if (!fs.existsSync(path.join(packagePath, '.jsiirc.json'))) {
+        const jsiirc = {
+          targets: {
+            java: {
+              package: module.javaPackage,
+            },
+            dotnet: {
+              package: module.dotnetPackage,
+            },
+            python: {
+              module: module.pythonModuleName,
+            },
+          },
+        };
+        await fs.writeJson(path.join(packagePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
+      }
+    },
+  ));
+
+  return moduleMap;
 }
 
 /**

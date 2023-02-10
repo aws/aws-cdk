@@ -1,7 +1,8 @@
-import { generateAll } from '@aws-cdk/cfn2ts';
+import { generateAll, ModuleMap } from '@aws-cdk/cfn2ts';
 import { ModuleDefinition } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { main as genSdkApiMetadata } from './gen-sdk-api-metadata';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const srcDir = path.join(awsCdkLibDir, 'lib');
@@ -14,14 +15,25 @@ main()
   .catch(console.error)
 
 async function main() {
+  const cfnScopeMapPath = path.join(__dirname, 'scope-map.json');
+  const cfnScopeMap: Record<string, string[]> = await fs.readJson(cfnScopeMapPath);
   const generated = await generateAll(srcDir, {
     coreImport: '../../core',
+    cloudwatchImport: '../../aws-cloudwatch',
+    scopeMap: cfnScopeMap,
   });
 
   await updatePackageJsonAndIndexFiles(generated);
+  
+  const newScopeMap = Object.fromEntries(Object.entries(generated)
+    .map(([moduleName, { scopes }]) => {
+      return [moduleName, scopes]
+    }));
+
+  await fs.writeJson(cfnScopeMapPath, newScopeMap, { spaces: 2 });
 }
 
-async function updatePackageJsonAndIndexFiles(modules: ModuleDefinition[]) {
+async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {
   const pkgJson = await fs.readJson(pkgJsonPath);
 
   const topLevelIndexFileEntries = new Array<string>();
@@ -30,15 +42,26 @@ async function updatePackageJsonAndIndexFiles(modules: ModuleDefinition[]) {
     topLevelIndexFileEntries.push(...indexFile.toString('utf-8').split('\n'));
   }
 
-  modules.forEach((module) => {
-    if (!pkgJson.exports[`./${module.moduleName}`]) {
-      pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
-    }
-    if (!topLevelIndexFileEntries.find(e => e.includes(module.moduleName))) {
-      topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './${module.moduleName}';`);
-    }
-  });
+  Object.entries(modules)
+    .forEach(([_, { module }]) => {
+      if (!pkgJson.exports[`./${module.moduleName}`]) {
+        pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
+      }
+      if (!topLevelIndexFileEntries.find(e => e.includes(module.moduleName))) {
+        topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './${module.moduleName}';`);
+      }
+    });
 
+  await genSdkApiMetadata(
+    path.resolve(
+      __dirname,
+      '..',
+      'lib',
+      'aws-events-targets',
+      'lib',
+      'sdk-api-metadata.generated.ts',
+    )
+  );
   await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
   await fs.writeFile(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n'));
 }
