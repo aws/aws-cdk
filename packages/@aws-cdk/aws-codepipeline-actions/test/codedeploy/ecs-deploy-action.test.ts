@@ -197,6 +197,38 @@ describe('CodeDeploy ECS Deploy Action', () => {
 
     });
   });
+
+  test('cross-account cross-region deployment has correct dependency between support stacks', () => {
+    // GIVEN
+    const stackEnv: cdk.Environment = { account: '111111111111', region: 'us-east-1' };
+    const deployEnv: cdk.Environment = { account: '222222222222', region: 'us-east-2' };
+
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Pipe', { env: stackEnv });
+    const deploymentGroup = codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(stack, 'Group', {
+      application: codedeploy.EcsApplication.fromEcsApplicationArn(stack, 'Application',
+        `arn:aws:codedeploy:${deployEnv.region}:${deployEnv.account}:application:MyApplication`),
+      deploymentGroupName: 'MyGroup',
+    });
+
+    // WHEN
+    addCodeDeployECSCodePipeline(stack, {
+      actionName: 'DeployECS',
+      deploymentGroup,
+      taskDefinitionTemplateInput: new codepipeline.Artifact('Artifact'),
+      appSpecTemplateInput: new codepipeline.Artifact('Artifact2'),
+    });
+
+    // THEN - dependency from region stack to account stack
+    // (region stack has bucket, account stack has role)
+    const asm = app.synth();
+
+    const stacks = Object.fromEntries(asm.stacks.map(s => [s.stackName, s]));
+    expect(Object.keys(stacks)).toContain('Pipe-support-us-east-2');
+    expect(Object.keys(stacks)).toContain('Pipe-support-222222222222');
+
+    expect(stacks['Pipe-support-us-east-2'].dependencies).toContain(stacks['Pipe-support-222222222222']);
+  });
 });
 
 function addEcsDeploymentGroup(stack: cdk.Stack): codedeploy.IEcsDeploymentGroup {

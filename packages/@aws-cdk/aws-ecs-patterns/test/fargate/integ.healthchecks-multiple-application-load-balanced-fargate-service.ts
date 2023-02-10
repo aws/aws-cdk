@@ -66,12 +66,6 @@ applicationMultipleTargetGroupsFargateService.targetGroups[1].configureHealthChe
   healthyHttpCodes: '200',
 });
 
-applicationMultipleTargetGroupsFargateService.loadBalancers[0]._enableCrossEnvironment;
-applicationMultipleTargetGroupsFargateService.loadBalancers[1]._enableCrossEnvironment;
-
-applicationMultipleTargetGroupsFargateService.listeners[0].listenerArn;
-applicationMultipleTargetGroupsFargateService.listeners[1].listenerArn;
-
 new IntegTest(app, 'Integ', { testCases: [stack] });
 
 app.synth();

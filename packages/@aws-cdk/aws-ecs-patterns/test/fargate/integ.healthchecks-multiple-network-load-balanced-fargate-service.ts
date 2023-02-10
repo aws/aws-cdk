@@ -50,8 +50,6 @@ networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
 
 networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({});
 
-networkMultipleTargetGroupsFargateService.loadBalancers[0]._enableCrossEnvironment;
-networkMultipleTargetGroupsFargateService.loadBalancers[1]._enableCrossEnvironment;
 
 new IntegTest(app, 'Integ', { testCases: [stack] });
 
