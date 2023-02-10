@@ -678,17 +678,17 @@
     },
     "AWS::AmplifyUIBuilder::Component": {
       "attributes": {
-        "AppId": "The unique ID for the Amplify app.",
-        "EnvironmentName": "The name of the backend environment that is a part of the Amplify app.",
         "Id": "The unique ID of the component.",
         "Ref": ""
       },
       "description": "The AWS::AmplifyUIBuilder::Component resource specifies a component within an Amplify app. A component is a user interface (UI) element that you can customize. Use `ComponentChild` to configure an instance of a `Component` . A `ComponentChild` instance inherits the configuration of the main `Component` .",
       "properties": {
+        "AppId": "The unique ID of the Amplify app associated with the component.",
         "BindingProperties": "The information to connect a component's properties to data at runtime. You can't specify `tags` as a valid property for `bindingProperties` .",
         "Children": "A list of the component's `ComponentChild` instances.",
         "CollectionProperties": "The data binding configuration for the component's properties. Use this for a collection component. You can't specify `tags` as a valid property for `collectionProperties` .",
         "ComponentType": "The type of the component. This can be an Amplify custom UI component or another custom component.",
+        "EnvironmentName": "The name of the backend environment that is a part of the Amplify app.",
         "Events": "Describes the events that can be raised on the component. Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components.",
         "Name": "The name of the component.",
         "Overrides": "Describes the component's properties that can be overriden in a customized instance of the component. You can't specify `tags` as a valid property for `overrides` .",
@@ -890,6 +890,7 @@
         "DefaultCountryCode": "The default country code for a phone number.",
         "DefaultValue": "The default value for the field.",
         "DescriptiveText": "The text to display to describe the field.",
+        "IsArray": "Specifies whether to render the field as an array. This property is ignored if the `dataSourceType` for the form is a Data Store.",
         "MaxValue": "The maximum value to display for the field.",
         "MinValue": "The minimum value to display for the field.",
         "Name": "The name of the field.",
@@ -976,6 +977,7 @@
       "attributes": {},
       "description": "Stores the configuration information for a visual helper element for a form. A sectional element can be a header, a text block, or a divider. These elements are static and not associated with any data.",
       "properties": {
+        "Excluded": "",
         "Level": "Specifies the size of the font for a `Heading` sectional element. Valid values are `1 | 2 | 3 | 4 | 5 | 6` .",
         "Orientation": "Specifies the orientation for a `Divider` sectional element. Valid values are `horizontal` or `vertical` .",
         "Position": "Specifies the position of the text in a field for a `Text` sectional element.",
@@ -1000,15 +1002,13 @@
     },
     "AWS::AmplifyUIBuilder::Theme": {
       "attributes": {
-        "AppId": "The unique ID for the Amplify app associated with the theme.",
-        "CreatedAt": "The time that the theme was created.",
-        "EnvironmentName": "The name of the backend environment that is a part of the Amplify app.",
         "Id": "The ID for the theme.",
-        "ModifiedAt": "The time that the theme was modified.",
         "Ref": ""
       },
       "description": "The AWS::AmplifyUIBuilder::Theme resource specifies a theme within an Amplify app. A theme is a collection of style settings that apply globally to the components associated with the app.",
       "properties": {
+        "AppId": "The unique ID for the Amplify app associated with the theme.",
+        "EnvironmentName": "The name of the backend environment that is a part of the Amplify app.",
         "Name": "The name of the theme.",
         "Overrides": "Describes the properties that can be overriden to customize a theme.",
         "Tags": "One or more key-value pairs to use when tagging the theme.",
@@ -1967,6 +1967,7 @@
         "DeploymentStrategyId": "The deployment strategy ID.",
         "Description": "A description of the deployment.",
         "EnvironmentId": "The environment ID.",
+        "KmsKeyIdentifier": "",
         "Tags": "Metadata to assign to the deployment. Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define."
       }
     },
@@ -11207,6 +11208,13 @@
         "Tags": "The tags used to organize, track, or control access for this resource. For example, { \"tags\": {\"key1\":\"value1\", \"key2\":\"value2\"} }."
       }
     },
+    "AWS::ConnectCampaigns::Campaign.AnswerMachineDetectionConfig": {
+      "attributes": {},
+      "description": "Contains information about answering machine detection.",
+      "properties": {
+        "EnableAnswerMachineDetection": "Whether answering machine detection is enabled."
+      }
+    },
     "AWS::ConnectCampaigns::Campaign.DialerConfig": {
       "attributes": {},
       "description": "Contains dialer configuration for an outbound campaign.",
@@ -11219,6 +11227,7 @@
       "attributes": {},
       "description": "Contains outbound call configuration for an outbound campaign.",
       "properties": {
+        "AnswerMachineDetectionConfig": "Whether answering machine detection has been enabled.",
         "ConnectContactFlowArn": "The Amazon Resource Name (ARN) of the flow.",
         "ConnectQueueArn": "The Amazon Resource Name (ARN) of the queue.",
         "ConnectSourcePhoneNumber": "The phone number associated with the outbound call. This is the caller ID that is displayed to customers when an agent calls them."
@@ -14451,8 +14460,11 @@
       },
       "description": "IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts throughout your AWS Organization. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
       "properties": {
+        "DefaultResourceDiscoveryAssociationId": "The IPAM's default resource discovery association ID.",
+        "DefaultResourceDiscoveryId": "The IPAM's default resource discovery ID.",
         "Description": "The description for the IPAM.",
         "OperatingRegions": "The operating Regions for an IPAM. Operating Regions are AWS Regions where the IPAM is allowed to manage IP address CIDRs. IPAM only discovers and monitors resources in the AWS Regions you select as operating Regions.\n\nFor more information about operating Regions, see [Create an IPAM](https://docs.aws.amazon.com//vpc/latest/ipam/create-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+        "ResourceDiscoveryAssociationCount": "The IPAM's resource discovery association count.",
         "Tags": "The key/value combination of a tag assigned to the resource. Use the tag key in the filter name and the tag value as the filter value. For example, to find all resources that have a tag with the key `Owner` and the value `TeamA` , specify `tag:Owner` for the filter name and `TeamA` for the filter value."
       }
     },
@@ -14553,13 +14565,15 @@
     },
     "AWS::EC2::IPAMResourceDiscoveryAssociation": {
       "attributes": {
+        "IpamArn": "",
+        "IpamRegion": "",
         "IpamResourceDiscoveryAssociationArn": "The resource discovery association ARN.",
         "IpamResourceDiscoveryAssociationId": "The resource discovery association ID.",
         "IsDefault": "Defines if the resource discovery is the default. When you create an IPAM, a default resource discovery is created for your IPAM and it's associated with your IPAM.",
         "OwnerId": "The owner ID.",
         "Ref": "`Ref` returns the resource discovery ID. For example: `ipam-res-disco-111122223333` .",
-        "State": "The lifecycle state of the association when you associate or disassociate a resource discovery.\n\n- `associate-in-progress` - Resource discovery is being associated.\n- `associate-complete` - Resource discovery association is complete.\n- `associate-failed` - Resource discovery association has failed.\n- `disassociate-in-progress` - Resource discovery is being disassociated.\n- `disassociate-complete` - Resource discovery disassociation is complete.\n- `disassociate-failed` - Resource discovery disassociation has failed.\n- `isolate-in-progress` - AWS account that created the resource discovery association has been removed and the resource discovery associatation is being isolated.\n- `isolate-complete` - Resource discovery isolation is complete..\n- `restore-in-progress` - Resource discovery is being restored.",
-        "Status": "The resource discovery status.\n\n- `active` : The connection or permissions required to read the results of the resource discovery are intact.\n- `not-found` : The connection or permissions required to read the results of the resource discovery are broken. This may happen if the owner of the resource discovery stopped sharing it or deleted the resource discovery. Verify the resource discovery still exists and the AWS RAM resource share is still in tact."
+        "ResourceDiscoveryStatus": "",
+        "State": "The lifecycle state of the association when you associate or disassociate a resource discovery.\n\n- `associate-in-progress` - Resource discovery is being associated.\n- `associate-complete` - Resource discovery association is complete.\n- `associate-failed` - Resource discovery association has failed.\n- `disassociate-in-progress` - Resource discovery is being disassociated.\n- `disassociate-complete` - Resource discovery disassociation is complete.\n- `disassociate-failed` - Resource discovery disassociation has failed.\n- `isolate-in-progress` - AWS account that created the resource discovery association has been removed and the resource discovery associatation is being isolated.\n- `isolate-complete` - Resource discovery isolation is complete..\n- `restore-in-progress` - Resource discovery is being restored."
       },
       "description": "An IPAM resource discovery association. An associated resource discovery is a resource discovery that has been associated with an IPAM. IPAM aggregates the resource CIDRs discovered by the associated resource discovery.",
       "properties": {
@@ -25528,6 +25542,7 @@
       "attributes": {},
       "description": "Describes an action that updates a CloudWatch log.",
       "properties": {
+        "BatchMode": "",
         "LogGroupName": "The CloudWatch log name.",
         "RoleArn": "The IAM role that allows access to the CloudWatch log."
       }
@@ -30752,7 +30767,7 @@
         "PackageType": "The type of deployment package. Set to `Image` for container image and set `Zip` for .zip file archive.",
         "ReservedConcurrentExecutions": "The number of simultaneous executions to reserve for the function.",
         "Role": "The Amazon Resource Name (ARN) of the function's execution role.",
-        "Runtime": "The identifier of the function's [runtime](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html) . Runtime is required if the deployment package is a .zip file archive.",
+        "Runtime": "The identifier of the function's [runtime](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html) . Runtime is required if the deployment package is a .zip file archive.\n\nThe following list includes deprecated runtimes. For more information, see [Runtime deprecation policy](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtime-support-policy) .",
         "RuntimeManagementConfig": "Sets the runtime management configuration for a function's version. For more information, see [Runtime updates](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html) .",
         "SnapStart": "The function's [AWS Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) setting.",
         "Tags": "A list of [tags](https://docs.aws.amazon.com/lambda/latest/dg/tagging.html) to apply to the function.",
@@ -36234,6 +36249,7 @@
       "attributes": {},
       "description": "The ID for a subnet that you want to associate with the firewall. AWS Network Firewall creates an instance of the associated firewall in each subnet that you specify, to filter traffic in the subnet's Availability Zone.",
       "properties": {
+        "IPAddressType": "The subnet's IP address type. You can't change the IP address type after you create the subnet.",
         "SubnetId": "The unique identifier for the subnet."
       }
     },
@@ -36916,10 +36932,19 @@
         "Ec2InstanceTypes": "The EC2 instance types that users can select from when launching a streaming session with this launch profile.",
         "MaxSessionLengthInMinutes": "The length of time, in minutes, that a streaming session can be active before it is stopped or terminated. After this point, Nimble Studio automatically terminates or stops the session. The default length of time is 690 minutes, and the maximum length of time is 30 days.",
         "MaxStoppedSessionLengthInMinutes": "Integer that determines if you can start and stop your sessions and how long a session can stay in the `STOPPED` state. The default value is 0. The maximum value is 5760.\n\nThis field is allowed only when `sessionPersistenceMode` is `ACTIVATED` and `automaticTerminationMode` is `ACTIVATED` .\n\nIf the value is set to 0, your sessions can\u2019t be `STOPPED` . If you then call `StopStreamingSession` , the session fails. If the time that a session stays in the `READY` state exceeds the `maxSessionLengthInMinutes` value, the session will automatically be terminated (instead of `STOPPED` ).\n\nIf the value is set to a positive number, the session can be stopped. You can call `StopStreamingSession` to stop sessions in the `READY` state. If the time that a session stays in the `READY` state exceeds the `maxSessionLengthInMinutes` value, the session will automatically be stopped (instead of terminated).",
+        "SessionBackup": "Information about the streaming session backup.",
         "SessionPersistenceMode": "Determine if a streaming session created from this launch profile can configure persistent storage. This means that `volumeConfiguration` and `automaticTerminationMode` are configured.",
         "SessionStorage": "The upload storage for a streaming session.",
         "StreamingImageIds": "The streaming images that users can select from when launching a streaming session with this launch profile.",
         "VolumeConfiguration": "Custom volume configuration for the root volumes that are attached to streaming sessions.\n\nThis parameter is only allowed when `sessionPersistenceMode` is `ACTIVATED` ."
+      }
+    },
+    "AWS::NimbleStudio::LaunchProfile.StreamConfigurationSessionBackup": {
+      "attributes": {},
+      "description": "Configures how streaming sessions are backed up when launched from this launch profile.",
+      "properties": {
+        "MaxBackupsToRetain": "The maximum number of backups that each streaming session created from this launch profile can have.",
+        "Mode": "Specifies how artists sessions are backed up.\n\nConfigures backups for streaming sessions launched with this launch profile. The default value is `DEACTIVATED` , which means that backups are deactivated. To allow backups, set this value to `AUTOMATIC` ."
       }
     },
     "AWS::NimbleStudio::LaunchProfile.StreamConfigurationSessionStorage": {
@@ -37885,8 +37910,8 @@
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) of the server, such as `arn:aws:OpsWorksCM:us-east-1:123456789012:server/server-a1bzhi` .",
         "Endpoint": "A DNS name that can be used to access the engine. Example: `myserver-asdfghjkl.us-east-1.opsworks.io` .",
-        "Id": "The ID of the server.",
-        "Ref": "`Ref` returns the server's ARN, such as `arn:aws:OpsWorksCM:us-east-1:123456789012:server/server-a1bzhi` ."
+        "Ref": "`Ref` returns the server's ARN, such as `arn:aws:OpsWorksCM:us-east-1:123456789012:server/server-a1bzhi` .",
+        "ServerName": ""
       },
       "description": "The `AWS::OpsWorksCM::Server` resource creates an AWS OpsWorks for Chef Automate or OpsWorks for Puppet Enterprise configuration management server. For more information, see [Create a Chef Automate Server in AWS CloudFormation](https://docs.aws.amazon.com/opsworks/latest/userguide/opscm-create-server-cfn.html) or [Create a Puppet Enterprise Master in AWS CloudFormation](https://docs.aws.amazon.com/opsworks/latest/userguide/opspup-create-server-cfn.html) in the *AWS OpsWorks User Guide* , and [CreateServer](https://docs.aws.amazon.com/opsworks-cm/latest/APIReference/API_CreateServer.html) in the *AWS OpsWorks CM API Reference* .",
       "properties": {
@@ -37907,7 +37932,6 @@
         "PreferredBackupWindow": "The start time for a one-hour period during which AWS OpsWorks CM backs up application-level data on your server if automated backups are enabled. Valid values must be specified in one of the following formats:\n\n- `HH:MM` for daily backups\n- `DDD:HH:MM` for weekly backups\n\n`MM` must be specified as `00` . The specified time is in coordinated universal time (UTC). The default value is a random, daily start time.\n\n*Example:* `08:00` , which represents a daily start time of 08:00 UTC.\n\n*Example:* `Mon:08:00` , which represents a start time of every Monday at 08:00 UTC. (8:00 a.m.)",
         "PreferredMaintenanceWindow": "The start time for a one-hour period each week during which AWS OpsWorks CM performs maintenance on the instance. Valid values must be specified in the following format: `DDD:HH:MM` . `MM` must be specified as `00` . The specified time is in coordinated universal time (UTC). The default value is a random one-hour period on Tuesday, Wednesday, or Friday. See `TimeWindowDefinition` for more information.\n\n*Example:* `Mon:08:00` , which represents a start time of every Monday at 08:00 UTC. (8:00 a.m.)",
         "SecurityGroupIds": "A list of security group IDs to attach to the Amazon EC2 instance. If you add this parameter, the specified security groups must be within the VPC that is specified by `SubnetIds` .\n\nIf you do not specify this parameter, AWS OpsWorks CM creates one new security group that uses TCP ports 22 and 443, open to 0.0.0.0/0 (everyone).",
-        "ServerName": "The name of the server. The server name must be unique within your AWS account, within each region. Server names must start with a letter; then letters, numbers, or hyphens (-) are allowed, up to a maximum of 40 characters.",
         "ServiceRoleArn": "The service role that the AWS OpsWorks CM service backend uses to work with your account. Although the AWS OpsWorks management console typically creates the service role for you, if you are using the AWS CLI or API commands, run the service-role-creation.yaml AWS CloudFormation template, located at https://s3.amazonaws.com/opsworks-cm-us-east-1-prod-default-assets/misc/opsworks-cm-roles.yaml. This template creates a CloudFormation stack that includes the service role and instance profile that you need.",
         "SubnetIds": "The IDs of subnets in which to launch the server EC2 instance.\n\nAmazon EC2-Classic customers: This field is required. All servers must run within a VPC. The VPC must have \"Auto Assign Public IP\" enabled.\n\nEC2-VPC customers: This field is optional. If you do not specify subnet IDs, your EC2 instances are created in a default subnet that is selected by Amazon EC2. If you specify subnet IDs, the VPC must have \"Auto Assign Public IP\" enabled.\n\nFor more information about supported Amazon EC2 platforms, see [Supported Platforms](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-supported-platforms.html) .",
         "Tags": "A map that contains tag keys and tag values to attach to an AWS OpsWorks for Chef Automate or OpsWorks for Puppet Enterprise server.\n\n- The key cannot be empty.\n- The key can be a maximum of 127 characters, and can contain only Unicode letters, numbers, or separators, or the following special characters: `+ - = . _ : / @`\n- The value can be a maximum 255 characters, and contain only Unicode letters, numbers, or separators, or the following special characters: `+ - = . _ : / @`\n- Leading and trailing spaces are trimmed from both the key and value.\n- A maximum of 50 user-applied tags is allowed for any AWS OpsWorks CM server."
@@ -41081,8 +41105,7 @@
         "ClientPasswordAuthType": "",
         "Description": "A user-specified description about the authentication used by a proxy to log in as a specific database user.",
         "IAMAuth": "Whether to require or disallow AWS Identity and Access Management (IAM) authentication for connections to the proxy. The `ENABLED` value is valid only for proxies with RDS for Microsoft SQL Server.\n\nValid Values: `ENABLED | DISABLED | REQUIRED`",
-        "SecretArn": "The Amazon Resource Name (ARN) representing the secret that the proxy uses to authenticate to the RDS DB instance or Aurora DB cluster. These secrets are stored within Amazon Secrets Manager.",
-        "UserName": "The name of the database user to which the proxy connects."
+        "SecretArn": "The Amazon Resource Name (ARN) representing the secret that the proxy uses to authenticate to the RDS DB instance or Aurora DB cluster. These secrets are stored within Amazon Secrets Manager."
       }
     },
     "AWS::RDS::DBProxy.TagFormat": {
@@ -41099,6 +41122,7 @@
         "Endpoint": "The custom endpoint for the RDS DB instance or Aurora DB cluster.",
         "IsDefault": "A value that indicates whether this endpoint is the default endpoint for the associated DB proxy. Default DB proxy endpoints always have read/write capability. Other endpoints that you associate with the DB proxy can be either read/write or read-only.",
         "Ref": "`Ref` returns the name of the DB proxy endpoint.",
+        "TargetRole": "",
         "VpcId": "The VPC ID of the DB proxy endpoint."
       },
       "description": "The `AWS::RDS::DBProxyEndpoint` resource creates or updates a DB proxy endpoint. You can use custom proxy endpoints to access a proxy through a different VPC than the proxy's default VPC.\n\nFor more information about RDS Proxy, see [AWS::RDS::DBProxy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxy.html) .",
@@ -41106,7 +41130,6 @@
         "DBProxyEndpointName": "The name of the DB proxy endpoint to create.",
         "DBProxyName": "The name of the DB proxy associated with the DB proxy endpoint that you create.",
         "Tags": "An optional set of key-value pairs to associate arbitrary data of your choosing with the proxy.",
-        "TargetRole": "A value that indicates whether the DB proxy endpoint can be used for read/write or read-only operations.\n\nValid Values: `READ_WRITE | READ_ONLY`",
         "VpcSecurityGroupIds": "The VPC security group IDs for the DB proxy endpoint that you create. You can specify a different set of security group IDs than for the original DB proxy. The default is the default security group for the VPC.",
         "VpcSubnetIds": "The VPC subnet IDs for the DB proxy endpoint that you create. You can specify a different set of subnet IDs than for the original DB proxy."
       }
@@ -42238,42 +42261,42 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "The state of the certificate revocation list (CRL) after a read or write operation.",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The revocation record for a certificate, following the x509 v3 standard.",
-        "Enabled": "Indicates whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the CRL.",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
     "AWS::RolesAnywhere::Profile": {
       "attributes": {
-        "ProfileArn": "The ARN of the profile.",
+        "ProfileArn": "",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "A list of tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
       "attributes": {
         "Ref": "`Ref` returns `TrustAnchorId` .",
         "TrustAnchorArn": "The ARN of the trust anchor.",
-        "TrustAnchorId": "The unique primary identifier of the TrustAnchor"
+        "TrustAnchorId": ""
       },
-      "description": "The state of the trust anchor after a read or write operation.",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -42283,15 +42306,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the trust anchor."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -44344,7 +44367,8 @@
         "SignatureVersion": "",
         "Subscription": "The Amazon SNS subscriptions (endpoints) for this topic.",
         "Tags": "The list of tags to add to a new topic.\n\n> To be able to tag a topic on creation, you must have the `sns:CreateTopic` and `sns:TagResource` permissions.",
-        "TopicName": "The name of the topic you want to create. Topic names must include only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens, and must be between 1 and 256 characters long. FIFO topic names must end with `.fifo` .\n\nIf you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the topic name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name."
+        "TopicName": "The name of the topic you want to create. Topic names must include only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens, and must be between 1 and 256 characters long. FIFO topic names must end with `.fifo` .\n\nIf you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the topic name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+        "TracingConfig": ""
       }
     },
     "AWS::SNS::Topic.Subscription": {
@@ -46051,12 +46075,20 @@
     },
     "AWS::SageMaker::ModelCard": {
       "attributes": {
+        "CreatedBy.DomainId": "",
+        "CreatedBy.UserProfileArn": "",
+        "CreationTime": "",
+        "LastModifiedBy.DomainId": "",
+        "LastModifiedBy.UserProfileArn": "",
         "ModelCardArn": "The Amazon Resource Number (ARN) of the model card. For example, `arn:aws:sagemaker:us-west-2:012345678901:modelcard/examplemodelcard` .",
+        "ModelCardProcessingStatus": "",
         "Ref": "`Ref` returns the model card name.\n\nFor more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
       "description": "Creates an Amazon SageMaker Model Card.\n\nFor information about how to use model cards, see [Amazon SageMaker Model Card](https://docs.aws.amazon.com/sagemaker/latest/dg/model-cards.html) .",
       "properties": {
         "Content": "The content of the model card. Content uses the [model card JSON schema](https://docs.aws.amazon.com/sagemaker/latest/dg/model-cards.html#model-cards-json-schema) .",
+        "CreatedBy": "Information about the user who created or modified one or more of the following:\n\n- Experiment\n- Trial\n- Trial component\n- Lineage group\n- Project\n- Model Card",
+        "LastModifiedBy": "",
         "ModelCardName": "The unique name of the model card.",
         "ModelCardStatus": "The approval status of the model card within your organization. Different organizations might have different criteria for model card review and approval.\n\n- `Draft` : The model card is a work in progress.\n- `PendingReview` : The model card is pending review.\n- `Approved` : The model card is approved.\n- `Archived` : The model card is archived. No more updates should be made to the model card, but it can still be exported.",
         "SecurityConfig": "The security configuration used to protect model card data.",
@@ -46130,6 +46162,18 @@
         "IntendedUses": "The intended use cases for the model.",
         "PurposeOfModel": "The general purpose of the model.",
         "RiskRating": "Your organization's risk rating. You can specify one the following values as the risk rating:\n\n- High\n- Medium\n- Low\n- Unknown"
+      }
+    },
+    "AWS::SageMaker::ModelCard.MetricDataItems": {
+      "attributes": {},
+      "description": "Metric data. The `type` determines the data types that you specify for `value` , `XAxisName` and `YAxisName` . For information about specifying values for metrics, see [model card JSON schema](https://docs.aws.amazon.com/sagemaker/latest/dg/model-cards.html#model-cards-json-schema) .",
+      "properties": {
+        "Name": "The names of the metrics.",
+        "Notes": "Any notes to add to the metric.",
+        "Type": "You must specify one of the following data types:\n\n- Bar Chart `bar_char`\n- Boolean `boolean`\n- Linear Graph `linear_graph`\n- Matrix `matrix`\n- Number `number`\n- String `string`",
+        "Value": "The datatype of the metric. The metric's *value* must be compatible with the metric's *type* .",
+        "XAxisName": "The name of the x axis.",
+        "YAxisName": "The name of the y axis."
       }
     },
     "AWS::SageMaker::ModelCard.MetricGroup": {
@@ -46215,6 +46259,15 @@
         "Name": "The name of the result from the SageMaker training job.",
         "Notes": "Any additional notes describing the result of the training job.",
         "Value": "The value of a result from the SageMaker training job."
+      }
+    },
+    "AWS::SageMaker::ModelCard.UserContext": {
+      "attributes": {},
+      "description": "Information about the user who created or modified an experiment, trial, trial component, lineage group, project, or model card.",
+      "properties": {
+        "DomainId": "The domain associated with the user.",
+        "UserProfileArn": "The Amazon Resource Name (ARN) of the user's profile.",
+        "UserProfileName": "The name of the user's profile."
       }
     },
     "AWS::SageMaker::ModelExplainabilityJobDefinition": {
@@ -49454,11 +49507,11 @@
         "VisibilityConfig": "Defines and enables Amazon CloudWatch metrics and web request sample collection."
       }
     },
-    "AWS::WAFv2::RuleGroup.Allow": {
+    "AWS::WAFv2::RuleGroup.AllowAction": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies that AWS WAF should allow the request and optionally defines additional custom handling for the request.\n\nThis is used in the context of other settings, for example to specify values for `RuleAction` and web ACL `DefaultAction` .",
       "properties": {
-        "CustomRequestHandling": ""
+        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
       }
     },
     "AWS::WAFv2::RuleGroup.AndStatement": {
@@ -49468,11 +49521,11 @@
         "Statements": "The statements to combine with AND logic. You can use any statements that can be nested."
       }
     },
-    "AWS::WAFv2::RuleGroup.Block": {
+    "AWS::WAFv2::RuleGroup.BlockAction": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies that AWS WAF should block the request and optionally defines additional custom handling for the response to the web request.\n\nThis is used in the context of other settings, for example to specify values for `RuleAction` and web ACL `DefaultAction` .",
       "properties": {
-        "CustomResponse": ""
+        "CustomResponse": "Defines a custom response for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
       }
     },
     "AWS::WAFv2::RuleGroup.Body": {
@@ -49493,11 +49546,11 @@
         "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
-    "AWS::WAFv2::RuleGroup.Captcha": {
+    "AWS::WAFv2::RuleGroup.CaptchaAction": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies that AWS WAF should run a `CAPTCHA` check against the request:\n\n- If the request includes a valid, unexpired `CAPTCHA` token, AWS WAF applies any custom request handling and labels that you've configured and then allows the web request inspection to proceed to the next rule, similar to a `CountAction` .\n- If the request doesn't include a valid, unexpired token, AWS WAF discontinues the web ACL evaluation of the request and blocks it from going to its intended destination.\n\nAWS WAF generates a response that it sends back to the client, which includes the following:\n\n- The header `x-amzn-waf-action` with a value of `captcha` .\n- The HTTP status code `405 Method Not Allowed` .\n- If the request contains an `Accept` header with a value of `text/html` , the response includes a `CAPTCHA` JavaScript page interstitial.\n\nYou can configure the expiration time in the `CaptchaConfig` `ImmunityTimeProperty` setting at the rule and web ACL level. The rule setting overrides the web ACL setting.\n\nThis action option is available for rules. It isn't available for web ACL default actions.",
       "properties": {
-        "CustomRequestHandling": ""
+        "CustomRequestHandling": "Defines custom handling for the web request, used when the `CAPTCHA` inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
       }
     },
     "AWS::WAFv2::RuleGroup.CaptchaConfig": {
@@ -49507,11 +49560,11 @@
         "ImmunityTimeProperty": "Determines how long a `CAPTCHA` timestamp in the token remains valid after the client successfully solves a `CAPTCHA` puzzle."
       }
     },
-    "AWS::WAFv2::RuleGroup.Challenge": {
+    "AWS::WAFv2::RuleGroup.ChallengeAction": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies that AWS WAF should run a `Challenge` check against the request to verify that the request is coming from a legitimate client session:\n\n- If the request includes a valid, unexpired challenge token, AWS WAF applies any custom request handling and labels that you've configured and then allows the web request inspection to proceed to the next rule, similar to a `CountAction` .\n- If the request doesn't include a valid, unexpired challenge token, AWS WAF discontinues the web ACL evaluation of the request and blocks it from going to its intended destination.\n\nAWS WAF then generates a challenge response that it sends back to the client, which includes the following:\n\n- The header `x-amzn-waf-action` with a value of `challenge` .\n- The HTTP status code `202 Request Accepted` .\n- If the request contains an `Accept` header with a value of `text/html` , the response includes a JavaScript page interstitial with a challenge script.\n\nChallenges run silent browser interrogations in the background, and don't generally affect the end user experience.\n\nA challenge enforces token acquisition using an interstitial JavaScript challenge that inspects the client session for legitimate behavior. The challenge blocks bots or at least increases the cost of operating sophisticated bots.\n\nAfter the client session successfully responds to the challenge, it receives a new token from AWS WAF , which the challenge script uses to resubmit the original request.\n\nYou can configure the expiration time in the `ChallengeConfig` `ImmunityTimeProperty` setting at the rule and web ACL level. The rule setting overrides the web ACL setting.\n\nThis action option is available for rules. It isn't available for web ACL default actions.",
       "properties": {
-        "CustomRequestHandling": ""
+        "CustomRequestHandling": "Defines custom handling for the web request, used when the challenge inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
       }
     },
     "AWS::WAFv2::RuleGroup.ChallengeConfig": {
@@ -49539,11 +49592,11 @@
         "OversizeHandling": "What AWS WAF should do if the cookies of the request are larger than AWS WAF can inspect. AWS WAF does not support inspecting the entire contents of request cookies when they exceed 8 KB (8192 bytes) or 200 total cookies. The underlying host service forwards a maximum of 200 cookies and at most 8 KB of cookie contents to AWS WAF .\n\nThe options for oversize handling are the following:\n\n- `CONTINUE` - Inspect the cookies normally, according to the rule inspection criteria.\n- `MATCH` - Treat the web request as matching the rule statement. AWS WAF applies the rule action to the request.\n- `NO_MATCH` - Treat the web request as not matching the rule statement."
       }
     },
-    "AWS::WAFv2::RuleGroup.Count": {
+    "AWS::WAFv2::RuleGroup.CountAction": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies that AWS WAF should count the request. Optionally defines additional custom handling for the request.\n\nThis is used in the context of other settings, for example to specify values for `RuleAction` and web ACL `DefaultAction` .",
       "properties": {
-        "CustomRequestHandling": ""
+        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
       }
     },
     "AWS::WAFv2::RuleGroup.CustomHTTPHeader": {
