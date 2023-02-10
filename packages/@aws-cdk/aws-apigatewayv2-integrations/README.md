@@ -63,12 +63,12 @@ and the integrating HTTP endpoint. More information can be found at [Working wit
 integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html).
 
 The following code configures a route `GET /books` with an HTTP proxy integration to an HTTP endpoint
-`get-books-proxy.myproxy.internal`.
+`get-books-proxy.example.com`.
 
 ```ts
 import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const booksIntegration = new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal');
+const booksIntegration = new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.example.com');
 
 const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
 
