@@ -493,6 +493,7 @@ export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'cn-north-1': '52.81.151.32',
   'cn-northwest-1': '161.189.23.64',
   'eu-central-1': '35.158.127.160',
+  'eu-central-2': '16.62.183.32',
   'eu-north-1': '13.53.63.224',
   'eu-south-1': '15.161.135.128',
   'eu-west-1': '52.19.239.192',
