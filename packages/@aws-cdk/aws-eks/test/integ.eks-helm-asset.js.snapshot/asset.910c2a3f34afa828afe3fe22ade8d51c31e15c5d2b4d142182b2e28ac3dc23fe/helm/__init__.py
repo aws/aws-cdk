@@ -113,7 +113,7 @@ def get_oci_cmd(repository, version):
         region = os.environ.get('AWS_REGION', 'us-east-1')
 
         cmnd = [
-            f"aws ecr-public get-login-password --region {region} | " \
+            f"aws ecr-public get-login-password --region us-east-1 | " \
             f"helm registry login --username AWS --password-stdin {public_ecr}; helm pull {repository} --version {version} --untar"
             ]
     else:
@@ -135,6 +135,8 @@ def get_chart_from_oci(tmpdir, repository = None, version = None):
             output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, shell=True)
             logger.info(output)
 
+            # effectively returns "$tmpDir/$lastPartOfOCIUrl", because this is how helm pull saves OCI artifact. 
+            # Eg. if we have oci://9999999999.dkr.ecr.us-east-1.amazonaws.com/foo/bar/pet-service repository, helm saves artifact under $tmpDir/pet-service
             return os.path.join(tmpdir, repository.rpartition('/')[-1])
         except subprocess.CalledProcessError as exc:
             output = exc.output
