@@ -251,7 +251,7 @@ export class Graph<A> extends GraphNode<A> {
   /**
    * Return topologically sorted tranches of nodes at this graph level
    */
-  public sortedChildren(): GraphNode<A>[][] {
+  public sortedChildren(fail=true): GraphNode<A>[][] {
     // Project dependencies to current children
     const nodes = this.nodes;
     const projectedDependencies = projectDependencies(this.deepDependencies(), (node) => {
@@ -261,7 +261,7 @@ export class Graph<A> extends GraphNode<A> {
       return nodes.has(node) ? [node] : [];
     });
 
-    return topoSort(nodes, projectedDependencies);
+    return topoSort(nodes, projectedDependencies, fail);
   }
 
   /**
@@ -302,7 +302,7 @@ export class Graph<A> extends GraphNode<A> {
       lines.push(`${indent} ${bullet} ${x}${depString(x)}`);
       if (x instanceof Graph) {
         let i = 0;
-        const sortedNodes = Array.prototype.concat.call([], ...x.sortedChildren());
+        const sortedNodes = Array.prototype.concat.call([], ...x.sortedChildren(false));
         for (const child of sortedNodes) {
           recurse(child, `${indent} ${follow} `, i++ == x.nodes.size - 1);
         }
@@ -357,7 +357,7 @@ export class Graph<A> extends GraphNode<A> {
 
         // Add dependency arrows between the "subgraph begin" and the first rank of
         // the children, and the last rank of the children and "subgraph end" nodes.
-        const sortedChildren = node.sortedChildren();
+        const sortedChildren = node.sortedChildren(false);
         for (const first of sortedChildren[0]) {
           const src = first instanceof Graph ? graphBegin(first) : nodeLabel(first);
           lines.push(`${graphBegin(node)} -> ${src};`);
