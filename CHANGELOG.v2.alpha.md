@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.64.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.63.2-alpha.0...v2.64.0-alpha.0) (2023-02-09)
+
+
+### Features
+
+* **cloud9:** support setting environment owner ([#23878](https://github.com/aws/aws-cdk/issues/23878)) ([08a2f36](https://github.com/aws/aws-cdk/commit/08a2f363093f39d04026778bb8d5d7f673698b57)), closes [#22474](https://github.com/aws/aws-cdk/issues/22474)
+* **redshift:** Tables can include comments ([#23847](https://github.com/aws/aws-cdk/issues/23847)) ([46cadd4](https://github.com/aws/aws-cdk/commit/46cadd4b2dd417e1484ba63389b33e1504cfd842)), closes [#22682](https://github.com/aws/aws-cdk/issues/22682)
+
+
+### Bug Fixes
+
+* **servicecatalogappregistry:** default stack name is not meaningful and causes conflict when multiple stacks deployed to the same account-region ([#23823](https://github.com/aws/aws-cdk/issues/23823)) ([420b5ff](https://github.com/aws/aws-cdk/commit/420b5ff2bd08311f2c8cabbe0787c0e0bf4f8ae3))
+
+## [2.63.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.63.1-alpha.0...v2.63.2-alpha.0) (2023-02-04)
+
+## [2.63.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.63.0-alpha.0...v2.63.1-alpha.0) (2023-02-03)
+
+## [2.63.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.62.2-alpha.0...v2.63.0-alpha.0) (2023-01-31)
+
+
+### Features
+
+* **synthetics:** Adding DeleteLambdaResourcesOnCanaryDeletion prop to the canary L2 ([#23820](https://github.com/aws/aws-cdk/issues/23820)) ([45c191e](https://github.com/aws/aws-cdk/commit/45c191efa865e0aef6fc9d7fa4cd9d56d98a7cc9))
+* **redshift:** support default role for redshift clusters ([#22551](https://github.com/aws/aws-cdk/issues/22551))
+
+## [2.62.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.62.1-alpha.0...v2.62.2-alpha.0) (2023-01-27)
+
+## [2.62.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.62.0-alpha.0...v2.62.1-alpha.0) (2023-01-26)
+
+## [2.62.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.61.1-alpha.0...v2.62.0-alpha.0) (2023-01-25)
+
+
+### Features
+
+* **apprunner:** apprunner secrets manager ([#23692](https://github.com/aws/aws-cdk/issues/23692)) ([a914fc0](https://github.com/aws/aws-cdk/commit/a914fc0614cd9aa634c5724c3474c99fd3888d98))
+
+
+### Bug Fixes
+
+* **integ-runner:** cleanup tmp snapshot before running test ([#23773](https://github.com/aws/aws-cdk/issues/23773)) ([366f2ab](https://github.com/aws/aws-cdk/commit/366f2ab6fbedaf33630a40d5306746c6d363f05c))
+
+## [2.61.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.61.0-alpha.0...v2.61.1-alpha.0) (2023-01-20)
+
 ## [2.61.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.60.0-alpha.0...v2.61.0-alpha.0) (2023-01-18)
 
 
