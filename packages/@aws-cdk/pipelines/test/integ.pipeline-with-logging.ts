@@ -1,4 +1,3 @@
-/// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import { GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
