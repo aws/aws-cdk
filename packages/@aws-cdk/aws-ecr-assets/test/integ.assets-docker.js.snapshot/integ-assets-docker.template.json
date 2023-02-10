@@ -76,6 +76,11 @@
    "Value": {
     "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:fa08370824fa0a7eab2c59a4f371fe7631019044d6c906b4268193120dc213b4"
    }
+  },
+  "ImageUri5": {
+   "Value": {
+    "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:60dea2e16e94d1977b92fe03fa7085fea446233f1fe499702b69593438baa59f"
+   }
   }
  },
  "Parameters": {

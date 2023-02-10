@@ -56,6 +56,9 @@ the `buildArgs` property. It is recommended to skip hashing of `buildArgs` for
 values that can change between different machines to maintain a consistent
 asset hash.
 
+Additionally, you can supply `buildSecrets`. Your system must have Buildkit
+enabled, see https://docs.docker.com/build/buildkit/.
+
 ```ts
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
