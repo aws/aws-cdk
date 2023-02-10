@@ -54,5 +54,6 @@ to the stack that pre-creates the log group as part of the stack deployment, if 
 correct log retention period (never expire, by default).
 
 ## Guardrails
+
 By default slack channel will use `AdministratorAccess` managed policy as guardrail policy.
 The `guardrailPolicies` property can be used to set a different set of managed policies.
