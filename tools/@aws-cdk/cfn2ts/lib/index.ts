@@ -40,14 +40,17 @@ export default async function(scopes: string | string[], outPath: string, option
   }
 }
 
-export async function generateAll(outPath: string, options: CodeGeneratorOptions) {
+export async function generateAll(outPath: string, options: CodeGeneratorOptions): Promise<pkglint.ModuleDefinition[]> {
   const scopes = cfnSpec.namespaces();
+  const modules = new Array<pkglint.ModuleDefinition>();
 
   for (const scope of scopes) {
     const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
     const module = pkglint.createModuleDefinitionFromCfnNamespace(scope);
     const packagePath = path.join(outPath, module.moduleName);
     const libPath = path.join(packagePath, 'lib');
+
+    modules.push(module);
 
     if (Object.keys(spec.ResourceTypes).length === 0) {
       throw new Error(`No resource was found for scope ${scope}`);
@@ -98,6 +101,8 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
       await fs.writeJson(path.join(packagePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
     }
   }
+
+  return modules;
 }
 
 /**
