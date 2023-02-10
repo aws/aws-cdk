@@ -109,8 +109,8 @@ def get_oci_cmd(repository, version):
             f"helm registry login --username AWS --password-stdin {registry}; helm pull {repository} --version {version} --untar"
             ]
     elif registry.startswith(public_ecr):
-        logger.info("Found AWS public repository, will use default region as deployment")
-        region = os.environ.get('AWS_REGION', 'us-east-1')
+        logger.info("Found AWS public repository, will use region 'us-east-1' as deployment")
+        region = 'us-east-1'
 
         cmnd = [
             f"aws ecr-public get-login-password --region {region} | " \
