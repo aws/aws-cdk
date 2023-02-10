@@ -648,6 +648,103 @@ describe('default IAM role', () => {
   });
 });
 
+describe('IAM role', () => {
+  test('roles can be directly attached to cluster during declaration', () => {
+    // GIVEN
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      roles: [role],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      Properties: {
+        IamRoles: Match.arrayEquals([
+          { 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] },
+        ]),
+      },
+    });
+  });
+
+  test('roles can be attached to cluster after declaration', () => {
+    // GIVEN
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    // WHEN
+    cluster.addIamRole(role);
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      Properties: {
+        IamRoles: Match.arrayEquals([
+          { 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] },
+        ]),
+      },
+    });
+  });
+
+  test('roles can be attached to cluster in another stack', () => {
+    // GIVEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    const newTestStack = new cdk.Stack(stack, 'NewTestStack', { env: { account: stack.account, region: stack.region } });
+    const role = new iam.Role(newTestStack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+
+    // WHEN
+    cluster.addIamRole(role);
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      Properties: {
+        IamRoles: Match.arrayEquals([
+          { 'Fn::ImportValue': Match.stringLikeRegexp('NewTestStack:ExportsOutputFnGetAttRole*') },
+        ]),
+      },
+    });
+  });
+
+  test('throws when adding role that is already in cluster', () => {
+    // GIVEN
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      roles: [role],
+    });
+
+    expect(() =>
+      // WHEN
+      cluster.addIamRole(role),
+    // THEN
+    ).toThrow(`Role '${role.roleArn}' is already attached to the cluster`);
+  });
+});
+
 function testStack() {
   const newTestStack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
   newTestStack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);

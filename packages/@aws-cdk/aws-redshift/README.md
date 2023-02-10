@@ -454,3 +454,39 @@ const redshiftCluster = new Cluster(stack, 'Redshift', {
 
 redshiftCluster.addDefaultIamRole(defaultRole);
 ```
+
+## IAM roles
+
+Attaching IAM roles to a Redshift Cluster grants permissions to the Redshift service to perform actions on your behalf.
+
+```ts
+declare const vpc: ec2.Vpc
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+});
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  roles: [role],
+});
+```
+
+Additional IAM roles can be attached to a cluster using the `addIamRole` method.
+
+```ts
+declare const vpc: ec2.Vpc
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+});
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+});
+cluster.addIamRole(role);
+```

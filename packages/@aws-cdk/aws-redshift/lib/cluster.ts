@@ -3,8 +3,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
-import { AwsCustomResource, PhysicalResourceId, AwsCustomResourcePolicy } from '@aws-cdk/custom-resources';
+import { Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -299,7 +299,7 @@ export interface ClusterProps {
 
   /**
    * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
-   * Specify a maximum of 10 roles.
+   * The maximum number of roles to attach to a cluster is subject to a quota.
    *
    * @default - No role is attached to the cluster.
    */
@@ -470,6 +470,13 @@ export class Cluster extends ClusterBase {
    */
   protected parameterGroup?: IClusterParameterGroup;
 
+  /**
+   * The ARNs of the roles that will be attached to the cluster.
+   *
+   * **NOTE** Please do not access this directly, use the `addIamRole` method instead.
+   */
+  private readonly roles: iam.IRole[];
+
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
@@ -478,6 +485,7 @@ export class Cluster extends ClusterBase {
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     };
     this.parameterGroup = props.parameterGroup;
+    this.roles = props?.roles ? [...props.roles] : [];
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
@@ -557,7 +565,7 @@ export class Cluster extends ClusterBase {
       nodeType: props.nodeType || NodeType.DC2_LARGE,
       numberOfNodes: nodeCount,
       loggingProperties,
-      iamRoles: props?.roles?.map(role => role.roleArn),
+      iamRoles: Lazy.list({ produce: () => this.roles.map(role => role.roleArn) }, { omitEmpty: true }),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
@@ -688,12 +696,12 @@ export class Cluster extends ClusterBase {
    */
   public addDefaultIamRole(defaultIamRole: iam.IRole): void {
     // Get list of IAM roles attached to cluster
-    const clusterRoleList = this.cluster.iamRoles ?? [];
+    const clusterRoleList = this.roles ?? [];
 
     // Check to see if default role is included in list of cluster IAM roles
     var roleAlreadyOnCluster = false;
     for (var i = 0; i < clusterRoleList.length; i++) {
-      if (clusterRoleList[i] == defaultIamRole.roleArn) {
+      if (clusterRoleList[i] === defaultIamRole) {
         roleAlreadyOnCluster = true;
         break;
       }
@@ -729,8 +737,24 @@ export class Cluster extends ClusterBase {
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      installLatestAwsSdk: false,
     });
 
     defaultIamRole.grantPassRole(defaultRoleCustomResource.grantPrincipal);
+  }
+
+  /**
+   * Adds a role to the cluster
+   *
+   * @param role the role to add
+   */
+  public addIamRole(role: iam.IRole): void {
+    const clusterRoleList = this.roles;
+
+    if (clusterRoleList.includes(role)) {
+      throw new Error(`Role '${role.roleArn}' is already attached to the cluster`);
+    }
+
+    clusterRoleList.push(role);
   }
 }
