@@ -2,6 +2,7 @@ import { EOL } from 'os';
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
@@ -337,26 +338,101 @@ describe('bucket', () => {
 
   });
 
-  test('throws error if using KMS-Managed key and server access logging to self', () => {
+  test('logs to self, no encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED, serverAccessLogsPrefix: 'test' });
+    }).not.toThrowError();
+  });
+
+  test('logs to self, S3 encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED, serverAccessLogsPrefix: 'test' });
+    }).not.toThrowError();
+  });
+
+  test('logs to self, KMS_MANAGED encryption throws error', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS_MANAGED, serverAccessLogsPrefix: 'test' });
-    }).toThrow('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
   });
-  test('throws error if using KMS CMK and server access logging to self', () => {
+
+  test('logs to self, KMS encryption without key throws error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to self, KMS encryption with key throws error', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to self, KMS key with no specific encryption specified throws error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, serverAccessLogsPrefix: 'test' });
-    }).toThrow('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
   });
-  test('throws error if enabling server access logging to bucket with SSE-KMS', () => {
+
+  test('logs to separate bucket, no encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).not.toThrowError();
+  });
+
+  test('logs to separate bucket, S3 encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).not.toThrowError();
+  });
+
+  // When provided an external bucket (as an IBucket), we cannot detect KMS_MANAGED encryption. Since this
+  // check is impossible, we skip thist test.
+  // eslint-disable-next-line jest/no-disabled-tests
+  test.skip('logs to separate bucket, KMS_MANAGED encryption throws error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS_MANAGED });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, KMS encryption without key throws error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, KMS encryption with key throws error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
-    const targetBucket = new s3.Bucket(stack, 'TargetBucket', { encryptionKey: key } );
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS });
     expect(() => {
-      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: targetBucket });
-    }).toThrow('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, KMS key with no specific encryption specified throws error', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
   });
 
   test('bucket with versioning turned on', () => {
@@ -805,9 +881,9 @@ describe('bucket', () => {
       });
     });
 
-    test('import can explicitly set bucket region', () => {
+    test('import can explicitly set bucket region with different suffix than stack', () => {
       const stack = new cdk.Stack(undefined, undefined, {
-        env: { region: 'us-east-1' },
+        env: { region: 'cn-north-1' },
       });
 
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
@@ -815,8 +891,59 @@ describe('bucket', () => {
         region: 'eu-west-1',
       });
 
-      expect(bucket.bucketRegionalDomainName).toEqual(`mybucket.s3.eu-west-1.${stack.urlSuffix}`);
-      expect(bucket.bucketWebsiteDomainName).toEqual(`mybucket.s3-website-eu-west-1.${stack.urlSuffix}`);
+      expect(bucket.bucketRegionalDomainName).toEqual('mybucket.s3.eu-west-1.amazonaws.com');
+      expect(bucket.bucketWebsiteDomainName).toEqual('mybucket.s3-website-eu-west-1.amazonaws.com');
+    });
+
+    test('new bucketWebsiteUrl format for specific region', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.us-east-2.amazonaws.com');
+    });
+
+    test('new bucketWebsiteUrl format for specific region with cn suffix', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'cn-north-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.cn-north-1.amazonaws.com.cn');
+    });
+
+
+    testDeprecated('new bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+        bucketWebsiteNewUrlFormat: true,
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.us-east-1.amazonaws.com');
+    });
+
+    testDeprecated('old bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+        bucketWebsiteNewUrlFormat: false,
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website-us-east-2.amazonaws.com');
     });
 
     test('import needs to specify a valid bucket name', () => {
@@ -2026,10 +2153,14 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'http://my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'http://my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
@@ -2037,14 +2168,17 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
-
     });
     test('exports the WebsiteURL for imported buckets with url', () => {
       const stack = new cdk.Stack();
