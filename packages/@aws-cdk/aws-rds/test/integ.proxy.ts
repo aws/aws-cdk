@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { RemovalPolicy } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as rds from '../lib';
 
 const app = new cdk.App();
@@ -28,4 +29,28 @@ new rds.DatabaseProxy(stack, 'dbProxy', {
   vpc,
 });
 
-app.synth();
+const cluster = new rds.DatabaseCluster(stack, 'dbCluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_14_5,
+  }),
+  instanceProps: { vpc },
+});
+
+new rds.DatabaseProxy(stack, 'Proxy', {
+  dbProxyName: 'cluster-db-proxy',
+  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+  secrets: [cluster.secret!],
+  vpc,
+});
+
+new integ.IntegTest(app, 'database-proxy-integ-test', {
+  testCases: [stack],
+  diffAssets: true,
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: true,
+      },
+    },
+  },
+});
