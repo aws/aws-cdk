@@ -494,7 +494,7 @@ test('selfMutationProject is undefined if switched off', () => {
   pipeline.buildPipeline();
 
   // THEN
-  expect(pipeline.selfMutationProject).toBeUndefined();
+  expect(() => pipeline.selfMutationProject).toThrow(/No selfMutationProject/);
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
