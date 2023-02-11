@@ -204,12 +204,10 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
       'ap-south-2': 'arn:aws:lambda:ap-south-2:891564319516:layer:LambdaInsightsExtension:6',
       // Asia Pacific (Jakarta)
       'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:8',
-      // Europe (Spain) 
+      // Europe (Spain)
       'eu-south-2': 'arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:2',
-      // Europe (Zurich)
-      'eu-central-2': 'arn:aws:lambda:eu-central-2:033019950311:layer:LambdaInsightsExtension:7',
       // Middle East (UAE)
-      'me-central-1': 'arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:6'
+      'me-central-1': 'arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:6',
     },
   },
   '1.0.143.0': {
@@ -509,6 +507,7 @@ export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'eu-central-1': '35.158.127.160',
   'eu-north-1': '13.53.63.224',
   'eu-south-1': '15.161.135.128',
+  'eu-south-2': '18.100.71.96',
   'eu-west-1': '52.19.239.192',
   'eu-west-2': '18.130.1.96',
   'eu-west-3': '35.180.1.96',
