@@ -56,6 +56,7 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'af-south-1', // Africa (Cape Town)
   'us-iso-west-1', // US ISO West
   'eu-south-2', // Europe (Spain)
+  'eu-central-2', // Europe (Zurich)
   'ap-southeast-3', // Asia Pacific (Jakarta)
   'me-central-1', // Middle East (UAE)
   'ap-south-2', // Asia Pacific (Hyderabad)

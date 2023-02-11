@@ -19,11 +19,13 @@ export const AWS_CDK_METADATA = new Set([
   'cn-north-1',
   'cn-northwest-1',
   'eu-central-1',
+  'eu-central-2',
   'eu-west-1',
   'eu-west-2',
   'eu-west-3',
   'eu-north-1',
   'eu-south-1',
+  // 'eu-south-2',
   'me-south-1',
   // 'me-central-1',
   'sa-east-1',
@@ -51,6 +53,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'eu-central-1': 'Z21DNDUVLTQW6Q',
   'eu-north-1': 'Z3BAZG2TWCNX0D',
   'eu-south-1': 'Z3IXVV8C73GIO3',
+  'eu-south-2': 'Z0081959F7139GRJC19J',
   'eu-west-1': 'Z1BKCTXD74EZPE',
   'eu-west-2': 'Z3GKZC51ZF0DB4',
   'eu-west-3': 'Z3R1K369G5AVDG',
@@ -196,6 +199,20 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
 
 // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
 export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
+  '1.0.178.0': {
+    x86_64: {
+      // Asia Pacific (Hyderabad)
+      'ap-south-2': 'arn:aws:lambda:ap-south-2:891564319516:layer:LambdaInsightsExtension:6',
+      // Asia Pacific (Jakarta)
+      'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:8',
+      // Europe (Spain)
+      'eu-south-2': 'arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:2',
+      // Europe (Zurich)
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:033019950311:layer:LambdaInsightsExtension:7',
+      // Middle East (UAE)
+      'me-central-1': 'arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:6',
+    },
+  },
   '1.0.143.0': {
     x86_64: {
       // US East (N. Virginia)
