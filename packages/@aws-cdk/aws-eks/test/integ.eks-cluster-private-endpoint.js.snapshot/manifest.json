@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d07f8aeeef3ffdaf2bdbe4fcb6de1c6736b4c07bc5bbc0c11be3c3203545cf43.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5ba2b041eec65cdf5d2382e1e12a8cb1576ec0e47352c39ba040b33cecddd2ab.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -168,7 +168,10 @@
         "/aws-cdk-eks-cluster-private-endpoint-test/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Role/Resource": [

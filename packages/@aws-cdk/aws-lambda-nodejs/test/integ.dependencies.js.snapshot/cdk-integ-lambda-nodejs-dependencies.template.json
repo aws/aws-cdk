@@ -59,6 +59,16 @@
    ]
   }
  },
+ "Outputs": {
+  "ExportsOutputRefexternal068F12D12C72A375": {
+   "Value": {
+    "Ref": "external068F12D1"
+   },
+   "Export": {
+    "Name": "cdk-integ-lambda-nodejs-dependencies:ExportsOutputRefexternal068F12D12C72A375"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

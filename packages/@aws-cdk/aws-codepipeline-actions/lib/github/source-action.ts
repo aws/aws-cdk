@@ -34,7 +34,7 @@ export interface GitHubSourceVariables {
 }
 
 /**
- * Construction properties of the {@link GitHubSourceAction GitHub source action}.
+ * Construction properties of the `GitHubSourceAction GitHub source action`.
  */
 export interface GitHubSourceActionProps extends codepipeline.CommonActionProps {
   /**
@@ -65,7 +65,7 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
    * It is recommended to use a Secrets Manager `Secret` to obtain the token:
    *
    *   const oauth = cdk.SecretValue.secretsManager('my-github-token');
-   *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth, ... });
+   *   new GitHubSourceAction(this, 'GitHubAction', { oauthToken: oauth, ... });
    *
    * If you rotate the value in the Secret, you must also change at least one property
    * of the CodePipeline to force CloudFormation to re-read the secret.

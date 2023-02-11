@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-gamelift-build": {
         "id": "aws-gamelift-build",
         "path": "aws-gamelift-build",
@@ -24,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "aws-gamelift-build/Build/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-gamelift-build/Build/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-gamelift-build/Build/ServiceRole/Resource",
@@ -79,7 +79,7 @@
                                         {
                                           "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                         },
-                                        "/6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7.zip"
+                                        "/b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip"
                                       ]
                                     ]
                                   }
@@ -152,18 +152,20 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::GameLift::Build",
                   "aws:cdk:cloudformation:props": {
+                    "operatingSystem": "AMAZON_LINUX_2",
                     "storageLocation": {
                       "bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "key": "6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7.zip",
+                      "key": "b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip",
                       "roleArn": {
                         "Fn::GetAtt": [
                           "BuildServiceRole1F57E904",
                           "Arn"
                         ]
                       }
-                    }
+                    },
+                    "version": "1.0"
                   }
                 },
                 "constructInfo": {
@@ -174,6 +176,38 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-gamelift.Build",
+              "version": "0.0.0"
+            }
+          },
+          "BuildArn": {
+            "id": "BuildArn",
+            "path": "aws-gamelift-build/BuildArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BuildId": {
+            "id": "BuildId",
+            "path": "aws-gamelift-build/BuildId",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-gamelift-build/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-gamelift-build/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
             }
           }
@@ -196,12 +230,30 @@
                 "path": "Build/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.161"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "Build/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Build/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Build/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -217,6 +269,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.161"
         }
       }
     },

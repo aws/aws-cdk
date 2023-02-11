@@ -64,4 +64,22 @@ describe(Match, () => {
 
     expect(() => stack.resolve(Match.anyOf())).toThrow(/A list of matchers must contain at least one element/);
   });
+
+  test('prefix', () => {
+    expect(stack.resolve(Match.prefix('foo'))).toEqual([
+      { prefix: 'foo' },
+    ]);
+  });
+
+  test('suffix', () => {
+    expect(stack.resolve(Match.suffix('foo'))).toEqual([
+      { suffix: 'foo' },
+    ]);
+  });
+
+  test('equalsIgnoreCase', () => {
+    expect(stack.resolve(Match.equalsIgnoreCase('foo'))).toEqual([
+      { 'equals-ignore-case': 'foo' },
+    ]);
+  });
 });

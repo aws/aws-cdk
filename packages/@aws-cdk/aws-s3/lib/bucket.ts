@@ -19,9 +19,11 @@ import {
   Tags,
   Token,
   Tokenization,
+  Annotations,
 } from '@aws-cdk/core';
 import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as regionInformation from '@aws-cdk/region-info';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -198,7 +200,7 @@ export interface IBucket extends IResource {
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
    * If you've already updated, but still need the principal to have permissions to modify the ACLs,
-   * use the {@link grantPutAcl} method.
+   * use the `grantPutAcl` method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -219,7 +221,7 @@ export interface IBucket extends IResource {
    * Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket.
    *
    * If your application has the '@aws-cdk/aws-s3:grantWriteWithoutAcl' feature flag set,
-   * calling {@link grantWrite} or {@link grantReadWrite} no longer grants permissions to modify the ACLs of the objects;
+   * calling `grantWrite` or `grantReadWrite` no longer grants permissions to modify the ACLs of the objects;
    * in this case, if you need to modify object ACLs, call this method explicitly.
    *
    * @param identity The principal
@@ -249,7 +251,7 @@ export interface IBucket extends IResource {
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
    * If you've already updated, but still need the principal to have permissions to modify the ACLs,
-   * use the {@link grantPutAcl} method.
+   * use the `grantPutAcl` method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -407,14 +409,14 @@ export interface BucketAttributes {
   /**
    * The domain name of the bucket.
    *
-   * @default Inferred from bucket name
+   * @default - Inferred from bucket name
    */
   readonly bucketDomainName?: string;
 
   /**
    * The website URL of the bucket (if static web hosting is enabled).
    *
-   * @default Inferred from bucket name
+   * @default - Inferred from bucket name and region
    */
   readonly bucketWebsiteUrl?: string;
 
@@ -429,13 +431,22 @@ export interface BucketAttributes {
   readonly bucketDualStackDomainName?: string;
 
   /**
-   * The format of the website URL of the bucket. This should be true for
+   * Force the format of the website URL of the bucket. This should be true for
    * regions launched since 2014.
    *
-   * @default false
+   * @default - inferred from available region information, `false` otherwise
+   *
+   * @deprecated The correct website url format can be inferred automatically from the bucket `region`.
+   * Always provide the bucket region if the `bucketWebsiteUrl` will be used.
+   * Alternatively provide the full `bucketWebsiteUrl` manually.
    */
   readonly bucketWebsiteNewUrlFormat?: boolean;
 
+  /**
+   * KMS encryption key associated with this bucket.
+   *
+   * @default - no encryption key
+   */
   readonly encryptionKey?: kms.IKey;
 
   /**
@@ -454,6 +465,8 @@ export interface BucketAttributes {
 
   /**
    * The region this existing bucket is in.
+   * Features that require the region (e.g. `bucketWebsiteUrl`) won't fully work
+   * if the region cannot be correctly inferred.
    *
    * @default - it's assumed the bucket is in the same region as the scope it's being imported into
    */
@@ -1400,9 +1413,33 @@ export interface BucketProps {
   /**
    * Whether this bucket should have versioning turned on or not.
    *
-   * @default false
+   * @default false (unless object lock is enabled, then true)
    */
   readonly versioned?: boolean;
+
+  /**
+   * Enable object lock on the bucket.
+   *
+   * Enabling object lock for existing buckets is not supported. Object lock must be
+   * enabled when the bucket is created.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-bucket-config-enable
+   *
+   * @default false, unless objectLockDefaultRetention is set (then, true)
+   */
+  readonly objectLockEnabled?: boolean;
+
+  /**
+   * The default retention mode and rules for S3 Object Lock.
+   *
+   * Default retention can be configured after a bucket is created if the bucket already
+   * has object lock enabled. Enabling object lock for existing buckets is not supported.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-bucket-config-enable
+   *
+   * @default no default retention period
+   */
+  readonly objectLockDefaultRetention?: ObjectLockRetention;
 
   /**
    * Whether this bucket should send notifications to Amazon EventBridge or not.
@@ -1601,7 +1638,8 @@ export class Bucket extends BucketBase {
   public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
     const stack = Stack.of(scope);
     const region = attrs.region ?? stack.region;
-    const urlSuffix = stack.urlSuffix;
+    const regionInfo = regionInformation.RegionInfo.get(region);
+    const urlSuffix = regionInfo.domainSuffix ?? stack.urlSuffix;
 
     const bucketName = parseBucketName(scope, attrs);
     if (!bucketName) {
@@ -1609,13 +1647,18 @@ export class Bucket extends BucketBase {
     }
     Bucket.validateBucketName(bucketName);
 
-    const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
-      ? false
-      : attrs.bucketWebsiteNewUrlFormat;
+    const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
+    const newEndpoint = `s3-website.${region}.${urlSuffix}`;
 
-    const websiteDomain = newUrlFormat
-      ? `${bucketName}.s3-website.${region}.${urlSuffix}`
-      : `${bucketName}.s3-website-${region}.${urlSuffix}`;
+    let staticDomainEndpoint = regionInfo.s3StaticWebsiteEndpoint
+      ?? Lazy.string({ produce: () => stack.regionalFact(regionInformation.FactName.S3_STATIC_WEBSITE_ENDPOINT, newEndpoint) });
+
+    // Deprecated use of bucketWebsiteNewUrlFormat
+    if (attrs.bucketWebsiteNewUrlFormat !== undefined) {
+      staticDomainEndpoint = attrs.bucketWebsiteNewUrlFormat ? newEndpoint : oldEndpoint;
+    }
+
+    const websiteDomain = `${bucketName}.${staticDomainEndpoint}`;
 
     class Import extends BucketBase {
       public readonly bucketName = bucketName!;
@@ -1625,7 +1668,7 @@ export class Bucket extends BucketBase {
       public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
       public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
-      public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
+      public readonly bucketWebsiteNewUrlFormat = attrs.bucketWebsiteNewUrlFormat ?? false;
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly isWebsite = attrs.isWebsite ?? false;
       public policy?: BucketPolicy = undefined;
@@ -1648,7 +1691,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Create a mutable {@link IBucket} based on a low-level {@link CfnBucket}.
+   * Create a mutable `IBucket` based on a low-level `CfnBucket`.
    */
   public static fromCfnBucket(cfnBucket: CfnBucket): IBucket {
     // use a "weird" id that has a higher chance of being unique
@@ -1786,6 +1829,8 @@ export class Bucket extends BucketBase {
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
 
+    const objectLockConfiguration = this.parseObjectLockConfig(props);
+
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
@@ -1801,6 +1846,8 @@ export class Bucket extends BucketBase {
       ownershipControls: this.parseOwnershipControls(props),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
+      objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
+      objectLockConfiguration: objectLockConfiguration,
     });
     this._resource = resource;
 
@@ -1832,7 +1879,20 @@ export class Bucket extends BucketBase {
     }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
-      props.serverAccessLogsBucket.allowLogDelivery();
+      props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
+    // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
+    // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
+    // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
+    // For example, we should not allow log delivery to `this` if given an imported bucket or
+    // another situation that causes `instanceof` to fail
+    } else if (!props.serverAccessLogsBucket && props.serverAccessLogsPrefix) {
+      this.allowLogDelivery(this, props.serverAccessLogsPrefix);
+    } else if (props.serverAccessLogsBucket) {
+      // A `serverAccessLogsBucket` was provided but it is not a concrete `Bucket` and it
+      // may not be possible to configure the ACLs or bucket policy as required.
+      Annotations.of(this).addWarning(
+        `Unable to add necessary logging permissions to imported target bucket: ${props.serverAccessLogsBucket}`,
+      );
     }
 
     for (const inventory of props.inventories ?? []) {
@@ -2045,6 +2105,19 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
+    if (
+      // KMS can't be used for logging since the logging service can't use the key - logs don't write
+      // KMS_MANAGED can't be used for logging since the account can't access the logging service key - account can't read logs
+      (!props.serverAccessLogsBucket && (
+        props.encryptionKey ||
+        props.encryption === BucketEncryption.KMS_MANAGED ||
+        props.encryption === BucketEncryption.KMS )) ||
+      // Another bucket is being used that is configured for default SSE-KMS
+      props.serverAccessLogsBucket?.encryptionKey
+    ) {
+      throw new Error('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+    }
+
     return {
       destinationBucketName: props.serverAccessLogsBucket?.bucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
@@ -2139,6 +2212,27 @@ export class Bucket extends BucketBase {
     });
   }
 
+  private parseObjectLockConfig(props: BucketProps): CfnBucket.ObjectLockConfigurationProperty | undefined {
+    const { objectLockEnabled, objectLockDefaultRetention } = props;
+
+    if (!objectLockDefaultRetention) {
+      return undefined;
+    }
+    if (objectLockEnabled === false && objectLockDefaultRetention) {
+      throw new Error('Object Lock must be enabled to configure default retention settings');
+    }
+
+    return {
+      objectLockEnabled: 'Enabled',
+      rule: {
+        defaultRetention: {
+          days: objectLockDefaultRetention.duration.toDays(),
+          mode: objectLockDefaultRetention.mode,
+        },
+      },
+    };
+  }
+
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
     if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirect && !props.websiteRoutingRules) {
       return undefined;
@@ -2178,17 +2272,42 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Allows the LogDelivery group to write, fails if ACL was set differently.
+   * Allows Log Delivery to the S3 bucket, using a Bucket Policy if the relevant feature
+   * flag is enabled, otherwise the canned ACL is used.
+   *
+   * If log delivery is to be allowed using the ACL and an ACL has already been set, this fails.
    *
    * @see
-   * https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
+   * https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
    */
-  private allowLogDelivery() {
-    if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
+  private allowLogDelivery(from: IBucket, prefix?: string) {
+    if (FeatureFlags.of(this).isEnabled(cxapi.S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY)) {
+      let conditions = undefined;
+      // The conditions for the bucket policy can be applied only when the buckets are in
+      // the same stack and a concrete bucket instance (not imported). Otherwise, the
+      // necessary imports may result in a cyclic dependency between the stacks.
+      if (from instanceof Bucket && Stack.of(this) === Stack.of(from)) {
+        conditions = {
+          ArnLike: {
+            'aws:SourceArn': from.bucketArn,
+          },
+          StringEquals: {
+            'aws:SourceAccount': from.env.account,
+          },
+        };
+      }
+      this.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.ServicePrincipal('logging.s3.amazonaws.com')],
+        actions: ['s3:PutObject'],
+        resources: [this.arnForObjects(prefix ? `${prefix}*` : '*')],
+        conditions: conditions,
+      }));
+    } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
       throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
+    } else {
+      this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
     }
-
-    this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
   }
 
   private parseInventoryConfiguration(): CfnBucket.InventoryConfigurationProperty[] | undefined {
@@ -2690,6 +2809,93 @@ export interface RoutingRule {
    * @default - No condition
    */
   readonly condition?: RoutingRuleCondition;
+}
+
+/**
+ * Modes in which S3 Object Lock retention can be configured.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes
+ */
+export enum ObjectLockMode {
+  /**
+   * The Governance retention mode.
+   *
+   * With governance mode, you protect objects against being deleted by most users, but you can
+   * still grant some users permission to alter the retention settings or delete the object if
+   * necessary. You can also use governance mode to test retention-period settings before
+   * creating a compliance-mode retention period.
+   */
+  GOVERNANCE = 'GOVERNANCE',
+
+  /**
+   * The Compliance retention mode.
+   *
+   * When an object is locked in compliance mode, its retention mode can't be changed, and
+   * its retention period can't be shortened. Compliance mode helps ensure that an object
+   * version can't be overwritten or deleted for the duration of the retention period.
+   */
+  COMPLIANCE = 'COMPLIANCE',
+}
+
+/**
+ * The default retention settings for an S3 Object Lock configuration.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html
+ */
+export class ObjectLockRetention {
+  /**
+   * Configure for Governance retention for a specified duration.
+   *
+   * With governance mode, you protect objects against being deleted by most users, but you can
+   * still grant some users permission to alter the retention settings or delete the object if
+   * necessary. You can also use governance mode to test retention-period settings before
+   * creating a compliance-mode retention period.
+   *
+   * @param duration the length of time for which objects should retained
+   * @returns the ObjectLockRetention configuration
+   */
+  public static governance(duration: Duration): ObjectLockRetention {
+    return new ObjectLockRetention(ObjectLockMode.GOVERNANCE, duration);
+  }
+
+  /**
+   * Configure for Compliance retention for a specified duration.
+   *
+   * When an object is locked in compliance mode, its retention mode can't be changed, and
+   * its retention period can't be shortened. Compliance mode helps ensure that an object
+   * version can't be overwritten or deleted for the duration of the retention period.
+   *
+   * @param duration the length of time for which objects should be retained
+   * @returns the ObjectLockRetention configuration
+   */
+  public static compliance(duration: Duration): ObjectLockRetention {
+    return new ObjectLockRetention(ObjectLockMode.COMPLIANCE, duration);
+  }
+
+  /**
+   * The default period for which objects should be retained.
+   */
+  public readonly duration: Duration;
+
+  /**
+   * The retention mode to use for the object lock configuration.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes
+   */
+  public readonly mode: ObjectLockMode;
+
+  private constructor(mode: ObjectLockMode, duration: Duration) {
+    // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
+    if (duration.toDays() > 365 * 100) {
+      throw new Error('Object Lock retention duration must be less than 100 years');
+    }
+    if (duration.toDays() < 1) {
+      throw new Error('Object Lock retention duration must be at least 1 day');
+    }
+
+    this.mode = mode;
+    this.duration = duration;
+  }
 }
 
 /**

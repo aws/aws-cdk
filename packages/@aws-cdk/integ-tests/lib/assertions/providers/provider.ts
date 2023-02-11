@@ -260,8 +260,8 @@ export class AssertionsProvider extends Construct {
    * declare const provider: AssertionsProvider;
    * provider.addToRolePolicy({
    *   Effect: 'Allow',
-   *   Action: 's3:GetObject',
-   *   Resources: '*',
+   *   Action: ['s3:GetObject'],
+   *   Resource: ['*'],
    * });
    */
   public addToRolePolicy(statement: any): void {

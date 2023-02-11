@@ -218,7 +218,7 @@ credentials generation and rotation is integrated.
 ## Importing Secrets
 
 Existing secrets can be imported by ARN, name, and other attributes (including the KMS key used to encrypt the secret).
-Secrets imported by name should use the short-form of the name (without the SecretsManager-provided suffx);
+Secrets imported by name should use the short-form of the name (without the SecretsManager-provided suffix);
 the secret name must exist in the same account and region as the stack.
 Importing by name makes it easier to reference secrets created in different regions, each with their own suffix and ARN.
 

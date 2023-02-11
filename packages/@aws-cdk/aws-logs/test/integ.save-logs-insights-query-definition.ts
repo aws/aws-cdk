@@ -1,4 +1,6 @@
 import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
+
 import { LogGroup, QueryDefinition, QueryString } from '../lib';
 
 class LogsInsightsQueryDefinitionIntegStack extends Stack {
@@ -25,5 +27,8 @@ class LogsInsightsQueryDefinitionIntegStack extends Stack {
 }
 
 const app = new App();
-new LogsInsightsQueryDefinitionIntegStack(app, 'aws-cdk-logs-querydefinition-integ');
+const stack = new LogsInsightsQueryDefinitionIntegStack(app, 'aws-cdk-logs-insights-querydefinition-integ');
+new IntegTest(app, 'LogsInsightsQueryDefinitionIntegTest', {
+  testCases: [stack],
+});
 app.synth();

@@ -3,6 +3,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Alias, AliasOptions } from './alias';
+import { IGameSessionQueueDestination } from './game-session-queue';
 import { GameLiftMetrics } from './gamelift-canned-metrics.generated';
 import { CfnFleet } from './gamelift.generated';
 
@@ -139,7 +141,7 @@ export interface ResourceCreationLimitPolicy {
 /**
  * Represents a Gamelift fleet
  */
-export interface IFleet extends cdk.IResource, iam.IGrantable {
+export interface IFleet extends cdk.IResource, iam.IGrantable, IGameSessionQueueDestination {
   /**
    * The Identifier of the fleet.
    *
@@ -453,6 +455,33 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
 
   private readonly locations: Location[] = [];
 
+  /**
+   * Defines an alias for this fleet.
+   *
+   * ```ts
+   * declare const fleet: gamelift.FleetBase;
+   *
+   * fleet.addAlias('Live');
+   *
+   * // Is equivalent to
+   *
+   * new gamelift.Alias(this, 'AliasLive', {
+   *   aliasName: 'Live',
+   *   fleet: fleet,
+   * });
+   * ```
+   *
+   * @param aliasName The name of the alias
+   * @param options Alias options
+   */
+  public addAlias(aliasName: string, options: AliasOptions = {}) {
+    return new Alias(this, `Alias${aliasName}`, {
+      aliasName,
+      fleet: this,
+      ...options,
+    });
+  }
+
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       resourceArns: [this.fleetArn],
@@ -505,6 +534,13 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
       ...fn({ FleetId: this.fleetId }),
       ...props,
     }).attachTo(this);
+  }
+
+  /**
+   * The ARN to put into the destination field of a game session queue
+   */
+  public get resourceArnForDestination() {
+    return this.fleetArn;
   }
 
   /**

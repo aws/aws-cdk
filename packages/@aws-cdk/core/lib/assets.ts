@@ -175,6 +175,19 @@ export interface DockerImageAssetSource {
   readonly dockerBuildArgs?: { [key: string]: string };
 
   /**
+   * Build secrets to pass to the `docker build` command.
+   *
+   * Since Docker build secrets are resolved before deployment, keys and
+   * values cannot refer to unresolved tokens (such as `lambda.functionArn` or
+   * `queue.queueUrl`).
+   *
+   * Only allowed when `directoryName` is specified.
+   *
+   * @default - no build secrets are passed
+   */
+  readonly dockerBuildSecrets?: { [key: string]: string };
+
+  /**
    * Docker target to build to
    *
    * Only allowed when `directoryName` is specified.
@@ -221,6 +234,14 @@ export interface DockerImageAssetSource {
    * @default - no platform specified (the current machine architecture will be used)
    */
   readonly platform?: string;
+
+  /**
+   * Outputs to pass to the `docker build` command.
+   *
+   * @default - no build args are passed
+   */
+  readonly dockerOutputs?: string[];
+
 }
 
 /**

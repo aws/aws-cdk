@@ -47,6 +47,63 @@ describe('AwsApiCall', () => {
 
   });
 
+  test('restrict output paths', () => {
+    // GIVEN
+    const app = new App();
+    const deplossert = new DeployAssert(app);
+
+    // WHEN
+    deplossert.awsApiCall('MyService', 'MyApi', {
+      param1: 'val1',
+      param2: 2,
+    }, ['path1', 'path2']);
+
+    // THEN
+    const template = Template.fromStack(deplossert.scope);
+    template.resourceCountIs('AWS::Lambda::Function', 1);
+    template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
+      service: 'MyService',
+      api: 'MyApi',
+      parameters: {
+        param1: 'val1',
+        param2: 2,
+      },
+      outputPaths: [
+        'path1',
+        'path2',
+      ],
+    });
+  });
+
+  test('assert at path', () => {
+    // GIVEN
+    const app = new App();
+    const deplossert = new DeployAssert(app);
+
+    // WHEN
+    deplossert.awsApiCall('MyService', 'MyApi', {
+      param1: 'val1',
+      param2: 2,
+    }).assertAtPath('Messages.0.Key', ExpectedResult.exact('first-key'));
+
+    // THEN
+    const template = Template.fromStack(deplossert.scope);
+    template.resourceCountIs('AWS::Lambda::Function', 1);
+    template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
+      service: 'MyService',
+      api: 'MyApi',
+      parameters: {
+        param1: 'val1',
+        param2: 2,
+      },
+      flattenResponse: 'true',
+      outputPaths: [
+        'Messages.0.Key',
+      ],
+      expected: JSON.stringify({ $Exact: 'first-key' }),
+    });
+  });
+
   test('add policy to provider', () => {
     // GIVEN
     const app = new App();

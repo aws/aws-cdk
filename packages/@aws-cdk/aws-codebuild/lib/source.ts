@@ -13,7 +13,7 @@ import {
 } from './source-types';
 
 /**
- * The type returned from {@link ISource#bind}.
+ * The type returned from `ISource#bind`.
  */
 export interface SourceConfig {
   readonly sourceProperty: CfnProject.SourceProperty;
@@ -30,7 +30,7 @@ export interface SourceConfig {
 
 /**
  * The abstract interface of a CodeBuild source.
- * Implemented by {@link Source}.
+ * Implemented by `Source`.
  */
 export interface ISource {
   readonly identifier?: string;
@@ -201,7 +201,7 @@ enum WebhookFilterTypes {
 /**
  * An object that represents a group of filter conditions for a webhook.
  * Every condition in a given FilterGroup must be true in order for the whole group to be true.
- * You construct instances of it by calling the {@link #inEventOf} static factory method,
+ * You construct instances of it by calling the `#inEventOf` static factory method,
  * and then calling various `andXyz` instance methods to create modified instances of it
  * (this class is immutable).
  *
@@ -565,7 +565,7 @@ abstract class ThirdPartyGitSource extends GitSource {
 }
 
 /**
- * Construction properties for {@link CodeCommitSource}.
+ * Construction properties for `CodeCommitSource`.
  */
 export interface CodeCommitSourceProps extends GitSourceProps {
   readonly repository: codecommit.IRepository;
@@ -603,7 +603,7 @@ class CodeCommitSource extends GitSource {
 }
 
 /**
- * Construction properties for {@link S3Source}.
+ * Construction properties for `S3Source`.
  */
 export interface S3SourceProps extends SourceProps {
   readonly bucket: s3.IBucket;
@@ -648,7 +648,7 @@ class S3Source extends Source {
 }
 
 /**
- * Common properties between {@link GitHubSource} and {@link GitHubEnterpriseSource}.
+ * Common properties between `GitHubSource` and `GitHubEnterpriseSource`.
  */
 interface CommonGithubSourceProps extends ThirdPartyGitSourceProps {
   /**
@@ -691,7 +691,7 @@ abstract class CommonGithubSource extends ThirdPartyGitSource {
 }
 
 /**
- * Construction properties for {@link GitHubSource} and {@link GitHubEnterpriseSource}.
+ * Construction properties for `GitHubSource` and `GitHubEnterpriseSource`.
  */
 export interface GitHubSourceProps extends CommonGithubSourceProps {
   /**
@@ -735,7 +735,7 @@ class GitHubSource extends CommonGithubSource {
 }
 
 /**
- * Construction properties for {@link GitHubEnterpriseSource}.
+ * Construction properties for `GitHubEnterpriseSource`.
  */
 export interface GitHubEnterpriseSourceProps extends CommonGithubSourceProps {
   /**
@@ -806,7 +806,7 @@ class GitHubEnterpriseSource extends CommonGithubSource {
 }
 
 /**
- * Construction properties for {@link BitBucketSource}.
+ * Construction properties for `BitBucketSource`.
  */
 export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
   /**

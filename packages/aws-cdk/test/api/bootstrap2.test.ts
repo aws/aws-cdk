@@ -1,13 +1,18 @@
+
 const mockDeployStack = jest.fn();
 
 jest.mock('../../lib/api/deploy-stack', () => ({
   deployStack: mockDeployStack,
 }));
 
+import { IAM } from 'aws-sdk';
 import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
 import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 
 let bootstrapper: Bootstrapper;
+let mockGetPolicyIamCode: (params: IAM.Types.GetPolicyRequest) => IAM.Types.GetPolicyResponse;
+let mockCreatePolicyIamCode: (params: IAM.Types.CreatePolicyRequest) => IAM.Types.CreatePolicyResponse;
+
 beforeEach(() => {
   bootstrapper = new Bootstrapper({ source: 'default' });
 });
@@ -29,6 +34,18 @@ describe('Bootstrapping v2', () => {
     sdk = new MockSdkProvider({ realSdk: false });
     // By default, we'll return a non-found toolkit info
     (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstraplessDeploymentsOnly(sdk.sdk));
+    const value = {
+      Policy: {
+        PolicyName: 'my-policy',
+        Arn: 'arn:aws:iam::0123456789012:policy/my-policy',
+      },
+    };
+    mockGetPolicyIamCode = jest.fn().mockReturnValue(value);
+    mockCreatePolicyIamCode = jest.fn().mockReturnValue(value);
+    sdk.stubIam({
+      createPolicy: mockCreatePolicyIamCode,
+      getPolicy: mockGetPolicyIamCode,
+    });
   });
 
   afterEach(() => {
@@ -78,6 +95,34 @@ describe('Bootstrapping v2', () => {
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
       parameters: expect.objectContaining({
         PublicAccessBlockConfiguration: 'false',
+      }),
+    }));
+  });
+
+  test('passes true to PermissionsBoundary', async () => {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        examplePermissionsBoundary: true,
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: expect.objectContaining({
+        InputPermissionsBoundary: 'cdk-hnb659fds-permissions-boundary',
+      }),
+    }));
+  });
+
+  test('passes value to PermissionsBoundary', async () => {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        customPermissionsBoundary: 'permissions-boundary-name',
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: expect.objectContaining({
+        InputPermissionsBoundary: 'permissions-boundary-name',
       }),
     }));
   });

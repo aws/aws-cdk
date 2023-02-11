@@ -253,6 +253,9 @@ export class BucketDeployment extends Construct {
   private readonly cr: cdk.CustomResource;
   private _deployedBucket?: s3.IBucket;
   private requestDestinationArn: boolean = false;
+  private readonly destinationBucket: s3.IBucket;
+  private readonly sources: SourceConfig[];
+  private readonly handlerRole: iam.IRole;
 
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
@@ -271,6 +274,8 @@ export class BucketDeployment extends Construct {
     if (props.useEfs && !props.vpc) {
       throw new Error('Vpc must be specified if useEfs is set');
     }
+
+    this.destinationBucket = props.destinationBucket;
 
     const accessPointPath = '/lambda';
     let accessPoint;
@@ -327,12 +332,13 @@ export class BucketDeployment extends Construct {
 
     const handlerRole = handler.role;
     if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
+    this.handlerRole = handlerRole;
 
-    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
+    this.sources = props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole }));
 
-    props.destinationBucket.grantReadWrite(handler);
+    this.destinationBucket.grantReadWrite(handler);
     if (props.accessControl) {
-      props.destinationBucket.grantPutAcl(handler);
+      this.destinationBucket.grantPutAcl(handler);
     }
     if (props.distribution) {
       handler.addToRolePolicy(new iam.PolicyStatement({
@@ -342,25 +348,40 @@ export class BucketDeployment extends Construct {
       }));
     }
 
-    // to avoid redundant stack updates, only include "SourceMarkers" if one of
-    // the sources actually has markers.
-    const hasMarkers = sources.some(source => source.markers);
-
     // Markers are not replaced if zip sources are not extracted, so throw an error
     // if extraction is not wanted and sources have markers.
-    if (hasMarkers && props.extract == false) {
-      throw new Error('Some sources are incompatible with extract=false; sources with deploy-time values (such as \'snsTopic.topicArn\') must be extracted.');
-    }
+    const _this = this;
+    this.node.addValidation({
+      validate(): string[] {
+        if (_this.sources.some(source => source.markers) && props.extract == false) {
+          return ['Some sources are incompatible with extract=false; sources with deploy-time values (such as \'snsTopic.topicArn\') must be extracted.'];
+        }
+        return [];
+      },
+    });
 
     const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.ephemeralStorageSize, props.vpc)}`;
     this.cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
-        SourceBucketNames: sources.map(source => source.bucket.bucketName),
-        SourceObjectKeys: sources.map(source => source.zipObjectKey),
-        SourceMarkers: hasMarkers ? sources.map(source => source.markers ?? {}) : undefined,
-        DestinationBucketName: props.destinationBucket.bucketName,
+        SourceBucketNames: cdk.Lazy.list({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
+        SourceObjectKeys: cdk.Lazy.list({ produce: () => this.sources.map(source => source.zipObjectKey) }),
+        SourceMarkers: cdk.Lazy.any({
+          produce: () => {
+            return this.sources.reduce((acc, source) => {
+              if (source.markers) {
+                acc.push(source.markers);
+                // if there are more than 1 source, then all sources
+                // require markers (custom resource will throw an error otherwise)
+              } else if (this.sources.length > 1) {
+                acc.push({});
+              }
+              return acc;
+            }, [] as Array<Record<string, any>>);
+          },
+        }, { omitEmptyArray: true }),
+        DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
         Extract: props.extract,
@@ -371,8 +392,8 @@ export class BucketDeployment extends Construct {
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
-        // Passing through the ARN sequences dependencees on the deployment
-        DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? props.destinationBucket.bucketArn : undefined }),
+        // Passing through the ARN sequences dependency on the deployment
+        DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
       },
     });
 
@@ -429,7 +450,7 @@ export class BucketDeployment extends Construct {
      * want the contents of the bucket to be removed on bucket deletion, then `autoDeleteObjects` property should
      * be set to true on the Bucket.
      */
-    cdk.Tags.of(props.destinationBucket).add(tagKey, 'true');
+    cdk.Tags.of(this.destinationBucket).add(tagKey, 'true');
 
   }
 
@@ -440,11 +461,18 @@ export class BucketDeployment extends Construct {
    * bucket deployment has happened before the next operation is started, pass the other construct
    * a reference to `deployment.deployedBucket`.
    *
-   * Doing this replaces calling `otherResource.node.addDependency(deployment)`.
+   * Note that this only returns an immutable reference to the destination bucket.
+   * If sequenced access to the original destination bucket is required, you may add a dependency
+   * on the bucket deployment instead: `otherResource.node.addDependency(deployment)`
    */
   public get deployedBucket(): s3.IBucket {
     this.requestDestinationArn = true;
-    this._deployedBucket = this._deployedBucket ?? s3.Bucket.fromBucketArn(this, 'DestinationBucket', cdk.Token.asString(this.cr.getAtt('DestinationBucketArn')));
+    this._deployedBucket = this._deployedBucket ?? s3.Bucket.fromBucketAttributes(this, 'DestinationBucket', {
+      bucketArn: cdk.Token.asString(this.cr.getAtt('DestinationBucketArn')),
+      region: this.destinationBucket.env.region,
+      account: this.destinationBucket.env.account,
+      isWebsite: this.destinationBucket.isWebsite,
+    });
     return this._deployedBucket;
   }
 
@@ -463,6 +491,22 @@ export class BucketDeployment extends Construct {
   public get objectKeys(): string[] {
     const objectKeys = cdk.Token.asList(this.cr.getAtt('SourceObjectKeys'));
     return objectKeys;
+  }
+
+  /**
+   * Add an additional source to the bucket deployment
+   *
+   * @example
+   * declare const websiteBucket: s3.IBucket;
+   * const deployment = new s3deploy.BucketDeployment(this, 'Deployment', {
+   *   sources: [s3deploy.Source.asset('./website-dist')],
+   *   destinationBucket: websiteBucket,
+   * });
+   *
+   * deployment.addSource(s3deploy.Source.asset('./another-asset'));
+   */
+  public addSource(source: ISource): void {
+    this.sources.push(source.bind(this, { handlerRole: this.handlerRole }));
   }
 
   private renderUniqueId(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {

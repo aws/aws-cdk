@@ -127,6 +127,13 @@ export interface TrailProps {
    * @default - false
    */
   readonly isOrganizationTrail?: boolean
+
+  /**
+   * A JSON string that contains the insight types you want to log on a trail.
+   *
+   * @default - No Value.
+   */
+  readonly insightTypes?: InsightType[]
 }
 
 /**
@@ -156,6 +163,23 @@ export enum ReadWriteType {
    * No events
    */
   NONE = 'None',
+}
+
+/**
+ * Util element for InsightSelector
+ */
+export class InsightType {
+  /**
+   * The type of insights to log on a trail. (API Call Rate)
+   */
+  public static readonly API_CALL_RATE = new InsightType('ApiCallRateInsight');
+
+  /**
+   * The type of insights to log on a trail. (API Error Rate)
+   */
+  public static readonly API_ERROR_RATE = new InsightType('ApiErrorRateInsight');
+
+  protected constructor(public readonly value: string) {}
 }
 
 /**
@@ -211,8 +235,10 @@ export class Trail extends Resource {
   public readonly logGroup?: logs.ILogGroup;
 
   private s3bucket: s3.IBucket;
+  private managementEvents: ReadWriteType | undefined;
   private eventSelectors: EventSelector[] = [];
   private topic: sns.ITopic | undefined;
+  private insightTypeValues: InsightSelector[] | undefined;
 
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
     super(scope, id, {
@@ -264,23 +290,23 @@ export class Trail extends Resource {
       }));
     }
 
-    if (props.managementEvents) {
-      let managementEvent;
-      if (props.managementEvents === ReadWriteType.NONE) {
-        managementEvent = {
-          includeManagementEvents: false,
-        };
-      } else {
-        managementEvent = {
-          includeManagementEvents: true,
-          readWriteType: props.managementEvents,
-        };
-      }
-      this.eventSelectors.push(managementEvent);
+    this.managementEvents = props.managementEvents;
+    if (this.managementEvents && this.managementEvents !== ReadWriteType.NONE) {
+      this.eventSelectors.push({
+        includeManagementEvents: true,
+        readWriteType: props.managementEvents,
+      });
     }
+    this.node.addValidation({ validate: () => this.validateEventSelectors() });
 
     if (props.kmsKey && props.encryptionKey) {
       throw new Error('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey');
+    }
+
+    if (props.insightTypes) {
+      this.insightTypeValues = props.insightTypes.map(function(t) {
+        return { insightType: t.value };
+      });
     }
 
     // TODO: not all regions support validation. Use service configuration data to fail gracefully
@@ -298,6 +324,7 @@ export class Trail extends Resource {
       snsTopicName: this.topic?.topicName,
       eventSelectors: this.eventSelectors,
       isOrganizationTrail: props.isOrganizationTrail,
+      insightSelectors: this.insightTypeValues,
     });
 
     this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
@@ -341,12 +368,17 @@ export class Trail extends Resource {
       throw new Error('A maximum of 5 event selectors are supported per trail.');
     }
 
+    let includeAllManagementEvents;
+    if (this.managementEvents === ReadWriteType.NONE) {
+      includeAllManagementEvents = false;
+    }
+
     this.eventSelectors.push({
       dataResources: [{
         type: dataResourceType,
         values: dataResourceValues,
       }],
-      includeManagementEvents: options.includeManagementEvents,
+      includeManagementEvents: options.includeManagementEvents ?? includeAllManagementEvents,
       excludeManagementEventSources: options.excludeManagementEventSources,
       readWriteType: options.readWriteType,
     });
@@ -371,7 +403,7 @@ export class Trail extends Resource {
   }
 
   /**
-   * Log all Lamda data events for all lambda functions the account.
+   * Log all Lambda data events for all lambda functions the account.
    * @see https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html
    * @default false
    */
@@ -418,6 +450,15 @@ export class Trail extends Resource {
    */
   public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     return Trail.onEvent(this, id, options);
+  }
+
+  private validateEventSelectors(): string[] {
+    const errors: string[] = [];
+    // Ensure that there is at least one event selector when management events are set to None
+    if (this.managementEvents === ReadWriteType.NONE && this.eventSelectors.length === 0) {
+      errors.push('At least one event selector must be added when management event recording is set to None');
+    }
+    return errors;
   }
 }
 
@@ -501,4 +542,8 @@ interface EventSelector {
 interface EventSelectorData {
   readonly type: string;
   readonly values: string[];
+}
+
+interface InsightSelector {
+  readonly insightType?: string;
 }

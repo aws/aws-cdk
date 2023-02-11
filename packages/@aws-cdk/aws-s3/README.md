@@ -349,7 +349,25 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 });
 ```
 
-[S3 Server access logging]: https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
+### Allowing access log delivery using a Bucket Policy (recommended)
+
+When possible, it is recommended to use a bucket policy to grant access instead of
+using ACLs. When the `@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy` feature flag
+is enabled, this is done by default for server access logs. If S3 Server Access Logs
+are the only logs delivered to your bucket (or if all other services logging to the
+bucket support using bucket policy instead of ACLs), you can set object ownership
+to [bucket owner enforced](#bucket-owner-enforced-recommended), as is recommended.
+
+```ts
+const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
+  objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+});
+
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  serverAccessLogsBucket: accessLogsBucket,
+  serverAccessLogsPrefix: 'logs',
+});
+```
 
 ## S3 Inventory
 
@@ -485,13 +503,22 @@ new s3.Bucket(this, 'MyBucket', {
 
 ### Bucket owner enforced (recommended)
 
-ACLs are disabled, and the bucket owner automatically owns and has full control over every object in the bucket. ACLs no longer affect permissions to data in the S3 bucket. The bucket uses policies to define access control.
+ACLs are disabled, and the bucket owner automatically owns and has full control
+over every object in the bucket. ACLs no longer affect permissions to data in the
+S3 bucket. The bucket uses policies to define access control.
 
 ```ts
 new s3.Bucket(this, 'MyBucket', {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
 });
 ```
+
+Some services may not not support log delivery to buckets that have object ownership
+set to bucket owner enforced, such as
+[S3 buckets using ACLs](#allowing-access-log-delivery-using-a-bucket-policy-recommended)
+or [CloudFront Distributions][CloudFront S3 Bucket].
+
+[CloudFront S3 Bucket]: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html#AccessLogsBucketAndFileOwnership
 
 ## Bucket deletion
 
@@ -588,4 +615,37 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
     }],
   }]
 });
+```
+
+## Object Lock Configuration
+
+[Object Lock](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html)
+can be configured to enable a write-once-read-many model for an S3 bucket. Object Lock must be
+configured when a bucket is created; if a bucket is created without Object Lock, it cannot be
+enabled later via the CDK.
+
+Object Lock can be enabled on an S3 bucket by specifying:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  objectLockEnabled: true
+});
+```
+
+Usually, it is desired to not just enable Object Lock for a bucket but to also configure a
+[retention mode](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes)
+and a [retention period](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-periods).
+These can be specified by providing `objectLockDefaultRetention`:
+
+```ts
+// Configure for governance mode with a duration of 7 years
+new s3.Bucket(this, 'Bucket1', {
+  objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(7 * 365)),
+});
+
+// Configure for compliance mode with a duration of 1 year
+new s3.Bucket(this, 'Bucket2', {
+  objectLockDefaultRetention: s3.ObjectLockRetention.compliance(cdk.Duration.days(365)),
+});
+
 ```

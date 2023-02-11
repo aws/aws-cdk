@@ -248,7 +248,7 @@ describe('Template', () => {
             Properties: { baz: 'waldo' },
           },
         },
-      })).toThrowError(/Expected waldo but received qux at \/Resources\/Foo\/Properties\/baz/);
+      })).toThrowError(/Expected waldo but received qux/);
     });
   });
 
@@ -267,11 +267,11 @@ describe('Template', () => {
 
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'waldo' },
-      })).toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+      })).toThrow(/Expected waldo but received qux/);
 
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'qux', fred: 'waldo' },
-      })).toThrow(/Missing key.*at \/Properties\/fred/);
+      })).toThrow(/Missing key/);
     });
 
     test('arrayWith', () => {
@@ -288,10 +288,10 @@ describe('Template', () => {
 
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: { baz: Match.arrayWith(['waldo']) },
-      })).toThrow(/Missing element \[waldo\] at pattern index 0 at \/Properties\/baz/);
+      })).toThrow(/Could not match arrayWith pattern 0/);
     });
 
-    test('arrayWith - multiple resources', done => {
+    test('arrayWith - multiple resources', async () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo1', {
         type: 'Foo::Bar',
@@ -304,13 +304,11 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
 
-      expectToThrow(() => {
+      await expectToThrow(() => {
         inspect.hasResource('Foo::Bar', {
           Properties: Match.arrayWith(['flob']),
         });
-      }, [/The closest result/, /flob/, /qux/], done);
-
-      done();
+      }, [/closest matches/, /flob/, /qux/]);
     });
 
     test('objectLike', () => {
@@ -330,10 +328,10 @@ describe('Template', () => {
 
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ baz: 'waldo' }),
-      })).toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+      })).toThrow(/Expected waldo but received qux/);
     });
 
-    test('objectLike - multiple resources', done => {
+    test('objectLike - multiple resources', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo1', {
         type: 'Foo::Bar',
@@ -350,9 +348,7 @@ describe('Template', () => {
         inspect.hasResource('Foo::Bar', {
           Properties: Match.objectLike({ foo: { flob: 'foo' } }),
         });
-      }, [/The closest result/, /"flob": "qux"/], done);
-
-      done();
+      }, [/closest match/, /"flob": "qux"/]);
     });
 
     test('absent', () => {
@@ -368,7 +364,7 @@ describe('Template', () => {
       });
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ baz: Match.absent() }),
-      })).toThrow(/key should be absent at \/Properties\/baz/);
+      })).toThrow(/key should be absent/);
     });
 
     test('incorrect types', () => {
@@ -381,7 +377,7 @@ describe('Template', () => {
       const inspect = Template.fromStack(stack);
       expect(() => inspect.hasResource('Foo::Baz', {
         Properties: Match.objectLike({ baz: 'qux' }),
-      })).toThrow(/No resource/);
+      })).toThrow(/0 resources with type Foo::Baz/);
     });
 
     test('capture', () => {
@@ -424,10 +420,10 @@ describe('Template', () => {
       inspect.hasResourceProperties('Foo::Bar', { baz: 'qux' });
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'waldo' }))
-        .toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+        .toThrow(/Expected waldo but received qux/);
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
-        .toThrow(/Missing key.*at \/Properties\/fred/);
+        .toThrow(/Missing key/);
     });
 
     test('absent - with properties', () => {
@@ -445,7 +441,7 @@ describe('Template', () => {
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', {
         baz: Match.absent(),
-      })).toThrow(/key should be absent at \/Properties\/baz/);
+      })).toThrow(/key should be absent/);
     });
 
     test('absent - no properties', () => {
@@ -457,7 +453,7 @@ describe('Template', () => {
       const inspect = Template.fromStack(stack);
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absent(), baz: 'qux' }))
-        .toThrow(/Missing key.*at \/Properties\/baz/);
+        .toThrow(/Missing key/);
 
       inspect.hasResourceProperties('Foo::Bar', Match.absent());
     });
@@ -570,7 +566,7 @@ describe('Template', () => {
       expect(inspect.allResources('Foo::Bar', { Properties: partialProps }));
     });
 
-    test('no resources match', (done) => {
+    test('no resources match', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -590,12 +586,10 @@ describe('Template', () => {
           /Foo/,
           /Foo2/,
         ],
-        done,
       );
-      done();
     });
 
-    test('some resources match', (done) => {
+    test('some resources match', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -614,9 +608,7 @@ describe('Template', () => {
           'The following resources do not match the given definition:',
           /Foo2/,
         ],
-        done,
       );
-      done();
     });
 
     test('using a "not" matcher ', () => {
@@ -652,7 +644,7 @@ describe('Template', () => {
       expect(inspect.allResourcesProperties('Foo::Bar', partialProps));
     });
 
-    test('no resources match', (done) => {
+    test('no resources match', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -676,12 +668,10 @@ describe('Template', () => {
           /Foo/,
           /Foo2/,
         ],
-        done,
       );
-      done();
     });
 
-    test('some resources match', (done) => {
+    test('some resources match', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -700,9 +690,7 @@ describe('Template', () => {
           'The following resources do not match the given definition:',
           /Foo2/,
         ],
-        done,
       );
-      done();
     });
 
     test('using a "not" matcher ', () => {
@@ -735,7 +723,7 @@ describe('Template', () => {
       expect(() => inspect.hasOutput('Foo', { Value: 'Bar' })).not.toThrow();
     });
 
-    test('not matching', (done) => {
+    test('not matching', () => {
       const stack = new Stack();
       new CfnOutput(stack, 'Foo', {
         value: 'Bar',
@@ -755,12 +743,10 @@ describe('Template', () => {
           /1 outputs named Foo/,
           /Expected ExportBaz but received ExportBar/,
         ],
-        done,
       );
-      done();
     });
 
-    test('value not matching with outputName', (done) => {
+    test('value not matching with outputName', () => {
       const stack = new Stack();
       new CfnOutput(stack, 'Foo', {
         value: 'Bar',
@@ -778,13 +764,11 @@ describe('Template', () => {
           /1 outputs named Fred/,
           /Expected Bar but received Baz/,
         ],
-        done,
       );
-      done();
     });
   });
 
-  test('outputName not matching', (done) => {
+  test('outputName not matching', () => {
     const stack = new Stack();
     new CfnOutput(stack, 'Foo', {
       value: 'Bar',
@@ -798,11 +782,9 @@ describe('Template', () => {
         Export: { Name: 'ExportBar' },
       }),
       [
-        /No outputs named Fred found in the template./,
+        /Template has 0 outputs named Fred./,
       ],
-      done,
     );
-    done();
   });
 
   describe('findOutputs', () => {
@@ -891,7 +873,7 @@ describe('Template', () => {
       expect(() => inspect.hasMapping('*', { Foo: { Bar: 'Lightning' } })).not.toThrow();
     });
 
-    test('not matching', (done) => {
+    test('not matching', () => {
       const stack = new Stack();
       new CfnMapping(stack, 'Foo', {
         mapping: {
@@ -914,9 +896,7 @@ describe('Template', () => {
           /2 mappings/,
           /Expected Qux but received Fred/,
         ],
-        done,
       );
-      done();
     });
 
     test('matching specific outputName', () => {
@@ -937,7 +917,7 @@ describe('Template', () => {
       expect(() => inspect.hasMapping('Foo', { Baz: { Bar: 'Qux' } })).not.toThrow();
     });
 
-    test('not matching specific outputName', (done) => {
+    test('not matching specific outputName', () => {
       const stack = new Stack();
       new CfnMapping(stack, 'Foo', {
         mapping: {
@@ -960,9 +940,7 @@ describe('Template', () => {
           /1 mappings/,
           /Expected Fred but received Baz/,
         ],
-        done,
       );
-      done();
     });
   });
 
@@ -1054,7 +1032,7 @@ describe('Template', () => {
       expect(() => inspect.findParameters('p3', { Type: 'String' })).not.toThrow();
     });
 
-    test('not matching', (done) => {
+    test('not matching', () => {
       const stack = new Stack();
       new CfnParameter(stack, 'p1', {
         type: 'String',
@@ -1073,9 +1051,7 @@ describe('Template', () => {
           /3 parameters/,
           /Expected CommaDelimitedList but received String/,
         ],
-        done,
       );
-      done();
     });
 
     test('matching specific parameter name', () => {
@@ -1093,7 +1069,7 @@ describe('Template', () => {
       expect(() => inspect.findParameters('p1', { Type: 'String' })).not.toThrow();
     });
 
-    test('not matching specific parameter name', (done) => {
+    test('not matching specific parameter name', () => {
       const stack = new Stack();
       new CfnParameter(stack, 'p1', {
         type: 'String',
@@ -1111,9 +1087,7 @@ describe('Template', () => {
           /1 parameter/,
           /Expected CommaDelimitedList but received Number/,
         ],
-        done,
       );
-      done();
     });
   });
 
@@ -1211,7 +1185,7 @@ describe('Template', () => {
       expect(() => inspect.hasCondition('*', { 'Fn::Equals': ['Bar', 'Baz'] })).not.toThrow();
     });
 
-    test('not matching', (done) => {
+    test('not matching', () => {
       const stack = new Stack();
       new CfnCondition(stack, 'Foo', {
         expression: Fn.conditionEquals('Bar', 'Baz'),
@@ -1230,9 +1204,7 @@ describe('Template', () => {
           /2 conditions/,
           /Missing key/,
         ],
-        done,
       );
-      done();
     });
 
     test('matching specific outputName', () => {
@@ -1245,7 +1217,7 @@ describe('Template', () => {
       expect(() => inspect.hasCondition('Foo', { 'Fn::Equals': ['Bar', 'Baz'] })).not.toThrow();
     });
 
-    test('not matching specific outputName', (done) => {
+    test('not matching specific outputName', () => {
       const stack = new Stack();
       new CfnCondition(stack, 'Foo', {
         expression: Fn.conditionEquals('Baz', 'Bar'),
@@ -1260,9 +1232,7 @@ describe('Template', () => {
           /1 conditions/,
           /Expected Baz but received Bar/,
         ],
-        done,
       );
-      done();
     });
   });
 
@@ -1385,34 +1355,23 @@ describe('Template', () => {
   });
 });
 
-function expectToThrow(fn: () => void, msgs: (RegExp | string)[], done: jest.DoneCallback): void {
+function expectToThrow(fn: () => void, msgs: (RegExp | string)[]): void {
   try {
     fn();
-    done.fail('Function expected to throw, did not throw');
+    throw new Error('Function expected to throw, did not throw');
   } catch (error) {
     const message = (error as Error).message;
-    const splits = message.split('\n');
-    let splitIdx = 0;
-    let msgsIdx = 0;
-    while (splitIdx < splits.length && msgsIdx < msgs.length) {
-      const msg = msgs[msgsIdx];
-      const split = splits[splitIdx];
-      let match = false;
+    const unmatching = msgs.filter(msg => {
       if (msg instanceof RegExp) {
-        match = msg.test(split);
+        return !msg.test(message);
       } else {
-        match = (msg === split);
+        return !message.includes(msg);
       }
+    });
 
-      if (match) {
-        msgsIdx++;
-      }
-      splitIdx++;
-    }
-
-    if (msgsIdx < msgs.length) {
-      done.fail([
-        `Error thrown did not contain expected messages: ${msgs.slice(msgsIdx, msgs.length)}`,
+    if (unmatching.length > 0) {
+      throw new Error([
+        `Error thrown did not contain expected messages: ${unmatching}`,
         `Received error: ${message}`,
       ].join('\n'));
     }

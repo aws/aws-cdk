@@ -1,6 +1,7 @@
 import { IResolvable, IResolveContext } from '../resolvable';
 import { captureStackTrace } from '../stack-trace';
 import { Token } from '../token';
+import { ResolutionTypeHint } from '../type-hints';
 
 /**
  * Customization properties for an Intrinsic token
@@ -13,6 +14,14 @@ export interface IntrinsicProps {
    * @default true
    */
   readonly stackTrace?: boolean;
+
+  /**
+   *
+   * Type that this token is expected to evaluate to
+   *
+   * @default ResolutionTypeHint.STRING
+   */
+  readonly typeHint?: ResolutionTypeHint;
 }
 
 /**
@@ -30,6 +39,11 @@ export class Intrinsic implements IResolvable {
    */
   public readonly creationStack: string[];
 
+  /**
+   * Type that the Intrinsic is expected to evaluate to.
+   */
+  public readonly typeHint?: ResolutionTypeHint;
+
   private readonly value: any;
 
   constructor(value: any, options: IntrinsicProps = {}) {
@@ -39,6 +53,7 @@ export class Intrinsic implements IResolvable {
 
     this.creationStack = options.stackTrace ?? true ? captureStackTrace() : [];
     this.value = value;
+    this.typeHint = options.typeHint ?? ResolutionTypeHint.STRING;
   }
 
   public resolve(_context: IResolveContext) {

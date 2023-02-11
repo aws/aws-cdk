@@ -10,6 +10,7 @@ import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
+import { formatDistributionArn } from './private/utils';
 
 /**
  * HTTP status code to failover to second origin
@@ -53,7 +54,7 @@ export enum FailoverStatusCode {
  * "cloudfront.net" domain. To use this feature you must provide the list of
  * additional domains, and the ACM Certificate that CloudFront should use for
  * these additional domains.
- * @deprecated see {@link CloudFrontWebDistributionProps#viewerCertificate} with {@link ViewerCertificate#acmCertificate}
+ * @deprecated see `CloudFrontWebDistributionProps#viewerCertificate` with `ViewerCertificate#acmCertificate`
  */
 export interface AliasConfiguration {
   /**
@@ -556,7 +557,7 @@ export class ViewerCertificate {
   /**
    * Generate a viewer certifcate configuration using
    * the CloudFront default certificate (e.g. d111111abcdef8.cloudfront.net)
-   * and a {@link SecurityPolicyProtocol.TLS_V1} security policy.
+   * and a `SecurityPolicyProtocol.TLS_V1` security policy.
    *
    * @param aliases Alternative CNAME aliases
    *                You also must create a CNAME record with your DNS service to route queries
@@ -576,7 +577,7 @@ export interface CloudFrontWebDistributionProps {
    * AliasConfiguration is used to configured CloudFront to respond to requests on custom domain names.
    *
    * @default - None.
-   * @deprecated see {@link CloudFrontWebDistributionProps#viewerCertificate} with {@link ViewerCertificate#acmCertificate}
+   * @deprecated see `CloudFrontWebDistributionProps#viewerCertificate` with `ViewerCertificate#acmCertificate`
    */
   readonly aliasConfiguration?: AliasConfiguration;
 
@@ -757,6 +758,13 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         this.domainName = attrs.domainName;
         this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
+      }
+
+      public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+        return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
+      }
+      public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
+        return this.grant(identity, 'cloudfront:CreateInvalidation');
       }
     }();
   }
@@ -981,6 +989,26 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this distribution to an IAM
+   * principal's policy.
+   *
+   * @param identity The principal
+   * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
+   */
+  public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({ grantee: identity, actions, resourceArns: [formatDistributionArn(this)] });
+  }
+
+  /**
+   * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal
+   */
+  grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity, 'cloudfront:CreateInvalidation');
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {

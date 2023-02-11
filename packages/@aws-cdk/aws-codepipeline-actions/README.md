@@ -633,7 +633,7 @@ The actions available for updating StackSets are:
 
 * **CloudFormationDeployStackSetAction** - Create or update a CloudFormation StackSet directly from the pipeline, optionally
   immediately create and update Stack Instances as well.
-* **CloudFormationDeployStackInstancesAction** - Update outdated Stack Instaces using the current version of the StackSet.
+* **CloudFormationDeployStackInstancesAction** - Update outdated Stack Instances using the current version of the StackSet.
 
 Here's an example of using both of these actions:
 

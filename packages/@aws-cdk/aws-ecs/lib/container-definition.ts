@@ -456,6 +456,8 @@ export class ContainerDefinition extends Construct {
 
   private readonly environment: { [key: string]: string };
 
+  private _namedPorts: Map<string, PortMapping>;
+
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
@@ -474,6 +476,8 @@ export class ContainerDefinition extends Construct {
 
     this.imageConfig = props.image.bind(this, this);
     this.imageName = this.imageConfig.imageName;
+
+    this._namedPorts = new Map<string, PortMapping>();
 
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
@@ -567,6 +571,28 @@ export class ContainerDefinition extends Construct {
           throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.taskDefinition.networkMode}`);
         }
       }
+      // No empty strings as port mapping names.
+      if (pm.name === '') {
+        throw new Error('Port mapping name cannot be an empty string.');
+      }
+      // Service connect logic.
+      if (pm.name || pm.appProtocol) {
+
+        // Service connect only supports Awsvpc and Bridge network modes.
+        if (![NetworkMode.BRIDGE, NetworkMode.AWS_VPC].includes(this.taskDefinition.networkMode)) {
+          throw new Error(`Service connect related port mapping fields 'name' and 'appProtocol' are not supported for network mode ${this.taskDefinition.networkMode}`);
+        }
+
+        // Name is not set but App Protocol is; this config is meaningless and we should throw.
+        if (!pm.name) {
+          throw new Error('Service connect-related port mapping field \'appProtocol\' cannot be set without \'name\'');
+        }
+
+        if (this._namedPorts.has(pm.name)) {
+          throw new Error(`Port mapping name '${pm.name}' already exists on this container`);
+        }
+        this._namedPorts.set(pm.name, pm);
+      }
 
       if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
         if (pm.hostPort === undefined) {
@@ -576,7 +602,6 @@ export class ContainerDefinition extends Construct {
           };
         }
       }
-
       return pm;
     }));
   }
@@ -654,6 +679,13 @@ export class ContainerDefinition extends Construct {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Returns the port mapping with the given name, if it exists.
+   */
+  public findPortMappingByName(name: string): PortMapping | undefined {
+    return this._namedPorts.get(name);
   }
 
   /**
@@ -1013,7 +1045,28 @@ export interface PortMapping {
    *
    * @default TCP
    */
-  readonly protocol?: Protocol
+  readonly protocol?: Protocol;
+
+  /**
+   * The name to give the port mapping.
+   *
+   * Name is required in order to use the port mapping with ECS Service Connect.
+   * This field may only be set when the task definition uses Bridge or Awsvpc network modes.
+   *
+   * @default - no port mapping name
+   */
+  readonly name?: string;
+
+  /**
+   * The protocol used by Service Connect. Valid values are AppProtocol.http, AppProtocol.http2, and
+   * AppProtocol.grpc. The protocol determines what telemetry will be shown in the ECS Console for
+   * Service Connect services using this port mapping.
+   *
+   * This field may only be set when the task definition uses Bridge or Awsvpc network modes.
+   *
+   * @default - no app protocol
+   */
+  readonly appProtocol?: AppProtocol;
 }
 
 /**
@@ -1031,11 +1084,41 @@ export enum Protocol {
   UDP = 'udp',
 }
 
+
+/**
+ * Service connect app protocol.
+ */
+export class AppProtocol {
+  /**
+   * HTTP app protocol.
+   */
+  public static http = new AppProtocol('http');
+  /**
+   * HTTP2 app protocol.
+   */
+  public static http2 = new AppProtocol('http2');
+  /**
+   * GRPC app protocol.
+   */
+  public static grpc = new AppProtocol('grpc');
+
+  /**
+   * Custom value.
+   */
+  public readonly value: string;
+
+  protected constructor(value: string) {
+    this.value = value;
+  }
+}
+
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
   return {
     containerPort: pm.containerPort,
     hostPort: pm.hostPort,
     protocol: pm.protocol || Protocol.TCP,
+    appProtocol: pm.appProtocol?.value,
+    name: pm.name ? pm.name : undefined,
   };
 }
 

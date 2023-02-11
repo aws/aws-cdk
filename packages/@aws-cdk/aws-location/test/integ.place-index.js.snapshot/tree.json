@@ -1,0 +1,126 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-integ-location-place-index": {
+        "id": "cdk-integ-location-place-index",
+        "path": "cdk-integ-location-place-index",
+        "children": {
+          "PlaceIndex": {
+            "id": "PlaceIndex",
+            "path": "cdk-integ-location-place-index/PlaceIndex",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-location-place-index/PlaceIndex/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::PlaceIndex",
+                  "aws:cdk:cloudformation:props": {
+                    "dataSource": "Esri",
+                    "indexName": "cdkinteglocationplaceindexPlaceIndex21A03EAC"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-location.CfnPlaceIndex",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-location.PlaceIndex",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-location-place-index/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-location-place-index/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "PlaceIndexTest": {
+        "id": "PlaceIndexTest",
+        "path": "PlaceIndexTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "PlaceIndexTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "PlaceIndexTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "PlaceIndexTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "PlaceIndexTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "PlaceIndexTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

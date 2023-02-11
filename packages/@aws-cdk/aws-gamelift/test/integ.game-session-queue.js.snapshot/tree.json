@@ -1,0 +1,534 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-gamelift-gameSessionQueue": {
+        "id": "aws-gamelift-gameSessionQueue",
+        "path": "aws-gamelift-gameSessionQueue",
+        "children": {
+          "Build": {
+            "id": "Build",
+            "path": "aws-gamelift-gameSessionQueue/Build",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-gamelift-gameSessionQueue/Build/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-gamelift-gameSessionQueue/Build/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.168"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-gamelift-gameSessionQueue/Build/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "gamelift.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-gamelift-gameSessionQueue/Build/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-gamelift-gameSessionQueue/Build/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:GetObject",
+                                    "s3:GetObjectVersion"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":s3:::",
+                                        {
+                                          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                        },
+                                        "/b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "BuildServiceRoleDefaultPolicyCB7101C6",
+                            "roles": [
+                              {
+                                "Ref": "BuildServiceRole1F57E904"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Content": {
+                "id": "Content",
+                "path": "aws-gamelift-gameSessionQueue/Build/Content",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-gamelift-gameSessionQueue/Build/Content/Stage",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.168"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-gamelift-gameSessionQueue/Build/Content/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "aws-gamelift-gameSessionQueue/Build/AssetBucket",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-gameSessionQueue/Build/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GameLift::Build",
+                  "aws:cdk:cloudformation:props": {
+                    "operatingSystem": "AMAZON_LINUX_2",
+                    "storageLocation": {
+                      "bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "key": "b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip",
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "BuildServiceRole1F57E904",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.CfnBuild",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-gamelift.Build",
+              "version": "0.0.0"
+            }
+          },
+          "BuildFleet": {
+            "id": "BuildFleet",
+            "path": "aws-gamelift-gameSessionQueue/BuildFleet",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-gamelift-gameSessionQueue/BuildFleet/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-gamelift-gameSessionQueue/BuildFleet/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.168"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-gamelift-gameSessionQueue/BuildFleet/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": [
+                                  "ec2.amazonaws.com",
+                                  "gamelift.amazonaws.com"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-gameSessionQueue/BuildFleet/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GameLift::Fleet",
+                  "aws:cdk:cloudformation:props": {
+                    "buildId": {
+                      "Ref": "Build45A36621"
+                    },
+                    "certificateConfiguration": {
+                      "certificateType": "DISABLED"
+                    },
+                    "ec2InboundPermissions": [
+                      {
+                        "protocol": "TCP",
+                        "fromPort": 1935,
+                        "toPort": 1935,
+                        "ipRange": "0.0.0.0/0"
+                      }
+                    ],
+                    "ec2InstanceType": "c5.large",
+                    "fleetType": "ON_DEMAND",
+                    "instanceRoleArn": {
+                      "Fn::GetAtt": [
+                        "BuildFleetServiceRole32D49FB4",
+                        "Arn"
+                      ]
+                    },
+                    "maxSize": 1,
+                    "minSize": 0,
+                    "name": "test-fleet",
+                    "newGameSessionProtectionPolicy": "NoProtection",
+                    "runtimeConfiguration": {
+                      "gameSessionActivationTimeoutSeconds": 300,
+                      "maxConcurrentGameSessionActivations": 1,
+                      "serverProcesses": [
+                        {
+                          "parameters": "port:1935 gameSessionLengthSeconds:20",
+                          "launchPath": "/local/game/TestApplicationServer",
+                          "concurrentExecutions": 1
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.CfnFleet",
+                  "version": "0.0.0"
+                }
+              },
+              "Aliaslive": {
+                "id": "Aliaslive",
+                "path": "aws-gamelift-gameSessionQueue/BuildFleet/Aliaslive",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-gamelift-gameSessionQueue/BuildFleet/Aliaslive/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::GameLift::Alias",
+                      "aws:cdk:cloudformation:props": {
+                        "name": "live",
+                        "routingStrategy": {
+                          "fleetId": {
+                            "Ref": "BuildFleet027ED403"
+                          },
+                          "type": "SIMPLE"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-gamelift.CfnAlias",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.Alias",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-gamelift.BuildFleet",
+              "version": "0.0.0"
+            }
+          },
+          "MyTopic": {
+            "id": "MyTopic",
+            "path": "aws-gamelift-gameSessionQueue/MyTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-gameSessionQueue/MyTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "MyGameSessionQueue": {
+            "id": "MyGameSessionQueue",
+            "path": "aws-gamelift-gameSessionQueue/MyGameSessionQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-gameSessionQueue/MyGameSessionQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GameLift::GameSessionQueue",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "test-gameSessionQueue",
+                    "customEventData": "test-event-data",
+                    "destinations": [
+                      {
+                        "destinationArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":gamelift:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":fleet/",
+                              {
+                                "Ref": "BuildFleet027ED403"
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "destinationArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":gamelift:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":alias/",
+                              {
+                                "Ref": "BuildFleetAliaslive3FE0BB2F"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    ],
+                    "filterConfiguration": {
+                      "allowedLocations": [
+                        "eu-west-1",
+                        "eu-west-2"
+                      ]
+                    },
+                    "notificationTarget": {
+                      "Ref": "MyTopic86869434"
+                    },
+                    "playerLatencyPolicies": [
+                      {
+                        "maximumIndividualPlayerLatencyMilliseconds": 100,
+                        "policyDurationSeconds": 300
+                      }
+                    ],
+                    "priorityConfiguration": {
+                      "priorityOrder": [
+                        "LATENCY",
+                        "COST",
+                        "DESTINATION",
+                        "LOCATION"
+                      ],
+                      "locationOrder": [
+                        "eu-west-1",
+                        "eu-west-2"
+                      ]
+                    },
+                    "timeoutInSeconds": 300
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.CfnGameSessionQueue",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-gamelift.GameSessionQueue",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-gamelift-gameSessionQueue/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.168"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-gamelift-gameSessionQueue/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.168"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.168"
+        }
+      },
+      "GameSessionQueue": {
+        "id": "GameSessionQueue",
+        "path": "GameSessionQueue",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "GameSessionQueue/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "GameSessionQueue/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.168"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "GameSessionQueue/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "GameSessionQueue/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.168"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "GameSessionQueue/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.168"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.168"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.168"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.168"
+    }
+  }
+}

@@ -1,8 +1,27 @@
-import { spawnSync, SpawnSyncOptions } from 'child_process';
+import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
 import { FileSystem } from './fs';
+import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
+
+/**
+ * Methods to build Docker CLI arguments for builds using secrets.
+ *
+ * Docker BuildKit must be enabled to use build secrets.
+ *
+ * @see https://docs.docker.com/build/buildkit/
+ */
+export class DockerBuildSecret {
+  /**
+   * A Docker build secret from a file source
+   * @param src The path to the source file, relative to the build directory.
+   * @returns The latter half required for `--secret`
+   */
+  public static fromSrc(src: string): string {
+    return `src=${src}`;
+  }
+}
 
 /**
  * Bundling options
@@ -42,6 +61,13 @@ export interface BundlingOptions {
    * @default - no additional volumes are mounted
    */
   readonly volumes?: DockerVolume[];
+
+  /**
+   * Where to mount the specified volumes from
+   * @see https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from
+   * @default - no containers are specified to mount volumes from
+   */
+  readonly volumesFrom?: string[];
 
   /**
    * The environment variables to pass to the Docker container.
@@ -101,6 +127,12 @@ export interface BundlingOptions {
    * @default - no networking options
    */
   readonly network?: string;
+
+  /**
+   * The access mechanism used to make source files available to the bundling container and to return the bundling output back to the host.
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: BundlingFileAccess;
 }
 
 /**
@@ -142,6 +174,23 @@ export interface ILocalBundling {
    * @param options bundling options for this asset
    */
   tryBundle(outputDir: string, options: BundlingOptions): boolean;
+}
+
+/**
+ * The access mechanism used to make source files available to the bundling container and to return the bundling output back to the host
+ */
+export enum BundlingFileAccess {
+  /**
+   * Creates temporary volumes and containers to copy files from the host to the bundling container and back.
+   * This is slower, but works also in more complex situations with remote or shared docker sockets.
+   */
+  VOLUME_COPY = 'VOLUME_COPY',
+
+  /**
+   * The source and output folders will be mounted as bind mount from the host system
+   * This is faster and simpler, but less portable than `VOLUME_COPY`.
+   */
+  BIND_MOUNT = 'BIND_MOUNT',
 }
 
 /**
@@ -209,6 +258,9 @@ export class BundlingDockerImage {
         : [],
       ...options.user
         ? ['-u', options.user]
+        : [],
+      ...options.volumesFrom
+        ? flatten(options.volumesFrom.map(v => ['--volumes-from', v]))
         : [],
       ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
@@ -442,6 +494,13 @@ export interface DockerRunOptions {
   readonly volumes?: DockerVolume[];
 
   /**
+   * Where to mount the specified volumes from
+   * @see https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from
+   * @default - no containers are specified to mount volumes from
+   */
+  readonly volumesFrom?: string[];
+
+  /**
    * The environment variables to pass to the container.
    *
    * @default - no environment variables.
@@ -517,30 +576,6 @@ export interface DockerBuildOptions {
 
 function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
-}
-
-function dockerExec(args: string[], options?: SpawnSyncOptions) {
-  const prog = process.env.CDK_DOCKER ?? 'docker';
-  const proc = spawnSync(prog, args, options ?? {
-    stdio: [ // show Docker output
-      'ignore', // ignore stdio
-      process.stderr, // redirect stdout to stderr
-      'inherit', // inherit stderr
-    ],
-  });
-
-  if (proc.error) {
-    throw proc.error;
-  }
-
-  if (proc.status !== 0) {
-    if (proc.stdout || proc.stderr) {
-      throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
-    }
-    throw new Error(`${prog} exited with status ${proc.status}`);
-  }
-
-  return proc;
 }
 
 function isSeLinux() : boolean {

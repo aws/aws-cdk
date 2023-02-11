@@ -65,10 +65,12 @@ export class AssetManifestBuilder {
       executable: asset.executable,
       directory: asset.directoryName,
       dockerBuildArgs: asset.dockerBuildArgs,
+      dockerBuildSecrets: asset.dockerBuildSecrets,
       dockerBuildTarget: asset.dockerBuildTarget,
       dockerFile: asset.dockerFile,
       networkMode: asset.networkMode,
       platform: asset.platform,
+      dockerOutputs: asset.dockerOutputs,
     }, {
       repositoryName: target.repositoryName,
       imageTag,
@@ -241,6 +243,7 @@ function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
 
   check('dockerBuildArgs');
   check('dockerBuildTarget');
+  check('dockerOutputs');
   check('dockerFile');
 
   function check<K extends keyof DockerImageAssetSource>(key: K) {

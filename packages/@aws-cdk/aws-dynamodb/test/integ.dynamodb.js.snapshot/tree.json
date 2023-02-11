@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-dynamodb": {
         "id": "aws-cdk-dynamodb",
         "path": "aws-cdk-dynamodb",
@@ -53,8 +45,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/Table/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -327,8 +319,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -396,8 +388,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -473,13 +465,234 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/TableWithLocalSecondaryIndex/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "Key": {
+            "id": "Key",
+            "path": "aws-cdk-dynamodb/Key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/Key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "enableKeyRotation": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "TableWithCustomerManagedKey": {
+            "id": "TableWithCustomerManagedKey",
+            "path": "aws-cdk-dynamodb/TableWithCustomerManagedKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/TableWithCustomerManagedKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 5,
+                      "writeCapacityUnits": 5
+                    },
+                    "sseSpecification": {
+                      "sseEnabled": true,
+                      "kmsMasterKeyId": {
+                        "Fn::GetAtt": [
+                          "Key961B73FD",
+                          "Arn"
+                        ]
+                      },
+                      "sseType": "KMS"
+                    },
+                    "streamSpecification": {
+                      "streamViewType": "NEW_AND_OLD_IMAGES"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-dynamodb/TableWithCustomerManagedKey/ScalingRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "Role": {
+            "id": "Role",
+            "path": "aws-cdk-dynamodb/Role",
+            "children": {
+              "ImportRole": {
+                "id": "ImportRole",
+                "path": "aws-cdk-dynamodb/Role/ImportRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "sqs.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-cdk-dynamodb/Role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-dynamodb/Role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "dynamodb:ListStreams",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:DescribeKey"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "Key961B73FD",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": [
+                                "dynamodb:DescribeStream",
+                                "dynamodb:GetRecords",
+                                "dynamodb:GetShardIterator"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "TableWithCustomerManagedKeyD5C58807",
+                                  "StreamArn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "RoleDefaultPolicy5FFB7DAB",
+                        "roles": [
+                          {
+                            "Ref": "Role1ABCC5F0"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
               "version": "0.0.0"
             }
           },
@@ -582,17 +795,41 @@
               "fqn": "@aws-cdk/aws-iam.User",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-dynamodb/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-dynamodb/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.189"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

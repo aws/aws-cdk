@@ -45,7 +45,7 @@ An ETL job processes data in batches using Apache Spark.
 declare const bucket: s3.Bucket;
 new glue.Job(this, 'ScalaSparkEtlJob', {
   executable: glue.JobExecutable.scalaEtl({
-    glueVersion: glue.GlueVersion.V2_0,
+    glueVersion: glue.GlueVersion.V4_0,
     script: glue.Code.fromBucket(bucket, 'src/com/example/HelloWorld.scala'),
     className: 'com.example.HelloWorld',
     extraJars: [glue.Code.fromBucket(bucket, 'jars/HelloWorld.jar')],
@@ -61,7 +61,7 @@ A Streaming job is similar to an ETL job, except that it performs ETL on data st
 ```ts
 new glue.Job(this, 'PythonSparkStreamingJob', {
   executable: glue.JobExecutable.pythonStreaming({
-    glueVersion: glue.GlueVersion.V2_0,
+    glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE,
     script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
   }),
@@ -87,6 +87,23 @@ new glue.Job(this, 'PythonShellJob', {
     script: glue.Code.fromBucket(bucket, 'script.py'),
   }),
   description: 'an example Python Shell job',
+});
+```
+
+### Ray Jobs
+
+These jobs run in a Ray environment managed by AWS Glue.
+
+```ts
+new glue.Job(this, 'RayJob', {
+  executable: glue.JobExecutable.pythonRay({
+    glueVersion: glue.GlueVersion.V4_0,
+    pythonVersion: glue.PythonVersion.THREE_NINE,
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+  }),
+  workerType: glue.WorkerType.Z_2X,
+  workerCount: 2,
+  description: 'an example Ray job'
 });
 ```
 
@@ -136,7 +153,6 @@ A `SecurityConfiguration` is a set of security properties that can be used by AW
 
 ```ts
 new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
-  securityConfigurationName: 'name',
   cloudWatchEncryption: {
     mode: glue.CloudWatchEncryptionMode.KMS,
   },
@@ -154,7 +170,6 @@ By default, a shared KMS key is created for use with the encryption configuratio
 ```ts
 declare const key: kms.Key;
 new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
-  securityConfigurationName: 'name',
   cloudWatchEncryption: {
     mode: glue.CloudWatchEncryptionMode.KMS,
     kmsKey: key,
@@ -169,9 +184,7 @@ See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-securi
 A `Database` is a logical grouping of `Tables` in the Glue Catalog.
 
 ```ts
-new glue.Database(this, 'MyDatabase', {
-  databaseName: 'my_database',
-});
+new glue.Database(this, 'MyDatabase');
 ```
 
 ## Table
@@ -182,7 +195,6 @@ A Glue table describes a table of data in S3: its structure (column names and ty
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -205,7 +217,6 @@ new glue.Table(this, 'MyTable', {
   s3Prefix: 'my-table/',
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -224,7 +235,6 @@ To improve query performance, a table can specify `partitionKeys` on which data 
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -256,7 +266,6 @@ property:
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -294,7 +303,6 @@ If you have a table with a large number of partitions that grows over time, cons
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
     database: myDatabase,
-    tableName: 'my_table',
     columns: [{
         name: 'col1',
         type: glue.Schema.STRING,
@@ -324,7 +332,6 @@ new glue.Table(this, 'MyTable', {
   encryption: glue.TableEncryption.S3_MANAGED,
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -342,7 +349,6 @@ new glue.Table(this, 'MyTable', {
   encryption: glue.TableEncryption.KMS,
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -356,7 +362,6 @@ new glue.Table(this, 'MyTable', {
   encryptionKey: new kms.Key(this, 'MyKey'),
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -373,7 +378,6 @@ new glue.Table(this, 'MyTable', {
   encryption: glue.TableEncryption.KMS_MANAGED,
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -391,7 +395,6 @@ new glue.Table(this, 'MyTable', {
   encryption: glue.TableEncryption.CLIENT_SIDE_KMS, 
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -405,7 +408,6 @@ new glue.Table(this, 'MyTable', {
   encryptionKey: new kms.Key(this, 'MyKey'),
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -447,7 +449,6 @@ new glue.Table(this, 'MyTable', {
   }],
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   dataFormat: glue.DataFormat.JSON,
 });  
 ```

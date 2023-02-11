@@ -1,26 +1,26 @@
 import { Construct } from 'constructs';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
+import { deploymentConfig } from '../private/utils';
 import { TrafficRouting } from '../traffic-routing-config';
-import { deploymentConfig } from '../utils';
 
 /**
  * The Deployment Configuration of an ECS Deployment Group.
  *
  * If you're managing the Deployment Configuration alongside the rest of your CDK resources,
- * use the {@link EcsDeploymentConfig} class.
+ * use the `EcsDeploymentConfig` class.
  *
  * If you want to reference an already existing deployment configuration,
  * or one defined in a different CDK Stack,
- * use the {@link EcsDeploymentConfig#fromEcsDeploymentConfigName} method.
+ * use the `EcsDeploymentConfig#fromEcsDeploymentConfigName` method.
  *
- * The default, pre-defined Configurations are available as constants on the {@link EcsDeploymentConfig} class
+ * The default, pre-defined Configurations are available as constants on the `EcsDeploymentConfig` class
  * (for example, `EcsDeploymentConfig.AllAtOnce`).
  */
 export interface IEcsDeploymentConfig extends IBaseDeploymentConfig {
 }
 
 /**
- * Construction properties of {@link EcsDeploymentConfig}.
+ * Construction properties of `EcsDeploymentConfig`.
  */
 export interface EcsDeploymentConfigProps extends BaseDeploymentConfigOptions {
   /**

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
+import { getWarnings } from './util';
 import { App, Stack } from '../lib';
 import { Annotations } from '../lib/annotations';
-import { getWarnings } from './util';
 
 const restore = process.env.CDK_BLOCK_DEPRECATIONS;
 
@@ -73,5 +73,24 @@ describe('annotations', () => {
     // THEN
     process.env.CDK_BLOCK_DEPRECATIONS = '1';
     expect(() => Annotations.of(c1).addDeprecation('foo', 'bar')).toThrow(/MyStack\/Hello: The API foo is deprecated: bar\. This API will be removed in the next major release/);
+  });
+
+  test('addMessage deduplicates the message on the node level', () => {
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+    Annotations.of(c1).addWarning('You should know this!');
+    Annotations.of(c1).addWarning('You should know this!');
+    Annotations.of(c1).addWarning('You should know this!');
+    Annotations.of(c1).addWarning('You should know this, too!');
+    expect(getWarnings(app.synth())).toEqual([{
+      path: '/S1/C1',
+      message: 'You should know this!',
+    },
+    {
+      path: '/S1/C1',
+      message: 'You should know this, too!',
+    }],
+    );
   });
 });

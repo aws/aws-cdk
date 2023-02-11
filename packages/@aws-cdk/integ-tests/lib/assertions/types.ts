@@ -27,7 +27,7 @@ export interface IDeployAssert {
    *   Messages: [{ Body: 'hello' }],
    * }));
    */
-  awsApiCall(service: string, api: string, parameters?: any): IApiCall;
+  awsApiCall(service: string, api: string, parameters?: any, outputPaths?: string[]): IApiCall;
 
   /**
    * Invoke a lambda function and return the response which can be asserted

@@ -7,9 +7,11 @@ import { IApplication, Application } from './application';
   */
 export interface TargetApplicationCommonOptions extends cdk.StackProps {
   /**
-    * Stack ID in which application will be created or imported.
+    * Stack ID in which application will be created or imported. The id of a stack is also the identifier that you use to
+    * refer to it in the [AWS CDK Toolkit](https://docs.aws.amazon.com/cdk/v2/guide/cli.html).
     *
     * @default - ApplicationAssociatorStack
+    * @deprecated - Use `stackName` instead to control the name of the stack
     */
   readonly stackId?: string;
 }
@@ -90,8 +92,10 @@ class CreateTargetApplication extends TargetApplication {
   }
   public bind(scope: Construct): BindTargetApplicationResult {
     const stackId = this.applicationOptions.stackId ?? 'ApplicationAssociatorStack';
+    (this.applicationOptions.stackName as string) =
+            this.applicationOptions.stackName || `Application-${this.applicationOptions.applicationName}-Stack`;
     (this.applicationOptions.description as string) =
-            this.applicationOptions.description || `Stack that holds the ${this.applicationOptions.applicationName} application`;
+            this.applicationOptions.description || 'Stack to create AppRegistry application';
     (this.applicationOptions.env as cdk.Environment) =
             this.applicationOptions.env || { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
@@ -99,6 +103,7 @@ class CreateTargetApplication extends TargetApplication {
       applicationName: this.applicationOptions.applicationName,
       description: this.applicationOptions.applicationDescription || 'Application containing stacks deployed via CDK.',
     });
+    cdk.Tags.of(appRegApplication).add('managedBy', 'CDK_Application_Associator');
 
     return {
       application: appRegApplication,
@@ -115,7 +120,11 @@ class ExistingTargetApplication extends TargetApplication {
     super();
   }
   public bind(scope: Construct): BindTargetApplicationResult {
+    const arnComponents = cdk.Arn.split(this.applicationOptions.applicationArnValue, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
+    const applicationId = arnComponents.resourceName;
     const stackId = this.applicationOptions.stackId ?? 'ApplicationAssociatorStack';
+    (this.applicationOptions.stackName as string) =
+            this.applicationOptions.stackName || `Application-${applicationId}-Stack`;
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = Application.fromApplicationArn(applicationStack, 'ExistingApplication', this.applicationOptions.applicationArnValue);
     return {

@@ -200,7 +200,7 @@ See the section [**Arbitrary CodePipeline actions** in the
 main `README`](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/pipelines/README.md#arbitrary-codepipeline-actions) for an example of how to inject arbitrary
 CodeBuild Actions.
 
-## Definining the pipeline
+## Defining the pipeline
 
 In the original API, you have to import the `aws-codepipeline` construct
 library and create `Artifact` objects for the source and Cloud Assembly

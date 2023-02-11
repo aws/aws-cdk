@@ -371,6 +371,143 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "EnableKeyRotation": true
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableWithCustomerManagedKeyD5C58807": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    },
+    "SSESpecification": {
+     "KMSMasterKeyId": {
+      "Fn::GetAtt": [
+       "Key961B73FD",
+       "Arn"
+      ]
+     },
+     "SSEEnabled": true,
+     "SSEType": "KMS"
+    },
+    "StreamSpecification": {
+     "StreamViewType": "NEW_AND_OLD_IMAGES"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Role1ABCC5F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sqs.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "RoleDefaultPolicy5FFB7DAB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "dynamodb:ListStreams",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Key961B73FD",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:DescribeStream",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TableWithCustomerManagedKeyD5C58807",
+         "StreamArn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RoleDefaultPolicy5FFB7DAB",
+    "Roles": [
+     {
+      "Ref": "Role1ABCC5F0"
+     }
+    ]
+   }
+  },
   "User00B015A1": {
    "Type": "AWS::IAM::User"
   },

@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "lambda-event-source-kinesis-with-dlq": {
         "id": "lambda-event-source-kinesis-with-dlq",
         "path": "lambda-event-source-kinesis-with-dlq",
@@ -92,6 +84,7 @@
                                 {
                                   "Action": [
                                     "kinesis:DescribeStream",
+                                    "kinesis:DescribeStreamConsumer",
                                     "kinesis:DescribeStreamSummary",
                                     "kinesis:GetRecords",
                                     "kinesis:GetShardIterator",
@@ -214,8 +207,8 @@
             "id": "FunctionArn",
             "path": "lambda-event-source-kinesis-with-dlq/FunctionArn",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "S": {
@@ -262,16 +255,16 @@
             "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "path": "lambda-event-source-kinesis-with-dlq/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnCondition",
+              "version": "0.0.0"
             }
           },
           "InputKinesisStreamName": {
             "id": "InputKinesisStreamName",
             "path": "lambda-event-source-kinesis-with-dlq/InputKinesisStreamName",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "Q": {
@@ -300,20 +293,44 @@
             "id": "DlqSqsQueueUrl",
             "path": "lambda-event-source-kinesis-with-dlq/DlqSqsQueueUrl",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "lambda-event-source-kinesis-with-dlq/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "lambda-event-source-kinesis-with-dlq/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.140"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

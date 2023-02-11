@@ -7,7 +7,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '@aws-cdk/core';
-import { ManagementEventSources, ReadWriteType, Trail } from '../lib';
+import { ManagementEventSources, ReadWriteType, Trail, InsightType } from '../lib';
 
 const ExpectedBucketPolicyProperties = {
   PolicyDocument: {
@@ -625,19 +625,77 @@ describe('cloudtrail', () => {
         });
       });
 
-      test('managementEvents set to None correctly turns off management events', () => {
+      test('not provided and managementEvents set to None throws missing event selectors error', () => {
         const stack = getTestStack();
 
         new Trail(stack, 'MyAmazingCloudTrail', {
           managementEvents: ReadWriteType.NONE,
         });
 
+        expect(() => {
+          Template.fromStack(stack);
+        }).toThrowError(/At least one event selector must be added when management event recording is set to None/);
+      });
+
+      test('defaults to not include management events when managementEvents set to None', () => {
+        const stack = getTestStack();
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail', {
+          managementEvents: ReadWriteType.NONE,
+        });
+
+        const bucket = new s3.Bucket(stack, 'testBucket', { bucketName: 'test-bucket' });
+        cloudTrail.addS3EventSelector([{ bucket }]);
+
         Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
-          EventSelectors: [
-            {
-              IncludeManagementEvents: false,
-            },
-          ],
+          EventSelectors: [{
+            DataResources: [{
+              Type: 'AWS::S3::Object',
+              Values: [{
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
+                    '/',
+                  ],
+                ],
+              }],
+            }],
+            IncludeManagementEvents: false,
+          }],
+        });
+      });
+
+      test('includeManagementEvents can be overridden when managementEvents set to None', () => {
+        const stack = getTestStack();
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail', {
+          managementEvents: ReadWriteType.NONE,
+        });
+
+        const bucket = new s3.Bucket(stack, 'testBucket', { bucketName: 'test-bucket' });
+        cloudTrail.addS3EventSelector([{ bucket }], {
+          includeManagementEvents: true,
+          readWriteType: ReadWriteType.WRITE_ONLY,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+          EventSelectors: [{
+            DataResources: [{
+              Type: 'AWS::S3::Object',
+              Values: [{
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
+                    '/',
+                  ],
+                ],
+              }],
+            }],
+            IncludeManagementEvents: true,
+            ReadWriteType: 'WriteOnly',
+          }],
         });
       });
 
@@ -697,6 +755,81 @@ describe('cloudtrail', () => {
           {
             Arn: 'arn',
             Id: 'Target0',
+          },
+        ],
+      });
+    });
+  });
+  describe('insights ', () => {
+    test('no properties', () => {
+      const stack = getTestStack();
+      new Trail(stack, 'MyAmazingCloudTrail', {
+        insightTypes: [],
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+        InsightSelectors: [],
+      });
+    });
+    test('API Call Rate properties', () => {
+      const stack = getTestStack();
+      new Trail(stack, 'MyAmazingCloudTrail', {
+        insightTypes: [
+          InsightType.API_CALL_RATE,
+        ],
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+        InsightSelectors: [{
+          InsightType: 'ApiCallRateInsight',
+        }],
+      });
+    });
+    test('API Error Rate properties', () => {
+      const stack = getTestStack();
+      new Trail(stack, 'MyAmazingCloudTrail', {
+        insightTypes: [
+          InsightType.API_ERROR_RATE,
+        ],
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+        InsightSelectors: [{
+          InsightType: 'ApiErrorRateInsight',
+        }],
+      });
+    });
+    test('duplicate properties', () => {
+      const stack = getTestStack();
+      new Trail(stack, 'MyAmazingCloudTrail', {
+        insightTypes: [
+          InsightType.API_CALL_RATE,
+          InsightType.API_CALL_RATE,
+        ],
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+        InsightSelectors: [
+          {
+            InsightType: 'ApiCallRateInsight',
+          },
+          {
+            InsightType: 'ApiCallRateInsight',
+          },
+        ],
+      });
+    });
+    test('ALL properties', () => {
+      const stack = getTestStack();
+      new Trail(stack, 'MyAmazingCloudTrail', {
+        insightTypes: [
+          InsightType.API_CALL_RATE,
+          InsightType.API_ERROR_RATE,
+        ],
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+        InsightSelectors: [
+          {
+            InsightType: 'ApiCallRateInsight',
+          },
+          {
+            InsightType: 'ApiErrorRateInsight',
           },
         ],
       });

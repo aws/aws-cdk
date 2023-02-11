@@ -313,7 +313,7 @@ A usage plan specifies who can access one or more deployed API stages and method
 accessed. The plan uses API keys to identify API clients and meters access to the associated API stages for each key.
 Usage plans also allow configuring throttling limits and quota limits that are enforced on individual client API keys.
 
-The following example shows how to create and asscociate a usage plan and an API key:
+The following example shows how to create and associate a usage plan and an API key:
 
 ```ts
 declare const integration: apigateway.LambdaIntegration;
@@ -1378,8 +1378,9 @@ api.addGatewayResponse('test-response', {
   type: apigateway.ResponseType.ACCESS_DENIED,
   statusCode: '500',
   responseHeaders: {
-    'Access-Control-Allow-Origin': 'test.com',
-    'test-key': 'test-value',
+    // Note that values must be enclosed within a pair of single quotes
+    'Access-Control-Allow-Origin': "'test.com'",
+    'test-key': "'test-value'",
   },
   templates: {
     'application/json': '{ "message": $context.error.messageString, "statusCode": "488", "type": "$context.error.responseType" }'

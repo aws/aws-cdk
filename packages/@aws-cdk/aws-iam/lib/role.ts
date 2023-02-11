@@ -14,7 +14,7 @@ import { ImmutableRole } from './private/immutable-role';
 import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
-import { AttachedPolicies, UniqueStringSet } from './util';
+import { AttachedPolicies, UniqueStringSet } from './private/util';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
@@ -38,7 +38,7 @@ export interface RoleProps {
    * If the configured and provided external IDs do not match, the
    * AssumeRole operation will fail.
    *
-   * @deprecated see {@link externalIds}
+   * @deprecated see `externalIds`
    *
    * @default No external ID required
    */
@@ -144,7 +144,7 @@ export interface RoleProps {
 }
 
 /**
- * Options allowing customizing the behavior of {@link Role.fromRoleArn}.
+ * Options allowing customizing the behavior of `Role.fromRoleArn`.
  */
 export interface FromRoleArnOptions {
   /**
@@ -221,7 +221,7 @@ export interface CustomizeRolesOptions {
 }
 
 /**
- * Options allowing customizing the behavior of {@link Role.fromRoleName}.
+ * Options allowing customizing the behavior of `Role.fromRoleName`.
  */
 export interface FromRoleNameOptions extends FromRoleArnOptions { }
 

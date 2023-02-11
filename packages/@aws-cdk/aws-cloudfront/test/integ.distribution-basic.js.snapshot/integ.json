@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.distribution-basic": {
+    "integ-distribution-basic/distribution-basic-test/DefaultTest": {
       "stacks": [
         "integ-distribution-basic"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ-distribution-basic/distribution-basic-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integdistributionbasicdistributionbasictestDefaultTestDeployAssert2D53EBF0"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

@@ -24,14 +24,14 @@ export class Match implements IResolvable {
   }
 
   /**
-   * Matches when the field is absent from the JSON of the event
+   * Matches when the field is present in the JSON of the event
    */
   public static exists(): string[] {
     return this.fromObjects([{ exists: true }]);
   }
 
   /**
-   * Matches when the field is present in the JSON of the event
+   * Matches when the field is absent from the JSON of the event
    */
   public static doesNotExist(): string[] {
     return this.fromObjects([{ exists: false }]);
@@ -40,21 +40,35 @@ export class Match implements IResolvable {
   /**
    * Matches a string, exactly, in the JSON of the event
    */
-  public static exactString(value: string): string [] {
+  public static exactString(value: string): string[] {
     return this.fromObjects([value]);
+  }
+
+  /**
+   * Matches a string, regardless of case, in the JSON of the event
+   */
+  public static equalsIgnoreCase(value: string): string[] {
+    return this.fromObjects([{ 'equals-ignore-case': value }]);
   }
 
   /**
    * Matches strings with the given prefix in the JSON of the event
    */
-  static prefix(value: string): string[] {
+  public static prefix(value: string): string[] {
     return this.fromObjects([{ prefix: value }]);
+  }
+
+  /**
+   * Matches strings with the given suffix in the JSON of the event
+   */
+  public static suffix(value: string): string[] {
+    return this.fromObjects([{ suffix: value }]);
   }
 
   /**
    * Matches IPv4 and IPv6 network addresses using the Classless Inter-Domain Routing (CIDR) format
    */
-  static cidr(range: string): string[] {
+  public static cidr(range: string): string[] {
     const ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/igm;
     const ipv6Regex = /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/igm;
 
@@ -69,7 +83,7 @@ export class Match implements IResolvable {
    * Matches IPv4 and IPv6 network addresses using the Classless Inter-Domain Routing (CIDR) format.
    * Alias of `cidr()`.
    */
-  static ipAddressRange(range: string): string[] {
+  public static ipAddressRange(range: string): string[] {
     return Match.cidr(range);
   }
 
@@ -77,7 +91,7 @@ export class Match implements IResolvable {
    * Matches anything except what's provided in the rule. The list of provided values must contain
    * only strings or only numbers.
    */
-  static anythingBut(...values: any[]): string[] {
+  public static anythingBut(...values: any[]): string[] {
     if (values.length === 0) {
       throw new Error('anythingBut matchers must be non-empty lists');
     }
@@ -95,7 +109,7 @@ export class Match implements IResolvable {
   /**
    * Matches any string that doesn't start with the given prefix.
    */
-  static anythingButPrefix(prefix: string): string[] {
+  public static anythingButPrefix(prefix: string): string[] {
     return this.fromObjects([{ 'anything-but': { prefix: prefix } }]);
   }
 
@@ -142,7 +156,7 @@ export class Match implements IResolvable {
    * @param lower Lower bound (inclusive)
    * @param upper Upper bound (inclusive)
    */
-  static interval(lower: number, upper: number): string[] {
+  public static interval(lower: number, upper: number): string[] {
     if (lower > upper) {
       throw new Error(`Invalid interval: [${lower}, ${upper}]`);
     }

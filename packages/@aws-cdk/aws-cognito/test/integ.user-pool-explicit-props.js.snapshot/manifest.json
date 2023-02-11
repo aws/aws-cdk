@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "22.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "integ-user-pool.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7df3ca05ace569184cc645d485b05885dc2e13f745606873a57afa9d264ecc08.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d52bd1bc71dfc61d4ad7024fe0716269f71e86ea085d0ccd71bcbe68e8df1c34.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -260,99 +254,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "createAuthChallengeCreateAuthChallengeCognito57E2297E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "createAuthChallengeCreateAuthChallengeCognito57E2297E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "customMessageCustomMessageCognitoB4F894A6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "customMessageCustomMessageCognitoB4F894A6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "defineAuthChallengeDefineAuthChallengeCognito4DBD8021": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "defineAuthChallengeDefineAuthChallengeCognito4DBD8021",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "postAuthenticationPostAuthenticationCognito8B923BC3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "postAuthenticationPostAuthenticationCognito8B923BC3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "postConfirmationPostConfirmationCognito9D010393": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "postConfirmationPostConfirmationCognito9D010393",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "preAuthenticationPreAuthenticationCognito67FACB54": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "preAuthenticationPreAuthenticationCognito67FACB54",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "preSignUpPreSignUpCognitoE986CC53": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "preSignUpPreSignUpCognitoE986CC53",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "preTokenGenerationPreTokenGenerationCognitoC1959918": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "preTokenGenerationPreTokenGenerationCognitoC1959918",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "userMigrationUserMigrationCognito29EEC4AD": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "userMigrationUserMigrationCognito29EEC4AD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "verifyAuthChallengeResponseVerifyAuthChallengeResponseCognito9DC48AFC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "verifyAuthChallengeResponseVerifyAuthChallengeResponseCognito9DC48AFC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-user-pool"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

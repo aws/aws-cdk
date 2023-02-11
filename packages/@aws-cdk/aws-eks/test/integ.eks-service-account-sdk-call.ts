@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack, CfnOutput } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
+import * as kplus from 'cdk8s-plus-24';
 import * as eks from '../lib';
 import { BucketPinger } from './bucket-pinger/bucket-pinger';
 
@@ -24,13 +24,13 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
 const cluster = new eks.Cluster(stack, 'Cluster', {
   vpc: vpc,
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_24,
 });
 
 const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
 
 const serviceAccount = cluster.addServiceAccount('my-service-account');
-const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(serviceAccount.serviceAccountName);
+const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(stack, 'kplus-sa', serviceAccount.serviceAccountName);
 new kplus.Deployment(chart, 'Deployment', {
   containers: [{
     image: dockerImage.imageUri,

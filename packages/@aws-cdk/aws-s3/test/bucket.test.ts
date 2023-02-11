@@ -1,7 +1,8 @@
 import { EOL } from 'os';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
@@ -337,6 +338,103 @@ describe('bucket', () => {
 
   });
 
+  test('logs to self, no encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED, serverAccessLogsPrefix: 'test' });
+    }).not.toThrowError();
+  });
+
+  test('logs to self, S3 encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED, serverAccessLogsPrefix: 'test' });
+    }).not.toThrowError();
+  });
+
+  test('logs to self, KMS_MANAGED encryption throws error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS_MANAGED, serverAccessLogsPrefix: 'test' });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to self, KMS encryption without key throws error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to self, KMS encryption with key throws error', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to self, KMS key with no specific encryption specified throws error', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, serverAccessLogsPrefix: 'test' });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, no encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).not.toThrowError();
+  });
+
+  test('logs to separate bucket, S3 encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).not.toThrowError();
+  });
+
+  // When provided an external bucket (as an IBucket), we cannot detect KMS_MANAGED encryption. Since this
+  // check is impossible, we skip thist test.
+  // eslint-disable-next-line jest/no-disabled-tests
+  test.skip('logs to separate bucket, KMS_MANAGED encryption throws error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS_MANAGED });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, KMS encryption without key throws error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, KMS encryption with key throws error', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, KMS key with no specific encryption specified throws error', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
   test('bucket with versioning turned on', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
@@ -357,6 +455,110 @@ describe('bucket', () => {
         },
       },
     });
+  });
+
+  test('bucket with object lock enabled but no retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: Match.absent(),
+    });
+  });
+
+  test('object lock defaults to disabled', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket');
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: Match.absent(),
+    });
+  });
+
+  test('object lock defaults to enabled when default retention is specified', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(7 * 365)),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'GOVERNANCE',
+            Days: 7 * 365,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock enabled with governance retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(1)),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'GOVERNANCE',
+            Days: 1,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock enabled with compliance retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.compliance(cdk.Duration.days(1)),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'COMPLIANCE',
+            Days: 1,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock disabled throws error with retention set', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: false,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(1)),
+    })).toThrow('Object Lock must be enabled to configure default retention settings');
+  });
+
+  test('bucket with object lock requires duration than one day', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(0)),
+    })).toThrow('Object Lock retention duration must be at least 1 day');
+  });
+
+  // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
+  test('bucket with object lock requires duration less than 100 years', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(365 * 101)),
+    })).toThrow('Object Lock retention duration must be less than 100 years');
   });
 
   test('bucket with block public access set to BlockAll', () => {
@@ -679,9 +881,9 @@ describe('bucket', () => {
       });
     });
 
-    test('import can explicitly set bucket region', () => {
+    test('import can explicitly set bucket region with different suffix than stack', () => {
       const stack = new cdk.Stack(undefined, undefined, {
-        env: { region: 'us-east-1' },
+        env: { region: 'cn-north-1' },
       });
 
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
@@ -689,8 +891,59 @@ describe('bucket', () => {
         region: 'eu-west-1',
       });
 
-      expect(bucket.bucketRegionalDomainName).toEqual(`mybucket.s3.eu-west-1.${stack.urlSuffix}`);
-      expect(bucket.bucketWebsiteDomainName).toEqual(`mybucket.s3-website-eu-west-1.${stack.urlSuffix}`);
+      expect(bucket.bucketRegionalDomainName).toEqual('mybucket.s3.eu-west-1.amazonaws.com');
+      expect(bucket.bucketWebsiteDomainName).toEqual('mybucket.s3-website-eu-west-1.amazonaws.com');
+    });
+
+    test('new bucketWebsiteUrl format for specific region', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.us-east-2.amazonaws.com');
+    });
+
+    test('new bucketWebsiteUrl format for specific region with cn suffix', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'cn-north-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.cn-north-1.amazonaws.com.cn');
+    });
+
+
+    testDeprecated('new bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+        bucketWebsiteNewUrlFormat: true,
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.us-east-1.amazonaws.com');
+    });
+
+    testDeprecated('old bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+        bucketWebsiteNewUrlFormat: false,
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website-us-east-2.amazonaws.com');
     });
 
     test('import needs to specify a valid bucket name', () => {
@@ -1900,10 +2153,14 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'http://my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'http://my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
@@ -1911,14 +2168,17 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
-
     });
     test('exports the WebsiteURL for imported buckets with url', () => {
       const stack = new cdk.Stack();
@@ -2181,6 +2441,96 @@ describe('bucket', () => {
         accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
       }),
     ).toThrow(/Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
+  });
+
+  test('Bucket skips setting up access log ACL but configures delivery for an imported target bucket', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = s3.Bucket.fromBucketName(stack, 'TargetBucket', 'target-logs-bucket');
+    new s3.Bucket(stack, 'TestBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+      serverAccessLogsPrefix: 'test/',
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: stack.resolve(accessLogBucket.bucketName),
+        LogFilePrefix: 'test/',
+      },
+    });
+    template.allResourcesProperties('AWS::S3::Bucket', {
+      AccessControl: Match.absent(),
+    });
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('Unable to add necessary logging permissions to imported target bucket'));
+  });
+
+  test('Bucket Allow Log delivery should use the recommended policy when flag enabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy', true);
+
+    // WHEN
+    const bucket = new s3.Bucket(stack, 'TestBucket', { serverAccessLogsPrefix: 'test' });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::Bucket', {
+      AccessControl: Match.absent(),
+    });
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: stack.resolve(bucket.bucketName),
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'logging.s3.amazonaws.com' },
+          Action: 's3:PutObject',
+          Resource: stack.resolve(`${bucket.bucketArn}/test*`),
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': stack.resolve(bucket.bucketArn),
+            },
+            StringEquals: {
+              'aws:SourceAccount': { 'Ref': 'AWS::AccountId' },
+            },
+          },
+        })]),
+      }),
+    });
+  });
+
+  test('Log Delivery bucket policy should properly set source bucket ARN/Account', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy', true);
+
+    // WHEN
+    const targetBucket = new s3.Bucket(stack, 'TargetBucket');
+    const sourceBucket = new s3.Bucket(stack, 'SourceBucket', { serverAccessLogsBucket: targetBucket });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: stack.resolve(targetBucket.bucketName),
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'logging.s3.amazonaws.com' },
+          Action: 's3:PutObject',
+          Resource: stack.resolve(`${targetBucket.bucketArn}/*`),
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': stack.resolve(sourceBucket.bucketArn),
+            },
+            StringEquals: {
+              'aws:SourceAccount': stack.resolve(sourceBucket.env.account),
+            },
+          },
+        })]),
+      }),
+    });
   });
 
   test('Defaults for an inventory bucket', () => {

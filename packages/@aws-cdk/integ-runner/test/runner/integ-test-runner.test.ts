@@ -483,6 +483,7 @@ describe('IntegTest runIntegTests', () => {
     });
 
     expect(removeSyncMock.mock.calls).toEqual([
+      ['test/test-data/cdk-integ.out.xxxxx.test-with-snapshot-assets.js.snapshot'],
       ['test/test-data/xxxxx.test-with-snapshot-assets.js.snapshot'],
       [
         'test/test-data/xxxxx.test-with-snapshot-assets.js.snapshot/asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824',
@@ -548,7 +549,7 @@ describe('IntegTest runIntegTests', () => {
     }));
   });
 
-  test('with custom app run command for JavaScript', () => {
+  test('with custom app run command', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,

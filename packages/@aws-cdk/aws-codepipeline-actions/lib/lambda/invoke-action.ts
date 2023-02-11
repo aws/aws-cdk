@@ -6,7 +6,7 @@ import { Construct } from 'constructs';
 import { Action } from '../action';
 
 /**
- * Construction properties of the {@link LambdaInvokeAction Lambda invoke CodePipeline Action}.
+ * Construction properties of the `LambdaInvokeAction Lambda invoke CodePipeline Action`.
  */
 export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionProps {
   /**

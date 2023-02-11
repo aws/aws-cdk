@@ -82,6 +82,14 @@
                     "id": "ServiceRole",
                     "path": "code-first-schema/code-first-api/planets/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "code-first-schema/code-first-api/planets/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "code-first-schema/code-first-api/planets/ServiceRole/Resource",
@@ -94,7 +102,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync"
+                                    "Service": "appsync.amazonaws.com"
                                   }
                                 }
                               ],
@@ -366,7 +374,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.161"
         }
       }
     },

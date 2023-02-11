@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "lambda-bucket-notifications": {
         "id": "lambda-bucket-notifications",
         "path": "lambda-bucket-notifications",
@@ -40,14 +32,14 @@
                     "id": "Resource",
                     "path": "lambda-bucket-notifications/MyBucket/Notifications/Resource",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.168"
                 }
               },
               "AllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C": {
@@ -94,6 +86,14 @@
                 "id": "ServiceRole",
                 "path": "lambda-bucket-notifications/MyFunction/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "lambda-bucket-notifications/MyFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "lambda-bucket-notifications/MyFunction/ServiceRole/Resource",
@@ -193,14 +193,14 @@
                     "id": "Resource",
                     "path": "lambda-bucket-notifications/YourBucket/Notifications/Resource",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.168"
                 }
               },
               "AllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C": {
@@ -247,6 +247,14 @@
                 "id": "Role",
                 "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource",
@@ -335,26 +343,50 @@
                 "id": "Resource",
                 "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.168"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "lambda-bucket-notifications/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "lambda-bucket-notifications/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.168"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

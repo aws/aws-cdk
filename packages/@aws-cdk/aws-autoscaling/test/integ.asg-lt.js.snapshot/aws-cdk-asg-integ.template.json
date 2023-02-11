@@ -507,6 +507,38 @@
     }
    }
   },
+  "AsgWithDefaultInstanceWarmupASG7A481C66": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "MaxSize": "1",
+    "MinSize": "1",
+    "DefaultInstanceWarmup": 5,
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "MainLT4FC09097"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "MainLT4FC09097",
+       "LatestVersionNumber"
+      ]
+     }
+    },
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
   "AsgFromMipASG9EFCE2FC": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
@@ -625,6 +657,130 @@
      "IgnoreUnmodifiedGroupSizeProperties": true
     }
    }
+  },
+  "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "AsgWithGp3BlockdeviceInstanceRoleF52FB39B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice"
+     }
+    ]
+   }
+  },
+  "AsgWithGp3BlockdeviceInstanceProfile2FC414A5": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
+     }
+    ]
+   }
+  },
+  "AsgWithGp3BlockdeviceLaunchConfig24411F5E": {
+   "Type": "AWS::AutoScaling::LaunchConfiguration",
+   "Properties": {
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t3.micro",
+    "BlockDeviceMappings": [
+     {
+      "DeviceName": "ebs",
+      "Ebs": {
+       "DeleteOnTermination": true,
+       "Encrypted": true,
+       "Throughput": 125,
+       "VolumeSize": 15,
+       "VolumeType": "gp3"
+      }
+     }
+    ],
+    "IamInstanceProfile": {
+     "Ref": "AsgWithGp3BlockdeviceInstanceProfile2FC414A5"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206",
+       "GroupId"
+      ]
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
+   },
+   "DependsOn": [
+    "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
+   ]
+  },
+  "AsgWithGp3BlockdeviceASGE82AA487": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "MaxSize": "10",
+    "MinSize": "0",
+    "DesiredCapacity": "5",
+    "LaunchConfigurationName": {
+     "Ref": "AsgWithGp3BlockdeviceLaunchConfig24411F5E"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "PropagateAtLaunch": true,
+      "Value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice"
+     }
+    ],
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
   }
  },
  "Parameters": {
@@ -635,6 +791,10 @@
   "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-arm64-gp2"
+  },
+  "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

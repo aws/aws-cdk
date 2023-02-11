@@ -954,7 +954,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
+  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
@@ -966,6 +966,9 @@ describe('cluster', () => {
       privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
       isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
       isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: vpcWithIsolated,
     });
 
     // WHEN
@@ -984,6 +987,7 @@ describe('cluster', () => {
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup,
     });
 
     // THEN
@@ -1005,11 +1009,17 @@ describe('cluster', () => {
         },
         vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
         excludeCharacters: '°_@',
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            stack.getLogicalId(securityGroup.node.defaultChild as ec2.CfnSecurityGroup),
+            'GroupId',
+          ],
+        },
       },
     });
   });
 
-  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
+  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
@@ -1021,6 +1031,9 @@ describe('cluster', () => {
       privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
       isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
       isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: vpcWithIsolated,
     });
     const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
 
@@ -1041,6 +1054,7 @@ describe('cluster', () => {
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup,
     });
 
     // THEN
@@ -1062,6 +1076,12 @@ describe('cluster', () => {
         },
         vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
         excludeCharacters: '°_@',
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            stack.getLogicalId(securityGroup.node.defaultChild as ec2.CfnSecurityGroup),
+            'GroupId',
+          ],
+        },
       },
     });
   });

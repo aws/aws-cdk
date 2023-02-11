@@ -46,7 +46,7 @@ describe('Messages', () => {
 
     test('no match', () => {
       expect(() => annotations.hasError('/Default/Fred', Match.anyValue()))
-        .toThrowError(/Stack has 1 messages, but none match as expected./);
+        .toThrowError(/Stack has 1 messages.*but none match as expected./);
     });
   });
 
@@ -79,7 +79,7 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasWarning('/Default/Foo', Match.anyValue())).toThrowError(/Stack has 1 messages, but none match as expected./);
+      expect(() => annotations.hasWarning('/Default/Foo', Match.anyValue())).toThrowError(/Stack has 1 messages.*but none match as expected./);
     });
   });
 
@@ -112,7 +112,7 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasInfo('/Default/Qux', 'this info is incorrect')).toThrowError(/Stack has 1 messages, but none match as expected./);
+      expect(() => annotations.hasInfo('/Default/Qux', 'this info is incorrect')).toThrowError(/Stack has 1 messages.*but none match as expected./);
     });
   });
 
@@ -147,7 +147,7 @@ describe('Messages', () => {
 
     test('not', () => {
       expect(() => annotations.hasError('/Default/Foo', Match.not('this is an error')))
-        .toThrowError(/Found unexpected match: "this is an error" at \/entry\/data/);
+        .toThrowError(/Found unexpected match: "this is an error"/);
     });
 
     test('stringLikeRegEx', () => {

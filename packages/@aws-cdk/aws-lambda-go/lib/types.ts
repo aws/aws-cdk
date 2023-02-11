@@ -1,16 +1,9 @@
-import { AssetHashType, DockerImage } from '@aws-cdk/core';
+import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions } from '@aws-cdk/core';
 
 /**
  * Bundling options
  */
-export interface BundlingOptions {
-  /**
-   * Environment variables defined when go runs.
-   *
-   * @default - no environment variables are defined.
-   */
-  readonly environment?: { [key: string]: string; };
-
+export interface BundlingOptions extends DockerRunOptions {
   /**
    * Force bundling in a Docker container even if local bundling is
    * possible.
@@ -96,6 +89,34 @@ export interface BundlingOptions {
    * @default - false
    */
   readonly cgoEnabled?: boolean;
+
+  /**
+   * What Go proxies to use to fetch the packages involved in the build
+   *
+   * Pass a list of proxy addresses in order, and/or the string `'direct'` to
+   * attempt direct access.
+   *
+   * By default this construct uses no proxies, but a standard Go install would
+   * use the Google proxy by default. To recreate that behavior, do the following:
+   *
+   * ```ts
+   * new go.GoFunction(this, 'GoFunction', {
+   *   entry: 'app/cmd/api',
+   *   bundling: {
+   *     goProxies: [go.GoFunction.GOOGLE_GOPROXY, 'direct'],
+   *   },
+   * });
+   * ```
+   *
+   * @default - Direct access
+   */
+  readonly goProxies?: string[];
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: BundlingFileAccess;
 }
 
 /**

@@ -24,7 +24,7 @@ jobs:
 
       - name: Locate Yarn cache
         id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - name: Restore Yarn cache
         uses: actions/cache@v3
@@ -45,7 +45,7 @@ jobs:
         # These need to be ignored from the `ncu` runs!
         run: |-
           echo -n "::set-output name=list::"
-          node -p "$(lerna ls --all --json 2>/dev/null).map(item => item.name).join(',')"
+          echo "list=$(lerna ls --all --json 2>/dev/null | jq -r 'map(.name) | join(",")')" >> $GITHUB_OUTPUT 
       - name: Run "ncu -u"
         # We special-case @types/node because we want to stay on the current major (minimum supported node release)
         # We special-case @types/fs-extra because the current major (9.x) is broken with @types/node >= 10
@@ -65,10 +65,10 @@ jobs:
           lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/prettier,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
           # Upgrade package.jsons in init templates
           for pj in $(find packages/aws-cdk/lib/init-templates -name package.json); do
-            (cd $(dirname $pj) && ncu --upgrade --reject='@types/jest,@types/node,@types/prettier,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,ts-jest,jest,${{ steps.list-packages.outputs.list }}')
+            (cd $(dirname $pj) && ncu --upgrade --reject='constructs,${{ steps.list-packages.outputs.list }}')
           done
           # Upgrade dependencies at an aws-eks integ test docker image
-          cd packages/@aws-cdk/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject='@types/jest,@types/node,@types/prettier,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,ts-jest,jest,${{ steps.list-packages.outputs.list }}'
+          cd packages/@aws-cdk/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject='aws-sdk,${{ steps.list-packages.outputs.list }}'
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
       - name: Run "yarn install"

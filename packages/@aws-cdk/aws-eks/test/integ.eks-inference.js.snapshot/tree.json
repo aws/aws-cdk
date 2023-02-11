@@ -683,9 +683,9 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "dd8086b05eeea461708bd66ad140d8965ddf70c0e144af871d078fdbddf0a67d.zip"
+                      "s3Key": "c475180f5b1bbabac165414da13a9b843b111cd3b6d5fae9c954c006640c4064.zip"
                     },
-                    "description": "/opt/kubectl/kubectl 1.23; /opt/helm/helm 3.9",
+                    "description": "/opt/kubectl/kubectl 1.24; /opt/helm/helm 3.9",
                     "licenseInfo": "Apache-2.0"
                   }
                 },
@@ -696,8 +696,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/lambda-layer-kubectl-v23.KubectlV23Layer",
-              "version": "2.0.1"
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
+              "version": "2.0.27"
             }
           },
           "Cluster": {
@@ -708,6 +708,14 @@
                 "id": "Role",
                 "path": "aws-cdk-eks-cluster-inference-test/Cluster/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-eks-cluster-inference-test/Cluster/Role/Resource",
@@ -824,6 +832,14 @@
                     "id": "CreationRole",
                     "path": "aws-cdk-eks-cluster-inference-test/Cluster/Resource/CreationRole",
                     "children": {
+                      "ImportCreationRole": {
+                        "id": "ImportCreationRole",
+                        "path": "aws-cdk-eks-cluster-inference-test/Cluster/Resource/CreationRole/ImportCreationRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-cluster-inference-test/Cluster/Resource/CreationRole/Resource",
@@ -974,7 +990,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.154"
+                  "version": "10.1.161"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1028,6 +1044,14 @@
                 "id": "MastersRole",
                 "path": "aws-cdk-eks-cluster-inference-test/Cluster/MastersRole",
                 "children": {
+                  "ImportMastersRole": {
+                    "id": "ImportMastersRole",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/MastersRole/ImportMastersRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-eks-cluster-inference-test/Cluster/MastersRole/Resource",
@@ -1148,6 +1172,14 @@
                     "id": "NodeGroupRole",
                     "path": "aws-cdk-eks-cluster-inference-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole",
                     "children": {
+                      "ImportNodeGroupRole": {
+                        "id": "ImportNodeGroupRole",
+                        "path": "aws-cdk-eks-cluster-inference-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-cluster-inference-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource",
@@ -1470,6 +1502,14 @@
                     "id": "InstanceRole",
                     "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/InstanceRole",
                     "children": {
+                      "ImportInstanceRole": {
+                        "id": "ImportInstanceRole",
+                        "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/InstanceRole/ImportInstanceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/InstanceRole/Resource",
@@ -1584,7 +1624,7 @@
                       "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
                       "aws:cdk:cloudformation:props": {
                         "imageId": {
-                          "Ref": "SsmParameterValueawsserviceeksoptimizedami123amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                          "Ref": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
                         },
                         "instanceType": "inf1.2xlarge",
                         "iamInstanceProfile": {
@@ -1798,6 +1838,14 @@
                     "id": "ServiceRole",
                     "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource",
@@ -1963,6 +2011,14 @@
                     "id": "ServiceRole",
                     "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource",
@@ -2132,6 +2188,14 @@
                         "id": "ServiceRole",
                         "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource",
@@ -2352,6 +2416,14 @@
                         "id": "ServiceRole",
                         "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource",
@@ -2562,6 +2634,14 @@
                         "id": "ServiceRole",
                         "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource",
@@ -2772,6 +2852,14 @@
                         "id": "Role",
                         "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource",
@@ -2894,7 +2982,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.154"
+                      "version": "10.1.161"
                     }
                   }
                 },
@@ -2973,7 +3061,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.154"
+              "version": "10.1.161"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2988,6 +3076,14 @@
                     "id": "ServiceRole",
                     "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource",
@@ -3258,6 +3354,14 @@
                         "id": "ServiceRole",
                         "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource",
@@ -3598,7 +3702,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.154"
+              "version": "10.1.161"
             }
           },
           "awscdkeksclusterinferencetestClusterEBBBA1AC-AlbController": {
@@ -3641,6 +3745,14 @@
                     "id": "Role",
                     "path": "aws-cdk-eks-cluster-inference-test/awscdkeksclusterinferencetestClusterEBBBA1AC-AlbController/alb-sa/Role",
                     "children": {
+                      "ImportRole": {
+                        "id": "ImportRole",
+                        "path": "aws-cdk-eks-cluster-inference-test/awscdkeksclusterinferencetestClusterEBBBA1AC-AlbController/alb-sa/Role/ImportRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-cluster-inference-test/awscdkeksclusterinferencetestClusterEBBBA1AC-AlbController/alb-sa/Role/Resource",
@@ -4021,17 +4133,17 @@
               "version": "0.0.0"
             }
           },
-          "SsmParameterValue:--aws--service--eks--optimized-ami--1.23--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
-            "id": "SsmParameterValue:--aws--service--eks--optimized-ami--1.23--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "aws-cdk-eks-cluster-inference-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.23--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+          "SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-cdk-eks-cluster-inference-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
             }
           },
-          "SsmParameterValue:--aws--service--eks--optimized-ami--1.23--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118": {
-            "id": "SsmParameterValue:--aws--service--eks--optimized-ami--1.23--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "aws-cdk-eks-cluster-inference-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.23--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
+          "SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-cdk-eks-cluster-inference-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
@@ -4072,7 +4184,7 @@
                 "path": "aws-cdk-eks-cluster-interence/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.154"
+                  "version": "10.1.161"
                 }
               },
               "DeployAssert": {
@@ -4118,7 +4230,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.154"
+          "version": "10.1.161"
         }
       }
     },

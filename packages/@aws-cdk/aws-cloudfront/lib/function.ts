@@ -202,7 +202,7 @@ export enum FunctionEventType {
 
 /**
  * Represents a CloudFront function and event type when using CF Functions.
- * The type of the {@link AddBehaviorOptions.functionAssociations} property.
+ * The type of the `AddBehaviorOptions.functionAssociations` property.
  */
 export interface FunctionAssociation {
   /**

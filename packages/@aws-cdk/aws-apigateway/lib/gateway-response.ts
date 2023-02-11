@@ -2,7 +2,6 @@ import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayResponse, CfnGatewayResponseProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
-import { normalizeResponseParameterValue } from './util';
 
 /**
  * Represents gateway response resource.
@@ -89,7 +88,7 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
 
     const responseParameters: { [key: string]: string } = {};
     for (const [header, value] of Object.entries(responseHeaders)) {
-      responseParameters[`gatewayresponse.header.${header}`] = normalizeResponseParameterValue(value) ;
+      responseParameters[`gatewayresponse.header.${header}`] = value;
     }
     return responseParameters;
   }

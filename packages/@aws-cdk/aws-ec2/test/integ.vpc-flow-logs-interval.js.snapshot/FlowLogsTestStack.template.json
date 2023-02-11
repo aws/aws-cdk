@@ -524,7 +524,6 @@
      "Ref": "VPCB9E5F0B4"
     },
     "ResourceType": "VPC",
-    "TrafficType": "ALL",
     "LogDestination": {
      "Fn::GetAtt": [
       "VPCFlowLogsS3BucketFB7DC2BE",
@@ -538,8 +537,12 @@
       "Key": "Name",
       "Value": "FlowLogsTestStack/VPC"
      }
-    ]
-   }
+    ],
+    "TrafficType": "ALL"
+   },
+   "DependsOn": [
+    "VPCFlowLogsS3BucketPolicyB2C2A045"
+   ]
   },
   "VPCFlowLogsS3KeyPrefixFlowLogB57F1746": {
    "Type": "AWS::EC2::FlowLog",
@@ -548,7 +551,6 @@
      "Ref": "VPCB9E5F0B4"
     },
     "ResourceType": "VPC",
-    "TrafficType": "ALL",
     "LogDestination": {
      "Fn::Join": [
       "",
@@ -569,8 +571,13 @@
       "Key": "Name",
       "Value": "FlowLogsTestStack/VPC"
      }
-    ]
-   }
+    ],
+    "TrafficType": "ALL"
+   },
+   "DependsOn": [
+    "BucketAutoDeleteObjectsCustomResourceBAFD23C2",
+    "BucketPolicyE9A3008A"
+   ]
   },
   "FlowLogsCWIAMRole017AD736": {
    "Type": "AWS::IAM::Role",
@@ -644,7 +651,6 @@
      "Ref": "VPCB9E5F0B4"
     },
     "ResourceType": "VPC",
-    "TrafficType": "ALL",
     "DeliverLogsPermissionArn": {
      "Fn::GetAtt": [
       "FlowLogsCWIAMRole017AD736",
@@ -655,7 +661,8 @@
     "LogGroupName": {
      "Ref": "FlowLogsCWLogGroup0398E8F8"
     },
-    "MaxAggregationInterval": 600
+    "MaxAggregationInterval": 600,
+    "TrafficType": "ALL"
    }
   },
   "Bucket83908E77": {
@@ -890,7 +897,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
+     "S3Key": "33e2651435a0d472a75c1e033c9832b21321d9e56711926b04c5705e5f63874c.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
