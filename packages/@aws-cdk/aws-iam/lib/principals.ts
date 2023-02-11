@@ -737,7 +737,7 @@ export class SamlConsolePrincipal extends SamlPrincipal {
     super(samlProvider, {
       ...conditions,
       StringEquals: {
-        'SAML:aud': 'https://signin.aws.amazon.com/saml',
+        'SAML:aud': cdk.Aws.PARTITION==='aws-cn'? 'https://signin.amazonaws.cn/saml': `https://signin.${cdk.Aws.URL_SUFFIX}/saml`,
       },
     });
   }
