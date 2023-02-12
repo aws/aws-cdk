@@ -5,7 +5,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ContainerOverride } from '..';
-import { integrationResourceArn, validatePatternSupported, validatePropagatedTagSourceSupported } from '../private/task-utils';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for ECS Tasks
@@ -234,11 +234,6 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     sfn.IntegrationPattern.RUN_JOB,
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   ];
-  private static readonly SUPPORTED_PROPAGATED_TAG_SOURCES: ecs.PropagatedTagSource[] = [
-    ecs.PropagatedTagSource.NONE,
-    ecs.PropagatedTagSource.SERVICE,
-    ecs.PropagatedTagSource.TASK_DEFINITION,
-  ];
 
   /**
    * Manage allowed network traffic for this service
@@ -257,7 +252,6 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, EcsRunTask.SUPPORTED_INTEGRATION_PATTERNS);
-    validatePropagatedTagSourceSupported(EcsRunTask.SUPPORTED_PROPAGATED_TAG_SOURCES, this.props.propagatedTagSource);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
