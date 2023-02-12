@@ -81,6 +81,12 @@ export interface SlackChannelConfigurationProps {
    * @default - Default AWS SDK retry options.
    */
   readonly logRetentionRetryOptions?: logs.LogRetentionRetryOptions;
+
+  /**
+   * A list of IAM managed policies that are applied as channel guardrails.
+   * @default - The AWS managed 'AdministratorAccess' policy is applied as a default if this is not set.
+   */
+  readonly guardrailPolicies?: iam.IManagedPolicy[];
 }
 
 /**
@@ -293,6 +299,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       slackChannelId: props.slackChannelId,
       snsTopicArns: cdk.Lazy.list({ produce: () => this.notificationTopics.map(topic => topic.topicArn) }, { omitEmpty: true } ),
       loggingLevel: props.loggingLevel?.toString(),
+      guardrailPolicies: cdk.Lazy.list({ produce: () => props.guardrailPolicies?.map(policy => policy.managedPolicyArn) }, { omitEmpty: true } ),
     });
 
     // Log retention
