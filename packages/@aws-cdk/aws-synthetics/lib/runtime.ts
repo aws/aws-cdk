@@ -83,6 +83,7 @@ export class Runtime {
    * - Chromium version 88.0.4298.0
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.0
+   * @deprecated Use the latest version instead
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_0 = new Runtime('syn-nodejs-puppeteer-3.0', RuntimeFamily.NODEJS);
 
@@ -95,6 +96,7 @@ export class Runtime {
    * - Chromium version 88.0.4298.0
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.1
+   * @deprecated Use the latest version instead
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_1 = new Runtime('syn-nodejs-puppeteer-3.1', RuntimeFamily.NODEJS);
 
@@ -107,6 +109,7 @@ export class Runtime {
    * - Chromium version 88.0.4298.0
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.2
+   * @deprecated Use the latest version instead
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_2 = new Runtime('syn-nodejs-puppeteer-3.2', RuntimeFamily.NODEJS);
 
@@ -119,6 +122,7 @@ export class Runtime {
    * - Chromium version 88.0.4298.0
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.3
+   * @deprecated Use the latest version instead
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_3 = new Runtime('syn-nodejs-puppeteer-3.3', RuntimeFamily.NODEJS);
 
@@ -131,6 +135,7 @@ export class Runtime {
    * - Chromium version 88.0.4298.0
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.4
+   * @deprecated Use the latest version instead
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_4 = new Runtime('syn-nodejs-puppeteer-3.4', RuntimeFamily.NODEJS);
 
@@ -180,6 +185,20 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.8
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_8 = new Runtime('syn-nodejs-puppeteer-3.8', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-3.9` includes the following:
+   *
+   * - Lambda runtime Node.js 14.x
+   * - Puppeteer-core version 5.5.0
+   * - Chromium version 92.0.4512
+   *
+   * New Features:
+   * - **Dependency upgrades**: Upgrades some third-party dependency packages.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.9
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_9 = new Runtime('syn-nodejs-puppeteer-3.9', RuntimeFamily.NODEJS);
 
   /**
    * `syn-python-selenium-1.0` includes the following:
