@@ -143,6 +143,19 @@ class FeatureFlagStack extends cdk.Stack {
     // Test lazy instance of the AwsCustomResource
     new cdk.CfnOutput(this, 'BootstrapBrokers4', { value: cluster3.bootstrapBrokersTls });
     new cdk.CfnOutput(this, 'BootstrapBrokers5', { value: cluster3.bootstrapBrokersSaslIam });
+
+    const cluster4 = new msk.Cluster(this, 'Cluster_V3_1_1', {
+      clusterName: 'integ-test-v3_1_1',
+      kafkaVersion: msk.KafkaVersion.V3_3_1,
+      vpc,
+      logging: {
+        s3: {
+          bucket: this.bucket,
+        },
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    new cdk.CfnOutput(this, 'BootstrapBrokers6', { value: cluster4.bootstrapBrokersTls });
   }
 }
 
