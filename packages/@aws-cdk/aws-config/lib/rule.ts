@@ -1530,6 +1530,20 @@ export class ResourceType {
   public static readonly EVENTBRIDGE_ARCHIVE = new ResourceType('AWS::Events::Archive');
   /** Amazon EventBridge Endpoint */
   public static readonly EVENTBRIDGE_ENDPOINT = new ResourceType('AWS::Events::Endpoint');
+  /** Amazon EventBridge EventSchemas registry */
+  public static readonly EVENTSCHEMAS_REGISTRY = new ResourceType('AWS::EventSchemas::Registry');
+  /** Amazon EventBridge EventSchemas registry policy */
+  public static readonly EVENTSCHEMAS_REGISTRY_POLICY = new ResourceType('AWS::EventSchemas::RegistryPolicy');
+  /** Amazon EventBridge EventSchemas discoverer */
+  public static readonly EVENTSCHEMAS_DISCOVERER = new ResourceType('AWS::EventSchemas::Discoverer');
+  /** AWS FraudDetector label */
+  public static readonly FRAUDDETECTOR_LABEL = new ResourceType('AWS::FraudDetector::Label');
+  /** AWS FraudDetector entity type */
+  public static readonly FRAUDDETECTOR_ENTITY_TYPE = new ResourceType('AWS::FraudDetector::EntityType');
+  /** AWS FraudDetector variable */
+  public static readonly FRAUDDETECTOR_VARIABLE = new ResourceType('AWS::FraudDetector::Variable');
+  /** AWS FraudDetector outcome */
+  public static readonly FRAUDDETECTOR_OUTCOME = new ResourceType('AWS::FraudDetector::Outcome');
   /** Amazon GuardDuty detector */
   public static readonly GUARDDUTY_DETECTOR = new ResourceType('AWS::GuardDuty::Detector');
   /** Amazon GuardDuty Threat Intel Set */
@@ -1552,6 +1566,12 @@ export class ResourceType {
   public static readonly LIGHTSAIL_CERTIFICATE = new ResourceType('AWS::Lightsail::Certificate');
   /** Amazon Lightsail Disk */
   public static readonly LIGHTSAIL_DISK = new ResourceType('AWS::Lightsail::Disk');
+  /** AWS Lightsail bucket */
+  public static readonly LIGHTSAIL_BUCKET = new ResourceType('AWS::Lightsail::Bucket');
+  /** AWS Lightsail static IP */
+  public static readonly LIGHTSAIL_STATIC_IP = new ResourceType('AWS::Lightsail::StaticIp');
+  /** Amazon MQ broker */
+  public static readonly AMAZON_MQ_BROKER = new ResourceType('AWS::AmazonMQ::Broker');
   /** Amazon MSK cluster */
   public static readonly MSK_CLUSTER = new ResourceType('AWS::MSK::Cluster');
   /** Amazon Redshift cluster */
@@ -1594,6 +1614,8 @@ export class ResourceType {
   public static readonly ROUTE53_RECOVERY_READINESS_CELL = new ResourceType('AWS::Route53RecoveryReadiness::Cell');
   /** Amazon Route 53 Application Recovery Controller Readiness Check */
   public static readonly ROUTE53_RECOVERY_READINESS_READINESS_CHECK = new ResourceType('AWS::Route53RecoveryReadiness::ReadinessCheck');
+  /** Amazon Route53 recovery readiness recovery group */
+  public static readonly ROUTE53_RECOVERY_READINESS_RECOVERY_GROUP = new ResourceType('AWS::Route53RecoveryReadiness::RecoveryGroup');
   /** Amazon SQS queue */
   public static readonly SQS_QUEUE = new ResourceType('AWS::SQS::Queue');
   /** Amazon SNS topic */
@@ -1650,6 +1672,10 @@ export class ResourceType {
   public static readonly WORKSPACES_WORKSPACE = new ResourceType('AWS::WorkSpaces::Workspace');
   /** AWS AppConfig application */
   public static readonly APPCONFIG_APPLICATION = new ResourceType('AWS::AppConfig::Application');
+  /** AWS AppConfig environment */
+  public static readonly APPCONFIG_ENVIRONMENT = new ResourceType('AWS::AppConfig::Environment');
+  /** AWS AppConfig configuration profile */
+  public static readonly APPCONFIG_CONFIGURATION_PROFILE = new ResourceType('AWS::AppConfig::ConfigurationProfile');
   /** AWS AppSync GraphQL Api */
   public static readonly APPSYNC_GRAPHQL_API = new ResourceType('AWS::AppSync::GraphQLApi');
   /** AWS Backup backup plan */
@@ -1672,6 +1698,8 @@ export class ResourceType {
   public static readonly CLOUDFORMATION_STACK = new ResourceType('AWS::CloudFormation::Stack');
   /** AWS CloudTrail trail */
   public static readonly CLOUDTRAIL_TRAIL = new ResourceType('AWS::CloudTrail::Trail');
+  /** AWS Cloud9 environment EC2 */
+  public static readonly CLOUD9_ENVIRONMENT_EC2 = new ResourceType('AWS::Cloud9::EnvironmentEC2');
   /** AWS Cloud Map(ServiceDiscovery) service */
   public static readonly SERVICEDISCOVERY_SERVICE = new ResourceType('AWS::ServiceDiscovery::Service');
   /** AWS Cloud Map(ServiceDiscovery) Public Dns Namespace */
@@ -1742,6 +1770,16 @@ export class ResourceType {
   public static readonly IAM_POLICY = new ResourceType('AWS::IAM::Policy');
   /** AWS IAM AccessAnalyzer analyzer */
   public static readonly IAM_ACCESSANALYZER_ANALYZER = new ResourceType('AWS::AccessAnalyzer::Analyzer');
+  /** AWS IoT authorizer */
+  public static readonly IOT_AUTHORIZER = new ResourceType('AWS::IoT::Authorizer');
+  /** AWS IoT security profile */
+  public static readonly IOT_SECURITY_PROFILE = new ResourceType('AWS::IoT::SecurityProfile');
+  /** AWS IoT role alias */
+  public static readonly IOT_ROLE_ALIAS = new ResourceType('AWS::IoT::RoleAlias');
+  /** AWS IoT dimension */
+  public static readonly IOT_DIMENSION = new ResourceType('AWS::IoT::Dimension');
+  /** AWS IoT Analytics datastore */
+  public static readonly IOT_ANALYTICS_DATASTORE = new ResourceType('AWS::IoTAnalytics::Datastore');
   /** AWS IoT Events Input */
   public static readonly IOT_EVENTS_INPUT = new ResourceType('AWS::IoTEvents::Input');
   /** AWS IoT Events Detector Model */
@@ -1752,6 +1790,14 @@ export class ResourceType {
   public static readonly KMS_KEY = new ResourceType('AWS::KMS::Key');
   /** AWS Lambda function */
   public static readonly LAMBDA_FUNCTION = new ResourceType('AWS::Lambda::Function');
+  /** AWS Network Firewall Firewall */
+  public static readonly NETWORK_FIREWALL_FIREWALL = new ResourceType('AWS::NetworkFirewall::Firewall');
+  /** AWS Network Firewall Firewall Policy */
+  public static readonly NETWORK_FIREWALL_FIREWALL_POLICY = new ResourceType('AWS::NetworkFirewall::FirewallPolicy');
+  /** AWS Network Firewall Rule Group */
+  public static readonly NETWORK_FIREWALL_RULE_GROUP = new ResourceType('AWS::NetworkFirewall::RuleGroup');
+  /** AWS ResilienceHub resiliency policy */
+  public static readonly RESILIENCEHUB_RESILIENCY_POLICY = new ResourceType('AWS::ResilienceHub::ResiliencyPolicy');
   /**AWS Secrets Manager secret */
   public static readonly SECRETS_MANAGER_SECRET = new ResourceType('AWS::SecretsManager::Secret');
   /** AWS Service Catalog CloudFormation product */
@@ -1777,6 +1823,8 @@ export class ResourceType {
   public static readonly SYSTEMS_MANAGER_ASSOCIATION_COMPLIANCE = new ResourceType('AWS::SSM::AssociationCompliance');
   /** AWS Systems Manager file data */
   public static readonly SYSTEMS_MANAGER_FILE_DATA = new ResourceType('AWS::SSM::FileData');
+  /** AWS Transfer workflow */
+  public static readonly TRANSFER_WORKFLOW = new ResourceType('AWS::Transfer::Workflow');
   /** AWS WAF rate based rule */
   public static readonly WAF_RATE_BASED_RULE = new ResourceType('AWS::WAF::RateBasedRule');
   /** AWS WAF rule */
@@ -1811,6 +1859,8 @@ export class ResourceType {
   public static readonly ELBV2_LOAD_BALANCER = new ResourceType('AWS::ElasticLoadBalancingV2::LoadBalancer');
   /** AWS ELBv2 application load balancer listener */
   public static readonly ELBV2_LISTENER = new ResourceType('AWS::ElasticLoadBalancingV2::Listener');
+  /** AWS Elemental MediaPackage packaging group */
+  public static readonly MEDIAPACKAGE_PACKAGING_GROUP = new ResourceType('AWS::MediaPackage::PackagingGroup');
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {

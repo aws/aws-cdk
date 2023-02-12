@@ -1,0 +1,17 @@
+name: pr-linter-exemption-labeler
+on:
+  issue_comment:
+    types:
+      - created
+      - edited
+      - deleted
+
+jobs:
+  pr_commented:
+    name: PR Comment
+    if: ${{ (github.event.issue.pull_request) && (github.event.issue.state == 'open') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: TheRealAmazonKendra/pr-linter-exemption-labeler@main
+        with:
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
