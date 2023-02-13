@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import * as path from 'path';
-import { updateIniKey, loadLines, writeLines } from '../files';
-import { shell } from '../shell';
 import { LoginInformation } from './codeartifact';
 import { parallelShell } from './parallel-shell';
 import { UsageDir } from './usage-dir';
+import { updateIniKey, loadLines, writeLines } from '../files';
+import { shell } from '../shell';
 
 export async function npmLogin(login: LoginInformation, usageDir: UsageDir) {
   // Creating an ~/.npmrc that references an envvar is what you're supposed to do. (https://docs.npmjs.com/private-modules/ci-server-config)
