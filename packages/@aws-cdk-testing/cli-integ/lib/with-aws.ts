@@ -13,7 +13,6 @@ export type AwsContext = { readonly aws: AwsClients };
 export function withAws(
   block: (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void>,
   disableBootstrap: boolean = false,
-
 ): (context: TestContext) => Promise<void> {
   return (context: TestContext) => regionPool().using(async (region) => {
     const aws = await AwsClients.forRegion(region, context.output);
