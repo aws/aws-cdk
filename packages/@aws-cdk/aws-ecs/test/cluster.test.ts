@@ -2167,7 +2167,7 @@ describe('cluster', () => {
       }).addDefaultCapacityProviderStrategy([
         { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
       ]);
-    }).toThrow(/Capacity provider with default strategy test capacityProvider is not present in cluster's capacity providers./);
+    }).toThrow(/Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider before it can be used in a default capacity provider strategy./);
   });
 
   test('should throw an error when capacity providers is length 0 and default capacity provider startegy specified', () => {
@@ -2181,7 +2181,7 @@ describe('cluster', () => {
       }).addDefaultCapacityProviderStrategy([
         { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
       ]);
-    }).toThrow(/Capacity provider with default strategy test capacityProvider is not present in cluster's capacity providers./);
+    }).toThrow(/Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider before it can be used in a default capacity provider strategy./);
   });
 
   test('should throw an error when more than 1 default capacity provider have base specified', () => {
@@ -2197,6 +2197,27 @@ describe('cluster', () => {
         { capacityProvider: 'FARGATE_SPOT', base: 10, weight: 50 },
       ]);
     }).toThrow(/Only 1 capacity provider with default strategy can have a nonzero base./);
+  });
+
+  test('should throw an error if addDefaultCapacityProviderStrategy is called more than once', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: true,
+      });
+      cluster.addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT' },
+      ]);
+      cluster.addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT' },
+      ]);
+    }).toThrow(/Cluster default capacity provider strategy is already set./);
   });
 
   test('can add ASG capacity via Capacity Provider with default capacity provider', () => {
