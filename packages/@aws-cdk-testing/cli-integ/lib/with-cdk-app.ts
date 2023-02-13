@@ -63,7 +63,7 @@ export function withCdkApp(
         });
       }
 
-      if (context.disableBootstrap) {
+      if (!context.disableBootstrap) {
         await ensureBootstrapped(fixture);
       }
 
