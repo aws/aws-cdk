@@ -23,6 +23,14 @@ rule checkcompliance when
 }
 `;
 
+// const samplePolicyText2 = `
+
+// rule username when
+//     resourceType == "AWS::IAM::User" {
+//       configuration.userName == "sample-user"
+//     }
+// `;
+
 new config.CustomPolicy(stack, 'Custom', {
   policyText: samplePolicyText,
   enableDebugLog: true,
