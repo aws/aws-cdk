@@ -41,6 +41,12 @@ describe('size', () => {
     expect(Size.mebibytes(4 * 1024).toGibibytes()).toEqual(4);
   });
 
+  test('Size in bytes test', () => {
+    const size = Size.bytes(1_073_741_823);
+    expect(size.toBytes()).toEqual(1_073_741_823);
+
+  });
+
   test('Size in gibibyte', () => {
     const size = Size.gibibytes(5);
 

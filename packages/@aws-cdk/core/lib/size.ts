@@ -17,6 +17,18 @@ export class Size {
    *
    * @returns a new `Size` instance
    */
+  public static bytes(amount: number): Size {
+    return new Size(amount, StorageUnit.Bytes);
+  }
+
+  /**
+   * Create a Storage representing an amount kibibytes.
+   * 1 KiB = 1024 bytes
+   *
+   * @param amount the amount of kibibytes to be represented
+   *
+   * @returns a new `Size` instance
+   */
   public static kibibytes(amount: number): Size {
     return new Size(amount, StorageUnit.Kibibytes);
   }
@@ -88,6 +100,17 @@ export class Size {
     }
     this.amount = amount;
     this.unit = unit;
+  }
+
+  /**
+   * Return this storage as a total number of bytes.
+   *
+   * @param opts the conversion options
+   *
+   * @returns the quantity expressed in bytes
+   */
+  public toBytes(opts: SizeConversionOptions = {}): number {
+    return convert(this.amount, this.unit, StorageUnit.Bytes, opts);
   }
 
   /**
@@ -178,6 +201,7 @@ export interface SizeConversionOptions {
 
 class StorageUnit {
   public static readonly Kibibytes = new StorageUnit('kibibytes', 1);
+  public static readonly Bytes = new StorageUnit('bytes', 1 / 1024);
   public static readonly Mebibytes = new StorageUnit('mebibytes', 1024);
   public static readonly Gibibytes = new StorageUnit('gibibytes', 1024 * 1024);
   public static readonly Tebibytes = new StorageUnit('tebibytes', 1024 * 1024 * 1024);
