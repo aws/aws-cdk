@@ -109,7 +109,9 @@ Packaging is executed using the `Packaging` class, which:
 ├── poetry.lock # your poetry lock file has to be present at the entry path
 ```
 
-If using `poetry`, particularly with `virtualenvs.in-project = true`, you can exclude specific files from the copied files using the optional bundling string array parameter `poetryAssetExcludes`
+**Excluding source files**
+
+You can exclude files from being copied using the optional bundling string array parameter `assetExcludes`
 
 ```ts
 new python.PythonFunction(this, 'function', {
@@ -117,7 +119,7 @@ new python.PythonFunction(this, 'function', {
   runtime: Runtime.PYTHON_3_8,
   bundling: {
     // translates to `rsync --exclude='.venv'`
-    poetryAssetExcludes: ['.venv'],
+    assetExcludes: ['.venv'],
   },
 });
 ```

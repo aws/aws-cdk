@@ -83,7 +83,7 @@ export class Bundling implements CdkBundlingOptions {
       image,
       poetryIncludeHashes,
       commandHooks,
-      poetryAssetExcludes = [],
+      assetExcludes = [],
     } = props;
 
     const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
@@ -94,7 +94,7 @@ export class Bundling implements CdkBundlingOptions {
       outputDir: outputPath,
       poetryIncludeHashes,
       commandHooks,
-      poetryAssetExcludes,
+      assetExcludes,
     });
 
     this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '../lib'), {
@@ -120,7 +120,7 @@ export class Bundling implements CdkBundlingOptions {
     const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes);
     let bundlingCommands: string[] = [];
     bundlingCommands.push(...options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []);
-    const exclusionStr = options.poetryAssetExcludes?.map(item => `--exclude='${item}'`).join(' ');
+    const exclusionStr = options.assetExcludes?.map(item => `--exclude='${item}'`).join(' ');
     bundlingCommands.push([
       'rsync', '-rLv', exclusionStr ?? '', `${options.inputDir}/`, options.outputDir,
     ].filter(item => item).join(' '));
@@ -138,7 +138,7 @@ interface BundlingCommandOptions {
   readonly entry: string;
   readonly inputDir: string;
   readonly outputDir: string;
-  readonly poetryAssetExcludes?: string[];
+  readonly assetExcludes?: string[];
   readonly poetryIncludeHashes?: boolean;
   readonly commandHooks?: ICommandHooks;
 }

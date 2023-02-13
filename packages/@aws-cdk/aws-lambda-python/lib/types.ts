@@ -16,11 +16,11 @@ export interface BundlingOptions extends DockerRunOptions {
   readonly poetryIncludeHashes?: boolean;
 
   /**
- * When using Poetry bundler, list of file patterns to exclude when copying assets for bundling.
+ * List of file patterns to exclude when copying assets from source for bundling.
  *
  * @default - Empty list
  */
-  readonly poetryAssetExcludes?: string[];
+  readonly assetExcludes?: string[];
 
   /**
    * Output path suffix: the suffix for the directory into which the bundled output is written.

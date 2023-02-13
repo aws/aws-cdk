@@ -74,6 +74,50 @@ test('Bundling a function with requirements.txt', () => {
   const files = fs.readdirSync(assetCode.path);
   expect(files).toContain('index.py');
   expect(files).toContain('requirements.txt');
+  expect(files).toContain('.ignorelist');
+});
+
+test('Bundling a function with requirements.txt using assetExcludes', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  const assetCode = Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    architecture: Architecture.X86_64,
+    assetExcludes: ['.ignorelist'],
+  });
+
+  // Correctly bundles
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        "rsync -rLv --exclude='.ignorelist' /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output",
+      ],
+    }),
+  }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
+  expect(files).toContain('requirements.txt');
+});
+
+test('Bundling Python 2.7 with requirements.txt installed', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_2_7,
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly bundles with requirements.txt pip installed
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'rsync -rLv /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
+      ],
+    }),
+  }));
 });
 
 test('Bundling Python 2.7 with requirements.txt installed', () => {
@@ -162,6 +206,34 @@ test('Bundling a function with pipenv dependencies', () => {
   expect(files).toContain('.ignorefile');
 });
 
+test('Bundling a function with pipenv dependencies with assetExcludes', () => {
+  const entry = path.join(__dirname, 'lambda-handler-pipenv');
+
+  const assetCode = Bundling.bundle({
+    entry: path.join(entry, '.'),
+    runtime: Runtime.PYTHON_3_9,
+    architecture: Architecture.X86_64,
+    outputPathSuffix: 'python',
+    assetExcludes: ['.ignorefile'],
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        "rsync -rLv --exclude='.ignorefile' /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python",
+      ],
+    }),
+  }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
+  expect(files).toContain('Pipfile');
+  expect(files).toContain('Pipfile.lock');
+  // Contains hidden files.
+  expect(files).toContain('.ignorefile');
+});
+
 test('Bundling a function with poetry dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler-poetry');
 
@@ -189,7 +261,7 @@ test('Bundling a function with poetry dependencies', () => {
   expect(files).toContain('.ignorefile');
 });
 
-test('Bundling a function with poetry and poetryAssetExcludes', () => {
+test('Bundling a function with poetry and assetExcludes', () => {
   const entry = path.join(__dirname, 'lambda-handler-poetry');
 
   Bundling.bundle({
@@ -197,7 +269,7 @@ test('Bundling a function with poetry and poetryAssetExcludes', () => {
     runtime: Runtime.PYTHON_3_9,
     architecture: Architecture.X86_64,
     outputPathSuffix: 'python',
-    poetryAssetExcludes: ['.ignorefile'],
+    assetExcludes: ['.ignorefile'],
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
@@ -211,7 +283,7 @@ test('Bundling a function with poetry and poetryAssetExcludes', () => {
 
 });
 
-test('Bundling a function with poetry and no poetryAssetExcludes', () => {
+test('Bundling a function with poetry and no assetExcludes', () => {
   const entry = path.join(__dirname, 'lambda-handler-poetry');
 
   Bundling.bundle({
