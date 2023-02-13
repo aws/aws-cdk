@@ -292,6 +292,8 @@ export class Metric implements IMetric {
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
       throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
+
+    this.warnings = undefined;
     this.dimensions = this.validateDimensions(props.dimensionsMap ?? props.dimensions);
     this.namespace = props.namespace;
     this.metricName = props.metricName;
@@ -300,12 +302,12 @@ export class Metric implements IMetric {
     if (parsedStat.type === 'generic') {
       // Unrecognized statistic, do not throw, just warn
       // There may be a new statistic that this lib does not support yet
-      // eslint-disable-next-line no-console
-      console.warn(
-        `WARNING: Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}", label "${props.label}" and metric name "${props.metricName}".` +
-          ' Use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
+      const label = props.label ? ` label "${props.label}"`: '';
+      this.warnings = [
+        `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}",${label} and metric name "${props.metricName}".` +
+          ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
           ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.',
-      );
+      ];
     }
     this.statistic = normalizeStatistic(parsedStat);
 
@@ -314,7 +316,6 @@ export class Metric implements IMetric {
     this.unit = props.unit;
     this.account = props.account;
     this.region = props.region;
-    this.warnings = undefined;
   }
 
   /**
