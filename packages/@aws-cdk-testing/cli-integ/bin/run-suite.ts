@@ -22,6 +22,11 @@ async function main() {
       type: 'string',
       requiresArg: true,
     })
+    .option('test-file', {
+      description: 'The specific test file to run',
+      type: 'string',
+      requiresArg: true,
+    })
     .option('use-source', {
       descripton: 'Use TypeScript packages from the given source repository (or "auto")',
       alias: 's',
@@ -121,6 +126,7 @@ async function main() {
       ...args.test ? ['-t', args.test] : [],
       ...args.verbose ? ['--verbose'] : [],
       ...passWithNoTests ? ['--passWithNoTests'] : [],
+      ...args['test-file'] ? [args['test-file']] : [],
     ], path.resolve(__dirname, '..', 'resources', 'integ.jest.config.js'));
 
   } finally {
