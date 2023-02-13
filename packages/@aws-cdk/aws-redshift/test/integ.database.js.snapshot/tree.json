@@ -1228,7 +1228,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.182"
+                  "version": "10.1.235"
                 }
               },
               "TablePrivileges": {
@@ -1470,13 +1470,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.182"
+                      "version": "10.1.235"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.182"
+                  "version": "10.1.235"
                 }
               }
             },
@@ -1639,7 +1639,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "8359857aa9b7c3fbc8bba9a505282ba848915383c4549f21b9f93f9f35b56415.zip"
+                      "s3Key": "847e15feeb180b356ab9a8094d8b9459ea8ec26fc27957794d583ed9eb3a79d8.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1902,7 +1902,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.182"
+                  "version": "10.1.235"
                 }
               }
             },
@@ -1946,7 +1946,7 @@
                 "path": "redshift-cluster-database-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.182"
+                  "version": "10.1.235"
                 }
               },
               "DeployAssert": {
@@ -1992,7 +1992,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.182"
+          "version": "10.1.235"
         }
       }
     },
