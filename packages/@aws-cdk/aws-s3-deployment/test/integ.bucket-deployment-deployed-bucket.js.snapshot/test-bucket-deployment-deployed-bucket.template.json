@@ -439,6 +439,9 @@
    "eu-central-1": {
     "endpoint": "s3-website.eu-central-1.amazonaws.com"
    },
+   "eu-central-2": {
+    "endpoint": "s3-website.eu-central-2.amazonaws.com"
+   },
    "eu-north-1": {
     "endpoint": "s3-website.eu-north-1.amazonaws.com"
    },

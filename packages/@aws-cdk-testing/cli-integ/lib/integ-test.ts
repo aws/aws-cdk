@@ -17,7 +17,7 @@ export function integTest(
   name: string,
   callback: (context: TestContext) => Promise<void>,
   timeoutMillis?: number,
-) {
+): void {
 
   // Integ tests can run concurrently, and are responsible for blocking
   // themselves if they cannot.  Because `test.concurrent` executes the test
