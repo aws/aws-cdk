@@ -14,6 +14,8 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
 } else {
   var cdk = require('aws-cdk-lib');
   var {
+    DefaultStackSynthesizer,
+    LegacyStackSynthesizer,
     aws_ec2: ec2,
     aws_s3: s3,
     aws_ssm: ssm,
@@ -216,7 +218,19 @@ class MissingSSMParameterStack extends cdk.Stack {
 
 class LambdaStack extends cdk.Stack {
   constructor(parent, id, props) {
-    super(parent, id, props);
+    // sometimes we need to specify the custom bootstrap bucket to use
+    // see the 'upgrade legacy bootstrap stack' test
+    const synthesizer = parent.node.tryGetContext('legacySynth') === 'true' ?
+      new LegacyStackSynthesizer({
+          fileAssetsBucketName: parent.node.tryGetContext('bootstrapBucket'),
+      })
+    : new DefaultStackSynthesizer({
+          fileAssetsBucketName: parent.node.tryGetContext('bootstrapBucket'),
+        })
+    super(parent, id, {
+      ...props,
+      synthesizer: synthesizer,
+    });
 
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
