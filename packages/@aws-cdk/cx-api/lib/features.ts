@@ -634,12 +634,12 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'Use unique resource name for Database Proxy',
     detailsMd: `
-      If this flag is not set, the default behavior for \`DatabaseProxy\` is 
-      to use \`id\` of the constructor for \`dbProxyName\` when it's not specified in the argument..
+      If this flag is not set, the default behavior for \`DatabaseProxy\` is
+      to use \`id\` of the constructor for \`dbProxyName\` when it's not specified in the argument.
       In this case, users can't deploy \`DatabaseProxy\`s that have the same \`id\` in the same region.
-      
+
       If this flag is set, the default behavior is to use unique resource names for each \`DatabaseProxy\`.
-      
+
       This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
     `,
     introducedIn: { v2: 'V2NEXT' },
