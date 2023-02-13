@@ -25,6 +25,7 @@ __export(lambda_data_processor_exports, {
 module.exports = __toCommonJS(lambda_data_processor_exports);
 async function handler(event, context) {
   const output = event.records.map((record) => ({
+    /* This transformation is the "identity" transformation, the data is left intact */
     recordId: record.recordId,
     result: "Ok",
     data: record.data
