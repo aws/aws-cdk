@@ -784,8 +784,8 @@ flag on a resource-by-resource basis to enable it if necessary.
 
 *Use unique resource name for Database Proxy* (fix)
 
-If this flag is not set, the default behavior for `DatabaseProxy` is
-to use `id` of the constructor for `dbProxyName` when it's not specified in the argument.
+If this flag is not set, the default behavior for `DatabaseProxy` is 
+to use `id` of the constructor for `dbProxyName` when it's not specified in the argument..
 In this case, users can't deploy `DatabaseProxy`s that have the same `id` in the same region.
 
 If this flag is set, the default behavior is to use unique resource names for each `DatabaseProxy`.
