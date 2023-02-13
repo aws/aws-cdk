@@ -295,7 +295,7 @@ export class Cluster extends Resource implements ICluster {
 
     const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
     if (defaultCapacityProvidersWithBase.length > 1) {
-      throw new Error('Only 1 capacity provider with default strategy can have a nonzero base.');
+      throw new Error('Only 1 capacity provider in a capacity provider strategy can have a nonzero base.');
     }
     this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
@@ -374,7 +374,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Getter for _defaultCapacityProviderStrategy. This is necessary to correctly create Capacity Provider Assocaitions.
+   * Getter for _defaultCapacityProviderStrategy. This is necessary to correctly create Capacity Provider Associations.
    */
   public get defaultCapacityProviderStrategy() {
     return this._defaultCapacityProviderStrategy;

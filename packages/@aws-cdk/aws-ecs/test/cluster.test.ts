@@ -2196,7 +2196,7 @@ describe('cluster', () => {
         { capacityProvider: 'FARGATE', base: 10, weight: 50 },
         { capacityProvider: 'FARGATE_SPOT', base: 10, weight: 50 },
       ]);
-    }).toThrow(/Only 1 capacity provider with default strategy can have a nonzero base./);
+    }).toThrow(/Only 1 capacity provider in a capacity provider strategy can have a nonzero base./);
   });
 
   test('should throw an error when a capacity provider strategy contains a mix of Auto Scaling groups and Fargate providers', () => {

@@ -1141,8 +1141,13 @@ new ecs.Ec2Service(this, 'EC2Service', {
 
 ### Cluster Default Provider Strategy
 
-When the service does not have a capacity provider strategy, the cluster's default capacity provider strategy will be used.
-Default Capacity Provider Strategy can be added by using the method addDefaultCapacityProviderStrategy.
+A capacity provider strategy is part of the configuration of a cluster, service, or task. A capacity provider strategy consists of one or more capacity providers. You can specify an optional base and weight value for finer control.
+
+You can associate a default capacity provider strategy with an Amazon ECS cluster. After you do this, a default capacity provider strategy is used when creating a service or running a standalone task in the cluster and whenever a custom capacity provider strategy or a launch type isn't specified. We recommend that you define a default capacity provider strategy for each cluster.
+
+For more information visit https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-capacity-providers.html
+
+When the service does not have a capacity provider strategy, the cluster's default capacity provider strategy will be used. Default Capacity Provider Strategy can be added by using the method `addDefaultCapacityProviderStrategy`. A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers.
 
 ```ts
 declare const capacityProvider: ecs.CapacityProvider;
@@ -1155,7 +1160,19 @@ cluster.addAsgCapacityProvider(capacityProvider);
 cluster.addDefaultCapacityProviderStrategy([
   { capacityProvider: 'FARGATE', base: 10, weight: 50 },
   { capacityProvider: 'FARGATE_SPOT', weight: 50 },
-  { capacityProvider: capacityProvider.capacityProviderName },
+]);
+```
+
+```ts
+declare const capacityProvider: ecs.CapacityProvider;
+
+const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+  enableFargateCapacityProviders: true,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+cluster.addDefaultCapacityProviderStrategy([
+  { capacityProvider: capacityProvider.capacityProviderName, base: 10, weight: 50 },
 ]);
 ```
 
