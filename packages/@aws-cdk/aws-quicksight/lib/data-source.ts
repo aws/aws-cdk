@@ -306,13 +306,9 @@ export class DataSource extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._dataSourcePermissions) {
-            this._dataSourcePermissions = [];
-          }
         }
 
-        return this._dataSourcePermissions;
+        return this._dataSourcePermissions!;
       }
 
       private _dataSourceTags: cxapi.QuickSightContextResponse.TagList | undefined;
@@ -330,13 +326,9 @@ export class DataSource extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._dataSourceTags) {
-            this._dataSourceTags = [];
-          }
         }
 
-        return this._dataSourceTags;
+        return this._dataSourceTags!;
       }
 
       public readonly dataSourceCreatedTime = '';
@@ -344,14 +336,14 @@ export class DataSource extends Resource {
       public readonly dataSourceStatus = '';
       public readonly credentials = undefined;
 
-      public resourceId = this.dataSource.dataSourceId ?? '';
+      public resourceId = this.dataSource.dataSourceId!;
 
       public get dataSourceName() {
         return this.dataSource.name;
       }
 
       public get dataSourceArn() {
-        return this.dataSource.arn ?? '';
+        return this.dataSource.arn!;
       }
 
       public get tags() {

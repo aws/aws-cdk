@@ -197,13 +197,9 @@ export class Template extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._templatePermissions) {
-            this._templatePermissions = [];
-          }
         }
 
-        return this._templatePermissions;
+        return this._templatePermissions!;
       }
 
       private _templateTags: cxapi.QuickSightContextResponse.TagList | undefined;
@@ -221,13 +217,9 @@ export class Template extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._templateTags) {
-            this._templateTags = [];
-          }
         }
 
-        return this._templateTags;
+        return this._templateTags!;
       }
 
       public get templateName() {
@@ -251,10 +243,10 @@ export class Template extends Resource {
       }
 
       public get templateArn() {
-        return this.template.arn ?? '';
+        return this.template.arn!;
       }
 
-      public resourceId = this.template.templateId ?? '';
+      public resourceId = this.template.templateId!;
 
       public get versionDescription() {
         return this.template.version?.description;
@@ -263,8 +255,8 @@ export class Template extends Resource {
       private _sourceEntity: ITemplate | IAnalysis | undefined;
       public get sourceEntity() {
         if (!this._sourceEntity) {
-          let splitArn = Stack.of(scope).splitArn(this.template.version?.sourceEntityArn ?? '', ArnFormat.SLASH_RESOURCE_NAME);
-          let sourceEntityId: string = this.template.version?.sourceEntityArn?.split('/')[1] ?? '';
+          let splitArn = Stack.of(scope).splitArn(this.template.version?.sourceEntityArn!, ArnFormat.SLASH_RESOURCE_NAME);
+          let sourceEntityId: string = this.template.version?.sourceEntityArn?.split('/')[1]!;
 
           if (splitArn.resource == 'analysis') {
 

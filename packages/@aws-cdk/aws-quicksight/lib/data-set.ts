@@ -289,13 +289,9 @@ export class DataSet extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._dataSetPermissions) {
-            this._dataSetPermissions = [];
-          }
         }
 
-        return this._dataSetPermissions;
+        return this._dataSetPermissions!;
       }
 
       private _dataSetTags: cxapi.QuickSightContextResponse.TagList | undefined;
@@ -313,13 +309,9 @@ export class DataSet extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._dataSetTags) {
-            this._dataSetTags = [];
-          }
         }
 
-        return this._dataSetTags;
+        return this._dataSetTags!;
       }
 
       public readonly ingestionWaitPolicy = undefined;
@@ -345,10 +337,10 @@ export class DataSet extends Resource {
       }
 
       public get dataSetArn() {
-        return this.dataSet.arn ?? '';
+        return this.dataSet.arn!;
       }
 
-      public resourceId = this.dataSet.dataSetId ?? '';
+      public resourceId = this.dataSet.dataSetId!;
 
       public get columnGroups() {
         return this.dataSet.columnGroups;

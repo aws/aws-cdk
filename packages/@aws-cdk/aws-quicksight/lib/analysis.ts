@@ -203,13 +203,9 @@ export class Analysis extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._analysisPermissions) {
-            this._analysisPermissions = [];
-          }
         }
 
-        return this._analysisPermissions;
+        return this._analysisPermissions!;
       }
 
       private _analysisTags: cxapi.QuickSightContextResponse.TagList | undefined;
@@ -227,13 +223,9 @@ export class Analysis extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._analysisTags) {
-            this._analysisTags = [];
-          }
         }
 
-        return this._analysisTags;
+        return this._analysisTags!;
       }
 
       public get analysisName() {
@@ -257,10 +249,10 @@ export class Analysis extends Resource {
       }
 
       public get analysisArn() {
-        return this.analysis.arn ?? '';
+        return this.analysis.arn!;
       }
 
-      public resourceId = this.analysis.analysisId ?? '';
+      public resourceId = this.analysis.analysisId!;
 
       // Analysis specific properties
       public readonly sourceTemplate = undefined;
@@ -269,7 +261,7 @@ export class Analysis extends Resource {
       private _theme: ITheme | undefined;
       public get theme(): ITheme {
         if (!this._theme) {
-          let themeId: string = this.analysis.themeArn?.split('/')[1] ?? '';
+          let themeId: string = this.analysis.themeArn?.split('/')[1]!;
           this._theme = Theme.fromId(scope, themeId, themeId);
         }
 
@@ -385,11 +377,8 @@ export class Analysis extends Resource {
     this.parameters = props.parameters;
     this.theme = props.theme;
 
-    if (!this.sourceTemplate) {
-      throw new Error('sourceTemplate missing');
-    }
-    let sourceTemplateArn: string = this.sourceTemplate.templateArn;
-    let placeholders: IDataSet[] = this.sourceTemplate.placeholders;
+    let sourceTemplateArn: string = this.sourceTemplate!.templateArn;
+    let placeholders: IDataSet[] = this.sourceTemplate!.placeholders;
 
     if (props.dataSets) {
       this.dataSets = props.dataSets;

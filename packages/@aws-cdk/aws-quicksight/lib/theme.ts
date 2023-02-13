@@ -204,13 +204,9 @@ export class Theme extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._themePermissions) {
-            this._themePermissions = [];
-          }
         }
 
-        return this._themePermissions;
+        return this._themePermissions!;
       }
 
       private _themeTags: cxapi.QuickSightContextResponse.TagList | undefined;
@@ -228,13 +224,9 @@ export class Theme extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._themeTags) {
-            this._themeTags = [];
-          }
         }
 
-        return this._themeTags;
+        return this._themeTags!;
       }
 
       public get themeName() {
@@ -258,10 +250,10 @@ export class Theme extends Resource {
       }
 
       public get themeArn() {
-        return this.theme.arn ?? '';
+        return this.theme.arn!;
       }
 
-      public resourceId = this.theme.themeId ?? '';
+      public resourceId = this.theme.themeId!;
 
       // Theme specific properties
 
@@ -270,13 +262,13 @@ export class Theme extends Resource {
       }
 
       public get versionDescription() {
-        return this.theme.version?.description ?? '';
+        return this.theme.version?.description!;
       }
 
       private _baseTheme: ITheme | undefined;
       public get baseTheme(): ITheme {
         if (!this._baseTheme) {
-          let baseThemeId: string = this.theme.version?.baseThemeId ?? '';
+          let baseThemeId: string = this.theme.version?.baseThemeId!;
           this._baseTheme = Theme.fromId(scope, baseThemeId, baseThemeId);
         }
 

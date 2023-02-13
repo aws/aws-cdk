@@ -229,13 +229,9 @@ export class Dashboard extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._dashboardPermissions) {
-            this._dashboardPermissions = [];
-          }
         }
 
-        return this._dashboardPermissions;
+        return this._dashboardPermissions!;
       }
 
       private _dashboardTags: cxapi.QuickSightContextResponse.TagList | undefined;
@@ -253,13 +249,9 @@ export class Dashboard extends Resource {
             props: contextProps,
             dummyValue: [],
           }).value;
-
-          if (!this._dashboardTags) {
-            this._dashboardTags = [];
-          }
         }
 
-        return this._dashboardTags;
+        return this._dashboardTags!;
       }
 
       public get dashboardName() {
@@ -283,10 +275,10 @@ export class Dashboard extends Resource {
       }
 
       public get dashboardArn() {
-        return this.dashboard.arn ?? '';
+        return this.dashboard.arn!;
       }
 
-      public resourceId = this.dashboard.dashboardId ?? '';
+      public resourceId = this.dashboard.dashboardId!;
 
       // Dashboard specific properties
       public readonly parameters = undefined;
@@ -315,7 +307,7 @@ export class Dashboard extends Resource {
       private _sourceTemplate: ITemplate | undefined;
       public get sourceTemplate() {
         if (!this._sourceTemplate) {
-          let templateId: string = this.dashboard.version?.sourceEntityArn?.split('/')[1] ?? '';
+          let templateId: string = this.dashboard.version?.sourceEntityArn?.split('/')[1]!;
           this._sourceTemplate = Template.fromId(scope, templateId, templateId);
         }
 
@@ -325,7 +317,7 @@ export class Dashboard extends Resource {
       private _theme: ITheme | undefined;
       public get theme() {
         if (!this._theme) {
-          let themeId: string = this.dashboard.version?.themeArn?.split('/')[1] ?? '';
+          let themeId: string = this.dashboard.version?.themeArn?.split('/')[1]!;
           this._theme = Theme.fromId(scope, themeId, themeId);
         }
 
@@ -440,11 +432,8 @@ export class Dashboard extends Resource {
     this.dashboardPublishOptions = props.dashboardPublishOptions;
     this.versionDescription = props.versionDescription;
 
-    if (!this.sourceTemplate) {
-      throw new Error('sourceTemplate missing');
-    }
-    let sourceTemplateArn: string = this.sourceTemplate.templateArn;
-    let placeholders: IDataSet[] = this.sourceTemplate.placeholders;
+    let sourceTemplateArn: string = this.sourceTemplate!.templateArn;
+    let placeholders: IDataSet[] = this.sourceTemplate!.placeholders;
 
     if (props.dataSets) {
       this.dataSets = props.dataSets;
