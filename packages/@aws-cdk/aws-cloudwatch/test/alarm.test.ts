@@ -324,7 +324,27 @@ describe('Alarm', () => {
     });
   });
 
-  test('metric warnings are added to Alarm', () => {
+  test('metric warnings are added to Alarm for unrecognized statistic', () => {
+    const stack = new Stack(undefined, 'MyStack');
+    const m = new Metric({
+      namespace: 'CDK/Test',
+      metricName: 'Metric',
+      statistic: 'invalid',
+    });
+
+    // WHEN
+    new Alarm(stack, 'MyAlarm', {
+      metric: m,
+      evaluationPeriods: 1,
+      threshold: 1,
+    });
+
+    // THEN
+    const template = Annotations.fromStack(stack);
+    template.hasWarning('/MyStack/MyAlarm', Match.stringLikeRegexp('Unrecognized statistic.*Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic'));
+  });
+
+  test('metric warnings are added to Alarm for math expressions', () => {
     const stack = new Stack(undefined, 'MyStack');
     const m = new MathExpression({ expression: 'oops' });
 
