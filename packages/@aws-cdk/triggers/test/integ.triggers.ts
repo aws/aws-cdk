@@ -1,6 +1,7 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as triggers from '../lib';
 
 const app = new App();
@@ -22,6 +23,10 @@ new triggers.TriggerFunction(stack, 'MySecondFunction', {
   runtime: lambda.Runtime.NODEJS_16_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function() { console.log("hello"); };'),
+});
+
+new integ.IntegTest(app, 'TriggerTest', {
+  testCases: [stack],
 });
 
 app.synth();

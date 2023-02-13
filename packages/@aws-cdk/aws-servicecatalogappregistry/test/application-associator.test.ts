@@ -15,13 +15,19 @@ describe('Scope based Associations with Application within Same Account', () => 
     });
   });
   test('ApplicationAssociator will associate allStacks created inside cdkApp', () => {
-    new appreg.ApplicationAssociator(app, 'MyApplication', {
+    const appAssociator = new appreg.ApplicationAssociator(app, 'MyApplication', {
       applications: [appreg.TargetApplication.createApplicationStack({
         applicationName: 'MyAssociatedApplication',
         stackName: 'MyAssociatedApplicationStack',
       })],
     });
+
     const anotherStack = new AppRegistrySampleStack(app, 'SampleStack');
+    Template.fromStack(appAssociator.appRegistryApplication().stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::Application', 1);
+    Template.fromStack(appAssociator.appRegistryApplication().stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
+      Name: 'MyAssociatedApplication',
+      Tags: { managedBy: 'CDK_Application_Associator' },
+    });
     Template.fromStack(anotherStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(anotherStack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
       Application: 'MyAssociatedApplication',
@@ -103,7 +109,8 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const crossRegionStack = new cdk.Stack(app, 'crossRegionStack', {
       env: { account: 'account', region: 'region' },
     });
-    Annotations.fromStack(crossRegionStack).hasError('*', 'AppRegistry does not support cross region associations. Application region region2, stack region region');
+    Annotations.fromStack(crossRegionStack).hasWarning('*', 'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app.'
+        + ' Application region region2, stack region region');
   });
 
   test('Environment Agnostic ApplicationAssociator with cross region stacks inside cdkApp gives warning', () => {
@@ -132,7 +139,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       associateStage: false,
     });
     app.synth();
-    Annotations.fromStack(pipelineStack).hasError('*',
+    Annotations.fromStack(pipelineStack).hasWarning('*',
       'Associate Stage: SampleStage to ensure all stacks in your cdk app are associated with AppRegistry. You can use ApplicationAssociator.associateStage to associate any stage.');
   });
 

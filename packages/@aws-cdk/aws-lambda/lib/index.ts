@@ -1,3 +1,4 @@
+export * from './adot-layers';
 export * from './alias';
 export * from './dlq';
 export * from './function-base';
@@ -22,6 +23,7 @@ export * from './lambda-insights';
 export * from './log-retention';
 export * from './architecture';
 export * from './function-url';
+export * from './runtime-management';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';

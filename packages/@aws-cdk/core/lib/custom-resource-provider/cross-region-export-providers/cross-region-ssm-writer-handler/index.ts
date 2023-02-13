@@ -30,9 +30,13 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         const removedExports = except(oldExports, exports);
         await throwIfAnyInUse(ssm, removedExports);
         // if the ones we are removing are not in use then delete them
-        await ssm.deleteParameters({
-          Names: Object.keys(removedExports),
-        }).promise();
+        // skip if no export names are to be deleted
+        const removedExportsNames = Object.keys(removedExports);
+        if (removedExportsNames.length > 0) {
+          await ssm.deleteParameters({
+            Names: removedExportsNames,
+          }).promise();
+        }
 
         // also throw an error if we are creating a new export that already exists for some reason
         await throwIfAnyInUse(ssm, newExports);

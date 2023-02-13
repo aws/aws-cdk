@@ -66,6 +66,8 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
   public static readonly ALL_VIEWER = OriginRequestPolicy.fromManagedOriginRequestPolicy('216adef6-5c7f-47e4-b989-5492eafa07d3');
   /** This policy is designed for use with an origin that is an AWS Elemental MediaTailor endpoint. */
   public static readonly ELEMENTAL_MEDIA_TAILOR = OriginRequestPolicy.fromManagedOriginRequestPolicy('775133bc-15f2-49f9-abea-afb2e0bf67d2');
+  /** This policy includes all values (headers, cookies, and query strings) in the viewer request, and all CloudFront headers that were released through June 2022 (CloudFront headers released after June 2022 are not included). */
+  public static readonly ALL_VIEWER_AND_CLOUDFRONT_2022 = OriginRequestPolicy.fromManagedOriginRequestPolicy('33f36d7e-f396-46d9-90e0-52428a34d9dc');
 
   /** Imports a Origin Request Policy from its id. */
   public static fromOriginRequestPolicyId(scope: Construct, id: string, originRequestPolicyId: string): IOriginRequestPolicy {

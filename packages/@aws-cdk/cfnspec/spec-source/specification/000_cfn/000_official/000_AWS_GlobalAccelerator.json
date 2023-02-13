@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::GlobalAccelerator::EndpointGroup.EndpointConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-globalaccelerator-endpointgroup-endpointconfiguration.html",
@@ -96,6 +96,7 @@
         },
         "IpAddresses": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-globalaccelerator-accelerator.html#cfn-globalaccelerator-accelerator-ipaddresses",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -109,6 +110,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-globalaccelerator-accelerator.html#cfn-globalaccelerator-accelerator-tags",
+          "DuplicatesAllowed": true,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -126,6 +128,7 @@
       "Properties": {
         "EndpointConfigurations": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-globalaccelerator-endpointgroup.html#cfn-globalaccelerator-endpointgroup-endpointconfigurations",
+          "DuplicatesAllowed": true,
           "ItemType": "EndpointConfiguration",
           "Required": false,
           "Type": "List",
@@ -169,6 +172,7 @@
         },
         "PortOverrides": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-globalaccelerator-endpointgroup.html#cfn-globalaccelerator-endpointgroup-portoverrides",
+          "DuplicatesAllowed": true,
           "ItemType": "PortOverride",
           "Required": false,
           "Type": "List",
@@ -210,6 +214,7 @@
         },
         "PortRanges": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-globalaccelerator-listener.html#cfn-globalaccelerator-listener-portranges",
+          "DuplicatesAllowed": true,
           "ItemType": "PortRange",
           "Required": true,
           "Type": "List",

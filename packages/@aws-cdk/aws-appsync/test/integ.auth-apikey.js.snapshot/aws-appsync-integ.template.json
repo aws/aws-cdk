@@ -121,7 +121,7 @@
     }
    }
   },
-  "ApitestDataSourceQuerygetTestsResolverA3BBB672": {
+  "ApiQueryGetTestsF8C40170": {
    "Type": "AWS::AppSync::Resolver",
    "Properties": {
     "ApiId": {
@@ -142,7 +142,7 @@
     "ApitestDataSource96AE54D5"
    ]
   },
-  "ApitestDataSourceMutationaddTestResolver36203D6B": {
+  "ApiMutationAddTestBF148084": {
    "Type": "AWS::AppSync::Resolver",
    "Properties": {
     "ApiId": {

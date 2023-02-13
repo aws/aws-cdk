@@ -1,16 +1,9 @@
-import { AssetHashType, DockerImage } from '@aws-cdk/core';
+import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions } from '@aws-cdk/core';
 
 /**
  * Bundling options
  */
-export interface BundlingOptions {
-  /**
-   * Environment variables defined when go runs.
-   *
-   * @default - no environment variables are defined.
-   */
-  readonly environment?: { [key: string]: string; };
-
+export interface BundlingOptions extends DockerRunOptions {
   /**
    * Force bundling in a Docker container even if local bundling is
    * possible.
@@ -118,6 +111,12 @@ export interface BundlingOptions {
    * @default - Direct access
    */
   readonly goProxies?: string[];
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: BundlingFileAccess;
 }
 
 /**

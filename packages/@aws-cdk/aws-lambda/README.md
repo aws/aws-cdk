@@ -85,9 +85,9 @@ To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Archi
 This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
 
 ```ts
-new DockerImageFunction(this, 'AssetFunction', {
-  code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
-  architecture: Architecture.ARM_64,
+new lambda.DockerImageFunction(this, 'AssetFunction', {
+  code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
+  architecture: lambda.Architecture.ARM_64,
 });
 ```
 
@@ -751,6 +751,55 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
 to learn more about AWS Lambda's X-Ray support.
 
+## Lambda with AWS Distro for OpenTelemetry layer
+
+To have automatic integration with XRay without having to add dependencies or change your code, you can use the
+[AWS Distro for OpenTelemetry Lambda (ADOT) layer](https://aws-otel.github.io/docs/getting-started/lambda).
+Consuming the latest ADOT layer can be done with the following snippet:
+
+```ts
+import {
+  AdotLambdaExecWrapper,
+  AdotLayerVersion,
+  AdotLambdaLayerJavaScriptSdkVersion,
+} from 'aws-cdk-lib/aws-lambda';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+  adotInstrumentation: {
+    layerVersion: AdotLayerVersion.fromJavaScriptSdkLayerVersion(AdotLambdaLayerJavaScriptSdkVersion.LATEST),
+    execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
+  },
+});
+```
+
+To use a different layer version, use one of the following helper functions for the `layerVersion` prop:
+
+* `AdotLayerVersion.fromJavaScriptSdkLayerVersion`
+* `AdotLayerVersion.fromPythonSdkLayerVersion`
+* `AdotLayerVersion.fromJavaSdkLayerVersion`
+* `AdotLayerVersion.fromJavaAutoInstrumentationSdkLayerVersion`
+* `AdotLayerVersion.fromGenericSdkLayerVersion`
+
+Each helper function expects a version value from a corresponding enum-like class as below:
+
+* `AdotLambdaLayerJavaScriptSdkVersion`
+* `AdotLambdaLayerPythonSdkVersion`
+* `AdotLambdaLayerJavaSdkVersion`
+* `AdotLambdaLayerJavaAutoInstrumentationSdkVersion`
+* `AdotLambdaLayerGenericSdkVersion`
+
+For more examples, see our [the integration test](test/integ.lambda-adot.ts).
+
+If you want to retrieve the ARN of the ADOT Lambda layer without enabling ADOT in a Lambda function:
+
+```ts
+declare const fn: lambda.Function;
+const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0.layerArn(fn.stack, fn.architecture);
+```
+
 ## Lambda with Profiling
 
 The following code configures the lambda function with CodeGuru profiling. By default, this creates a new CodeGuru
@@ -988,6 +1037,31 @@ const codeSigningConfig = new lambda.CodeSigningConfig(this, 'CodeSigningConfig'
 
 new lambda.Function(this, 'Function', {
   codeSigningConfig,
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+## Runtime updates
+
+Lambda runtime management controls help reduce the risk of impact to your workloads in the rare event of a runtime version incompatibility.
+For more information, see [Runtime management controls](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html#runtime-management-controls)
+
+```ts
+new Function(stack, 'Lambda', {
+  runtimeManagementMode: RuntimeManagementMode.AUTO,
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+If you want to set the "Manual" setting, using the ARN of the runtime version as the argument.
+
+```ts
+new Function(stack, 'Lambda', {
+  runtimeManagementMode: RuntimeManagementMode.manual('runtimeVersion-arn'),
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),

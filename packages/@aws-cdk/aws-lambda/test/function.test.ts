@@ -17,6 +17,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
+import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
 import { calculateFunctionHash } from '../lib/function-hash';
 
 describe('function', () => {
@@ -2871,7 +2872,7 @@ describe('function', () => {
 
   describe('FunctionUrl', () => {
     test('addFunctionUrl creates a function url with default options', () => {
-    // GIVEN
+      // GIVEN
       const stack = new cdk.Stack();
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
@@ -2895,7 +2896,7 @@ describe('function', () => {
     });
 
     test('addFunctionUrl creates a function url with all options', () => {
-    // GIVEN
+      // GIVEN
       const stack = new cdk.Stack();
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
@@ -3045,6 +3046,55 @@ describe('function', () => {
       },
     });
   });
+
+  test('adds ADOT instrumentation to a ZIP Lambda function', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Base', {
+      env: { account: '111111111111', region: 'us-west-2' },
+    });
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      adotInstrumentation: {
+        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_19_0),
+        execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1'],
+      Environment: {
+        Variables: {
+          AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
+        },
+      },
+    });
+  });
+
+  test('adds ADOT instrumentation to a container image Lambda function', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Base', {
+      env: { account: '111111111111', region: 'us-west-2' },
+    });
+
+    // WHEN
+    expect(
+      () =>
+        new lambda.DockerImageFunction(stack, 'MyLambda', {
+          code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+          adotInstrumentation: {
+            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_19_0),
+            execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
+          },
+        }),
+    ).toThrow(/ADOT Lambda layer can't be configured with container image package type/);
+  });
 });
 
 test('throws if ephemeral storage size is out of bound', () => {
@@ -3141,14 +3191,14 @@ test('set SnapStart to desired value', () => {
 
   Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
     Properties:
-        {
-          Code: { ZipFile: 'java11-test-function.zip' },
-          Handler: 'example.Handler::handleRequest',
-          Runtime: 'java11',
-          SnapStart: {
-            ApplyOn: 'PublishedVersions',
-          },
-        },
+    {
+      Code: { ZipFile: 'java11-test-function.zip' },
+      Handler: 'example.Handler::handleRequest',
+      Runtime: 'java11',
+      SnapStart: {
+        ApplyOn: 'PublishedVersions',
+      },
+    },
   });
 });
 

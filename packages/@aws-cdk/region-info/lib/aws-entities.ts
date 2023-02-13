@@ -58,6 +58,8 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'eu-south-2', // Europe (Spain)
   'ap-southeast-3', // Asia Pacific (Jakarta)
   'me-central-1', // Middle East (UAE)
+  'ap-south-2', // Asia Pacific (Hyderabad)
+  'eu-central-2', // Europe (Zurich)
 ];
 
 /**
@@ -70,7 +72,7 @@ export const AWS_REGIONS = AWS_REGIONS_AND_RULES
   .sort() as readonly string[];
 
 /**
- * Possibly non-exaustive list of all service names, used to locate service principals.
+ * Possibly non-exhaustive list of all service names, used to locate service principals.
  *
  * Not in the list ==> default service principal mappings.
  */

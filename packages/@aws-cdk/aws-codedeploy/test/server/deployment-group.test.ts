@@ -494,4 +494,34 @@ describe('CodeDeploy Server Deployment Group', () => {
     expect(() => app.synth()).toThrow('Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
   });
 
+  describe('deploymentGroup from ARN in different account and region', () => {
+    let stack: cdk.Stack;
+    let application: codedeploy.IServerApplication;
+    let group: codedeploy.IServerDeploymentGroup;
+
+    const account = '222222222222';
+    const region = 'theregion-1';
+
+    beforeEach(() => {
+      stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'blabla-1' } });
+
+      application = codedeploy.ServerApplication.fromServerApplicationArn(stack, 'Application', `arn:aws:codedeploy:${region}:${account}:application:MyApplication`);
+      group = codedeploy.ServerDeploymentGroup.fromServerDeploymentGroupAttributes(stack, 'Group', {
+        application,
+        deploymentGroupName: 'DeploymentGroup',
+      });
+    });
+
+    test('knows its account and region', () => {
+      // THEN
+      expect(application.env).toEqual(expect.objectContaining({ account, region }));
+      expect(group.env).toEqual(expect.objectContaining({ account, region }));
+    });
+
+    test('references the predefined DeploymentGroupConfig in the right region', () => {
+      expect(group.deploymentConfig.deploymentConfigArn).toEqual(expect.stringContaining(
+        `:codedeploy:${region}:${account}:deploymentconfig:CodeDeployDefault.OneAtATime`,
+      ));
+    });
+  });
 });

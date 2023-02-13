@@ -15,8 +15,10 @@ interface BuildOptions {
   readonly target?: string;
   readonly file?: string;
   readonly buildArgs?: Record<string, string>;
+  readonly buildSecrets?: Record<string, string>;
   readonly networkMode?: string;
   readonly platform?: string;
+  readonly outputs?: string[];
 }
 
 export interface DockerCredentialsConfig {
@@ -53,11 +55,13 @@ export class Docker {
     const buildCommand = [
       'build',
       ...flatten(Object.entries(options.buildArgs || {}).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+      ...flatten(Object.entries(options.buildSecrets || {}).map(([k, v]) => ['--secret', `id=${k},${v}`])),
       '--tag', options.tag,
       ...options.target ? ['--target', options.target] : [],
       ...options.file ? ['--file', options.file] : [],
       ...options.networkMode ? ['--network', options.networkMode] : [],
       ...options.platform ? ['--platform', options.platform] : [],
+      ...options.outputs ? options.outputs.map(output => [`--output=${output}`]) : [],
       '.',
     ];
     await this.execute(buildCommand, { cwd: options.directory });

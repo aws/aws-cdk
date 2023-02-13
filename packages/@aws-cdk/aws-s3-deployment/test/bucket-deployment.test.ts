@@ -997,14 +997,15 @@ test('given a source with markers and extract is false, BucketDeployment throws 
       },
     },
   });
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [file],
+    destinationBucket: bucket,
+    extract: false,
+  });
 
   // THEN
   expect(() => {
-    new s3deploy.BucketDeployment(stack, 'Deploy', {
-      sources: [file],
-      destinationBucket: bucket,
-      extract: false,
-    });
+    Template.fromStack(stack);
   }).toThrow('Some sources are incompatible with extract=false; sources with deploy-time values (such as \'snsTopic.topicArn\') must be extracted.');
 });
 
@@ -1108,6 +1109,32 @@ test('s3 deployment bucket is identical to destination bucket', () => {
     // before deploying other resources that rely call the destination bucket.
     DestinationBucketArn: { 'Fn::GetAtt': ['DestC383B82A', 'Arn'] },
   });
+});
+
+test('s3 deployed bucket in a different region has correct website url', () => {
+  // GIVEN
+  const stack = new cdk.Stack(undefined, undefined, {
+    env: {
+      region: 'us-east-1',
+    },
+  });
+  const bucket = s3.Bucket.fromBucketAttributes(stack, 'Dest', {
+    bucketName: 'my-bucket',
+    // Bucket is in a different region than stack
+    region: 'eu-central-1',
+  });
+
+  // WHEN
+  const bd = new s3deploy.BucketDeployment(stack, 'Deployment', {
+    destinationBucket: bucket,
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  });
+  const websiteUrl = stack.resolve(bd.deployedBucket.bucketWebsiteUrl);
+
+  // THEN
+  // eu-central-1 uses website endpoint format with a `.`
+  // see https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_website_region_endpoints
+  expect(JSON.stringify(websiteUrl)).toContain('.s3-website.eu-central-1.');
 });
 
 test('using deployment bucket references the destination bucket by means of the CustomResource', () => {
@@ -1360,6 +1387,49 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   });
 });
 
+test('can add sources with addSource', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.data('my/path.txt', 'helloWorld')],
+    destinationBucket: bucket,
+  });
+  deployment.addSource(s3deploy.Source.data('my/other/path.txt', 'hello world'));
+
+  const result = app.synth();
+  const content = readDataFile(result, 'my/path.txt');
+  const content2 = readDataFile(result, 'my/other/path.txt');
+  expect(content).toStrictEqual('helloWorld');
+  expect(content2).toStrictEqual('hello world');
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [
+      {},
+      {},
+    ],
+  });
+});
+
+test('if any source has markers then all sources have markers', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.data('my/path.txt', 'helloWorld')],
+    destinationBucket: bucket,
+  });
+  deployment.addSource(s3deploy.Source.asset(path.join(__dirname, 'my-website')));
+
+  const result = app.synth();
+  const content = readDataFile(result, 'my/path.txt');
+  expect(content).toStrictEqual('helloWorld');
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [
+      {},
+      {},
+    ],
+  });
+});
 
 function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
   const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));

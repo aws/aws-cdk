@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "GoLang/DefaultTest": {
+      "stacks": [
+        "GoLangStack"
+      ],
+      "assertionStack": "GoLang/DefaultTest/DeployAssert",
+      "assertionStackName": "GoLangDefaultTestDeployAssertA629E612"
+    }
+  }
+}

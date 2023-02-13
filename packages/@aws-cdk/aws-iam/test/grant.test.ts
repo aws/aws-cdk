@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import { CfnResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as iam from '../lib';
@@ -97,6 +97,34 @@ describe('Grant dependencies', () => {
     expectDependencyOn('RoleDefaultPolicy5FFB7DAB');
     expectDependencyOn('BuckarooPolicy74174DA4');
   });
+
+  test('can combine two grants', () => {
+    // GIVEN
+    const role1 = new iam.Role(stack, 'Role1', {
+      assumedBy: new iam.ServicePrincipal('bla.amazonaws.com'),
+    });
+    const role2 = new iam.Role(stack, 'Role2', {
+      assumedBy: new iam.ServicePrincipal('bla.amazonaws.com'),
+    });
+
+    // WHEN
+    const g1 = iam.Grant.addToPrincipal({
+      actions: ['service:DoAThing'],
+      grantee: role1,
+      resourceArns: ['*'],
+    });
+    const g2 = iam.Grant.addToPrincipal({
+      actions: ['service:DoAThing'],
+      grantee: role2,
+      resourceArns: ['*'],
+    });
+
+    (g1.combine(g2)).applyBefore(resource);
+
+    // THEN
+    expectDependencyOn('Role1DefaultPolicyD3EF4D0A');
+    expectDependencyOn('Role2DefaultPolicy3A7A0A1B');
+  });
 });
 
 function applyGrantWithDependencyTo(principal: iam.IPrincipal) {
@@ -108,8 +136,8 @@ function applyGrantWithDependencyTo(principal: iam.IPrincipal) {
 }
 
 function expectDependencyOn(id: string) {
-  Template.fromStack(stack).hasResource('CDK::Test::SomeResource', (props: any) => {
-    return (props?.DependsOn ?? []).includes(id);
+  Template.fromStack(stack).hasResource('CDK::Test::SomeResource', {
+    DependsOn: Match.arrayWith([id]),
   });
 }
 

@@ -5,7 +5,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Duration } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import * as codedeploy from '../../lib';
 
 const mockCluster = 'my-cluster';
@@ -45,7 +45,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
         deploymentGroupName: 'EcsDeploymentGroup',
       });
 
-      expect(importedGroup.deploymentConfig).toEqual(codedeploy.EcsDeploymentConfig.ALL_AT_ONCE);
+      expect(importedGroup.deploymentConfig.deploymentConfigName).toEqual('CodeDeployDefault.ECSAllAtOnce');
     });
   });
 
@@ -846,6 +846,37 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
         ],
         Version: '2012-10-17',
       },
+    });
+  });
+
+  describe('deploymentGroup from ARN in different account and region', () => {
+    let stack: Stack;
+    let application: codedeploy.IEcsApplication;
+    let group: codedeploy.IEcsDeploymentGroup;
+
+    const account = '222222222222';
+    const region = 'theregion-1';
+
+    beforeEach(() => {
+      stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'blabla-1' } });
+
+      application = codedeploy.EcsApplication.fromEcsApplicationArn(stack, 'Application', `arn:aws:codedeploy:${region}:${account}:application:MyApplication`);
+      group = codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(stack, 'Group', {
+        application,
+        deploymentGroupName: 'DeploymentGroup',
+      });
+    });
+
+    test('knows its account and region', () => {
+      // THEN
+      expect(application.env).toEqual(expect.objectContaining({ account, region }));
+      expect(group.env).toEqual(expect.objectContaining({ account, region }));
+    });
+
+    test('references the predefined DeploymentGroupConfig in the right region', () => {
+      expect(group.deploymentConfig.deploymentConfigArn).toEqual(expect.stringContaining(
+        `:codedeploy:${region}:${account}:deploymentconfig:CodeDeployDefault.ECSAllAtOnce`,
+      ));
     });
   });
 });

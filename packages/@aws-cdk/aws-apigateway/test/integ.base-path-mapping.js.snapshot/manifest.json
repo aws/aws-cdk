@@ -81,6 +81,12 @@
             "data": "MappingTwo551C79ED"
           }
         ],
+        "/test-stack/MappingThree/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MappingThree36BBA1B6"
+          }
+        ],
         "/test-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

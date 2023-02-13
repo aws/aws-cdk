@@ -12,7 +12,7 @@ class FeatureFlagStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new Vpc(this, 'VPC');
+    const vpc = new Vpc(this, 'VPC', { natGateways: 1 });
 
     const flowLog = vpc.addFlowLog('FlowLogsS3', {
       destination: FlowLogDestination.toS3(),
@@ -36,11 +36,28 @@ class FeatureFlagStack extends Stack {
   }
 }
 
+class DependencyTestStack extends Stack {
+  constructor(scope: App, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const vpc = new Vpc(this, 'VPC', { natGateways: 1 });
+
+    const bucket = new s3.Bucket(this, 'Bucket', {
+      autoDeleteObjects: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    vpc.addFlowLog('FlowLogS3', {
+      destination: FlowLogDestination.toS3(bucket, 'vpcFlowLog'),
+    });
+  }
+}
+
 class TestStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new Vpc(this, 'VPC');
+    const vpc = new Vpc(this, 'VPC', { natGateways: 1 });
 
     new FlowLog(this, 'FlowLogsCW', {
       resourceType: FlowLogResourceType.fromVpc(vpc),
@@ -102,9 +119,9 @@ const integ = new IntegTest(app, 'FlowLogs', {
   testCases: [
     new TestStack(app, 'FlowLogsTestStack'),
     featureFlagTest,
+    new DependencyTestStack(app, 'DependencyTestStack'),
   ],
 });
-
 
 const objects = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
   Bucket: featureFlagTest.bucket.bucketName,

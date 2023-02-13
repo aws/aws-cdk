@@ -2,6 +2,7 @@ import { IConstruct } from 'constructs';
 import { TokenString } from './private/encoding';
 import { TokenMap } from './private/token-map';
 import { TokenizedStringFragments } from './string-fragments';
+import { ResolutionTypeHint } from './type-hints';
 
 /**
  * Current resolution context for tokens
@@ -59,6 +60,11 @@ export interface IResolvable {
    * to get this property populated, if it was skipped for performance reasons.
    */
   readonly creationStack: string[];
+
+  /**
+   * The type that this token will likely resolve to.
+   */
+  readonly typeHint?: ResolutionTypeHint;
 
   /**
    * Produce the Token's value at resolution time

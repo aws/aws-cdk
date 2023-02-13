@@ -295,7 +295,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType,
   machineImage,
-  blockDevices: [{
+  blockDevices: [
     {
         deviceName: 'gp3-volume',
         volume: autoscaling.BlockDeviceVolume.ebs(15, {
@@ -303,7 +303,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
           throughput: 125,
         }),
       },
-  }],
+  ],
   // ...
 });
 ```
@@ -518,6 +518,26 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+## Configuring Capacity Rebalancing
+
+Indicates whether Capacity Rebalancing is enabled. Otherwise, Capacity Rebalancing is disabled. When you turn on Capacity Rebalancing, Amazon EC2 Auto Scaling attempts to launch a Spot Instance whenever Amazon EC2 notifies that a Spot Instance is at an elevated risk of interruption. After launching a new instance, it then terminates an old instance. For more information, see [Use Capacity Rebalancing to handle Amazon EC2 Spot Interruptions](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-capacity-rebalancing.html) in the in the Amazon EC2 Auto Scaling User Guide.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  capacityRebalance: true,
+});
+```
+
 ## Configuring Instance Metadata Service (IMDS)
 
 ### Toggling IMDSv1
@@ -571,6 +591,35 @@ declare const autoScalingGroup: autoscaling.AutoScalingGroup;
 autoScalingGroup.addWarmPool({
   minSize: 1,
   reuseOnScaleIn: true,
+});
+```
+
+### Default Instance Warming
+
+You can use the default instance warmup feature to improve the Amazon CloudWatch metrics used for dynamic scaling. 
+When default instance warmup is not enabled, each instance starts contributing usage data to the aggregated metrics 
+as soon as the instance reaches the InService state. However, if you enable default instance warmup, this lets 
+your instances finish warming up before they contribute the usage data.
+
+To optimize the performance of scaling policies that scale continuously, such as target tracking and step scaling 
+policies, we strongly recommend that you enable the default instance warmup, even if its value is set to 0 seconds. 
+
+To set up Default Instance Warming for an autoscaling group, simply pass it in as a prop
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  defaultInstanceWarmup: Duration.seconds(5),
 });
 ```
 

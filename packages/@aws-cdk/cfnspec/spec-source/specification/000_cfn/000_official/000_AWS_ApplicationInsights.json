@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::ApplicationInsights::Application.Alarm": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-alarm.html",
@@ -40,6 +40,7 @@
         },
         "SubComponentTypeConfigurations": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentconfiguration.html#cfn-applicationinsights-application-componentconfiguration-subcomponenttypeconfigurations",
+          "DuplicatesAllowed": true,
           "ItemType": "SubComponentTypeConfiguration",
           "Required": false,
           "Type": "List",
@@ -93,6 +94,7 @@
       "Properties": {
         "AlarmMetrics": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-alarmmetrics",
+          "DuplicatesAllowed": true,
           "ItemType": "AlarmMetric",
           "Required": false,
           "Type": "List",
@@ -100,6 +102,7 @@
         },
         "Alarms": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-alarms",
+          "DuplicatesAllowed": true,
           "ItemType": "Alarm",
           "Required": false,
           "Type": "List",
@@ -125,6 +128,7 @@
         },
         "Logs": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-logs",
+          "DuplicatesAllowed": true,
           "ItemType": "Log",
           "Required": false,
           "Type": "List",
@@ -132,6 +136,7 @@
         },
         "WindowsEvents": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-windowsevents",
+          "DuplicatesAllowed": true,
           "ItemType": "WindowsEvent",
           "Required": false,
           "Type": "List",
@@ -150,6 +155,7 @@
         },
         "ResourceList": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-customcomponent.html#cfn-applicationinsights-application-customcomponent-resourcelist",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -289,6 +295,7 @@
       "Properties": {
         "LogPatterns": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-logpatternset.html#cfn-applicationinsights-application-logpatternset-logpatterns",
+          "DuplicatesAllowed": true,
           "ItemType": "LogPattern",
           "Required": true,
           "Type": "List",
@@ -307,6 +314,7 @@
       "Properties": {
         "AlarmMetrics": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-subcomponentconfigurationdetails.html#cfn-applicationinsights-application-subcomponentconfigurationdetails-alarmmetrics",
+          "DuplicatesAllowed": true,
           "ItemType": "AlarmMetric",
           "Required": false,
           "Type": "List",
@@ -314,6 +322,7 @@
         },
         "Logs": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-subcomponentconfigurationdetails.html#cfn-applicationinsights-application-subcomponentconfigurationdetails-logs",
+          "DuplicatesAllowed": true,
           "ItemType": "Log",
           "Required": false,
           "Type": "List",
@@ -321,6 +330,7 @@
         },
         "WindowsEvents": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-subcomponentconfigurationdetails.html#cfn-applicationinsights-application-subcomponentconfigurationdetails-windowsevents",
+          "DuplicatesAllowed": true,
           "ItemType": "WindowsEvent",
           "Required": false,
           "Type": "List",
@@ -350,6 +360,7 @@
       "Properties": {
         "EventLevels": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-windowsevent.html#cfn-applicationinsights-application-windowsevent-eventlevels",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -399,6 +410,7 @@
         },
         "ComponentMonitoringSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-componentmonitoringsettings",
+          "DuplicatesAllowed": true,
           "ItemType": "ComponentMonitoringSetting",
           "Required": false,
           "Type": "List",
@@ -406,6 +418,7 @@
         },
         "CustomComponents": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-customcomponents",
+          "DuplicatesAllowed": true,
           "ItemType": "CustomComponent",
           "Required": false,
           "Type": "List",
@@ -419,6 +432,7 @@
         },
         "LogPatternSets": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-logpatternsets",
+          "DuplicatesAllowed": true,
           "ItemType": "LogPatternSet",
           "Required": false,
           "Type": "List",
@@ -444,6 +458,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-tags",
+          "DuplicatesAllowed": true,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",

@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::Scheduler::Schedule.AwsVpcConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-awsvpcconfiguration.html",
@@ -12,6 +12,7 @@
         },
         "SecurityGroups": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-awsvpcconfiguration.html#cfn-scheduler-schedule-awsvpcconfiguration-securitygroups",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -19,6 +20,7 @@
         },
         "Subnets": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-awsvpcconfiguration.html#cfn-scheduler-schedule-awsvpcconfiguration-subnets",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -65,6 +67,7 @@
       "Properties": {
         "CapacityProviderStrategy": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-ecsparameters.html#cfn-scheduler-schedule-ecsparameters-capacityproviderstrategy",
+          "DuplicatesAllowed": true,
           "ItemType": "CapacityProviderStrategyItem",
           "Required": false,
           "Type": "List",
@@ -102,6 +105,7 @@
         },
         "PlacementConstraints": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-ecsparameters.html#cfn-scheduler-schedule-ecsparameters-placementconstraints",
+          "DuplicatesAllowed": true,
           "ItemType": "PlacementConstraint",
           "Required": false,
           "Type": "List",
@@ -109,6 +113,7 @@
         },
         "PlacementStrategy": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-ecsparameters.html#cfn-scheduler-schedule-ecsparameters-placementstrategy",
+          "DuplicatesAllowed": true,
           "ItemType": "PlacementStrategy",
           "Required": false,
           "Type": "List",
@@ -134,9 +139,8 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-ecsparameters.html#cfn-scheduler-schedule-ecsparameters-tags",
-          "ItemType": "TagMap",
+          "PrimitiveType": "Json",
           "Required": false,
-          "Type": "List",
           "UpdateType": "Mutable"
         },
         "TaskCount": {
@@ -282,6 +286,7 @@
       "Properties": {
         "PipelineParameterList": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-sagemakerpipelineparameters.html#cfn-scheduler-schedule-sagemakerpipelineparameters-pipelineparameterlist",
+          "DuplicatesAllowed": true,
           "ItemType": "SageMakerPipelineParameter",
           "Required": false,
           "Type": "List",
@@ -299,12 +304,6 @@
           "UpdateType": "Mutable"
         }
       }
-    },
-    "AWS::Scheduler::Schedule.TagMap": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-tagmap.html",
-      "PrimitiveType": "Json",
-      "Required": false,
-      "UpdateType": "Mutable"
     },
     "AWS::Scheduler::Schedule.Target": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-target.html",
@@ -474,6 +473,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-scheduler-schedulegroup.html#cfn-scheduler-schedulegroup-tags",
+          "DuplicatesAllowed": true,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",

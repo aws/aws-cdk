@@ -79,7 +79,7 @@ configures all other HTTP method calls to `/books` to a lambda proxy.
 ```ts
 import { HttpUrlIntegration, HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration', 'https://get-books-proxy.myproxy.internal');
+const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration', 'https://get-books-proxy.example.com');
 
 declare const booksDefaultFn: lambda.Function;
 const booksDefaultIntegration = new HttpLambdaIntegration('BooksIntegration', booksDefaultFn);
@@ -184,7 +184,7 @@ const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 const domainName = 'example.com';
 
 const dn = new apigwv2.DomainName(this, 'DN', {
-  domainName,
+  domainName: domainName,
   certificate: acm.Certificate.fromCertificateArn(this, 'cert', certArn),
 });
 

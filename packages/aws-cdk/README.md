@@ -375,15 +375,20 @@ $ cdk deploy --hotswap [StackNames]
 ```
 
 This will attempt to perform a faster, short-circuit deployment if possible
-(for example, if you only changed the code of a Lambda function in your CDK app,
-but nothing else in your CDK code),
+(for example, if you changed the code of a Lambda function in your CDK app),
 skipping CloudFormation, and updating the affected resources directly;
 this includes changes to resources in nested stacks.
 If the tool detects that the change does not support hotswapping,
-it will fall back and perform a full CloudFormation deployment,
-exactly like `cdk deploy` does without the `--hotswap` flag.
+it will ignore it and display that ignored change.
+To have hotswap fall back and perform a full CloudFormation deployment,
+exactly like `cdk deploy` does without the `--hotswap` flag,
+specify `--hotswap-fallback`, like so:
 
-Passing this option to `cdk deploy` will make it use your current AWS credentials to perform the API calls -
+```console
+$ cdk deploy --hotswap-fallback [StackNames]
+```
+
+Passing either option to `cdk deploy` will make it use your current AWS credentials to perform the API calls -
 it will not assume the Roles from your bootstrap stack,
 even if the `@aws-cdk/core:newStyleStackSynthesis` feature flag is set to `true`
 (as those Roles do not have the necessary permissions to update AWS resources directly, without using CloudFormation).
@@ -588,7 +593,13 @@ Out of the box customization options are also available as arguments. To use a p
 - `--example-permissions-boundary` indicates the example permissions boundary, supplied by CDK
 - `--custom-permissions-boundary` specifies, by name a predefined, customer maintained, boundary
 
-A few notes to add at this point. The CDK supplied permissions boundary policy should be regarded as an example. Edit the content and reference the example policy if you're testing out the feature, turn it into a new policy for actual deployments (if one does not already exist). The concern here is drift as, most likely, a permissions boundary is maintained and has dedicated conventions, naming included.
+A few notes to add at this point. The CDK supplied permissions boundary policy should be regarded as
+an example. Edit the content and reference the example policy if you're testing out the feature, turn
+it into a new policy for actual deployments (if one does not already exist). The concern here is drift
+as, most likely, a permissions boundary is maintained and has dedicated conventions, naming included.
+
+For more information on configuring permissions, including using permissions
+boundaries see the [Security And Safety Dev Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
 ### `cdk doctor`
 

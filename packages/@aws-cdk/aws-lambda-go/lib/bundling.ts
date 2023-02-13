@@ -60,6 +60,12 @@ export interface BundlingProps extends BundlingOptions {
    * The system architecture of the lambda function
    */
   readonly architecture: Architecture;
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 }
 
 /**
@@ -78,6 +84,14 @@ export class Bundling implements cdk.BundlingOptions {
         command: bundling.command,
         environment: bundling.environment,
         local: bundling.local,
+        entrypoint: bundling.entrypoint,
+        volumes: bundling.volumes,
+        volumesFrom: bundling.volumesFrom,
+        workingDirectory: bundling.workingDirectory,
+        user: bundling.user,
+        securityOpt: bundling.securityOpt,
+        network: bundling.network,
+        bundlingFileAccess: bundling.bundlingFileAccess,
       },
     });
   }
@@ -93,6 +107,14 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
   public readonly local?: cdk.ILocalBundling;
+  public readonly entrypoint?: string[]
+  public readonly volumes?: cdk.DockerVolume[];
+  public readonly volumesFrom?: string[];
+  public readonly workingDirectory?: string;
+  public readonly user?: string;
+  public readonly securityOpt?: string;
+  public readonly network?: string;
+  public readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 
   private readonly relativeEntryPath: string;
 
@@ -131,8 +153,16 @@ export class Bundling implements cdk.BundlingOptions {
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
     const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
-    this.command = ['bash', '-c', bundlingCommand];
+    this.command = props.command ?? ['bash', '-c', bundlingCommand];
     this.environment = environment;
+    this.entrypoint = props.entrypoint;
+    this.volumes = props.volumes;
+    this.volumesFrom = props.volumesFrom;
+    this.workingDirectory = props.workingDirectory;
+    this.user = props.user;
+    this.securityOpt = props.securityOpt;
+    this.network = props.network;
+    this.bundlingFileAccess = props.bundlingFileAccess;
 
     // Local bundling
     if (!props.forcedDockerBundling) { // only if Docker is not forced

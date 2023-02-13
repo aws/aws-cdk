@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::ACMPCA::Certificate.ApiPassthrough": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificate-apipassthrough.html",
@@ -97,6 +97,7 @@
       "Properties": {
         "CertificatePolicies": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificate-extensions.html#cfn-acmpca-certificate-extensions-certificatepolicies",
+          "DuplicatesAllowed": true,
           "ItemType": "PolicyInformation",
           "Required": false,
           "Type": "List",
@@ -104,6 +105,7 @@
         },
         "CustomExtensions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificate-extensions.html#cfn-acmpca-certificate-extensions-customextensions",
+          "DuplicatesAllowed": true,
           "ItemType": "CustomExtension",
           "Required": false,
           "Type": "List",
@@ -111,6 +113,7 @@
         },
         "ExtendedKeyUsage": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificate-extensions.html#cfn-acmpca-certificate-extensions-extendedkeyusage",
+          "DuplicatesAllowed": true,
           "ItemType": "ExtendedKeyUsage",
           "Required": false,
           "Type": "List",
@@ -124,6 +127,7 @@
         },
         "SubjectAlternativeNames": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificate-extensions.html#cfn-acmpca-certificate-extensions-subjectalternativenames",
+          "DuplicatesAllowed": true,
           "ItemType": "GeneralName",
           "Required": false,
           "Type": "List",
@@ -271,6 +275,7 @@
         },
         "PolicyQualifiers": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificate-policyinformation.html#cfn-acmpca-certificate-policyinformation-policyqualifiers",
+          "DuplicatesAllowed": true,
           "ItemType": "PolicyQualifierInfo",
           "Required": false,
           "Type": "List",
@@ -323,6 +328,7 @@
         },
         "CustomAttributes": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificate-subject.html#cfn-acmpca-certificate-subject-customattributes",
+          "DuplicatesAllowed": true,
           "ItemType": "CustomAttribute",
           "Required": false,
           "Type": "List",
@@ -499,6 +505,7 @@
         },
         "SubjectInformationAccess": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificateauthority-csrextensions.html#cfn-acmpca-certificateauthority-csrextensions-subjectinformationaccess",
+          "DuplicatesAllowed": true,
           "ItemType": "AccessDescription",
           "Required": false,
           "Type": "List",
@@ -720,6 +727,7 @@
         },
         "CustomAttributes": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificateauthority-subject.html#cfn-acmpca-certificateauthority-subject-customattributes",
+          "DuplicatesAllowed": true,
           "ItemType": "CustomAttribute",
           "Required": false,
           "Type": "List",
@@ -905,6 +913,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-acmpca-certificateauthority.html#cfn-acmpca-certificateauthority-tags",
+          "DuplicatesAllowed": true,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -963,6 +972,7 @@
       "Properties": {
         "Actions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-acmpca-permission.html#cfn-acmpca-permission-actions",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",

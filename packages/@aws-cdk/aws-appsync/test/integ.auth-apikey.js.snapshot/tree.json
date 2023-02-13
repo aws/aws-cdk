@@ -217,80 +217,80 @@
                       "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
                       "version": "0.0.0"
                     }
-                  },
-                  "QuerygetTestsResolver": {
-                    "id": "QuerygetTestsResolver",
-                    "path": "aws-appsync-integ/Api/testDataSource/QuerygetTestsResolver",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-appsync-integ/Api/testDataSource/QuerygetTestsResolver/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
-                          "aws:cdk:cloudformation:props": {
-                            "apiId": {
-                              "Fn::GetAtt": [
-                                "ApiF70053CD",
-                                "ApiId"
-                              ]
-                            },
-                            "fieldName": "getTests",
-                            "typeName": "Query",
-                            "dataSourceName": "testDataSource",
-                            "kind": "UNIT",
-                            "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
-                            "responseMappingTemplate": "$util.toJson($ctx.result.items)"
-                          }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
+                  "version": "0.0.0"
+                }
+              },
+              "QueryGetTests": {
+                "id": "QueryGetTests",
+                "path": "aws-appsync-integ/Api/QueryGetTests",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/QueryGetTests/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
                         },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
-                          "version": "0.0.0"
-                        }
+                        "fieldName": "getTests",
+                        "typeName": "Query",
+                        "dataSourceName": "testDataSource",
+                        "kind": "UNIT",
+                        "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appsync.Resolver",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "MutationaddTestResolver": {
-                    "id": "MutationaddTestResolver",
-                    "path": "aws-appsync-integ/Api/testDataSource/MutationaddTestResolver",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-appsync-integ/Api/testDataSource/MutationaddTestResolver/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
-                          "aws:cdk:cloudformation:props": {
-                            "apiId": {
-                              "Fn::GetAtt": [
-                                "ApiF70053CD",
-                                "ApiId"
-                              ]
-                            },
-                            "fieldName": "addTest",
-                            "typeName": "Mutation",
-                            "dataSourceName": "testDataSource",
-                            "kind": "UNIT",
-                            "requestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-                            "responseMappingTemplate": "$util.toJson($ctx.result)"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
+                  "version": "0.0.0"
+                }
+              },
+              "MutationAddTest": {
+                "id": "MutationAddTest",
+                "path": "aws-appsync-integ/Api/MutationAddTest",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/MutationAddTest/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
+                        },
+                        "fieldName": "addTest",
+                        "typeName": "Mutation",
+                        "dataSourceName": "testDataSource",
+                        "kind": "UNIT",
+                        "requestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               }
@@ -371,7 +371,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.161"
+          "version": "10.1.182"
         }
       }
     },

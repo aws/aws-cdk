@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::IoTAnalytics::Channel.ChannelStorage": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-channel-channelstorage.html",
@@ -12,8 +12,8 @@
         },
         "ServiceManagedS3": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-channel-channelstorage.html#cfn-iotanalytics-channel-channelstorage-servicemanageds3",
+          "PrimitiveType": "Json",
           "Required": false,
-          "Type": "ServiceManagedS3",
           "UpdateType": "Mutable"
         }
       }
@@ -57,12 +57,6 @@
           "UpdateType": "Mutable"
         }
       }
-    },
-    "AWS::IoTAnalytics::Channel.ServiceManagedS3": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-channel-servicemanageds3.html",
-      "PrimitiveType": "Json",
-      "Required": false,
-      "UpdateType": "Mutable"
     },
     "AWS::IoTAnalytics::Dataset.Action": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-action.html",
@@ -552,8 +546,8 @@
         },
         "ServiceManagedS3": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-datastorestorage.html#cfn-iotanalytics-datastore-datastorestorage-servicemanageds3",
+          "PrimitiveType": "Json",
           "Required": false,
-          "Type": "ServiceManagedS3",
           "UpdateType": "Mutable"
         }
       }
@@ -563,8 +557,8 @@
       "Properties": {
         "JsonConfiguration": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-fileformatconfiguration.html#cfn-iotanalytics-datastore-fileformatconfiguration-jsonconfiguration",
+          "PrimitiveType": "Json",
           "Required": false,
-          "Type": "JsonConfiguration",
           "UpdateType": "Mutable"
         },
         "ParquetConfiguration": {
@@ -585,12 +579,6 @@
           "UpdateType": "Mutable"
         }
       }
-    },
-    "AWS::IoTAnalytics::Datastore.JsonConfiguration": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-jsonconfiguration.html",
-      "PrimitiveType": "Json",
-      "Required": false,
-      "UpdateType": "Mutable"
     },
     "AWS::IoTAnalytics::Datastore.ParquetConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-parquetconfiguration.html",
@@ -643,12 +631,6 @@
           "UpdateType": "Mutable"
         }
       }
-    },
-    "AWS::IoTAnalytics::Datastore.ServiceManagedS3": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-servicemanageds3.html",
-      "PrimitiveType": "Json",
-      "Required": false,
-      "UpdateType": "Mutable"
     },
     "AWS::IoTAnalytics::Datastore.TimestampPartition": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-timestamppartition.html",

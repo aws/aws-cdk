@@ -120,3 +120,39 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy`
+
+Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+rather than using the canned \`LogDeliveryWrite\` ACL. ACLs do not work when Object Ownership is
+enabled on the bucket.
+
+This flag uses a Bucket Policy statement to allow Server Access Log delivery, following best
+practices for S3.
+
+https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true
+  }
+}
+```
+
+* `@aws-cdk/aws-rds:databaseProxyUniqueResourceName`
+
+Enable this feature flag to use unique resource names for each `DatabaseProxy`.
+
+Previously, the default behavior for `DatabaseProxy` was to use `id` of the constructor for `dbProxyName`.
+In this case, users couldn't deploy `DatabaseProxy`s that have the same `id` in the same region.
+
+This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true
+  }
+}
+```

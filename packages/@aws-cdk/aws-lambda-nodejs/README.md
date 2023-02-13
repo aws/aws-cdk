@@ -307,6 +307,20 @@ should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using
 Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
 
+You can set additional Docker options to configure the build environment:
+
+ ```ts
+new nodejs.NodejsFunction(this, 'my-handler', {
+  bundling: {
+      network: 'host',
+      securityOpt: 'no-new-privileges',
+      user: 'user:group',
+      volumesFrom: ['777f7dc92da7'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+   },
+});
+```
+
 ## Asset hash
 
 By default the asset hash will be calculated based on the bundled output (`AssetHashType.OUTPUT`).
@@ -323,3 +337,16 @@ new nodejs.NodejsFunction(this, 'my-handler', {
 
 If you chose to customize the hash, you will need to make sure it is updated every time the asset
 changes, or otherwise it is possible that some deployments will not be invalidated.
+
+## Docker based bundling in complex Docker configurations
+
+By default the input and output of Docker based bundling is handled via bind mounts.
+In situtations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
+
+ ```ts
+ new nodejs.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
+  },
+});
+```

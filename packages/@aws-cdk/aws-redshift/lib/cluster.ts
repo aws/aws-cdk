@@ -3,7 +3,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -13,7 +14,7 @@ import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
 
 /**
  * Possible Node Types to use in the cluster
- * used for defining {@link ClusterProps.nodeType}.
+ * used for defining `ClusterProps.nodeType`.
  */
 export enum NodeType {
   /**
@@ -56,15 +57,15 @@ export enum NodeType {
 
 /**
  * What cluster type to use.
- * Used by {@link ClusterProps.clusterType}
+ * Used by `ClusterProps.clusterType`
  */
 export enum ClusterType {
   /**
-   * single-node cluster, the {@link ClusterProps.numberOfNodes} parameter is not required
+   * single-node cluster, the `ClusterProps.numberOfNodes` parameter is not required
    */
   SINGLE_NODE = 'single-node',
   /**
-   * multi-node cluster, set the amount of nodes using {@link ClusterProps.numberOfNodes} parameter
+   * multi-node cluster, set the amount of nodes using `ClusterProps.numberOfNodes` parameter
    */
   MULTI_NODE = 'multi-node',
 }
@@ -144,7 +145,7 @@ export interface RotationMultiUserOptions {
 
 /**
  * Create a Redshift Cluster with a given number of nodes.
- * Implemented by {@link Cluster} via {@link ClusterBase}.
+ * Implemented by `Cluster` via `ClusterBase`.
  */
 export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
@@ -222,14 +223,14 @@ export interface ClusterProps {
   /**
    * The node type to be provisioned for the cluster.
    *
-   * @default {@link NodeType.DC2_LARGE}
+   * @default `NodeType.DC2_LARGE`
    */
   readonly nodeType?: NodeType;
 
   /**
    * Settings for the individual instances that are launched
    *
-   * @default {@link ClusterType.MULTI_NODE}
+   * @default `ClusterType.MULTI_NODE`
    */
   readonly clusterType?: ClusterType;
 
@@ -298,11 +299,19 @@ export interface ClusterProps {
 
   /**
    * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
-   * Specify a maximum of 10 roles.
+   * The maximum number of roles to attach to a cluster is subject to a quota.
    *
    * @default - No role is attached to the cluster.
    */
   readonly roles?: iam.IRole[];
+
+  /**
+   * A single AWS Identity and Access Management (IAM) role to be used as the default role for the cluster.
+   * The default role must be included in the roles list.
+   *
+   * @default - No default role is specified for the cluster.
+   */
+  readonly defaultRole?: iam.IRole;
 
   /**
    * Name of a database which is automatically created inside the cluster
@@ -461,6 +470,13 @@ export class Cluster extends ClusterBase {
    */
   protected parameterGroup?: IClusterParameterGroup;
 
+  /**
+   * The ARNs of the roles that will be attached to the cluster.
+   *
+   * **NOTE** Please do not access this directly, use the `addIamRole` method instead.
+   */
+  private readonly roles: iam.IRole[];
+
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
@@ -469,6 +485,7 @@ export class Cluster extends ClusterBase {
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     };
     this.parameterGroup = props.parameterGroup;
+    this.roles = props?.roles ? [...props.roles] : [];
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
@@ -548,7 +565,7 @@ export class Cluster extends ClusterBase {
       nodeType: props.nodeType || NodeType.DC2_LARGE,
       numberOfNodes: nodeCount,
       loggingProperties,
-      iamRoles: props?.roles?.map(role => role.roleArn),
+      iamRoles: Lazy.list({ produce: () => this.roles.map(role => role.roleArn) }, { omitEmpty: true }),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
@@ -575,6 +592,15 @@ export class Cluster extends ClusterBase {
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
+
+    // Add default role if specified and also available in the roles list
+    if (props.defaultRole) {
+      if (props.roles?.some(x => x === props.defaultRole)) {
+        this.addDefaultIamRole(props.defaultRole);
+      } else {
+        throw new Error('Default role must be included in role list.');
+      }
+    }
   }
 
   /**
@@ -661,5 +687,74 @@ export class Cluster extends ClusterBase {
     } else {
       throw new Error('Cannot add a parameter to an imported parameter group.');
     }
+  }
+
+  /**
+   * Adds default IAM role to cluster. The default IAM role must be already associated to the cluster to be added as the default role.
+   *
+   * @param defaultIamRole the IAM role to be set as the default role
+   */
+  public addDefaultIamRole(defaultIamRole: iam.IRole): void {
+    // Get list of IAM roles attached to cluster
+    const clusterRoleList = this.roles ?? [];
+
+    // Check to see if default role is included in list of cluster IAM roles
+    var roleAlreadyOnCluster = false;
+    for (var i = 0; i < clusterRoleList.length; i++) {
+      if (clusterRoleList[i] === defaultIamRole) {
+        roleAlreadyOnCluster = true;
+        break;
+      }
+    }
+    if (!roleAlreadyOnCluster) {
+      throw new Error('Default role must be associated to the Redshift cluster to be set as the default role.');
+    }
+
+    // On UPDATE or CREATE define the default IAM role. On DELETE, remove the default IAM role
+    const defaultRoleCustomResource = new AwsCustomResource(this, 'default-role', {
+      onUpdate: {
+        service: 'Redshift',
+        action: 'modifyClusterIamRoles',
+        parameters: {
+          ClusterIdentifier: this.cluster.ref,
+          DefaultIamRoleArn: defaultIamRole.roleArn,
+        },
+        physicalResourceId: PhysicalResourceId.of(
+          `${defaultIamRole.roleArn}-${this.cluster.ref}`,
+        ),
+      },
+      onDelete: {
+        service: 'Redshift',
+        action: 'modifyClusterIamRoles',
+        parameters: {
+          ClusterIdentifier: this.cluster.ref,
+          DefaultIamRoleArn: '',
+        },
+        physicalResourceId: PhysicalResourceId.of(
+          `${defaultIamRole.roleArn}-${this.cluster.ref}`,
+        ),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+      installLatestAwsSdk: false,
+    });
+
+    defaultIamRole.grantPassRole(defaultRoleCustomResource.grantPrincipal);
+  }
+
+  /**
+   * Adds a role to the cluster
+   *
+   * @param role the role to add
+   */
+  public addIamRole(role: iam.IRole): void {
+    const clusterRoleList = this.roles;
+
+    if (clusterRoleList.includes(role)) {
+      throw new Error(`Role '${role.roleArn}' is already attached to the cluster`);
+    }
+
+    clusterRoleList.push(role);
   }
 }

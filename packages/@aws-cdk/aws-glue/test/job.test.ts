@@ -14,6 +14,10 @@ describe('WorkerType', () => {
 
   test('.G_2X should set the name correctly', () => expect(glue.WorkerType.G_2X.name).toEqual('G.2X'));
 
+  test('.G_025X should set the name correctly', () => expect(glue.WorkerType.G_025X.name).toEqual('G.025X'));
+
+  test('.Z_2X should set the name correctly', () => expect(glue.WorkerType.Z_2X.name).toEqual('Z.2X'));
+
   test('of(customType) should set name correctly', () => expect(glue.WorkerType.of('CustomType').name).toEqual('CustomType'));
 });
 
@@ -566,7 +570,7 @@ describe('Job', () => {
     });
 
     test('with reserved args should throw', () => {
-      ['--conf', '--debug', '--mode', '--JOB_NAME'].forEach((arg, index) => {
+      ['--debug', '--mode', '--JOB_NAME'].forEach((arg, index) => {
         const defaultArguments: {[key: string]: string} = {};
         defaultArguments[arg] = 'random value';
 
@@ -601,6 +605,33 @@ describe('Job', () => {
           }),
           sparkUI: { enabled: true },
         })).toThrow('Spark UI is not available for JobType.PYTHON_SHELL');
+      });
+    });
+
+    describe('ray job', () => {
+      test('with unsupported glue version should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V3_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            script,
+          }),
+          workerType: glue.WorkerType.Z_2X,
+          workerCount: 2,
+        })).toThrow('Specified GlueVersion 3.0 does not support Ray');
+      });
+
+      test('with unsupported Spark UI prop should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V4_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            script,
+          }),
+          workerType: glue.WorkerType.Z_2X,
+          workerCount: 2,
+          sparkUI: { enabled: true },
+        })).toThrow('Spark UI is not available for JobType.RAY');
       });
     });
 

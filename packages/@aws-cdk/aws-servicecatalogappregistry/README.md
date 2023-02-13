@@ -84,6 +84,8 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
+This will create an application `MyAssociatedApplication` with the `TagKey` as `managedBy` and `TagValue` as `CDK_Application_Associator`.
+
 If you want to re-use an existing Application with ARN: `arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId`
 and want to associate all stacks in the `App` scope to your imported application, then use as shown in the example below:
 

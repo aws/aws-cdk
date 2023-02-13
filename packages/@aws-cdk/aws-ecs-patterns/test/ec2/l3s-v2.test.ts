@@ -1054,9 +1054,9 @@ describe('When Network Load Balancer', () => {
     });
 
     // THEN
-    expect(() => Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      EnableExecuteCommand: true,
-    })).toThrow('Expected true but received false at /Properties/EnableExecuteCommand (using objectLike matcher)');
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      EnableExecuteCommand: false,
+    });
   });
 
   test('test ECS NLB construct with all settings', () => {

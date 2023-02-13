@@ -1,5 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
 import * as route53 from '../lib';
 
@@ -578,7 +579,7 @@ describe('record set', () => {
     });
   });
 
-  test('Cross account zone delegation record with parentHostedZoneId', () => {
+  testDeprecated('Cross account zone delegation record with parentHostedZoneId', () => {
     // GIVEN
     const stack = new Stack();
     const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
@@ -630,7 +631,7 @@ describe('record set', () => {
     });
   });
 
-  test('Cross account zone delegation record with parentHostedZoneName', () => {
+  testDeprecated('Cross account zone delegation record with parentHostedZoneName', () => {
     // GIVEN
     const stack = new Stack();
     const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
@@ -675,7 +676,7 @@ describe('record set', () => {
     });
   });
 
-  test('Cross account zone delegation record throws when parent id and name both/nither are supplied', () => {
+  testDeprecated('Cross account zone delegation record throws when parent id and name both/nither are supplied', () => {
     // GIVEN
     const stack = new Stack();
     const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
@@ -707,7 +708,7 @@ describe('record set', () => {
     }).toThrow(/Only one of parentHostedZoneName and parentHostedZoneId is supported/);
   });
 
-  test('Multiple cross account zone delegation records', () => {
+  testDeprecated('Multiple cross account zone delegation records', () => {
     // GIVEN
     const stack = new Stack();
     const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
@@ -773,7 +774,7 @@ describe('record set', () => {
     }
   });
 
-  test('Cross account zone delegation policies', () => {
+  testDeprecated('Cross account zone delegation policies', () => {
     // GIVEN
     const stack = new Stack();
     const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
@@ -845,7 +846,7 @@ describe('record set', () => {
     }
   });
 
-  test('Cross account zone context flag', () => {
+  testDeprecated('Cross account zone context flag', () => {
     // GIVEN
     const stack = new Stack();
     stack.node.setContext('@aws-cdk/aws-route53:useRegionalStsEndpoint', true);

@@ -202,3 +202,17 @@ for (const record of identity.dkimRecords) {
   // create CNAME records using `record.name` and `record.value`
 }
 ```
+
+### Virtual Deliverability Manager (VDM)
+
+Virtual Deliverability Manager is an Amazon SES feature that helps you enhance email deliverability,
+like increasing inbox deliverability and email conversions, by providing insights into your sending
+and delivery data, and giving advice on how to fix the issues that are negatively affecting your
+delivery success rate and reputation.
+
+Use the `VdmAttributes` construct to configure the Virtual Deliverability Manager for your account:
+
+```ts
+// Enables engagement tracking and optimized shared delivery by default
+new ses.VdmAttributes(this, 'Vdm');
+```

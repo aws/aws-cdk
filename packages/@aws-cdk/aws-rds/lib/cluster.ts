@@ -269,7 +269,7 @@ interface DatabaseClusterBaseProps {
 
   /**
    * The KMS key for storage encryption.
-   * If specified, {@link storageEncrypted} will be set to `true`.
+   * If specified, `storageEncrypted` will be set to `true`.
    *
    * @default - if storageEncrypted is true then the default master key, no key otherwise
    */

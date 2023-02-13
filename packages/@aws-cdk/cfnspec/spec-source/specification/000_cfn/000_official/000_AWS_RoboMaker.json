@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::RoboMaker::RobotApplication.RobotSoftwareSuite": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-robotapplication-robotsoftwaresuite.html",
@@ -218,6 +218,7 @@
         },
         "Sources": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-sources",
+          "DuplicatesAllowed": true,
           "ItemType": "SourceConfig",
           "Required": false,
           "Type": "List",
@@ -306,6 +307,7 @@
         },
         "Sources": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-sources",
+          "DuplicatesAllowed": true,
           "ItemType": "SourceConfig",
           "Required": false,
           "Type": "List",

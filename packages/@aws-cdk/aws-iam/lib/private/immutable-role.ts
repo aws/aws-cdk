@@ -17,8 +17,8 @@ import { IRole } from '../role';
  * management, and instead have full control over all permissions.
  *
  * Note: if you want to ignore all mutations for an externally defined role
- * which was imported into the CDK with {@link Role.fromRoleArn}, you don't have to use this class -
- * simply pass the property mutable = false when calling {@link Role.fromRoleArn}.
+ * which was imported into the CDK with `Role.fromRoleArn`, you don't have to use this class -
+ * simply pass the property mutable = false when calling `Role.fromRoleArn`.
  */
 export class ImmutableRole extends Resource implements IRole {
   public readonly assumeRoleAction = this.role.assumeRoleAction;

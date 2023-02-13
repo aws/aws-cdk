@@ -4,9 +4,11 @@ import { IAppsyncFunction } from './appsync-function';
 import { CfnResolver } from './appsync.generated';
 import { CachingConfig } from './caching-config';
 import { BASE_CACHING_KEYS } from './caching-key';
+import { Code } from './code';
 import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
+import { FunctionRuntime } from './runtime';
 
 /**
  * Basic properties for an AppSync resolver
@@ -51,6 +53,19 @@ export interface BaseResolverProps {
    * @default - No max batch size
    */
   readonly maxBatchSize?: number;
+
+  /**
+   * The functions runtime
+   *
+   * @default - no function runtime, VTL mapping templates used
+   */
+  readonly runtime?: FunctionRuntime;
+  /**
+   * The function code
+   *
+   * @default - no code is used
+   */
+  readonly code?: Code;
 }
 
 /**
@@ -93,6 +108,15 @@ export class Resolver extends Construct {
       { functions: props.pipelineConfig.map((func) => func.functionId) }
       : undefined;
 
+    // If runtime is specified, code must also be
+    if (props.runtime && !props.code) {
+      throw new Error('Code is required when specifying a runtime');
+    }
+
+    if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
+      throw new Error('Mapping templates cannot be used alongside code');
+    }
+
     if (pipelineConfig && props.dataSource) {
       throw new Error(`Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`);
     }
@@ -108,12 +132,16 @@ export class Resolver extends Construct {
       }
     }
 
+    const code = props.code?.bind(this);
     this.resolver = new CfnResolver(this, 'Resource', {
       apiId: props.api.apiId,
       typeName: props.typeName,
       fieldName: props.fieldName,
       dataSourceName: props.dataSource ? props.dataSource.name : undefined,
       kind: pipelineConfig ? 'PIPELINE' : 'UNIT',
+      runtime: props.runtime?.toProperties(),
+      codeS3Location: code?.s3Location,
+      code: code?.inlineCode,
       pipelineConfig: pipelineConfig,
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
@@ -122,7 +150,7 @@ export class Resolver extends Construct {
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
-      this.resolver.addDependsOn(props.dataSource.ds);
+      this.resolver.addDependency(props.dataSource.ds);
     }
     this.arn = this.resolver.attrResolverArn;
   }

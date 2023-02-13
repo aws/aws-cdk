@@ -51,16 +51,16 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   readonly awsSdkConnectionReuse?: boolean;
 
   /**
-   * The path to the dependencies lock file (`yarn.lock` or `package-lock.json`).
+   * The path to the dependencies lock file (`yarn.lock`, `pnpm-lock.yaml` or `package-lock.json`).
    *
    * This will be used as the source for the volume mounted in the Docker
    * container.
    *
    * Modules specified in `nodeModules` will be installed using the right
-   * installer (`npm` or `yarn`) along with this lock file.
+   * installer (`yarn`, `pnpm` or `npm`) along with this lock file.
    *
    * @default - the path is found by walking up parent directories searching for
-   *   a `yarn.lock` or `package-lock.json` file
+   *   a `yarn.lock`, `pnpm-lock.yaml` or `package-lock.json` file
    */
   readonly depsLockFilePath?: string;
 
