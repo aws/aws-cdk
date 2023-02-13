@@ -13,18 +13,25 @@
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- Deploying to Amazon EC2 and on-premise instances
+- [AWS CodeDeploy Construct Library](#aws-codedeploy-construct-library)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
   - [EC2/on-premise Applications](#ec2on-premise-applications)
   - [EC2/on-premise Deployment Groups](#ec2on-premise-deployment-groups)
+    - [Load balancers](#load-balancers)
   - [EC2/on-premise Deployment Configurations](#ec2on-premise-deployment-configurations)
-- Deploying to AWS Lambda functions
   - [Lambda Applications](#lambda-applications)
   - [Lambda Deployment Groups](#lambda-deployment-groups)
+    - [Lambda Deployment Rollbacks and Alarms](#lambda-deployment-rollbacks-and-alarms)
+    - [Pre and Post Hooks](#pre-and-post-hooks)
+    - [Import an existing Lambda Deployment Group](#import-an-existing-lambda-deployment-group)
   - [Lambda Deployment Configurations](#lambda-deployment-configurations)
-- Deploying to Amazon ECS services
   - [ECS Applications](#ecs-applications)
   - [ECS Deployment Groups](#ecs-deployment-groups)
+    - [ECS Deployment Rollbacks and Alarms](#ecs-deployment-rollbacks-and-alarms)
+    - [Deployment validation and manual deployment approval](#deployment-validation-and-manual-deployment-approval)
+    - [Deployment bake time](#deployment-bake-time)
+    - [Import an existing ECS Deployment Group](#import-an-existing-ecs-deployment-group)
   - [ECS Deployment Configurations](#ecs-deployment-configurations)
   - [ECS Deployments](#ecs-deployments)
 
@@ -569,14 +576,14 @@ deployment and can automatically roll back the deployment.
 
 ```ts
 new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
-  // The deployment will wait for approval for up to 8 hours before stopping the deployment
-  deploymentApprovalWaitTime: Duration.hours(8),
   autoRollback: {
     // CodeDeploy will automatically roll back if the 8-hour approval period times out and the deployment stops
     stoppedDeployment: true,
   },
   service,
   blueGreenDeploymentConfig: {
+    // The deployment will wait for approval for up to 8 hours before stopping the deployment
+    deploymentApprovalWaitTime: Duration.hours(8),
     blueTargetGroup,
     greenTargetGroup,
     listener,
