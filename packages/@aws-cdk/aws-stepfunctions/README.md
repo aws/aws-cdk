@@ -29,8 +29,8 @@ declare const getStatusLambda: lambda.Function;
 
 const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
   lambdaFunction: submitLambda,
-  // Lambda's result is in the attribute `Payload`
-  outputPath: '$.Payload',
+  // Lambda's result is in the attribute `guid`
+  outputPath: '$.guid',
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
@@ -42,7 +42,7 @@ const getStatus = new tasks.LambdaInvoke(this, 'Get Job Status', {
   // Pass just the field named "guid" into the Lambda, put the
   // Lambda's result in a field called "status" in the response
   inputPath: '$.guid',
-  outputPath: '$.Payload',
+  outputPath: '$.status',
 });
 
 const jobFailed = new sfn.Fail(this, 'Job Failed', {
