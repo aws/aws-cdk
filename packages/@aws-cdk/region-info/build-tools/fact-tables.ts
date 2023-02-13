@@ -24,7 +24,7 @@ export const AWS_CDK_METADATA = new Set([
   'eu-west-3',
   'eu-north-1',
   'eu-south-1',
-  'eu-south-2',
+  // 'eu-south-2',
   'me-south-1',
   // 'me-central-1',
   'sa-east-1',
@@ -198,18 +198,6 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
 
 // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
 export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
-  '1.0.178.0': {
-    x86_64: {
-      // Asia Pacific (Hyderabad)
-      'ap-south-2': 'arn:aws:lambda:ap-south-2:891564319516:layer:LambdaInsightsExtension:6',
-      // Asia Pacific (Jakarta)
-      'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:8',
-      // Europe (Spain)
-      'eu-south-2': 'arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:2',
-      // Middle East (UAE)
-      'me-central-1': 'arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:6',
-    },
-  },
   '1.0.143.0': {
     x86_64: {
       // US East (N. Virginia)
