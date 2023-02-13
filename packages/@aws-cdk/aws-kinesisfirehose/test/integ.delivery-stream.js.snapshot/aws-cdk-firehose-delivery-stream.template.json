@@ -232,11 +232,17 @@
    "eu-central-1": {
     "FirehoseCidrBlock": "35.158.127.160/27"
    },
+   "eu-central-2": {
+    "FirehoseCidrBlock": "16.62.183.32/27"
+   },
    "eu-north-1": {
     "FirehoseCidrBlock": "13.53.63.224/27"
    },
    "eu-south-1": {
     "FirehoseCidrBlock": "15.161.135.128/27"
+   },
+   "eu-south-2": {
+    "FirehoseCidrBlock": "18.100.71.96/27"
    },
    "eu-west-1": {
     "FirehoseCidrBlock": "52.19.239.192/27"
