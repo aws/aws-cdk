@@ -200,17 +200,32 @@ new Table(this, 'Table', {
 });
 ```
 
-Tables can also be configured with a comment:
+Tables and their respective columns can be configured to contain comments:
 
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)' }, 
-    { name: 'col2', dataType: 'float' }
+    { name: 'col1', dataType: 'varchar(4)', comment: 'This is a column comment' }, 
+    { name: 'col2', dataType: 'float', comment: 'This is a another column comment' }
   ],
   cluster: cluster,
   databaseName: 'databaseName',
-  comment: 'This is a comment',
+  tableComment: 'This is a table comment',
+});
+```
+
+Table columns can be configured to use a specific compression encoding:
+
+```ts fixture=cluster
+import { ColumnEncoding } from '@aws-cdk/aws-redshift';
+
+new Table(this, 'Table', {
+  tableColumns: [
+    { name: 'col1', dataType: 'varchar(4)', encoding: ColumnEncoding.TEXT32K },
+    { name: 'col2', dataType: 'float', encoding: ColumnEncoding.DELTA32K },
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
 });
 ```
 
@@ -417,6 +432,8 @@ Some Amazon Redshift features require Amazon Redshift to access other AWS servic
 When you create an IAM role and set it as the default for the cluster using console, you don't have to provide the IAM role's Amazon Resource Name (ARN) to perform authentication and authorization.
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 declare const vpc: ec2.Vpc;
 
 const defaultRole = new iam.Role(this, 'DefaultRole', {
@@ -424,7 +441,7 @@ const defaultRole = new iam.Role(this, 'DefaultRole', {
 },
 );
 
-new Cluster(stack, 'Redshift', {
+new Cluster(this, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },
@@ -437,6 +454,8 @@ new Cluster(stack, 'Redshift', {
 A default role can also be added to a cluster using the `addDefaultIamRole` method.
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 declare const vpc: ec2.Vpc;
 
 const defaultRole = new iam.Role(this, 'DefaultRole', {
@@ -444,7 +463,7 @@ const defaultRole = new iam.Role(this, 'DefaultRole', {
 },
 );
 
-const redshiftCluster = new Cluster(stack, 'Redshift', {
+const redshiftCluster = new Cluster(this, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },
@@ -453,4 +472,40 @@ const redshiftCluster = new Cluster(stack, 'Redshift', {
 });
 
 redshiftCluster.addDefaultIamRole(defaultRole);
+```
+
+## IAM roles
+
+Attaching IAM roles to a Redshift Cluster grants permissions to the Redshift service to perform actions on your behalf.
+
+```ts
+declare const vpc: ec2.Vpc
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+});
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  roles: [role],
+});
+```
+
+Additional IAM roles can be attached to a cluster using the `addIamRole` method.
+
+```ts
+declare const vpc: ec2.Vpc
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+});
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+});
+cluster.addIamRole(role);
 ```

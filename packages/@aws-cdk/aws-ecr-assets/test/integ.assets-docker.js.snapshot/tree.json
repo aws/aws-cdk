@@ -112,6 +112,32 @@
               "version": "0.0.0"
             }
           },
+          "DockerImage5": {
+            "id": "DockerImage5",
+            "path": "integ-assets-docker/DockerImage5",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "integ-assets-docker/DockerImage5/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Repository": {
+                "id": "Repository",
+                "path": "integ-assets-docker/DockerImage5/Repository",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
+              "version": "0.0.0"
+            }
+          },
           "MyUser": {
             "id": "MyUser",
             "path": "integ-assets-docker/MyUser",
@@ -236,6 +262,14 @@
               "version": "0.0.0"
             }
           },
+          "ImageUri5": {
+            "id": "ImageUri5",
+            "path": "integ-assets-docker/ImageUri5",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "integ-assets-docker/BootstrapVersion",
@@ -263,7 +297,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.182"
+          "version": "10.1.216"
         }
       }
     },

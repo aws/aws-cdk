@@ -353,6 +353,18 @@ export interface CommonAutoScalingGroupProps {
    * @default None
    */
   readonly defaultInstanceWarmup?: Duration;
+
+  /**
+   * Indicates whether Capacity Rebalancing is enabled. When you turn on Capacity Rebalancing, Amazon EC2 Auto Scaling
+   * attempts to launch a Spot Instance whenever Amazon EC2 notifies that a Spot Instance is at an elevated risk of
+   * interruption. After launching a new instance, it then terminates an old instance.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-group.html#cfn-as-group-capacityrebalance
+   *
+   * @default false
+   *
+   */
+  readonly capacityRebalance?: boolean;
 }
 
 /**
@@ -1364,6 +1376,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
       terminationPolicies: props.terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
+      capacityRebalance: props.capacityRebalance,
       ...this.getLaunchSettings(launchConfig, props.launchTemplate, props.mixedInstancesPolicy),
     };
 
