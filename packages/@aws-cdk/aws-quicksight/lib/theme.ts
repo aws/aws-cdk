@@ -176,7 +176,7 @@ export class Theme extends Resource {
           };
 
           this._theme = ContextProvider.getValue(scope, {
-            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER,
+            provider: cxschema.ContextProvider.QUICKSIGHT_THEME_PROVIDER,
             props: contextProps,
             dummyValue: undefined,
           }).value;
@@ -200,7 +200,7 @@ export class Theme extends Resource {
           };
 
           this._themePermissions = ContextProvider.getValue(scope, {
-            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER,
+            provider: cxschema.ContextProvider.QUICKSIGHT_THEME_PERMISSIONS_PROVIDER,
             props: contextProps,
             dummyValue: [],
           }).value;
@@ -249,10 +249,8 @@ export class Theme extends Resource {
         let tags: Tag[] = [];
 
         if (this.themeTags) {
-          this.themeTags.forEach(function(value: any) {
-            if (value.Key && value.Value) {
-              tags.push(new Tag(value.Key, value.Value));
-            }
+          this.themeTags.forEach(function(value) {
+            tags.push(new Tag(value.key, value.value));
           });
         }
 
@@ -263,9 +261,7 @@ export class Theme extends Resource {
         return this.theme.arn ?? '';
       }
 
-      public get resourceId(): string {
-        return this.theme.themeId ?? '';
-      }
+      public resourceId = this.theme.themeId ?? '';
 
       // Theme specific properties
 

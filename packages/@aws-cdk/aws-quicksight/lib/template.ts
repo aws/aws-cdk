@@ -169,7 +169,7 @@ export class Template extends Resource {
           };
 
           this._template = ContextProvider.getValue(scope, {
-            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER,
+            provider: cxschema.ContextProvider.QUICKSIGHT_TEMPLATE_PROVIDER,
             props: contextProps,
             dummyValue: undefined,
           }).value;
@@ -193,7 +193,7 @@ export class Template extends Resource {
           };
 
           this._templatePermissions = ContextProvider.getValue(scope, {
-            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER,
+            provider: cxschema.ContextProvider.QUICKSIGHT_TEMPLATE_PERMISSIONS_PROVIDER,
             props: contextProps,
             dummyValue: [],
           }).value;
@@ -242,10 +242,8 @@ export class Template extends Resource {
         let tags: Tag[] = [];
 
         if (this.templateTags) {
-          this.templateTags.forEach(function(value: any) {
-            if (value.Key && value.Value) {
-              tags.push(new Tag(value.Key, value.Value));
-            }
+          this.templateTags.forEach(function(value) {
+            tags.push(new Tag(value.key, value.value));
           });
         }
 
@@ -256,9 +254,7 @@ export class Template extends Resource {
         return this.template.arn ?? '';
       }
 
-      public get resourceId(): string {
-        return this.template.templateId ?? '';
-      }
+      public resourceId = this.template.templateId ?? '';
 
       public get versionDescription() {
         return this.template.version?.description;
@@ -290,9 +286,9 @@ export class Template extends Resource {
         if (!this._placeholders) {
           let placeholders: IDataSet[] = [];
 
-          this.template.version?.dataSetConfigurations?.forEach(function(value: any) {
-            if (value.Placeholder) {
-              let placeholderId: string = value.Placeholder.split('/')[1];
+          this.template.version?.dataSetConfigurations?.forEach(function(value) {
+            if (value.placeholder) {
+              let placeholderId: string = value.placeholder.split('/')[1];
               placeholders.push(DataSet.fromId(scope, placeholderId, placeholderId));
             }
           });

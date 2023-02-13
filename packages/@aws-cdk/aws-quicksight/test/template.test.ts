@@ -1,16 +1,11 @@
 // eslint-disable-next-line import/order
 import * as Mock from './mock';
 
-jest.mock('aws-sdk', () => {
-  return {
-    QuickSight: jest.fn(() => Mock.mockQuickSight),
-    config: { logger: '' },
-  };
-});
-
 // eslint-disable-next-line import/order
-import { Stack } from '@aws-cdk/core';
+import { Stack, ContextProvider } from '@aws-cdk/core';
 import { Analysis, IAnalysis, ITemplate, Template } from '../lib';
+
+ContextProvider.getValue = Mock.mockGetValue;
 
 // INTERFACE CHECKERS
 function instanceOfITemplate(o: any): o is ITemplate {
@@ -143,5 +138,20 @@ describe('template', () => {
         templateName: 'TestName',
       });
     }).toThrow(Error); // TODO Make this a better error.;
+  });
+
+  test('resource not found', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: Mock.NOT_FOUND,
+      },
+    });
+
+    // THEN
+    expect(() => {
+      Template.fromId(stack, 'ImportedTemplate', 'test');
+    }).toThrow(Error); // TODO Make this a better error.
   });
 });

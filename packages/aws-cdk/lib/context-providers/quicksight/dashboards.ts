@@ -9,7 +9,7 @@ export class DashboardContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightDashboardContextQuery): Promise<cxapi.QuickSightContextResponse.Dashboard> {
+  public async getValue(args: cxschema.QuickSightDashboardContextQuery): Promise<cxapi.QuickSightContextResponse.Dashboard> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
@@ -38,7 +38,7 @@ export class DashboardPermissionsContextProviderPlugin implements ContextProvide
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightDashboardContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
+  public async getValue(args: cxschema.QuickSightDashboardContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 

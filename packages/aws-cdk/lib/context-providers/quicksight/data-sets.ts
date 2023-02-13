@@ -9,7 +9,7 @@ export class DataSetContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightDataSetContextQuery): Promise<cxapi.QuickSightContextResponse.DataSet> {
+  public async getValue(args: cxschema.QuickSightDataSetContextQuery): Promise<cxapi.QuickSightContextResponse.DataSet> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
@@ -38,7 +38,7 @@ export class DataSetPermissionsContextProviderPlugin implements ContextProviderP
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightDataSetContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
+  public async getValue(args: cxschema.QuickSightDataSetContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 

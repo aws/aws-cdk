@@ -1,16 +1,11 @@
 // eslint-disable-next-line import/order
 import * as Mock from './mock';
 
-jest.mock('aws-sdk', () => {
-  return {
-    QuickSight: jest.fn(() => Mock.mockQuickSight),
-    config: { logger: '' },
-  };
-});
-
 // eslint-disable-next-line import/order
-import { Stack } from '@aws-cdk/core';
+import { Stack, ContextProvider } from '@aws-cdk/core';
 import { CfnDataSet, DataSet } from '../lib';
+
+ContextProvider.getValue = Mock.mockGetValue;
 
 // INTERFACE CHECKERS
 function instanceOfGeoSpatialColumnGroupProperty(o: any): o is CfnDataSet.GeoSpatialColumnGroupProperty {
@@ -261,5 +256,20 @@ describe('dataset', () => {
     // THEN
     expect(dataSet.resourceId).toBe('TestId');
     expect(dataSet.dataSetArn).toContain('arn');
+  });
+
+  test('resource not found', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: Mock.NOT_FOUND,
+      },
+    });
+
+    // THEN
+    expect(() => {
+      DataSet.fromId(stack, 'ImportedDataSet', 'test');
+    }).toThrow(Error); // TODO Make this a better error.
   });
 });

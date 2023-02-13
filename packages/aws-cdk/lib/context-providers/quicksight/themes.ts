@@ -9,7 +9,7 @@ export class ThemeContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightThemeContextQuery): Promise<cxapi.QuickSightContextResponse.Theme> {
+  public async getValue(args: cxschema.QuickSightThemeContextQuery): Promise<cxapi.QuickSightContextResponse.Theme> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
@@ -38,7 +38,7 @@ export class ThemePermissionsContextProviderPlugin implements ContextProviderPlu
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightThemeContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
+  public async getValue(args: cxschema.QuickSightThemeContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 

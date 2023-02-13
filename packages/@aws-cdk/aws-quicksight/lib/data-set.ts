@@ -261,7 +261,7 @@ export class DataSet extends Resource {
           };
 
           this._dataSet = ContextProvider.getValue(scope, {
-            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER,
+            provider: cxschema.ContextProvider.QUICKSIGHT_DATA_SET_PROVIDER,
             props: contextProps,
             dummyValue: undefined,
           }).value;
@@ -285,7 +285,7 @@ export class DataSet extends Resource {
           };
 
           this._dataSetPermissions = ContextProvider.getValue(scope, {
-            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER,
+            provider: cxschema.ContextProvider.QUICKSIGHT_DATA_SET_PERMISSIONS_PROVIDER,
             props: contextProps,
             dummyValue: [],
           }).value;
@@ -336,10 +336,8 @@ export class DataSet extends Resource {
         let tags: Tag[] = [];
 
         if (this.dataSetTags) {
-          this.dataSetTags.forEach(function(value: any) {
-            if (value.Key && value.Value) {
-              tags.push(new Tag(value.Key, value.Value));
-            }
+          this.dataSetTags.forEach(function(value) {
+            tags.push(new Tag(value.key, value.value));
           });
         }
 
@@ -350,9 +348,7 @@ export class DataSet extends Resource {
         return this.dataSet.arn ?? '';
       }
 
-      public get resourceId(): string {
-        return this.dataSet.dataSetId ?? '';
-      }
+      public resourceId = this.dataSet.dataSetId ?? '';
 
       public get columnGroups() {
         return this.dataSet.columnGroups;

@@ -9,7 +9,7 @@ export class TemplateContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightTemplateContextQuery): Promise<cxapi.QuickSightContextResponse.Template> {
+  public async getValue(args: cxschema.QuickSightTemplateContextQuery): Promise<cxapi.QuickSightContextResponse.Template> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
@@ -38,7 +38,7 @@ export class TemplatePermissionsContextProviderPlugin implements ContextProvider
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightTemplateContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
+  public async getValue(args: cxschema.QuickSightTemplateContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 

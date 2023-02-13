@@ -248,10 +248,8 @@ export class Analysis extends Resource {
         let tags: Tag[] = [];
 
         if (this.analysisTags) {
-          this.analysisTags.forEach(function(value: any) {
-            if (value.Key && value.Value) {
-              tags.push(new Tag(value.Key, value.Value));
-            }
+          this.analysisTags.forEach(function(value) {
+            tags.push(new Tag(value.key, value.value));
           });
         }
 
@@ -262,9 +260,7 @@ export class Analysis extends Resource {
         return this.analysis.arn ?? '';
       }
 
-      public get resourceId(): string {
-        return this.analysis.analysisId ?? '';
-      }
+      public resourceId = this.analysis.analysisId ?? '';
 
       // Analysis specific properties
       public readonly sourceTemplate = undefined;
@@ -273,7 +269,7 @@ export class Analysis extends Resource {
       private _theme: ITheme | undefined;
       public get theme(): ITheme {
         if (!this._theme) {
-          let themeId: string = this.resourceId;
+          let themeId: string = this.analysis.themeArn?.split('/')[1] ?? '';
           this._theme = Theme.fromId(scope, themeId, themeId);
         }
 
@@ -284,7 +280,7 @@ export class Analysis extends Resource {
       public get dataSets(): IDataSet[] {
         if (!this._dataSets) {
           let dataSets: IDataSet[] = [];
-          this.analysis.dataSetArns?.forEach(function(value: any) {
+          this.analysis.dataSetArns?.forEach(function(value) {
             let dataSetId: string = value.split('/')[1];
             dataSets.push(DataSet.fromId(scope, dataSetId, dataSetId));
           });
@@ -404,8 +400,8 @@ export class Analysis extends Resource {
     let dataSetReferences: CfnAnalysis.DataSetReferenceProperty[] = [];
 
     if (this.dataSets.length != placeholders.length) {
-      throw new Error('The number of DataSets must be equal to the number of ' +
-        'DataSets in the sourceTemplate');
+      throw new Error(`The number of DataSets (${this.dataSets.length}) must be
+      equal to the number of DataSets in the sourceTemplate (${placeholders.length})`);
     }
 
     for (let i = 0; i < this.dataSets.length; i++) {

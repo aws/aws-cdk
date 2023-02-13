@@ -9,7 +9,7 @@ export class AnalysisContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightAnalysisContextQuery): Promise<cxapi.QuickSightContextResponse.Analysis> {
+  public async getValue(args: cxschema.QuickSightAnalysisContextQuery): Promise<cxapi.QuickSightContextResponse.Analysis> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
@@ -38,7 +38,7 @@ export class AnalysisPermissionsContextProviderPlugin implements ContextProvider
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightAnalysisContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
+  public async getValue(args: cxschema.QuickSightAnalysisContextQuery): Promise<cxapi.QuickSightContextResponse.ResourcePermissionList> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 

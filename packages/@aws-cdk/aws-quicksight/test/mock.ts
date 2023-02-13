@@ -1,5 +1,9 @@
 // CONSTANTS
 
+// All
+export const NOT_FOUND = 'NOT_FOUND';
+export const NO_PERMISSIONS = 'NO_PERMISSIONS';
+
 // DataSource
 export const DATA_SOURCE_ID_AMAZON_ELASTICSEARCH = 'DATA_SOURCE_ID_AMAZONELASTICSEARCH';
 export const DATA_SOURCE_ID_AMAZON_OPENSEARCH = 'DATA_SOURCE_ID_AMAZONOPENSEARCH';
@@ -69,132 +73,132 @@ export const NO_VERSION_DESCRIPTION = 'NO_VERSION_DESCRIPTION';
 // FUNCTIONS
 
 // DataSource
-function buildDataSourceParameter(dataSourceId: string): QuickSight.DataSourceParameters {
+function buildDataSourceParameter(dataSourceId: string): cxapi.QuickSightContextResponse.DataSourceParameters {
 
-  let dataSourceParameters: QuickSight.DataSourceParameters;
+  let dataSourceParameters: cxapi.QuickSightContextResponse.DataSourceParameters;
 
   switch (dataSourceId) {
 
     case DATA_SOURCE_ID_AMAZON_ELASTICSEARCH:
       dataSourceParameters = {
-        AmazonElasticsearchParameters: {
-          Domain: 'AmazonElasticsearchParametersDomain',
+        amazonElasticsearchParameters: {
+          domain: 'AmazonElasticsearchParametersDomain',
         },
       };
       break;
 
     case DATA_SOURCE_ID_AMAZON_OPENSEARCH:
       dataSourceParameters = {
-        AmazonOpenSearchParameters: {
-          Domain: 'AmazonOpenSearchParametersDomain',
+        amazonOpenSearchParameters: {
+          domain: 'AmazonOpenSearchParametersDomain',
         },
       };
       break;
 
     case DATA_SOURCE_ID_ATHENA:
       dataSourceParameters = {
-        AthenaParameters: {
-          WorkGroup: 'primary',
+        athenaParameters: {
+          workGroup: 'primary',
         },
       };
       break;
 
     case DATA_SOURCE_ID_AURORA:
       dataSourceParameters = {
-        AuroraParameters: {
-          Database: 'AuroraParametersDatabase',
-          Host: 'AuroraParametersHost',
-          Port: 12345,
+        auroraParameters: {
+          database: 'AuroraParametersDatabase',
+          host: 'AuroraParametersHost',
+          port: 12345,
         },
       };
       break;
 
     case DATA_SOURCE_ID_AURORA_POSTGRESQL:
       dataSourceParameters = {
-        AuroraPostgreSqlParameters: {
-          Database: 'AuroraPostgreSqlParametersDatabase',
-          Host: 'AuroraPostgreSqlParametersHost',
-          Port: 12345,
+        auroraPostgreSqlParameters: {
+          database: 'AuroraPostgreSqlParametersDatabase',
+          host: 'AuroraPostgreSqlParametersHost',
+          port: 12345,
         },
       };
       break;
 
     case DATA_SOURCE_ID_MARIADB:
       dataSourceParameters = {
-        MariaDbParameters: {
-          Database: 'MariaDbParametersDatabase',
-          Host: 'MariaDbParametersHost',
-          Port: 12345,
+        mariaDbParameters: {
+          database: 'MariaDbParametersDatabase',
+          host: 'MariaDbParametersHost',
+          port: 12345,
         },
       };
       break;
 
     case DATA_SOURCE_ID_MYSQL:
       dataSourceParameters = {
-        MySqlParameters: {
-          Database: 'MySqlParametersDatabase',
-          Host: 'MySqlParametersHost',
-          Port: 12345,
+        mySqlParameters: {
+          database: 'MySqlParametersDatabase',
+          host: 'MySqlParametersHost',
+          port: 12345,
         },
       };
       break;
 
     case DATA_SOURCE_ID_ORACLE:
       dataSourceParameters = {
-        OracleParameters: {
-          Database: 'OracleParametersDatabase',
-          Host: 'OracleParametersHost',
-          Port: 12345,
+        oracleParameters: {
+          database: 'OracleParametersDatabase',
+          host: 'OracleParametersHost',
+          port: 12345,
         },
       };
       break;
 
     case DATA_SOURCE_ID_POSTGRESQL:
       dataSourceParameters = {
-        PostgreSqlParameters: {
-          Database: 'PostgreSqlParametersDatabase',
-          Host: 'PostgreSqlParametersHost',
-          Port: 12345,
+        postgreSqlParameters: {
+          database: 'PostgreSqlParametersDatabase',
+          host: 'PostgreSqlParametersHost',
+          port: 12345,
         },
       };
       break;
 
     case DATA_SOURCE_ID_PRESTO:
       dataSourceParameters = {
-        PrestoParameters: {
-          Catalog: 'PrestoParametersCatalog',
-          Host: 'PrestoParametersHost',
-          Port: 12345,
+        prestoParameters: {
+          catalog: 'PrestoParametersCatalog',
+          host: 'PrestoParametersHost',
+          port: 12345,
         },
       };
       break;
 
     case DATA_SOURCE_ID_RDS:
       dataSourceParameters = {
-        RdsParameters: {
-          Database: 'RdsParametersDatabase',
-          InstanceId: 'RdsParametersInstanceId',
+        rdsParameters: {
+          database: 'RdsParametersDatabase',
+          instanceId: 'RdsParametersInstanceId',
         },
       };
       break;
 
     case DATA_SOURCE_ID_REDSHIFT:
       dataSourceParameters = {
-        RedshiftParameters: {
-          Database: 'RedshiftParametersDatabase',
-          ClusterId: 'RedshiftParametersClusterId',
-          Host: 'RedshiftParametersHost',
-          Port: 12345,
+        redshiftParameters: {
+          database: 'RedshiftParametersDatabase',
+          clusterId: 'RedshiftParametersClusterId',
+          host: 'RedshiftParametersHost',
+          port: 12345,
         },
       };
       break;
 
     case DATA_SOURCE_ID_S3:
       dataSourceParameters = {
-        S3Parameters: {
-          ManifestFileLocation: {
-            Bucket: 'TestBucket',
-            Key: 'TestKey',
+        s3Parameters: {
+          manifestFileLocation: {
+            bucket: 'TestBucket',
+            key: 'TestKey',
           },
         },
       };
@@ -202,39 +206,39 @@ function buildDataSourceParameter(dataSourceId: string): QuickSight.DataSourcePa
 
     case DATA_SOURCE_ID_SNOWFLAKE:
       dataSourceParameters = {
-        SnowflakeParameters: {
-          Database: 'SnowflakeParametersDatabase',
-          Host: 'SnowflakeParametersHost',
-          Warehouse: 'SnowflakeParametersWarehouse',
+        snowflakeParameters: {
+          database: 'SnowflakeParametersDatabase',
+          host: 'SnowflakeParametersHost',
+          warehouse: 'SnowflakeParametersWarehouse',
         },
       };
       break;
 
     case DATA_SOURCE_ID_SPARK:
       dataSourceParameters = {
-        SparkParameters: {
-          Host: 'SparkParametersHost',
-          Port: 12345,
+        sparkParameters: {
+          host: 'SparkParametersHost',
+          port: 12345,
         },
       };
       break;
 
     case DATA_SOURCE_ID_SQLSERVER:
       dataSourceParameters = {
-        SqlServerParameters: {
-          Database: 'SqlServerParametersDatabase',
-          Host: 'host',
-          Port: 12345,
+        sqlServerParameters: {
+          database: 'SqlServerParametersDatabase',
+          host: 'host',
+          port: 12345,
         },
       };
       break;
 
     case DATA_SOURCE_ID_TERADATA:
       dataSourceParameters = {
-        TeradataParameters: {
-          Database: 'TeradataParametersDatabase',
-          Host: 'TeradataParametersHost',
-          Port: 12345,
+        teradataParameters: {
+          database: 'TeradataParametersDatabase',
+          host: 'TeradataParametersHost',
+          port: 12345,
         },
       };
       break;
@@ -311,22 +315,22 @@ export function getDataSourceType(dataSourceId: string): string {
 }
 
 // DataSet
-function buildPhysicalTableMap(dataSetId: string): QuickSight.PhysicalTableMap {
-  let physicalTableMap: QuickSight.PhysicalTableMap = {};
+function buildPhysicalTableMap(dataSetId: string): cxapi.QuickSightContextResponse.PhysicalTableMap {
+  let physicalTableMap: cxapi.QuickSightContextResponse.PhysicalTableMap = {};
 
   dataSetId.split('$').forEach(function (value, index) {
     switch (value) {
       case RELATIONAL_TABLE:
         physicalTableMap[`${value}$${index}`] = {
-          RelationalTable: {
-            DataSourceArn: `arn:aws:quicksight:region:1234567:datasource/${DATA_SOURCE_ID_AURORA}`,
-            Catalog: 'RelationalTableCatalog',
-            Schema: 'RelationalTableSchema',
-            Name: 'RelationalTableName',
-            InputColumns: [
+          relationalTable: {
+            dataSourceArn: `arn:aws:quicksight:region:1234567:datasource/${DATA_SOURCE_ID_AURORA}`,
+            catalog: 'RelationalTableCatalog',
+            schema: 'RelationalTableSchema',
+            name: 'RelationalTableName',
+            inputColumns: [
               {
-                Name: 'RelationalTableInputColumnName',
-                Type: 'RelationalTableInputColumnType',
+                name: 'RelationalTableInputColumnName',
+                type: 'RelationalTableInputColumnType',
               },
             ],
           },
@@ -335,14 +339,14 @@ function buildPhysicalTableMap(dataSetId: string): QuickSight.PhysicalTableMap {
 
       case CUSTOM_SQL:
         physicalTableMap[`${value}$${index}`] = {
-          CustomSql: {
-            DataSourceArn: `arn:aws:quicksight:region:1234567:datasource/${DATA_SOURCE_ID_MYSQL}`,
-            Name: 'CustomSqlName',
-            SqlQuery: 'CustomSqlSqlQuery',
-            Columns: [
+          customSql: {
+            dataSourceArn: `arn:aws:quicksight:region:1234567:datasource/${DATA_SOURCE_ID_MYSQL}`,
+            name: 'CustomSqlName',
+            sqlQuery: 'CustomSqlSqlQuery',
+            columns: [
               {
-                Name: 'CustomSqlName',
-                Type: 'CustomSqlType',
+                name: 'CustomSqlName',
+                type: 'CustomSqlType',
               },
             ],
           },
@@ -351,19 +355,19 @@ function buildPhysicalTableMap(dataSetId: string): QuickSight.PhysicalTableMap {
 
       case S3_SOURCE:
         physicalTableMap[`${value}$${index}`] = {
-          S3Source: {
-            DataSourceArn: `arn:aws:quicksight:region:1234567:datasource/${DATA_SOURCE_ID_S3}`,
-            UploadSettings: {
-              Format: 'UploadSettingsFormat',
-              StartFromRow: 123,
-              ContainsHeader: true,
-              TextQualifier: 'UploadSettingsTextQualifier',
-              Delimiter: 'UploadSettingsDelimiter',
+          s3Source: {
+            dataSourceArn: `arn:aws:quicksight:region:1234567:datasource/${DATA_SOURCE_ID_S3}`,
+            uploadSettings: {
+              format: 'UploadSettingsFormat',
+              startFromRow: 123,
+              containsHeader: true,
+              textQualifier: 'UploadSettingsTextQualifier',
+              delimiter: 'UploadSettingsDelimiter',
             },
-            InputColumns: [
+            inputColumns: [
               {
-                Name: 'S3SourceInputColumnsName',
-                Type: 'S3SourceInputColumnsType',
+                name: 'S3SourceInputColumnsName',
+                type: 'S3SourceInputColumnsType',
               },
             ],
           },
@@ -374,26 +378,26 @@ function buildPhysicalTableMap(dataSetId: string): QuickSight.PhysicalTableMap {
   return physicalTableMap;
 }
 
-function buildLogicalTableMap(dataSetId: string): QuickSight.LogicalTableMap {
-  let logicalTableMap: QuickSight.LogicalTableMap = {};
+function buildLogicalTableMap(dataSetId: string): cxapi.QuickSightContextResponse.LogicalTableMap {
+  let logicalTableMap: cxapi.QuickSightContextResponse.LogicalTableMap = {};
 
   dataSetId.split('$').forEach(function (value, index) {
     if (LOGICAL_TABLE_MAP_ATTRS.includes(value)) {
       logicalTableMap[`${value}$${index}`] = {
-        Alias: 'logicalTableMapAlias',
-        DataTransforms: [],
-        Source: {
-          JoinInstruction: {
-            LeftOperand: '',
-            RightOperand: '',
-            LeftJoinKeyProperties: {
-              UniqueKey: true,
+        alias: 'logicalTableMapAlias',
+        dataTransforms: [],
+        source: {
+          joinInstruction: {
+            leftOperand: '',
+            rightOperand: '',
+            leftJoinKeyProperties: {
+              uniqueKey: true,
             },
-            RightJoinKeyProperties: {
-              UniqueKey: true,
+            rightJoinKeyProperties: {
+              uniqueKey: true,
             },
-            Type: '',
-            OnClause: '',
+            type: '',
+            onClause: '',
           },
         },
       };
@@ -401,9 +405,9 @@ function buildLogicalTableMap(dataSetId: string): QuickSight.LogicalTableMap {
 
     switch (value) {
       case PROJECT_OPERATION:
-        logicalTableMap[`${value}$${index}`].DataTransforms?.push({
-          ProjectOperation: {
-            ProjectedColumns: [
+        logicalTableMap[`${value}$${index}`].dataTransforms?.push({
+          projectOperation: {
+            projectedColumns: [
               'ProjectedColumns',
             ],
           },
@@ -411,21 +415,21 @@ function buildLogicalTableMap(dataSetId: string): QuickSight.LogicalTableMap {
         break;
 
       case FILTER_OPERATION:
-        logicalTableMap[`${value}$${index}`].DataTransforms?.push({
-          FilterOperation: {
-            ConditionExpression: 'ConditionExpression',
+        logicalTableMap[`${value}$${index}`].dataTransforms?.push({
+          filterOperation: {
+            conditionExpression: 'ConditionExpression',
           },
         });
         break;
 
       case CREATE_COLUMNS_OPERATION:
-        logicalTableMap[`${value}$${index}`].DataTransforms?.push({
-          CreateColumnsOperation: {
-            Columns: [
+        logicalTableMap[`${value}$${index}`].dataTransforms?.push({
+          createColumnsOperation: {
+            columns: [
               {
-                ColumnName: 'CreateColumnsOperationColumnName',
-                ColumnId: '',
-                Expression: '',
+                columnName: 'CreateColumnsOperationColumnName',
+                columnId: '',
+                expression: '',
               },
             ],
           },
@@ -433,33 +437,33 @@ function buildLogicalTableMap(dataSetId: string): QuickSight.LogicalTableMap {
         break;
 
       case RENAME_COLUMN_OPERATION:
-        logicalTableMap[`${value}$${index}`].DataTransforms?.push({
-          RenameColumnOperation: {
-            ColumnName: 'RenameColumnOperationColumnName',
-            NewColumnName: '',
+        logicalTableMap[`${value}$${index}`].dataTransforms?.push({
+          renameColumnOperation: {
+            columnName: 'RenameColumnOperationColumnName',
+            newColumnName: '',
           },
         });
         break;
 
       case CAST_COLUMN_TYPE_OPERATION:
-        logicalTableMap[`${value}$${index}`].DataTransforms?.push({
-          CastColumnTypeOperation: {
-            ColumnName: 'CastColumnTypeOperationColumnName',
-            NewColumnType: '',
-            Format: '',
+        logicalTableMap[`${value}$${index}`].dataTransforms?.push({
+          castColumnTypeOperation: {
+            columnName: 'CastColumnTypeOperationColumnName',
+            newColumnType: '',
+            format: '',
           },
         });
         break;
 
       case TAG_COLUMN_OPERATION:
-        logicalTableMap[`${value}$${index}`].DataTransforms?.push({
-          TagColumnOperation: {
-            ColumnName: '',
-            Tags: [
+        logicalTableMap[`${value}$${index}`].dataTransforms?.push({
+          tagColumnOperation: {
+            columnName: '',
+            tags: [
               {
-                ColumnGeographicRole: '',
-                ColumnDescription: {
-                  Text: 'Text',
+                columnGeographicRole: '',
+                columnDescription: {
+                  text: 'Text',
                 },
               },
             ],
@@ -468,10 +472,10 @@ function buildLogicalTableMap(dataSetId: string): QuickSight.LogicalTableMap {
         break;
 
       case UNTAG_COLUMN_OPERATION:
-        logicalTableMap[`${value}$${index}`].DataTransforms?.push({
-          UntagColumnOperation: {
-            ColumnName: '',
-            TagNames: [
+        logicalTableMap[`${value}$${index}`].dataTransforms?.push({
+          untagColumnOperation: {
+            columnName: '',
+            tagNames: [
               'TagNames',
             ],
           },
@@ -487,17 +491,16 @@ function buildLogicalTableMap(dataSetId: string): QuickSight.LogicalTableMap {
 
 // General
 const mockListTagsForResource = jest.fn((
-  params: QuickSight.ListTagsForResourceRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.ListTagsForResourceResponse) => QuickSight.ListTagsForResourceResponse) | undefined) => {
+  params: cxschema.QuickSightTagsContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.TagList) =>
+  cxapi.QuickSightContextResponse.TagList) | undefined) => {
 
-  let response = {
-    Tags: [
-      {
-        Key: 'ResourceArn',
-        Value: params.ResourceArn,
-      },
-    ],
-  };
+  let response = [
+    {
+      key: 'ResourceArn',
+      value: params.resourceArn,
+    },
+  ];
 
   if (callback) {
     callback(undefined, response);
@@ -508,31 +511,28 @@ const mockListTagsForResource = jest.fn((
 
 // DataSource
 const mockDescribeDataSource = jest.fn((
-  params: QuickSight.DescribeDataSourceRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSourceResponse) => QuickSight.DescribeDataSourceResponse)) => {
+  params: cxschema.QuickSightDataSourceContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.DataSource) =>
+  cxapi.QuickSightContextResponse.DataSource)) => {
 
-  let response: QuickSight.DescribeDataSourceResponse = {
-    DataSource: {
-      DataSourceId: params.DataSourceId,
-      Name: 'DataSourceName',
-      Arn: `arn:aws:quicksight:region:${params.AwsAccountId}:datasource/${params.DataSourceId}`,
-      AlternateDataSourceParameters: [],
-      ErrorInfo: {
-        Message: 'Error message',
-        Type: 'ErrorType',
-      },
-      VpcConnectionProperties: {
-        VpcConnectionArn: `arn:aws:ec2:region:${params.AwsAccountId}:vpc-peering-connection/*`,
-      },
-      SecretArn: `arn:aws:secretsmanager:region:${params.AwsAccountId}:secret:secretId`,
+  let response: cxapi.QuickSightContextResponse.DataSource = {
+    dataSourceId: params.dataSourceId,
+    name: 'DataSourceName',
+    arn: `arn:aws:quicksight:region:${params.account}:datasource/${params.dataSourceId}`,
+    type: getDataSourceType(params.dataSourceId),
+    dataSourceParameters: buildDataSourceParameter(params.dataSourceId),
+    alternateDataSourceParameters: [
+      buildDataSourceParameter(params.dataSourceId),
+    ],
+    errorInfo: {
+      message: 'Error message',
+      type: 'ErrorType',
     },
+    vpcConnectionProperties: {
+      vpcConnectionArn: `arn:aws:ec2:region:${params.account}:vpc-peering-connection/*`,
+    },
+    secretArn: `arn:aws:secretsmanager:region:${params.account}:secret:secretId`,
   };
-
-  if (response.DataSource?.AlternateDataSourceParameters) {
-    response.DataSource.Type = getDataSourceType(params.DataSourceId);
-    response.DataSource.DataSourceParameters = buildDataSourceParameter(params.DataSourceId);
-    response.DataSource.AlternateDataSourceParameters.push(buildDataSourceParameter(params.DataSourceId));
-  }
 
   if (callback) {
     callback(undefined, response);
@@ -542,22 +542,22 @@ const mockDescribeDataSource = jest.fn((
 });
 
 const mockDescribeDataSourcePermissions = jest.fn((
-  params: QuickSight.DescribeDataSourcePermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSourcePermissionsResponse) =>
-  QuickSight.DescribeDataSourcePermissionsResponse) | undefined) => {
+  params: cxschema.QuickSightDataSourceContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.ResourcePermissionList) =>
+  cxapi.QuickSightContextResponse.ResourcePermissionList) | undefined) => {
 
-  let response = {
-    DataSourceId: params.DataSourceId,
-    DataSourceArn: `arn:aws:quicksight:region:${params.AwsAccountId}:datasource/${params.DataSourceId}`,
-    Permissions: [
-      {
-        Principal: 'DataSourcePermissionsPrincipal',
-        Actions: [
-          'DataSourcePermissionsAction',
-        ],
-      },
-    ],
-  };
+  let response = [
+    {
+      principal: 'DataSourcePermissionsPrincipal',
+      actions: [
+        'DataSourcePermissionsAction',
+      ],
+    },
+  ];
+
+  if (params.region == NO_PERMISSIONS) {
+    response = [];
+  }
 
   if (callback) {
     callback(undefined, response);
@@ -568,85 +568,76 @@ const mockDescribeDataSourcePermissions = jest.fn((
 
 // DataSet
 const mockDescribeDataSet = jest.fn((
-  params: QuickSight.DescribeDataSetRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSetResponse) => QuickSight.DescribeDataSetResponse)) => {
+  params: cxschema.QuickSightDataSetContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.DataSet) =>
+  cxapi.QuickSightContextResponse.DataSet)) => {
 
-  let response: QuickSight.DescribeDataSetResponse = {
-    DataSet: {
-      DataSetId: params.DataSetId,
-      Name: 'DataSetName',
-      Arn: `arn:aws:quicksight:region:${params.AwsAccountId}:dataset/${params.DataSetId}`,
-      PhysicalTableMap: {},
-      LogicalTableMap: {},
-      OutputColumns: [
-        {
-          Name: 'OutputColumnName',
-          Description: 'OutputColumnDescription',
-          Type: 'OutputColumnDescriptionType',
-        },
-      ],
-      ImportMode: 'ImportMode',
-      ColumnGroups: [
-        {
-          GeoSpatialColumnGroup: {
-            Name: 'GeoSpatialColumnGroupName',
-            CountryCode: 'GeoSpatialColumnGroupCountryCode',
-            Columns: [
-              'GeoSpatialColumnGroupColumn',
-            ],
-          },
-        },
-      ],
-      FieldFolders: {
-        fieldFolderName: {
-          description: 'FieldFolderDescription',
+  let response: cxapi.QuickSightContextResponse.DataSet = {
+    dataSetId: params.dataSetId,
+    name: 'DataSetName',
+    arn: `arn:aws:quicksight:region:${params.account}:dataset/${params.dataSetId}`,
+    physicalTableMap: buildPhysicalTableMap(params.dataSetId),
+    logicalTableMap: buildLogicalTableMap(params.dataSetId),
+    outputColumns: [
+      {
+        name: 'OutputColumnName',
+        description: 'OutputColumnDescription',
+        type: 'OutputColumnDescriptionType',
+      },
+    ],
+    importMode: 'ImportMode',
+    columnGroups: [
+      {
+        geoSpatialColumnGroup: {
+          name: 'GeoSpatialColumnGroupName',
+          countryCode: 'GeoSpatialColumnGroupCountryCode',
           columns: [
-            'FieldFolderColumn',
+            'GeoSpatialColumnGroupColumn',
           ],
         },
       },
-      RowLevelPermissionDataSet: {
-        Namespace: 'RowLevelPermissionDataSetNamespace',
-        Arn: 'RowLevelPermissionDataSetArn',
-        PermissionPolicy: 'RowLevelPermissionDataSetPermissionPolicy',
-        FormatVersion: 'RowLevelPermissionDataSetFormatVersion',
-        Status: 'RowLevelPermissionDataSetStatus',
-      },
-      RowLevelPermissionTagConfiguration: {
-        Status: 'RowLevelPermissionTagConfigurationStatus',
-        TagRules: [
-          {
-            TagKey: 'RowLevelPermissionTagConfigurationTagRulesTagKey',
-            ColumnName: 'RowLevelPermissionTagConfigurationTagRulesColumnName',
-            TagMultiValueDelimiter: 'RowLevelPermissionTagConfigurationTagRulesTagMultiValueDelimiter',
-            MatchAllValue: 'RowLevelPermissionTagConfigurationTagRulesMatchAllValue',
-          },
+    ],
+    fieldFolders: {
+      fieldFolderName: {
+        description: 'FieldFolderDescription',
+        columns: [
+          'FieldFolderColumn',
         ],
       },
-      ColumnLevelPermissionRules: [
+    },
+    rowLevelPermissionDataSet: {
+      namespace: 'RowLevelPermissionDataSetNamespace',
+      arn: 'RowLevelPermissionDataSetArn',
+      permissionPolicy: 'RowLevelPermissionDataSetPermissionPolicy',
+      formatVersion: 'RowLevelPermissionDataSetFormatVersion',
+      status: 'RowLevelPermissionDataSetStatus',
+    },
+    rowLevelPermissionTagConfiguration: {
+      status: 'RowLevelPermissionTagConfigurationStatus',
+      tagRules: [
         {
-          Principals: [
-            'ColumnLevelPermissionRulesPrincipals',
-          ],
-          ColumnNames: [
-            'ColumnLevelPermissionRulesColumnNames',
-          ],
+          tagKey: 'RowLevelPermissionTagConfigurationTagRulesTagKey',
+          columnName: 'RowLevelPermissionTagConfigurationTagRulesColumnName',
+          tagMultiValueDelimiter: 'RowLevelPermissionTagConfigurationTagRulesTagMultiValueDelimiter',
+          matchAllValue: 'RowLevelPermissionTagConfigurationTagRulesMatchAllValue',
         },
       ],
-      DataSetUsageConfiguration: {
-        DisableUseAsDirectQuerySource: true,
-        DisableUseAsImportedSource: true,
+    },
+    columnLevelPermissionRules: [
+      {
+        principals: [
+          'ColumnLevelPermissionRulesPrincipals',
+        ],
+        columnNames: [
+          'ColumnLevelPermissionRulesColumnNames',
+        ],
       },
+    ],
+    dataSetUsageConfiguration: {
+      disableUseAsDirectQuerySource: true,
+      disableUseAsImportedSource: true,
     },
   };
-
-  if (response.DataSet) {
-    response.DataSet.PhysicalTableMap = buildPhysicalTableMap(params.DataSetId);
-  }
-
-  if (response.DataSet) {
-    response.DataSet.LogicalTableMap = buildLogicalTableMap(params.DataSetId);
-  }
 
   if (callback) {
     callback(undefined, response);
@@ -656,22 +647,22 @@ const mockDescribeDataSet = jest.fn((
 });
 
 const mockDescribeDataSetPermissions = jest.fn((
-  params: QuickSight.DescribeDataSetPermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSetPermissionsResponse) =>
-  QuickSight.DescribeDataSetPermissionsResponse) | undefined) => {
+  params: cxschema.QuickSightDataSetContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.ResourcePermissionList) =>
+  cxapi.QuickSightContextResponse.ResourcePermissionList) | undefined) => {
 
-  let response = {
-    DataSetId: params.DataSetId,
-    DataSetArn: `arn:aws:quicksight:region:${params.AwsAccountId}:dataset/${params.DataSetId}`,
-    Permissions: [
-      {
-        Principal: 'DataSetPermissionsPrincipal',
-        Actions: [
-          'DataSetPermissionsAction',
-        ],
-      },
-    ],
-  };
+  let response = [
+    {
+      principal: 'DataSetPermissionsPrincipal',
+      actions: [
+        'DataSetPermissionsAction',
+      ],
+    },
+  ];
+
+  if (params.region == NO_PERMISSIONS) {
+    response = [];
+  }
 
   if (callback) {
     callback(undefined, response);
@@ -682,76 +673,74 @@ const mockDescribeDataSetPermissions = jest.fn((
 
 // Template
 const mockDescribeTemplate = jest.fn((
-  params: QuickSight.DescribeTemplateRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeTemplateResponse) => QuickSight.DescribeTemplateResponse)) => {
+  params: cxschema.QuickSightTemplateContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.Template) =>
+  cxapi.QuickSightContextResponse.Template)) => {
 
   let sourceEntityArn: string;
 
-  switch (params.TemplateId) {
+  switch (params.templateId) {
     case SOURCE_TEMPLATE:
-      sourceEntityArn = `arn:aws:quicksight:region:${params.AwsAccountId}:template/${SOURCE_ANALYSIS}`;
+      sourceEntityArn = `arn:aws:quicksight:region:${params.account}:template/${SOURCE_ANALYSIS}`;
       break;
     case SOURCE_ANALYSIS:
-      sourceEntityArn = `arn:aws:quicksight:region:${params.AwsAccountId}:analysis/${ANALYSIS_ID}`;
+      sourceEntityArn = `arn:aws:quicksight:region:${params.account}:analysis/${ANALYSIS_ID}`;
       break;
     default:
-      sourceEntityArn = `invalid: ${params.TemplateId}`;
+      sourceEntityArn = `invalid: ${params.templateId}`;
       break;
   }
 
-  let response: QuickSight.DescribeTemplateResponse = {
-    RequestId: 'RequestId',
-    Template: {
-      Arn: `arn:aws:quicksight:region:${params.AwsAccountId}:template/${params.TemplateId}`,
-      Name: 'TemplateName',
-      TemplateId: params.TemplateId,
-      Version: {
-        DataSetConfigurations: [
-          {
-            ColumnGroupSchemaList: [
-              {
-                ColumnGroupColumnSchemaList: [
-                  {
-                    Name: 'Name',
-                  },
-                ],
-                Name: 'Name',
-              },
-            ],
-            DataSetSchema: {
-              ColumnSchemaList: [
+  let response: cxapi.QuickSightContextResponse.Template = {
+    arn: `arn:aws:quicksight:region:${params.account}:template/${params.templateId}`,
+    name: 'TemplateName',
+    templateId: params.templateId,
+    version: {
+      dataSetConfigurations: [
+        {
+          columnGroupSchemaList: [
+            {
+              columnGroupColumnSchemaList: [
                 {
-                  DataType: 'DataType',
-                  GeographicRole: 'GeographicRole',
-                  Name: 'Name',
+                  name: 'Name',
                 },
               ],
+              name: 'Name',
             },
-            Placeholder: `arn:aws:quicksight:region:${params.AwsAccountId}:dataset/${DATA_SET_ID}$${S3_SOURCE}$${UNTAG_COLUMN_OPERATION}`,
-          },
-        ],
-        Description: 'Description',
-        Errors: [
-          {
-            Message: 'Message',
-            Type: 'Type',
-            ViolatedEntities: [
+          ],
+          dataSetSchema: {
+            columnSchemaList: [
               {
-                Path: 'Path',
+                dataType: 'DataType',
+                geographicRole: 'GeographicRole',
+                name: 'Name',
               },
             ],
           },
-        ],
-        Sheets: [
-          {
-            Name: 'Name',
-            SheetId: 'SheetId',
-          },
-        ],
-        SourceEntityArn: sourceEntityArn,
-        Status: 'Status',
-        ThemeArn: `arn:aws:quicksight:region:${params.AwsAccountId}:theme/${MANAGED_THEME}`,
-      },
+          placeholder: `arn:aws:quicksight:region:${params.account}:dataset/${DATA_SET_ID}$${S3_SOURCE}$${UNTAG_COLUMN_OPERATION}`,
+        },
+      ],
+      description: 'Description',
+      errors: [
+        {
+          message: 'Message',
+          type: 'Type',
+          violatedEntities: [
+            {
+              path: 'Path',
+            },
+          ],
+        },
+      ],
+      sheets: [
+        {
+          name: 'Name',
+          sheetId: 'SheetId',
+        },
+      ],
+      sourceEntityArn: sourceEntityArn,
+      status: 'Status',
+      themeArn: `arn:aws:quicksight:region:${params.account}:theme/${MANAGED_THEME}`,
     },
   };
 
@@ -763,22 +752,22 @@ const mockDescribeTemplate = jest.fn((
 });
 
 const mockDescribeTemplatePermissions = jest.fn((
-  params: QuickSight.DescribeTemplatePermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeTemplatePermissionsResponse) =>
-  QuickSight.DescribeTemplatePermissionsResponse) | undefined) => {
+  params: cxschema.QuickSightTemplateContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.ResourcePermissionList) =>
+  cxapi.QuickSightContextResponse.ResourcePermissionList) | undefined) => {
 
-  let response = {
-    TemplateId: params.TemplateId,
-    TemplateArn: `arn:aws:quicksight:region:${params.AwsAccountId}:template/${params.TemplateId}`,
-    Permissions: [
-      {
-        Principal: 'TemplatePermissionsPrincipal',
-        Actions: [
-          'TemplatePermissionsAction',
-        ],
-      },
-    ],
-  };
+  let response = [
+    {
+      principal: 'TemplatePermissionsPrincipal',
+      actions: [
+        'TemplatePermissionsAction',
+      ],
+    },
+  ];
+
+  if (params.region == NO_PERMISSIONS) {
+    response = [];
+  }
 
   if (callback) {
     callback(undefined, response);
@@ -789,90 +778,90 @@ const mockDescribeTemplatePermissions = jest.fn((
 
 //Theme
 const mockDescribeTheme = jest.fn((
-  params: QuickSight.DescribeThemeRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeThemeResponse) => QuickSight.DescribeThemeResponse)) => {
+  params: cxschema.QuickSightThemeContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.Theme) =>
+  cxapi.QuickSightContextResponse.Theme)) => {
 
-  let response: QuickSight.DescribeThemeResponse = {
-    Theme: {
-      Arn: `arn:aws:quicksight:region:${params.AwsAccountId}:theme/${params.ThemeId}`,
-      Name: 'ThemeName',
-      ThemeId: params.ThemeId,
-      Version: {
-        VersionNumber: 123,
-        Arn: `arn:aws:quicksight:region:${params.AwsAccountId}:theme/${params.ThemeId}/version/`,
-        Configuration: {
-          DataColorPalette: {
-            Colors: [
-              'Colors',
-            ],
-            MinMaxGradient: [
-              'MinMaxGradient',
-            ],
-            EmptyFillColor: 'EmptyFillColor',
-          },
-          UIColorPalette: {
-            PrimaryForeground: 'PrimaryForeground',
-            PrimaryBackground: 'PrimaryBackground',
-            SecondaryForeground: 'SecondaryForeground',
-            SecondaryBackground: 'SecondaryBackground',
-            Accent: 'Accent',
-            AccentForeground: 'AccentForeground',
-            Danger: 'Danger',
-            DangerForeground: 'DangerForeground',
-            Warning: 'Warning',
-            WarningForeground: 'WarningForeground',
-            Success: 'Success',
-            SuccessForeground: 'SuccessForeground',
-            Dimension: 'Dimension',
-            DimensionForeground: 'DimensionForeground',
-            Measure: 'Measure',
-            MeasureForeground: 'MeasureForeground',
-          },
-          Sheet: {
-            Tile: {
-              Border: {
-                Show: true,
-              },
+  let description: string | undefined;
+  if (params.themeId != NO_VERSION_DESCRIPTION) {
+    description = 'Description';
+  }
+
+  let basethemeId: string | undefined;
+  if (params.themeId == CUSTOM_THEME) {
+    basethemeId = MANAGED_THEME;
+  }
+
+  let response: cxapi.QuickSightContextResponse.Theme = {
+    arn: `arn:aws:quicksight:region:${params.account}:theme/${params.themeId}`,
+    name: 'ThemeName',
+    themeId: params.themeId,
+    version: {
+      description: description,
+      baseThemeId: basethemeId,
+      versionNumber: 123,
+      arn: `arn:aws:quicksight:region:${params.account}:theme/${params.themeId}/version/`,
+      configuration: {
+        dataColorPalette: {
+          colors: [
+            'Colors',
+          ],
+          minMaxGradient: [
+            'MinMaxGradient',
+          ],
+          emptyFillColor: 'EmptyFillColor',
+        },
+        uIColorPalette: {
+          primaryForeground: 'PrimaryForeground',
+          primaryBackground: 'PrimaryBackground',
+          secondaryForeground: 'SecondaryForeground',
+          secondaryBackground: 'SecondaryBackground',
+          accent: 'Accent',
+          accentForeground: 'AccentForeground',
+          danger: 'Danger',
+          dangerForeground: 'DangerForeground',
+          warning: 'Warning',
+          warningForeground: 'WarningForeground',
+          success: 'Success',
+          successForeground: 'SuccessForeground',
+          dimension: 'Dimension',
+          dimensionForeground: 'DimensionForeground',
+          measure: 'Measure',
+          measureForeground: 'MeasureForeground',
+        },
+        sheet: {
+          tile: {
+            border: {
+              show: true,
             },
-            TileLayout: {
-              Gutter: {
-                Show: true,
-              },
-              Margin: {
-                Show: true,
-              },
-            },
           },
-          Typography: {
-            FontFamilies: [
-              {
-                FontFamily: 'FontFamily',
-              },
-            ],
+          tileLayout: {
+            gutter: {
+              show: true,
+            },
+            margin: {
+              show: true,
+            },
           },
         },
-        Errors: [
-          {
-            Type: 'INTERNAL_FAILURE',
-            Message: 'Message',
-          },
-        ],
-        Status: 'CREATION_SUCCESSFUL',
+        typography: {
+          fontFamilies: [
+            {
+              fontFamily: 'FontFamily',
+            },
+          ],
+        },
       },
-      Type: 'CUSTOM',
+      errors: [
+        {
+          type: 'INTERNAL_FAILURE',
+          message: 'Message',
+        },
+      ],
+      status: 'CREATION_SUCCESSFUL',
     },
-    Status: 123,
-    RequestId: 'RequestId',
+    type: 'CUSTOM',
   };
-
-  if (params.ThemeId != NO_VERSION_DESCRIPTION &&
-      response.Theme?.Version) {
-    response.Theme.Version.Description = 'Description';
-  }
-
-  if (params.ThemeId == CUSTOM_THEME && response.Theme?.Version) {
-    response.Theme.Version.BaseThemeId = MANAGED_THEME;
-  }
 
   if (callback) {
     callback(undefined, response);
@@ -882,21 +871,22 @@ const mockDescribeTheme = jest.fn((
 });
 
 const mockDescribeThemePermissions = jest.fn((
-  params: QuickSight.DescribeThemePermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeThemePermissionsResponse) => QuickSight.DescribeThemePermissionsResponse) | undefined) => {
+  params: cxschema.QuickSightThemeContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.ResourcePermissionList) =>
+  cxapi.QuickSightContextResponse.ResourcePermissionList) | undefined) => {
 
-  let response = {
-    ThemeId: params.ThemeId,
-    ThemeArn: `arn:aws:quicksight:region:${params.AwsAccountId}:template/${params.ThemeId}`,
-    Permissions: [
-      {
-        Principal: 'ThemePermissionsPrincipal',
-        Actions: [
-          'ThemePermissionsAction',
-        ],
-      },
-    ],
-  };
+  let response = [
+    {
+      principal: 'ThemePermissionsPrincipal',
+      actions: [
+        'ThemePermissionsAction',
+      ],
+    },
+  ];
+
+  if (params.region == NO_PERMISSIONS) {
+    response = [];
+  }
 
   if (callback) {
     callback(undefined, response);
@@ -907,36 +897,34 @@ const mockDescribeThemePermissions = jest.fn((
 
 // Analysis
 const mockDescribeAnalysis = jest.fn((
-  params: QuickSight.DescribeAnalysisRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeAnalysisResponse) => QuickSight.DescribeAnalysisResponse)) => {
+  params: cxschema.QuickSightAnalysisContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.Analysis) =>
+  cxapi.QuickSightContextResponse.Analysis)) => {
 
-  let response: QuickSight.DescribeAnalysisResponse = {
-    Analysis: {
-      AnalysisId: params.AnalysisId,
-      Arn: `arn:aws:quicksight:region:${params.AwsAccountId}:analysis/${params.AnalysisId}`,
-      DataSetArns: [`arn:aws:quicksight:region:${params.AwsAccountId}:dataset/${DATA_SET_ID}$${S3_SOURCE}$${UNTAG_COLUMN_OPERATION}`],
-      Errors: [
-        {
-          Message: 'Message',
-          Type: 'Type',
-          ViolatedEntities: [
-            {
-              Path: 'Path',
-            },
-          ],
-        },
-      ],
-      Name: 'AnalysisName',
-      Sheets: [
-        {
-          Name: 'Name',
-          SheetId: 'SheetId',
-        },
-      ],
-      Status: 'Status',
-      ThemeArn: `arn:aws:quicksight:region:${params.AwsAccountId}:theme/${MANAGED_THEME}`,
-    },
-    RequestId: 'RequestId',
+  let response: cxapi.QuickSightContextResponse.Analysis = {
+    analysisId: params.analysisId,
+    arn: `arn:aws:quicksight:region:${params.account}:analysis/${params.analysisId}`,
+    dataSetArns: [`arn:aws:quicksight:region:${params.account}:dataset/${DATA_SET_ID}$${S3_SOURCE}$${UNTAG_COLUMN_OPERATION}`],
+    errors: [
+      {
+        message: 'Message',
+        type: 'Type',
+        violatedEntities: [
+          {
+            path: 'Path',
+          },
+        ],
+      },
+    ],
+    name: 'AnalysisName',
+    sheets: [
+      {
+        name: 'Name',
+        sheetId: 'SheetId',
+      },
+    ],
+    status: 'Status',
+    themeArn: `arn:aws:quicksight:region:${params.account}:theme/${MANAGED_THEME}`,
   };
 
   if (callback) {
@@ -947,22 +935,22 @@ const mockDescribeAnalysis = jest.fn((
 });
 
 const mockDescribeAnalysisPermissions = jest.fn((
-  params: QuickSight.DescribeAnalysisPermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeAnalysisPermissionsResponse) =>
-  QuickSight.DescribeAnalysisPermissionsResponse) | undefined) => {
+  params: cxschema.QuickSightAnalysisContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.ResourcePermissionList) =>
+  cxapi.QuickSightContextResponse.ResourcePermissionList) | undefined) => {
 
-  let response = {
-    AnalysisId: params.AnalysisId,
-    AnalysisArn: `arn:aws:quicksight:region:${params.AwsAccountId}:analysis/${params.AnalysisId}`,
-    Permissions: [
-      {
-        Principal: 'AnalysisPermissionsPrincipal',
-        Actions: [
-          'AnalysisPermissionsAction',
-        ],
-      },
-    ],
-  };
+  let response = [
+    {
+      principal: 'AnalysisPermissionsPrincipal',
+      actions: [
+        'AnalysisPermissionsAction',
+      ],
+    },
+  ];
+
+  if (params.region == NO_PERMISSIONS) {
+    response = [];
+  }
 
   if (callback) {
     callback(undefined, response);
@@ -973,46 +961,46 @@ const mockDescribeAnalysisPermissions = jest.fn((
 
 // Dashboard
 const mockDescribeDashboard = jest.fn((
-  params: QuickSight.DescribeDashboardRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDashboardResponse) => QuickSight.DescribeDashboardResponse)) => {
+  params: cxschema.QuickSightDashboardContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.Dashboard) =>
+  cxapi.QuickSightContextResponse.Dashboard)) => {
 
-  let response: QuickSight.DescribeDashboardResponse = {
-    Dashboard: {
-      Arn: `arn:aws:quicksight:region:${params.AwsAccountId}:dashboard/${params.DashboardId}`,
-      DashboardId: params.DashboardId,
-      Name: 'DashboardName',
-      Version: {
-        Arn: `arn:aws:quicksight:region:${params.AwsAccountId}:dashboard/${params.DashboardId}/version`,
-        DataSetArns: [`arn:aws:quicksight:region:${params.AwsAccountId}:dataset/${DATA_SET_ID}$${S3_SOURCE}$${UNTAG_COLUMN_OPERATION}`],
-        Errors: [
-          {
-            Message: 'Message',
-            Type: 'Type',
-            ViolatedEntities: [
-              {
-                Path: 'Path',
-              },
-            ],
-          },
-        ],
-        Sheets: [
-          {
-            Name: 'Name',
-            SheetId: 'SheetId',
-          },
-        ],
-        SourceEntityArn: `arn:aws:quicksight:region:${params.AwsAccountId}:template/${SOURCE_ANALYSIS}`,
-        Status: 'Status',
-        ThemeArn: `arn:aws:quicksight:region:${params.AwsAccountId}:theme/${MANAGED_THEME}`,
-      },
-    },
-    RequestId: 'RequestId',
-  };
 
-  if (params.DashboardId != NO_VERSION_DESCRIPTION &&
-      response.Dashboard?.Version) {
-    response.Dashboard.Version.Description = 'Description';
+  let description: string | undefined;
+  if (params.dashboardId != NO_VERSION_DESCRIPTION) {
+    description = 'Description';
   }
+
+  let response: cxapi.QuickSightContextResponse.Dashboard = {
+    arn: `arn:aws:quicksight:region:${params.account}:dashboard/${params.dashboardId}`,
+    dashboardId: params.dashboardId,
+    name: 'DashboardName',
+    version: {
+      description: description,
+      arn: `arn:aws:quicksight:region:${params.account}:dashboard/${params.dashboardId}/version`,
+      dataSetArns: [`arn:aws:quicksight:region:${params.account}:dataset/${DATA_SET_ID}$${S3_SOURCE}$${UNTAG_COLUMN_OPERATION}`],
+      errors: [
+        {
+          message: 'Message',
+          type: 'Type',
+          violatedEntities: [
+            {
+              path: 'Path',
+            },
+          ],
+        },
+      ],
+      sheets: [
+        {
+          name: 'Name',
+          sheetId: 'SheetId',
+        },
+      ],
+      sourceEntityArn: `arn:aws:quicksight:region:${params.account}:template/${SOURCE_ANALYSIS}`,
+      status: 'Status',
+      themeArn: `arn:aws:quicksight:region:${params.account}:theme/${MANAGED_THEME}`,
+    },
+  };
 
   if (callback) {
     callback(undefined, response);
@@ -1022,22 +1010,22 @@ const mockDescribeDashboard = jest.fn((
 });
 
 const mockDescribeDashboardPermissions = jest.fn((
-  params: QuickSight.DescribeDashboardPermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDashboardPermissionsResponse) =>
-  QuickSight.DescribeDashboardPermissionsResponse) | undefined) => {
+  params: cxschema.QuickSightDashboardContextQuery,
+  callback?: ((err?: AWSError, data?: cxapi.QuickSightContextResponse.ResourcePermissionList) =>
+  cxapi.QuickSightContextResponse.ResourcePermissionList) | undefined) => {
 
-  let response = {
-    DashboardId: params.DashboardId,
-    DashboardArn: `arn:aws:quicksight:region:${params.AwsAccountId}:dashboard/${params.DashboardId}`,
-    Permissions: [
-      {
-        Principal: 'DashboardPermissionsPrincipal',
-        Actions: [
-          'DashboardPermissionsAction',
-        ],
-      },
-    ],
-  };
+  let response = [
+    {
+      principal: 'DashboardPermissionsPrincipal',
+      actions: [
+        'DashboardPermissionsAction',
+      ],
+    },
+  ];
+
+  if (params.region == NO_PERMISSIONS) {
+    response = [];
+  }
 
   if (callback) {
     callback(undefined, response);
@@ -1046,27 +1034,75 @@ const mockDescribeDashboardPermissions = jest.fn((
   return response;
 });
 
-export const mockQuickSight = {
-  listTagsForResource: mockListTagsForResource,
-  describeDataSource: mockDescribeDataSource,
-  describeDataSourcePermissions: mockDescribeDataSourcePermissions,
-  describeDataSet: mockDescribeDataSet,
-  describeDataSetPermissions: mockDescribeDataSetPermissions,
-  describeTemplate: mockDescribeTemplate,
-  describeTemplatePermissions: mockDescribeTemplatePermissions,
-  describeTheme: mockDescribeTheme,
-  describeThemePermissions: mockDescribeThemePermissions,
-  describeAnalysis: mockDescribeAnalysis,
-  describeAnalysisPermissions: mockDescribeAnalysisPermissions,
-  describeDashboard: mockDescribeDashboard,
-  describeDashboardPermissions: mockDescribeDashboardPermissions,
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { GetContextValueOptions, GetContextValueResult } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { AWSError } from 'aws-sdk';
+import { Construct } from 'constructs';
+
+export function mockGetValue (_scope: Construct, options: GetContextValueOptions) {
+  let result: GetContextValueResult;
+
+  if (options.props?.region == NOT_FOUND) {
+    return { value: options.dummyValue };
+  }
+
+  switch (options.provider) {
+    case cxschema.ContextProvider.QUICKSIGHT_TAGS_PROVIDER:
+      result = { value: mockListTagsForResource(options.props as cxschema.QuickSightTagsContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_DATA_SOURCE_PROVIDER:
+      result = { value: mockDescribeDataSource(options.props as cxschema.QuickSightDataSourceContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_DATA_SOURCE_PERMISSIONS_PROVIDER:
+      result = { value: mockDescribeDataSourcePermissions(options.props as cxschema.QuickSightDataSourceContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_DATA_SET_PROVIDER:
+      result = { value: mockDescribeDataSet(options.props as cxschema.QuickSightDataSetContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_DATA_SET_PERMISSIONS_PROVIDER:
+      result = { value: mockDescribeDataSetPermissions(options.props as cxschema.QuickSightDataSetContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_TEMPLATE_PROVIDER:
+      result = { value: mockDescribeTemplate(options.props as cxschema.QuickSightTemplateContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_TEMPLATE_PERMISSIONS_PROVIDER:
+      result = { value: mockDescribeTemplatePermissions(options.props as cxschema.QuickSightTemplateContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_THEME_PROVIDER:
+      result = { value: mockDescribeTheme(options.props as cxschema.QuickSightThemeContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_THEME_PERMISSIONS_PROVIDER:
+      result = { value: mockDescribeThemePermissions(options.props as cxschema.QuickSightThemeContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER:
+      result = { value: mockDescribeAnalysis(options.props as cxschema.QuickSightAnalysisContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER:
+      result = { value: mockDescribeAnalysisPermissions(options.props as cxschema.QuickSightAnalysisContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_DASHBOARD_PROVIDER:
+      result = { value: mockDescribeDashboard(options.props as cxschema.QuickSightDashboardContextQuery) };
+      break;
+
+    case cxschema.ContextProvider.QUICKSIGHT_DASHBOARD_PERMISSIONS_PROVIDER:
+      result = { value: mockDescribeDashboardPermissions(options.props as cxschema.QuickSightDashboardContextQuery) };
+      break;
+
+    default:
+      throw Error;
+  }
+
+  return result;
 };
-
-jest.mock('aws-sdk', () => {
-  return {
-    QuickSight: jest.fn(() => mockQuickSight),
-    config: { logger: '' },
-  };
-});
-
-import { QuickSight, AWSError } from 'aws-sdk';

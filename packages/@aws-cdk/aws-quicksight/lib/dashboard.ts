@@ -274,10 +274,8 @@ export class Dashboard extends Resource {
         let tags: Tag[] = [];
 
         if (this.dashboardTags) {
-          this.dashboardTags.forEach(function(value: any) {
-            if (value.Key && value.Value) {
-              tags.push(new Tag(value.Key, value.Value));
-            }
+          this.dashboardTags.forEach(function(value) {
+            tags.push(new Tag(value.key, value.value));
           });
         }
 
@@ -288,9 +286,7 @@ export class Dashboard extends Resource {
         return this.dashboard.arn ?? '';
       }
 
-      public get resourceId(): string {
-        return this.dashboard.dashboardId ?? '';
-      }
+      public resourceId = this.dashboard.dashboardId ?? '';
 
       // Dashboard specific properties
       public readonly parameters = undefined;
@@ -305,7 +301,7 @@ export class Dashboard extends Resource {
         if (!this._dataSets) {
           let dataSets: IDataSet[] = [];
 
-          this.dashboard.version?.dataSetArns?.forEach(function (value: any) {
+          this.dashboard.version?.dataSetArns?.forEach(function (value) {
             let dataSetId: string = value.split('/')[1];
             dataSets.push(DataSet.fromId(scope, dataSetId, dataSetId));
           });

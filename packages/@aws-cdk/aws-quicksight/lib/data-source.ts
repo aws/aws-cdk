@@ -278,7 +278,7 @@ export class DataSource extends Resource {
           };
 
           this._dataSource = ContextProvider.getValue(scope, {
-            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER,
+            provider: cxschema.ContextProvider.QUICKSIGHT_DATA_SOURCE_PROVIDER,
             props: contextProps,
             dummyValue: undefined,
           }).value;
@@ -302,7 +302,7 @@ export class DataSource extends Resource {
           };
 
           this._dataSourcePermissions = ContextProvider.getValue(scope, {
-            provider: cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER,
+            provider: cxschema.ContextProvider.QUICKSIGHT_DATA_SOURCE_PERMISSIONS_PROVIDER,
             props: contextProps,
             dummyValue: [],
           }).value;
@@ -344,9 +344,7 @@ export class DataSource extends Resource {
       public readonly dataSourceStatus = '';
       public readonly credentials = undefined;
 
-      public get resourceId() {
-        return this.dataSource.dataSourceId ?? '';
-      }
+      public resourceId = this.dataSource.dataSourceId ?? '';
 
       public get dataSourceName() {
         return this.dataSource.name;
@@ -360,10 +358,8 @@ export class DataSource extends Resource {
         let tags: Tag[] = [];
 
         if (this.dataSourceTags) {
-          this.dataSourceTags.forEach(function(value: any) {
-            if (value.Key && value.Value) {
-              tags.push(new Tag(value.Key, value.Value));
-            }
+          this.dataSourceTags.forEach(function(value) {
+            tags.push(new Tag(value.key, value.value));
           });
         }
 

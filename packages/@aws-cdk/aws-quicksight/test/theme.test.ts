@@ -1,16 +1,11 @@
 // eslint-disable-next-line import/order
 import * as Mock from './mock';
 
-jest.mock('aws-sdk', () => {
-  return {
-    QuickSight: jest.fn(() => Mock.mockQuickSight),
-    config: { logger: '' },
-  };
-});
-
 // eslint-disable-next-line import/order
-import { Stack } from '@aws-cdk/core';
+import { Stack, ContextProvider } from '@aws-cdk/core';
 import { CfnTheme, Theme } from '../lib';
+
+ContextProvider.getValue = Mock.mockGetValue;
 
 // INTERFACE CHECKERS
 function instanceOfDataColorPaletteProperty(o: any): o is CfnTheme.DataColorPaletteProperty {
@@ -51,6 +46,7 @@ describe('analysis', () => {
     expect(theme.baseTheme?.resourceId).toBe(Mock.MANAGED_THEME);
     expect(theme.permissions?.[0].principal).toBe('ThemePermissionsPrincipal');
     expect(theme.tags?.[0].key).toBe('ResourceArn');
+    expect(theme.versionDescription).toBe('Description');
     if (instanceOfDataColorPaletteProperty(theme.configuration?.dataColorPalette)) {
       expect(theme.configuration?.dataColorPalette?.emptyFillColor).toBe('EmptyFillColor');
     }
@@ -109,5 +105,20 @@ describe('analysis', () => {
     // THEN
     expect(theme.resourceId).toBe('TestId');
     expect(theme.themeArn).toContain('arn');
+  });
+
+  test('resource not found', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: Mock.NOT_FOUND,
+      },
+    });
+
+    // THEN
+    expect(() => {
+      Theme.fromId(stack, 'ImportedTheme', 'test');
+    }).toThrow(Error); // TODO Make this a better error.
   });
 });

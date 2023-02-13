@@ -1,21 +1,16 @@
 // eslint-disable-next-line import/order
 import * as Mock from './mock';
 
-jest.mock('aws-sdk', () => {
-  return {
-    QuickSight: jest.fn(() => Mock.mockQuickSight),
-    config: { logger: '' },
-  };
-});
-
 // eslint-disable-next-line import/order
-import { Stack } from '@aws-cdk/core';
+import { Stack, ContextProvider } from '@aws-cdk/core';
 import { Analysis, DataSet, Template } from '../lib';
+
+ContextProvider.getValue = Mock.mockGetValue;
 
 describe('analysis', () => {
 
   let oldConsoleLog: any;
-  let logEnabled: boolean = false;
+  let logEnabled: boolean = true;
 
   beforeAll(() => {
     if (!logEnabled) {
@@ -133,5 +128,36 @@ describe('analysis', () => {
         dataSets: [dataSet, dataSet],
       });
     }).toThrow(Error); // TODO Make this a better error.
+  });
+
+  test('resource not found', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: Mock.NOT_FOUND,
+      },
+    });
+
+    // THEN
+    expect(() => {
+      Analysis.fromId(stack, 'ImportedAnalysis', 'test');
+    }).toThrow(Error(`No Analysis found in account 0123456789 and region ${Mock.NOT_FOUND} with id test`)); // TODO Make this a better error.
+  });
+
+  test('no permissions', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: Mock.NO_PERMISSIONS,
+      },
+    });
+
+    // WHEN
+    let analysis = Analysis.fromId(stack, 'ImportedAnalysis', 'test');
+
+    // THEN
+    expect(analysis.permissions?.length).toBe(0);
   });
 });

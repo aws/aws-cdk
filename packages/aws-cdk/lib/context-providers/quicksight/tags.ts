@@ -9,7 +9,7 @@ export class QuickSightTagsContextProviderPlugin implements ContextProviderPlugi
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(args: cxschema.QuickSightTagsContextQuery): Promise<cxapi.QuickSightContextResponse.TagList> {
+  public async getValue(args: cxschema.QuickSightTagsContextQuery): Promise<cxapi.QuickSightContextResponse.TagList> {
 
     const options = { assumeRoleArn: args.lookupRoleArn };
 
