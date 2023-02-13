@@ -283,9 +283,13 @@ export class Cluster extends Resource implements ICluster {
       throw new Error('Cluster default capacity provider strategy is already set.');
     }
 
+    if (defaultCapacityProviderStrategy.some(dcp => dcp.capacityProvider.includes('FARGATE')) && defaultCapacityProviderStrategy.some(dcp => !dcp.capacityProvider.includes('FARGATE'))) {
+      throw new Error('A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again.');
+    }
+
     defaultCapacityProviderStrategy.forEach(dcp => {
       if (!this._capacityProviderNames.includes(dcp.capacityProvider)) {
-        throw new Error(`Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider before it can be used in a default capacity provider strategy.`);
+        throw new Error(`Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.`);
       }
     });
 
@@ -370,7 +374,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Getter for _defaultCapacityProviderStrategyadded to cluster
+   * Getter for _defaultCapacityProviderStrategy. This is necessary to correctly create Capacity Provider Assocaitions.
    */
   public get defaultCapacityProviderStrategy() {
     return this._defaultCapacityProviderStrategy;

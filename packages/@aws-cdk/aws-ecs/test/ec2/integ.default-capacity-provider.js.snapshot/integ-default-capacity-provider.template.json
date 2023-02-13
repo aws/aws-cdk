@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc"
+      "Value": "integ-default-capacity-provider/Vpc"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PublicSubnet1"
+      "Value": "integ-default-capacity-provider/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PublicSubnet1"
+      "Value": "integ-default-capacity-provider/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PublicSubnet1"
+      "Value": "integ-default-capacity-provider/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PublicSubnet1"
+      "Value": "integ-default-capacity-provider/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -150,7 +150,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PublicSubnet2"
+      "Value": "integ-default-capacity-provider/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -164,7 +164,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PublicSubnet2"
+      "Value": "integ-default-capacity-provider/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PublicSubnet2"
+      "Value": "integ-default-capacity-provider/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PublicSubnet2"
+      "Value": "integ-default-capacity-provider/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -258,7 +258,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PrivateSubnet1"
+      "Value": "integ-default-capacity-provider/Vpc/PrivateSubnet1"
      }
     ]
    }
@@ -272,7 +272,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PrivateSubnet1"
+      "Value": "integ-default-capacity-provider/Vpc/PrivateSubnet1"
      }
     ]
    }
@@ -327,7 +327,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PrivateSubnet2"
+      "Value": "integ-default-capacity-provider/Vpc/PrivateSubnet2"
      }
     ]
    }
@@ -341,7 +341,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc/PrivateSubnet2"
+      "Value": "integ-default-capacity-provider/Vpc/PrivateSubnet2"
      }
     ]
    }
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/Vpc"
+      "Value": "integ-default-capacity-provider/Vpc"
      }
     ]
    }
@@ -419,7 +419,7 @@
       "Name": "web"
      }
     ],
-    "Family": "integec2capacityproviderTaskDefA6140A6B",
+    "Family": "integdefaultcapacityproviderTaskDefE3B336CC",
     "NetworkMode": "bridge",
     "RequiresCompatibilities": [
      "EC2"
@@ -435,7 +435,7 @@
   "ASGInstanceSecurityGroup0525485D": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-ec2-capacity-provider/ASG/InstanceSecurityGroup",
+    "GroupDescription": "integ-default-capacity-provider/ASG/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -446,7 +446,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/ASG"
+      "Value": "integ-default-capacity-provider/ASG"
      }
     ],
     "VpcId": {
@@ -472,7 +472,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/ASG"
+      "Value": "integ-default-capacity-provider/ASG"
      }
     ]
    }
@@ -595,7 +595,7 @@
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "integ-ec2-capacity-provider/ASG"
+      "Value": "integ-default-capacity-provider/ASG"
      }
     ],
     "VPCZoneIdentifier": [
@@ -645,7 +645,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/ASG"
+      "Value": "integ-default-capacity-provider/ASG"
      }
     ]
    }
@@ -761,7 +761,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/ASG"
+      "Value": "integ-default-capacity-provider/ASG"
      }
     ],
     "Timeout": 310
@@ -771,7 +771,7 @@
     "ASGDrainECSHookFunctionServiceRoleC12963BB"
    ]
   },
-  "ASGDrainECSHookFunctionAllowInvokeintegec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C1EB63E78F": {
+  "ASGDrainECSHookFunctionAllowInvokeintegdefaultcapacityproviderASGLifecycleHookDrainHookTopicB8CF8925702E570F": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -808,7 +808,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/ASG"
+      "Value": "integ-default-capacity-provider/ASG"
      }
     ]
    }
@@ -831,7 +831,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-capacity-provider/ASG"
+      "Value": "integ-default-capacity-provider/ASG"
      }
     ]
    }
@@ -921,7 +921,8 @@
       "Weight": 1
      },
      {
-      "CapacityProvider": "FARGATE_SPOT"
+      "CapacityProvider": "FARGATE_SPOT",
+      "Weight": 1
      }
     ]
    }

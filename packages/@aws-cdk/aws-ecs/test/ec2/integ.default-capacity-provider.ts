@@ -5,7 +5,7 @@ import * as integ from '@aws-cdk/integ-tests';
 import * as ecs from '../../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-ec2-capacity-provider');
+const stack = new cdk.Stack(app, 'integ-default-capacity-provider');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
@@ -36,7 +36,7 @@ const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {
 cluster.addAsgCapacityProvider(cp);
 cluster.addDefaultCapacityProviderStrategy([
   { capacityProvider: 'FARGATE', base: 1, weight: 1 },
-  { capacityProvider: 'FARGATE_SPOT' },
+  { capacityProvider: 'FARGATE_SPOT', weight: 1 },
 ]);
 
 

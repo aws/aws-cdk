@@ -3,7 +3,7 @@
   "testCases": {
     "CapacityProviders/DefaultTest": {
       "stacks": [
-        "integ-ec2-capacity-provider"
+        "integ-default-capacity-provider"
       ],
       "assertionStack": "CapacityProviders/DefaultTest/DeployAssert",
       "assertionStackName": "CapacityProvidersDefaultTestDeployAssert30F9785A"
