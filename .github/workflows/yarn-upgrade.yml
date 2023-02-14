@@ -37,7 +37,7 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Install Tools
         run: |-
-          npm -g install lerna npm-check-updates@^9.0.0
+          npm -g install lerna js-yaml npm-check-updates@^9.0.0
       - name: Build Integ Runner
         run: lerna run build --scope @aws-cdk/integ-runner --include-dependencies
       - name: List Mono-Repo Packages
