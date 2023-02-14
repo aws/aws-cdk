@@ -59,6 +59,9 @@
       "Arn"
      ]
     },
+    "AlarmConfiguration": {
+     "Enabled": false
+    },
     "AutoRollbackConfiguration": {
      "Enabled": true,
      "Events": [
