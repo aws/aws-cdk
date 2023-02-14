@@ -52,3 +52,8 @@ allows you to customize the maximum number of retries and base backoff duration.
 resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) is added
 to the stack that pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the
 correct log retention period (never expire, by default).
+
+## Guardrails
+
+By default slack channel will use `AdministratorAccess` managed policy as guardrail policy.
+The `guardrailPolicies` property can be used to set a different set of managed policies.
