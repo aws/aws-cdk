@@ -1,5 +1,6 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -12,7 +13,8 @@ import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
-import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
+import { CfnService } from '../../lib';
+import { AlarmBehavior, DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 import { addDefaultCapacityProvider } from '../util';
 
@@ -1262,7 +1264,113 @@ describe('ec2 service', () => {
       // THEN
       expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
+    });
 
+    test('add alarm config wjile service is constructed if deploymentAlarms config is specified with no behavior', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.EXTERNAL,
+        },
+        deploymentAlarms: {
+          alarms: [myAlarm],
+        },
+      });
+
+      // THEN
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      const config = (service.node.defaultChild as CfnService).deploymentConfiguration as CfnService.DeploymentConfigurationProperty;
+      const alarms = config.alarms as CfnService.DeploymentAlarmsProperty;
+      expect(alarms.enable).toBe(true);
+      expect(alarms.rollback).toBe(true);
+      expect(alarms.alarmNames).toEqual([myAlarm.alarmName]);
+    });
+
+    test('add alarm config wjile service is constructed if deploymentAlarms config is specified with rollback behavior', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.EXTERNAL,
+        },
+        deploymentAlarms: {
+          alarms: [myAlarm],
+          behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
+        },
+      });
+
+      // THEN
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      const config = (service.node.defaultChild as CfnService).deploymentConfiguration as CfnService.DeploymentConfigurationProperty;
+      const alarms = config.alarms as CfnService.DeploymentAlarmsProperty;
+      expect(alarms.enable).toBe(true);
+      expect(alarms.rollback).toBe(true);
+      expect(alarms.alarmNames).toEqual([myAlarm.alarmName]);
+    });
+
+    test('add alarm config wjile service is constructed if deploymentAlarms config is specified with failed behavior', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.EXTERNAL,
+        },
+        deploymentAlarms: {
+          alarms: [myAlarm],
+          behavior: AlarmBehavior.FAIL_ON_ALARM,
+        },
+      });
+
+      // THEN
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      const config = (service.node.defaultChild as CfnService).deploymentConfiguration as CfnService.DeploymentConfigurationProperty;
+      const alarms = config.alarms as CfnService.DeploymentAlarmsProperty;
+      expect(alarms.enable).toBe(true);
+      expect(alarms.rollback).toBe(false);
+      expect(alarms.alarmNames).toEqual([myAlarm.alarmName]);
     });
 
     test('errors if daemon and desiredCount both specified', () => {

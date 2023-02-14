@@ -1,5 +1,6 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { IAlarm } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -66,6 +67,39 @@ export interface DeploymentCircuitBreaker {
    * @default false
    */
   readonly rollback?: boolean;
+}
+
+/**
+ * Alarm behavior of an ECS service
+ */
+export enum AlarmBehavior {
+  /**
+   * ROLLBACK_ON_ALARM causes the service to roll back to the previous deployment
+   * when any configured alarm is in the 'Alarm' state. The Cloudformation stack
+   * will be rolled back and enter state "UPDATE_ROLLBACK_COMPLETE".
+   */
+  ROLLBACK_ON_ALARM = 0,
+  /**
+   * FAIL_ON_ALARM causes the deployment to fail immediately. In order to restore
+   * functionality, you must roll the stack forward by pushing a new version of the
+   * ECS service.
+   */
+  FAIL_ON_ALARM = 1,
+}
+
+/**
+ * The deployment alarms to use for the service
+ */
+export interface DeploymentAlarmConfig {
+  /**
+   * Default rollback on alarm
+   * @default AlarmBehavior.ROLLBACK_ON_ALARM
+   */
+  readonly behavior?: AlarmBehavior;
+  /**
+   * List of alarms
+   */
+  readonly alarms: IAlarm[];
 }
 
 export interface EcsTarget {
@@ -272,6 +306,13 @@ export interface BaseServiceOptions {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * Whether to enable the deployment alarms. If this property is defined, alarms will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly deploymentAlarms?: DeploymentAlarmConfig;
 
   /**
    * A list of Capacity Provider strategies used to place a service.
@@ -545,6 +586,11 @@ export abstract class BaseService extends Resource
         deploymentCircuitBreaker: props.circuitBreaker ? {
           enable: true,
           rollback: props.circuitBreaker.rollback ?? false,
+        } : undefined,
+        alarms: props.deploymentAlarms ? {
+          alarmNames: props.deploymentAlarms.alarms.map(alarm => alarm.alarmName),
+          enable: true,
+          rollback: props.deploymentAlarms.behavior ? props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM : true,
         } : undefined,
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
