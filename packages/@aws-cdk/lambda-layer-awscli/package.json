@@ -91,7 +91,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/asset-awscli-v1": "^2.2.52",
+    "@aws-cdk/asset-awscli-v1": "^2.2.67",
     "constructs": "^10.0.0"
   },
   "engines": {
