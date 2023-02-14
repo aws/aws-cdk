@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as iam from '../lib';
 
 class TestStack extends cdk.Stack {
@@ -16,6 +17,8 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new TestStack(app, 'iam-integ-composite-principal');
+new IntegTest(app, 'iam-integ-composite-principal-test', {
+  testCases: [new TestStack(app, 'iam-integ-composite-principal')],
+});
 
 app.synth();
