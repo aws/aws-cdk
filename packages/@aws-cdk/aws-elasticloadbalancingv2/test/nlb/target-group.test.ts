@@ -135,13 +135,13 @@ describe('tests', () => {
       vpc,
       port: 80,
       healthCheck: {
-        interval: cdk.Duration.seconds(5),
+        interval: cdk.Duration.seconds(3),
       },
     });
 
     expect(() => {
       app.synth();
-    }).toThrow(/Health check interval '5' not supported. Must be one of the following values '10,30'./);
+    }).toThrow(/Health check interval '3' not supported. Must be between 5 and 300./);
   });
 
   test('targetGroupName unallowed: more than 32 characters', () => {
