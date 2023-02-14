@@ -609,4 +609,38 @@ describe('tests', () => {
       },
     });
   });
+
+  test('imported targetGroup has metrics', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+      loadBalancerArns: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/73e2d6bc24d8a067',
+    });
+
+    const metric = targetGroup.metrics.custom('MetricName');
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/ApplicationELB');
+    expect(stack.resolve(metric.dimensions)).toEqual({
+      LoadBalancer: 'app/my-load-balancer/73e2d6bc24d8a067',
+      TargetGroup: 'targetgroup/my-target-group/50dc6c495c0c9188',
+    });
+  });
+
+  test('imported targetGroup without load balancer cannot have metrics', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+    });
+
+    expect(() => targetGroup.metrics.custom('MetricName')).toThrow();
+  });
 });

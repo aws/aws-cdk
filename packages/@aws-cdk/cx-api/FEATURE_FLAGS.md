@@ -43,6 +43,7 @@ Flags come in three types:
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.59.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
+| [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | V2NEXT | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | V2NEXT | (fix) |
 
 <!-- END table -->
@@ -78,7 +79,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
     "@aws-cdk/aws-route53-patters:useCertificate": true,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
-    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true
+    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
+    "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true
   }
 }
 ```
@@ -778,6 +780,21 @@ flag on a resource-by-resource basis to enable it if necessary.
 | 2.60.0 | `false` | `false` |
 
 **Compatibility with old behavior:** Set installLatestAwsSdk: true on all resources that need it.
+
+
+### @aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup
+
+*Remove CloudWatch alarms from deployment group* (fix)
+
+Enable this flag to be able to remove all CloudWatch alarms from a deployment group by removing
+the alarms from the construct. If this flag is not set, removing all alarms from the construct
+will still leave the alarms configured for the deployment group.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/aws-rds:databaseProxyUniqueResourceName
