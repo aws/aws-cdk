@@ -1,5 +1,6 @@
 import * as cognito from '@aws-cdk/aws-cognito';
-import { Duration, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Duration, FeatureFlags, Lazy, Names, Stack } from '@aws-cdk/core';
+import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
@@ -104,8 +105,10 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
 
     this.restApiId = restApi.restApiId;
 
+    const addToLogicalId = FeatureFlags.of(this).isEnabled(APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID);
+
     const deployment = restApi.latestDeployment;
-    if (deployment) {
+    if (deployment && addToLogicalId) {
       deployment.node.addDependency(this);
       deployment.addToLogicalId({
         authorizer: this.authorizerProps,

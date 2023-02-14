@@ -525,8 +525,9 @@ describe('lambda authorizer', () => {
     expect(() => stack.resolve(auth.authorizerArn)).toThrow(/must be attached to a RestApi/);
   });
 
-  test('rest api depends on the token authorizer', () => {
+  test('rest api depends on the token authorizer when @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
     const stack = new Stack();
+    stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
 
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -552,8 +553,9 @@ describe('lambda authorizer', () => {
     expect(deployment.DependsOn).toEqual(expect.arrayContaining([authorizerId]));
   });
 
-  test('rest api depends on the request authorizer', () => {
+  test('rest api depends on the request authorizer when @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
     const stack = new Stack();
+    stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
 
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -581,9 +583,10 @@ describe('lambda authorizer', () => {
     expect(deployment.DependsOn).toEqual(expect.arrayContaining([authorizerId]));
   });
 
-  test('a new deployment is created when a lambda function changes name', () => {
+  test('a new deployment is created when a lambda function changes name and @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
     const createApiTemplate = (lambdaFunctionName: string) => {
       const stack = new Stack();
+      stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
 
       const func = new lambda.Function(stack, 'myfunction', {
         handler: 'handler',

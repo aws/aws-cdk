@@ -64,8 +64,9 @@ describe('Cognito Authorizer', () => {
     expect(authorizer.authorizerArn.endsWith(`/authorizers/${authorizer.authorizerId}`)).toBeTruthy();
   });
 
-  test('rest api depends on the authorizer', () => {
+  test('rest api depends on the authorizer when @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
     const stack = new Stack();
+    stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
     const userPool1 = new cognito.UserPool(stack, 'UserPool');
 
     const authorizer = new CognitoUserPoolsAuthorizer(stack, 'Authorizer', {
@@ -87,9 +88,10 @@ describe('Cognito Authorizer', () => {
     expect(deployment.DependsOn).toEqual(expect.arrayContaining([authorizerId]));
   });
 
-  test('a new deployment is created when a cognito user pool is re-created', () => {
+  test('a new deployment is created when a cognito user pool is re-created and @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
     const createApiTemplate = (userPoolId: string) => {
       const stack = new Stack();
+      stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
 
       const userPool = new cognito.UserPool(stack, userPoolId);
 
