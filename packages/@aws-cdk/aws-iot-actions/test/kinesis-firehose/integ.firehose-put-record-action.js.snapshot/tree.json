@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.129"
-        }
-      },
       "test-stack": {
         "id": "test-stack",
         "path": "test-stack",
@@ -58,6 +50,14 @@
                 "id": "TopicRuleActionRole",
                 "path": "test-stack/TopicRule/TopicRuleActionRole",
                 "children": {
+                  "ImportTopicRuleActionRole": {
+                    "id": "ImportTopicRuleActionRole",
+                    "path": "test-stack/TopicRule/TopicRuleActionRole/ImportTopicRuleActionRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "test-stack/TopicRule/TopicRuleActionRole/Resource",
@@ -172,6 +172,14 @@
                 "id": "Service Role",
                 "path": "test-stack/MyStream/Service Role",
                 "children": {
+                  "ImportService Role": {
+                    "id": "ImportService Role",
+                    "path": "test-stack/MyStream/Service Role/ImportService Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "test-stack/MyStream/Service Role/Resource",
@@ -207,6 +215,14 @@
                 "id": "S3 Destination Role",
                 "path": "test-stack/MyStream/S3 Destination Role",
                 "children": {
+                  "ImportS3 Destination Role": {
+                    "id": "ImportS3 Destination Role",
+                    "path": "test-stack/MyStream/S3 Destination Role/ImportS3 Destination Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "test-stack/MyStream/S3 Destination Role/Resource",
@@ -422,11 +438,35 @@
               "fqn": "@aws-cdk/core.CfnMapping",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "test-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "test-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.237"
         }
       }
     },
