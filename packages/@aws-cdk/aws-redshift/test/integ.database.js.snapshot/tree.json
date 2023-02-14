@@ -1228,7 +1228,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.235"
+                  "version": "10.1.209"
                 }
               },
               "TablePrivileges": {
@@ -1470,13 +1470,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.235"
+                      "version": "10.1.209"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.235"
+                  "version": "10.1.209"
                 }
               }
             },
@@ -1639,7 +1639,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "847e15feeb180b356ab9a8094d8b9459ea8ec26fc27957794d583ed9eb3a79d8.zip"
+                      "s3Key": "ab58b1384030fef0fc8663c06f6fd62196fb3ae8807ab82e4559967d3b885b08.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1902,7 +1902,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.235"
+                  "version": "10.1.209"
                 }
               }
             },
@@ -1946,7 +1946,7 @@
                 "path": "redshift-cluster-database-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.235"
+                  "version": "10.1.209"
                 }
               },
               "DeployAssert": {
@@ -1992,7 +1992,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.235"
+          "version": "10.1.209"
         }
       }
     },

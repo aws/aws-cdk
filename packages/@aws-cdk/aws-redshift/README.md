@@ -200,32 +200,17 @@ new Table(this, 'Table', {
 });
 ```
 
-Tables and their respective columns can be configured to contain comments:
+Tables can also be configured with a comment:
 
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', comment: 'This is a column comment' }, 
-    { name: 'col2', dataType: 'float', comment: 'This is a another column comment' }
+    { name: 'col1', dataType: 'varchar(4)' }, 
+    { name: 'col2', dataType: 'float' }
   ],
   cluster: cluster,
   databaseName: 'databaseName',
-  tableComment: 'This is a table comment',
-});
-```
-
-Table columns can be configured to use a specific compression encoding:
-
-```ts fixture=cluster
-import { ColumnEncoding } from '@aws-cdk/aws-redshift';
-
-new Table(this, 'Table', {
-  tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', encoding: ColumnEncoding.TEXT32K },
-    { name: 'col2', dataType: 'float', encoding: ColumnEncoding.DELTA32K },
-  ],
-  cluster: cluster,
-  databaseName: 'databaseName',
+  comment: 'This is a comment',
 });
 ```
 
@@ -432,8 +417,6 @@ Some Amazon Redshift features require Amazon Redshift to access other AWS servic
 When you create an IAM role and set it as the default for the cluster using console, you don't have to provide the IAM role's Amazon Resource Name (ARN) to perform authentication and authorization.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
 declare const vpc: ec2.Vpc;
 
 const defaultRole = new iam.Role(this, 'DefaultRole', {
@@ -441,7 +424,7 @@ const defaultRole = new iam.Role(this, 'DefaultRole', {
 },
 );
 
-new Cluster(this, 'Redshift', {
+new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },
@@ -454,8 +437,6 @@ new Cluster(this, 'Redshift', {
 A default role can also be added to a cluster using the `addDefaultIamRole` method.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
 declare const vpc: ec2.Vpc;
 
 const defaultRole = new iam.Role(this, 'DefaultRole', {
@@ -463,7 +444,7 @@ const defaultRole = new iam.Role(this, 'DefaultRole', {
 },
 );
 
-const redshiftCluster = new Cluster(this, 'Redshift', {
+const redshiftCluster = new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },

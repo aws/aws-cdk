@@ -3,7 +3,6 @@ import { Construct, IConstruct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
-import { ColumnEncoding } from './private/database-query-provider';
 import { HandlerName } from './private/database-query-provider/handler-name';
 import { getDistKeyColumn, getSortKeyColumns } from './private/database-query-provider/util';
 import { TableHandlerProps } from './private/handler-props';
@@ -80,20 +79,6 @@ export interface Column {
    * @default - column is not a SORTKEY
    */
   readonly sortKey?: boolean;
-
-  /**
-   * The encoding to use for the column.
-   *
-   * @default - Amazon Redshift determines the encoding based on the data type.
-   */
-  readonly encoding?: ColumnEncoding;
-
-  /**
-   * A comment to attach to the column.
-   *
-   * @default - no comment
-   */
-  readonly comment?: string;
 }
 
 /**
@@ -359,5 +344,3 @@ export enum TableSortStyle {
    */
   INTERLEAVED = 'INTERLEAVED',
 }
-
-export { ColumnEncoding } from './private/database-query-provider';
