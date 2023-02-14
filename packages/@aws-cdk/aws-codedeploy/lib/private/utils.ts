@@ -31,13 +31,23 @@ export function arnForDeploymentConfig(name: string, resource?: IResource): stri
   });
 }
 
-export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure?: boolean):
-CfnDeploymentGroup.AlarmConfigurationProperty {
-  return {
-    alarms: alarms.length > 0 ? alarms.map(a => ({ name: a.alarmName })) : undefined,
-    enabled: alarms.length > 0,
-    ignorePollAlarmFailure,
-  };
+export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure: boolean | undefined, removeAlarms = true):
+CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
+  if (removeAlarms) {
+    return {
+      alarms: alarms.length > 0 ? alarms.map(a => ({ name: a.alarmName })) : undefined,
+      enabled: alarms.length > 0,
+      ignorePollAlarmFailure,
+    };
+  }
+
+  return alarms.length === 0
+    ? undefined
+    : {
+      alarms: alarms.map(a => ({ name: a.alarmName })),
+      enabled: true,
+      ignorePollAlarmFailure,
+    };
 }
 
 export function deploymentConfig(name: string): IBaseDeploymentConfig & IPredefinedDeploymentConfig {

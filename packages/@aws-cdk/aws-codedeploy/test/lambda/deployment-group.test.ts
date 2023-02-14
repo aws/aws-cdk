@@ -26,6 +26,7 @@ function mockAlias(stack: cdk.Stack) {
 describe('CodeDeploy Lambda DeploymentGroup', () => {
   test('can be created with default AllAtOnce IN_PLACE configuration', () => {
     const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup', true);
     const application = new codedeploy.LambdaApplication(stack, 'MyApp');
     const alias = mockAlias(stack);
     new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
