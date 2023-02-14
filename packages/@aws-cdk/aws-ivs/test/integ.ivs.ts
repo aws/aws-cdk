@@ -1,4 +1,5 @@
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as ivs from '../lib';
 
 /*
@@ -40,5 +41,9 @@ const streamKey = new ivs.StreamKey(stack, 'StreamKey', {
 new CfnOutput(stack, 'PlaybackKeyPairArn', { value: keypair.playbackKeyPairArn });
 new CfnOutput(stack, 'ChannelArn', { value: channel.channelArn });
 new CfnOutput(stack, 'StreamKeyArn', { value: streamKey.streamKeyArn });
+
+new IntegTest(app, 'ivs-test', {
+  testCases: [stack],
+});
 
 app.synth();
