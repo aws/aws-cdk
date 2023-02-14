@@ -158,7 +158,7 @@ listener.addAction('Fixed', {
     elbv2.ListenerCondition.pathPatterns(['/ok']),
   ],
   action: elbv2.ListenerAction.fixedResponse(200, {
-    contentType: elbv2.ContentType.TEXT_PLAIN,
+    contentType: 'text/plain',
     messageBody: 'OK',
   })
 });
