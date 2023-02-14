@@ -1,14 +1,20 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "testCases": {
-    "integ.proxy": {
+    "database-proxy-integ-test/DefaultTest": {
       "stacks": [
         "aws-cdk-rds-proxy"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "database-proxy-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "databaseproxyintegtestDefaultTestDeployAssert1DC3D9D5"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
