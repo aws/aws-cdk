@@ -12,9 +12,10 @@ const CFN_CONTEXT = {
   'AWS::URLSuffix': 'domain.aws',
 };
 
-let app: App;
-let stack: Stack;
 describe('new style synthesis', () => {
+  let app: App;
+  let stack: Stack;
+
   beforeEach(() => {
     app = new App({
       context: {
@@ -222,6 +223,27 @@ describe('new style synthesis', () => {
 
   });
 
+  test('dockerBuildArgs or dockerBuildSecrets without directoryName', () => {
+    // WHEN
+    expect(() => {
+      stack.synthesizer.addDockerImageAsset({
+        sourceHash: 'abcdef',
+        dockerBuildArgs: {
+          ABC: '123',
+        },
+      });
+    }).toThrowError(/Exactly one of 'directoryName' or 'executable' is required/);
+
+    expect(() => {
+      stack.synthesizer.addDockerImageAsset({
+        sourceHash: 'abcdef',
+        dockerBuildSecrets: {
+          DEF: '456',
+        },
+      });
+    }).toThrowError(/Exactly one of 'directoryName' or 'executable' is required/);
+  });
+
   test('synthesis', () => {
     // GIVEN
     stack.synthesizer.addFileAsset({
@@ -400,17 +422,64 @@ describe('new style synthesis', () => {
     expect(imageTag).toEqual('test-prefix-docker-asset-hash');
   });
 
-  test('cannot use same synthesizer for multiple stacks', () => {
+  test('can use same synthesizer for multiple stacks', () => {
     // GIVEN
-    const synthesizer = new DefaultStackSynthesizer();
+    const synthesizer = new DefaultStackSynthesizer({
+      bootstrapStackVersionSsmParameter: 'bleep',
+    });
 
     // WHEN
-    new Stack(app, 'Stack2', { synthesizer });
-    expect(() => {
-      new Stack(app, 'Stack3', { synthesizer });
-    }).toThrow(/A StackSynthesizer can only be used for one Stack/);
+    const stack1 = new Stack(app, 'Stack1', { synthesizer });
+    const stack2 = new Stack(app, 'Stack2', { synthesizer });
 
+    // THEN
+    const asm = app.synth();
+    for (const st of [stack1, stack2]) {
+      const tpl = asm.getStackByName(st.stackName).template;
+      expect(tpl).toEqual(expect.objectContaining({
+        Parameters: expect.objectContaining({
+          BootstrapVersion: expect.objectContaining({
+            Default: 'bleep', // Assert that the settings have been applied
+          }),
+        }),
+      }));
+    }
   });
+
+  /**
+   * Evaluate a possibly string-containing value the same way CFN would do
+   *
+   * (Be invariant to the specific Fn::Sub or Fn::Join we would output)
+   */
+  function evalCFN(value: any) {
+    return evaluateCFN(stack.resolve(value), CFN_CONTEXT);
+  }
+});
+
+test('can specify synthesizer at the app level', () => {
+  // GIVEN
+  const app = new App({
+    defaultStackSynthesizer: new DefaultStackSynthesizer({
+      bootstrapStackVersionSsmParameter: 'bleep',
+    }),
+  });
+
+  // WHEN
+  const stack1 = new Stack(app, 'Stack1');
+  const stack2 = new Stack(app, 'Stack2');
+
+  // THEN
+  const asm = app.synth();
+  for (const st of [stack1, stack2]) {
+    const tpl = asm.getStackByName(st.stackName).template;
+    expect(tpl).toEqual(expect.objectContaining({
+      Parameters: expect.objectContaining({
+        BootstrapVersion: expect.objectContaining({
+          Default: 'bleep', // Assert that the settings have been applied
+        }),
+      }),
+    }));
+  }
 });
 
 test('get an exception when using tokens for parameters', () => {
@@ -421,15 +490,6 @@ test('get an exception when using tokens for parameters', () => {
     });
   }).toThrow(/cannot contain tokens/);
 });
-
-/**
- * Evaluate a possibly string-containing value the same way CFN would do
- *
- * (Be invariant to the specific Fn::Sub or Fn::Join we would output)
- */
-function evalCFN(value: any) {
-  return evaluateCFN(stack.resolve(value), CFN_CONTEXT);
-}
 
 function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {
   return x instanceof cxapi.AssetManifestArtifact;

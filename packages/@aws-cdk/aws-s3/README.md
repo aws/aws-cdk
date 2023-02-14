@@ -619,3 +619,35 @@ pass a `TransitionTime` object. There are two mutually exclusive ways to specify
 this time: by providing an absolute point in time (`TransitionTime.at()`) or by
 a providing the time elapsed since the creation of the object
 (`TransitionTime.after())`).
+## Object Lock Configuration
+
+[Object Lock](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html)
+can be configured to enable a write-once-read-many model for an S3 bucket. Object Lock must be
+configured when a bucket is created; if a bucket is created without Object Lock, it cannot be
+enabled later via the CDK.
+
+Object Lock can be enabled on an S3 bucket by specifying:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  objectLockEnabled: true
+});
+```
+
+Usually, it is desired to not just enable Object Lock for a bucket but to also configure a
+[retention mode](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes)
+and a [retention period](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-periods).
+These can be specified by providing `objectLockDefaultRetention`:
+
+```ts
+// Configure for governance mode with a duration of 7 years
+new s3.Bucket(this, 'Bucket1', {
+  objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(7 * 365)),
+});
+
+// Configure for compliance mode with a duration of 1 year
+new s3.Bucket(this, 'Bucket2', {
+  objectLockDefaultRetention: s3.ObjectLockRetention.compliance(cdk.Duration.days(365)),
+});
+
+```

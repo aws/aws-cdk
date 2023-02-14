@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.129"
-        }
-      },
       "aws-cdk-firehose-delivery-stream": {
         "id": "aws-cdk-firehose-delivery-stream",
         "path": "aws-cdk-firehose-delivery-stream",
@@ -42,6 +34,14 @@
             "id": "Role",
             "path": "aws-cdk-firehose-delivery-stream/Role",
             "children": {
+              "ImportRole": {
+                "id": "ImportRole",
+                "path": "aws-cdk-firehose-delivery-stream/Role/ImportRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-firehose-delivery-stream/Role/Resource",
@@ -203,6 +203,14 @@
                 "id": "Service Role",
                 "path": "aws-cdk-firehose-delivery-stream/Delivery Stream/Service Role",
                 "children": {
+                  "ImportService Role": {
+                    "id": "ImportService Role",
+                    "path": "aws-cdk-firehose-delivery-stream/Delivery Stream/Service Role/ImportService Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-firehose-delivery-stream/Delivery Stream/Service Role/Resource",
@@ -333,11 +341,35 @@
               "fqn": "@aws-cdk/core.CfnMapping",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-firehose-delivery-stream/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-firehose-delivery-stream/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.237"
         }
       }
     },

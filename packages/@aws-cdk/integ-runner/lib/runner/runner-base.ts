@@ -33,7 +33,7 @@ export interface IntegRunnerOptions {
    *
    * @default - no additional environment variables
    */
-  readonly env?: { [name: string]: string },
+  readonly env?: { [name: string]: string | undefined },
 
   /**
    * tmp cdk.out directory
@@ -191,7 +191,11 @@ export abstract class IntegRunner {
       },
       output: path.relative(this.directory, this.cdkOutDir),
     });
-    return this.loadManifest(this.cdkOutDir);
+    const manifest = this.loadManifest(this.cdkOutDir);
+    // after we load the manifest remove the tmp snapshot
+    // so that it doesn't mess up the real snapshot created later
+    this.cleanup();
+    return manifest;
   }
 
   /**

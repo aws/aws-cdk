@@ -525,12 +525,15 @@ pipeline.
 This will encrypt the artifact bucket(s), but incurs a cost for maintaining the
 KMS key.
 
+You may also wish to enable automatic key rotation for the created KMS key.
+
 Example:
 
 ```ts
 const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   // Encrypt artifacts, required for cross-account deployments
   crossAccountKeys: true,
+  enableKeyRotation: true, // optional
   synth: new pipelines.ShellStep('Synth', {
     input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
       connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
@@ -904,21 +907,37 @@ If you wish to use an existing `CodePipeline.Pipeline` while using the modern AP
 methods and classes, you can pass in the existing `CodePipeline.Pipeline` to be built upon
 instead of having the `pipelines.CodePipeline` construct create a new `CodePipeline.Pipeline`.
 This also gives you more direct control over the underlying `CodePipeline.Pipeline` construct
-if the way the modern API creates it doesn't allow for desired configurations.
+if the way the modern API creates it doesn't allow for desired configurations. Use `CodePipelineFileset` to convert CodePipeline **artifacts** into CDK Pipelines **file sets**,
+that can be used everywhere a file set or file set producer is expected.
 
-Here's an example of passing in an existing pipeline:
+Here's an example of passing in an existing pipeline and using a *source* that's already
+in the pipeline:
 
 ```ts
 declare const codePipeline: codepipeline.Pipeline;
 
+const sourceArtifact = new codepipeline.Artifact('MySourceArtifact');
+
 const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  codePipeline: codePipeline,
   synth: new pipelines.ShellStep('Synth', {
-    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
-      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
-    }),
+    input: pipelines.CodePipelineFileSet.fromArtifact(sourceArtifact),
     commands: ['npm ci','npm run build','npx cdk synth'],
   }),
+});
+```
+
+If your existing pipeline already provides a synth step, pass the existing
+artifact in place of the `synth` step:
+
+```ts
+declare const codePipeline: codepipeline.Pipeline;
+
+const buildArtifact = new codepipeline.Artifact('MyBuildArtifact');
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   codePipeline: codePipeline,
+  synth: pipelines.CodePipelineFileSet.fromArtifact(buildArtifact),
 });
 ```
 
