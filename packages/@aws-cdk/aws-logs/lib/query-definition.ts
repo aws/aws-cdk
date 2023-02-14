@@ -16,21 +16,42 @@ export interface QueryStringProps {
   readonly fields?: string[];
 
   /**
-  * One or more statements for parsing data from a log field and creating ephemeral fields that can
-  * be processed further in the query. Each statement provided generates a separate parse line in
-  * the query string.
+  * A single statement for parsing data from a log field and creating ephemeral fields that can
+  * be processed further in the query.
+  *
+  * @deprecated Use `parseStatements` instead
+  * @default - no parse in QueryString
+  */
+  readonly parse?: string;
+
+  /**
+  * An array of one or more statements for parsing data from a log field and creating ephemeral
+  * fields that can be processed further in the query. Each provided statement generates a separate
+  * parse line in the query string.
+  *
+  * Note: If provided, this property overrides any value provided for the `parse` property.
   *
   * @default - no parse in QueryString
   */
-  readonly parse?: string | string[];
+  readonly parseStatements?: string[];
 
   /**
-  * One or more statements for filtering the results of a query based on a boolean expression. Each
-  * statement provided generates a separate filter line in the query string.
+  * A single statement for filtering the results of a query based on a boolean expression.
+  *
+  * @deprecated Use `filterStatements` instead
+  * @default - no filter in QueryString
+  */
+  readonly filter?: string;
+
+  /**
+  * An array of one or more statements for filtering the results of a query based on a boolean
+  * expression. Each provided statement generates a separate filter line in the query string.
+  *
+  * Note: If provided, this property overrides any value provided for the `filter` property.
   *
   * @default - no filter in QueryString
   */
-  readonly filter?: string | string[];
+  readonly filterStatements?: string[];
 
   /**
   * Uses log field values to calculate aggregate statistics.
@@ -66,8 +87,8 @@ export interface QueryStringProps {
  */
 export class QueryString {
   private readonly fields?: string[];
-  private readonly parse?: string | string[];
-  private readonly filter?: string | string[];
+  private readonly parse: string[];
+  private readonly filter: string[];
   private readonly stats?: string;
   private readonly sort?: string;
   private readonly limit?: Number;
@@ -75,12 +96,28 @@ export class QueryString {
 
   constructor(props: QueryStringProps = {}) {
     this.fields = props.fields;
-    this.parse = props.parse;
-    this.filter = props.filter;
     this.stats = props.stats;
     this.sort = props.sort;
     this.limit = props.limit;
     this.display = props.display;
+
+    // Determine parsing by either the parseStatements or parse properties, or default to empty array
+    if (props.parseStatements) {
+      this.parse = props.parseStatements;
+    } else if (props.parse) {
+      this.parse = [props.parse];
+    } else {
+      this.parse = [];
+    }
+
+    // Determine filtering by either the filterStatements or filter properties, or default to empty array
+    if (props.filterStatements) {
+      this.filter = props.filterStatements;
+    } else if (props.filter) {
+      this.filter = [props.filter];
+    } else {
+      this.filter = [];
+    }
   }
 
   /**
@@ -88,13 +125,13 @@ export class QueryString {
   */
   public toString(): string {
     return [
-      ...this.buildQueryLines('fields', this.fields?.join(', ')),
+      this.buildQueryLine('fields', this.fields?.join(', ')),
       ...this.buildQueryLines('parse', this.parse),
       ...this.buildQueryLines('filter', this.filter),
-      ...this.buildQueryLines('stats', this.stats),
-      ...this.buildQueryLines('sort', this.sort),
-      ...this.buildQueryLines('limit', this.limit?.toString()),
-      ...this.buildQueryLines('display', this.display),
+      this.buildQueryLine('stats', this.stats),
+      this.buildQueryLine('sort', this.sort),
+      this.buildQueryLine('limit', this.limit?.toString()),
+      this.buildQueryLine('display', this.display),
     ].filter(
       (queryLine) => queryLine !== undefined && queryLine.length > 0,
     ).join('\n| ');
@@ -107,13 +144,13 @@ export class QueryString {
    * @param statements one or more query statements for the specified command, or undefined
    * @returns an array of the query string lines generated from the provided command and statements
    */
-  buildQueryLines(command: string, statements: string[] | string | undefined): string[] {
+  buildQueryLines(command: string, statements?: string[]): string[] {
     if (statements === undefined) {
       return [];
     }
 
     return (typeof statements === 'string' ? [statements] : statements).map(
-      (statement: string | undefined): string => this.buildQueryLine(command, statement!),
+      (statement: string): string => this.buildQueryLine(command, statement),
     );
   }
 
@@ -124,7 +161,7 @@ export class QueryString {
    * @param statement a single query statement
    * @returns a single query string line generated from the provided command and statement
    */
-  buildQueryLine(command: string, statement: string): string {
+  buildQueryLine(command: string, statement?: string): string {
     return statement ? `${command} ${statement}` : '';
   }
 }

@@ -30,11 +30,11 @@ class LogsInsightsQueryDefinitionIntegStack extends Stack {
       queryDefinitionName: 'QueryDefinitionWithMultipleStatements',
       queryString: new QueryString({
         fields: ['@timestamp', '@message'],
-        parse: [
+        parseStatements: [
           '@message "[*] *" as loggingType, loggingMessage',
           '@message "<*>: *" as differentLoggingType, differentLoggingMessage',
         ],
-        filter: [
+        filterStatements: [
           'loggingType = "ERROR"',
           'loggingMessage = "A very strange error occurred!"',
         ],
