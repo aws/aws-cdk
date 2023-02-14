@@ -18,5 +18,3 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   }
   return subHandler(event.ResourceProperties, event);
 }
-
-export { ColumnEncoding } from './types';
