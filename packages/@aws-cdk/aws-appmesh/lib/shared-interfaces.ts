@@ -122,8 +122,8 @@ export abstract class AccessLog {
    *
    * @default - no file based access logging
    */
-  public static fromFilePath(filePath: string): AccessLog {
-    return new FileAccessLog(filePath);
+  public static fromFilePathAndFormat(filePath: string, loggingFormat?: LoggingFormat): AccessLog {
+    return new FileAccessLog(filePath, loggingFormat);
   }
 
   /**
@@ -143,10 +143,15 @@ class FileAccessLog extends AccessLog {
    * @default - no file based access logging
    */
   public readonly filePath: string;
+  public readonly virtualNodeLoggingFormat?: CfnVirtualNode.LoggingFormatProperty;
+  public readonly virtualGatewayLoggingFormat?: CfnVirtualGateway.LoggingFormatProperty;
 
-  constructor(filePath: string) {
+  constructor(filePath: string, loggingFormat?: LoggingFormat) {
     super();
     this.filePath = filePath;
+    // For now we have the same setting for Virtual Gateway and Virtual Nodes
+    this.virtualGatewayLoggingFormat = loggingFormat;
+    this.virtualNodeLoggingFormat = loggingFormat;
   }
 
   public bind(_scope: Construct): AccessLogConfig {
@@ -154,14 +159,81 @@ class FileAccessLog extends AccessLog {
       virtualNodeAccessLog: {
         file: {
           path: this.filePath,
+          format: this.virtualNodeLoggingFormat,
         },
       },
       virtualGatewayAccessLog: {
         file: {
           path: this.filePath,
+          format: this.virtualGatewayLoggingFormat,
         },
       },
     };
+  }
+}
+
+/**
+ * Configuration for Envoy logging format
+ */
+export class LoggingFormat {
+  /**
+   * Generate logging format from text pattern
+   */
+  public static fromText(text: string): LoggingFormat {
+    return new LoggingFormat(text);
+  }
+  /**
+   * Generate logging format from json key pairs
+   */
+  public static fromJson(jsonPairs: string[][]): LoggingFormat {
+    const json: JsonFormatRef[] = [];
+    if (jsonPairs.length == 0) {
+      throw new Error('Json key pairs cannot be empty.');
+    }
+
+    jsonPairs.forEach(pair => {
+      if (pair.length != 2) {
+        throw new Error('key value pair should be a string array of length 2.');
+      }
+      json.push(new JsonFormatRef(pair[0], pair[1]));
+    });
+    return new LoggingFormat(undefined, json);
+  };
+
+  /**
+   * Json pattern for the output logs
+   *
+   * @default - no format specified
+   */
+  public readonly json?: Array<CfnVirtualNode.JsonFormatRefProperty>;
+
+  /**
+   * Text pattern for the output logs
+   *
+   * @default - no text pattern specified
+   */
+  public readonly text?: string;
+
+  constructor(text?: string, json?: Array<CfnVirtualNode.JsonFormatRefProperty>) {
+    if (text && json) {
+      throw new Error('Text and json format cannot be defined at the same time.');
+    }
+    this.text = text;
+    this.json = json;
+  }
+
+}
+
+/**
+   * Key Value pair json reference for json Format
+   */
+class JsonFormatRef {
+  public readonly key: string;
+  public readonly value: string;
+
+  constructor(key: string, value:string) {
+    this.key = key;
+    this.value = value;
   }
 }
 
