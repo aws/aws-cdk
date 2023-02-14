@@ -10,8 +10,8 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
     * Stack ID in which application will be created or imported. The id of a stack is also the identifier that you use to
     * refer to it in the [AWS CDK Toolkit](https://docs.aws.amazon.com/cdk/v2/guide/cli.html).
     *
-    * @default - ApplicationAssociatorStack
-    * @deprecated - Use `stackName` instead to control the name of the stack
+    * @default - `Application-${APPLICATION_IDENTIFIER}-Stack`, where APPLICATION_IDENTIFIER is the application name or id
+    *             depending on the type of TargetApplication.
     */
   readonly stackId?: string;
 }
@@ -91,9 +91,7 @@ class CreateTargetApplication extends TargetApplication {
     super();
   }
   public bind(scope: Construct): BindTargetApplicationResult {
-    const stackId = this.applicationOptions.stackId ?? 'ApplicationAssociatorStack';
-    (this.applicationOptions.stackName as string) =
-            this.applicationOptions.stackName || `Application-${this.applicationOptions.applicationName}-Stack`;
+    const stackId = this.applicationOptions.stackId ?? `Application-${this.applicationOptions.applicationName}-Stack`;
     (this.applicationOptions.description as string) =
             this.applicationOptions.description || 'Stack to create AppRegistry application';
     (this.applicationOptions.env as cdk.Environment) =
@@ -122,9 +120,7 @@ class ExistingTargetApplication extends TargetApplication {
   public bind(scope: Construct): BindTargetApplicationResult {
     const arnComponents = cdk.Arn.split(this.applicationOptions.applicationArnValue, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
     const applicationId = arnComponents.resourceName;
-    const stackId = this.applicationOptions.stackId ?? 'ApplicationAssociatorStack';
-    (this.applicationOptions.stackName as string) =
-            this.applicationOptions.stackName || `Application-${applicationId}-Stack`;
+    const stackId = this.applicationOptions.stackId ?? `Application-${applicationId}-Stack`;
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = Application.fromApplicationArn(applicationStack, 'ExistingApplication', this.applicationOptions.applicationArnValue);
     return {
