@@ -34,6 +34,14 @@
             "id": "Role",
             "path": "aws-cdk-firehose-delivery-stream-source-stream/Role",
             "children": {
+              "ImportRole": {
+                "id": "ImportRole",
+                "path": "aws-cdk-firehose-delivery-stream-source-stream/Role/ImportRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-firehose-delivery-stream-source-stream/Role/Resource",
@@ -192,6 +200,14 @@
                 "id": "Service Role",
                 "path": "aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream/Service Role",
                 "children": {
+                  "ImportService Role": {
+                    "id": "ImportService Role",
+                    "path": "aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream/Service Role/ImportService Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream/Service Role/Resource",
@@ -359,7 +375,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

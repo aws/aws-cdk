@@ -187,7 +187,7 @@
                       ]
                     },
                     "name": "canary-integ",
-                    "runtimeVersion": "syn-nodejs-puppeteer-3.8",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.9",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(1 minute)"
@@ -488,7 +488,7 @@
                       ]
                     },
                     "name": "assetcanary-one",
-                    "runtimeVersion": "syn-nodejs-puppeteer-3.8",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.9",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(5 minutes)"
@@ -790,7 +790,7 @@
                       ]
                     },
                     "name": "assetcanary-two",
-                    "runtimeVersion": "syn-nodejs-puppeteer-3.8",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.9",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(5 minutes)"
@@ -1091,7 +1091,7 @@
                       ]
                     },
                     "name": "assetcanary-three",
-                    "runtimeVersion": "syn-nodejs-puppeteer-3.8",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.9",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(5 minutes)"
@@ -1392,7 +1392,7 @@
                       ]
                     },
                     "name": "assetcanary-four",
-                    "runtimeVersion": "syn-nodejs-puppeteer-3.8",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.9",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(5 minutes)"
@@ -1693,7 +1693,7 @@
                       ]
                     },
                     "name": "assetcanary-five",
-                    "runtimeVersion": "syn-nodejs-puppeteer-3.8",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.9",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(5 minutes)"
