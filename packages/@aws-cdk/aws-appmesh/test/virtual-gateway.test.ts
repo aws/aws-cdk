@@ -116,7 +116,7 @@ describe('virtual gateway', () => {
           healthCheck: appmesh.HealthCheck.grpc(),
         })],
         mesh: mesh,
-        accessLog: appmesh.AccessLog.fromFilePathAndFormat('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
+        accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
       });
 
       // THEN
@@ -169,7 +169,7 @@ describe('virtual gateway', () => {
           healthCheck: appmesh.HealthCheck.grpc(),
         })],
         mesh: mesh,
-        accessLog: appmesh.AccessLog.fromFilePathAndFormat('/dev/stdout',
+        accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout',
           appmesh.LoggingFormat.fromJson(
             [['testKey1', 'testValue1'], ['testKey2', 'testValue2']])),
       });
@@ -233,7 +233,7 @@ describe('virtual gateway', () => {
             healthCheck: appmesh.HealthCheck.grpc(),
           })],
           mesh: mesh,
-          accessLog: appmesh.AccessLog.fromFilePathAndFormat('/dev/stdout', appmesh.LoggingFormat.fromJson([])),
+          accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromJson([])),
         });
       }).toThrow('Json key pairs cannot be empty.');
       expect(() => {
@@ -244,7 +244,7 @@ describe('virtual gateway', () => {
             healthCheck: appmesh.HealthCheck.grpc(),
           })],
           mesh: mesh,
-          accessLog: appmesh.AccessLog.fromFilePathAndFormat('/dev/stdout', appmesh.LoggingFormat.fromJson([['value1', 'value2', 'value3']])),
+          accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromJson([['value1', 'value2', 'value3']])),
         });
       }).toThrow('key value pair should be a string array of length 2.');
     });

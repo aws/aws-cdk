@@ -122,7 +122,7 @@ export abstract class AccessLog {
    *
    * @default - no file based access logging
    */
-  public static fromFilePathAndFormat(filePath: string, loggingFormat?: LoggingFormat): AccessLog {
+  public static fromFilePath(filePath: string, loggingFormat?: LoggingFormat): AccessLog {
     return new FileAccessLog(filePath, loggingFormat);
   }
 

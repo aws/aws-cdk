@@ -103,7 +103,7 @@ describe('virtual node', () => {
 
         const node = mesh.addVirtualNode('test-node', {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-          accessLog: appmesh.AccessLog.fromFilePathAndFormat('/dev/stdout',
+          accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout',
             appmesh.LoggingFormat.fromJson(
               [['testKey1', 'testValue1'], ['testKey2', 'testValue2']])),
         });
@@ -157,7 +157,7 @@ describe('virtual node', () => {
 
         const node = mesh.addVirtualNode('test-node', {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-          accessLog: appmesh.AccessLog.fromFilePathAndFormat('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
+          accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
         });
 
         node.addListener(appmesh.VirtualNodeListener.tcp({
