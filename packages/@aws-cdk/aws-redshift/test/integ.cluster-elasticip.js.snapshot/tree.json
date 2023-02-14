@@ -4,6 +4,14 @@
     "id": "App",
     "path": "",
     "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
       "aws-cdk-redshift-cluster-database": {
         "id": "aws-cdk-redshift-cluster-database",
         "path": "aws-cdk-redshift-cluster-database",
@@ -95,8 +103,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -262,8 +270,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -429,8 +437,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -548,8 +556,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -856,27 +864,11 @@
               "fqn": "@aws-cdk/aws-redshift.Cluster",
               "version": "0.0.0"
             }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "aws-cdk-redshift-cluster-database/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-redshift-cluster-database/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
-              "version": "0.0.0"
-            }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-cdk-redshift-elastic-ip-test": {
@@ -892,33 +884,15 @@
                 "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.235"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert",
-                "children": {
-                  "BootstrapVersion": {
-                    "id": "BootstrapVersion",
-                    "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert/BootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CheckBootstrapVersion": {
-                    "id": "CheckBootstrapVersion",
-                    "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
@@ -932,19 +906,11 @@
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
-      },
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.235"
-        }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }
