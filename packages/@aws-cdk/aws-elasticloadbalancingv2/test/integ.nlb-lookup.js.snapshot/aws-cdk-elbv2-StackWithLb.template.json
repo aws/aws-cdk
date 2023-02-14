@@ -390,6 +390,40 @@
     "VPCPublicSubnet2DefaultRouteB7481BBA",
     "VPCPublicSubnet2RouteTableAssociation5A808732"
    ]
+  },
+  "LBListener49E825B4": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "LBListenerTargetGroupGroup07C223BF"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "LB8A12904C"
+    },
+    "Port": 443,
+    "Protocol": "TCP"
+   }
+  },
+  "LBListenerTargetGroupGroup07C223BF": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "Port": 443,
+    "Protocol": "TCP",
+    "Targets": [
+     {
+      "Id": "10.0.1.1"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
   }
  },
  "Outputs": {
@@ -401,12 +435,28 @@
     "Name": "NlbArn"
    }
   },
+  "TgArn": {
+   "Value": {
+    "Ref": "LBListenerTargetGroupGroup07C223BF"
+   },
+   "Export": {
+    "Name": "TgArn"
+   }
+  },
   "ExportsOutputRefLB8A12904C1150D6A6": {
    "Value": {
     "Ref": "LB8A12904C"
    },
    "Export": {
     "Name": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+   }
+  },
+  "ExportsOutputRefLBListenerTargetGroupGroup07C223BF73476D0D": {
+   "Value": {
+    "Ref": "LBListenerTargetGroupGroup07C223BF"
+   },
+   "Export": {
+    "Name": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLBListenerTargetGroupGroup07C223BF73476D0D"
    }
   }
  },
