@@ -68,6 +68,14 @@
                 "id": "Role",
                 "path": "aws-cdk-codepipeline-codedeploy/CodeDeployGroup/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-codepipeline-codedeploy/CodeDeployGroup/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-codepipeline-codedeploy/CodeDeployGroup/Role/Resource",
@@ -136,6 +144,9 @@
                         "Arn"
                       ]
                     },
+                    "alarmConfiguration": {
+                      "enabled": false
+                    },
                     "autoRollbackConfiguration": {
                       "enabled": true,
                       "events": [
@@ -193,6 +204,14 @@
                 "id": "Role",
                 "path": "aws-cdk-codepipeline-codedeploy/Pipeline/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-codepipeline-codedeploy/Pipeline/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-codepipeline-codedeploy/Pipeline/Role/Resource",
@@ -418,6 +437,14 @@
                         "id": "CodePipelineActionRole",
                         "path": "aws-cdk-codepipeline-codedeploy/Pipeline/Source/S3Source/CodePipelineActionRole",
                         "children": {
+                          "ImportCodePipelineActionRole": {
+                            "id": "ImportCodePipelineActionRole",
+                            "path": "aws-cdk-codepipeline-codedeploy/Pipeline/Source/S3Source/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-codepipeline-codedeploy/Pipeline/Source/S3Source/CodePipelineActionRole/Resource",
@@ -565,13 +592,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.189"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.189"
                 }
               },
               "Deploy": {
@@ -586,6 +613,14 @@
                         "id": "CodePipelineActionRole",
                         "path": "aws-cdk-codepipeline-codedeploy/Pipeline/Deploy/CodeDeploy/CodePipelineActionRole",
                         "children": {
+                          "ImportCodePipelineActionRole": {
+                            "id": "ImportCodePipelineActionRole",
+                            "path": "aws-cdk-codepipeline-codedeploy/Pipeline/Deploy/CodeDeploy/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-codepipeline-codedeploy/Pipeline/Deploy/CodeDeploy/CodePipelineActionRole/Resource",
@@ -790,13 +825,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.189"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.189"
                 }
               }
             },
@@ -832,7 +867,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.189"
         }
       }
     },

@@ -45,4 +45,14 @@ new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
   postHook,
 });
 
+const secondAlias = new lambda.Alias(stack, 'SecondAlias', {
+  aliasName: 'secondAlias',
+  version,
+});
+
+new codedeploy.LambdaDeploymentGroup(stack, 'SecondDeployment', {
+  alias: secondAlias,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES,
+});
+
 app.synth();
