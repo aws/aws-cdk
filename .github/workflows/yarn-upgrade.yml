@@ -44,7 +44,6 @@ jobs:
         id: list-packages
         # These need to be ignored from the `ncu` runs!
         run: |-
-          echo -n "::set-output name=list::"
           echo "list=$(lerna ls --all --json 2>/dev/null | jq -r 'map(.name) | join(",")')" >> $GITHUB_OUTPUT
       - name: Run "ncu -u"
         # We special-case some @types because they need to be pinned to specific versions due to breaking changes in minor upgrades https://github.com/DefinitelyTyped/DefinitelyTyped/issues/64266

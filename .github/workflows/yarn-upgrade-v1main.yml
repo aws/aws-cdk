@@ -26,7 +26,7 @@ jobs:
 
       - name: Locate Yarn cache
         id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - name: Restore Yarn cache
         uses: actions/cache@v3
@@ -48,8 +48,7 @@ jobs:
         id: list-packages
         # These need to be ignored from the `ncu` runs!
         run: |-
-          echo -n "::set-output name=list::"
-          node -p "$(lerna ls --all --json 2>/dev/null).map(item => item.name).join(',')"
+          echo "list=$(lerna ls --all --json 2>/dev/null | jq -r 'map(.name) | join(",")')" >> $GITHUB_OUTPUT
       - name: Run "ncu -u"
         # We special-case some @types because they need to be pinned to specific versions due to breaking changes in minor upgrades https://github.com/DefinitelyTyped/DefinitelyTyped/issues/64266
         # We special-case aws-sdk because of breaking changes with TS interface exports in recent minor versions - https://github.com/aws/aws-sdk-js/issues/3453
