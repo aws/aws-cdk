@@ -317,7 +317,7 @@
     },
     "AWS::ACMPCA::Permission": {
       "attributes": {},
-      "description": "Grants permissions to the AWS Certificate Manager ( ACM ) service principal ( `acm.amazonaws.com` ) to perform [IssueCertificate](https://docs.aws.amazon.com/latest/APIReference/API_IssueCertificate.html) , [GetCertificate](https://docs.aws.amazon.com/privateca/latest/APIReference/API_GetCertificate.html) , and [ListPermissions](https://docs.aws.amazon.com/privateca/latest/APIReference/API_ListPermissions.html) actions on a CA. These actions are needed for the ACM principal to renew private PKI certificates requested through ACM and residing in the same AWS account as the CA.\n\n**About permissions** - If the private CA and the certificates it issues reside in the same account, you can use `AWS::ACMPCA::Permission` to grant permissions for ACM to carry out automatic certificate renewals.\n- For automatic certificate renewal to succeed, the ACM service principal needs permissions to create, retrieve, and list permissions.\n- If the private CA and the ACM certificates reside in different accounts, then permissions cannot be used to enable automatic renewals. Instead, the ACM certificate owner must set up a resource-based policy to enable cross-account issuance and renewals. For more information, see [Using a Resource Based Policy with AWS Private CA](https://docs.aws.amazon.com/privateca/latest/userguide/pca-rbp.html) .\n\n> To update an `AWS::ACMPCA::Permission` resource, you must first delete the existing permission resource from the CloudFormation stack and then create a new permission resource with updated properties.",
+      "description": "Grants permissions to the AWS Certificate Manager ( ACM ) service principal ( `acm.amazonaws.com` ) to perform [IssueCertificate](https://docs.aws.amazon.com/privateca/latest/APIReference/API_IssueCertificate.html) , [GetCertificate](https://docs.aws.amazon.com/privateca/latest/APIReference/API_GetCertificate.html) , and [ListPermissions](https://docs.aws.amazon.com/privateca/latest/APIReference/API_ListPermissions.html) actions on a CA. These actions are needed for the ACM principal to renew private PKI certificates requested through ACM and residing in the same AWS account as the CA.\n\n**About permissions** - If the private CA and the certificates it issues reside in the same account, you can use `AWS::ACMPCA::Permission` to grant permissions for ACM to carry out automatic certificate renewals.\n- For automatic certificate renewal to succeed, the ACM service principal needs permissions to create, retrieve, and list permissions.\n- If the private CA and the ACM certificates reside in different accounts, then permissions cannot be used to enable automatic renewals. Instead, the ACM certificate owner must set up a resource-based policy to enable cross-account issuance and renewals. For more information, see [Using a Resource Based Policy with AWS Private CA](https://docs.aws.amazon.com/privateca/latest/userguide/pca-rbp.html) .\n\n> To update an `AWS::ACMPCA::Permission` resource, you must first delete the existing permission resource from the CloudFormation stack and then create a new permission resource with updated properties.",
       "properties": {
         "Actions": "The private CA actions that can be performed by the designated AWS service. Supported actions are `IssueCertificate` , `GetCertificate` , and `ListPermissions` .",
         "CertificateAuthorityArn": "The Amazon Resource Number (ARN) of the private CA from which the permission was issued.",
@@ -5521,7 +5521,7 @@
     },
     "AWS::Athena::WorkGroup.ResultConfiguration": {
       "attributes": {},
-      "description": "The location in Amazon S3 where query results are stored and the encryption option, if any, used for query results. These are known as \"client-side settings\". If workgroup settings override client-side settings, then the query uses the workgroup settings.",
+      "description": "The location in Amazon S3 where query and calculation results are stored and the encryption option, if any, used for query and calculation results. These are known as \"client-side settings\". If workgroup settings override client-side settings, then the query uses the workgroup settings.",
       "properties": {
         "EncryptionConfiguration": "If query results are encrypted in Amazon S3, indicates the encryption option used (for example, `SSE_KMS` or `CSE_KMS` ) and key information. This is a client-side setting. If workgroup settings override client-side settings, then the query uses the encryption configuration that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. See `EnforceWorkGroupConfiguration` and [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
         "OutputLocation": "The location in Amazon S3 where your query results are stored, such as `s3://path/to/query/bucket/` . To run a query, you must specify the query results location using either a client-side setting for individual queries or a location specified by the workgroup. If workgroup settings override client-side settings, then the query uses the location specified for the workgroup. If no query location is set, Athena issues an error. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) and `EnforceWorkGroupConfiguration` ."
@@ -5628,7 +5628,7 @@
         "CapacityRebalance": "Indicates whether Capacity Rebalancing is enabled. Otherwise, Capacity Rebalancing is disabled. When you turn on Capacity Rebalancing, Amazon EC2 Auto Scaling attempts to launch a Spot Instance whenever Amazon EC2 notifies that a Spot Instance is at an elevated risk of interruption. After launching a new instance, it then terminates an old instance. For more information, see [Use Capacity Rebalancing to handle Amazon EC2 Spot Interruptions](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-capacity-rebalancing.html) in the in the *Amazon EC2 Auto Scaling User Guide* .",
         "Context": "Reserved.",
         "Cooldown": "*Only needed if you use simple scaling policies.*\n\nThe amount of time, in seconds, between one scaling activity ending and another one starting due to simple scaling policies. For more information, see [Scaling cooldowns for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/Cooldown.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nDefault: `300` seconds",
-        "DefaultInstanceWarmup": "The amount of time, in seconds, until a newly launched instance can contribute to the Amazon CloudWatch metrics. This delay lets an instance finish initializing before Amazon EC2 Auto Scaling aggregates instance metrics, resulting in more reliable usage data. Set this value equal to the amount of time that it takes for resource consumption to become stable after an instance reaches the `InService` state. For more information, see [Set the default instance warmup for an Auto Scaling group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\n> To manage your warm-up settings at the group level, we recommend that you set the default instance warmup, *even if its value is set to 0 seconds* . This also optimizes the performance of scaling policies that scale continuously, such as target tracking and step scaling policies.\n> \n> If you need to remove a value that you previously set, include the property but specify `-1` for the value. However, we strongly recommend keeping the default instance warmup enabled by specifying a minimum value of `0` . \n\nDefault: None",
+        "DefaultInstanceWarmup": "The amount of time, in seconds, until a new instance is considered to have finished initializing and resource consumption to become stable after it enters the `InService` state.\n\nDuring an instance refresh, Amazon EC2 Auto Scaling waits for the warm-up period after it replaces an instance before it moves on to replacing the next instance. Amazon EC2 Auto Scaling also waits for the warm-up period before aggregating the metrics for new instances with existing instances in the Amazon CloudWatch metrics that are used for scaling, resulting in more reliable usage data. For more information, see [Set the default instance warmup for an Auto Scaling group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\n> To manage various warm-up settings at the group level, we recommend that you set the default instance warmup, *even if it is set to 0 seconds* . To remove a value that you previously set, include the property but specify `-1` for the value. However, we strongly recommend keeping the default instance warmup enabled by specifying a value of `0` or other nominal value. \n\nDefault: None",
         "DesiredCapacity": "The desired capacity is the initial capacity of the Auto Scaling group at the time of its creation and the capacity it attempts to maintain. It can scale beyond this capacity if you configure automatic scaling.\n\nThe number must be greater than or equal to the minimum size of the group and less than or equal to the maximum size of the group. If you do not specify a desired capacity when creating the stack, the default is the minimum size of the group.\n\nCloudFormation marks the Auto Scaling group as successful (by setting its status to CREATE_COMPLETE) when the desired capacity is reached. However, if a maximum Spot price is set in the launch template or launch configuration that you specified, then desired capacity is not used as a criteria for success. Whether your request is fulfilled depends on Spot Instance capacity and your maximum price.",
         "DesiredCapacityType": "The unit of measurement for the value specified for desired capacity. Amazon EC2 Auto Scaling supports `DesiredCapacityType` for attribute-based instance type selection only. For more information, see [Creating an Auto Scaling group using attribute-based instance type selection](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-asg-instance-type-requirements.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nBy default, Amazon EC2 Auto Scaling specifies `units` , which translates into number of instances.\n\nValid values: `units` | `vcpu` | `memory-mib`",
         "HealthCheckGracePeriod": "The amount of time, in seconds, that Amazon EC2 Auto Scaling waits before checking the health status of an EC2 instance that has come into service and marking it unhealthy due to a failed health check. This is useful if your instances do not immediately pass their health checks after they enter the `InService` state. For more information, see [Set the health check grace period for an Auto Scaling group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-check-grace-period.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nDefault: `0` seconds",
@@ -6453,7 +6453,7 @@
         "EksConfiguration": "The details for the Amazon EKS cluster that supports the compute environment.",
         "ReplaceComputeEnvironment": "Specifies whether the compute environment is replaced if an update is made that requires replacing the instances in the compute environment. The default value is `true` . To enable more properties to be updated, set this property to `false` . When changing the value of this property to `false` , do not change any other properties at the same time. If other properties are changed at the same time, and the change needs to be rolled back but it can't, it's possible for the stack to go into the `UPDATE_ROLLBACK_FAILED` state. You can't update a stack that is in the `UPDATE_ROLLBACK_FAILED` state. However, if you can continue to roll it back, you can return the stack to its original settings and then try to update it again. For more information, see [Continue rolling back an update](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html) in the *AWS CloudFormation User Guide* .\n\nThe properties that can't be changed without replacing the compute environment are in the [`ComputeResources`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html) property type: [`AllocationStrategy`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-allocationstrategy) , [`BidPercentage`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-bidpercentage) , [`Ec2Configuration`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-ec2configuration) , [`Ec2KeyPair`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-ec2keypair) , [`Ec2KeyPair`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-ec2keypair) , [`ImageId`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-imageid) , [`InstanceRole`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-instancerole) , [`InstanceTypes`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-instancetypes) , [`LaunchTemplate`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-launchtemplate) , [`MaxvCpus`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-maxvcpus) , [`MinvCpus`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-minvcpus) , [`PlacementGroup`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-placementgroup) , [`SecurityGroupIds`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-securitygroupids) , [`Subnets`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-subnets) , [Tags](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-tags) , [`Type`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-type) , and [`UpdateToLatestImageVersion`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-updatetolatestimageversion) .",
         "ServiceRole": "The full Amazon Resource Name (ARN) of the IAM role that allows AWS Batch to make calls to other AWS services on your behalf. For more information, see [AWS Batch service IAM role](https://docs.aws.amazon.com/batch/latest/userguide/service_IAM_role.html) in the *AWS Batch User Guide* .\n\n> If your account already created the AWS Batch service-linked role, that role is used by default for your compute environment unless you specify a different role here. If the AWS Batch service-linked role doesn't exist in your account, and no role is specified here, the service attempts to create the AWS Batch service-linked role in your account. \n\nIf your specified role has a path other than `/` , then you must specify either the full role ARN (recommended) or prefix the role name with the path. For example, if a role with the name `bar` has a path of `/foo/` , specify `/foo/bar` as the role name. For more information, see [Friendly names and paths](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-friendly-names) in the *IAM User Guide* .\n\n> Depending on how you created your AWS Batch service role, its ARN might contain the `service-role` path prefix. When you only specify the name of the service role, AWS Batch assumes that your ARN doesn't use the `service-role` path prefix. Because of this, we recommend that you specify the full ARN of your service role when you create compute environments.",
-        "State": "The state of the compute environment. If the state is `ENABLED` , then the compute environment accepts jobs from a queue and can scale out automatically based on queues.\n\nIf the state is `ENABLED` , then the AWS Batch scheduler can attempt to place jobs from an associated job queue on the compute resources within the environment. If the compute environment is managed, then it can scale its instances out or in automatically, based on the job queue demand.\n\nIf the state is `DISABLED` , then the AWS Batch scheduler doesn't attempt to place jobs within the environment. Jobs in a `STARTING` or `RUNNING` state continue to progress normally. Managed compute environments in the `DISABLED` state don't scale out. However, they scale in to `minvCpus` value after instances become idle.",
+        "State": "The state of the compute environment. If the state is `ENABLED` , then the compute environment accepts jobs from a queue and can scale out automatically based on queues.\n\nIf the state is `ENABLED` , then the AWS Batch scheduler can attempt to place jobs from an associated job queue on the compute resources within the environment. If the compute environment is managed, then it can scale its instances out or in automatically, based on the job queue demand.\n\nIf the state is `DISABLED` , then the AWS Batch scheduler doesn't attempt to place jobs within the environment. Jobs in a `STARTING` or `RUNNING` state continue to progress normally. Managed compute environments in the `DISABLED` state don't scale out.\n\n> Compute environments in a `DISABLED` state may continue to incur billing charges. To prevent additional charges, turn off and then delete the compute environment. For more information, see [State](https://docs.aws.amazon.com/batch/latest/userguide/compute_environment_parameters.html#compute_environment_state) in the *AWS Batch User Guide* . \n\nWhen an instance is idle, the instance scales down to the `minvCpus` value. However, the instance size doesn't change. For example, consider a `c5.8xlarge` instance with a `minvCpus` value of `4` and a `desiredvCpus` value of `36` . This instance doesn't scale down to a `c5.large` instance.",
         "Tags": "The tags applied to the compute environment.",
         "Type": "The type of the compute environment: `MANAGED` or `UNMANAGED` . For more information, see [Compute Environments](https://docs.aws.amazon.com/batch/latest/userguide/compute_environments.html) in the *AWS Batch User Guide* .",
         "UnmanagedvCpus": "The maximum number of vCPUs for an unmanaged compute environment. This parameter is only used for fair share scheduling to reserve vCPU capacity for new share identifiers. If this parameter isn't provided for a fair share job queue, no vCPU capacity is reserved.\n\n> This parameter is only supported when the `type` parameter is set to `UNMANAGED` .",
@@ -6466,7 +6466,7 @@
       "properties": {
         "AllocationStrategy": "The allocation strategy to use for the compute resource if not enough instances of the best fitting instance type can be allocated. This might be because of availability of the instance type in the Region or [Amazon EC2 service limits](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html) . For more information, see [Allocation strategies](https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html) in the *AWS Batch User Guide* .\n\nWhen updating a compute environment, changing the allocation strategy requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* . `BEST_FIT` is not supported when updating a compute environment.\n\n> This parameter isn't applicable to jobs that are running on Fargate resources, and shouldn't be specified. \n\n- **BEST_FIT (default)** - AWS Batch selects an instance type that best fits the needs of the jobs with a preference for the lowest-cost instance type. If additional instances of the selected instance type aren't available, AWS Batch waits for the additional instances to be available. If there aren't enough instances available, or if the user is reaching [Amazon EC2 service limits](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html) then additional jobs aren't run until the currently running jobs have completed. This allocation strategy keeps costs lower but can limit scaling. If you are using Spot Fleets with `BEST_FIT` then the Spot Fleet IAM role must be specified.\n- **BEST_FIT_PROGRESSIVE** - AWS Batch will select additional instance types that are large enough to meet the requirements of the jobs in the queue, with a preference for instance types with a lower cost per unit vCPU. If additional instances of the previously selected instance types aren't available, AWS Batch will select new instance types.\n- **SPOT_CAPACITY_OPTIMIZED** - AWS Batch will select one or more instance types that are large enough to meet the requirements of the jobs in the queue, with a preference for instance types that are less likely to be interrupted. This allocation strategy is only available for Spot Instance compute resources.\n\nWith both `BEST_FIT_PROGRESSIVE` and `SPOT_CAPACITY_OPTIMIZED` allocation strategies using On-Demand or Spot Instances, and the `BEST_FIT` strategy using Spot Instances, AWS Batch might need to go above `maxvCpus` to meet your capacity requirements. In this event, AWS Batch never exceeds `maxvCpus` by more than a single instance.",
         "BidPercentage": "The maximum percentage that a Spot Instance price can be when compared with the On-Demand price for that instance type before instances are launched. For example, if your maximum percentage is 20%, the Spot price must be less than 20% of the current On-Demand price for that Amazon EC2 instance. You always pay the lowest (market) price and never more than your maximum percentage. For most use cases, we recommend leaving this field empty.\n\nWhen updating a compute environment, changing the bid percentage requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it.",
-        "DesiredvCpus": "The desired number of Amazon EC2 vCPUS in the compute environment. AWS Batch modifies this value between the minimum and maximum values based on job queue demand.\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it. > AWS Batch doesn't support changing the desired number of vCPUs of an existing compute environment. Don't specify this parameter for compute environments using Amazon EKS clusters.",
+        "DesiredvCpus": "The desired number of Amazon EC2 vCPUS in the compute environment. AWS Batch modifies this value between the minimum and maximum values based on job queue demand.\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it. > AWS Batch doesn't support changing the desired number of vCPUs of an existing compute environment. Don't specify this parameter for compute environments using Amazon EKS clusters. > When you update the `desiredvCpus` setting, the value must be between the `minvCpus` and `maxvCpus` values.\n> \n> Additionally, the updated `desiredvCpus` value must be greater than or equal to the current `desiredvCpus` value. For more information, see `error-desired-vcpus-update` in the *AWS Batch User Guide* .",
         "Ec2Configuration": "Provides information used to select Amazon Machine Images (AMIs) for EC2 instances in the compute environment. If `Ec2Configuration` isn't specified, the default is `ECS_AL2` .\n\nWhen updating a compute environment, changing this setting requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* . To remove the EC2 configuration and any custom AMI ID specified in `imageIdOverride` , set this value to an empty string.\n\nOne or two values can be provided.\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it.",
         "Ec2KeyPair": "The Amazon EC2 key pair that's used for instances launched in the compute environment. You can use this key pair to log in to your instances with SSH. To remove the Amazon EC2 key pair, set this value to an empty string.\n\nWhen updating a compute environment, changing the EC2 key pair requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it.",
         "ImageId": "The Amazon Machine Image (AMI) ID used for instances launched in the compute environment. This parameter is overridden by the `imageIdOverride` member of the `Ec2Configuration` structure. To remove the custom AMI ID and use the default AMI ID, set this value to an empty string.\n\nWhen updating a compute environment, changing the AMI ID requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it. > The AMI that you choose for a compute environment must match the architecture of the instance types that you intend to use for that compute environment. For example, if your compute environment uses A1 instance types, the compute resource AMI that you choose must support ARM instances. Amazon ECS vends both x86 and ARM versions of the Amazon ECS-optimized Amazon Linux 2 AMI. For more information, see [Amazon ECS-optimized Amazon Linux 2 AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html#ecs-optimized-ami-linux-variants.html) in the *Amazon Elastic Container Service Developer Guide* .",
@@ -7222,13 +7222,13 @@
       },
       "description": "The `AWS::CE::AnomalySubscription` resource is a Cost Explorer resource type that associates a monitor, threshold, and list of subscribers. It delivers notifications about anomalies detected by a monitor that exceeds a threshold. The content consists of the detailed metadata and the current status of the `AnomalySubscription` object.",
       "properties": {
-        "Frequency": "The frequency that anomaly reports are sent over email.",
+        "Frequency": "The frequency that anomaly notifications are sent. Notifications are sent either over email (for DAILY and WEEKLY frequencies) or SNS (for IMMEDIATE frequency). For more information, see [Creating an Amazon SNS topic for anomaly notifications](https://docs.aws.amazon.com/cost-management/latest/userguide/ad-SNS.html) .",
         "MonitorArnList": "A list of cost anomaly monitors.",
         "ResourceTags": "",
         "Subscribers": "A list of subscribers to notify.",
         "SubscriptionName": "The name for the subscription.",
-        "Threshold": "(deprecated)\n\nThe dollar value that triggers a notification if the threshold is exceeded.\n\nThis field has been deprecated. To specify a threshold, use ThresholdExpression. Continued use of Threshold will be treated as shorthand syntax for a ThresholdExpression.\n\nOne of Threshold or ThresholdExpression is required for this resource.",
-        "ThresholdExpression": "An [Expression](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_Expression.html) object used to specify the anomalies that you want to generate alerts for. This supports dimensions and nested expressions. The supported dimensions are `ANOMALY_TOTAL_IMPACT_ABSOLUTE` and `ANOMALY_TOTAL_IMPACT_PERCENTAGE` . The supported nested expression types are `AND` and `OR` . The match option `GREATER_THAN_OR_EQUAL` is required. Values must be numbers between 0 and 10,000,000,000.\n\nOne of Threshold or ThresholdExpression is required for this resource.\n\nThe following are examples of valid ThresholdExpressions:\n\n- Absolute threshold: `{ \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_ABSOLUTE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } }`\n- Percentage threshold: `{ \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_PERCENTAGE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } }`\n- `AND` two thresholds together: `{ \"And\": [ { \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_ABSOLUTE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } }, { \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_PERCENTAGE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } } ] }`\n- `OR` two thresholds together: `{ \"Or\": [ { \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_ABSOLUTE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } }, { \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_PERCENTAGE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } } ] }`"
+        "Threshold": "(deprecated)\n\nAn absolute dollar value that must be exceeded by the anomaly's total impact (see [Impact](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_Impact.html) for more details) for an anomaly notification to be generated.\n\nThis field has been deprecated. To specify a threshold, use ThresholdExpression. Continued use of Threshold will be treated as shorthand syntax for a ThresholdExpression.\n\nOne of Threshold or ThresholdExpression is required for this resource. You cannot specify both.",
+        "ThresholdExpression": "An [Expression](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_Expression.html) object used to specify the anomalies that you want to generate alerts for. This supports dimensions and nested expressions. The supported dimensions are `ANOMALY_TOTAL_IMPACT_ABSOLUTE` and `ANOMALY_TOTAL_IMPACT_PERCENTAGE` , corresponding to an anomaly\u2019s TotalImpact and TotalImpactPercentage, respectively (see [Impact](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_Impact.html) for more details). The supported nested expression types are `AND` and `OR` . The match option `GREATER_THAN_OR_EQUAL` is required. Values must be numbers between 0 and 10,000,000,000 in string format.\n\nOne of Threshold or ThresholdExpression is required for this resource. You cannot specify both.\n\nThe following are examples of valid ThresholdExpressions:\n\n- Absolute threshold: `{ \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_ABSOLUTE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } }`\n- Percentage threshold: `{ \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_PERCENTAGE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } }`\n- `AND` two thresholds together: `{ \"And\": [ { \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_ABSOLUTE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } }, { \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_PERCENTAGE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } } ] }`\n- `OR` two thresholds together: `{ \"Or\": [ { \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_ABSOLUTE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } }, { \"Dimensions\": { \"Key\": \"ANOMALY_TOTAL_IMPACT_PERCENTAGE\", \"MatchOptions\": [ \"GREATER_THAN_OR_EQUAL\" ], \"Values\": [ \"100\" ] } } ] }`"
       }
     },
     "AWS::CE::AnomalySubscription.ResourceTag": {
@@ -10601,26 +10601,26 @@
       "properties": {
         "ExcludedAccounts": "A comma-separated list of accounts excluded from organization AWS Config rule.",
         "OrganizationConfigRuleName": "The name that you assign to organization AWS Config rule.",
-        "OrganizationCustomCodeRuleMetadata": "",
+        "OrganizationCustomPolicyRuleMetadata": "An object that specifies metadata for your organization's AWS Config Custom Policy rule. The metadata includes the runtime system in use, which accounts have debug logging enabled, and other custom rule metadata, such as resource type, resource ID of AWS resource, and organization trigger types that initiate AWS Config to evaluate AWS resources against a rule.",
         "OrganizationCustomRuleMetadata": "An `OrganizationCustomRuleMetadata` object.",
         "OrganizationManagedRuleMetadata": "An `OrganizationManagedRuleMetadata` object."
       }
     },
-    "AWS::Config::OrganizationConfigRule.OrganizationCustomCodeRuleMetadata": {
+    "AWS::Config::OrganizationConfigRule.OrganizationCustomPolicyRuleMetadata": {
       "attributes": {},
-      "description": "",
+      "description": "An object that specifies metadata for your organization's AWS Config Custom Policy rule. The metadata includes the runtime system in use, which accounts have debug logging enabled, and other custom rule metadata, such as resource type, resource ID of AWS resource, and organization trigger types that initiate AWS Config to evaluate AWS resources against a rule.",
       "properties": {
-        "CodeText": "",
-        "DebugLogDeliveryAccounts": "",
-        "Description": "",
-        "InputParameters": "",
-        "MaximumExecutionFrequency": "",
-        "OrganizationConfigRuleTriggerTypes": "",
-        "ResourceIdScope": "",
-        "ResourceTypesScope": "",
+        "DebugLogDeliveryAccounts": "A list of accounts that you can enable debug logging for your organization AWS Config Custom Policy rule. List is null when debug logging is enabled for all accounts.",
+        "Description": "The description that you provide for your organization AWS Config Custom Policy rule.",
+        "InputParameters": "A string, in JSON format, that is passed to your organization AWS Config Custom Policy rule.",
+        "MaximumExecutionFrequency": "The maximum frequency with which AWS Config runs evaluations for a rule. Your AWS Config Custom Policy rule is triggered when AWS Config delivers the configuration snapshot. For more information, see `ConfigSnapshotDeliveryProperties` .",
+        "OrganizationConfigRuleTriggerTypes": "The type of notification that initiates AWS Config to run an evaluation for a rule. For AWS Config Custom Policy rules, AWS Config supports change-initiated notification types:\n\n- `ConfigurationItemChangeNotification` - Initiates an evaluation when AWS Config delivers a configuration item as a result of a resource change.\n- `OversizedConfigurationItemChangeNotification` - Initiates an evaluation when AWS Config delivers an oversized configuration item. AWS Config may generate this notification type when a resource changes and the notification exceeds the maximum size allowed by Amazon SNS.",
+        "PolicyText": "The policy definition containing the logic for your organization AWS Config Custom Policy rule.",
+        "ResourceIdScope": "The ID of the AWS resource that was evaluated.",
+        "ResourceTypesScope": "The type of the AWS resource that was evaluated.",
         "Runtime": "",
-        "TagKeyScope": "",
-        "TagValueScope": ""
+        "TagKeyScope": "One part of a key-value pair that make up a tag. A key is a general label that acts like a category for more specific tag values.",
+        "TagValueScope": "The optional part of a key-value pair that make up a tag. A value acts as a descriptor within a tag category (key)."
       }
     },
     "AWS::Config::OrganizationConfigRule.OrganizationCustomRuleMetadata": {
@@ -13090,6 +13090,7 @@
         "AgentArns": "Specifies the Amazon Resource Names (ARNs) of the DataSync agents that can securely connect with your location.",
         "BucketName": "Specifies the name of the object storage bucket involved in the transfer.",
         "SecretKey": "Specifies the secret key (for example, a password) if credentials are required to authenticate with the object storage server.",
+        "ServerCertificate": "Specifies a certificate to authenticate with an object storage system that uses a private or self-signed certificate authority (CA). You must specify a Base64-encoded `.pem` file (for example, `file:///home/user/.ssh/storage_sys_certificate.pem` ). The certificate can be up to 32768 bytes (before Base64 encoding).\n\nTo use this parameter, configure `ServerProtocol` to `HTTPS` .",
         "ServerHostname": "Specifies the domain name or IP address of the object storage server. A DataSync agent uses this hostname to mount the object storage server in a network.",
         "ServerPort": "Specifies the port that your object storage server accepts inbound network traffic on (for example, port 443).",
         "ServerProtocol": "Specifies the protocol that your object storage server uses to communicate.",
@@ -13613,6 +13614,13 @@
         "KeyType": "The role that this key attribute will assume:\n\n- `HASH` - partition key\n- `RANGE` - sort key\n\n> The partition key of an item is also known as its *hash attribute* . The term \"hash attribute\" derives from DynamoDB's usage of an internal hash function to evenly distribute data items across partitions, based on their partition key values.\n> \n> The sort key of an item is also known as its *range attribute* . The term \"range attribute\" derives from the way DynamoDB stores items with the same partition key physically close together, in sorted order by the sort key value."
       }
     },
+    "AWS::DynamoDB::GlobalTable.KinesisStreamSpecification": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "StreamArn": ""
+      }
+    },
     "AWS::DynamoDB::GlobalTable.LocalSecondaryIndex": {
       "attributes": {},
       "description": "Represents the properties of a local secondary index. A local secondary index can only be created when its parent table is created.",
@@ -13667,6 +13675,7 @@
       "properties": {
         "ContributorInsightsSpecification": "The settings used to enable or disable CloudWatch Contributor Insights for the specified replica. When not specified, defaults to contributor insights disabled for the replica.",
         "GlobalSecondaryIndexes": "Defines additional settings for the global secondary indexes of this replica.",
+        "KinesisStreamSpecification": "",
         "PointInTimeRecoverySpecification": "The settings used to enable point in time recovery. When not specified, defaults to point in time recovery disabled for the replica.",
         "ReadProvisionedThroughputSettings": "Defines read capacity settings for the replica table.",
         "Region": "The region in which this replica exists.",
@@ -15417,7 +15426,9 @@
       "description": "Describes an additional detail for a path analysis.",
       "properties": {
         "AdditionalDetailType": "The information type.",
-        "Component": "The path component."
+        "Component": "The path component.",
+        "LoadBalancers": "",
+        "ServiceName": ""
       }
     },
     "AWS::EC2::NetworkInsightsAnalysis.AlternatePathHint": {
@@ -15578,6 +15589,7 @@
         "RouteTableRoute": "The route table route.",
         "SecurityGroupRule": "The security group rule.",
         "SequenceNumber": "The sequence number.",
+        "ServiceName": "",
         "SourceVpc": "The source VPC.",
         "Subnet": "The subnet.",
         "TransitGateway": "The transit gateway.",
@@ -18859,6 +18871,7 @@
         "SnapshottingClusterId": "The cluster ID that is used as the daily snapshot source for the replication group. This parameter cannot be set for Redis (cluster mode enabled) replication groups.",
         "Tags": "A list of tags to be added to this resource. Tags are comma-separated key,value pairs (e.g. Key= `myKey` , Value= `myKeyValue` . You can include multiple tags as shown following: Key= `myKey` , Value= `myKeyValue` Key= `mySecondKey` , Value= `mySecondKeyValue` . Tags on replication groups will be replicated to all nodes.",
         "TransitEncryptionEnabled": "A flag that enables in-transit encryption when set to `true` .\n\nYou cannot modify the value of `TransitEncryptionEnabled` after the cluster is created. To enable in-transit encryption on a cluster you must set `TransitEncryptionEnabled` to `true` when you create a cluster.\n\nThis parameter is valid only if the `Engine` parameter is `redis` , the `EngineVersion` parameter is `3.2.6` or `4.x` onward, and the cluster is being created in an Amazon VPC.\n\nIf you enable in-transit encryption, you must also specify a value for `CacheSubnetGroup` .\n\n*Required:* Only available when creating a replication group in an Amazon VPC using redis version `3.2.6` or `4.x` onward.\n\nDefault: `false`\n\n> For HIPAA compliance, you must specify `TransitEncryptionEnabled` as `true` , an `AuthToken` , and a `CacheSubnetGroup` .",
+        "TransitEncryptionMode": "A setting that allows you to migrate your clients to use in-transit encryption, with no downtime.\n\nWhen setting `TransitEncryptionEnabled` to `true` , you can set your `TransitEncryptionMode` to `preferred` in the same request, to allow both encrypted and unencrypted connections at the same time. Once you migrate all your Redis clients to use encrypted connections you can modify the value to `required` to allow encrypted connections only.\n\nSetting `TransitEncryptionMode` to `required` is a two-step process that requires you to first set the `TransitEncryptionMode` to `preferred` , after that you can set `TransitEncryptionMode` to `required` .",
         "UserGroupIds": "The ID of user group to associate with the replication group."
       }
     },
@@ -19955,7 +19968,7 @@
         "State": "The current state of the endpoint.",
         "StateReason": "The reason the endpoint is in its current state."
       },
-      "description": "A global endpoint used to improve your application's availability by making it regional-fault tolerant. For more information about global endpoints, see [Making applications Regional-fault tolerant with global endpoints and event replication](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-global-endpoints.html) in the Amazon EventBridge User Guide.",
+      "description": "A global endpoint used to improve your application's availability by making it regional-fault tolerant. For more information about global endpoints, see [Making applications Regional-fault tolerant with global endpoints and event replication](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-global-endpoints.html) in the *Amazon EventBridge User Guide* .",
       "properties": {
         "Description": "A description for the endpoint.",
         "EventBuses": "The event buses being used by the endpoint.\n\n*Exactly* : `2`",
@@ -20067,7 +20080,7 @@
         "RoleArn": "The Amazon Resource Name (ARN) of the role that is used for target invocation.\n\nIf you're setting an event bus in another account as the target and that account granted permission to your account through an organization instead of directly by the account ID, you must specify a `RoleArn` with proper permissions in the `Target` structure, instead of here in this parameter.",
         "ScheduleExpression": "The scheduling expression. For example, \"cron(0 20 * * ? *)\", \"rate(5 minutes)\". For more information, see [Creating an Amazon EventBridge rule that runs on a schedule](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html) .",
         "State": "The state of the rule.",
-        "Targets": "Adds the specified targets to the specified rule, or updates the targets if they are already associated with the rule.\n\nTargets are the resources that are invoked when a rule is triggered.\n\n> Each rule can have up to five (5) targets associated with it at one time. \n\nYou can configure the following as targets for Events:\n\n- [API destination](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-api-destinations.html)\n- [API Gateway](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-api-gateway-target.html)\n- Batch job queue\n- CloudWatch group\n- CodeBuild project\n- CodePipeline\n- EC2 `CreateSnapshot` API call\n- EC2 Image Builder\n- EC2 `RebootInstances` API call\n- EC2 `StopInstances` API call\n- EC2 `TerminateInstances` API call\n- ECS task\n- [Event bus in a different account or Region](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cross-account.html)\n- [Event bus in the same account and Region](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-bus-to-bus.html)\n- Firehose delivery stream\n- Glue workflow\n- [Incident Manager response plan](https://docs.aws.amazon.com//incident-manager/latest/userguide/incident-creation.html#incident-tracking-auto-eventbridge)\n- Inspector assessment template\n- Kinesis stream\n- Lambda function\n- Redshift cluster\n- SageMaker Pipeline\n- SNS topic\n- SQS queue\n- Step Functions state machine\n- Systems Manager Automation\n- Systems Manager OpsItem\n- Systems Manager Run Command\n\nCreating rules with built-in targets is supported only in the AWS Management Console . The built-in targets are `EC2 CreateSnapshot API call` , `EC2 RebootInstances API call` , `EC2 StopInstances API call` , and `EC2 TerminateInstances API call` .\n\nFor some target types, `PutTargets` provides target-specific parameters. If the target is a Kinesis data stream, you can optionally specify which shard the event goes to by using the `KinesisParameters` argument. To invoke a command on multiple EC2 instances with one rule, you can use the `RunCommandParameters` field.\n\nTo be able to make API calls against the resources that you own, Amazon EventBridge needs the appropriate permissions. For AWS Lambda and Amazon SNS resources, EventBridge relies on resource-based policies. For EC2 instances, Kinesis Data Streams, AWS Step Functions state machines and API Gateway APIs, EventBridge relies on IAM roles that you specify in the `RoleARN` argument in `PutTargets` . For more information, see [Authentication and Access Control](https://docs.aws.amazon.com/eventbridge/latest/userguide/auth-and-access-control-eventbridge.html) in the *Amazon EventBridge User Guide* .\n\nIf another AWS account is in the same region and has granted you permission (using `PutPermission` ), you can send events to that account. Set that account's event bus as a target of the rules in your account. To send the matched events to the other account, specify that account's event bus as the `Arn` value when you run `PutTargets` . If your account sends events to another account, your account is charged for each sent event. Each event sent to another account is charged as a custom event. The account receiving the event is not charged. For more information, see [Amazon EventBridge Pricing](https://docs.aws.amazon.com/eventbridge/pricing/) .\n\n> `Input` , `InputPath` , and `InputTransformer` are not available with `PutTarget` if the target is an event bus of a different AWS account. \n\nIf you are setting the event bus of another account as the target, and that account granted permission to your account through an organization instead of directly by the account ID, then you must specify a `RoleArn` with proper permissions in the `Target` structure. For more information, see [Sending and Receiving Events Between AWS Accounts](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html) in the *Amazon EventBridge User Guide* .\n\nFor more information about enabling cross-account events, see [PutPermission](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutPermission.html) .\n\n*Input* , *InputPath* , and *InputTransformer* are mutually exclusive and optional parameters of a target. When a rule is triggered due to a matched event:\n\n- If none of the following arguments are specified for a target, then the entire event is passed to the target in JSON format (unless the target is Amazon EC2 Run Command or Amazon ECS task, in which case nothing from the event is passed to the target).\n- If *Input* is specified in the form of valid JSON, then the matched event is overridden with this constant.\n- If *InputPath* is specified in the form of JSONPath (for example, `$.detail` ), then only the part of the event specified in the path is passed to the target (for example, only the detail part of the event is passed).\n- If *InputTransformer* is specified, then one or more specified JSONPaths are extracted from the event and used as values in a template that you specify as the input to the target.\n\nWhen you specify `InputPath` or `InputTransformer` , you must use JSON dot notation, not bracket notation.\n\nWhen you add targets to a rule and the associated rule triggers soon after, new or updated targets might not be immediately invoked. Allow a short period of time for changes to take effect.\n\nThis action can partially fail if too many requests are made at the same time. If that happens, `FailedEntryCount` is non-zero in the response and each entry in `FailedEntries` provides the ID of the failed target and the error code."
+        "Targets": "Adds the specified targets to the specified rule, or updates the targets if they are already associated with the rule.\n\nTargets are the resources that are invoked when a rule is triggered.\n\nThe maximum number of entries per request is 10.\n\n> Each rule can have up to five (5) targets associated with it at one time. \n\nFor a list of services you can configure as targets for events, see [EventBridge targets](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html) in the *Amazon EventBridge User Guide* .\n\nCreating rules with built-in targets is supported only in the AWS Management Console . The built-in targets are:\n\n- `EC2 CreateSnapshot API call`\n- `EC2 RebootInstances API call`\n- `EC2 StopInstances API call`\n- `EC2 TerminateInstances API call`\n\nFor some target types, `PutTargets` provides target-specific parameters. If the target is a Kinesis data stream, you can optionally specify which shard the event goes to by using the `KinesisParameters` argument. To invoke a command on multiple EC2 instances with one rule, you can use the `RunCommandParameters` field.\n\nTo be able to make API calls against the resources that you own, Amazon EventBridge needs the appropriate permissions:\n\n- For AWS Lambda and Amazon SNS resources, EventBridge relies on resource-based policies.\n- For EC2 instances, Kinesis Data Streams, AWS Step Functions state machines and API Gateway APIs, EventBridge relies on IAM roles that you specify in the `RoleARN` argument in `PutTargets` .\n\nFor more information, see [Authentication and Access Control](https://docs.aws.amazon.com/eventbridge/latest/userguide/auth-and-access-control-eventbridge.html) in the *Amazon EventBridge User Guide* .\n\nIf another AWS account is in the same region and has granted you permission (using `PutPermission` ), you can send events to that account. Set that account's event bus as a target of the rules in your account. To send the matched events to the other account, specify that account's event bus as the `Arn` value when you run `PutTargets` . If your account sends events to another account, your account is charged for each sent event. Each event sent to another account is charged as a custom event. The account receiving the event is not charged. For more information, see [Amazon EventBridge Pricing](https://docs.aws.amazon.com/eventbridge/pricing/) .\n\n> `Input` , `InputPath` , and `InputTransformer` are not available with `PutTarget` if the target is an event bus of a different AWS account. \n\nIf you are setting the event bus of another account as the target, and that account granted permission to your account through an organization instead of directly by the account ID, then you must specify a `RoleArn` with proper permissions in the `Target` structure. For more information, see [Sending and Receiving Events Between AWS Accounts](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html) in the *Amazon EventBridge User Guide* .\n\nFor more information about enabling cross-account events, see [PutPermission](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutPermission.html) .\n\n*Input* , *InputPath* , and *InputTransformer* are mutually exclusive and optional parameters of a target. When a rule is triggered due to a matched event:\n\n- If none of the following arguments are specified for a target, then the entire event is passed to the target in JSON format (unless the target is Amazon EC2 Run Command or Amazon ECS task, in which case nothing from the event is passed to the target).\n- If *Input* is specified in the form of valid JSON, then the matched event is overridden with this constant.\n- If *InputPath* is specified in the form of JSONPath (for example, `$.detail` ), then only the part of the event specified in the path is passed to the target (for example, only the detail part of the event is passed).\n- If *InputTransformer* is specified, then one or more specified JSONPaths are extracted from the event and used as values in a template that you specify as the input to the target.\n\nWhen you specify `InputPath` or `InputTransformer` , you must use JSON dot notation, not bracket notation.\n\nWhen you add targets to a rule and the associated rule triggers soon after, new or updated targets might not be immediately invoked. Allow a short period of time for changes to take effect.\n\nThis action can partially fail if too many requests are made at the same time. If that happens, `FailedEntryCount` is non-zero in the response and each entry in `FailedEntries` provides the ID of the failed target and the error code."
       }
     },
     "AWS::Events::Rule.AwsVpcConfiguration": {
@@ -36852,6 +36865,26 @@
         "Tags": "The list of key-value tags that changed for the segment."
       }
     },
+    "AWS::NetworkManager::TransitGatewayPeering": {
+      "attributes": {
+        "CoreNetworkArn": "The ARN of the core network.",
+        "CreatedAt": "The timestamp when the core network peering was created.",
+        "EdgeLocation": "The edge location for the peer.",
+        "OwnerAccountId": "The ID of the account owner.",
+        "PeeringId": "The ID of the peering.",
+        "PeeringType": "The peering type. This will be `TRANSIT_GATEWAY` .",
+        "Ref": "`Ref` returns the `peeringId` . For example: `peering-01234ab1234a12a12` .",
+        "ResourceArn": "The ARN of the resource peered to a core network.",
+        "State": "The current state of the peer. This can be `CREATING` | `FAILED` | `AVAILABLE` | `DELETING` .",
+        "TransitGatewayPeeringAttachmentId": "The ID of the peering attachment."
+      },
+      "description": "Creates a transit gateway peering connection.",
+      "properties": {
+        "CoreNetworkId": "The ID of the core network.",
+        "Tags": "The list of key-value tags associated with the peering.",
+        "TransitGatewayArn": "The ARN of the transit gateway."
+      }
+    },
     "AWS::NetworkManager::TransitGatewayRegistration": {
       "attributes": {
         "Ref": "`Ref` returns the ID of the global network and the ARN of the transit gateway. For example: `global-network-01231231231231231|arn:aws:ec2:us-west-2:123456789012:transit-gateway/tgw-123abc05e04123abc` ."
@@ -38862,7 +38895,7 @@
       "properties": {
         "ApplicationId": "The unique identifier for the Amazon Pinpoint application that the segment is associated with.",
         "Dimensions": "The criteria that define the dimensions for the segment.",
-        "Name": "The name of the segment.",
+        "Name": "The name of the segment.\n\n> A segment must have a name otherwise it will not appear in the Amazon Pinpoint console.",
         "SegmentGroups": "The segment group to use and the dimensions to apply to the group's base segments in order to build the segment. A segment group can consist of zero or more base segments. Your request can include only one segment group.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
@@ -41471,6 +41504,8 @@
         "EndpointStatus": "The status of the endpoint.",
         "Port": "The port number on which the cluster accepts incoming connections.",
         "Ref": "`Ref` returns the resource name.",
+        "VpcEndpoint": "",
+        "VpcEndpoint.NetworkInterfaces": "",
         "VpcEndpoint.VpcEndpointId": "",
         "VpcEndpoint.VpcId": ""
       },
@@ -41480,9 +41515,7 @@
         "EndpointName": "The name of the endpoint.",
         "ResourceOwner": "The AWS account ID of the owner of the cluster.",
         "SubnetGroupName": "The subnet group name where Amazon Redshift chooses to deploy the endpoint.",
-        "VpcEndpoint": "",
-        "VpcSecurityGroupIds": "The security group that defines the ports, protocols, and sources for inbound traffic that you are authorizing into your endpoint.",
-        "VpcSecurityGroups": "The security groups associated with the endpoint."
+        "VpcSecurityGroupIds": "The security group that defines the ports, protocols, and sources for inbound traffic that you are authorizing into your endpoint."
       }
     },
     "AWS::Redshift::EndpointAccess.NetworkInterface": {
@@ -41607,6 +41640,7 @@
     },
     "AWS::RedshiftServerless::Namespace": {
       "attributes": {
+        "Namespace": "Returns the `Namespace` value.",
         "Namespace.AdminUsername": "",
         "Namespace.CreationDate": "",
         "Namespace.DbName": "",
@@ -41631,7 +41665,6 @@
         "IamRoles": "A list of IAM roles to associate with the namespace.",
         "KmsKeyId": "The ID of the AWS Key Management Service key used to encrypt your data.",
         "LogExports": "The types of logs the namespace can export. Available export types are `userlog` , `connectionlog` , and `useractivitylog` .",
-        "Namespace": "",
         "NamespaceName": "The name of the namespace.",
         "Tags": "The map of the key-value pairs used to tag the namespace."
       }
@@ -41656,10 +41689,14 @@
     "AWS::RedshiftServerless::Workgroup": {
       "attributes": {
         "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, Ref returns the WorkgroupName, such as `sample-workgroup.` For more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) .",
+        "Workgroup": "Returns the `Workgroup` value.",
         "Workgroup.BaseCapacity": "",
+        "Workgroup.ConfigParameters": "",
         "Workgroup.CreationDate": "",
+        "Workgroup.Endpoint": "",
         "Workgroup.Endpoint.Address": "",
         "Workgroup.Endpoint.Port": "",
+        "Workgroup.Endpoint.VpcEndpoints": "",
         "Workgroup.EnhancedVpcRouting": "",
         "Workgroup.NamespaceName": "",
         "Workgroup.PubliclyAccessible": "",
@@ -41676,11 +41713,11 @@
         "ConfigParameters": "A list of parameters to set for finer control over a database. Available options are `datestyle` , `enable_user_activity_logging` , `query_group` , `search_path` , and `max_query_execution_time` .",
         "EnhancedVpcRouting": "The value that specifies whether to enable enhanced virtual private cloud (VPC) routing, which forces Amazon Redshift Serverless to route traffic through your VPC.",
         "NamespaceName": "The namespace the workgroup is associated with.",
+        "Port": "The custom port to use when connecting to a workgroup. Valid port ranges are 5431-5455 and 8191-8215. The default is 5439.",
         "PubliclyAccessible": "A value that specifies whether the workgroup can be accessible from a public network.",
         "SecurityGroupIds": "A list of security group IDs to associate with the workgroup.",
         "SubnetIds": "A list of subnet IDs the workgroup is associated with.",
         "Tags": "The map of the key-value pairs used to tag the workgroup.",
-        "Workgroup": "",
         "WorkgroupName": "The name of the workgroup."
       }
     },
@@ -42944,6 +42981,7 @@
       "description": "In a [CreateResolverRule](https://docs.aws.amazon.com/Route53/latest/APIReference/API_route53resolver_CreateResolverRule.html) request, an array of the IPs that you want to forward DNS queries to.",
       "properties": {
         "Ip": "One IP address that you want to forward DNS queries to. You can specify only IPv4 addresses.",
+        "Ipv6": "",
         "Port": "The port at `Ip` that you want to forward DNS queries to."
       }
     },
@@ -44341,8 +44379,8 @@
       "properties": {
         "DeliveryPolicy": "The delivery policy JSON assigned to the subscription. Enables the subscriber to define the message delivery retry strategy in the case of an HTTP/S endpoint subscribed to the topic. For more information, see `[GetSubscriptionAttributes](https://docs.aws.amazon.com/sns/latest/api/API_GetSubscriptionAttributes.html)` in the *Amazon SNS API Reference* and [Message delivery retries](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) in the *Amazon SNS Developer Guide* .",
         "Endpoint": "The subscription's endpoint. The endpoint value depends on the protocol that you specify. For more information, see the `Endpoint` parameter of the `[Subscribe](https://docs.aws.amazon.com/sns/latest/api/API_Subscribe.html)` action in the *Amazon SNS API Reference* .",
-        "FilterPolicy": "The filter policy JSON assigned to the subscription. Enables the subscriber to filter out unwanted messages. For more information, see `[GetSubscriptionAttributes](https://docs.aws.amazon.com/sns/latest/api/API_GetSubscriptionAttributes.html)` in the *Amazon SNS API Reference* and [Message filtering](https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html) in the *Amazon SNS Developer Guide* .\n\n- `FilterPolicyScope` - This attribute lets you choose the filtering scope by using one of the following string value types:\n\n- `MessageAttributes` (default) - The filter is applied on the message attributes.\n- `MessageBody` - The filter is applied on the message body.",
-        "FilterPolicyScope": "",
+        "FilterPolicy": "The filter policy JSON assigned to the subscription. Enables the subscriber to filter out unwanted messages. For more information, see `[GetSubscriptionAttributes](https://docs.aws.amazon.com/sns/latest/api/API_GetSubscriptionAttributes.html)` in the *Amazon SNS API Reference* and [Message filtering](https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html) in the *Amazon SNS Developer Guide* .",
+        "FilterPolicyScope": "This attribute lets you choose the filtering scope by using one of the following string value types:\n\n- `MessageAttributes` (default) - The filter is applied on the message attributes.\n- `MessageBody` - The filter is applied on the message body.",
         "Protocol": "The subscription's protocol. For more information, see the `Protocol` parameter of the `[Subscribe](https://docs.aws.amazon.com/sns/latest/api/API_Subscribe.html)` action in the *Amazon SNS API Reference* .",
         "RawMessageDelivery": "When set to `true` , enables raw message delivery. Raw messages don't contain any JSON formatting and can be sent to Amazon SQS and HTTP/S endpoints. For more information, see `[GetSubscriptionAttributes](https://docs.aws.amazon.com/sns/latest/api/API_GetSubscriptionAttributes.html)` in the *Amazon SNS API Reference* .",
         "RedrivePolicy": "When specified, sends undeliverable messages to the specified Amazon SQS dead-letter queue. Messages that can't be delivered due to client errors (for example, when the subscribed endpoint is unreachable) or server errors (for example, when the service that powers the subscribed endpoint becomes unavailable) are held in the dead-letter queue for further analysis or reprocessing.\n\nFor more information about the redrive policy and dead-letter queues, see [Amazon SQS dead-letter queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html) in the *Amazon SQS Developer Guide* .",
@@ -44364,11 +44402,11 @@
         "DisplayName": "The display name to use for an Amazon SNS topic with SMS subscriptions. The display name must be maximum 100 characters long, including hyphens (-), underscores (_), spaces, and tabs.",
         "FifoTopic": "Set to true to create a FIFO topic.",
         "KmsMasterKeyId": "The ID of an AWS managed customer master key (CMK) for Amazon SNS or a custom CMK. For more information, see [Key terms](https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html#sse-key-terms) . For more examples, see `[KeyId](https://docs.aws.amazon.com/kms/latest/APIReference/API_DescribeKey.html#API_DescribeKey_RequestParameters)` in the *AWS Key Management Service API Reference* .\n\nThis property applies only to [server-side-encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html) .",
-        "SignatureVersion": "",
+        "SignatureVersion": "The signature version corresponds to the hashing algorithm used while creating the signature of the notifications, subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS. By default, `SignatureVersion` is set to `1` .",
         "Subscription": "The Amazon SNS subscriptions (endpoints) for this topic.",
         "Tags": "The list of tags to add to a new topic.\n\n> To be able to tag a topic on creation, you must have the `sns:CreateTopic` and `sns:TagResource` permissions.",
         "TopicName": "The name of the topic you want to create. Topic names must include only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens, and must be between 1 and 256 characters long. FIFO topic names must end with `.fifo` .\n\nIf you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the topic name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
-        "TracingConfig": ""
+        "TracingConfig": "Tracing mode of an Amazon SNS topic. By default `TracingConfig` is set to `PassThrough` , and the topic passes through the tracing header it receives from an SNS publisher to its subscriptions. If set to Active, SNS will vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true. Only supported on standard topics."
       }
     },
     "AWS::SNS::Topic.Subscription": {
@@ -47300,6 +47338,60 @@
         "ProvisioningParameters": "A list of key value pairs that you specify when you provision a product."
       }
     },
+    "AWS::SageMaker::Space": {
+      "attributes": {
+        "Ref": "",
+        "SpaceArn": "The space's Amazon Resource Name (ARN)."
+      },
+      "description": "Creates a space used for real time collaboration in a Domain.",
+      "properties": {
+        "DomainId": "The ID of the associated Domain.",
+        "SpaceName": "The name of the space.",
+        "SpaceSettings": "A collection of space settings.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
+      }
+    },
+    "AWS::SageMaker::Space.CustomImage": {
+      "attributes": {},
+      "description": "A custom SageMaker image. For more information, see [Bring your own SageMaker image](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-byoi.html) .",
+      "properties": {
+        "AppImageConfigName": "The name of the AppImageConfig.",
+        "ImageName": "The name of the CustomImage. Must be unique to your account.",
+        "ImageVersionNumber": "The version number of the CustomImage."
+      }
+    },
+    "AWS::SageMaker::Space.JupyterServerAppSettings": {
+      "attributes": {},
+      "description": "The JupyterServer app settings.",
+      "properties": {
+        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the JupyterServer app. If you use the `LifecycleConfigArns` parameter, then this parameter is also required."
+      }
+    },
+    "AWS::SageMaker::Space.KernelGatewayAppSettings": {
+      "attributes": {},
+      "description": "The KernelGateway app settings.",
+      "properties": {
+        "CustomImages": "A list of custom SageMaker images that are configured to run as a KernelGateway app.",
+        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the KernelGateway app.\n\n> The Amazon SageMaker Studio UI does not use the default instance type value set here. The default instance type set here is used when Apps are created using the AWS Command Line Interface or AWS CloudFormation and the instance type parameter value is not passed."
+      }
+    },
+    "AWS::SageMaker::Space.ResourceSpec": {
+      "attributes": {},
+      "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
+      "properties": {
+        "InstanceType": "The instance type that the image version runs on.\n\n> *JupyterServer apps* only support the `system` value.\n> \n> For *KernelGateway apps* , the `system` value is translated to `ml.t3.medium` . KernelGateway apps also support all other values for available instance types.",
+        "SageMakerImageArn": "The ARN of the SageMaker image that the image version belongs to.",
+        "SageMakerImageVersionArn": "The ARN of the image version created on the instance."
+      }
+    },
+    "AWS::SageMaker::Space.SpaceSettings": {
+      "attributes": {},
+      "description": "A collection of space settings.",
+      "properties": {
+        "JupyterServerAppSettings": "The JupyterServer app settings.",
+        "KernelGatewayAppSettings": "The KernelGateway app settings."
+      }
+    },
     "AWS::SageMaker::UserProfile": {
       "attributes": {
         "Ref": "`Ref` returns the Domain ID and the user profile name, such as `d-xxxxxxxxxxxx` and `my-user-profile` , respectively.",
@@ -47671,7 +47763,7 @@
         "IncludeSpace": "Specifies whether to include the space character. If you include this switch, the password can contain space characters.",
         "PasswordLength": "The length of the password. If you don't include this parameter, the default length is 32 characters.",
         "RequireEachIncludedType": "Specifies whether to include at least one upper and lowercase letter, one number, and one punctuation. If you don't include this switch, the password contains at least one of every character type.",
-        "SecretStringTemplate": "A template that the generated string must match."
+        "SecretStringTemplate": "A template that the generated string must match. When you make a change to this property, a new secret version is created."
       }
     },
     "AWS::SecretsManager::Secret.ReplicaRegion": {
