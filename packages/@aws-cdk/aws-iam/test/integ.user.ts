@@ -1,4 +1,5 @@
 import { App, CfnOutput, SecretValue, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { User } from '../lib';
 
 const app = new App();
@@ -32,5 +33,9 @@ new CfnOutput(stack, 'NameForUserImportedByAttributes', { value: userImportedByA
 new CfnOutput(stack, 'NameForUserImportedByAttributesPath', { value: userImportedByAttributesPath.userName });
 new CfnOutput(stack, 'NameForUserImportedByAttributesPathMultiple', { value: userImportedByAttributesPathMultiple.userName });
 new CfnOutput(stack, 'NameForUserImportedByName', { value: userImportedByName.userName });
+
+new IntegTest(app, 'iam-user-test', {
+  testCases: [stack],
+});
 
 app.synth();

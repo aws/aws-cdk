@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "30.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-iam-policy.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -124,6 +118,12 @@
         ]
       },
       "displayName": "PolicyInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
