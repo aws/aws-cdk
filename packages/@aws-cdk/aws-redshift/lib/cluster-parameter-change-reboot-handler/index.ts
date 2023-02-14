@@ -17,7 +17,7 @@ async function rebootClusterIfRequired(clusterId: string, parameterGroupName: st
   // https://docs.aws.amazon.com/redshift/latest/APIReference/API_ClusterParameterStatus.html
   async function executeActionForStatus(status: string, retryDurationMs?: number): Promise<void> {
     await sleep(retryDurationMs ?? 0);
-    if (['pending-reboot', 'apply-deferred', 'apply-error', 'unknown-error'].includes(status)) {
+    if (['pending-reboot', 'apply-deferred', 'apply-error'].includes(status)) {
       try {
         await redshift.rebootCluster({ ClusterIdentifier: clusterId }).promise();
       } catch (err) {
