@@ -39,7 +39,7 @@ jobs:
         run: |-
           npm -g install lerna npm-check-updates@^9.0.0
       - name: Build Integ Runner
-        run: cd packages/@aws-cdk/integ-runner && ../../../scripts/buildup
+        run: lerna run build --scope @aws-cdk/integ-runner --include-dependencies
       - name: List Mono-Repo Packages
         id: list-packages
         # These need to be ignored from the `ncu` runs!

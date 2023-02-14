@@ -41,9 +41,9 @@ jobs:
         run: |-
           npm -g install lerna npm-check-updates@^9.0.0
       - name: Build CLI
-        run: cd packages/aws-cdk && ../../scripts/buildup
+        run: lerna run build --scope aws-cdk --include-dependencies --stream
       - name: Build Integ Runner
-        run: cd packages/@aws-cdk/integ-runner && ../../../scripts/buildup
+        run: lerna run build --scope @aws-cdk/integ-runner --include-dependencies --stream
       - name: List Mono-Repo Packages
         id: list-packages
         # These need to be ignored from the `ncu` runs!
