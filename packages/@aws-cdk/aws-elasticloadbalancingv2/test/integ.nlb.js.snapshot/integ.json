@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
     "elbv2-integ/DefaultTest": {
       "stacks": [
         "aws-cdk-elbv2-integ"
       ],
-      "assertionStack": "elbv2-integ/DefaultTest/DeployAssert"
+      "assertionStack": "elbv2-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "elbv2integDefaultTestDeployAssert6120E394"
     }
   }
 }

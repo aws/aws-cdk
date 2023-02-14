@@ -439,6 +439,8 @@
   "LBListenerTargetGroupF04FCF6D": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
+    "HealthCheckIntervalSeconds": 250,
+    "HealthCheckProtocol": "TCP",
     "Port": 443,
     "Protocol": "TCP",
     "Targets": [

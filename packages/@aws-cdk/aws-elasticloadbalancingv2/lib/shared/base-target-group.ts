@@ -74,8 +74,9 @@ export interface HealthCheck {
 
   /**
    * The approximate number of seconds between health checks for an individual target.
+   * Must be 5 to 300 seconds
    *
-   * @default Duration.seconds(30)
+   * @default 10 seconds if protocol is `GENEVE`, 35 seconds if target type is `lambda`, else 30 seconds
    */
   readonly interval?: cdk.Duration;
 
