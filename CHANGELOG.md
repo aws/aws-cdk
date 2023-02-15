@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.193.0](https://github.com/aws/aws-cdk/compare/v1.192.0...v1.193.0) (2023-02-15)
+
 ## [1.192.0](https://github.com/aws/aws-cdk/compare/v1.191.0...v1.192.0) (2023-02-09)
 
 
