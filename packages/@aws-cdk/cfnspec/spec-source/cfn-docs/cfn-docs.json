@@ -12954,7 +12954,7 @@
       "attributes": {},
       "description": "Specifies the version of the Server Message Block (SMB) protocol that AWS DataSync uses to access an SMB file server.",
       "properties": {
-        "Version": "By default, DataSync automatically chooses an SMB protocol version based on negotiation with your SMB file server. You also can configure DataSync to use a specific SMB version, but we recommend doing this only if DataSync has trouble negotiating with the SMB file server automatically.\n\nThese are the following options for configuring the SMB version:\n\n- `AUTOMATIC` (default): DataSync and the SMB file server negotiate a protocol version that they mutually support. (DataSync supports SMB versions 2.1.0 and later.)\n\nThis is the recommended option. If you instead choose a specific version that your file server doesn't support, you may get an `Operation Not Supported` error.\n- `SMB3` : Restricts the protocol negotiation to only SMB version 3.0.2.\n- `SMB2` : Restricts the protocol negotiation to only SMB version 2.1.0."
+        "Version": "By default, DataSync automatically chooses an SMB protocol version based on negotiation with your SMB file server. You also can configure DataSync to use a specific SMB version, but we recommend doing this only if DataSync has trouble negotiating with the SMB file server automatically.\n\nThese are the following options for configuring the SMB version:\n\n- `AUTOMATIC` (default): DataSync and the SMB file server negotiate a protocol version that they mutually support. (DataSync supports SMB versions 1.0 and later.)\n\nThis is the recommended option. If you instead choose a specific version that your file server doesn't support, you may get an `Operation Not Supported` error.\n- `SMB3` : Restricts the protocol negotiation to only SMB version 3.0.2.\n- `SMB2` : Restricts the protocol negotiation to only SMB version 2.1.\n- `SMB2_0` : Restricts the protocol negotiation to only SMB version 2.0.\n- `SMB1` : Restricts the protocol negotiation to only SMB version 1.0.\n\n> The `SMB1` option isn't available when [creating an Amazon FSx for NetApp ONTAP location](https://docs.aws.amazon.com/datasync/latest/userguide/API_CreateLocationFsxOntap.html) ."
       }
     },
     "AWS::DataSync::LocationFSxOpenZFS": {
@@ -13142,7 +13142,7 @@
       "attributes": {},
       "description": "Specifies the version of the SMB protocol that DataSync uses to access your SMB file server.",
       "properties": {
-        "Version": "By default, DataSync automatically chooses an SMB protocol version based on negotiation with your SMB file server. You also can configure DataSync to use a specific SMB version, but we recommend doing this only if DataSync has trouble negotiating with the SMB file server automatically.\n\nThese are the following options for configuring the SMB version:\n\n- `AUTOMATIC` (default): DataSync and the SMB file server negotiate a protocol version that they mutually support. (DataSync supports SMB versions 2.1.0 and later.)\n\nThis is the recommended option. If you instead choose a specific version that your file server doesn't support, you may get an `Operation Not Supported` error.\n- `SMB3` : Restricts the protocol negotiation to only SMB version 3.0.2.\n- `SMB2` : Restricts the protocol negotiation to only SMB version 2.1.0."
+        "Version": "By default, DataSync automatically chooses an SMB protocol version based on negotiation with your SMB file server. You also can configure DataSync to use a specific SMB version, but we recommend doing this only if DataSync has trouble negotiating with the SMB file server automatically.\n\nThese are the following options for configuring the SMB version:\n\n- `AUTOMATIC` (default): DataSync and the SMB file server negotiate a protocol version that they mutually support. (DataSync supports SMB versions 1.0 and later.)\n\nThis is the recommended option. If you instead choose a specific version that your file server doesn't support, you may get an `Operation Not Supported` error.\n- `SMB3` : Restricts the protocol negotiation to only SMB version 3.0.2.\n- `SMB2` : Restricts the protocol negotiation to only SMB version 2.1.\n- `SMB2_0` : Restricts the protocol negotiation to only SMB version 2.0.\n- `SMB1` : Restricts the protocol negotiation to only SMB version 1.0.\n\n> The `SMB1` option isn't available when [creating an Amazon FSx for NetApp ONTAP location](https://docs.aws.amazon.com/datasync/latest/userguide/API_CreateLocationFsxOntap.html) ."
       }
     },
     "AWS::DataSync::Task": {
@@ -20080,7 +20080,7 @@
         "RoleArn": "The Amazon Resource Name (ARN) of the role that is used for target invocation.\n\nIf you're setting an event bus in another account as the target and that account granted permission to your account through an organization instead of directly by the account ID, you must specify a `RoleArn` with proper permissions in the `Target` structure, instead of here in this parameter.",
         "ScheduleExpression": "The scheduling expression. For example, \"cron(0 20 * * ? *)\", \"rate(5 minutes)\". For more information, see [Creating an Amazon EventBridge rule that runs on a schedule](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html) .",
         "State": "The state of the rule.",
-        "Targets": "Adds the specified targets to the specified rule, or updates the targets if they are already associated with the rule.\n\nTargets are the resources that are invoked when a rule is triggered.\n\nThe maximum number of entries per request is 10.\n\n> Each rule can have up to five (5) targets associated with it at one time. \n\nFor a list of services you can configure as targets for events, see [EventBridge targets](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html) in the *Amazon EventBridge User Guide* .\n\nCreating rules with built-in targets is supported only in the AWS Management Console . The built-in targets are:\n\n- `EC2 CreateSnapshot API call`\n- `EC2 RebootInstances API call`\n- `EC2 StopInstances API call`\n- `EC2 TerminateInstances API call`\n\nFor some target types, `PutTargets` provides target-specific parameters. If the target is a Kinesis data stream, you can optionally specify which shard the event goes to by using the `KinesisParameters` argument. To invoke a command on multiple EC2 instances with one rule, you can use the `RunCommandParameters` field.\n\nTo be able to make API calls against the resources that you own, Amazon EventBridge needs the appropriate permissions:\n\n- For AWS Lambda and Amazon SNS resources, EventBridge relies on resource-based policies.\n- For EC2 instances, Kinesis Data Streams, AWS Step Functions state machines and API Gateway APIs, EventBridge relies on IAM roles that you specify in the `RoleARN` argument in `PutTargets` .\n\nFor more information, see [Authentication and Access Control](https://docs.aws.amazon.com/eventbridge/latest/userguide/auth-and-access-control-eventbridge.html) in the *Amazon EventBridge User Guide* .\n\nIf another AWS account is in the same region and has granted you permission (using `PutPermission` ), you can send events to that account. Set that account's event bus as a target of the rules in your account. To send the matched events to the other account, specify that account's event bus as the `Arn` value when you run `PutTargets` . If your account sends events to another account, your account is charged for each sent event. Each event sent to another account is charged as a custom event. The account receiving the event is not charged. For more information, see [Amazon EventBridge Pricing](https://docs.aws.amazon.com/eventbridge/pricing/) .\n\n> `Input` , `InputPath` , and `InputTransformer` are not available with `PutTarget` if the target is an event bus of a different AWS account. \n\nIf you are setting the event bus of another account as the target, and that account granted permission to your account through an organization instead of directly by the account ID, then you must specify a `RoleArn` with proper permissions in the `Target` structure. For more information, see [Sending and Receiving Events Between AWS Accounts](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html) in the *Amazon EventBridge User Guide* .\n\nFor more information about enabling cross-account events, see [PutPermission](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutPermission.html) .\n\n*Input* , *InputPath* , and *InputTransformer* are mutually exclusive and optional parameters of a target. When a rule is triggered due to a matched event:\n\n- If none of the following arguments are specified for a target, then the entire event is passed to the target in JSON format (unless the target is Amazon EC2 Run Command or Amazon ECS task, in which case nothing from the event is passed to the target).\n- If *Input* is specified in the form of valid JSON, then the matched event is overridden with this constant.\n- If *InputPath* is specified in the form of JSONPath (for example, `$.detail` ), then only the part of the event specified in the path is passed to the target (for example, only the detail part of the event is passed).\n- If *InputTransformer* is specified, then one or more specified JSONPaths are extracted from the event and used as values in a template that you specify as the input to the target.\n\nWhen you specify `InputPath` or `InputTransformer` , you must use JSON dot notation, not bracket notation.\n\nWhen you add targets to a rule and the associated rule triggers soon after, new or updated targets might not be immediately invoked. Allow a short period of time for changes to take effect.\n\nThis action can partially fail if too many requests are made at the same time. If that happens, `FailedEntryCount` is non-zero in the response and each entry in `FailedEntries` provides the ID of the failed target and the error code."
+        "Targets": "Adds the specified targets to the specified rule, or updates the targets if they are already associated with the rule.\n\nTargets are the resources that are invoked when a rule is triggered.\n\nThe maximum number of entries per request is 10.\n\n> Each rule can have up to five (5) targets associated with it at one time. \n\nFor a list of services you can configure as targets for events, see [EventBridge targets](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html) in the *Amazon EventBridge User Guide* .\n\nCreating rules with built-in targets is supported only in the AWS Management Console . The built-in targets are:\n\n- `Amazon EBS CreateSnapshot API call`\n- `Amazon EC2 RebootInstances API call`\n- `Amazon EC2 StopInstances API call`\n- `Amazon EC2 TerminateInstances API call`\n\nFor some target types, `PutTargets` provides target-specific parameters. If the target is a Kinesis data stream, you can optionally specify which shard the event goes to by using the `KinesisParameters` argument. To invoke a command on multiple EC2 instances with one rule, you can use the `RunCommandParameters` field.\n\nTo be able to make API calls against the resources that you own, Amazon EventBridge needs the appropriate permissions:\n\n- For AWS Lambda and Amazon SNS resources, EventBridge relies on resource-based policies.\n- For EC2 instances, Kinesis Data Streams, AWS Step Functions state machines and API Gateway APIs, EventBridge relies on IAM roles that you specify in the `RoleARN` argument in `PutTargets` .\n\nFor more information, see [Authentication and Access Control](https://docs.aws.amazon.com/eventbridge/latest/userguide/auth-and-access-control-eventbridge.html) in the *Amazon EventBridge User Guide* .\n\nIf another AWS account is in the same region and has granted you permission (using `PutPermission` ), you can send events to that account. Set that account's event bus as a target of the rules in your account. To send the matched events to the other account, specify that account's event bus as the `Arn` value when you run `PutTargets` . If your account sends events to another account, your account is charged for each sent event. Each event sent to another account is charged as a custom event. The account receiving the event is not charged. For more information, see [Amazon EventBridge Pricing](https://docs.aws.amazon.com/eventbridge/pricing/) .\n\n> `Input` , `InputPath` , and `InputTransformer` are not available with `PutTarget` if the target is an event bus of a different AWS account. \n\nIf you are setting the event bus of another account as the target, and that account granted permission to your account through an organization instead of directly by the account ID, then you must specify a `RoleArn` with proper permissions in the `Target` structure. For more information, see [Sending and Receiving Events Between AWS Accounts](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html) in the *Amazon EventBridge User Guide* .\n\nFor more information about enabling cross-account events, see [PutPermission](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutPermission.html) .\n\n*Input* , *InputPath* , and *InputTransformer* are mutually exclusive and optional parameters of a target. When a rule is triggered due to a matched event:\n\n- If none of the following arguments are specified for a target, then the entire event is passed to the target in JSON format (unless the target is Amazon EC2 Run Command or Amazon ECS task, in which case nothing from the event is passed to the target).\n- If *Input* is specified in the form of valid JSON, then the matched event is overridden with this constant.\n- If *InputPath* is specified in the form of JSONPath (for example, `$.detail` ), then only the part of the event specified in the path is passed to the target (for example, only the detail part of the event is passed).\n- If *InputTransformer* is specified, then one or more specified JSONPaths are extracted from the event and used as values in a template that you specify as the input to the target.\n\nWhen you specify `InputPath` or `InputTransformer` , you must use JSON dot notation, not bracket notation.\n\nWhen you add targets to a rule and the associated rule triggers soon after, new or updated targets might not be immediately invoked. Allow a short period of time for changes to take effect.\n\nThis action can partially fail if too many requests are made at the same time. If that happens, `FailedEntryCount` is non-zero in the response and each entry in `FailedEntries` provides the ID of the failed target and the error code."
       }
     },
     "AWS::Events::Rule.AwsVpcConfiguration": {
@@ -28700,7 +28700,7 @@
         "ExcludeAttachmentFilePatterns": "A list of regular expression patterns to exclude certain documents in your Salesforce. Documents that match the patterns are excluded from the index. Documents that don't match the patterns are included in the index. If a document matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the document isn't included in the index.\n\nThe pattern is applied to the name of the attached file.",
         "IncludeAttachmentFilePatterns": "A list of regular expression patterns to include certain documents in your Salesforce. Documents that match the patterns are included in the index. Documents that don't match the patterns are excluded from the index. If a document matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the document isn't included in the index.\n\nThe pattern is applied to the name of the attached file.",
         "KnowledgeArticleConfiguration": "Configuration information for the knowledge article types that Amazon Kendra indexes. Amazon Kendra indexes standard knowledge articles and the standard fields of knowledge articles, or the custom fields of custom knowledge articles, but not both.",
-        "SecretArn": "The Amazon Resource Name (ARN) of an AWS Secrets Manager secret that contains the key/value pairs required to connect to your Salesforce instance. The secret must contain a JSON structure with the following keys:\n\n- authenticationUrl - The OAUTH endpoint that Amazon Kendra connects to get an OAUTH token.\n- consumerKey - The application public key generated when you created your Salesforce application.\n- consumerSecret - The application private key generated when you created your Salesforce application.\n- password - The password associated with the user logging in to the Salesforce instance.\n- securityToken - The token associated with the user account logging in to the Salesforce instance.\n- username - The user name of the user logging in to the Salesforce instance.",
+        "SecretArn": "The Amazon Resource Name (ARN) of an AWS Secrets Manager secret that contains the key/value pairs required to connect to your Salesforce instance. The secret must contain a JSON structure with the following keys:\n\n- authenticationUrl - The OAUTH endpoint that Amazon Kendra connects to get an OAUTH token.\n- consumerKey - The application public key generated when you created your Salesforce application.\n- consumerSecret - The application private key generated when you created your Salesforce application.\n- password - The password associated with the user logging in to the Salesforce instance.\n- securityToken - The token associated with the user logging in to the Salesforce instance.\n- username - The user name of the user logging in to the Salesforce instance.",
         "ServerUrl": "The instance URL for the Salesforce site that you want to index.",
         "StandardObjectAttachmentConfiguration": "Configuration information for processing attachments to Salesforce standard objects.",
         "StandardObjectConfigurations": "Configuration of the Salesforce standard objects that Amazon Kendra indexes."
@@ -30833,9 +30833,9 @@
       "attributes": {},
       "description": "Configuration values that override the container image Dockerfile settings. For more information, see [Container image settings](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html#images-parms) .",
       "properties": {
-        "Command": "Specifies parameters that you want to pass in with ENTRYPOINT.",
-        "EntryPoint": "Specifies the entry point to their application, which is typically the location of the runtime executable.",
-        "WorkingDirectory": "Specifies the working directory."
+        "Command": "Specifies parameters that you want to pass in with ENTRYPOINT. You can specify a maximum of 1,500 parameters in the list.",
+        "EntryPoint": "Specifies the entry point to their application, which is typically the location of the runtime executable. You can specify a maximum of 1,500 string entries in the list.",
+        "WorkingDirectory": "Specifies the working directory. The length of the directory string cannot exceed 1,000 characters."
       }
     },
     "AWS::Lambda::Function.RuntimeManagementConfig": {
@@ -35955,52 +35955,52 @@
       },
       "description": "Adds a new playback configuration to AWS Elemental MediaTailor .",
       "properties": {
-        "AdDecisionServerUrl": "The URL for the ad decision server (ADS). This includes the specification of static parameters and placeholders for dynamic parameters. MediaTailor substitutes player-specific and session-specific parameters as needed when calling the ADS. Alternately, for testing you can provide a static VAST URL. The maximum length is 25,000 characters.",
-        "AvailSuppression": "The configuration for avail suppression, also known as ad suppression. For more information about ad suppression, see [Ad Suppression](https://docs.aws.amazon.com/mediatailor/latest/ug/ad-behavior.html) .",
-        "Bumper": "The configuration for bumpers. Bumpers are short audio or video clips that play at the start or before the end of an ad break. To learn more about bumpers, see [Bumpers](https://docs.aws.amazon.com/mediatailor/latest/ug/bumpers.html) .",
-        "CdnConfiguration": "The configuration for using a content delivery network (CDN), like Amazon CloudFront, for content and ad segment management.",
+        "AdDecisionServerUrl": "",
+        "AvailSuppression": "",
+        "Bumper": "",
+        "CdnConfiguration": "",
         "ConfigurationAliases": "The player parameters and aliases used as dynamic variables during session initialization. For more information, see [Domain Variables](https://docs.aws.amazon.com/mediatailor/latest/ug/variables-domain.html) .",
-        "DashConfiguration": "The configuration for DASH content.",
-        "HlsConfiguration": "",
-        "LivePreRollConfiguration": "The configuration for pre-roll ad insertion.",
-        "ManifestProcessingRules": "The configuration for manifest processing rules. Manifest processing rules enable customization of the personalized manifests created by MediaTailor.",
-        "Name": "The identifier for the playback configuration.",
-        "PersonalizationThresholdSeconds": "Defines the maximum duration of underfilled ad time (in seconds) allowed in an ad break. If the duration of underfilled ad time exceeds the personalization threshold, then the personalization of the ad break is abandoned and the underlying content is shown. This feature applies to *ad replacement* in live and VOD streams, rather than ad insertion, because it relies on an underlying content stream. For more information about ad break behavior, including ad replacement and insertion, see [Ad Behavior in MediaTailor](https://docs.aws.amazon.com/mediatailor/latest/ug/ad-behavior.html) .",
-        "SlateAdUrl": "The URL for a high-quality video asset to transcode and use to fill in time that's not used by ads. MediaTailor shows the slate to fill in gaps in media content. Configuring the slate is optional for non-VPAID configurations. For VPAID, the slate is required because MediaTailor provides it in the slots that are designated for dynamic ad content. The slate must be a high-quality asset that contains both audio and video.",
-        "Tags": "The tags to assign to the playback configuration.",
-        "TranscodeProfileName": "The name that is used to associate this playback configuration with a custom transcode profile. This overrides the dynamic transcoding defaults of MediaTailor. Use this only if you have already set up custom profiles with the help of AWS Support.",
-        "VideoContentSourceUrl": "The URL prefix for the parent manifest for the stream, minus the asset ID. The maximum length is 512 characters."
+        "DashConfiguration": "",
+        "HlsConfiguration": "The configuration for HLS content.",
+        "LivePreRollConfiguration": "",
+        "ManifestProcessingRules": "",
+        "Name": "",
+        "PersonalizationThresholdSeconds": "",
+        "SlateAdUrl": "",
+        "Tags": "",
+        "TranscodeProfileName": "",
+        "VideoContentSourceUrl": ""
       }
     },
     "AWS::MediaTailor::PlaybackConfiguration.AdMarkerPassthrough": {
       "attributes": {},
-      "description": "For HLS, when set to `true` , MediaTailor passes through `EXT-X-CUE-IN` , `EXT-X-CUE-OUT` , and `EXT-X-SPLICEPOINT-SCTE35` ad markers from the origin manifest to the MediaTailor personalized manifest.\n\nNo logic is applied to these ad markers. For example, if `EXT-X-CUE-OUT` has a value of `60` , but no ads are filled for that ad break, MediaTailor will not set the value to `0` .",
+      "description": "",
       "properties": {
-        "Enabled": "Enables ad marker passthrough for your configuration."
+        "Enabled": ""
       }
     },
     "AWS::MediaTailor::PlaybackConfiguration.AvailSuppression": {
       "attributes": {},
-      "description": "The configuration for avail suppression, also known as ad suppression. For more information about ad suppression, see [Ad Suppression](https://docs.aws.amazon.com/mediatailor/latest/ug/ad-behavior.html) .",
+      "description": "",
       "properties": {
-        "Mode": "Sets the ad suppression mode. By default, ad suppression is off and all ad breaks are filled with ads or slate. When Mode is set to BEHIND_LIVE_EDGE, ad suppression is active and MediaTailor won't fill ad breaks on or behind the ad suppression Value time in the manifest lookback window.",
-        "Value": "A live edge offset time in HH:MM:SS. MediaTailor won't fill ad breaks on or behind this time in the manifest lookback window. If Value is set to 00:00:00, it is in sync with the live edge, and MediaTailor won't fill any ad breaks on or behind the live edge. If you set a Value time, MediaTailor won't fill any ad breaks on or behind this time in the manifest lookback window. For example, if you set 00:45:00, then MediaTailor will fill ad breaks that occur within 45 minutes behind the live edge, but won't fill ad breaks on or behind 45 minutes behind the live edge."
+        "Mode": "",
+        "Value": ""
       }
     },
     "AWS::MediaTailor::PlaybackConfiguration.Bumper": {
       "attributes": {},
-      "description": "The configuration for bumpers. Bumpers are short audio or video clips that play at the start or before the end of an ad break. To learn more about bumpers, see [Bumpers](https://docs.aws.amazon.com/mediatailor/latest/ug/bumpers.html) .",
+      "description": "",
       "properties": {
-        "EndUrl": "The URL for the end bumper asset.",
-        "StartUrl": "The URL for the start bumper asset."
+        "EndUrl": "",
+        "StartUrl": ""
       }
     },
     "AWS::MediaTailor::PlaybackConfiguration.CdnConfiguration": {
       "attributes": {},
-      "description": "The configuration for using a content delivery network (CDN), like Amazon CloudFront, for content and ad segment management.",
+      "description": "",
       "properties": {
-        "AdSegmentUrlPrefix": "A non-default content delivery network (CDN) to serve ad segments. By default, MediaTailor uses Amazon CloudFront with default cache settings as its CDN for ad segments. To set up an alternate CDN, create a rule in your CDN for the origin ads.mediatailor.&lt;region>.amazonaws.com. Then specify the rule's name in this AdSegmentUrlPrefix. When MediaTailor serves a manifest, it reports your CDN as the source for ad segments.",
-        "ContentSegmentUrlPrefix": "A content delivery network (CDN) to cache content segments, so that content requests don\u2019t always have to go to the origin server. First, create a rule in your CDN for the content segment origin server. Then specify the rule's name in this ContentSegmentUrlPrefix. When MediaTailor serves a manifest, it reports your CDN as the source for content segments."
+        "AdSegmentUrlPrefix": "",
+        "ContentSegmentUrlPrefix": ""
       }
     },
     "AWS::MediaTailor::PlaybackConfiguration.DashConfiguration": {
@@ -36008,8 +36008,8 @@
       "description": "The configuration for DASH content.",
       "properties": {
         "ManifestEndpointPrefix": "The URL generated by MediaTailor to initiate a playback session. The session uses server-side reporting. This setting is ignored in PUT operations.",
-        "MpdLocation": "The setting that controls whether MediaTailor includes the Location tag in DASH manifests. MediaTailor populates the Location tag with the URL for manifest update requests, to be used by players that don't support sticky redirects. Disable this if you have CDN routing rules set up for accessing MediaTailor manifests, and you are either using client-side reporting or your players support sticky HTTP redirects. Valid values are DISABLED and EMT_DEFAULT. The EMT_DEFAULT setting enables the inclusion of the tag and is the default value.",
-        "OriginManifestType": "The setting that controls whether MediaTailor handles manifests from the origin server as multi-period manifests or single-period manifests. If your origin server produces single-period manifests, set this to SINGLE_PERIOD. The default setting is MULTI_PERIOD. For multi-period manifests, omit this setting or set it to MULTI_PERIOD."
+        "MpdLocation": "The setting that controls whether MediaTailor includes the Location tag in DASH manifests. MediaTailor populates the Location tag with the URL for manifest update requests, to be used by players that don't support sticky redirects. Disable this if you have CDN routing rules set up for accessing MediaTailor manifests, and you are either using client-side reporting or your players support sticky HTTP redirects. Valid values are `DISABLED` and `EMT_DEFAULT` . The `EMT_DEFAULT` setting enables the inclusion of the tag and is the default value.",
+        "OriginManifestType": "The setting that controls whether MediaTailor handles manifests from the origin server as multi-period manifests or single-period manifests. If your origin server produces single-period manifests, set this to `SINGLE_PERIOD` . The default setting is `MULTI_PERIOD` . For multi-period manifests, omit this setting or set it to `MULTI_PERIOD` ."
       }
     },
     "AWS::MediaTailor::PlaybackConfiguration.HlsConfiguration": {
@@ -36021,17 +36021,17 @@
     },
     "AWS::MediaTailor::PlaybackConfiguration.LivePreRollConfiguration": {
       "attributes": {},
-      "description": "The configuration for pre-roll ad insertion.",
+      "description": "",
       "properties": {
-        "AdDecisionServerUrl": "The URL for the ad decision server (ADS) for pre-roll ads. This includes the specification of static parameters and placeholders for dynamic parameters. MediaTailor substitutes player-specific and session-specific parameters as needed when calling the ADS. Alternately, for testing, you can provide a static VAST URL. The maximum length is 25,000 characters.",
-        "MaxDurationSeconds": "The maximum allowed duration for the pre-roll ad avail. MediaTailor won't play pre-roll ads to exceed this duration, regardless of the total duration of ads that the ADS returns."
+        "AdDecisionServerUrl": "",
+        "MaxDurationSeconds": ""
       }
     },
     "AWS::MediaTailor::PlaybackConfiguration.ManifestProcessingRules": {
       "attributes": {},
-      "description": "The configuration for manifest processing rules. Manifest processing rules enable customization of the personalized manifests created by MediaTailor.",
+      "description": "",
       "properties": {
-        "AdMarkerPassthrough": "For HLS, when set to `true` , MediaTailor passes through `EXT-X-CUE-IN` , `EXT-X-CUE-OUT` , and `EXT-X-SPLICEPOINT-SCTE35` ad markers from the origin manifest to the MediaTailor personalized manifest.\n\nNo logic is applied to these ad markers. For example, if `EXT-X-CUE-OUT` has a value of `60` , but no ads are filled for that ad break, MediaTailor will not set the value to `0` ."
+        "AdMarkerPassthrough": ""
       }
     },
     "AWS::MemoryDB::ACL": {
@@ -42298,42 +42298,42 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "The state of the certificate revocation list (CRL) after a read or write operation.",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The revocation record for a certificate, following the x509 v3 standard.",
+        "Enabled": "Indicates whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the CRL.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
     "AWS::RolesAnywhere::Profile": {
       "attributes": {
-        "ProfileArn": "",
+        "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "A list of tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
       "attributes": {
         "Ref": "`Ref` returns `TrustAnchorId` .",
         "TrustAnchorArn": "The ARN of the trust anchor.",
-        "TrustAnchorId": ""
+        "TrustAnchorId": "The unique primary identifier of the TrustAnchor"
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "The state of the trust anchor after a read or write operation.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -42343,15 +42343,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the trust anchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -44522,7 +44522,7 @@
         "Name": "A name for the SSM document.\n\n> You can't use the following strings as document name prefixes. These are reserved by AWS for use as document name prefixes:\n> \n> - `aws`\n> - `amazon`\n> - `amzn`",
         "Requires": "A list of SSM documents required by a document. This parameter is used exclusively by AWS AppConfig . When a user creates an AWS AppConfig configuration in an SSM document, the user must also specify a required document for validation purposes. In this case, an `ApplicationConfiguration` document requires an `ApplicationConfigurationSchema` document for validation purposes. For more information, see [What is AWS AppConfig ?](https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html) in the *AWS AppConfig User Guide* .",
         "Tags": "AWS CloudFormation resource tags to apply to the document. Use tags to help you identify and categorize resources.",
-        "TargetType": "Specify a target type to define the kinds of resources the document can run on. For example, to run a document on EC2 instances, specify the following value: `/AWS::EC2::Instance` . If you specify a value of '/' the document can run on all types of resources. If you don't specify a value, the document can't run on any resources. For a list of valid resource types, see [AWS resource and property types reference](https://docs.aws.amazon.com//AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) in the *AWS CloudFormation User Guide* .",
+        "TargetType": "Specify a target type to define the kinds of resources the document can run on. For example, to run a document on EC2 instances, specify the following value: `/AWS::EC2::Instance` . If you specify a value of '/' the document can run on all types of resources. If you don't specify a value, the document can't run on any resources. For a list of valid resource types, see [AWS resource and property types reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) in the *AWS CloudFormation User Guide* .",
         "UpdateMethod": "If the document resource you specify in your template already exists, this parameter determines whether a new version of the existing document is created, or the existing document is replaced. `Replace` is the default method. If you specify `NewVersion` for the `UpdateMethod` parameter, and the `Name` of the document does not match an existing resource, a new document is created. When you specify `NewVersion` , the default version of the document is changed to the newly created version.",
         "VersionName": "An optional field specifying the version of the artifact you are creating with the document. For example, `Release12.1` . This value is unique across all versions of a document, and can't be changed."
       }
