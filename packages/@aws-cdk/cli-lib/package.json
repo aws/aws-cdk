@@ -1,0 +1,116 @@
+{
+  "name": "@aws-cdk/cli-lib",
+  "description": "AWS CDK Programmatic CLI library",
+  "version": "0.0.0",
+  "private": true,
+  "main": "lib/main.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.Cli.Lib",
+        "packageId": "Amazon.CDK.Cli.Lib",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.cli.lib",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-cli-lib"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.cli-lib",
+        "module": "aws_cdk.cli_lib",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "scripts": {
+    "attribute": "node-bundle validate --external=fsevents:optional --entrypoint=lib/index.js --fix --dont-attribute \"^@aws-cdk/|^cdk-assets$|^cdk-cli-wrapper$|^aws-cdk$\"",
+    "awslint": "cdk-awslint",
+    "build": "cdk-build",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test": "yarn build && yarn test",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract",
+    "build+test+package": "yarn build+test && yarn package",
+    "bundle": "esbuild --bundle lib/index.ts --target=node14 --platform=node --external:fsevents --minify-whitespace --outfile=lib/main.js",
+    "compat": "cdk-compat",
+    "gen": "../../../packages/aws-cdk/generate.sh",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "pkglint": "pkglint -f",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "test": "cdk-test",
+    "watch": "cdk-watch"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/cli-lib.AwsCdkCli"
+    ]
+  },
+  "cdk-build": {
+    "post": [
+      "yarn attribute",
+      "cp ../../../node_modules/vm2/lib/bridge.js ../../../node_modules/vm2/lib/setup-sandbox.js ./lib",
+      "yarn bundle"
+    ],
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "ubergen": {
+    "exclude": true
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/node-bundle": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.5.2",
+    "aws-cdk": "0.0.0",
+    "constructs": "^10.0.0",
+    "jest": "^27.5.1",
+    "ts-node": "^10.9.1"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/cli-lib"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "separate-module": true,
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "awscdkio": {
+    "announce": false
+  }
+}

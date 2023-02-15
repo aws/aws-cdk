@@ -2,7 +2,9 @@ import * as child_process from 'child_process';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { DockerImage, FileSystem } from '../lib';
+import { DockerBuildSecret, DockerImage, FileSystem } from '../lib';
+
+const dockerCmd = process.env.CDK_DOCKER ?? 'docker';
 
 describe('bundling', () => {
   afterEach(() => {
@@ -33,7 +35,7 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith('docker', [
+    expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:delegated',
@@ -74,13 +76,13 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.firstCall.calledWith('docker', [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--build-arg', 'TEST_ARG=cdk-test',
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
@@ -110,13 +112,13 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.firstCall.calledWith('docker', [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--platform', platform,
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
@@ -146,13 +148,13 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.firstCall.calledWith('docker', [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--target', targetStage,
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
@@ -281,7 +283,7 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith('docker', [
+    expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:delegated',
@@ -392,7 +394,7 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith('docker', [
+    expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '--security-opt', 'no-new-privileges',
       '-u', 'user:group',
@@ -427,7 +429,7 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith('docker', [
+    expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '--network', 'host',
       '-u', 'user:group',
@@ -464,7 +466,7 @@ describe('bundling', () => {
       // nevertheless what we want to check here is that the command was built correctly and triggered
     };
 
-    expect(spawnSyncStub.calledWith('docker', [
+    expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '--volumes-from', 'foo',
@@ -507,7 +509,7 @@ describe('bundling', () => {
     });
 
     // THEN
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:z,delegated',
@@ -548,7 +550,7 @@ describe('bundling', () => {
     });
 
     // THEN
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:delegated',
@@ -589,7 +591,7 @@ describe('bundling', () => {
     });
 
     // THEN
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:delegated',
@@ -597,5 +599,13 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('ensure correct Docker CLI arguments are returned', () => {
+    // GIVEN
+    const fromSrc = DockerBuildSecret.fromSrc('path.json');
+
+    // THEN
+    expect(fromSrc).toEqual('src=path.json');
   });
 });

@@ -1,5 +1,5 @@
 // Fixture with packages imported, but nothing else
-import { Stack } from '@aws-cdk/core';
+import { Stack, SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as apprunner from '@aws-cdk/aws-apprunner';
 import * as path from 'path';

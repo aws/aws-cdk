@@ -26,6 +26,7 @@ import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
+import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
 
 /**
@@ -359,6 +360,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default Architecture.X86_64
    */
   readonly architecture?: Architecture;
+
+  /**
+   * Sets the runtime management configuration for a function's version.
+   * @default Auto
+   */
+  readonly runtimeManagementMode?: RuntimeManagementMode;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -436,7 +443,7 @@ export class Function extends FunctionBase {
 
     cfn.overrideLogicalId(Lazy.uncachedString({
       produce: () => {
-        const hash = calculateFunctionHash(this);
+        const hash = calculateFunctionHash(this, this.hashMixins.join(''));
         const logicalId = trimFromStart(originalLogicalId, 255 - 32);
         return `${logicalId}${hash}`;
       },
@@ -664,6 +671,7 @@ export class Function extends FunctionBase {
   private _currentVersion?: Version;
 
   private _architecture?: Architecture;
+  private hashMixins = new Array<string>();
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -813,6 +821,7 @@ export class Function extends FunctionBase {
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
+      runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
@@ -870,9 +879,6 @@ export class Function extends FunctionBase {
     }
 
     this.currentVersionOptions = props.currentVersionOptions;
-    if (props.currentVersionOptions) {
-      this.currentVersion;
-    }
 
     if (props.filesystem) {
       if (!props.vpc) {
@@ -941,6 +947,31 @@ export class Function extends FunctionBase {
     }
     this.environment[key] = { value, ...options };
     return this;
+  }
+
+  /**
+   * Mix additional information into the hash of the Version object
+   *
+   * The Lambda Function construct does its best to automatically create a new
+   * Version when anything about the Function changes (its code, its layers,
+   * any of the other properties).
+   *
+   * However, you can sometimes source information from places that the CDK cannot
+   * look into, like the deploy-time values of SSM parameters. In those cases,
+   * the CDK would not force the creation of a new Version object when it actually
+   * should.
+   *
+   * This method can be used to invalidate the current Version object. Pass in
+   * any string into this method, and make sure the string changes when you know
+   * a new Version needs to be created.
+   *
+   * This method may be called more than once.
+   */
+  public invalidateVersionBasedOn(x: string) {
+    if (Token.isUnresolved(x)) {
+      throw new Error('invalidateVersionOn: input may not contain unresolved tokens');
+    }
+    this.hashMixins.push(x);
   }
 
   /**

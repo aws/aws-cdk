@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.102"
-        }
-      },
       "aws-cdk-msk-integ": {
         "id": "aws-cdk-msk-integ",
         "path": "aws-cdk-msk-integ",
@@ -1115,7 +1107,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.102"
+              "version": "10.1.189"
             }
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
@@ -1126,6 +1118,14 @@
                 "id": "ServiceRole",
                 "path": "aws-cdk-msk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-msk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-msk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
@@ -1207,7 +1207,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip"
+                      "s3Key": "a268caa53756f51bda8ad5f499be4ed8484a81b314811806fbb66f874837c476.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1749,6 +1749,22 @@
               "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-msk-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-msk-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -1769,7 +1785,7 @@
                 "path": "MskLogging/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.102"
+                  "version": "10.1.189"
                 }
               },
               "DeployAssert": {
@@ -1789,7 +1805,7 @@
                             "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.102"
+                              "version": "10.1.189"
                             }
                           }
                         },
@@ -1816,57 +1832,11 @@
                           "version": "0.0.0"
                         }
                       },
-                      "AssertEqualsS3listObjectsV2": {
-                        "id": "AssertEqualsS3listObjectsV2",
-                        "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertEqualsS3listObjectsV2",
-                        "children": {
-                          "AssertionProvider": {
-                            "id": "AssertionProvider",
-                            "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertEqualsS3listObjectsV2/AssertionProvider",
-                            "children": {
-                              "AssertionsProvider": {
-                                "id": "AssertionsProvider",
-                                "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertEqualsS3listObjectsV2/AssertionProvider/AssertionsProvider",
-                                "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.1.102"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "Default": {
-                            "id": "Default",
-                            "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertEqualsS3listObjectsV2/Default",
-                            "children": {
-                              "Default": {
-                                "id": "Default",
-                                "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertEqualsS3listObjectsV2/Default/Default",
-                                "constructInfo": {
-                                  "fqn": "@aws-cdk/core.CfnResource",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CustomResource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "AssertionResults": {
-                            "id": "AssertionResults",
-                            "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertEqualsS3listObjectsV2/AssertionResults",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnOutput",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertionResults",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                          "fqn": "@aws-cdk/core.CfnOutput",
                           "version": "0.0.0"
                         }
                       }
@@ -1907,7 +1877,23 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.102"
+                      "version": "10.1.189"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "MskLogging/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "MskLogging/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -1926,6 +1912,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.189"
         }
       }
     },

@@ -62,7 +62,6 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^27.5.2",
-    "@types/node": "^14.18.34",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "jest": "^27.5.1",
     "@aws-cdk/pkglint": "0.0.0"
