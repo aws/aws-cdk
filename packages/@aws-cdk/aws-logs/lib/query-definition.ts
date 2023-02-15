@@ -144,12 +144,12 @@ export class QueryString {
    * @param statements one or more query statements for the specified command, or undefined
    * @returns an array of the query string lines generated from the provided command and statements
    */
-  buildQueryLines(command: string, statements?: string[]): string[] {
+  private buildQueryLines(command: string, statements?: string[]): string[] {
     if (statements === undefined) {
       return [];
     }
 
-    return (typeof statements === 'string' ? [statements] : statements).map(
+    return statements.map(
       (statement: string): string => this.buildQueryLine(command, statement),
     );
   }
@@ -161,7 +161,7 @@ export class QueryString {
    * @param statement a single query statement
    * @returns a single query string line generated from the provided command and statement
    */
-  buildQueryLine(command: string, statement?: string): string {
+  private buildQueryLine(command: string, statement?: string): string {
     return statement ? `${command} ${statement}` : '';
   }
 }
