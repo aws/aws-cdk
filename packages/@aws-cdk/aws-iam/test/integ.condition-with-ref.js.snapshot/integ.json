@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.condition-with-ref": {
+    "iam-test-condition-with-ref/DefaultTest": {
       "stacks": [
         "test-condition-with-ref"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "iam-test-condition-with-ref/DefaultTest/DeployAssert",
+      "assertionStackName": "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
