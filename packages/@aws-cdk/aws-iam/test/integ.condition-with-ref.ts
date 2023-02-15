@@ -1,4 +1,5 @@
 import { App, CfnJson, CfnParameter, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import { AccountRootPrincipal, Role } from '../lib';
 
@@ -23,5 +24,8 @@ class MyStack extends Stack {
 }
 
 const app = new App();
-new MyStack(app, 'test-condition-with-ref');
+new IntegTest(app, 'iam-test-condition-with-ref', {
+  testCases: [new MyStack(app, 'test-condition-with-ref')],
+})
+;
 app.synth();

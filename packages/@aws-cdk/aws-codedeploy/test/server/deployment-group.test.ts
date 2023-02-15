@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -20,6 +20,23 @@ describe('CodeDeploy Server Deployment Group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'ApplicationName': {
         'Ref': 'MyApp3CE31C26',
+      },
+    });
+  });
+
+  test('can create a deployment group with no alarms', () => {
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup', true);
+
+    const application = new codedeploy.ServerApplication(stack, 'MyApp');
+    new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
+      application,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      AlarmConfiguration: {
+        Enabled: false,
+        Alarms: Match.absent(),
       },
     });
   });
@@ -494,25 +511,34 @@ describe('CodeDeploy Server Deployment Group', () => {
     expect(() => app.synth()).toThrow('Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
   });
 
-  test('deploymentGroup from Arn knows its account and region', () => {
-    // GIVEN
-    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'blabla-1' } });
+  describe('deploymentGroup from ARN in different account and region', () => {
+    let stack: cdk.Stack;
+    let application: codedeploy.IServerApplication;
+    let group: codedeploy.IServerDeploymentGroup;
 
-    // WHEN
-    const application = codedeploy.ServerApplication.fromServerApplicationArn(stack, 'Application', 'arn:aws:codedeploy:theregion-1:222222222222:application:MyApplication');
-    const group = codedeploy.ServerDeploymentGroup.fromServerDeploymentGroupAttributes(stack, 'Group', {
-      application,
-      deploymentGroupName: 'DeploymentGroup',
+    const account = '222222222222';
+    const region = 'theregion-1';
+
+    beforeEach(() => {
+      stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'blabla-1' } });
+
+      application = codedeploy.ServerApplication.fromServerApplicationArn(stack, 'Application', `arn:aws:codedeploy:${region}:${account}:application:MyApplication`);
+      group = codedeploy.ServerDeploymentGroup.fromServerDeploymentGroupAttributes(stack, 'Group', {
+        application,
+        deploymentGroupName: 'DeploymentGroup',
+      });
     });
 
-    // THEN
-    expect(application.env).toEqual(expect.objectContaining({
-      account: '222222222222',
-      region: 'theregion-1',
-    }));
-    expect(group.env).toEqual(expect.objectContaining({
-      account: '222222222222',
-      region: 'theregion-1',
-    }));
+    test('knows its account and region', () => {
+      // THEN
+      expect(application.env).toEqual(expect.objectContaining({ account, region }));
+      expect(group.env).toEqual(expect.objectContaining({ account, region }));
+    });
+
+    test('references the predefined DeploymentGroupConfig in the right region', () => {
+      expect(group.deploymentConfig.deploymentConfigArn).toEqual(expect.stringContaining(
+        `:codedeploy:${region}:${account}:deploymentconfig:CodeDeployDefault.OneAtATime`,
+      ));
+    });
   });
 });
