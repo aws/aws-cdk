@@ -282,4 +282,19 @@ describe('SlackChannelConfiguration', () => {
       Ref: 'ARN',
     });
   });
+
+  test('guardrail policy should be configured by ARN when specified', () => {
+    new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'ConfigurationName',
+      guardrailPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchReadOnlyAccess')],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
+      GuardrailPolicies: [
+        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/CloudWatchReadOnlyAccess']] },
+      ],
+    });
+  });
 });

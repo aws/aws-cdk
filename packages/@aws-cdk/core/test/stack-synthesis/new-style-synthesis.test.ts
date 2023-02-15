@@ -223,6 +223,27 @@ describe('new style synthesis', () => {
 
   });
 
+  test('dockerBuildArgs or dockerBuildSecrets without directoryName', () => {
+    // WHEN
+    expect(() => {
+      stack.synthesizer.addDockerImageAsset({
+        sourceHash: 'abcdef',
+        dockerBuildArgs: {
+          ABC: '123',
+        },
+      });
+    }).toThrowError(/Exactly one of 'directoryName' or 'executable' is required/);
+
+    expect(() => {
+      stack.synthesizer.addDockerImageAsset({
+        sourceHash: 'abcdef',
+        dockerBuildSecrets: {
+          DEF: '456',
+        },
+      });
+    }).toThrowError(/Exactly one of 'directoryName' or 'executable' is required/);
+  });
+
   test('synthesis', () => {
     // GIVEN
     stack.synthesizer.addFileAsset({

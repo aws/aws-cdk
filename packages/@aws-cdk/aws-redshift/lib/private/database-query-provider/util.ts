@@ -1,5 +1,5 @@
-import { Column } from '../../table';
 import { ClusterProps } from './types';
+import { Column } from '../../table';
 
 export function makePhysicalId(resourceName: string, clusterProps: ClusterProps, requestId: string): string {
   return `${clusterProps.clusterName}:${clusterProps.databaseName}:${resourceName}:${requestId}`;

@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { CfnWorkGroup } from '../lib';
 
 const app = new cdk.App();
@@ -19,6 +20,10 @@ new CfnWorkGroup(stack, 'AthenaWorkgroup', {
       value: 'value2',
     },
   ],
+});
+
+new IntegTest(app, 'athena-workgroup-tags-test', {
+  testCases: [stack],
 });
 
 app.synth();

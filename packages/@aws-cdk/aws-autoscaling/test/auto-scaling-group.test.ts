@@ -1345,6 +1345,27 @@ describe('auto scaling group', () => {
 
   });
 
+  test('Can set Capacity Rebalancing via constructor property', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      capacityRebalance: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      CapacityRebalance: true,
+    });
+
+  });
+
+
   test('Can protect new instances from scale-in via constructor property', () => {
     // GIVEN
     const stack = new cdk.Stack();

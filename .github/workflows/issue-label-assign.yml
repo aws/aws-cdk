@@ -70,7 +70,6 @@ env:
           [
             {"area":"package/tools","keywords":["cli","command line","init","synth","diff","bootstrap"],"labels":["package/tools"],"enableGlobalAffixes":false},
             {"area":"@aws-cdk/alexa-ask","keywords":["alexa-ask","alexa"],"labels":["@aws-cdk/alexa-ask"]},
-            {"area":"@aws-cdk/app-delivery","keywords":["app-delivery"],"labels":["@aws-cdk/app-delivery"]},
             {"area":"@aws-cdk/assert","keywords":["assert"],"labels":["@aws-cdk/assert"]},
             {"area":"@aws-cdk/assertions","keywords":["assertions"],"labels":["@aws-cdk/assertions"]},
             {"area":"@aws-cdk/assets","keywords":["assets","staging"],"labels":["@aws-cdk/assets"]},

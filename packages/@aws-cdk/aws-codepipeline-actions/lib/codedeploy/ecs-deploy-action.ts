@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Action } from '../action';
+import { forceSupportStackDependency } from '../private/stack-dependency';
 
 /**
  * Configuration for replacing a placeholder string in the ECS task
@@ -177,6 +178,7 @@ export class CodeDeployEcsDeployAction extends Action {
 
     // the Action's Role needs to read from the Bucket to get artifacts
     options.bucket.grantRead(options.role);
+    forceSupportStackDependency(options.bucket, options.role);
 
     const taskDefinitionTemplateArtifact = determineTaskDefinitionArtifact(this.actionProps);
     const appSpecTemplateArtifact = determineAppSpecArtifact(this.actionProps);

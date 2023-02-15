@@ -6,6 +6,24 @@ import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
 
 /**
+ * Methods to build Docker CLI arguments for builds using secrets.
+ *
+ * Docker BuildKit must be enabled to use build secrets.
+ *
+ * @see https://docs.docker.com/build/buildkit/
+ */
+export class DockerBuildSecret {
+  /**
+   * A Docker build secret from a file source
+   * @param src The path to the source file, relative to the build directory.
+   * @returns The latter half required for `--secret`
+   */
+  public static fromSrc(src: string): string {
+    return `src=${src}`;
+  }
+}
+
+/**
  * Bundling options
  *
  */

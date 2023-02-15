@@ -1,4 +1,3 @@
-app-delivery/test/integ.cicd.js
 aws-amplify/test/integ.app-asset-deployment.js
 aws-amplify/test/integ.app-codecommit.js
 aws-amplify/test/integ.app.js

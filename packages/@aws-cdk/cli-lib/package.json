@@ -86,7 +86,6 @@
     "@aws-cdk/node-bundle": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "@types/node": "^14.18.36",
     "aws-cdk": "0.0.0",
     "constructs": "^10.0.0",
     "jest": "^27.5.1",

@@ -5,9 +5,9 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
+import { DatabaseQueryHandlerProps } from './handler-props';
 import { Cluster } from '../cluster';
 import { DatabaseOptions } from '../database-options';
-import { DatabaseQueryHandlerProps } from './handler-props';
 
 export interface DatabaseQueryProps<HandlerProps> extends DatabaseOptions {
   readonly handler: string;

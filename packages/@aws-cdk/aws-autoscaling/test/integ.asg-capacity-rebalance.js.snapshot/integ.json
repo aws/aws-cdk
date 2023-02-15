@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "CapacityRebalanceTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-autoscaling-integ"
+      ],
+      "assertionStack": "CapacityRebalanceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CapacityRebalanceTestDefaultTestDeployAssert759ED6BE"
+    }
+  }
+}

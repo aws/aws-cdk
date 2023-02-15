@@ -307,12 +307,12 @@ describe('tests', () => {
     const targetGroup = listener.addTargets('ECS', {
       port: 80,
       healthCheck: {
-        interval: cdk.Duration.seconds(60),
+        interval: cdk.Duration.seconds(350),
       },
     });
 
     const validationErrors: string[] = targetGroup.node.validate();
-    const intervalError = validationErrors.find((err) => /Health check interval '60' not supported. Must be one of the following values/.test(err));
+    const intervalError = validationErrors.find((err) => /Health check interval '350' not supported. Must be between/.test(err));
     expect(intervalError).toBeDefined();
   });
 

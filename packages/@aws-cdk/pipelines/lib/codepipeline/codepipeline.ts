@@ -317,10 +317,15 @@ export interface CodeBuildOptions {
  * users that don't need to switch out engines.
  */
 export class CodePipeline extends PipelineBase {
+  /**
+   * Whether SelfMutation is enabled for this CDK Pipeline
+   */
+  public readonly selfMutationEnabled: boolean;
+
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
   private _synthProject?: cb.IProject;
-  private readonly selfMutation: boolean;
+  private _selfMutationProject?: cb.IProject;
   private readonly useChangeSets: boolean;
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
@@ -345,7 +350,7 @@ export class CodePipeline extends PipelineBase {
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {
     super(scope, id, props);
 
-    this.selfMutation = props.selfMutation ?? true;
+    this.selfMutationEnabled = props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
     this.cliVersion = props.cliVersion ?? preferredCliVersion();
@@ -363,6 +368,22 @@ export class CodePipeline extends PipelineBase {
       throw new Error('Call pipeline.buildPipeline() before reading this property');
     }
     return this._synthProject;
+  }
+
+  /**
+   * The CodeBuild project that performs the SelfMutation
+   *
+   * Will throw an error if this is accessed before `buildPipeline()`
+   * is called, or if selfMutation has been disabled.
+   */
+  public get selfMutationProject(): cb.IProject {
+    if (!this._pipeline) {
+      throw new Error('Call pipeline.buildPipeline() before reading this property');
+    }
+    if (!this._selfMutationProject) {
+      throw new Error('No selfMutationProject since the selfMutation property was set to false');
+    }
+    return this._selfMutationProject;
   }
 
   /**
@@ -417,7 +438,7 @@ export class CodePipeline extends PipelineBase {
     }
 
     const graphFromBp = new PipelineGraph(this, {
-      selfMutation: this.selfMutation,
+      selfMutation: this.selfMutationEnabled,
       singlePublisherPerAssetType: this.singlePublisherPerAssetType,
       prepareStep: this.useChangeSets,
     });
@@ -448,7 +469,7 @@ export class CodePipeline extends PipelineBase {
 
   private pipelineStagesAndActionsFromGraph(structure: PipelineGraph) {
     // Translate graph into Pipeline Stages and Actions
-    let beforeSelfMutation = this.selfMutation;
+    let beforeSelfMutation = this.selfMutationEnabled;
     for (const stageNode of flatten(structure.graph.sortedChildren())) {
       if (!isGraph(stageNode)) {
         throw new Error(`Top-level children must be graphs, got '${stageNode}'`);
@@ -526,6 +547,9 @@ export class CodePipeline extends PipelineBase {
 
       if (nodeType === CodeBuildProjectType.SYNTH) {
         this._synthProject = result.project;
+      }
+      if (nodeType === CodeBuildProjectType.SELF_MUTATE) {
+        this._selfMutationProject = result.project;
       }
     }
 

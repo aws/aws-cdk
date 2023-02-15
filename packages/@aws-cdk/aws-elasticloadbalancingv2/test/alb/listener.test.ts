@@ -645,14 +645,14 @@ describe('tests', () => {
 
     // WHEN
     const metrics = new Array<Metric>();
-    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
-    metrics.push(group.metricIpv6RequestCount());
-    metrics.push(group.metricUnhealthyHostCount());
-    metrics.push(group.metricUnhealthyHostCount());
-    metrics.push(group.metricRequestCount());
-    metrics.push(group.metricTargetConnectionErrorCount());
-    metrics.push(group.metricTargetResponseTime());
-    metrics.push(group.metricTargetTLSNegotiationErrorCount());
+    metrics.push(group.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
+    metrics.push(group.metrics.ipv6RequestCount());
+    metrics.push(group.metrics.unhealthyHostCount());
+    metrics.push(group.metrics.unhealthyHostCount());
+    metrics.push(group.metrics.requestCount());
+    metrics.push(group.metrics.targetConnectionErrorCount());
+    metrics.push(group.metrics.targetResponseTime());
+    metrics.push(group.metrics.targetTLSNegotiationErrorCount());
 
     for (const metric of metrics) {
       expect(metric.namespace).toEqual('AWS/ApplicationELB');

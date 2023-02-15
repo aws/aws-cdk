@@ -218,6 +218,13 @@
                         "type": "string"
                     }
                 },
+                "buildSecrets": {
+                    "description": "Build secrets to pass to the `docker build` command (Default no build secrets are passed)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "target": {
                     "description": "Docker target to build to (Default no build target)",
                     "type": "string"

@@ -166,7 +166,9 @@ test('SAML principal', () => {
           Action: 'sts:AssumeRoleWithSAML',
           Condition: {
             StringEquals: {
-              'SAML:aud': 'https://signin.aws.amazon.com/saml',
+              'SAML:aud': {
+                'Fn::Join': ['', ['https://signin.', { Ref: 'AWS::URLSuffix' }, '/saml']],
+              },
             },
           },
           Effect: 'Allow',
@@ -237,6 +239,45 @@ test('PrincipalWithConditions.addCondition should work', () => {
             StringEquals: {
               'aws:PrincipalOrgID': ['o-xxxxxxxxxxx'],
               'aws:PrincipalTag/critical': 'true',
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Service: 'service.amazonaws.com',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('PrincipalWithConditions.addCondition with a new condition operator should work', () => {
+  // GIVEN
+  const stack = new Stack();
+  const basePrincipal = new iam.ServicePrincipal('service.amazonaws.com');
+  const principalWithConditions = new iam.PrincipalWithConditions(basePrincipal, { });
+
+  // WHEN
+  principalWithConditions.addCondition('StringEquals', { 'aws:PrincipalTag/critical': 'true' });
+  principalWithConditions.addCondition('IpAddress', { 'aws:SourceIp': '0.0.0.0/0' });
+
+  new iam.Role(stack, 'Role', {
+    assumedBy: principalWithConditions,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Condition: {
+            StringEquals: {
+              'aws:PrincipalTag/critical': 'true',
+            },
+            IpAddress: {
+              'aws:SourceIp': '0.0.0.0/0',
             },
           },
           Effect: 'Allow',

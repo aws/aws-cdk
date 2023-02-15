@@ -297,7 +297,7 @@ export class CfnResource extends CfnRefElement {
       return;
     }
 
-    addDependency(this, target);
+    addDependency(this, target, `{${this.node.path}}.addDependency({${target.node.path}})`);
   }
 
   /**

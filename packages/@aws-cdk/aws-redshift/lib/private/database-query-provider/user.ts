@@ -2,10 +2,10 @@
 import * as AWSLambda from 'aws-lambda';
 /* eslint-disable-next-line import/no-extraneous-dependencies */
 import * as SecretsManager from 'aws-sdk/clients/secretsmanager';
-import { UserHandlerProps } from '../handler-props';
 import { executeStatement } from './redshift-data';
 import { ClusterProps } from './types';
 import { makePhysicalId } from './util';
+import { UserHandlerProps } from '../handler-props';
 
 const secretsManager = new SecretsManager();
 

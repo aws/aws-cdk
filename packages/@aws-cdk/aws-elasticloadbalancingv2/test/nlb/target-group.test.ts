@@ -135,13 +135,13 @@ describe('tests', () => {
       vpc,
       port: 80,
       healthCheck: {
-        interval: cdk.Duration.seconds(5),
+        interval: cdk.Duration.seconds(3),
       },
     });
 
     expect(() => {
       app.synth();
-    }).toThrow(/Health check interval '5' not supported. Must be one of the following values '10,30'./);
+    }).toThrow(/Health check interval '3' not supported. Must be between 5 and 300./);
   });
 
   test('targetGroupName unallowed: more than 32 characters', () => {
@@ -579,8 +579,8 @@ describe('tests', () => {
 
     // WHEN
     const metrics = new Array<cloudwatch.Metric>();
-    metrics.push(targetGroup.metricHealthyHostCount());
-    metrics.push(targetGroup.metricUnHealthyHostCount());
+    metrics.push(targetGroup.metrics.healthyHostCount());
+    metrics.push(targetGroup.metrics.unHealthyHostCount());
 
     // THEN
 
@@ -618,8 +618,8 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(() => targetGroup.metricHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
-    expect(() => targetGroup.metricUnHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
+    expect(() => targetGroup.metrics.healthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
+    expect(() => targetGroup.metrics.unHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
   });
 
   test('imported targetGroup has targetGroupName', () => {
@@ -681,5 +681,39 @@ describe('tests', () => {
         ],
       },
     });
+  });
+
+  test('imported targetGroup has metrics', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const targetGroup = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+      loadBalancerArns: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/net/my-load-balancer/73e2d6bc24d8a067',
+    });
+
+    const metric = targetGroup.metrics.custom('MetricName');
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/NetworkELB');
+    expect(stack.resolve(metric.dimensions)).toEqual({
+      LoadBalancer: 'net/my-load-balancer/73e2d6bc24d8a067',
+      TargetGroup: 'targetgroup/my-target-group/50dc6c495c0c9188',
+    });
+  });
+
+  test('imported targetGroup without load balancer cannot have metrics', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const targetGroup = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+    });
+
+    expect(() => targetGroup.metrics.custom('MetricName')).toThrow();
   });
 });

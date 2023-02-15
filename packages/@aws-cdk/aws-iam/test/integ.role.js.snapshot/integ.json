@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.role": {
+    "integ-iam-role/DefaultTest": {
       "stacks": [
         "integ-iam-role-1"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ-iam-role/DefaultTest/DeployAssert",
+      "assertionStackName": "integiamroleDefaultTestDeployAssert48737E31"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

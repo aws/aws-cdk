@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "nested-stacks-docker.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -77,6 +71,12 @@
         ]
       },
       "displayName": "nested-stacks-docker"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

@@ -22,6 +22,8 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    *
    * Note: this must be TaskDefinition, and not ITaskDefinition,
    * as it requires properties that are not known for imported task definitions
+   * If you want to run a RunTask with an imported task definition,
+   * consider using CustomState
    */
   readonly taskDefinition: ecs.TaskDefinition;
 
