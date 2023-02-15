@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { App, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as iam from '../lib';
 
@@ -13,10 +14,15 @@ class TestStack extends Stack {
 
     new iam.Role(this, 'Role', {
       assumedBy: new iam.SamlConsolePrincipal(provider),
+      description: 'fix the partition issue',
     });
   }
 }
 
 const app = new App();
-new TestStack(app, 'cdk-saml-provider');
+
+new IntegTest(app, 'saml-provider-test', {
+  testCases: [new TestStack(app, 'cdk-saml-provider')],
+});
+
 app.synth();
