@@ -618,4 +618,35 @@ describe('lambda authorizer', () => {
 
     expect(oldDeploymentId).not.toEqual(newDeploymentId);
   });
+
+  test('a new deployment is created when an imported lambda function changes name and @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
+    const createApiTemplate = (lambdaFunctionName: string) => {
+      const stack = new Stack();
+      stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
+
+      const func = lambda.Function.fromFunctionName(stack, 'myfunction', lambdaFunctionName);
+
+      const auth = new RequestAuthorizer(stack, 'myauthorizer', {
+        handler: func,
+        resultsCacheTtl: Duration.seconds(0),
+        identitySources: [],
+      });
+
+      const restApi = new RestApi(stack, 'myrestapi');
+      restApi.root.addMethod('ANY', undefined, {
+        authorizer: auth,
+        authorizationType: AuthorizationType.CUSTOM,
+      });
+
+      return Template.fromStack(stack);
+    };
+
+    const oldTemplate = createApiTemplate('foo');
+    const newTemplate = createApiTemplate('bar');
+
+    const oldDeploymentId = Object.keys(oldTemplate.findResources('AWS::ApiGateway::Deployment'))[0];
+    const newDeploymentId = Object.keys(newTemplate.findResources('AWS::ApiGateway::Deployment'))[0];
+
+    expect(oldDeploymentId).not.toEqual(newDeploymentId);
+  });
 });

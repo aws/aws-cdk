@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Arn, ArnFormat, Duration, FeatureFlags, Lazy, Names, Stack, Token } from '@aws-cdk/core';
+import { Arn, ArnFormat, Duration, FeatureFlags, Lazy, Names, Stack } from '@aws-cdk/core';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
@@ -94,31 +94,25 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
 
     this.restApiId = restApi.restApiId;
 
-    let functionName;
-
-    if (this.handler instanceof lambda.Function) {
-      // if not imported, extract the name from the CFN layer to reach
-      // the literal value if it is given (rather than a token)
-      functionName = (this.handler.node.defaultChild as lambda.CfnFunction).functionName;
-    } else {
-      // imported, just take the function name.
-      functionName = this.handler.functionName;
-    }
-
-    let authorizerToken;
-
-    if (!Token.isUnresolved(functionName)) {
-      authorizerToken = JSON.stringify({ functionName });
-    }
-
+    const deployment = restApi.latestDeployment;
     const addToLogicalId = FeatureFlags.of(this).isEnabled(APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID);
 
-    const deployment = restApi.latestDeployment;
     if (deployment && addToLogicalId) {
+      let functionName;
+
+      if (this.handler instanceof lambda.Function) {
+        // if not imported, attempt to get the function name, which
+        // may be a token
+        functionName = (this.handler.node.defaultChild as lambda.CfnFunction).functionName;
+      } else {
+        // if imported, the function name will be a token
+        functionName = this.handler.functionName;
+      }
+
       deployment.node.addDependency(this);
       deployment.addToLogicalId({
         authorizer: this.authorizerProps,
-        authorizerToken,
+        authorizerToken: functionName,
       });
     }
   }
