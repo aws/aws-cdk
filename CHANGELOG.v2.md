@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.65.0](https://github.com/aws/aws-cdk/compare/v2.64.0...v2.65.0) (2023-02-15)
+
+
+### Features
+
+* **autoscaling:** L2 construct for enabling capacity rebalance of autoscaling ([#24025](https://github.com/aws/aws-cdk/issues/24025)) ([d2c63f5](https://github.com/aws/aws-cdk/commit/d2c63f55f8657315ad4e4dd463cfcae07cb66e53)), closes [#22625](https://github.com/aws/aws-cdk/issues/22625)
+* **chatbot:** support guardrail policies ([#24114](https://github.com/aws/aws-cdk/issues/24114)) ([4c72a7d](https://github.com/aws/aws-cdk/commit/4c72a7dc3994ba190f1e1aa467d3087228bcb881)), closes [#20788](https://github.com/aws/aws-cdk/issues/20788)
+* **core:** Allow passing Docker build secrets ([#23778](https://github.com/aws/aws-cdk/issues/23778)) ([74512fa](https://github.com/aws/aws-cdk/commit/74512fa339e0a2937213f519c109ef1207e9d0c6)), closes [#14910](https://github.com/aws/aws-cdk/issues/14910) [#14395](https://github.com/aws/aws-cdk/issues/14395)
+* **elbv2:** add metrics to INetworkTargetGroup and IApplicationTargetGroup ([#23993](https://github.com/aws/aws-cdk/issues/23993)) ([6a9e43f](https://github.com/aws/aws-cdk/commit/6a9e43f0c6f966df4671267eeda21638611dfb1c)), closes [#23853](https://github.com/aws/aws-cdk/issues/23853) [#10850](https://github.com/aws/aws-cdk/issues/10850)
+* **lambda:** add insights version 1.0.178.0 ([#23836](https://github.com/aws/aws-cdk/issues/23836)) ([5272908](https://github.com/aws/aws-cdk/commit/527290854d0fa31e7f41497ede0c1b8b0e1b9ad4))
+
+
+### Bug Fixes
+
+* **bootstrap:** remove Security Hub finding S3.10 ([#24175](https://github.com/aws/aws-cdk/issues/24175)) ([a1da757](https://github.com/aws/aws-cdk/commit/a1da757ce348b4bd66a6d0e7776f2ff8e9f531b6)), closes [/docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-s3-10](https://github.com/aws//docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html/issues/fsbp-s3-10)
+* **codedeploy:** unable to remove alarms from deployment group ([#23308](https://github.com/aws/aws-cdk/issues/23308)) ([eee005f](https://github.com/aws/aws-cdk/commit/eee005f4949d7438467c7448ba8326efa4b79221))
+* **codepipeline:** x-env ECS deployment lacking support stack-dependency ([#24053](https://github.com/aws/aws-cdk/issues/24053)) ([adfe4fa](https://github.com/aws/aws-cdk/commit/adfe4fa137bb748961b4a767d538335490e13ed1)), closes [#24050](https://github.com/aws/aws-cdk/issues/24050) [#24051](https://github.com/aws/aws-cdk/issues/24051)
+* **core:** messages are displayed multiple times per construct ([#24019](https://github.com/aws/aws-cdk/issues/24019)) ([57770bb](https://github.com/aws/aws-cdk/commit/57770bb12ea6d77373f1e9e8e04f6757b440f277)), closes [#9565](https://github.com/aws/aws-cdk/issues/9565)
+* **ec2:** enable set throughput param to CfnVolume ([#24118](https://github.com/aws/aws-cdk/issues/24118)) ([32781f8](https://github.com/aws/aws-cdk/commit/32781f825352f9cb43d8fed5c122b454275b3076)), closes [#24107](https://github.com/aws/aws-cdk/issues/24107) [#24107](https://github.com/aws/aws-cdk/issues/24107)
+* **elbv2:** healthcheck interval is overly restrictive ([#24157](https://github.com/aws/aws-cdk/issues/24157)) ([4f83e02](https://github.com/aws/aws-cdk/commit/4f83e02b85229ebdff3f32ba6fd662ffd707d8db)), closes [#24156](https://github.com/aws/aws-cdk/issues/24156)
+* **iam:** PrincipalWithConditions.addCondition fails with a new key ([#23782](https://github.com/aws/aws-cdk/issues/23782)) ([8951d01](https://github.com/aws/aws-cdk/commit/8951d013bea5dad54b94a6a683f56275ff4e6dba)), closes [#23781](https://github.com/aws/aws-cdk/issues/23781)
+* **iam:** SamlConsolePrincipal does not work in China [#22091](https://github.com/aws/aws-cdk/issues/22091) ([#24034](https://github.com/aws/aws-cdk/issues/24034)) ([2902043](https://github.com/aws/aws-cdk/commit/29020435aeb1a9fb6401572520d0adca8155dc60))
+* **pipelines:** SelfMutation CodeBuild project not accessible ([#24073](https://github.com/aws/aws-cdk/issues/24073)) ([5942978](https://github.com/aws/aws-cdk/commit/594297862f2626b64b174d6998886a40f1b316be))
+* **rds:** database proxies use ids as their resource names directly (under feature flag) ([#23703](https://github.com/aws/aws-cdk/issues/23703)) ([03a0f79](https://github.com/aws/aws-cdk/commit/03a0f79b40e3be95de5421370703eb54c06b7dd7)), closes [#18578](https://github.com/aws/aws-cdk/issues/18578)
+* **s3:** logging bucket blocks KMS_MANAGED encryption ([#23514](https://github.com/aws/aws-cdk/issues/23514)) ([1e8926f](https://github.com/aws/aws-cdk/commit/1e8926fa9bcf561135beaa31379ec1f1e6f79901))
+
 ## [2.64.0](https://github.com/aws/aws-cdk/compare/v2.63.2...v2.64.0) (2023-02-09)
 
 

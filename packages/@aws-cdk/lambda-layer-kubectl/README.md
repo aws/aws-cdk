@@ -26,3 +26,10 @@ fn.addLayers(new KubectlLayer(this, 'KubectlLayer'));
 ```
 
 `kubectl` will be installed under `/opt/kubectl/kubectl`, and `helm` will be installed under `/opt/helm/helm`.
+
+## Alternatives
+
+This module bundles Kubectl v1.20.0 and the associated helm version
+To use alternative Kubectl versions, including the latest available,
+you can use the external module
+[awscdk-asset-kubectl](https://github.com/cdklabs/awscdk-asset-kubectl).
