@@ -249,6 +249,24 @@ describe('volume', () => {
     });
   });
 
+  test('throughput', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(1),
+      volumeType: EbsDeviceVolumeType.GP3,
+      throughput: 200,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
+      Throughput: 200,
+    });
+  });
+
   test('volume: standard', () => {
     // GIVEN
     const stack = new cdk.Stack();

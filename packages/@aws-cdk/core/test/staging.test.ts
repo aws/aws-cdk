@@ -5,10 +5,13 @@ import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage } from '../lib';
+import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileAccess } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
+
+const STUB_INPUT_CP_FILE = '/tmp/docker-stub-cp.input';
+const STUB_INPUT_CP_CONCAT_FILE = '/tmp/docker-stub-cp.input.concat';
 
 enum DockerStubCommand {
   SUCCESS = 'DOCKER_STUB_SUCCESS',
@@ -16,6 +19,7 @@ enum DockerStubCommand {
   SUCCESS_NO_OUTPUT = 'DOCKER_STUB_SUCCESS_NO_OUTPUT',
   MULTIPLE_FILES = 'DOCKER_STUB_MULTIPLE_FILES',
   SINGLE_ARCHIVE = 'DOCKER_STUB_SINGLE_ARCHIVE',
+  VOLUME_SINGLE_ARCHIVE = 'DOCKER_STUB_VOLUME_SINGLE_ARCHIVE',
 }
 
 const FIXTURE_TEST1_DIR = path.join(__dirname, 'fs', 'fixtures', 'test1');
@@ -27,10 +31,16 @@ const ARCHIVE_TARBALL_TEST_HASH = '3e948ff54a277d6001e2452fdbc4a9ef61f916ff662ba
 const userInfo = os.userInfo();
 const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
 
-// this is a way to provide a custom "docker" command for staging.
-process.env.CDK_DOCKER = `${__dirname}/docker-stub.sh`;
 
 describe('staging', () => {
+  beforeAll(() => {
+    // this is a way to provide a custom "docker" command for staging.
+    process.env.CDK_DOCKER = `${__dirname}/docker-stub.sh`;
+  });
+
+  afterAll(() => {
+    delete process.env.CDK_DOCKER;
+  });
 
   afterEach(() => {
     AssetStaging.clearAssetHashCache();
@@ -1252,6 +1262,73 @@ describe('staging', () => {
   });
 });
 
+describe('staging with docker cp', () => {
+  beforeAll(() => {
+    // this is a way to provide a custom "docker" command for staging.
+    process.env.CDK_DOCKER = `${__dirname}/docker-stub-cp.sh`;
+  });
+
+  afterAll(() => {
+    delete process.env.CDK_DOCKER;
+  });
+
+  afterEach(() => {
+    AssetStaging.clearAssetHashCache();
+    if (fs.existsSync(STUB_INPUT_CP_FILE)) {
+      fs.unlinkSync(STUB_INPUT_CP_FILE);
+    }
+    if (fs.existsSync(STUB_INPUT_CP_CONCAT_FILE)) {
+      fs.unlinkSync(STUB_INPUT_CP_CONCAT_FILE);
+    }
+    sinon.restore();
+  });
+
+  test('bundling with docker image copy variant', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const staging = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.VOLUME_SINGLE_ARCHIVE],
+        bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    expect(fs.readdirSync(assembly.directory)).toEqual([
+      'asset.0ec371a2022d29dfd83f5df104e0f01b34233a4e3e839c3c4ec62008f0b9a0e8', // this is the bundle dir
+      'asset.0ec371a2022d29dfd83f5df104e0f01b34233a4e3e839c3c4ec62008f0b9a0e8.zip',
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+    expect(fs.readdirSync(path.join(assembly.directory, 'asset.0ec371a2022d29dfd83f5df104e0f01b34233a4e3e839c3c4ec62008f0b9a0e8'))).toEqual([
+      'test.zip', // bundle dir with "touched" bundled output file
+    ]);
+    expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(staging.isArchive).toEqual(true);
+    const dockerCalls: string[] = readDockerStubInputConcat(STUB_INPUT_CP_CONCAT_FILE).split(/\r?\n/);
+    expect(dockerCalls).toEqual(expect.arrayContaining([
+      expect.stringContaining('volume create assetInput'),
+      expect.stringContaining('volume create assetOutput'),
+      expect.stringMatching('run --name copyContainer.* -v /input:/asset-input -v /output:/asset-output alpine sh -c mkdir -p /asset-input && chown -R .* /asset-output && chown -R .* /asset-input'),
+      expect.stringMatching('cp .*fs/fixtures/test1/\. copyContainer.*:/asset-input'),
+      expect.stringMatching('run --rm -u .* --volumes-from copyContainer.* -w /asset-input alpine DOCKER_STUB_VOLUME_SINGLE_ARCHIVE'),
+      expect.stringMatching('cp copyContainer.*:/asset-output/\. .*'),
+      expect.stringContaining('rm copyContainer'),
+      expect.stringContaining('volume rm assetInput'),
+      expect.stringContaining('volume rm assetOutput'),
+    ]));
+  });
+});
+
 // Reads a docker stub and cleans the volume paths out of the stub.
 function readAndCleanDockerStubInput(file: string) {
   return fs
@@ -1262,10 +1339,10 @@ function readAndCleanDockerStubInput(file: string) {
 }
 
 // Last docker input since last teardown
-function readDockerStubInput() {
-  return readAndCleanDockerStubInput(STUB_INPUT_FILE);
+function readDockerStubInput(file?: string) {
+  return readAndCleanDockerStubInput(file ?? STUB_INPUT_FILE);
 }
 // Concatenated docker inputs since last teardown
-function readDockerStubInputConcat() {
-  return readAndCleanDockerStubInput(STUB_INPUT_CONCAT_FILE);
+function readDockerStubInputConcat(file?: string) {
+  return readAndCleanDockerStubInput(file ?? STUB_INPUT_CONCAT_FILE);
 }
