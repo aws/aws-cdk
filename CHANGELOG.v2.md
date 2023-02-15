@@ -28,11 +28,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **rds:** database proxies use ids as their resource names directly (under feature flag) ([#23703](https://github.com/aws/aws-cdk/issues/23703)) ([03a0f79](https://github.com/aws/aws-cdk/commit/03a0f79b40e3be95de5421370703eb54c06b7dd7)), closes [#18578](https://github.com/aws/aws-cdk/issues/18578)
 * **s3:** logging bucket blocks KMS_MANAGED encryption ([#23514](https://github.com/aws/aws-cdk/issues/23514)) ([1e8926f](https://github.com/aws/aws-cdk/commit/1e8926fa9bcf561135beaa31379ec1f1e6f79901))
 
-
-### Reverts
-
-* "feat(redshift): column compression encodings and comments can now be customised" ([#24165](https://github.com/aws/aws-cdk/issues/24165)) ([615e1ce](https://github.com/aws/aws-cdk/commit/615e1ce6960b2eca6c0705c97f70d00f94d48e36)), closes [aws/aws-cdk#23597](https://github.com/aws/aws-cdk/issues/23597)
-
 ## [2.64.0](https://github.com/aws/aws-cdk/compare/v2.63.2...v2.64.0) (2023-02-09)
 
 
