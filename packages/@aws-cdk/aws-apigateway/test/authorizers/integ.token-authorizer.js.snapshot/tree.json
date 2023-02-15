@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.108"
-        }
-      },
       "TokenAuthorizerInteg": {
         "id": "TokenAuthorizerInteg",
         "path": "TokenAuthorizerInteg",
@@ -24,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "TokenAuthorizerInteg/MyAuthorizerFunction/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "TokenAuthorizerInteg/MyAuthorizerFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "TokenAuthorizerInteg/MyAuthorizerFunction/ServiceRole/Resource",
@@ -276,6 +276,14 @@
                 "id": "CloudWatchRole",
                 "path": "TokenAuthorizerInteg/MyRestApi/CloudWatchRole",
                 "children": {
+                  "ImportCloudWatchRole": {
+                    "id": "ImportCloudWatchRole",
+                    "path": "TokenAuthorizerInteg/MyRestApi/CloudWatchRole/ImportCloudWatchRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "TokenAuthorizerInteg/MyRestApi/CloudWatchRole/Resource",
@@ -381,7 +389,7 @@
                           "Ref": "MyRestApi2D1F47A9"
                         },
                         "deploymentId": {
-                          "Ref": "MyRestApiDeploymentB555B582464879c8d1f9fcce2500f142532cdaec"
+                          "Ref": "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a"
                         },
                         "stageName": "prod"
                       }
@@ -543,6 +551,14 @@
                 "id": "ServiceRole",
                 "path": "TokenAuthorizerInteg/InvokeFunction/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "TokenAuthorizerInteg/InvokeFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "TokenAuthorizerInteg/InvokeFunction/ServiceRole/Resource",
@@ -658,7 +674,23 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.108"
+              "version": "10.1.168"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "TokenAuthorizerInteg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "TokenAuthorizerInteg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
@@ -680,7 +712,7 @@
                 "path": "apigw-token-auth/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.108"
+                  "version": "10.1.168"
                 }
               },
               "DeployAssert": {
@@ -700,7 +732,7 @@
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke3deec958b1e945795e38da5fc2f86753/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.108"
+                              "version": "10.1.168"
                             }
                           }
                         },
@@ -780,7 +812,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.108"
+                      "version": "10.1.168"
                     }
                   },
                   "LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a": {
@@ -796,7 +828,7 @@
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.108"
+                              "version": "10.1.168"
                             }
                           }
                         },
@@ -858,7 +890,7 @@
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke0532e3d95b2a56b147278c621e5800c4/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.108"
+                              "version": "10.1.168"
                             }
                           }
                         },
@@ -906,6 +938,22 @@
                       "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
                       "version": "0.0.0"
                     }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "apigw-token-auth/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "apigw-token-auth/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -923,6 +971,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.168"
         }
       }
     },
