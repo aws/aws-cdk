@@ -643,7 +643,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.65.0' },
     recommendedValue: true,
   },
 
@@ -656,7 +656,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       the alarms from the construct. If this flag is not set, removing all alarms from the construct
       will still leave the alarms configured for the deployment group.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.65.0' },
     recommendedValue: true,
   },
 };

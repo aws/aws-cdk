@@ -43,8 +43,8 @@ Flags come in three types:
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.59.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
-| [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | V2NEXT | (fix) |
-| [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | V2NEXT | (fix) |
+| [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
+| [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
 
 <!-- END table -->
 
@@ -794,7 +794,7 @@ will still leave the alarms configured for the deployment group.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.65.0 | `false` | `true` |
 
 
 ### @aws-cdk/aws-rds:databaseProxyUniqueResourceName
@@ -813,7 +813,7 @@ This is a feature flag as the old behavior was technically incorrect, but users 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.65.0 | `false` | `true` |
 
 
 <!-- END details -->
