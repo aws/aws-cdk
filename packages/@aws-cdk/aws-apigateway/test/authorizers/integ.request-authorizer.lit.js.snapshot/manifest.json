@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "RequestAuthorizerInteg.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5ba1108f5d1f7ce23d5bad675df22e0d3beb4f42fc970713488ea99585299b43.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a605b6be7a978439cf7b93d6214f4ce6d30a9163415575fa17ba0a5857238906.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,6 +51,12 @@
             "data": "MyAuthorizerFunctionRequestAuthorizerIntegMyAuthorizer5D9D41C5PermissionsCB8B246E"
           }
         ],
+        "/RequestAuthorizerInteg/MyAuthorizerFunction/RequestAuthorizerIntegMySecondAuthorizerCCC4ECED:Permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunctionRequestAuthorizerIntegMySecondAuthorizerCCC4ECEDPermissions055F817A"
+          }
+        ],
         "/RequestAuthorizerInteg/MyRestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -78,7 +78,7 @@
         "/RequestAuthorizerInteg/MyRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRestApiDeploymentB555B582dcff966d69deeda8d47e3bf409ce29cb"
+            "data": "MyRestApiDeploymentB555B582d83364d66d67f510f848797cd89349d5"
           }
         ],
         "/RequestAuthorizerInteg/MyRestApi/DeploymentStage.prod/Resource": [
@@ -99,10 +99,28 @@
             "data": "MyRestApiANY05143F93"
           }
         ],
+        "/RequestAuthorizerInteg/MyRestApi/Default/auth/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiauth918A22B9"
+          }
+        ],
+        "/RequestAuthorizerInteg/MyRestApi/Default/auth/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiauthANY12A3CAB7"
+          }
+        ],
         "/RequestAuthorizerInteg/MyAuthorizer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAuthorizer6575980E"
+          }
+        ],
+        "/RequestAuthorizerInteg/MySecondAuthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecondAuthorizer25A69B96"
           }
         ],
         "/RequestAuthorizerInteg/BootstrapVersion": [
@@ -116,9 +134,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "MyRestApiDeploymentB555B5824e51b8fe7583a45923d0b84d7acf920f": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentB555B5824e51b8fe7583a45923d0b84d7acf920f",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "RequestAuthorizerInteg"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
