@@ -66,7 +66,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.189"
+              "version": "10.1.249"
             }
           },
           "BootstrapVersion": {
@@ -258,7 +258,7 @@
                     "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistRolePolicies/SdkProvider/AssertionsProvider",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "version": "10.1.249"
                     }
                   }
                 },
@@ -330,7 +330,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.189"
+              "version": "10.1.249"
             }
           },
           "BootstrapVersion": {
@@ -368,7 +368,7 @@
                 "path": "ImportedRoleTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "version": "10.1.249"
                 }
               }
             },
@@ -388,7 +388,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.249"
         }
       }
     },

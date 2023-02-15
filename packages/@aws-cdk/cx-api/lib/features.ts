@@ -78,6 +78,8 @@ export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@
 export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
 export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
 export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
+export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
+export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -626,6 +628,36 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Set installLatestAwsSdk: true on all resources that need it.',
     introducedIn: { v2: '2.60.0' },
     recommendedValue: false,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DATABASE_PROXY_UNIQUE_RESOURCE_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'Use unique resource name for Database Proxy',
+    detailsMd: `
+      If this flag is not set, the default behavior for \`DatabaseProxy\` is
+      to use \`id\` of the constructor for \`dbProxyName\` when it's not specified in the argument.
+      In this case, users can't deploy \`DatabaseProxy\`s that have the same \`id\` in the same region.
+
+      If this flag is set, the default behavior is to use unique resource names for each \`DatabaseProxy\`.
+
+      This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
+    `,
+    introducedIn: { v2: '2.65.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP]: {
+    type: FlagType.BugFix,
+    summary: 'Remove CloudWatch alarms from deployment group',
+    detailsMd: `
+      Enable this flag to be able to remove all CloudWatch alarms from a deployment group by removing
+      the alarms from the construct. If this flag is not set, removing all alarms from the construct
+      will still leave the alarms configured for the deployment group.
+    `,
+    introducedIn: { v2: '2.65.0' },
+    recommendedValue: true,
   },
 };
 
