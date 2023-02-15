@@ -8,7 +8,6 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { ConfigurationSourceType, Cpu, GitHubConnection, Memory, Runtime, Service, Source, VpcConnector } from '../lib';
 import * as apprunner from '../lib';
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {
@@ -1016,8 +1015,8 @@ test('create a service which is not publicly accessible', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromEcrPublic({
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
       imageConfiguration: { port: 8000 },
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
