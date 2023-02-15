@@ -217,18 +217,12 @@ export interface RestApiProps extends RestApiOptions {
   readonly binaryMediaTypes?: string[];
 
   /**
-   * A nullable integer that is used to enable compression (with non-negative
-   * between 0 and 10485760 (10M) bytes, inclusive) or disable compression
-   * (when undefined) on an API. When compression is enabled, compression or
-   * decompression is not applied on the payload if the payload size is
-   * smaller than this value. Setting it to zero allows compression for any
-   * payload size.
+   * Deprecated
    *
    * @default - Compression is disabled.
-   *
    * @deprecated - superseded by `minCompressionSize`
    */
-  readonly minimumCompressionSize?: Size;
+  readonly minimumCompressionSize?: number;
 
   /**
    * A nullable integer that is used to enable compression (with non-negative
@@ -286,7 +280,7 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    *
    * @default - Compression is disabled.
    */
-  readonly minimumCompressionSize?: Size;
+  readonly minCompressionSize?: Size;
 }
 
 /**
@@ -674,7 +668,7 @@ export class SpecRestApi extends RestApiBase {
       name: this.restApiName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
-      minimumCompressionSize: props.minimumCompressionSize?.toBytes(),
+      minimumCompressionSize: props.minCompressionSize?.toBytes(),
       body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),

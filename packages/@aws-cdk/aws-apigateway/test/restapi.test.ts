@@ -1051,7 +1051,7 @@ describe('SpecRestApi', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Account', 0);
   });
 
-  test('SpecRestApi minimumCompressionSize test', () => {
+  test('SpecRestApi minimumCompressionSize', () => {
     // GIVEN
     const app = new App({
       context: {
@@ -1062,7 +1062,7 @@ describe('SpecRestApi', () => {
     const stack = new Stack(app);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
-      minimumCompressionSize: Size.bytes(1024),
+      minCompressionSize: Size.bytes(1024),
     });
 
     // WHEN
