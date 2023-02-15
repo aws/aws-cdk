@@ -185,18 +185,16 @@ export class LoggingFormat {
   /**
    * Generate logging format from json key pairs
    */
-  public static fromJson(jsonPairs: string[][]): LoggingFormat {
+  public static fromJson(jsonPairs :{[key:string]: string}): LoggingFormat {
     const json: JsonFormatRef[] = [];
-    if (jsonPairs.length == 0) {
+    if (Object.keys(jsonPairs).length == 0) {
       throw new Error('Json key pairs cannot be empty.');
     }
 
-    jsonPairs.forEach(pair => {
-      if (pair.length != 2) {
-        throw new Error('key value pair should be a string array of length 2.');
-      }
-      json.push(new JsonFormatRef(pair[0], pair[1]));
-    });
+    for (const key in jsonPairs) {
+      json.push(new JsonFormatRef(key, jsonPairs[key]));
+    };
+
     return new LoggingFormat(undefined, json);
   };
 
@@ -205,14 +203,14 @@ export class LoggingFormat {
    *
    * @default - no format specified
    */
-  public readonly json?: Array<CfnVirtualNode.JsonFormatRefProperty>;
+  readonly json?: Array<CfnVirtualNode.JsonFormatRefProperty>;
 
   /**
    * Text pattern for the output logs
    *
    * @default - no text pattern specified
    */
-  public readonly text?: string;
+  readonly text?: string;
 
   constructor(text?: string, json?: Array<CfnVirtualNode.JsonFormatRefProperty>) {
     if (text && json) {
@@ -225,8 +223,8 @@ export class LoggingFormat {
 }
 
 /**
-   * Key Value pair json reference for json Format
-   */
+  * Key Value pair json reference for json Format
+  */
 class JsonFormatRef {
   public readonly key: string;
   public readonly value: string;

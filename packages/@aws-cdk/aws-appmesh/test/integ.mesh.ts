@@ -146,7 +146,7 @@ const node4 = mesh.addVirtualNode('node4', {
   },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout',
     appmesh.LoggingFormat.fromJson(
-      [['testKey1', 'testValue1'], ['testKey2', 'testValue2']])),
+      { testKey1: 'testValue1', testKey2: 'testValue2' })),
 });
 
 node4.addBackend(appmesh.Backend.virtualService(

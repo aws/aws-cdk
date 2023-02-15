@@ -238,11 +238,11 @@ const node = new appmesh.VirtualNode(this, 'node', {
   },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout',
     appmesh.LoggingFormat.fromJson(
-      [['testKey1', 'testValue1'], ['testKey2', 'testValue2']])),
+      {testKey1: 'testValue1', testKey2: 'testValue2'})),
 });
 ```
 
-By using a n by 2 sting array, you can sprcify json key pairs to customize the log entry pattern. You can also use text format as below. You can only specify one of these 2 formats.
+By using a key-value pair indexed signature, you can specify json key pairs to customize the log entry pattern. You can also use text format as below. You can only specify one of these 2 formats.
 
 ```ts
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),

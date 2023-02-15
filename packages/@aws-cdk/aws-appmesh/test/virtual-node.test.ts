@@ -105,7 +105,7 @@ describe('virtual node', () => {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout',
             appmesh.LoggingFormat.fromJson(
-              [['testKey1', 'testValue1'], ['testKey2', 'testValue2']])),
+              { testKey1: 'testValue1', testKey2: 'testValue2' })),
         });
 
         node.addListener(appmesh.VirtualNodeListener.tcp({
