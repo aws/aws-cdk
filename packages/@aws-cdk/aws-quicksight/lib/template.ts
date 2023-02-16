@@ -249,14 +249,14 @@ export class Template extends Resource {
       public resourceId = this.template.templateId!;
 
       public get versionDescription() {
-        return this.template.version?.description;
+        return this.template.version!.description;
       };
 
       private _sourceEntity: ITemplate | IAnalysis | undefined;
       public get sourceEntity() {
         if (!this._sourceEntity) {
-          let splitArn = Stack.of(scope).splitArn(this.template.version?.sourceEntityArn!, ArnFormat.SLASH_RESOURCE_NAME);
-          let sourceEntityId: string = this.template.version?.sourceEntityArn?.split('/')[1]!;
+          let splitArn = Stack.of(scope).splitArn(this.template.version!.sourceEntityArn!, ArnFormat.SLASH_RESOURCE_NAME);
+          let sourceEntityId: string = this.template.version!.sourceEntityArn!.split('/')[1]!;
 
           if (splitArn.resource == 'analysis') {
 
@@ -278,7 +278,7 @@ export class Template extends Resource {
         if (!this._placeholders) {
           let placeholders: IDataSet[] = [];
 
-          this.template.version?.dataSetConfigurations?.forEach(function(value) {
+          this.template.version!.dataSetConfigurations?.forEach(function(value) {
             if (value.placeholder) {
               let placeholderId: string = value.placeholder.split('/')[1];
               placeholders.push(DataSet.fromId(scope, placeholderId, placeholderId));
@@ -391,7 +391,7 @@ export class Template extends Resource {
           dataSetPlaceholder: value.dataSetArn,
         });
 
-        _this.placeholders?.push(value);
+        _this.placeholders!.push(value);
       });
 
       sourceEntity = {

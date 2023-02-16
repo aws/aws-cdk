@@ -261,7 +261,7 @@ export class Analysis extends Resource {
       private _theme: ITheme | undefined;
       public get theme(): ITheme {
         if (!this._theme) {
-          let themeId: string = this.analysis.themeArn?.split('/')[1]!;
+          let themeId: string = this.analysis.themeArn!.split('/')[1]!;
           this._theme = Theme.fromId(scope, themeId, themeId);
         }
 

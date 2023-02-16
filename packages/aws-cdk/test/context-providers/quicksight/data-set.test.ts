@@ -1,17 +1,28 @@
 // eslint-disable-next-line import/order
+import * as MockAws from 'aws-sdk-mock';
 import * as Mock from './mock';
+MockAws.setSDK(require.resolve('aws-sdk'));
 
 describe('dataset', () => {
 
   let oldConsoleLog: any;
+  let logEnabled: boolean = false;
 
   beforeAll(() => {
-    oldConsoleLog = global.console.log;
-    global.console.log = jest.fn();
+    if (!logEnabled) {
+      oldConsoleLog = global.console.log;
+      global.console.log = jest.fn();
+    }
+
+    Mock.mockAws(MockAws);
   });
 
   afterAll(() => {
-    global.console.log = oldConsoleLog;
+    if (!logEnabled) {
+      global.console.log = oldConsoleLog;
+    }
+
+    MockAws.restore();
   });
 
   afterEach(() => {

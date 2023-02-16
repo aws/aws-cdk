@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/order
+import * as MockAws from 'aws-sdk-mock';
 import * as Mock from './mock';
+MockAws.setSDK(require.resolve('aws-sdk'));
 
 describe('analysis', () => {
 
@@ -11,12 +13,16 @@ describe('analysis', () => {
       oldConsoleLog = global.console.log;
       global.console.log = jest.fn();
     }
+
+    Mock.mockAws(MockAws);
   });
 
   afterAll(() => {
     if (!logEnabled) {
       global.console.log = oldConsoleLog;
     }
+
+    MockAws.restore();
   });
 
   afterEach(() => {

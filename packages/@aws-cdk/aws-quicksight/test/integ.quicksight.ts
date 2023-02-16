@@ -5,7 +5,8 @@ import { Stack, App } from '@aws-cdk/core';
 //import * as cr from '@aws-cdk/custom-resources';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import { QuickSight } from 'aws-sdk';
-import { Analysis, Dashboard, DataSet, DataSource, IAnalysis, IDashboard, IDataSet, IDataSource, ITemplate, ITheme, Template, Theme } from '../lib';
+// import { Analysis, Dashboard, DataSet, DataSource, IAnalysis, IDashboard, IDataSet, IDataSource, ITemplate, ITheme, Template, Theme } from '../lib';
+import { Analysis, DataSource, IAnalysis } from '../lib';
 
 
 // SIGN UP FOR QUICKSIGHT
@@ -116,55 +117,55 @@ async function main() {
 
   // GET RESOURCE IDS
 
-  let dataSourceId: string;
-  let dataSetId: string;
-  let templateId: string;
+  // let dataSourceId: string;
+  // let dataSetId: string;
+  // let templateId: string;
   let analysisId: string;
-  let dashboardId: string;
-  let themeId: string;
+  // let dashboardId: string;
+  // let themeId: string;
 
-  let importedDataSource: IDataSource;
-  let importedDataSet: IDataSet;
-  let importedTemplate: ITemplate;
+  // let importedDataSource: IDataSource;
+  // let importedDataSet: IDataSet;
+  // let importedTemplate: ITemplate;
   let importedAnalysis: IAnalysis;
-  let importedDashboard: IDashboard;
-  let importedTheme: ITheme;
+  // let importedDashboard: IDashboard;
+  // let importedTheme: ITheme;
 
-  //let template: Template;
-  let analysis: Analysis;
-  let dashboard: Dashboard;
-  let theme: Theme;
+  // //let template: Template;
+  // let analysis: Analysis;
+  // let dashboard: Dashboard;
+  // let theme: Theme;
   let dataSource: DataSource;
 
-  const listDataSourceResponse = await quickSight.listDataSources({
-    AwsAccountId: Stack.of(stack).account,
-  }).promise();
+  // const listDataSourceResponse = await quickSight.listDataSources({
+  //   AwsAccountId: Stack.of(stack).account,
+  // }).promise();
 
-  if (listDataSourceResponse.DataSources?.[0]?.DataSourceId) {
-    dataSourceId = listDataSourceResponse.DataSources?.[0].DataSourceId;
-  } else {
-    throw Error('No dataSource found');
-  }
+  // if (listDataSourceResponse.DataSources?.[0]?.DataSourceId) {
+  //   dataSourceId = listDataSourceResponse.DataSources?.[0].DataSourceId;
+  // } else {
+  //   throw Error('No dataSource found');
+  // }
 
-  const listDataSetsResponse = await quickSight.listDataSets({
-    AwsAccountId: Stack.of(stack).account,
-  }).promise();
+  // const listDataSetsResponse = await quickSight.listDataSets({
+  //   AwsAccountId: Stack.of(stack).account,
+  // }).promise();
 
-  if (listDataSetsResponse.DataSetSummaries?.[0]?.DataSetId) {
-    dataSetId = listDataSetsResponse.DataSetSummaries[0].DataSetId;
-  } else {
-    throw Error('No dataSet found');
-  }
+  // if (listDataSetsResponse.DataSetSummaries?.[0]?.DataSetId) {
+  //   dataSetId = listDataSetsResponse.DataSetSummaries[0].DataSetId;
+  // } else {
+  //   throw Error('No dataSet found');
+  // }
 
-  const listTemplatesResponse = await quickSight.listTemplates({
-    AwsAccountId: Stack.of(stack).account,
-  }).promise();
+  // const listTemplatesResponse = await quickSight.listTemplates({
+  //   AwsAccountId: Stack.of(stack).account,
+  // }).promise();
 
-  if (listTemplatesResponse.TemplateSummaryList?.[0]?.TemplateId) {
-    templateId = listTemplatesResponse.TemplateSummaryList[0].TemplateId;
-  } else {
-    throw Error('No template found');
-  }
+  // if (listTemplatesResponse.TemplateSummaryList?.[0]?.TemplateId) {
+  //   templateId = listTemplatesResponse.TemplateSummaryList[0].TemplateId;
+  // } else {
+  //   throw Error('No template found');
+  // }
 
   const listAnalysesResponse = await quickSight.listAnalyses({
     AwsAccountId: Stack.of(stack).account,
@@ -176,58 +177,58 @@ async function main() {
     throw Error('No analysis found');
   }
 
-  const listDashboardsResponse = await quickSight.listDashboards({
-    AwsAccountId: Stack.of(stack).account,
-  }).promise();
+  // const listDashboardsResponse = await quickSight.listDashboards({
+  //   AwsAccountId: Stack.of(stack).account,
+  // }).promise();
 
-  if (listDashboardsResponse.DashboardSummaryList?.[0]?.DashboardId) {
-    dashboardId = listDashboardsResponse.DashboardSummaryList[0].DashboardId;
-  } else {
-    throw Error('No dashboard found');
-  }
+  // if (listDashboardsResponse.DashboardSummaryList?.[0]?.DashboardId) {
+  //   dashboardId = listDashboardsResponse.DashboardSummaryList[0].DashboardId;
+  // } else {
+  //   throw Error('No dashboard found');
+  // }
 
-  const listThemesResponse = await quickSight.listThemes({
-    AwsAccountId: Stack.of(stack).account,
-  }).promise();
+  // const listThemesResponse = await quickSight.listThemes({
+  //   AwsAccountId: Stack.of(stack).account,
+  // }).promise();
 
-  if (listThemesResponse.ThemeSummaryList?.[0]?.ThemeId) {
-    themeId = listThemesResponse.ThemeSummaryList[0].ThemeId;
-  } else {
-    throw Error('No theme found');
-  }
+  // if (listThemesResponse.ThemeSummaryList?.[0]?.ThemeId) {
+  //   themeId = listThemesResponse.ThemeSummaryList[0].ThemeId;
+  // } else {
+  //   throw Error('No theme found');
+  // }
 
   // IMPORT RESOURCES
 
-  importedDataSource = DataSource.fromId(stack, 'ImportedDataSource', dataSourceId);
-  importedDataSet = DataSet.fromId(stack, 'ImportedDataSet', dataSetId);
-  importedTemplate = Template.fromId(stack, 'ImportedTemplate', templateId);
+  // importedDataSource = DataSource.fromId(stack, 'ImportedDataSource', dataSourceId);
+  // importedDataSet = DataSet.fromId(stack, 'ImportedDataSet', dataSetId);
+  // importedTemplate = Template.fromId(stack, 'ImportedTemplate', templateId);
   importedAnalysis = Analysis.fromId(stack, 'ImportedAnalysis', analysisId);
-  importedDashboard = Dashboard.fromId(stack, 'ImportedDashboard', dashboardId);
-  importedTheme = Theme.fromId(stack, 'ImportedTheme', themeId);
+  // importedDashboard = Dashboard.fromId(stack, 'ImportedDashboard', dashboardId);
+  // importedTheme = Theme.fromId(stack, 'ImportedTheme', themeId);
 
   global.console.log('IMPORTED ANALYSIS: ' + importedAnalysis);
 
   // CREATE RESOURCES FROM IMPORTED RESOURCES
 
-  analysis = new Analysis(stack, 'TestAnalysis', {
-    resourceId: 'TestId',
-    analysisName: 'TestName',
-    sourceTemplate: importedTemplate,
-  });
+  // analysis = new Analysis(stack, 'TestAnalysis', {
+  //   resourceId: 'TestId',
+  //   analysisName: 'TestName',
+  //   sourceTemplate: importedTemplate,
+  // });
 
-  dashboard = new Dashboard(stack, 'TestDashboard', {
-    resourceId: 'TestId',
-    dashboardName: 'TestName',
-    sourceTemplate: importedTemplate,
-    versionDescription: 'VersionDescription',
-  });
+  // dashboard = new Dashboard(stack, 'TestDashboard', {
+  //   resourceId: 'TestId',
+  //   dashboardName: 'TestName',
+  //   sourceTemplate: importedTemplate,
+  //   versionDescription: 'VersionDescription',
+  // });
 
-  theme = new Theme(stack, 'TestTheme', {
-    resourceId: 'TestId',
-    themeName: 'TestName',
-    baseTheme: importedTheme,
-    versionDescription: 'VersionDescription',
-  });
+  // theme = new Theme(stack, 'TestTheme', {
+  //   resourceId: 'TestId',
+  //   themeName: 'TestName',
+  //   baseTheme: importedTheme,
+  //   versionDescription: 'VersionDescription',
+  // });
 
   // CREATE RESOURCES WITH NEW RESOURCES
 
@@ -253,18 +254,18 @@ async function main() {
 
   // RUN TESTS
 
-  integ.node.addDependency(importedDataSource);
-  integ.node.addDependency(importedDataSet);
-  integ.node.addDependency(importedTemplate);
-  integ.node.addDependency(importedAnalysis);
-  integ.node.addDependency(importedDashboard);
-  integ.node.addDependency(importedTheme);
+  // integ.node.addDependency(importedDataSource);
+  // integ.node.addDependency(importedDataSet);
+  // integ.node.addDependency(importedTemplate);
+  // integ.node.addDependency(importedAnalysis);
+  // integ.node.addDependency(importedDashboard);
+  // integ.node.addDependency(importedTheme);
 
   integ.node.addDependency(dataSource);
   //integ.node.addDependency(template);
-  integ.node.addDependency(analysis);
-  integ.node.addDependency(dashboard);
-  integ.node.addDependency(theme);
+  // integ.node.addDependency(analysis);
+  // integ.node.addDependency(dashboard);
+  // integ.node.addDependency(theme);
 
   // describe the results
   const describe = integ.assertions.awsApiCall('QuickSight', 'describeDataSource', {

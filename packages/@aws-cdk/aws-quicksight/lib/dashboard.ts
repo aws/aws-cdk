@@ -285,7 +285,7 @@ export class Dashboard extends Resource {
       public readonly dashboardPublishOptions? = undefined;
 
       public get versionDescription() {
-        return this.dashboard.version?.description ?? '';
+        return this.dashboard.version!.description ?? '';
       };
 
       private _dataSets: IDataSet[] | undefined;
@@ -293,7 +293,7 @@ export class Dashboard extends Resource {
         if (!this._dataSets) {
           let dataSets: IDataSet[] = [];
 
-          this.dashboard.version?.dataSetArns?.forEach(function (value) {
+          this.dashboard.version!.dataSetArns?.forEach(function (value) {
             let dataSetId: string = value.split('/')[1];
             dataSets.push(DataSet.fromId(scope, dataSetId, dataSetId));
           });
@@ -307,7 +307,7 @@ export class Dashboard extends Resource {
       private _sourceTemplate: ITemplate | undefined;
       public get sourceTemplate() {
         if (!this._sourceTemplate) {
-          let templateId: string = this.dashboard.version?.sourceEntityArn?.split('/')[1]!;
+          let templateId: string = this.dashboard.version!.sourceEntityArn!.split('/')[1]!;
           this._sourceTemplate = Template.fromId(scope, templateId, templateId);
         }
 
@@ -317,7 +317,7 @@ export class Dashboard extends Resource {
       private _theme: ITheme | undefined;
       public get theme() {
         if (!this._theme) {
-          let themeId: string = this.dashboard.version?.themeArn?.split('/')[1]!;
+          let themeId: string = this.dashboard.version!.themeArn!.split('/')[1]!;
           this._theme = Theme.fromId(scope, themeId, themeId);
         }
 

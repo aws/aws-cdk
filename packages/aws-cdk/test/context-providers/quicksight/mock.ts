@@ -1071,7 +1071,6 @@ jest.mock('aws-sdk', () => {
 });
 
 import * as Aws from 'aws-sdk';
-// import * as MockAws from 'aws-sdk-mock';
 
 import { MockSdkProvider } from '../../util/mock-sdk';
 // eslint-disable-next-line import/order
@@ -1093,48 +1092,49 @@ import {
 
 const mockSDK = new MockSdkProvider();
 
-mockSDK.stubQuickSight(mockQuickSight);
-// type AwsCallback<T> = (err: Error | null, val: T) => void;
+type AwsCallback<T> = (err: Error | null, val: T) => void;
 
-// MockAws.mock('QuickSight', 'listTagsForResource', (params: Aws.QuickSight.ListTagsForResourceRequest, cb: AwsCallback<Aws.QuickSight.ListTagsForResourceResponse>) => {
-//   return cb(null, mockListTagsForResource(params));
-// });
-// MockAws.mock('QuickSight', 'describeDataSource', (params: Aws.QuickSight.DescribeDataSourceRequest, cb: AwsCallback<Aws.QuickSight.DescribeDataSourceResponse>) => {
-//   return cb(null, mockDescribeDataSource(params));
-// });
-// MockAws.mock('QuickSight', 'describeDataSourcePermissions', (params: Aws.QuickSight.DescribeDataSourcePermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeDataSourcePermissionsResponse>) => {
-//   return cb(null, mockDescribeDataSourcePermissions(params));
-// });
-// MockAws.mock('QuickSight', 'describeDataSet', (params: Aws.QuickSight.DescribeDataSetRequest, cb: AwsCallback<Aws.QuickSight.DescribeDataSetResponse>) => {
-//   return cb(null, mockDescribeDataSet(params));
-// });
-// MockAws.mock('QuickSight', 'describeDataSetPermissions', (params: Aws.QuickSight.DescribeDataSetPermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeDataSetPermissionsResponse>) => {
-//   return cb(null, mockDescribeDataSetPermissions(params));
-// });
-// MockAws.mock('QuickSight', 'describeTemplate', (params: Aws.QuickSight.DescribeTemplateRequest, cb: AwsCallback<Aws.QuickSight.DescribeTemplateResponse>) => {
-//   return cb(null, mockDescribeTemplate(params));
-// });
-// MockAws.mock('QuickSight', 'describeTemplatePermissions', (params: Aws.QuickSight.DescribeTemplatePermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeTemplatePermissionsResponse>) => {
-//   return cb(null, mockDescribeTemplatePermissions(params));
-// });
-// MockAws.mock('QuickSight', 'describeTheme', (params: Aws.QuickSight.DescribeThemeRequest, cb: AwsCallback<Aws.QuickSight.DescribeThemeResponse>) => {
-//   return cb(null, mockDescribeTheme(params));
-// });
-// MockAws.mock('QuickSight', 'describeThemePermissions', (params: Aws.QuickSight.DescribeThemePermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeThemePermissionsResponse>) => {
-//   return cb(null, mockDescribeThemePermissions(params));
-// });
-// MockAws.mock('QuickSight', 'describeAnalysis', (params: Aws.QuickSight.DescribeAnalysisRequest, cb: AwsCallback<Aws.QuickSight.DescribeAnalysisResponse>) => {
-//   return cb(null, mockDescribeAnalysis(params));
-// });
-// MockAws.mock('QuickSight', 'describeAnalysisPermissions', (params: Aws.QuickSight.DescribeAnalysisPermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeAnalysisPermissionsResponse>) => {
-//   return cb(null, mockDescribeAnalysisPermissions(params));
-// });
-// MockAws.mock('QuickSight', 'describeDashboard', (params: Aws.QuickSight.DescribeDashboardRequest, cb: AwsCallback<Aws.QuickSight.DescribeDashboardResponse>) => {
-//   return cb(null, mockDescribeDashboard(params));
-// });
-// MockAws.mock('QuickSight', 'describeDashboardPermissions', (params: Aws.QuickSight.DescribeDashboardPermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeDashboardPermissionsResponse>) => {
-//   return cb(null, mockDescribeDashboardPermissions(params));
-// });
+export function mockAws(MockAws: any) {
+  MockAws.mock('QuickSight', 'listTagsForResource', (params: Aws.QuickSight.ListTagsForResourceRequest, cb: AwsCallback<Aws.QuickSight.ListTagsForResourceResponse>) => {
+    return cb(null, mockListTagsForResource(params));
+  });
+  MockAws.mock('QuickSight', 'describeDataSource', (params: Aws.QuickSight.DescribeDataSourceRequest, cb: AwsCallback<Aws.QuickSight.DescribeDataSourceResponse>) => {
+    return cb(null, mockDescribeDataSource(params));
+  });
+  MockAws.mock('QuickSight', 'describeDataSourcePermissions', (params: Aws.QuickSight.DescribeDataSourcePermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeDataSourcePermissionsResponse>) => {
+    return cb(null, mockDescribeDataSourcePermissions(params));
+  });
+  MockAws.mock('QuickSight', 'describeDataSet', (params: Aws.QuickSight.DescribeDataSetRequest, cb: AwsCallback<Aws.QuickSight.DescribeDataSetResponse>) => {
+    return cb(null, mockDescribeDataSet(params));
+  });
+  MockAws.mock('QuickSight', 'describeDataSetPermissions', (params: Aws.QuickSight.DescribeDataSetPermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeDataSetPermissionsResponse>) => {
+    return cb(null, mockDescribeDataSetPermissions(params));
+  });
+  MockAws.mock('QuickSight', 'describeTemplate', (params: Aws.QuickSight.DescribeTemplateRequest, cb: AwsCallback<Aws.QuickSight.DescribeTemplateResponse>) => {
+    return cb(null, mockDescribeTemplate(params));
+  });
+  MockAws.mock('QuickSight', 'describeTemplatePermissions', (params: Aws.QuickSight.DescribeTemplatePermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeTemplatePermissionsResponse>) => {
+    return cb(null, mockDescribeTemplatePermissions(params));
+  });
+  MockAws.mock('QuickSight', 'describeTheme', (params: Aws.QuickSight.DescribeThemeRequest, cb: AwsCallback<Aws.QuickSight.DescribeThemeResponse>) => {
+    return cb(null, mockDescribeTheme(params));
+  });
+  MockAws.mock('QuickSight', 'describeThemePermissions', (params: Aws.QuickSight.DescribeThemePermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeThemePermissionsResponse>) => {
+    return cb(null, mockDescribeThemePermissions(params));
+  });
+  MockAws.mock('QuickSight', 'describeAnalysis', (params: Aws.QuickSight.DescribeAnalysisRequest, cb: AwsCallback<Aws.QuickSight.DescribeAnalysisResponse>) => {
+    return cb(null, mockDescribeAnalysis(params));
+  });
+  MockAws.mock('QuickSight', 'describeAnalysisPermissions', (params: Aws.QuickSight.DescribeAnalysisPermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeAnalysisPermissionsResponse>) => {
+    return cb(null, mockDescribeAnalysisPermissions(params));
+  });
+  MockAws.mock('QuickSight', 'describeDashboard', (params: Aws.QuickSight.DescribeDashboardRequest, cb: AwsCallback<Aws.QuickSight.DescribeDashboardResponse>) => {
+    return cb(null, mockDescribeDashboard(params));
+  });
+  MockAws.mock('QuickSight', 'describeDashboardPermissions', (params: Aws.QuickSight.DescribeDashboardPermissionsRequest, cb: AwsCallback<Aws.QuickSight.DescribeDashboardPermissionsResponse>) => {
+    return cb(null, mockDescribeDashboardPermissions(params));
+  });
+}
 
 export const providers = {
   analysis: new AnalysisContextProviderPlugin(mockSDK),

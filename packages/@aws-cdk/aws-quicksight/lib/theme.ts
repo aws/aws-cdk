@@ -258,17 +258,17 @@ export class Theme extends Resource {
       // Theme specific properties
 
       public get configuration() {
-        return this.theme.version?.configuration;
+        return this.theme.version!.configuration;
       }
 
       public get versionDescription() {
-        return this.theme.version?.description!;
+        return this.theme.version!.description!;
       }
 
       private _baseTheme: ITheme | undefined;
       public get baseTheme(): ITheme {
         if (!this._baseTheme) {
-          let baseThemeId: string = this.theme.version?.baseThemeId!;
+          let baseThemeId: string = this.theme.version!.baseThemeId!;
           this._baseTheme = Theme.fromId(scope, baseThemeId, baseThemeId);
         }
 
