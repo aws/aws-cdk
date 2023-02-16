@@ -19,6 +19,9 @@ export interface GitHubPr {
   readonly title: string;
   readonly body: string | null;
   readonly labels: GitHubLabel[];
+  readonly user?: {
+    login: string;
+  }
 }
 
 export interface GitHubLabel {
@@ -32,7 +35,7 @@ export interface GitHubFile {
 export interface Review {
   id: number;
   user: {
-    login: string
+    login: string;
   };
   body: string;
   state: string;
@@ -214,12 +217,17 @@ export class PullRequestLinter {
    * @param existingReview The review created by a previous run of the linter.
    */
   private async createOrUpdatePRLinterReview(failureMessages: string[], existingReview?: Review): Promise<void> {
-    const body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}PRs must pass status checks before we can provide a meaningful review.`;
+    const body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
+      + '<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n'
+      + 'If you would like to request an exemption from the status checks or clarification on feedback,'
+      + ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.';
     if (!existingReview) {
       await this.client.pulls.createReview({
         ...this.prParams,
-        body: 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.' +
-          ' If you believe this pull request should receive an exemption, please comment and provide a justification.',
+        body: 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.'
+          + ' If you believe this pull request should receive an exemption, please comment and provide a justification.'
+          + '\n\n\nA comment requesting an exemption should contain the text `Exemption Request`.'
+          +  ' Additionally, if clarification is needed add `Clarification Request` to a comment.',
         event: 'REQUEST_CHANGES',
       })
     }
@@ -272,7 +280,7 @@ export class PullRequestLinter {
     const number = this.props.number;
 
     console.log(`⌛  Fetching PR number ${number}`);
-    const pr = (await this.client.pulls.get(this.prParams)).data;
+    const pr = (await this.client.pulls.get(this.prParams)).data as GitHubPr;
 
     console.log(`⌛  Fetching files for PR number ${number}`);
     const files = await this.client.paginate(this.client.pulls.listFiles, this.prParams);
@@ -317,7 +325,7 @@ export class PullRequestLinter {
     });
 
     validationCollector.validateRuleSet({
-      exemption: (pr) => hasLabel(pr, Exemption.CLI_INTEG_TESTED),
+      exemption: shouldExemptCliIntegTested,
       testRuleSet: [ { test: noCliChanges } ],
     });
 
@@ -407,6 +415,10 @@ function shouldExemptIntegTest(pr: GitHubPr): boolean {
 function shouldExemptBreakingChange(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.BREAKING_CHANGE);
 };
+
+function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
+  return (hasLabel(pr, Exemption.CLI_INTEG_TESTED) || pr.user?.login === 'aws-cdk-automation');
+}
 
 function hasLabel(pr: GitHubPr, labelName: string): boolean {
   return pr.labels.some(function (l: any) {

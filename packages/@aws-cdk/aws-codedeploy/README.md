@@ -569,14 +569,14 @@ deployment and can automatically roll back the deployment.
 
 ```ts
 new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
-  // The deployment will wait for approval for up to 8 hours before stopping the deployment
-  deploymentApprovalWaitTime: Duration.hours(8),
   autoRollback: {
     // CodeDeploy will automatically roll back if the 8-hour approval period times out and the deployment stops
     stoppedDeployment: true,
   },
   service,
   blueGreenDeploymentConfig: {
+    // The deployment will wait for approval for up to 8 hours before stopping the deployment
+    deploymentApprovalWaitTime: Duration.hours(8),
     blueTargetGroup,
     greenTargetGroup,
     listener,

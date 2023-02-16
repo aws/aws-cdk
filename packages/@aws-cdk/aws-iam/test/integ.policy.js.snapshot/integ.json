@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.policy": {
+    "PolicyInteg/DefaultTest": {
       "stacks": [
         "aws-cdk-iam-policy"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "PolicyInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "PolicyIntegDefaultTestDeployAssert274BB918"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
