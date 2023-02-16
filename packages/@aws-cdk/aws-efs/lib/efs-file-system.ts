@@ -231,6 +231,13 @@ export interface FileSystemProps {
    * @default false
    */
   readonly enableAutomaticBackups?: boolean;
+
+  /**
+   * File system policy is an IAM resource policy used to control NFS access to an EFS file system.
+   *
+   * @default none
+   */
+  readonly fileSystemPolicy?: iam.PolicyDocument;
 }
 
 /**
@@ -332,6 +339,8 @@ export class FileSystem extends FileSystemBase {
 
   public readonly mountTargetsAvailable: IDependable;
 
+  public readonly fileSystemPolicy?: iam.PolicyDocument;
+
   private readonly _mountTargetsAvailable = new DependencyGroup();
 
   /**
@@ -371,11 +380,13 @@ export class FileSystem extends FileSystemBase {
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
       backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
+      fileSystemPolicy: props.fileSystemPolicy,
     });
     filesystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = filesystem.ref;
     this.fileSystemArn = filesystem.attrArn;
+    this.fileSystemPolicy = props.fileSystemPolicy;
 
     Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
