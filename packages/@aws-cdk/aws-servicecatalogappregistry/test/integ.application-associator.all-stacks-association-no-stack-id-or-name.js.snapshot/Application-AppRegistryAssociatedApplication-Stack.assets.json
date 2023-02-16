@@ -1,9 +1,9 @@
 {
-  "version": "29.0.0",
+  "version": "30.0.0",
   "files": {
     "c4d674e9642d6dbbd0df5c93890473101fc95bbc70de7e28d79ba771b5284de8": {
       "source": {
-        "path": "ApplicationAssociatorStack.template.json",
+        "path": "Application-AppRegistryAssociatedApplication-Stack.template.json",
         "packaging": "file"
       },
       "destinations": {

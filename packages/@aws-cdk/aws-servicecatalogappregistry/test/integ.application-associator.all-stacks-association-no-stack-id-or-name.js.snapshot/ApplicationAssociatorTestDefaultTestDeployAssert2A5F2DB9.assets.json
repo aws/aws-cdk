@@ -1,9 +1,9 @@
 {
-  "version": "29.0.0",
+  "version": "30.0.0",
   "files": {
     "19dd33f3c17e59cafd22b9459b0a8d9bedbd42252737fedb06b2bcdbcf7809cc": {
       "source": {
-        "path": "integ-servicecatalogappregistry-application.template.json",
+        "path": "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9.template.json",
         "packaging": "file"
       },
       "destinations": {
