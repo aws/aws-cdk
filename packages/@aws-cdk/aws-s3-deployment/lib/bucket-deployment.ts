@@ -91,6 +91,17 @@ export interface BucketDeploymentProps {
   readonly retainOnDelete?: boolean;
 
   /**
+   * If this is set to false, when a Cloudfront invalidation request is made, the cloudformation deployment
+   * will not fail if errors are encountered during the waiter process.
+   *
+   * NOTICE: Configuring this to "false" might have operational implications. Please
+   * visit to the package documentation referred below to make sure you fully understand those implications.
+   *
+   * @default true - fail the bucket deployment on cloudfront invalidation errors
+   */
+  readonly failOnCFInvalidation?: boolean;
+
+  /**
    * The CloudFront distribution using the destination bucket as an origin.
    * Files in the distribution's edge caches will be invalidated after
    * files are uploaded to the destination bucket.
@@ -388,6 +399,7 @@ export class BucketDeployment extends Construct {
         Prune: props.prune ?? true,
         Exclude: props.exclude,
         Include: props.include,
+        FailOnCFInvalidation: props.failOnCFInvalidation ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,

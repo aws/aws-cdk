@@ -10,6 +10,7 @@ from uuid import uuid4
 from zipfile import ZipFile
 
 import boto3
+import botocore.exceptions import WaiterError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -54,6 +55,7 @@ def handler(event, context):
             distribution_id     = props.get('DistributionId', '')
             user_metadata       = props.get('UserMetadata', {})
             system_metadata     = props.get('SystemMetadata', {})
+            fail_on_cf_purge    = props.get('FailOnCFInvalidation', 'true').lower() == 'true'
             prune               = props.get('Prune', 'true').lower() == 'true'
             exclude             = props.get('Exclude', [])
             include             = props.get('Include', [])
@@ -117,7 +119,7 @@ def handler(event, context):
             s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract)
 
         if distribution_id:
-            cloudfront_invalidate(distribution_id, distribution_paths)
+            cloudfront_invalidate(distribution_id, distribution_paths, fail_on_cf_purge)
 
         cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id, responseData={
             # Passing through the ARN sequences dependencees on the deployment
@@ -191,7 +193,7 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
 
 #---------------------------------------------------------------------------------------------------
 # invalidate files in the CloudFront distribution edge caches
-def cloudfront_invalidate(distribution_id, distribution_paths):
+def cloudfront_invalidate(distribution_id, distribution_paths, fail_on_waiter=True):
     invalidation_resp = cloudfront.create_invalidation(
         DistributionId=distribution_id,
         InvalidationBatch={
@@ -202,9 +204,15 @@ def cloudfront_invalidate(distribution_id, distribution_paths):
             'CallerReference': str(uuid4()),
         })
     # by default, will wait up to 10 minutes
-    cloudfront.get_waiter('invalidation_completed').wait(
-        DistributionId=distribution_id,
-        Id=invalidation_resp['Invalidation']['Id'])
+    try:
+        cloudfront.get_waiter('invalidation_completed').wait(
+            DistributionId=distribution_id,
+            Id=invalidation_resp['Invalidation']['Id'])
+    except WaiterError:
+        if fail_on_waiter:
+            raise
+        pass
+
 
 #---------------------------------------------------------------------------------------------------
 # set metadata
