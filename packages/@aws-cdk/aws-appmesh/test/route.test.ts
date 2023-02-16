@@ -387,6 +387,181 @@ describe('route', () => {
       });
     });
 
+    test('Specify ports for multiple listener', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+
+      // WHEN
+      const node = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      router.addRoute('test-http-route', {
+        routeSpec: appmesh.RouteSpec.http({
+          match: {
+            matchPort: 1001,
+          },
+          weightedTargets: [
+            {
+              virtualNode: node,
+              targetPort: 1002,
+            },
+          ],
+          timeout: {
+            idle: cdk.Duration.seconds(10),
+            perRequest: cdk.Duration.seconds(11),
+          },
+        }),
+      });
+
+      router.addRoute('test-tcp-route', {
+        routeSpec: appmesh.RouteSpec.tcp({
+          match: {
+            matchPort: 2001,
+          },
+          weightedTargets: [
+            {
+              virtualNode: node,
+              targetPort: 2002,
+            },
+          ],
+          timeout: {
+            idle: cdk.Duration.seconds(14),
+          },
+        }),
+      });
+
+      router.addRoute('test-grpc-route', {
+        routeSpec: appmesh.RouteSpec.grpc({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              targetPort: 3002,
+            },
+          ],
+          match: {
+            serviceName: 'test.svc.local',
+            matchPort: 3001,
+          },
+          timeout: {
+            idle: cdk.Duration.seconds(15),
+            perRequest: cdk.Duration.seconds(16),
+          },
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        Spec: {
+          HttpRoute: {
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': [
+                      'meshtestnodeF93946D4',
+                      'VirtualNodeName',
+                    ],
+                  },
+                  Weight: 1,
+                  Port: 1002,
+                },
+              ],
+            },
+            Match: {
+              Prefix: '/',
+              Port: 1001,
+            },
+            Timeout: {
+              Idle: {
+                Value: 10000,
+                Unit: 'ms',
+              },
+              PerRequest: {
+                Value: 11000,
+                Unit: 'ms',
+              },
+            },
+          },
+        },
+        MeshOwner: Match.absent(),
+        RouteName: 'test-http-route',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        Spec: {
+          TcpRoute: {
+            Match: {
+              Port: 2001,
+            },
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': [
+                      'meshtestnodeF93946D4',
+                      'VirtualNodeName',
+                    ],
+                  },
+                  Weight: 1,
+                  Port: 2002,
+                },
+              ],
+            },
+            Timeout: {
+              Idle: {
+                Value: 14000,
+                Unit: 'ms',
+              },
+            },
+          },
+        },
+        RouteName: 'test-tcp-route',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        Spec: {
+          GrpcRoute: {
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': [
+                      'meshtestnodeF93946D4',
+                      'VirtualNodeName',
+                    ],
+                  },
+                  Weight: 1,
+                  Port: 3002,
+                },
+              ],
+            },
+            Match: {
+              ServiceName: 'test.svc.local',
+              Port: 3001,
+            },
+            Timeout: {
+              Idle: {
+                Value: 15000,
+                Unit: 'ms',
+              },
+              PerRequest: {
+                Value: 16000,
+                Unit: 'ms',
+              },
+            },
+          },
+        },
+        RouteName: 'test-grpc-route',
+      });
+    });
     test('errors when http retry policy has no events', () => {
       // GIVEN
       const stack = new cdk.Stack();

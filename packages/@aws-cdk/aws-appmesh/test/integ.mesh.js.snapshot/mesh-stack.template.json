@@ -932,6 +932,180 @@
     "RouteName": "route-7"
    }
   },
+  "meshmultilistenerrouterA540AE1C": {
+   "Type": "AWS::AppMesh::VirtualRouter",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Listeners": [
+      {
+       "PortMapping": {
+        "Port": 8080,
+        "Protocol": "http"
+       }
+      },
+      {
+       "PortMapping": {
+        "Port": 443,
+        "Protocol": "tcp"
+       }
+      },
+      {
+       "PortMapping": {
+        "Port": 80,
+        "Protocol": "grpc"
+       }
+      }
+     ]
+    },
+    "VirtualRouterName": "meshstackmeshmultilistenerrouterFC17F018"
+   }
+  },
+  "meshmultilistenerroutermultiroute19F737419": {
+   "Type": "AWS::AppMesh::Route",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "HttpRoute": {
+      "Action": {
+       "WeightedTargets": [
+        {
+         "Port": 8080,
+         "VirtualNode": {
+          "Fn::GetAtt": [
+           "meshmultilistenernode3D46C665",
+           "VirtualNodeName"
+          ]
+         },
+         "Weight": 50
+        }
+       ]
+      },
+      "Match": {
+       "Port": 8080,
+       "Prefix": "/"
+      },
+      "Timeout": {
+       "Idle": {
+        "Unit": "ms",
+        "Value": 10000
+       },
+       "PerRequest": {
+        "Unit": "ms",
+        "Value": 10000
+       }
+      }
+     }
+    },
+    "VirtualRouterName": {
+     "Fn::GetAtt": [
+      "meshmultilistenerrouterA540AE1C",
+      "VirtualRouterName"
+     ]
+    },
+    "RouteName": "multi-route-1"
+   }
+  },
+  "meshmultilistenerroutermultiroute2B42EC689": {
+   "Type": "AWS::AppMesh::Route",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "TcpRoute": {
+      "Action": {
+       "WeightedTargets": [
+        {
+         "Port": 443,
+         "VirtualNode": {
+          "Fn::GetAtt": [
+           "meshmultilistenernode3D46C665",
+           "VirtualNodeName"
+          ]
+         },
+         "Weight": 20
+        }
+       ]
+      },
+      "Match": {
+       "Port": 443
+      },
+      "Timeout": {
+       "Idle": {
+        "Unit": "ms",
+        "Value": 12000
+       }
+      }
+     }
+    },
+    "VirtualRouterName": {
+     "Fn::GetAtt": [
+      "meshmultilistenerrouterA540AE1C",
+      "VirtualRouterName"
+     ]
+    },
+    "RouteName": "multi-route-2"
+   }
+  },
+  "meshmultilistenerroutermultiroute3C6AB831C": {
+   "Type": "AWS::AppMesh::Route",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "GrpcRoute": {
+      "Action": {
+       "WeightedTargets": [
+        {
+         "Port": 80,
+         "VirtualNode": {
+          "Fn::GetAtt": [
+           "meshmultilistenernode3D46C665",
+           "VirtualNodeName"
+          ]
+         },
+         "Weight": 20
+        }
+       ]
+      },
+      "Match": {
+       "Port": 80
+      },
+      "Timeout": {
+       "Idle": {
+        "Unit": "ms",
+        "Value": 12000
+       }
+      }
+     }
+    },
+    "VirtualRouterName": {
+     "Fn::GetAtt": [
+      "meshmultilistenerrouterA540AE1C",
+      "VirtualRouterName"
+     ]
+    },
+    "RouteName": "multi-route-3"
+   }
+  },
   "meshnode726C787D": {
    "Type": "AWS::AppMesh::VirtualNode",
    "Properties": {
@@ -979,6 +1153,80 @@
      }
     },
     "VirtualNodeName": "meshstackmeshnode61AD3D23"
+   }
+  },
+  "meshmultilistenernode3D46C665": {
+   "Type": "AWS::AppMesh::VirtualNode",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Backends": [
+      {
+       "VirtualService": {
+        "VirtualServiceName": "multi-service.domain.local"
+       }
+      }
+     ],
+     "Listeners": [
+      {
+       "HealthCheck": {
+        "HealthyThreshold": 3,
+        "IntervalMillis": 5000,
+        "Path": "/check-path",
+        "Port": 8080,
+        "Protocol": "http",
+        "TimeoutMillis": 2000,
+        "UnhealthyThreshold": 2
+       },
+       "PortMapping": {
+        "Port": 8080,
+        "Protocol": "http"
+       }
+      },
+      {
+       "HealthCheck": {
+        "HealthyThreshold": 3,
+        "IntervalMillis": 5000,
+        "Path": "/check-path",
+        "Port": 443,
+        "Protocol": "http",
+        "TimeoutMillis": 2000,
+        "UnhealthyThreshold": 2
+       },
+       "PortMapping": {
+        "Port": 443,
+        "Protocol": "tcp"
+       }
+      },
+      {
+       "HealthCheck": {
+        "HealthyThreshold": 3,
+        "IntervalMillis": 5000,
+        "Path": "/check-path",
+        "Port": 80,
+        "Protocol": "http",
+        "TimeoutMillis": 2000,
+        "UnhealthyThreshold": 2
+       },
+       "PortMapping": {
+        "Port": 80,
+        "Protocol": "grpc"
+       }
+      }
+     ],
+     "ServiceDiscovery": {
+      "DNS": {
+       "Hostname": "node1.domain.local",
+       "IpPreference": "IPv4_ONLY"
+      }
+     }
+    },
+    "VirtualNodeName": "meshstackmeshmultilistenernodeDBA10939"
    }
   },
   "meshnode2092BA426": {
@@ -1725,6 +1973,30 @@
      }
     },
     "VirtualServiceName": "service1.domain.local"
+   }
+  },
+  "multiservice86738169": {
+   "Type": "AWS::AppMesh::VirtualService",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Provider": {
+      "VirtualRouter": {
+       "VirtualRouterName": {
+        "Fn::GetAtt": [
+         "meshmultilistenerrouterA540AE1C",
+         "VirtualRouterName"
+        ]
+       }
+      }
+     }
+    },
+    "VirtualServiceName": "multi-service.domain.local"
    }
   },
   "service27C65CF7D": {
