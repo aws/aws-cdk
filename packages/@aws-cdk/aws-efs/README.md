@@ -60,6 +60,7 @@ const importedFileSystem = efs.FileSystem.fromFileSystemAttributes(this, 'existi
   }),
 });
 ```
+
 ### IAM to control file system data access
 
 You can use both IAM identity policies and resource policies to control client access to Amazon EFS resources in a way that is scalable and optimized for cloud environments. Using IAM, you can permit clients to perform specific actions on a file system, including read-only, write, and root access.
