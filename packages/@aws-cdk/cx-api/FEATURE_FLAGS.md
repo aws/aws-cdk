@@ -46,8 +46,6 @@ Flags come in three types:
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | V2NEXT | (fix) |
-| [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | V2NEXT | (fix) |
-| [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -786,22 +784,6 @@ flag on a resource-by-resource basis to enable it if necessary.
 **Compatibility with old behavior:** Set installLatestAwsSdk: true on all resources that need it.
 
 
-### @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId
-
-*Include authorizer configuration in the calculation of the API deployment logical ID.* (fix)
-
-The logical ID of the AWS::ApiGateway::Deployment resource is calculated by hashing
-the API configuration, including methods, and resources, etc. Enable this feature flag
-to also include the configuration of any authorizer attached to the API in the
-calculation, so any changes made to an authorizer will create a new deployment.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-
 ### @aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup
 
 *Remove CloudWatch alarms from deployment group* (fix)
@@ -834,6 +816,22 @@ This is a feature flag as the old behavior was technically incorrect, but users 
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.65.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId
+
+*Include authorizer configuration in the calculation of the API deployment logical ID.* (fix)
+
+The logical ID of the AWS::ApiGateway::Deployment resource is calculated by hashing
+the API configuration, including methods, and resources, etc. Enable this feature flag
+to also include the configuration of any authorizer attached to the API in the
+calculation, so any changes made to an authorizer will create a new deployment.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
