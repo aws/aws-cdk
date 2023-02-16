@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -51,6 +51,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
 
   test('can be created with default configuration', () => {
     const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup', true);
 
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
       service: mockEcsService(stack),
@@ -72,6 +73,10 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
             'MyDGServiceRole5E94FD88',
             'Arn',
           ],
+        },
+        AlarmConfiguration: {
+          Enabled: false,
+          Alarms: Match.absent(),
         },
         AutoRollbackConfiguration: {
           Enabled: true,

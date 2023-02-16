@@ -1,4 +1,5 @@
 import { App, Stack, CfnOutput } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as iam from '../lib';
 
 const app = new App();
@@ -31,6 +32,10 @@ new CfnOutput(stack, 'ClientsThumbprints', {
 
 new CfnOutput(stack, 'ThumbprintsThumbprints', {
   value: `${thumbprints.openIdConnectProviderthumbprints}`,
+});
+
+new IntegTest(app, 'iodc-provider-test', {
+  testCases: [stack],
 });
 
 app.synth();
