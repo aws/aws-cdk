@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "testCases": {
     "iam-token-authorizer/DefaultTest": {
       "stacks": [
         "TokenAuthorizerIAMRoleInteg"
       ],
-      "assertionStack": "iam-token-authorizer/DefaultTest/DeployAssert"
+      "assertionStack": "iam-token-authorizer/DefaultTest/DeployAssert",
+      "assertionStackName": "iamtokenauthorizerDefaultTestDeployAssert87D47FBB"
     }
   }
 }

@@ -26,6 +26,11 @@ const authorizer = new RequestAuthorizer(stack, 'MyAuthorizer', {
   identitySources: [IdentitySource.header('Authorization'), IdentitySource.queryString('allow')],
 });
 
+const secondAuthorizer = new RequestAuthorizer(stack, 'MySecondAuthorizer', {
+  handler: authorizerFn,
+  identitySources: [IdentitySource.header('Authorization'), IdentitySource.queryString('allow')],
+});
+
 restapi.root.addMethod('ANY', new MockIntegration({
   integrationResponses: [
     { statusCode: '200' },
@@ -39,4 +44,19 @@ restapi.root.addMethod('ANY', new MockIntegration({
     { statusCode: '200' },
   ],
   authorizer,
+});
+
+restapi.root.resourceForPath('auth').addMethod('ANY', new MockIntegration({
+  integrationResponses: [
+    { statusCode: '200' },
+  ],
+  passthroughBehavior: PassthroughBehavior.NEVER,
+  requestTemplates: {
+    'application/json': '{ "statusCode": 200 }',
+  },
+}), {
+  methodResponses: [
+    { statusCode: '200' },
+  ],
+  authorizer: secondAuthorizer,
 });

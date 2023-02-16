@@ -208,7 +208,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyRestApiDeploymentB555B582464879c8d1f9fcce2500f142532cdaec": {
+  "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {
@@ -217,6 +217,7 @@
     "Description": "Automatically created by the RestApi construct"
    },
    "DependsOn": [
+    "MyAuthorizer6575980E",
     "MyRestApiANY05143F93",
     "MyRestApiOPTIONS43BD7BF4"
    ]
@@ -228,7 +229,7 @@
      "Ref": "MyRestApi2D1F47A9"
     },
     "DeploymentId": {
-     "Ref": "MyRestApiDeploymentB555B582464879c8d1f9fcce2500f142532cdaec"
+     "Ref": "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a"
     },
     "StageName": "prod"
    },
