@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "22.0.0",
   "artifacts": {
     "aws-cdk-codedeploy-lambda.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f2bf64943c8612dfbd52471095c4b141d6c458592f9416621609658bc7935827.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/209ced6e70ec9b3c3a5387896ca7c4942afced90ed5eb6045cc8f392776ae7ce.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -99,12 +99,6 @@
             "data": "BlueGreenErrors60C27452"
           }
         ],
-        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/Application/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BlueGreenDeploymentApplication36C892C0"
-          }
-        ],
         "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -117,10 +111,40 @@
             "data": "BlueGreenDeploymentServiceRoleDefaultPolicy7008FB0A"
           }
         ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/Application/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BlueGreenDeploymentApplication36C892C0"
+          }
+        ],
         "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BlueGreenDeployment5C188134"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/SecondAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondAlias33D63566"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/SecondDeployment/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondDeploymentServiceRoleAFF1ECD5"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/SecondDeployment/Application/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondDeploymentApplication1F8C51FE"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/SecondDeployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondDeploymentC270A23D"
           }
         ],
         "/aws-cdk-codedeploy-lambda/BootstrapVersion": [
