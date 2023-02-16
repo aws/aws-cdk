@@ -339,8 +339,6 @@ export class FileSystem extends FileSystemBase {
 
   public readonly mountTargetsAvailable: IDependable;
 
-  public readonly fileSystemPolicy?: iam.PolicyDocument;
-
   private readonly _mountTargetsAvailable = new DependencyGroup();
 
   /**
@@ -386,7 +384,6 @@ export class FileSystem extends FileSystemBase {
 
     this.fileSystemId = filesystem.ref;
     this.fileSystemArn = filesystem.attrArn;
-    this.fileSystemPolicy = props.fileSystemPolicy;
 
     Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
