@@ -170,7 +170,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: 'nodejs14.x', // Equivalent to Runtime.NODEJS_14_X
+        Runtime: 'nodejs18.x', // Equivalent to Runtime.NODEJS_18_X
         Code: {
           S3Bucket: asset.s3BucketName,
           S3Key: asset.s3ObjectKey,
