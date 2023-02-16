@@ -7,6 +7,7 @@ import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
 import { AppProtocol } from '../lib';
+import { Duration } from '@aws-cdk/core';
 
 describe('container definition', () => {
   describe('When creating a Task Definition', () => {
@@ -1689,6 +1690,37 @@ describe('container definition', () => {
         ],
       });
     }).toThrow(/At least one argument must be supplied for health check command./);
+  });
+
+  test('throws when setting Health Check with invalid interval because of too short', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ['CMD-SHELL', 'curl localhost:8000'],
+        interval: Duration.seconds(4),
+        timeout: Duration.seconds(30),
+      },
+    });
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            HealthCheck: {
+              Command: ['CMD-SHELL', 'curl localhost:8000'],
+              Interval: 4,
+            },
+          },
+        ],
+      });
+    }).toThrow(/Interval must be between 5 seconds and 300 seconds./);
   });
 
   test('can specify Health Check values in shell form', () => {
