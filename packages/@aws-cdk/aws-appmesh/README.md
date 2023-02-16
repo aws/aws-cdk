@@ -920,7 +920,7 @@ const multiListenerRouter = mesh.addVirtualRouter('multi-listener-router', {
 });
 ```
 
-Add corresponding routes for this Virtual Router
+Add corresponding routes for this Virtual Router. `targetPort` is the port that you will direct your traffic to and `matchPort` is the port number of inbound traffic you want to match. 
 ```ts
 multiListenerRouter.addRoute('multi-route-1', {
   routeSpec: appmesh.RouteSpec.http({
