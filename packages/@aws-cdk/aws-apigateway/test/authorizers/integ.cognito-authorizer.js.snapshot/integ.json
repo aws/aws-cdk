@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "testCases": {
     "cognito-authorizer/DefaultTest": {
       "stacks": [
         "CognitoUserPoolsAuthorizerInteg"
       ],
-      "assertionStack": "cognito-authorizer/DefaultTest/DeployAssert"
+      "assertionStack": "cognito-authorizer/DefaultTest/DeployAssert",
+      "assertionStackName": "cognitoauthorizerDefaultTestDeployAssert4551574C"
     }
   }
 }
