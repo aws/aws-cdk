@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-user-pool-client-explicit-props": {
-        "id": "integ-user-pool-client-explicit-props",
-        "path": "integ-user-pool-client-explicit-props",
+      "integ-user-pool-client-secret": {
+        "id": "integ-user-pool-client-secret",
+        "path": "integ-user-pool-client-secret",
         "children": {
-          "myuserpool": {
-            "id": "myuserpool",
-            "path": "integ-user-pool-client-explicit-props/myuserpool",
+          "pool": {
+            "id": "pool",
+            "path": "integ-user-pool-client-secret/pool",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-user-pool-client-explicit-props/myuserpool/Resource",
+                "path": "integ-user-pool-client-secret/pool/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
                   "aws:cdk:cloudformation:props": {
@@ -35,16 +35,6 @@
                     },
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
-                    "schema": [
-                      {
-                        "name": "attribute_one",
-                        "attributeDataType": "String"
-                      },
-                      {
-                        "name": "attribute_two",
-                        "attributeDataType": "String"
-                      }
-                    ],
                     "smsVerificationMessage": "The verification code to your new account is {####}",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
@@ -59,18 +49,18 @@
                   "version": "0.0.0"
                 }
               },
-              "myuserpoolclient": {
-                "id": "myuserpoolclient",
-                "path": "integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient",
+              "client": {
+                "id": "client",
+                "path": "integ-user-pool-client-secret/pool/client",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/Resource",
+                    "path": "integ-user-pool-client-secret/pool/client/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
                       "aws:cdk:cloudformation:props": {
                         "userPoolId": {
-                          "Ref": "myuserpool01998219"
+                          "Ref": "pool056F3F7E"
                         },
                         "allowedOAuthFlows": [
                           "implicit",
@@ -78,49 +68,18 @@
                         ],
                         "allowedOAuthFlowsUserPoolClient": true,
                         "allowedOAuthScopes": [
+                          "profile",
                           "phone",
                           "email",
                           "openid",
-                          "profile",
                           "aws.cognito.signin.user.admin"
                         ],
-                        "authSessionValidity": 3,
                         "callbackUrLs": [
-                          "https://redirect-here.myapp.com"
-                        ],
-                        "clientName": "myuserpoolclient",
-                        "explicitAuthFlows": [
-                          "ALLOW_USER_PASSWORD_AUTH",
-                          "ALLOW_ADMIN_USER_PASSWORD_AUTH",
-                          "ALLOW_CUSTOM_AUTH",
-                          "ALLOW_USER_SRP_AUTH",
-                          "ALLOW_REFRESH_TOKEN_AUTH"
+                          "https://example.com"
                         ],
                         "generateSecret": true,
-                        "preventUserExistenceErrors": "ENABLED",
                         "supportedIdentityProviders": [
                           "COGNITO"
-                        ],
-                        "writeAttributes": [
-                          "address",
-                          "birthdate",
-                          "custom:attribute_one",
-                          "custom:attribute_two",
-                          "email",
-                          "family_name",
-                          "gender",
-                          "given_name",
-                          "locale",
-                          "middle_name",
-                          "name",
-                          "nickname",
-                          "phone_number",
-                          "picture",
-                          "preferred_username",
-                          "profile",
-                          "updated_at",
-                          "website",
-                          "zoneinfo"
                         ]
                       }
                     },
@@ -131,11 +90,11 @@
                   },
                   "DescribeCognitoUserPoolClient": {
                     "id": "DescribeCognitoUserPoolClient",
-                    "path": "integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient",
+                    "path": "integ-user-pool-client-secret/pool/client/DescribeCognitoUserPoolClient",
                     "children": {
                       "Provider": {
                         "id": "Provider",
-                        "path": "integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient/Provider",
+                        "path": "integ-user-pool-client-secret/pool/client/DescribeCognitoUserPoolClient/Provider",
                         "constructInfo": {
                           "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
                           "version": "0.0.0"
@@ -143,11 +102,11 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient/Resource",
+                        "path": "integ-user-pool-client-secret/pool/client/DescribeCognitoUserPoolClient/Resource",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient/Resource/Default",
+                            "path": "integ-user-pool-client-secret/pool/client/DescribeCognitoUserPoolClient/Resource/Default",
                             "constructInfo": {
                               "fqn": "@aws-cdk/core.CfnResource",
                               "version": "0.0.0"
@@ -161,11 +120,11 @@
                       },
                       "CustomResourcePolicy": {
                         "id": "CustomResourcePolicy",
-                        "path": "integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient/CustomResourcePolicy",
+                        "path": "integ-user-pool-client-secret/pool/client/DescribeCognitoUserPoolClient/CustomResourcePolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "integ-user-pool-client-explicit-props/myuserpool/myuserpoolclient/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource",
+                            "path": "integ-user-pool-client-secret/pool/client/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -176,7 +135,7 @@
                                       "Effect": "Allow",
                                       "Resource": {
                                         "Fn::GetAtt": [
-                                          "myuserpool01998219",
+                                          "pool056F3F7E",
                                           "Arn"
                                         ]
                                       }
@@ -184,7 +143,7 @@
                                   ],
                                   "Version": "2012-10-17"
                                 },
-                                "policyName": "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyF83BED40",
+                                "policyName": "poolclientDescribeCognitoUserPoolClientCustomResourcePolicy5C0049D2",
                                 "roles": [
                                   {
                                     "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -223,15 +182,15 @@
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
             "id": "AWS679f53fac002430cb0da5b7982bd2287",
-            "path": "integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287",
+            "path": "integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
+                "path": "integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "path": "integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -239,7 +198,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
+                    "path": "integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -284,11 +243,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/Code",
+                "path": "integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
+                    "path": "integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.AssetStaging",
                       "version": "0.0.0"
@@ -296,7 +255,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
+                    "path": "integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.BucketBase",
                       "version": "0.0.0"
@@ -310,7 +269,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+                "path": "integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -342,19 +301,19 @@
               "version": "0.0.0"
             }
           },
-          "Secret": {
-            "id": "Secret",
-            "path": "integ-user-pool-client-explicit-props/Secret",
+          "secret": {
+            "id": "secret",
+            "path": "integ-user-pool-client-secret/secret",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-user-pool-client-explicit-props/Secret/Resource",
+                "path": "integ-user-pool-client-secret/secret/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                   "aws:cdk:cloudformation:props": {
                     "secretString": {
                       "Fn::GetAtt": [
-                        "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientEA733B32",
+                        "poolclientDescribeCognitoUserPoolClient51F12EBD",
                         "UserPoolClient.ClientSecret"
                       ]
                     }
@@ -371,9 +330,17 @@
               "version": "0.0.0"
             }
           },
+          "ClientSecretName": {
+            "id": "ClientSecretName",
+            "path": "integ-user-pool-client-secret/ClientSecretName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-user-pool-client-explicit-props/BootstrapVersion",
+            "path": "integ-user-pool-client-secret/BootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
@@ -381,7 +348,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-user-pool-client-explicit-props/CheckBootstrapVersion",
+            "path": "integ-user-pool-client-secret/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
@@ -390,6 +357,60 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-user-pool-client-secret-test": {
+        "id": "integ-user-pool-client-secret-test",
+        "path": "integ-user-pool-client-secret-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-user-pool-client-secret-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-user-pool-client-secret-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.216"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-user-pool-client-secret-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-user-pool-client-secret-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-user-pool-client-secret-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       },
