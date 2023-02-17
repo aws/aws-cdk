@@ -43,6 +43,11 @@ Flags come in three types:
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.59.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
+| [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
+| [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
+| [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | V2NEXT | (fix) |
+| [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | V2NEXT | (fix) |
+| [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -76,7 +81,10 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
     "@aws-cdk/aws-route53-patters:useCertificate": true,
-    "@aws-cdk/customresources:installLatestAwsSdkDefault": false
+    "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
+    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
+    "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
+    "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true
   }
 }
 ```
@@ -776,6 +784,56 @@ flag on a resource-by-resource basis to enable it if necessary.
 | 2.60.0 | `false` | `false` |
 
 **Compatibility with old behavior:** Set installLatestAwsSdk: true on all resources that need it.
+
+
+### @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId
+
+*Include authorizer configuration in the calculation of the API deployment logical ID.* (fix)
+
+The logical ID of the AWS::ApiGateway::Deployment resource is calculated by hashing
+the API configuration, including methods, and resources, etc. Enable this feature flag
+to also include the configuration of any authorizer attached to the API in the
+calculation, so any changes made to an authorizer will create a new deployment.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup
+
+*Remove CloudWatch alarms from deployment group* (fix)
+
+Enable this flag to be able to remove all CloudWatch alarms from a deployment group by removing
+the alarms from the construct. If this flag is not set, removing all alarms from the construct
+will still leave the alarms configured for the deployment group.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.65.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-rds:databaseProxyUniqueResourceName
+
+*Use unique resource name for Database Proxy* (fix)
+
+If this flag is not set, the default behavior for `DatabaseProxy` is
+to use `id` of the constructor for `dbProxyName` when it's not specified in the argument.
+In this case, users can't deploy `DatabaseProxy`s that have the same `id` in the same region.
+
+If this flag is set, the default behavior is to use unique resource names for each `DatabaseProxy`.
+
+This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.65.0 | `false` | `true` |
 
 
 <!-- END details -->

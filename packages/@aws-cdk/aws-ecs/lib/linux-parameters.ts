@@ -126,7 +126,7 @@ export class LinuxParameters extends Construct {
   /**
    * Adds one or more Linux capabilities to the Docker configuration of a container.
    *
-   * Only works with EC2 launch type.
+   * Tasks launched on Fargate only support adding the 'SYS_PTRACE' kernel capability.
    */
   public addCapabilities(...cap: Capability[]) {
     this.capAdd.push(...cap);
@@ -134,8 +134,6 @@ export class LinuxParameters extends Construct {
 
   /**
    * Removes one or more Linux capabilities to the Docker configuration of a container.
-   *
-   * Only works with EC2 launch type.
    */
   public dropCapabilities(...cap: Capability[]) {
     this.capDrop.push(...cap);
