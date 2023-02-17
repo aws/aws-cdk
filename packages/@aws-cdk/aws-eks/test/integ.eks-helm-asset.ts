@@ -78,7 +78,7 @@ class EksClusterStack extends Stack {
     });
 
     // testing the disable mechanism of the installation of CRDs
-    this.cluster.addHelmChart('test-oci-chart-different-release-name', {
+    this.cluster.addHelmChart('test-skip-crd-installation', {
       chart: 'lambda-chart',
       release: 'lambda-chart-release',
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/lambda-chart',
