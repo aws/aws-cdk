@@ -1237,7 +1237,7 @@ const chart2 = cluster.addHelmChart('MyChart', {
 chart2.node.addDependency(chart1);
 ```
 
-#### CDK8s Charts
+### CDK8s Charts
 
 [CDK8s](https://cdk8s.io/) is an open-source library that enables Kubernetes manifest authoring using familiar programming languages. It is founded on the same technologies as the AWS CDK, such as [`constructs`](https://github.com/aws/constructs) and [`jsii`](https://github.com/aws/jsii).
 
