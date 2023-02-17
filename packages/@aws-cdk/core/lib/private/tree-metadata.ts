@@ -18,6 +18,8 @@ const FILE_PATH = 'tree.json';
  *
  */
 export class TreeMetadata extends Construct {
+  private tree?: Node;
+
   constructor(scope: Construct) {
     super(scope, 'Tree');
   }
@@ -55,9 +57,11 @@ export class TreeMetadata extends Construct {
       return node;
     };
 
+    this.tree = visit(this.node.root);
+
     const tree = {
       version: 'tree-0.1',
-      tree: visit(this.node.root),
+      tree: this.tree,
     };
 
     const builder = session.assembly;
@@ -69,6 +73,29 @@ export class TreeMetadata extends Construct {
         file: FILE_PATH,
       },
     });
+  }
+
+  nodesFromPath(constructPath: string): Node[] {
+    const ids = ['App'].concat(constructPath.split('/'));
+    return this.trail(this.tree, ids);
+  }
+
+  private trail(node: Node | undefined, ids: string[], acc: Node[] = []): Node[] {
+    if (ids.length === 0 || node == null || node.id !== ids[0]) {
+      throw new Error(`Invalid path: ${ids.join('/')}`);
+    }
+
+    acc.push(node);
+    if (ids.length === 1) {
+      return acc;
+    }
+
+    const child = Object
+      .entries(node.children || {})
+      .find(([id]) => id === ids[1])
+      ?.[1];
+
+    return this.trail(child, ids.slice(1), acc);
   }
 
   private synthAttributes(construct: IConstruct): { [key: string]: any } | undefined {
@@ -88,7 +115,7 @@ export class TreeMetadata extends Construct {
   }
 }
 
-interface Node {
+export interface Node {
   readonly id: string;
   readonly path: string;
   readonly children?: { [key: string]: Node };

@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
 import { table } from 'table';
+import { TreeMetadata } from '../private/tree-metadata';
 
 /**
    * TODO docs
@@ -64,7 +65,7 @@ export class ValidationContext {
      */
     public readonly stdout?: boolean) {
 
-    this.report = new ValidationReport(plugin.name, stack, stdout ?? false);
+    this.report = new ValidationReport(plugin.name, stack, root);
     this.logger = new ValidationLogger();
   }
 }
@@ -133,6 +134,13 @@ export interface ValidationViolatingConstruct extends ValidationViolatingResourc
    * @default - TODO
    */
   readonly constructPath?: string;
+
+  /**
+   * A stack of constructs that lead to the violation.
+   *
+   * @default - TODO
+   */
+  readonly constructStack?: string[];
 
 }
 
@@ -230,8 +238,6 @@ export interface ValidationReportJson {
  * The report emitted by the plugin after evaluation.
  */
 export class ValidationReport {
-
-
   private readonly violations: ValidationViolationConstructAware[] = [];
 
   private _summary?: ValidationReportSummary;
@@ -239,7 +245,7 @@ export class ValidationReport {
   constructor(
     private readonly pluginName: string,
     private readonly stack: cxapi.CloudFormationStackArtifact,
-    private readonly stdout: boolean) {
+    private readonly root: IConstruct) {
   }
 
   /**
@@ -250,22 +256,24 @@ export class ValidationReport {
       throw new Error('Violations cannot be added to report after its submitted');
     }
 
-    if (this.stdout) {
-      // eslint-disable-next-line no-console
-      console.log('Yooo');
-    }
-
     const template = this.stack.template;
+    const tree = this.root.node.tryFindChild('Tree') as TreeMetadata;
     const constructPath = template.Resources[violation.violatingResource.resourceName].Metadata['aws:cdk:path'];
+    const nodes = tree.nodesFromPath(constructPath);
+    const constructStack = nodes
+      .filter(n => n.constructInfo != null)
+      .map(n => `${n.constructInfo!.fqn} (${n.id})`)
+      .reverse();
 
     this.violations.push({
       ruleName: violation.ruleName,
       recommendation: violation.recommendation,
       violatingConstruct: {
+        constructStack,
         constructPath,
         locations: violation.violatingResource.locations,
         resourceName: violation.violatingResource.resourceName,
-        templatePath: this.stdout ? 'STDOUT' : violation.violatingResource.templatePath,
+        templatePath: violation.violatingResource.templatePath,
       },
       fix: violation.fix,
     });
@@ -332,6 +340,7 @@ export class ValidationReport {
         output.push('');
         output.push(`    - Construct Path: ${construct.constructPath ?? 'N/A'}`);
         output.push(`    - Template Path: ${construct.templatePath}`);
+        output.push(`    - Creation Stack:\n\t${construct.constructStack?.join('\n\t')}`);
         output.push(`    - Resource Name: ${construct.resourceName}`);
         if (construct.locations) {
           output.push('    - Locations:');
