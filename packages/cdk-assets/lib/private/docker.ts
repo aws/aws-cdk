@@ -19,8 +19,8 @@ interface BuildOptions {
   readonly networkMode?: string;
   readonly platform?: string;
   readonly outputs?: string[];
-  readonly cacheFrom?: string[];
-  readonly cacheTo?: string;
+  readonly cacheFrom?: DockerCacheOption[];
+  readonly cacheTo?: DockerCacheOption;
 }
 
 export interface DockerCredentialsConfig {
@@ -31,6 +31,11 @@ export interface DockerCredentialsConfig {
 export interface DockerDomainCredentials {
   readonly secretsManagerSecretId?: string;
   readonly ecrRepository?: string;
+}
+
+export interface DockerCacheOption {
+  readonly type: string;
+  readonly params?: { [key: string]: string };
 }
 
 export class Docker {
@@ -64,8 +69,8 @@ export class Docker {
       ...options.networkMode ? ['--network', options.networkMode] : [],
       ...options.platform ? ['--platform', options.platform] : [],
       ...options.outputs ? options.outputs.map(output => [`--output=${output}`]) : [],
-      ...options.cacheFrom ? options.cacheFrom.map(cacheFrom => [`--cache-from ${cacheFrom}`]) : [],
-      ...options.cacheTo ? [`--cache-to ${options.cacheTo}`] : [],
+      ...options.cacheFrom ? options.cacheFrom.map(cacheFrom => this.cacheOptionToFlag(cacheFrom)) : [],
+      ...options.cacheTo ? [this.cacheOptionToFlag(options.cacheTo)] : [],
       '.',
     ];
     await this.execute(buildCommand, { cwd: options.directory });
@@ -154,6 +159,14 @@ export class Docker {
       }
       throw e;
     }
+  }
+
+  private cacheOptionToFlag(option: DockerCacheOption): string {
+    let flag = `type=${option.type}`;
+    if (option.params) {
+      flag += ',' + Object.entries(option.params).map(([k, v]) => `${k}=${v}`).join(',');
+    }
+    return flag;
   }
 }
 

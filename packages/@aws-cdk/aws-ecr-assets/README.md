@@ -128,8 +128,8 @@ import { DockerImageAsset, Platform } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
-  cacheFrom: ['type=registry,ref=ghcr.io/myorg/myimage:cache'],
-  cacheTo: 'type=registry,ref=ghcr.io/myorg/myimage:cache,mode=max,compression=zstd'
+  cacheFrom: [{ type: 'registry', params: { ref: 'ghcr.io/myorg/myimage:cache' }}],
+  cacheTo: { type: 'registry', params: { ref: 'ghcr.io/myorg/myimage:cache', mode: 'max', compression: 'zstd' }}
 })
 ```
 

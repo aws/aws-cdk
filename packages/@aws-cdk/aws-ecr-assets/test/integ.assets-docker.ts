@@ -25,9 +25,15 @@ const asset4 = new assets.DockerImageAsset(stack, 'DockerImage4', {
 });
 
 const asset5 = new assets.DockerImageAsset(stack, 'DockerImage5', {
+  directory: path.join(__dirname, 'demo-image-secret'),
+  buildSecrets: {
+    mysecret: cdk.DockerBuildSecret.fromSrc('index.py'),
+  },
+});
+
+const asset6 = new assets.DockerImageAsset(stack, 'DockerImage5', {
   directory: path.join(__dirname, 'demo-image'),
-  cacheFrom: ['type=registry,ref=notan/image'],
-  cacheTo: 'type=inline',
+  cacheTo: { type: 'inline' },
 });
 
 const user = new iam.User(stack, 'MyUser');
@@ -36,11 +42,13 @@ asset2.repository.grantPull(user);
 asset3.repository.grantPull(user);
 asset4.repository.grantPull(user);
 asset5.repository.grantPull(user);
+asset6.repository.grantPull(user);
 
 new cdk.CfnOutput(stack, 'ImageUri', { value: asset.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri2', { value: asset2.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri3', { value: asset3.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri4', { value: asset4.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri5', { value: asset5.imageUri });
+new cdk.CfnOutput(stack, 'ImageUri6', { value: asset6.imageUri });
 
 app.synth();
