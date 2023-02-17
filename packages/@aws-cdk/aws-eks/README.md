@@ -1313,7 +1313,7 @@ const myChart = new MyChart(new cdk8s.App(), 'MyChart', { bucket });
 cluster.addCdk8sChart('my-chart', myChart);
 ```
 
-##### Custom CDK8s Constructs
+#### Custom CDK8s Constructs
 
 You can also compose a few stock `cdk8s+` constructs into your own custom construct. However, since mixing scopes between `aws-cdk` and `cdk8s` is currently not supported, the `Construct` class
 you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `@aws-cdk/core` like you normally would.
@@ -1350,7 +1350,7 @@ export class LoadBalancedWebService extends constructs.Construct {
 }
 ```
 
-##### Manually importing k8s specs and CRD's
+#### Manually importing k8s specs and CRD's
 
 If you find yourself unable to use `cdk8s+`, or just like to directly use the `k8s` native objects or CRD's, you can do so by manually importing them using the `cdk8s-cli`.
 
