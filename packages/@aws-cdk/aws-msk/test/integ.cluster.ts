@@ -145,8 +145,8 @@ class FeatureFlagStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'BootstrapBrokers5', { value: cluster3.bootstrapBrokersSaslIam });
 
     const cluster4 = new msk.Cluster(this, 'Cluster_V3_1_1', {
-      clusterName: 'integ-test-v3_1_1',
-      kafkaVersion: msk.KafkaVersion.V3_3_1,
+      clusterName: 'integ-test-v3-1-1',
+      kafkaVersion: msk.KafkaVersion.V3_1_1,
       vpc,
       logging: {
         s3: {
@@ -156,6 +156,32 @@ class FeatureFlagStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers6', { value: cluster4.bootstrapBrokersTls });
+
+    const cluster5 = new msk.Cluster(this, 'Cluster_V3_2_0', {
+      clusterName: 'integ-test-v3-2-0',
+      kafkaVersion: msk.KafkaVersion.V3_2_0,
+      vpc,
+      logging: {
+        s3: {
+          bucket: this.bucket,
+        },
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    new cdk.CfnOutput(this, 'BootstrapBrokers7', { value: cluster5.bootstrapBrokersTls });
+
+    const cluster6 = new msk.Cluster(this, 'Cluster_V3_3_1', {
+      clusterName: 'integ-test-v3-3-1',
+      kafkaVersion: msk.KafkaVersion.V3_3_1,
+      vpc,
+      logging: {
+        s3: {
+          bucket: this.bucket,
+        },
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    new cdk.CfnOutput(this, 'BootstrapBrokers8', { value: cluster6.bootstrapBrokersTls });
   }
 }
 
