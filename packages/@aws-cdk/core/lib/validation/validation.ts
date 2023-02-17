@@ -1,17 +1,26 @@
-
 import * as os from 'os';
+import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct } from 'constructs';
 import { table } from 'table';
-import { FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../stack-synthesizers';
 
 /**
    * TODO docs
    */
 export interface IValidationPlugin {
-/**
+  /**
    * TODO docs
    */
-  validate(session: ISynthesisSession, source: FileAssetSource): Promise<ValidationReport>;
+  readonly name: string;
+
+  /**
+   * TODO docs
+   */
+  validate(context: ValidationContext): void;
+
+  /**
+   * TODO docs
+   */
+  isReady(): boolean;
 }
 
 /**
@@ -36,24 +45,26 @@ export class ValidationContext {
   constructor(
 
     /**
-   * TODO docs
-   */
-    public readonly pluginName: string,
+     * TODO docs
+     */
+    public readonly plugin: IValidationPlugin,
+
     /**
-   * TODO docs
-   */
-    public readonly template: {readonly [key: string]: any},
+     * TODO docs
+     */
+    public readonly root: IConstruct,
+
     /**
-   * TODO docs
-   */
-    public readonly templatePath: string,
+     * TODO docs
+     */
+    public readonly stack: cxapi.CloudFormationStackArtifact,
 
     /**
      * Whether or not the synth command was executed with --stdout.
      */
     public readonly stdout?: boolean) {
 
-    this.report = new ValidationReport(pluginName, template, stdout ?? false);
+    this.report = new ValidationReport(plugin.name, stack, stdout ?? false);
     this.logger = new ValidationLogger();
   }
 }
@@ -185,6 +196,12 @@ export interface ValidationReportSummary {
    * TODO docs
    */
   readonly plugin: string;
+
+  /**
+   * TODO docs
+   * @default - TODO
+   */
+  readonly metadata?: { readonly [key: string]: string };
 }
 
 /**
@@ -221,7 +238,7 @@ export class ValidationReport {
 
   constructor(
     private readonly pluginName: string,
-    private readonly template: {readonly [key: string]: any},
+    private readonly stack: cxapi.CloudFormationStackArtifact,
     private readonly stdout: boolean) {
   }
 
@@ -238,7 +255,8 @@ export class ValidationReport {
       console.log('Yooo');
     }
 
-    const constructPath = this.template.Resources[violation.violatingResource.resourceName].Metadata['aws:cdk:path'];
+    const template = this.stack.template;
+    const constructPath = template.Resources[violation.violatingResource.resourceName].Metadata['aws:cdk:path'];
 
     this.violations.push({
       ruleName: violation.ruleName,
@@ -256,8 +274,8 @@ export class ValidationReport {
   /**
    * Submit the report with a status and additional metadata.
    */
-  public submit(status: ValidationReportStatus) {
-    this._summary = { status, plugin: this.pluginName };
+  public submit(status: ValidationReportStatus, metadata?: { readonly [key: string]: string }) {
+    this._summary = { status, plugin: this.pluginName, metadata };
   }
 
   /**
@@ -294,6 +312,7 @@ export class ValidationReport {
     output.push(table([
       ['Status', json.summary.status],
       ['Plugin', json.summary.plugin],
+      ...Object.entries(json.summary.metadata ?? {}),
     ]));
 
     if (json.violations) {

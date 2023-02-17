@@ -2020,6 +2020,13 @@
   resolved "https://registry.npmjs.org/@types/changelog-parser/-/changelog-parser-2.8.1.tgz#294f63a1d54af24ee73e600c1a0d4ba7ca9c2516"
   integrity sha512-Wul8tHLumoC7mauxXzPbtBLC2KuY5NZ2w6BlRYnOM53oZz5mz7oUGsYL4l8bKzZzIX7y2vO7Y4/2K8qICJjckw==
 
+"@types/cross-spawn@^6.0.2":
+  version "6.0.2"
+  resolved "https://registry.npmjs.org/@types/cross-spawn/-/cross-spawn-6.0.2.tgz#168309de311cd30a2b8ae720de6475c2fbf33ac7"
+  integrity sha512-KuwNhp3eza+Rhu8IFI5HUXRP0LIhqH5cAjubUvGXXthh4YYBuP2ntwEX+Cz8GJoZUHlKo247wPWOfA9LYEq4cw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/eslint@^7.29.0":
   version "7.29.0"
   resolved "https://registry.npmjs.org/@types/eslint/-/eslint-7.29.0.tgz#e56ddc8e542815272720bb0b4ccc2aff9c3e1c78"

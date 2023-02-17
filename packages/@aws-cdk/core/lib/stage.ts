@@ -3,6 +3,7 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
+import { IValidationPlugin } from './validation';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -69,6 +70,12 @@ export interface StageProps {
    * @default - no permissions boundary is applied
    */
   readonly permissionsBoundary?: PermissionsBoundary;
+
+  /**
+   * TODO docs
+   * @default - no validation plugins are used
+   */
+  readonly validationPlugins?: IValidationPlugin[]
 }
 
 /**
@@ -137,6 +144,12 @@ export class Stage extends Construct {
    */
   private assembly?: cxapi.CloudAssembly;
 
+  /**
+   * TODO docs
+   */
+  public readonly validationPlugins: IValidationPlugin[] = [];
+
+
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
@@ -156,6 +169,10 @@ export class Stage extends Construct {
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
     this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
+
+    if (props.validationPlugins) {
+      this.validationPlugins = props.validationPlugins;
+    }
   }
 
   /**

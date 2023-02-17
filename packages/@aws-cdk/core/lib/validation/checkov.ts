@@ -1,9 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { sync } from 'cross-spawn';
-import { IValidationPlugin, IValidation, ValidationContext, ValidationReport } from './validation';
-import { FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../stack-synthesizers';
+import { IValidationPlugin, ValidationContext } from './validation';
 
 // NOTE: This class will eventually move out to a separate repository, but we're
 // keeping it here for now to make it easier to iterate on.
@@ -13,22 +9,18 @@ import { ISynthesisSession } from '../stack-synthesizers';
 //   shell out to it.
 // * Each entry in the checkov output is a separate violation.
 
+
 /**
  * TODO docs
  */
-export class CheckovValiation implements IValidation {
+export class CheckovValidationPlugin implements IValidationPlugin {
+  public readonly name = 'Checkov';
+
   /**
    * TODO docs
+   * @returns TODO docs
    */
-  async validate(context: ValidationContext): Promise<void> {
-    if (!this.isCheckovInstalled()) {
-      throw new Error('Checkov is not installed. Install it by running "pip install checkov".');
-    }
-
-    await this.checkPolicies(context);
-  }
-
-  private isCheckovInstalled(): boolean {
+  isReady(): boolean {
     const { status } = sync('checkov', ['--version'], {
       encoding: 'utf-8',
       stdio: 'pipe',
@@ -37,10 +29,14 @@ export class CheckovValiation implements IValidation {
     return status === 0;
   }
 
-  private async checkPolicies(context: ValidationContext): Promise<void> {
+  /**
+   * TODO docs
+   */
+  validate(context: ValidationContext) {
+    const templatePath = context.stack.templateFullPath;
     const flags = [
       '-f',
-      context.templatePath,
+      templatePath,
       '-o',
       'json',
     ];
@@ -59,30 +55,12 @@ export class CheckovValiation implements IValidation {
         ruleName: check.check_id,
         violatingResource: {
           resourceName: check.resource.split('.')[1],
-          templatePath: context.templatePath,
+          templatePath,
           locations: check.check_result.evaluated_keys,
         },
       });
     });
 
     context.report.submit(status == 0 ? 'success' : 'failure');
-  }
-}
-
-/**
- * TODO docs
- */
-export class CheckovValidationPlugin implements IValidationPlugin {
-  private readonly validation = new CheckovValiation();
-
-  /**
-   * TODO docs
-   */
-  async validate(session: ISynthesisSession, source: FileAssetSource): Promise<ValidationReport> {
-    const templateAbsolutePath = path.join(process.cwd(), session.outdir, source.fileName ?? '');
-    const template = JSON.parse(fs.readFileSync(templateAbsolutePath, { encoding: 'utf-8' }));
-    const validationContext = new ValidationContext('Checkov', template, templateAbsolutePath);
-    await this.validation.validate(validationContext);
-    return validationContext.report;
   }
 }

@@ -1,29 +1,28 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { sync } from 'cross-spawn';
-import { IValidationPlugin, IValidation, ValidationContext, ValidationReport } from './validation';
-import { FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../stack-synthesizers';
+import { IValidationPlugin, ValidationContext } from './validation';
 
 // Design decisions:
 // * We don't want to install cfnguard as a dependency of the CDK, so we'll just
 //   shell out to it.
 // * Each entry in the cfnguard output is a separate violation.
 
-export class CfnguardValidation implements IValidation {
-  constructor(private readonly rulesPath: string) {
+export interface PluginProps {
+  readonly path: string;
+}
 
-  };
-  async validate(context: ValidationContext): Promise<void> {
-    // TODO: check whether cfnguard is installed
-    if (!this.isCfnguardInstalled()) {
-      throw new Error('Cfn-guard is not installed. Install it by running "npm install cfn-guard".');
-    }
+export class CfnguardValidationPlugin implements IValidationPlugin {
+  private readonly rulesPath: string;
+  public readonly name = 'CFN Guard';
 
-    await this.checkPolicies(context);
+  constructor(props: PluginProps) {
+    this.rulesPath = props.path;
   }
 
-  private isCfnguardInstalled(): boolean {
+  /**
+   * TODO docs
+   * @returns TODO docs
+   */
+  isReady(): boolean {
     const { status } = sync('cfn-guard', ['--version'], {
       encoding: 'utf-8',
       stdio: 'pipe',
@@ -32,13 +31,17 @@ export class CfnguardValidation implements IValidation {
     return status === 0;
   }
 
-  private async checkPolicies(context: ValidationContext): Promise<void> {
+  /**
+   * TODO docs
+   */
+  validate(context: ValidationContext) {
+    const templatePath = context.stack.templateFullPath;
     const flags = [
       'validate',
       '--rules',
       this.rulesPath,
       '--data',
-      context.templatePath,
+      templatePath,
       '--output-format',
       'json',
       '--show-summary',
@@ -58,7 +61,7 @@ export class CfnguardValidation implements IValidation {
         ruleName: check.Rule.name,
         violatingResource: {
           resourceName: check.Rule.checks[0].Clause.Unary.check.UnResolved.value.traversed_to.path.split('/')[2],
-          templatePath: context.templatePath,
+          templatePath,
           locations: [check.Rule.checks[0].Clause.Unary.check.UnResolved.value.remaining_query],
         },
       });
@@ -66,29 +69,5 @@ export class CfnguardValidation implements IValidation {
 
     // eslint-disable-next-line no-console
     context.report.submit(status == 0 ? 'success' : 'failure');
-  }
-}
-
-export interface PluginProps {
-  readonly path: string;
-}
-
-export class CfnguardValidationPlugin implements IValidationPlugin {
-  private readonly path: string;
-  private readonly validation: CfnguardValidation;
-
-  constructor(props: PluginProps) {
-    this.path = props.path;
-    this.validation = new CfnguardValidation(this.path);
-  };
-  /**
-   * TODO docs
-   */
-  async validate(session: ISynthesisSession, source: FileAssetSource): Promise<ValidationReport> {
-    const templateAbsolutePath = path.join(process.cwd(), session.outdir, source.fileName ?? '');
-    const template = JSON.parse(fs.readFileSync(templateAbsolutePath, { encoding: 'utf-8' }));
-    const validationContext = new ValidationContext('cfn-guard', template, templateAbsolutePath);
-    await this.validation.validate(validationContext);
-    return validationContext.report;
   }
 }

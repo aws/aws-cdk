@@ -160,17 +160,13 @@ export class App extends Stage {
   public readonly _treeMetadata: boolean;
 
   /**
-   * TODO docs
-   */
-  public readonly validationPlugins: IValidationPlugin[] = [];
-
-  /**
    * Initializes a CDK application.
    * @param props initialization properties
    */
   constructor(props: AppProps = {}) {
     super(undefined as any, '', {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
+      validationPlugins: props.validationPlugins,
     });
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });
@@ -196,10 +192,6 @@ export class App extends Stage {
       // synth() guarantuees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
       process.once('beforeExit', () => this.synth());
-    }
-
-    if (props.validationPlugins) {
-      this.validationPlugins = props.validationPlugins;
     }
 
     this._treeMetadata = props.treeMetadata ?? true;

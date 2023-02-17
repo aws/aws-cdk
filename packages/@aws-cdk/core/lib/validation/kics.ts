@@ -1,9 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { sync } from 'cross-spawn';
-import { IValidation, IValidationPlugin, ValidationContext, ValidationReport } from './validation';
-import { FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../stack-synthesizers';
+import { IValidationPlugin, ValidationContext } from './validation';
 
 // NOTE: This class will eventually move out to a separate repository, but we're
 // keeping it here for now to make it easier to iterate on.
@@ -11,17 +9,20 @@ import { ISynthesisSession } from '../stack-synthesizers';
 /**
  * TODO docs
  */
-export class KicsValidation implements IValidation {
+export class KicsValidationPlugin implements IValidationPlugin {
+  name: string = 'KICS';
+
+  isReady(): boolean {
+    // TODO Check if docker is installed
+    return true;
+  }
+
   /**
    * TODO docs
    */
-  async validate(context: ValidationContext): Promise<void> {
-
-    await this.checkPolicies(context);
-  }
-
-  private async checkPolicies(context: ValidationContext): Promise<void> {
-    const [templateFolder, templateFileName] = this.splitPathAndFile(context.templatePath);
+  validate(context: ValidationContext) {
+    const templatePath = context.stack.templateFullPath;
+    const [templateFolder, templateFileName] = this.splitPathAndFile(templatePath);
 
     const flags = [
       'run',
@@ -74,29 +75,9 @@ export class KicsValidation implements IValidation {
     context.report.submit(status == 0 ? 'success' : 'failure');
   }
 
-  private splitPathAndFile(input: string): string[] {
-    const splitPath = input.split('/');
-    const fileName = splitPath.pop();
-    const filePath = splitPath.join('/');
-
-    return [filePath, fileName!];
-  }
-}
-
-/**
- * TODO docs
- */
-export class KicsValidationPlugin implements IValidationPlugin {
-  private readonly validation = new KicsValidation();
-
-  /**
-   * TODO docs
-   */
-  async validate(session: ISynthesisSession, source: FileAssetSource): Promise<ValidationReport> {
-    const templateAbsolutePath = path.join(process.cwd(), session.outdir, source.fileName ?? '');
-    const template = JSON.parse(fs.readFileSync(templateAbsolutePath, { encoding: 'utf-8' }));
-    const validationContext = new ValidationContext('Kics', template, templateAbsolutePath);
-    await this.validation.validate(validationContext);
-    return validationContext.report;
+  splitPathAndFile(templatePath: string): [any, any] {
+    const templateFolder = path.dirname(templatePath);
+    const templateFileName = path.basename(templatePath);
+    return [templateFolder, templateFileName];
   }
 }

@@ -1,14 +1,15 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
+import { MetadataResource } from './metadata-resource';
+import { prepareApp } from './prepare-app';
+import { TreeMetadata } from './tree-metadata';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { Aspects, IAspect } from '../aspect';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
-import { MetadataResource } from './metadata-resource';
-import { prepareApp } from './prepare-app';
-import { TreeMetadata } from './tree-metadata';
+import { ValidationContext } from '../validation';
 
 /**
  * Options for `synthesize()`
@@ -49,7 +50,41 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   // stacks to add themselves to the synthesized cloud assembly.
   synthesizeTree(root, builder, options.validateOnSynthesis);
 
-  return builder.buildAssembly();
+  const assembly = builder.buildAssembly();
+
+  invokeValidationPlugins(root, assembly);
+
+  return assembly;
+}
+
+function invokeValidationPlugins(root: IConstruct, assembly: cxapi.CloudAssembly) {
+  const stage = Stage.isStage(root) ? root : App.of(root);
+
+  if (!stage) {
+    throw new Error('Cannot validate a construct tree which is not attached to a Stage');
+  }
+
+  for (const plugin of stage.validationPlugins) {
+    if (!plugin.isReady()) {
+      throw new Error('Validation plugin is not ready');
+    }
+
+    assembly.stacks.forEach(stack => {
+      const validationContext = new ValidationContext(
+        plugin,
+        root,
+        stack,
+      );
+
+      plugin.validate(validationContext);
+      const report = validationContext.report;
+      if (!report.success) {
+        // eslint-disable-next-line no-console
+        console.log(report.toString());
+        throw new Error(`Validation failed for stack ${stack.name}`);
+      }
+    });
+  }
 }
 
 const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
