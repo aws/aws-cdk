@@ -1455,6 +1455,40 @@ describe('bucket', () => {
         },
       });
     });
+
+    test('does not grant excludedKeyActions when specified', () => {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const user = new iam.User(stack, 'MyUser');
+
+      bucket.grantWrite(user, '*', ['s3:Abort*', 's3:DeleteObject*']);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
+              ],
+              'Effect': 'Allow',
+              'Resource': [
+                { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                {
+                  'Fn::Join': ['', [
+                    { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                    '/*',
+                  ]],
+                },
+              ],
+            },
+          ],
+        },
+      });
+    });
   });
 
   describe('grantPut', () => {
