@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.managed-policy": {
+    "ManagedPolicyInteg/DefaultTest": {
       "stacks": [
         "aws-cdk-iam-managed-policy"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "ManagedPolicyInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ManagedPolicyIntegDefaultTestDeployAssert27007DC6"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

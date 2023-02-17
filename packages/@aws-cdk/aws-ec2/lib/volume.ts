@@ -620,6 +620,7 @@ export class Volume extends VolumeBase {
       multiAttachEnabled: props.enableMultiAttach ?? false,
       size: props.size?.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }),
       snapshotId: props.snapshotId,
+      throughput: props.throughput,
       volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     });
     resource.applyRemovalPolicy(props.removalPolicy);

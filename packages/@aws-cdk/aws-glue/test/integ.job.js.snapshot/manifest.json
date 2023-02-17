@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/977a2f07e22679bb04b03ce83cc1fac3e6cc269a794e38248ec67106ee39f0a2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b553fef631f82898c826f3c20e1de0d155dbd3a35339ef92d0893052a5be69ce.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -211,6 +211,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ShellJob390C141361"
+          }
+        ],
+        "/aws-glue-job/RayJob/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RayJobServiceRole51433C3D"
+          }
+        ],
+        "/aws-glue-job/RayJob/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RayJobServiceRoleDefaultPolicyA615640D"
+          }
+        ],
+        "/aws-glue-job/RayJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RayJob2F7864D9"
           }
         ],
         "/aws-glue-job/BootstrapVersion": [
