@@ -46,6 +46,7 @@ def helm_handler(event, context):
     create_namespace = props.get('CreateNamespace', None)
     repository       = props.get('Repository', None)
     values_text      = props.get('Values', None)
+    skip_crds        = props.get('SkipCrds', False)
 
     # "log in" to the cluster
     subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
@@ -146,7 +147,7 @@ def get_chart_from_oci(tmpdir, repository = None, version = None):
     raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
 
 
-def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None):
+def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None, skip_crds = False):
     import subprocess
 
     cmnd = ['helm', verb, release]
@@ -166,6 +167,8 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
         cmnd.extend(['--namespace', namespace])
     if wait:
         cmnd.append('--wait')
+    if skip_crds:
+        cmnd.append('--skip-crds')
     if not timeout is None:
         cmnd.extend(['--timeout', timeout])
     cmnd.extend(['--kubeconfig', kubeconfig])

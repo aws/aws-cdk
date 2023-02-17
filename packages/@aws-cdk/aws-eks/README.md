@@ -472,7 +472,6 @@ To disable the installation of the termination handler, set the `spotInterruptHa
 
 #### Bottlerocket
 
-[Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts.
 
 `Bottlerocket` is supported when using managed nodegroups or self-managed auto-scaling groups.
 
@@ -1190,6 +1189,20 @@ cluster.addHelmChart('ExternalSecretsOperator', {
       port: 9443
     }
   },
+});
+```
+
+Helm chart can come with Custom Resource Definitions (CRDs) defined that by default will be installed by helm as well. However in special cases it might be needed to skip the installation of CRDs, for that the property `skipCrds` can be used.
+
+```ts
+declare const cluster: eks.Cluster;
+// option 1: use a construct
+new eks.HelmChart(this, 'NginxIngress', {
+  cluster,
+  chart: 'nginx-ingress',
+  repository: 'https://helm.nginx.com/stable',
+  namespace: 'kube-system',
+  skipCrds: true,
 });
 ```
 
