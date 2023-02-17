@@ -31,7 +31,7 @@ const asset5 = new assets.DockerImageAsset(stack, 'DockerImage5', {
   },
 });
 
-const asset6 = new assets.DockerImageAsset(stack, 'DockerImage5', {
+const asset6 = new assets.DockerImageAsset(stack, 'DockerImage6', {
   directory: path.join(__dirname, 'demo-image'),
   cacheTo: { type: 'inline' },
 });
