@@ -472,6 +472,7 @@ To disable the installation of the termination handler, set the `spotInterruptHa
 
 #### Bottlerocket
 
+[Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts.
 
 `Bottlerocket` is supported when using managed nodegroups or self-managed auto-scaling groups.
 
