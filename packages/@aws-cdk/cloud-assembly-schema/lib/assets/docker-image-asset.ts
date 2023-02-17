@@ -104,7 +104,7 @@ export interface DockerImageSource {
    * @default - no cache from options are passed to the build command
    * @see https://docs.docker.com/build/cache/backends/
    */
-  readonly cacheFrom?: string[];
+  readonly cacheFrom?: DockerCacheOption[];
 
   /**
    * Cache to options to pass to the `docker build` command.
@@ -112,7 +112,7 @@ export interface DockerImageSource {
    * @default - no cache to options are passed to the build command
    * @see https://docs.docker.com/build/cache/backends/
    */
-  readonly cacheTo?: string;
+  readonly cacheTo?: DockerCacheOption;
 }
 
 /**
@@ -128,4 +128,26 @@ export interface DockerImageDestination extends AwsDestination {
    * Tag of the image to publish
    */
   readonly imageTag: string;
+}
+
+/**
+ * Options for configuring the Docker cache backend
+ */
+export interface DockerCacheOption {
+  /**
+   * The type of cache to use.
+   * Refer to https://docs.docker.com/build/cache/backends/ for full list of backends.
+   * @default - unspecified
+   *
+   * @example 'registry'
+   */
+  readonly type: string;
+  /**
+   * Any parameters to pass into the docker cache backend configuration.
+   * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
+   * @default {} No options provided
+   *
+   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   */
+  readonly params?: { [key: string]: string };
 }

@@ -72,6 +72,28 @@ export interface Tag {
 }
 
 /**
+ * Options for configuring the Docker cache backend
+ */
+export interface ContainerImageAssetCacheOption {
+  /**
+   * The type of cache to use.
+   * Refer to https://docs.docker.com/build/cache/backends/ for full list of backends.
+   * @default - unspecified
+   *
+   * @example 'registry'
+   */
+  readonly type: string;
+  /**
+   * Any parameters to pass into the docker cache backend configuration.
+   * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
+   * @default {} No options provided
+   *
+   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   */
+  readonly params?: { [key: string]: string };
+}
+
+/**
  * Metadata Entry spec for container images.
  */
 export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry {
@@ -167,7 +189,7 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @default - no cache from options are passed to the build command
    * @see https://docs.docker.com/build/cache/backends/
    */
-  readonly cacheFrom?: string[];
+  readonly cacheFrom?: ContainerImageAssetCacheOption[];
 
   /**
    * Cache to options to pass to the `docker build` command.
@@ -175,7 +197,7 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @default - no cache to options are passed to the build command
    * @see https://docs.docker.com/build/cache/backends/
    */
-  readonly cacheTo?: string;
+  readonly cacheTo?: ContainerImageAssetCacheOption;
 }
 
 /**
