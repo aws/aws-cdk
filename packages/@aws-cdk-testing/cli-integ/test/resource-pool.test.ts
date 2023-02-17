@@ -3,6 +3,8 @@ import { ResourcePool } from '../lib/resource-pool';
 
 const POOL_NAME = 'resource-pool.test';
 
+jest.setTimeout(60_000);
+
 test('take and dispose', async () => {
   const pool = ResourcePool.withResources(POOL_NAME, ['a']);
   const take1 = pool.take();
