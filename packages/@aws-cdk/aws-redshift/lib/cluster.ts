@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -7,7 +8,6 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
-import * as path from 'path';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
@@ -478,11 +478,6 @@ export class Cluster extends ClusterBase {
   protected parameterGroup?: IClusterParameterGroup;
 
   /**
-   * Guards against repeated invocations of enableRebootForParameterChanges()
-   */
-  protected rebootForParameterChangesEnabled?: boolean;
-
-  /**
    * The ARNs of the roles that will be attached to the cluster.
    *
    * **NOTE** Please do not access this directly, use the `addIamRole` method instead.
@@ -707,10 +702,9 @@ export class Cluster extends ClusterBase {
    * Enables automatic cluster rebooting when changes to the cluster's parameter group require a restart to apply.
    */
   public enableRebootForParameterChanges(): void {
-    if (this.rebootForParameterChangesEnabled) {
+    if (this.node.tryFindChild('RedshiftClusterRebooterCustomResource')) {
       return;
     }
-    this.rebootForParameterChangesEnabled = true;
     const rebootFunction = new lambda.SingletonFunction(this, 'RedshiftClusterRebooterFunction', {
       uuid: '511e207f-13df-4b8b-b632-c32b30b65ac2',
       runtime: lambda.Runtime.NODEJS_16_X,

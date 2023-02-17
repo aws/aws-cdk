@@ -662,6 +662,22 @@ describe('reboot for Parameter Changes', () => {
       .not.toThrowError(/Cannot enable reboot for parameter changes/);
   });
 
+  test('not create duplicate resources when reboot feature is enabled multiple times on a cluster', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      rebootForParameterChanges: true,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+    //WHEN
+    cluster.enableRebootForParameterChanges();
+    // THEN
+    Template.fromStack(stack).resourceCountIs('Custom::RedshiftClusterRebooter', 1);
+  });
+
   test('cluster with parameter group', () => {
     // Given
     const cluster = new Cluster(stack, 'Redshift', {
