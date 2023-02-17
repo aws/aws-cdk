@@ -51,7 +51,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * an `import` statement or a `require` call.
    *
    * For example, `{ '.png': 'dataurl' }`.
-   * 
+   *
    * @see https://esbuild.github.io/api/#loader
    *
    * @default - use esbuild default loaders
