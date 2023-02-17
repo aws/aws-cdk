@@ -1,0 +1,185 @@
+{
+ "Resources": {
+  "GlueCrawlerRole5C6F104C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "GlueDatabase4801C042": {
+   "Type": "AWS::Glue::Database",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseInput": {
+     "Name": "dbcrawler"
+    }
+   }
+  },
+  "GlueCrawler": {
+   "Type": "AWS::Glue::Crawler",
+   "Properties": {
+    "Role": {
+     "Fn::GetAtt": [
+      "GlueCrawlerRole5C6F104C",
+      "Arn"
+     ]
+    },
+    "Targets": {
+     "S3Targets": [
+      {
+       "Path": "s3://aaa"
+      }
+     ]
+    },
+    "DatabaseName": {
+     "Ref": "GlueDatabase4801C042"
+    },
+    "Name": "MyGlueCrawler"
+   }
+  },
+  "StateMachineRole543B9670": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachineRoleDefaultPolicyDA5F7DA8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "glue:GetCrawler",
+        "glue:StartCrawler"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":glue:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":crawler/MyGlueCrawler"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StateMachineRoleDefaultPolicyDA5F7DA8",
+    "Roles": [
+     {
+      "Ref": "StateMachineRole543B9670"
+     }
+    ]
+   }
+  },
+  "StateMachine81935E76": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRole543B9670",
+      "Arn"
+     ]
+    },
+    "DefinitionString": "{\"StartAt\":\"Start Task\",\"States\":{\"Start Task\":{\"Type\":\"Pass\",\"Next\":\"Glue Crawler Task\"},\"Glue Crawler Task\":{\"Next\":\"End Task\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::aws-sdk:glue:startCrawler\",\"Parameters\":{\"Name\":\"MyGlueCrawler\"}},\"End Task\":{\"Type\":\"Pass\",\"End\":true}}}"
+   },
+   "DependsOn": [
+    "StateMachineRoleDefaultPolicyDA5F7DA8",
+    "StateMachineRole543B9670"
+   ]
+  }
+ },
+ "Outputs": {
+  "StateMachineARNOutput": {
+   "Value": {
+    "Ref": "StateMachine81935E76"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "CrawlerTest/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-integ"
+      ],
+      "assertionStack": "CrawlerTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CrawlerTestDefaultTestDeployAssert1941F9AE"
+    }
+  }
+}

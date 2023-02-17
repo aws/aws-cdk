@@ -1,0 +1,383 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-stepfunctions-integ": {
+        "id": "aws-stepfunctions-integ",
+        "path": "aws-stepfunctions-integ",
+        "children": {
+          "Glue Crawler Role": {
+            "id": "Glue Crawler Role",
+            "path": "aws-stepfunctions-integ/Glue Crawler Role",
+            "children": {
+              "ImportGlue Crawler Role": {
+                "id": "ImportGlue Crawler Role",
+                "path": "aws-stepfunctions-integ/Glue Crawler Role/ImportGlue Crawler Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-integ/Glue Crawler Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "glue.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSGlueServiceRole"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "Glue Database": {
+            "id": "Glue Database",
+            "path": "aws-stepfunctions-integ/Glue Database",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-integ/Glue Database/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Glue::Database",
+                  "aws:cdk:cloudformation:props": {
+                    "catalogId": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "databaseInput": {
+                      "name": "dbcrawler"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-glue.CfnDatabase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue.Database",
+              "version": "0.0.0"
+            }
+          },
+          "Glue Crawler": {
+            "id": "Glue Crawler",
+            "path": "aws-stepfunctions-integ/Glue Crawler",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Crawler",
+              "aws:cdk:cloudformation:props": {
+                "role": {
+                  "Fn::GetAtt": [
+                    "GlueCrawlerRole5C6F104C",
+                    "Arn"
+                  ]
+                },
+                "targets": {
+                  "s3Targets": [
+                    {
+                      "path": "s3://aaa"
+                    }
+                  ]
+                },
+                "databaseName": {
+                  "Ref": "GlueDatabase4801C042"
+                },
+                "name": "MyGlueCrawler"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue.CfnCrawler",
+              "version": "0.0.0"
+            }
+          },
+          "Glue Crawler Task": {
+            "id": "Glue Crawler Task",
+            "path": "aws-stepfunctions-integ/Glue Crawler Task",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.TaskStateBase",
+              "version": "0.0.0"
+            }
+          },
+          "Start Task": {
+            "id": "Start Task",
+            "path": "aws-stepfunctions-integ/Start Task",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "End Task": {
+            "id": "End Task",
+            "path": "aws-stepfunctions-integ/End Task",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "State Machine": {
+            "id": "State Machine",
+            "path": "aws-stepfunctions-integ/State Machine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-integ/State Machine/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-integ/State Machine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-integ/State Machine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-integ/State Machine/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-integ/State Machine/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "glue:GetCrawler",
+                                    "glue:StartCrawler"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":glue:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":crawler/MyGlueCrawler"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StateMachineRoleDefaultPolicyDA5F7DA8",
+                            "roles": [
+                              {
+                                "Ref": "StateMachineRole543B9670"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-integ/State Machine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRole543B9670",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": "{\"StartAt\":\"Start Task\",\"States\":{\"Start Task\":{\"Type\":\"Pass\",\"Next\":\"Glue Crawler Task\"},\"Glue Crawler Task\":{\"Next\":\"End Task\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::aws-sdk:glue:startCrawler\",\"Parameters\":{\"Name\":\"MyGlueCrawler\"}},\"End Task\":{\"Type\":\"Pass\",\"End\":true}}}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "State Machine ARN Output": {
+            "id": "State Machine ARN Output",
+            "path": "aws-stepfunctions-integ/State Machine ARN Output",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-stepfunctions-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-stepfunctions-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "CrawlerTest": {
+        "id": "CrawlerTest",
+        "path": "CrawlerTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "CrawlerTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CrawlerTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.249"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "CrawlerTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "CrawlerTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "CrawlerTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.249"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
