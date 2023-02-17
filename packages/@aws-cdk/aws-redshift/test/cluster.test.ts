@@ -614,12 +614,142 @@ test('elastic ip address', () => {
   });
 });
 
+describe('reboot for Parameter Changes', () => {
+  test('throw error for cluster without parameter group', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster.enableRebootForParameterChanges();
+    // WHEN
+    expect(() => Template.fromStack(stack))
+      // THEN
+      .toThrowError(/Cannot enable reboot for parameter changes/);
+  });
+
+  test('throw error for cluster with imported parameter group', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: ClusterParameterGroup.fromClusterParameterGroupName(stack, 'foo', 'bar'),
+    });
+    cluster.enableRebootForParameterChanges();
+    // WHEN
+    expect(() => Template.fromStack(stack))
+      // THEN
+      .toThrowError(/Cannot enable reboot for parameter changes/);
+  });
+
+  test('not throw error when parameter group is created after enabling reboots', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      rebootForParameterChanges: true,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+    // WHEN
+    expect(() => Template.fromStack(stack))
+      // THEN
+      .not.toThrowError(/Cannot enable reboot for parameter changes/);
+  });
+
+  test('not create duplicate resources when reboot feature is enabled multiple times on a cluster', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      rebootForParameterChanges: true,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+    //WHEN
+    cluster.enableRebootForParameterChanges();
+    // THEN
+    Template.fromStack(stack).resourceCountIs('Custom::RedshiftClusterRebooter', 1);
+  });
+
+  test('cluster with parameter group', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+
+    const cluster2 = new Cluster(stack, 'Redshift2', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster2.addToParameterGroup('foo', 'bar');
+
+    // WHEN
+    cluster.enableRebootForParameterChanges();
+    cluster2.enableRebootForParameterChanges();
+
+    //THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('Custom::RedshiftClusterRebooter', 2);
+    template.templateMatches({
+      Resources: {
+        SingletonLambda511e207f13df4b8bb632c32b30b65ac281740AC5: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Handler: 'index.handler',
+            Runtime: 'nodejs16.x',
+            Timeout: 900,
+          },
+        },
+      },
+    });
+  });
+
+  test('Custom resource ParametersString property updates', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+    cluster.enableRebootForParameterChanges();
+
+    // WHEN
+    cluster.addToParameterGroup('lorem', 'ipsum');
+
+    //THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('Custom::RedshiftClusterRebooter', {
+      ParametersString: JSON.stringify(
+        {
+          foo: 'bar',
+          lorem: 'ipsum',
+        },
+      ),
+    });
+  });
+});
+
 describe('default IAM role', () => {
 
   test('Default role not in role list', () => {
     // GIVEN
-    const clusterRole1 = new iam.Role(stack, 'clusterRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
-    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+    const clusterRole1 = new iam.Role(stack, 'clusterRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') });
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') });
 
     expect(() => {
       new Cluster(stack, 'Redshift', {
@@ -634,7 +764,7 @@ describe('default IAM role', () => {
   });
 
   test('throws error when default role not attached to cluster when adding default role post creation', () => {
-    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') });
     const cluster = new Cluster(stack, 'Redshift', {
       masterUser: {
         masterUsername: 'admin',
@@ -740,7 +870,7 @@ describe('IAM role', () => {
     expect(() =>
       // WHEN
       cluster.addIamRole(role),
-    // THEN
+      // THEN
     ).toThrow(`Role '${role.roleArn}' is already attached to the cluster`);
   });
 });

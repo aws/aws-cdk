@@ -1,0 +1,177 @@
+{
+ "Resources": {
+  "AwsApiCallRedshiftdescribeClusters": {
+   "Type": "Custom::DeployAssert@SdkCallRedshiftdescribeClusters",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Redshift",
+    "api": "describeClusters",
+    "expected": "{\"$StringLike\":\"in-sync\"}",
+    "actualPath": "Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus",
+    "parameters": {
+     "ClusterIdentifier": {
+      "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefClusterEB0386A796A0E3FE"
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus"
+    ],
+    "salt": "1671057311528"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "redshift:DescribeClusters"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "redshift:DescribeClusterParameters"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "382ba2a8fd0a13f6782aec5543e465f988f5c100f35ed20f90cd96b8ee53f674.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallRedshiftdescribeClusterParameters": {
+   "Type": "Custom::DeployAssert@SdkCallRedshiftdescribeClusterParameter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Redshift",
+    "api": "describeClusterParameters",
+    "expected": "{\"$ObjectLike\":{\"Parameters\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"ParameterName\":\"enable_user_activity_logging\",\"ParameterValue\":\"false\"}},{\"$ObjectLike\":{\"ParameterName\":\"use_fips_ssl\",\"ParameterValue\":\"true\"}}]}}}",
+    "parameters": {
+     "ParameterGroupName": {
+      "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+     },
+     "Source": "user"
+    },
+    "flattenResponse": "false",
+    "salt": "1671057311529"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallRedshiftdescribeClusters": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRedshiftdescribeClusters",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallRedshiftdescribeClusterParameters": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRedshiftdescribeClusterParameters",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
