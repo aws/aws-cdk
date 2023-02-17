@@ -1723,6 +1723,130 @@ describe('container definition', () => {
     }).toThrow(/Interval must be between 5 seconds and 300 seconds./);
   });
 
+  test('throws when setting Health Check with invalid interval because of too long', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ['CMD-SHELL', 'curl localhost:8000'],
+        interval: Duration.seconds(301),
+        timeout: Duration.seconds(30),
+      },
+    });
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            HealthCheck: {
+              Command: ['CMD-SHELL', 'curl localhost:8000'],
+              Interval: 4,
+            },
+          },
+        ],
+      });
+    }).toThrow(/Interval must be between 5 seconds and 300 seconds./);
+  });
+
+  test('throws when setting Health Check with invalid timeout because of too short', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ['CMD-SHELL', 'curl localhost:8000'],
+        interval: Duration.seconds(40),
+        timeout: Duration.seconds(1),
+      },
+    });
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            HealthCheck: {
+              Command: ['CMD-SHELL', 'curl localhost:8000'],
+              Interval: 4,
+            },
+          },
+        ],
+      });
+    }).toThrow(/Timeout must be between 2 seconds and 120 seconds./);
+  });
+
+  test('throws when setting Health Check with invalid timeout because of too long', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ['CMD-SHELL', 'curl localhost:8000'],
+        interval: Duration.seconds(150),
+        timeout: Duration.seconds(130),
+      },
+    });
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            HealthCheck: {
+              Command: ['CMD-SHELL', 'curl localhost:8000'],
+              Interval: 4,
+            },
+          },
+        ],
+      });
+    }).toThrow(/Timeout must be between 2 seconds and 120 seconds./);
+  });
+
+  test('throws when setting Health Check with invalid interval and timeout because timeout is longer than interval', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ['CMD-SHELL', 'curl localhost:8000'],
+        interval: Duration.seconds(10),
+        timeout: Duration.seconds(30),
+      },
+    });
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            HealthCheck: {
+              Command: ['CMD-SHELL', 'curl localhost:8000'],
+              Interval: 4,
+            },
+          },
+        ],
+      });
+    }).toThrow(/Health check interval should be longer than timeout./);
+  });
+
   test('can specify Health Check values in shell form', () => {
     // GIVEN
     const stack = new cdk.Stack();
