@@ -50,9 +50,9 @@ export interface BundlingOptions extends DockerRunOptions {
    * Configuring a loader for a given file type lets you load that file type with
    * an `import` statement or a `require` call.
    *
-   * @see https://esbuild.github.io/api/#loader
-   *
    * For example, `{ '.png': 'dataurl' }`.
+   *
+   * @see https://esbuild.github.io/api/#loader
    *
    * @default - use esbuild default loaders
    */

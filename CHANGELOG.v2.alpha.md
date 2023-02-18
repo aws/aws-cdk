@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.65.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.64.0-alpha.0...v2.65.0-alpha.0) (2023-02-15)
+
+
+### Features
+
+* **glue:** support Ray jobs ([#23822](https://github.com/aws/aws-cdk/issues/23822)) ([8de50d6](https://github.com/aws/aws-cdk/commit/8de50d624c8703a12713dcffbc764688868f22b0))
+* **redshift:** IAM roles can be attached to a cluster, post creation ([#23791](https://github.com/aws/aws-cdk/issues/23791)) ([1a46808](https://github.com/aws/aws-cdk/commit/1a46808b03e8f6d09846f999ae3dc65b190f5f26)), closes [#22632](https://github.com/aws/aws-cdk/issues/22632)
+* **synthetics:** support runtime 3.9 ([#24101](https://github.com/aws/aws-cdk/issues/24101)) ([9d23cad](https://github.com/aws/aws-cdk/commit/9d23caded8aca42d3b78de1bc7e89c38a4d6805e))
+
 ## [2.64.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.63.2-alpha.0...v2.64.0-alpha.0) (2023-02-09)
 
 

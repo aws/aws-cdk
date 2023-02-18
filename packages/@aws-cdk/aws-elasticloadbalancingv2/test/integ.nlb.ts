@@ -24,6 +24,11 @@ const group = listener.addTargets('Target', {
   targets: [new elbv2.IpTarget('10.0.1.1')],
 });
 
+group.configureHealthCheck({
+  interval: cdk.Duration.seconds(250),
+  protocol: elbv2.Protocol.TCP,
+});
+
 vpc.publicSubnets.forEach(subnet => group.node.addDependency(subnet));
 group.node.addDependency(vpc.internetConnectivityEstablished);
 
