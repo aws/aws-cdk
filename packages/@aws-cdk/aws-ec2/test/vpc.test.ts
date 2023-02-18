@@ -1525,6 +1525,33 @@ describe('vpc', () => {
 
     });
 
+    test('can configure NAT instances with requireImdsv2 true', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const provider = NatProvider.instance({
+        instanceType: new InstanceType('q86.mega'),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
+        }),
+        requireImdsv2: true,
+      });
+
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider: provider,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+        LaunchTemplateData: {
+          MetadataOptions: {
+            HttpTokens: 'required',
+          },
+        },
+      });
+    });
+
   });
 
   describe('Network ACL association', () => {

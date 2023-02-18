@@ -217,6 +217,19 @@ new ec2.Vpc(this, 'TheVPC', {
 provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
 ```
 
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
+allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
+
+To do this for a single `NatProvider.Instance`, you can use the `requireImdsv2` property.
+The example below demonstrates IMDSv2 being required on a single `NatProvider.Instance`:
+
+```ts
+new ec2.NatProvider.Instance({
+  requireImdsv2: true,
+  // ...
+});
+```
+
 ### Ip Address Management
 
 The VPC spans a supernet IP range, which contains the non-overlapping IPs of its contained subnets. Possible sources for this IP range are:

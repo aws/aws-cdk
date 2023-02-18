@@ -209,6 +209,13 @@ export interface NatInstanceProps {
    * @default NatTrafficDirection.INBOUND_AND_OUTBOUND
    */
   readonly defaultAllowedTraffic?: NatTrafficDirection;
+
+  /**
+   * Whether IMDSv2 should be required on this instance.
+   *
+   * @default - false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -309,6 +316,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
         securityGroup: this._securityGroup,
         role,
         keyName: this.props.keyName,
+        requireImdsv2: this.props.requireImdsv2,
       });
       // NAT instance routes all traffic, both ways
       this.gateways.add(sub.availabilityZone, natInstance);
