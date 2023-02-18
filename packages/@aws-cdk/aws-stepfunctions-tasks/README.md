@@ -66,6 +66,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [EventBridge](#eventbridge)
     - [Put Events](#put-events)
   - [Glue](#glue)
+    - [StartJobRun](#startjobrun)
+    - [StartCrawlerRun](#startcrawlerrun)
   - [Glue DataBrew](#glue-databrew)
   - [Lambda](#lambda)
   - [SageMaker](#sagemaker)
@@ -897,6 +899,8 @@ new tasks.EventBridgePutEvents(this, 'Send an event to EventBridge', {
 
 ## Glue
 
+### StartJobRun
+
 Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html) through the service integration pattern.
 
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-StartJobRun) API from a `Task` state.
@@ -909,6 +913,18 @@ new tasks.GlueStartJobRun(this, 'Task', {
   }),
   taskTimeout: sfn.Timeout.duration(Duration.minutes(30)),
   notifyDelayAfter: Duration.minutes(5),
+});
+```
+
+### StartCrawlerRun
+
+Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html#supported-services-awssdk-list) through AWS SDK service integrations.
+
+You can call the `startCrawler` API from a `Task` state.
+
+```ts
+new tasks.GlueStartCrawlerRun(this, 'Task', {
+  'my-crawler-job',
 });
 ```
 
