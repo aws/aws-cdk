@@ -200,32 +200,17 @@ new Table(this, 'Table', {
 });
 ```
 
-Tables and their respective columns can be configured to contain comments:
+Tables can also be configured with a comment:
 
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', comment: 'This is a column comment' }, 
-    { name: 'col2', dataType: 'float', comment: 'This is a another column comment' }
+    { name: 'col1', dataType: 'varchar(4)' }, 
+    { name: 'col2', dataType: 'float' }
   ],
   cluster: cluster,
   databaseName: 'databaseName',
-  tableComment: 'This is a table comment',
-});
-```
-
-Table columns can be configured to use a specific compression encoding:
-
-```ts fixture=cluster
-import { ColumnEncoding } from '@aws-cdk/aws-redshift';
-
-new Table(this, 'Table', {
-  tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', encoding: ColumnEncoding.TEXT32K },
-    { name: 'col2', dataType: 'float', encoding: ColumnEncoding.DELTA32K },
-  ],
-  cluster: cluster,
-  databaseName: 'databaseName',
+  comment: 'This is a comment',
 });
 ```
 
@@ -364,6 +349,25 @@ const cluster = new Cluster(this, 'Cluster', {
 cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 ```
 
+## Rebooting for Parameter Updates
+
+In most cases, existing clusters [must be manually rebooted](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html) to apply parameter changes. You can automate parameter related reboots by setting the cluster's `rebootForParameterChanges` property to `true` , or by using `Cluster.enableRebootForParameterChanges()`.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new Cluster(this, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+    masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+  },
+  vpc,
+});
+
+cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+cluster.enableRebootForParameterChanges()
+```
+
 ## Elastic IP
 
 If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
@@ -432,8 +436,6 @@ Some Amazon Redshift features require Amazon Redshift to access other AWS servic
 When you create an IAM role and set it as the default for the cluster using console, you don't have to provide the IAM role's Amazon Resource Name (ARN) to perform authentication and authorization.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
 declare const vpc: ec2.Vpc;
 
 const defaultRole = new iam.Role(this, 'DefaultRole', {
@@ -441,7 +443,7 @@ const defaultRole = new iam.Role(this, 'DefaultRole', {
 },
 );
 
-new Cluster(this, 'Redshift', {
+new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },
@@ -454,8 +456,6 @@ new Cluster(this, 'Redshift', {
 A default role can also be added to a cluster using the `addDefaultIamRole` method.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
 declare const vpc: ec2.Vpc;
 
 const defaultRole = new iam.Role(this, 'DefaultRole', {
@@ -463,7 +463,7 @@ const defaultRole = new iam.Role(this, 'DefaultRole', {
 },
 );
 
-const redshiftCluster = new Cluster(this, 'Redshift', {
+const redshiftCluster = new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
     },
