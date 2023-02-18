@@ -11,13 +11,14 @@
     },
     "service": "Lambda",
     "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
       "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerD202FA8E369E8804"
      }
     },
     "flattenResponse": "false",
-    "salt": "1662643989220"
+    "salt": "1676327434136"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -36,27 +37,6 @@
      ]
     }
    }
-  },
-  "LambdaInvoke431773224924ebf10c8a31d363a6bf16AssertEqualsLambdainvokeF6179C6B": {
-   "Type": "Custom::DeployAssert@AssertEquals",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "actual": {
-     "Fn::GetAtt": [
-      "LambdaInvoke431773224924ebf10c8a31d363a6bf16",
-      "apiCallResponse"
-     ]
-    },
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
-    "salt": "1662643989220"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
    "Type": "AWS::IAM::Role",
@@ -123,6 +103,46 @@
            ]
           }
          ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerexcludes0437E0D23D81F234"
+             }
+            ]
+           ]
+          }
+         ]
         }
        ]
       }
@@ -138,7 +158,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.zip"
+     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -149,14 +169,60 @@
      ]
     }
    }
+  },
+  "LambdaInvoke0e6bc88fc58c90a2753e79d6caf4bc14": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerexcludes0437E0D23D81F234"
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1676327434137"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke0e6bc88fc58c90a2753e79d6caf4bc14InvokeD7AA9E7A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerexcludes0437E0D23D81F234"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
   }
  },
  "Outputs": {
-  "AssertionResultsAssertEqualsLambdainvoke64d766e0ddfdf2e2979fef994a5cd2aa": {
+  "AssertionResultsLambdaInvoke431773224924ebf10c8a31d363a6bf16": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke431773224924ebf10c8a31d363a6bf16AssertEqualsLambdainvokeF6179C6B",
-     "data"
+     "LambdaInvoke431773224924ebf10c8a31d363a6bf16",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke0e6bc88fc58c90a2753e79d6caf4bc14": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke0e6bc88fc58c90a2753e79d6caf4bc14",
+     "assertion"
     ]
    }
   }
