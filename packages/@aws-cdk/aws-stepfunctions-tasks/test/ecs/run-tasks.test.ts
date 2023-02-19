@@ -565,7 +565,7 @@ test('Running a task with WAIT_FOR_TASK_TOKEN and task token in environment', ()
 });
 
 test('Set revision number of ECS task denition family', () => {
-  // Given
+  // When
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
@@ -575,8 +575,6 @@ test('Set revision number of ECS task denition family', () => {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
     memoryLimitMiB: 256,
   });
-
-  // Then
   const runTask = new tasks.EcsRunTask(stack, 'task', {
     cluster,
     taskDefinition: taskDefinition,
@@ -584,6 +582,7 @@ test('Set revision number of ECS task denition family', () => {
     launchTarget: new tasks.EcsFargateLaunchTarget(),
   });
 
+  // Then
   expect(stack.resolve(runTask.toStateJson())).toEqual(
     {
       End: true,
