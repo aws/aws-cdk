@@ -26,6 +26,13 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   readonly taskDefinition: ecs.TaskDefinition;
 
   /**
+   * Can specify revision number of ECS task definiton family
+   *
+   * @default - none specify revision number. for this reason you will be specifying latest.
+   */
+  readonly revisionNumber?: number;
+
+  /**
    * Container setting overrides
    *
    * Specify the container to use and the overrides to apply.
@@ -143,7 +150,7 @@ export interface EcsEc2LaunchTargetOptions {
  * @see https://docs.aws.amazon.com/AmazonECS/latest/userguide/launch_types.html#launch-type-fargate
  */
 export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
-  constructor(private readonly options?: EcsFargateLaunchTargetOptions) {}
+  constructor(private readonly options?: EcsFargateLaunchTargetOptions) { }
 
   /**
    * Called when the Fargate launch type configured on RunTask
@@ -168,7 +175,7 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
  * @see https://docs.aws.amazon.com/AmazonECS/latest/userguide/launch_types.html#launch-type-ec2
  */
 export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
-  constructor(private readonly options?: EcsEc2LaunchTargetOptions) {}
+  constructor(private readonly options?: EcsEc2LaunchTargetOptions) { }
   /**
    * Called when the EC2 launch type is configured on RunTask
    */
@@ -280,7 +287,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         Cluster: this.props.cluster.clusterArn,
-        TaskDefinition: this.props.taskDefinition.family,
+        TaskDefinition: this.props.revisionNumber === undefined ? this.props.taskDefinition.family : `${this.props.taskDefinition.family}:${this.props.revisionNumber?.toString()}`,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
