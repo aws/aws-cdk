@@ -30,7 +30,7 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   /**
    * Can specify revision number of ECS task definiton family
    *
-   * @default - none specify revision number. for this reason you will be specifying latest.
+   * @default - None specify revision number. for this reason you will be specifying latest.
    */
   readonly revisionNumber?: number;
 

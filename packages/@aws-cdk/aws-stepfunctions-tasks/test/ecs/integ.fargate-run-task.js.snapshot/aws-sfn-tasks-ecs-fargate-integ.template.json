@@ -786,7 +786,7 @@
          "Arn"
         ]
        },
-       "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"",
+       "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10:1\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"",
        {
         "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
        },
