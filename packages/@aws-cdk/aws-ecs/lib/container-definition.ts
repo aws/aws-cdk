@@ -565,16 +565,18 @@ export class ContainerDefinition extends Construct {
    * This method adds one or more port mappings to the container.
    */
   public addPortMappings(...portMappings: PortMapping[]) {
+    // TODO: Refactor This Method.
     this.portMappings.push(...portMappings.map(pm => {
+      const portMap = new PortMap(this.taskDefinition.networkMode, pm);
+      portMap.tempDoNoghing();
+      // NOTE: ホストポートとコンテナポートの整合性を確かめるためのロジックっぽい
+      // ここはネットワークモードがVPCかHOSTモードの時にだけ
       if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC || this.taskDefinition.networkMode === NetworkMode.HOST) {
         if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
           throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.taskDefinition.networkMode}`);
         }
       }
-      // No empty strings as port mapping names.
-      if (pm.name === '') {
-        throw new Error('Port mapping name cannot be an empty string.');
-      }
+      // NOTE: It's service connect logick(sholud divide)
       // Service connect logic.
       if (pm.name || pm.appProtocol) {
 
@@ -594,6 +596,9 @@ export class ContainerDefinition extends Construct {
         this._namedPorts.set(pm.name, pm);
       }
 
+      // Brideモードの時にのみ関心があるロジックらしいが・・・
+      // 関心ごとがよくわからん・これはどういうロジックなんだ？
+      // 破壊的変更をしているところが辛い。新しいオブジェクトを返したいですね
       if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
         if (pm.hostPort === undefined) {
           pm = {
@@ -1084,6 +1089,29 @@ export interface PortMapping {
    * @default - no app protocol
    */
   readonly appProtocol?: AppProtocol;
+}
+
+/**
+ * PortMap ValueObjectClass having by ContainerDefinition
+ */
+class PortMap {
+  readonly networkmode: NetworkMode;
+  readonly portmapping: PortMapping;
+
+  constructor(networkmode: NetworkMode, pm: PortMapping) {
+    this.networkmode = networkmode;
+    this.portmapping = pm;
+    this.validPortName();
+  }
+
+  public tempDoNoghing() {
+  }
+
+  private validPortName(): void {
+    if (this.portmapping.name === '') {
+      throw new Error('Port mapping name cannot be an empty string.');
+    }
+  }
 }
 
 /**
