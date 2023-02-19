@@ -565,7 +565,6 @@ export class ContainerDefinition extends Construct {
    * This method adds one or more port mappings to the container.
    */
   public addPortMappings(...portMappings: PortMapping[]) {
-    // TODO: Refactor This Method.
     this.portMappings.push(...portMappings.map(pm => {
       const portMap = new PortMap(this.taskDefinition.networkMode, pm);
       portMap.validate();
@@ -574,18 +573,8 @@ export class ContainerDefinition extends Construct {
         serviceConnect.validate();
         this.setNamedPort(pm);
       }
-      // Brideモードの時にのみ関心があるロジックらしいが・・・
-      // 関心ごとがよくわからん・これはどういうロジックなんだ？
-      // 破壊的変更をしているところが辛い。新しいオブジェクトを返したいですね
-      if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
-        if (pm.hostPort === undefined) {
-          pm = {
-            ...pm,
-            hostPort: 0,
-          };
-        }
-      }
-      return pm;
+      const sanitizedPM = this.addHostPortIfNeeded(pm);
+      return sanitizedPM;
     }));
   }
 
@@ -595,18 +584,6 @@ export class ContainerDefinition extends Construct {
   public addEnvironment(name: string, value: string) {
     this.environment[name] = value;
   }
-
-  /**
-   * This method adds an namedPort
-   */
-  private setNamedPort(pm: PortMapping) :void {
-    if (!pm.name) return;
-    if (this._namedPorts.has(pm.name)) {
-      throw new Error(`Port mapping name '${pm.name}' already exists on this container`);
-    }
-    this._namedPorts.set(pm.name, pm);
-  }
-
 
   /**
    * This method adds a secret as environment variable to the container.
@@ -682,6 +659,32 @@ export class ContainerDefinition extends Construct {
   public findPortMappingByName(name: string): PortMapping | undefined {
     return this._namedPorts.get(name);
   }
+
+  /**
+   * This method adds an namedPort
+   */
+  private setNamedPort(pm: PortMapping) :void {
+    if (!pm.name) return;
+    if (this._namedPorts.has(pm.name)) {
+      throw new Error(`Port mapping name '${pm.name}' already exists on this container`);
+    }
+    this._namedPorts.set(pm.name, pm);
+  }
+
+
+  /**
+   * Set HostPort to 0 When netowork mode is Brdige
+   */
+  private addHostPortIfNeeded(pm: PortMapping) :PortMapping {
+    const newPM = {
+      ...pm,
+    };
+    if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE) return newPM;
+    if (pm.hostPort !== undefined) return newPM;
+    newPM.hostPort = 0;
+    return newPM;
+  }
+
 
   /**
    * Whether this container definition references a specific JSON field of a secret
@@ -1123,6 +1126,10 @@ class PortMap {
 
 }
 
+
+/**
+ * ServiceConnect ValueObjectClass having by ContainerDefinition
+ */
 class ServiceConnect {
   readonly portmapping: PortMapping;
   readonly networkmode: NetworkMode;
