@@ -568,7 +568,7 @@ export class ContainerDefinition extends Construct {
     // TODO: Refactor This Method.
     this.portMappings.push(...portMappings.map(pm => {
       const portMap = new PortMap(this.taskDefinition.networkMode, pm);
-      portMap.tempDoNoghing();
+      portMap.validate();
       // NOTE: ホストポートとコンテナポートの整合性を確かめるためのロジックっぽい
       // ここはネットワークモードがVPCかHOSTモードの時にだけ
       if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC || this.taskDefinition.networkMode === NetworkMode.HOST) {
@@ -1095,23 +1095,28 @@ export interface PortMapping {
  * PortMap ValueObjectClass having by ContainerDefinition
  */
 class PortMap {
+
   readonly networkmode: NetworkMode;
   readonly portmapping: PortMapping;
 
   constructor(networkmode: NetworkMode, pm: PortMapping) {
     this.networkmode = networkmode;
     this.portmapping = pm;
-    this.validPortName();
   }
 
-  public tempDoNoghing() {
-  }
-
-  private validPortName(): void {
-    if (this.portmapping.name === '') {
+  public validate(): void {
+    if (!this.isvalidPortName()) {
       throw new Error('Port mapping name cannot be an empty string.');
     }
   }
+
+  private isvalidPortName(): boolean {
+    if (this.portmapping.name === '') {
+      return false;
+    }
+    return true;
+  }
+
 }
 
 /**
