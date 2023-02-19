@@ -217,12 +217,17 @@ export class PullRequestLinter {
    * @param existingReview The review created by a previous run of the linter.
    */
   private async createOrUpdatePRLinterReview(failureMessages: string[], existingReview?: Review): Promise<void> {
-    const body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}PRs must pass status checks before we can provide a meaningful review.`;
+    const body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
+      + '<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n'
+      + 'If you would like to request an exemption from the status checks or clarification on feedback,'
+      + ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.';
     if (!existingReview) {
       await this.client.pulls.createReview({
         ...this.prParams,
-        body: 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.' +
-          ' If you believe this pull request should receive an exemption, please comment and provide a justification.',
+        body: 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.'
+          + ' If you believe this pull request should receive an exemption, please comment and provide a justification.'
+          + '\n\n\nA comment requesting an exemption should contain the text `Exemption Request`.'
+          +  ' Additionally, if clarification is needed add `Clarification Request` to a comment.',
         event: 'REQUEST_CHANGES',
       })
     }
