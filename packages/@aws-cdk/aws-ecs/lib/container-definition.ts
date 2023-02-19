@@ -569,33 +569,11 @@ export class ContainerDefinition extends Construct {
     this.portMappings.push(...portMappings.map(pm => {
       const portMap = new PortMap(this.taskDefinition.networkMode, pm);
       portMap.validate();
-      // NOTE: ホストポートとコンテナポートの整合性を確かめるためのロジックっぽい
-      // ここはネットワークモードがVPCかHOSTモードの時にだけ
-      if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC || this.taskDefinition.networkMode === NetworkMode.HOST) {
-        if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
-          throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.taskDefinition.networkMode}`);
-        }
+      const serviceConnect = new ServiceConnect(this.taskDefinition.networkMode, pm);
+      if (serviceConnect.isServiceConnect()) {
+        serviceConnect.validate();
+        this.setNamedPort(pm);
       }
-      // NOTE: It's service connect logick(sholud divide)
-      // Service connect logic.
-      if (pm.name || pm.appProtocol) {
-
-        // Service connect only supports Awsvpc and Bridge network modes.
-        if (![NetworkMode.BRIDGE, NetworkMode.AWS_VPC].includes(this.taskDefinition.networkMode)) {
-          throw new Error(`Service connect related port mapping fields 'name' and 'appProtocol' are not supported for network mode ${this.taskDefinition.networkMode}`);
-        }
-
-        // Name is not set but App Protocol is; this config is meaningless and we should throw.
-        if (!pm.name) {
-          throw new Error('Service connect-related port mapping field \'appProtocol\' cannot be set without \'name\'');
-        }
-
-        if (this._namedPorts.has(pm.name)) {
-          throw new Error(`Port mapping name '${pm.name}' already exists on this container`);
-        }
-        this._namedPorts.set(pm.name, pm);
-      }
-
       // Brideモードの時にのみ関心があるロジックらしいが・・・
       // 関心ごとがよくわからん・これはどういうロジックなんだ？
       // 破壊的変更をしているところが辛い。新しいオブジェクトを返したいですね
@@ -617,6 +595,18 @@ export class ContainerDefinition extends Construct {
   public addEnvironment(name: string, value: string) {
     this.environment[name] = value;
   }
+
+  /**
+   * This method adds an namedPort
+   */
+  private setNamedPort(pm: PortMapping) :void {
+    if (!pm.name) return;
+    if (this._namedPorts.has(pm.name)) {
+      throw new Error(`Port mapping name '${pm.name}' already exists on this container`);
+    }
+    this._namedPorts.set(pm.name, pm);
+  }
+
 
   /**
    * This method adds a secret as environment variable to the container.
@@ -1108,6 +1098,10 @@ class PortMap {
     if (!this.isvalidPortName()) {
       throw new Error('Port mapping name cannot be an empty string.');
     }
+    if (!this.isValidPorts()) {
+      const pm = this.portmapping;
+      throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.networkmode}`);
+    }
   }
 
   private isvalidPortName(): boolean {
@@ -1117,6 +1111,54 @@ class PortMap {
     return true;
   }
 
+  private isValidPorts() :boolean {
+    const isAwsVpcMode = this.networkmode == NetworkMode.AWS_VPC;
+    const isHostMode = this.networkmode == NetworkMode.HOST;
+    if (!isAwsVpcMode && !isHostMode) return true;
+    const hostPort = this.portmapping.hostPort;
+    const containerPort = this.portmapping.containerPort;
+    if (containerPort !== hostPort && hostPort !== undefined ) return false;
+    return true;
+  }
+
+}
+
+class ServiceConnect {
+  readonly portmapping: PortMapping;
+  readonly networkmode: NetworkMode;
+
+  constructor(networkmode: NetworkMode, pm: PortMapping) {
+    this.portmapping = pm;
+    this.networkmode = networkmode;
+  }
+
+  public isServiceConnect() :boolean {
+    const hasPortname = this.portmapping.name;
+    const hasAppProtcol = this.portmapping.appProtocol;
+    if (hasPortname || hasAppProtcol) return true;
+    return false;
+  }
+
+  public validate() :void {
+    if (!this.isValidNetworkmode()) {
+      throw new Error(`Service connect related port mapping fields 'name' and 'appProtocol' are not supported for network mode ${this.networkmode}`);
+    }
+    if (!this.isValidPortName()) {
+      throw new Error('Service connect-related port mapping field \'appProtocol\' cannot be set without \'name\'');
+    }
+  }
+
+  private isValidNetworkmode() :boolean {
+    const isAwsVpcMode = this.networkmode == NetworkMode.AWS_VPC;
+    const isBridgeMode = this.networkmode == NetworkMode.BRIDGE;
+    if (isAwsVpcMode || isBridgeMode) return true;
+    return false;
+  }
+
+  private isValidPortName() :boolean {
+    if (!this.portmapping.name) return false;
+    return true;
+  }
 }
 
 /**
