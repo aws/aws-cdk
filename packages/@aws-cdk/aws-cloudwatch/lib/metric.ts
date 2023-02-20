@@ -302,7 +302,7 @@ export class Metric implements IMetric {
     if (parsedStat.type === 'generic') {
       // Unrecognized statistic, do not throw, just warn
       // There may be a new statistic that this lib does not support yet
-      const label = props.label ? ` label "${props.label}"`: '';
+      const label = props.label ? `, label "${props.label}"`: '';
       this.warnings = [
         `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
           ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
