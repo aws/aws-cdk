@@ -2,10 +2,6 @@ import * as cp from 'child_process';
 import * as path from 'path';
 import {
   main as ubergen,
-  // findLibrariesToPackage,
-  // verifyDependencies,
-  // copySubmoduleExports,
-  // transformPackage,
   Config,
   Export,
   LibraryReference,
@@ -72,7 +68,6 @@ export async function main() {
   // be aware of all source file moves if needed via `git move`.
   await exec(`git clone ${repoRoot} ${targetDir}`);
 
-
   await makeAwsCdkLib(targetDir);
 
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
@@ -92,8 +87,6 @@ async function copyTemplateFiles(src: string, target: string) {
 async function makeAwsCdkLib(target: string) {
   const awsCdkLibDir = path.join(target, 'packages', 'aws-cdk-lib');
   const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
-  const libRoot = awsCdkLibDir;
-  // const libRoot = path.join(awsCdkLibDir, 'lib');
   const pkgJson: PackageJson = await fs.readJson(pkgJsonPath);
 
   const pkgJsonExports = pkgJson.exports ?? {};
@@ -115,6 +108,10 @@ async function makeAwsCdkLib(target: string) {
     skipCodeGen: true,
   };
 
+  // Call ubergen to copy all package source files and rewrite import statements
+  // as needed.
+  const packagesToBundle = await ubergen(ubgConfig);
+
   const devDependencies = pkgJson?.devDependencies ?? {};
   const allPackages = await findAllPackages(ubgConfig);
   const deprecatedPackages = await getDeprecatedPackages(allPackages, ubgConfig);
@@ -122,20 +119,6 @@ async function makeAwsCdkLib(target: string) {
   const deprecatedPackagesName = getPackageNames(deprecatedPackages);
   const experimentalPackagesName = getPackageNames(experimentalPackages);
 
-  // Call ubergen excluding all of the packages we don't want bundled. Excludes 
-  // experimental packages explicitly so it doesn't try to extract L1s from those
-  // libraries since these are handled during codegen/build.
-  const packagesToBundle = await ubergen(ubgConfig);
-  // const packagesToBundle = await ubergen({
-  //   ...ubgConfig,
-  //   excludedPackages: [
-  //     ...ubgConfig.excludedPackages,
-  //     ...deprecatedPackagesName,
-  //     ...experimentalPackagesName,
-  //   ],
-  // });
-
-  // Filter out packages we are bundling from dev dependencies
   const packagesToBundleName = packagesToBundle.map(p => p.packageJson.name);
 
   // Filter out all of the stuff we don't want in devDeps anymore
@@ -148,7 +131,13 @@ async function makeAwsCdkLib(target: string) {
         || p === '@aws-cdk/ubergen'
       ),
     );
-  const filteredDevDeps = Object.fromEntries(filteredDevDepsEntries);
+
+  const filteredDevDeps = filteredDevDepsEntries.reduce((accum, [key, val]) => {
+    return {
+      ...accum,
+      [key]: val,
+    };
+  }, {});
 
   const newPkgJsonExports = formatPkgJsonExports(pkgJsonExports);
 
@@ -193,12 +182,12 @@ async function makeAwsCdkLib(target: string) {
     },
     ubergen: {
       ...pkgJson.ubergen,
-      libRoot,
+      libRoot: awsCdkLibDir,
     },
     scripts: {
       ...pkgJson.scripts,
       gen: 'ts-node scripts/gen.ts',
-      build: 'yarn gen && cdk-build',
+      build: 'cdk-build',
     },
     devDependencies: {
       ...filteredDevDeps,
@@ -206,17 +195,26 @@ async function makeAwsCdkLib(target: string) {
     },
   }, { spaces: 2 });
 
+  // Clean up all build-tools directories in sub folders
+  await Promise.all(packagesToBundle.map(async (pkg) => {
+    const buildToolsDir = path.join(awsCdkLibDir, 'lib', pkg.shortName, 'build-tools');
+    await fs.remove(buildToolsDir);
+  }));
+
   // TODO: Cleanup
   // 1. lib/aws-events-targets/build-tools, moved to gen.ts step
   // 2. All bundled and deprecated packages
 }
 
+// Reformat existing relative path to prepend with "./lib"
 function pathReformat(str: string): string {
   const split = str.split(/.(.*)/s);
   const newVal = ['./lib', split[1]].join('');
   return newVal;
 }
 
+// Reformat all of the paths in `exports` field of package.json so that they
+//  correctly include the new `lib` directory.
 function formatPkgJsonExports(exports: Record<string, Export>): Record<string, Export> {
   const dontFormat = ['./package.json', './.jsii', './.warnings.jsii.js'];
   const entries = Object.entries(exports).map(([k, v]) => {
@@ -237,6 +235,12 @@ function formatPkgJsonExports(exports: Record<string, Export>): Record<string, E
   return Object.fromEntries(entries);
 }
 
+// Creates a map of directories to the cloudformations scopes that should be
+// generated within that directory. Preserves information such as the "core"
+// module including the AWS:CloudFormation resources, in addition to the
+// "aws-cloudformation" module also having them. Also "kinesis-analytics"
+// contains "AWS::KinesisAnalytics" and "AWS::KinesisAnalyticsV2" AND
+// "kinesis-analyticsv2" contains "AWS:KinesisAnalyticsV2".
 function makeScopeMap(pkgs: LibraryReference[]) {
   return pkgs.reduce((accum: Record<string, string[]>, { packageJson, shortName }) => {
     const scopes = packageJson?.['cdk-build']?.cloudformation ?? [];
@@ -245,13 +249,14 @@ function makeScopeMap(pkgs: LibraryReference[]) {
       ...(typeof scopes === 'string' ? [scopes] : scopes),
     ];
 
-    return {
+    return newScopes.length ? {
       ...accum,
       [shortName]: newScopes,
-    }
+    } : accum;
   }, {});
 }
 
+// Lists all directories in "packages/@aws-cdk" directory
 async function findAllPackages(config: Config): Promise<LibraryReference[]> {
   const librariesRoot = path.resolve(config.rootPath, 'packages', '@aws-cdk');
 
@@ -268,6 +273,7 @@ async function findAllPackages(config: Config): Promise<LibraryReference[]> {
   );
 }
 
+// List all packages marked as deprecated in their package.json
 async function getDeprecatedPackages(pkgs: LibraryReference[], config: Config) {
   const pkgJson: PackageJson = await fs.readJson(config.uberPackageJsonPath);
   const deprecatedPackages = pkgJson.ubergen?.deprecatedPackages;
@@ -280,10 +286,12 @@ async function getDeprecatedPackages(pkgs: LibraryReference[], config: Config) {
   });
 }
 
+// List all packages with experimental stability in package.json
 function getExperimentalPackages(pkgs: LibraryReference[]) {
   return pkgs.filter(p => p.packageJson.stability === 'experimental');
 }
 
+// Return just list of package names from library reference
 function getPackageNames(pkgs: LibraryReference[]) {
   return pkgs.map(p => p.packageJson.name);
 }

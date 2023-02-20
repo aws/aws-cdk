@@ -1,8 +1,8 @@
 import { generateAll, ModuleMap } from '@aws-cdk/cfn2ts';
-import { ModuleDefinition } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { main as genSdkApiMetadata } from './gen-sdk-api-metadata';
+import { main as genRegionInfoBuiltins } from './gen-region-info-builtins';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const srcDir = path.join(awsCdkLibDir, 'lib');
@@ -15,6 +15,7 @@ main()
   .catch(console.error)
 
 async function main() {
+  // Generate all L1s based on config in scope-map.json
   const cfnScopeMapPath = path.join(__dirname, 'scope-map.json');
   const cfnScopeMap: Record<string, string[]> = await fs.readJson(cfnScopeMapPath);
   const generated = await generateAll(srcDir, {
@@ -23,14 +24,34 @@ async function main() {
     scopeMap: cfnScopeMap,
   });
 
+  // Add any new cfn modules to exports in package.json and index.ts
   await updatePackageJsonAndIndexFiles(generated);
   
-  const newScopeMap = Object.fromEntries(Object.entries(generated)
-    .map(([moduleName, { scopes }]) => {
-      return [moduleName, scopes]
-    }));
-
+  // Update scope-map config with any changes
+  const newScopeMap = Object.entries(generated)
+    .reduce((accum, [moduleName, { scopes }]) => {
+      return {
+        ...accum,
+        [moduleName]: scopes,
+      }
+    }, {});
   await fs.writeJson(cfnScopeMapPath, newScopeMap, { spaces: 2 });
+
+  // Generate additional files for specific modules
+  const moduleBasePath = path.resolve(__dirname, '..', 'lib');
+  await genSdkApiMetadata(path.resolve(
+    moduleBasePath,
+    'aws-events-targets',
+    'lib',
+    'sdk-api-metadata.generated.ts',
+  ));
+
+  await genRegionInfoBuiltins(path.resolve(
+    moduleBasePath,
+    'region-info',
+    'lib',
+    'built-ins.generated.ts'
+  ));
 }
 
 async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {
@@ -43,25 +64,32 @@ async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {
   }
 
   Object.entries(modules)
-    .forEach(([_, { module }]) => {
-      if (!pkgJson.exports[`./${module.moduleName}`]) {
-        pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
+    .forEach(([moduleName, { module }]) => {
+      let moduleConfig: { name: string, submodule: string };
+      if (module) {
+        moduleConfig = {
+          name: module.moduleName,
+          submodule: module.submoduleName,
+        };
+      } else {
+        moduleConfig = {
+          name: moduleName,
+          submodule: moduleName.replace(/-/g, '_'),
+        }
       }
-      if (!topLevelIndexFileEntries.find(e => e.includes(module.moduleName))) {
-        topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './${module.moduleName}';`);
+
+      const exports = [`./${moduleConfig.name}`, `/${moduleConfig.name}`];
+      exports.forEach((exportName) => {
+        if (!pkgJson.exports[exportName]) {
+          pkgJson.exports[exportName]  =`./lib/${moduleConfig.name}/index.js`;
+        }
+      });
+
+      if (!topLevelIndexFileEntries.find(e => e.includes(moduleConfig.name))) {
+        topLevelIndexFileEntries.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
       }
     });
 
-  await genSdkApiMetadata(
-    path.resolve(
-      __dirname,
-      '..',
-      'lib',
-      'aws-events-targets',
-      'lib',
-      'sdk-api-metadata.generated.ts',
-    )
-  );
   await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
   await fs.writeFile(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n'));
 }

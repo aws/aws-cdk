@@ -60,7 +60,7 @@ export interface GeneratorOptions extends CodeGeneratorOptions, AugmentationsGen
 
 export interface ModuleMap {
   [moduleName: string]: {
-    module: pkglint.ModuleDefinition;
+    module?: pkglint.ModuleDefinition;
     scopes: string[];
   }
 }
@@ -71,12 +71,22 @@ export async function generateAll(
 ): Promise<ModuleMap> {
   const scopes = cfnSpec.namespaces();
 
-  const moduleMap: ModuleMap = {};
+  const moduleMap: ModuleMap = Object.entries(scopeMap)
+    .reduce((accum, [name, moduleScopes]) => {
+      return {
+        ...accum,
+        [name]: { scopes: moduleScopes },
+      };
+    }, {});
+
+  // Make sure all scopes have their own dedicated package/namespace.
+  // Adds new submodules for new namespaces.
   for (const scope of scopes) {
     const module = pkglint.createModuleDefinitionFromCfnNamespace(scope);
+    const currentScopes = moduleMap[module.moduleName]?.scopes ?? [];
+    // remove dupes
+    const newScopes = [...new Set([...currentScopes, scope])];
 
-    const currentScopes = scopeMap[module.moduleName] ?? [];
-    const newScopes = [...currentScopes, scope];
     // Add new modules to module map and return to caller
     moduleMap[module.moduleName] = {
       scopes: newScopes,
@@ -100,7 +110,17 @@ export async function generateAll(
       }
 
       // Create .jsiirc.json file if needed
-      if (!fs.existsSync(path.join(packagePath, '.jsiirc.json'))) {
+      const excludeJsii = ['core'];
+      if (
+        !fs.existsSync(path.join(packagePath, '.jsiirc.json'))
+        && !excludeJsii.includes(moduleName)
+      ) {
+        if (!module) {
+          throw new Error(
+            `Cannot infer path or namespace for submodule named "${moduleName}". Manually create ${packagePath}/.jsiirc.json file.`,
+          );
+        }
+
         const jsiirc = {
           targets: {
             java: {
@@ -116,8 +136,7 @@ export async function generateAll(
         };
         await fs.writeJson(path.join(packagePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
       }
-    },
-  ));
+    }));
 
   return moduleMap;
 }
