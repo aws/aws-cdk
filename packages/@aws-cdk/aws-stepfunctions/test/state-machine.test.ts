@@ -503,4 +503,20 @@ describe('State Machine', () => {
       });
     });
   });
+
+  test('with removal policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: new sfn.Pass(stack, 'Pass'),
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::StepFunctions::StateMachine', {
+      DeletionPolicy: 'Retain',
+    });
+  });
 });
