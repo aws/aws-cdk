@@ -437,18 +437,16 @@ test('Support logging setting from codeBuildDefaults', () => {
   });
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     codeBuildDefaults: {
-      logging: {
-        cloudWatch: {
-          logGroup: logGroup,
-          prefix: 'prefix',
-          enabled: true,
-        },
-        s3: {
-          encrypted: true,
-          bucket: bucket,
-          prefix: 'test',
-          enabled: true,
-        },
+      cloudWatchLogging: {
+        logGroup: logGroup,
+        prefix: 'prefix',
+        enabled: true,
+      },
+      s3logging: {
+        encrypted: true,
+        bucket: bucket,
+        prefix: 'test',
+        enabled: true,
       },
     },
   });

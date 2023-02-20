@@ -5,6 +5,8 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import { LogGroup } from '@aws-cdk/aws-logs';
+import { IBucket } from '@aws-cdk/aws-s3';
 import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -308,15 +310,163 @@ export interface CodeBuildOptions {
   readonly timeout?: Duration;
 
   /**
-   * Information about logs for the build project.
+   * Information about CloudWatch logs for the build project.
    *
-   * A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
-   *
-   * @default - no log configuration is set
+   * @default - Default CloudWatch logging setting
    */
-  readonly logging?: cb.LoggingOptions;
+  readonly cloudWatchLogging?: CloudWatchLoggingOption;
+
+  /**
+   * Information about S3 logs for the build project.
+   *
+   * @default - Default S3 logging setting
+   */
+  readonly s3logging?: S3LoggingOptions;
 }
 
+/**
+ * Based class representing CodeBuild Logging settings
+ */
+export abstract class CodeBuildLoggingBase {
+  /**
+   * The setting is enable or not.
+   */
+  public enabled?: boolean;
+
+  constructor(enable?: boolean) {
+    this.enabled = enable;
+  }
+}
+
+/**
+ * CodeBuild CloudWatch settings
+ */
+export class CloudWatchLoggingOption extends CodeBuildLoggingBase {
+  /**
+   * Enable CloudWatch Logging settings
+   * @param logGroup CloudWatch Log group
+   * @param prefix CloudWatch log group specific prefix
+   * @returns CodeBuild CloudWatch logging settings
+   */
+  static enable(logGroup?: LogGroup, prefix?: string): CloudWatchLoggingOption {
+    return new CloudWatchLoggingOption(true, { logGroup, prefix });
+  }
+
+  /**
+   * Disbale CloudWatch Logging settings
+   * @returns CodeBuild CloudWatch logging settings
+   */
+  static disable(): CodeBuildLoggingBase {
+    return new CloudWatchLoggingOption(false, {});
+  }
+
+  /**
+   * The Log Group to send logs to
+   */
+  public logGroup?: LogGroup;
+
+  /**
+   * The prefix of the stream name of the Amazon CloudWatch Logs
+   */
+  public prefix?: string;
+
+  constructor(enabled?: boolean, options: CloudWatchLoggingOptionProps = {}) {
+    super(enabled);
+    this.logGroup = options?.logGroup;
+    this.prefix = options?.prefix;
+  }
+}
+
+/**
+ * Properties for CodeBuild CloudWatch logging settings
+ */
+export interface CloudWatchLoggingOptionProps {
+  /**
+   * The Log Group to send logs to
+   *
+   * @default - no log group specified
+   */
+  readonly logGroup?: LogGroup;
+
+  /**
+   * The prefix of the stream name of the Amazon CloudWatch Logs
+   *
+   * @default - no prefix
+   */
+  readonly prefix?: string;
+}
+
+/**
+ * CodeBuild S3 settings
+ */
+export class S3LoggingOptions extends CodeBuildLoggingBase {
+  /**
+   * Enable S3 Logging settings
+   * @param bucket S3 bucket to save logs
+   * @param prefix S3 folder to save logs
+   * @param encrypted S3 object encrypted or not
+   * @returns CodeBuild S3 logging settings
+   */
+  static enable(bucket: IBucket, prefix?: string, encrypted?: boolean): S3LoggingOptions {
+    return new S3LoggingOptions(true, { bucket, prefix, encrypted });
+  }
+
+  /**
+   * Disbale S3 Logging settings
+   * @returns CodeBuild S3 logging settings
+   */
+  static disable(): S3LoggingOptions {
+    return new S3LoggingOptions(false, {});
+  }
+
+  /**
+   * The S3 Bucket to send logs to
+   */
+  readonly bucket?: IBucket;
+
+  /**
+   * Encrypt the S3 build log output
+   */
+  readonly encrypted?: boolean;
+
+  /**
+   * The path prefix for S3 logs
+   */
+  readonly prefix?: string;
+
+  constructor(enabled?: boolean, options: S3LoggingOptionProps = {}) {
+    super(enabled);
+    this.bucket = options?.bucket;
+    this.encrypted = options?.encrypted ?? true;
+    this.prefix = options?.prefix;
+  }
+}
+
+/**
+ * Properties for CodeBuild S3 logging settings
+ */
+export interface S3LoggingOptionProps {
+  /**
+   * The S3 Bucket to send logs to
+   *
+   * @default - no bucket
+   */
+  readonly bucket?: IBucket;
+
+  /**
+   * The path prefix for S3 logs
+   *
+   * @default - no prefix
+   */
+  readonly prefix?: string;
+
+  /**
+   * Encrypt the S3 build log output
+   *
+   * @default true
+   */
+  readonly encrypted?: boolean;
+}
 
 /**
  * A CDK Pipeline that uses CodePipeline to deploy CDK apps

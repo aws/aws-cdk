@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
 import { ShellStep, ShellStepProps } from '../blueprint';
+import { CloudWatchLoggingOption, S3LoggingOptions } from './codepipeline';
 import { mergeBuildSpecs } from './private/buildspecs';
 import { makeCodePipelineOutput } from './private/outputs';
 
@@ -198,13 +199,18 @@ export class CodeBuildStep extends ShellStep {
   readonly timeout?: Duration;
 
   /**
-   * Information about logs for the build project.
+   * Information about CloudWatch logs for the build project.
    *
-   * A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
-   *
-   * @default - no log configuration is set
+   * @default - Default CloudWatch logging setting
    */
-  readonly logging?: codebuild.LoggingOptions;
+  readonly cloudWatchLogging?: CloudWatchLoggingOption;
+
+  /**
+   * Information about S3 logs for the build project.
+   *
+   * @default - Default S3 logging setting
+   */
+  readonly s3logging?: S3LoggingOptions;
 
   private _project?: codebuild.IProject;
   private _partialBuildSpec?: codebuild.BuildSpec;

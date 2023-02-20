@@ -1,18 +1,32 @@
-import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as cb from '@aws-cdk/aws-codebuild';
+import { CodeBuildOptions } from '../codepipeline';
 
-export function mergeLoggings(a: codebuild.LoggingOptions, b?: codebuild.LoggingOptions): codebuild.LoggingOptions | undefined;
-export function mergeLoggings(a: codebuild.LoggingOptions | undefined, b: codebuild.LoggingOptions): codebuild.LoggingOptions | undefined;
-export function mergeLoggings(a?: codebuild.LoggingOptions, b?: codebuild.LoggingOptions): codebuild.LoggingOptions | undefined;
-export function mergeLoggings(a?: codebuild.LoggingOptions, b?: codebuild.LoggingOptions) {
-  const cloudWatch = b?.cloudWatch ?? a?.cloudWatch;
-  const s3 = b?.s3 ?? a?.s3;
+export function exportLoggingSettings(option: CodeBuildOptions): cb.LoggingOptions | undefined {
+  let s3, cloudWatch = undefined;
 
-  if (!cloudWatch && !s3) {
-    return undefined;
+  if (option.s3logging != undefined && option.s3logging.bucket) {
+    s3 = {
+      enabled: option.s3logging.enabled,
+      bucket: option.s3logging.bucket,
+      prefix: option.s3logging.prefix,
+      encrypted: option.s3logging.encrypted,
+    };
   }
 
-  return {
-    cloudWatch: (cloudWatch?.enabled && !cloudWatch?.logGroup) ? undefined : cloudWatch,
-    s3: s3,
-  };
+  if (option.cloudWatchLogging != undefined) {
+    cloudWatch = {
+      enabled: option.cloudWatchLogging.enabled,
+      logGroup: option.cloudWatchLogging.logGroup,
+      prefix: option.cloudWatchLogging.prefix,
+    };
+  }
+
+  if (s3 == undefined && cloudWatch == undefined) {
+    return undefined;
+  } else {
+    return {
+      cloudWatch: cloudWatch,
+      s3: s3,
+    };
+  }
 }

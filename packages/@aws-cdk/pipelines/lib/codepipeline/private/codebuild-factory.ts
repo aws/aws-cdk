@@ -17,7 +17,7 @@ import { CodeBuildStep } from '../codebuild-step';
 import { CodeBuildOptions } from '../codepipeline';
 import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from '../codepipeline-action-factory';
 import { mergeBuildSpecs } from './buildspecs';
-import { mergeLoggings } from './logging';
+import { exportLoggingSettings } from './logging';
 
 export interface CodeBuildFactoryProps {
   /**
@@ -163,7 +163,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         subnetSelection: step.subnetSelection,
         cache: step.cache,
         timeout: step.timeout,
-        logging: step.logging,
+        cloudWatchLogging: step.cloudWatchLogging,
+        s3logging: step.s3logging,
       }),
     });
 
@@ -304,7 +305,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       buildSpec: projectBuildSpec,
       role: this.props.role,
       timeout: projectOptions.timeout,
-      logging: projectOptions.logging,
+      logging: exportLoggingSettings(projectOptions),
     });
 
     if (this.props.additionalDependable) {
@@ -432,8 +433,9 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       vpc: b.vpc ?? a.vpc,
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
       timeout: b.timeout ?? a.timeout,
-      logging: mergeLoggings(a.logging, b.logging),
       cache: b.cache ?? a.cache,
+      cloudWatchLogging: b.cloudWatchLogging ?? a.cloudWatchLogging,
+      s3logging: b.s3logging ?? a.s3logging,
     };
   }
 }

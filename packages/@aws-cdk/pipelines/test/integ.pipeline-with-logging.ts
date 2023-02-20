@@ -23,12 +23,9 @@ const logGroup = new logs.LogGroup(stack, 'LogGroup', {
 
 const pipeline = new pipelines.CodePipeline(stack, 'Pipeline', {
   codeBuildDefaults: {
-    logging: {
-      cloudWatch: {
-        logGroup: logGroup,
-        prefix: 'prefix',
-        enabled: true,
-      },
+    cloudWatchLogging: {
+      logGroup: logGroup,
+      prefix: 'prefix',
     },
   },
   synth: new pipelines.CodeBuildStep('Synth', {
