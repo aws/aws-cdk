@@ -79,8 +79,7 @@ function invokeValidationPlugins(root: IConstruct, assembly: cxapi.CloudAssembly
       plugin.validate(validationContext);
       const report = validationContext.report;
       if (!report.success) {
-        // eslint-disable-next-line no-console
-        console.log(report.toString());
+        validationContext.logger.log(report.toString());
         throw new Error(`Validation failed for stack ${stack.name}`);
       }
     });

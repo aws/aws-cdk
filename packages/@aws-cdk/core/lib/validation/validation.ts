@@ -384,33 +384,3 @@ function red(s: string) {
 function bright(s: string) {
   return `\x1b[1m${s}`;
 }
-
-
-/**
- * TODO docs
- */
-export interface ValidationConfig {
-
-  /**
-   * TODO docs
-   */
-  readonly package: string;
-  /**
-   * TODO docs
-   */
-  readonly version: string;
-  /**
-   * TODO docs
-   */
-  readonly class: string;
-  /**
-   * TODO docs
-   * @default - TODO
-   */
-  readonly installEnv?: { [key: string]: any };
-  /**
-   * TODO docs
-   * @default - TODO
-   */
-  readonly properties?: { [key: string]: any };
-}
