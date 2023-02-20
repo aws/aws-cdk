@@ -1302,4 +1302,102 @@ permissions boundary attached.
 
 For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam-readme.html#permissions-boundaries) section in the IAM guide.
 
+## Policy Validation
+
+If you or your organization use any policy validation tool, such as
+[CloudFormation
+Guard](https://docs.aws.amazon.com/cfn-guard/latest/ug/what-is-guard.html) or
+[OPA](https://www.openpolicyagent.org/), to define constraints on your
+CloudFormation template, you can integrate them with the CDK at synthesis time.
+By using the appropriate plugin, you can make the CDK application check the
+generated CloudFormation template against your policies immediately after
+synthesis. If there are any violations, the synthesis will fail and a report
+will be printed to the console.
+
+### For application developers
+
+<!-- Should we write a real, concrete example of a plugin here (e.g., CFN Guard) or
+just a hypothetical one? Using a concrete one is better, but if we do it, we are
+committing ourselves to including it in the first release. -->
+
+```ts
+// globally for the entire app (an app is a stage)
+import { CfnGuardValidator } from '@aws-cdk/cfn-guard-validator';
+
+const app = new App({
+  validationPlugins: [
+    new CfnGuardValidator({
+      rules: [
+        // rules can be specified inline
+        Rules.fromAsset('../my-local-rules'),
+        
+        // or from a remote location
+        Rules.fromDownload('https://somelocation.com/company-rules', {
+          auth: {},
+        }),
+        
+        // or from an S3 location
+        Rules.fromS3(s3Location),
+        
+        // or by calling an external endpoint
+        Rules.fromRequest('POST', 'https://someendpoint.com/validate'),
+      ],
+      options: {
+        someOption: "value",
+      },
+    }),
+  ],
+});
+
+// only apply to a particular stage
+const prodStage = new Stage(app, 'ProdStage', {
+  validationPlugins: [...],
+});
+```
+
+### For plugin authors
+
+The communication protocol between the CDK core module and your policy tool is
+defined by the `IValidationPlugin` interface. To create a new plugin you must
+write a class that implements this interface. There are three things you need to
+implement: the plugin name (by overriding the `name` property), and the two
+methods `isReady()` and `validate()`.
+
+The method `isReady()` is called first in the workflow, to make sure that the
+plugin is in a valid state to be used. For example, most plugins will have an
+external dependency, such as a CLI, which must be installed for the plugin to
+work. To signal to the framework that it can go ahead and use the plugin, you
+can check whether the CLI is installed by checking the version:
+
+```ts
+isReady(): boolean {
+  const { status } = sync('cfn-guard', ['--version'], {
+    encoding: 'utf-8',
+    stdio: 'pipe',
+  });
+
+  return status === 0;
+}
+```
+
+<!-- TODO Talk more about the interface when we have stabilized it:
+
+- How to build a report
+- How to use the logger
+
+-->
+
+<!-- Other topics:
+
+<!-- Guidelines on how to configure your plugin -->
+
+If your plugin depends on an external tool, keep in mind that some developers may
+not have that tool installed in their workstations yet. To minimize friction, we
+highly recommend that you provide some installation script along with your
+plugin package, to automate the whole process. Better yet, run that script as
+part of the installation of your package. With `npm`, for example, you can run
+add it to the `postinstall`
+[script](https://docs.npmjs.com/cli/v9/using-npm/scripts) in the `package.json`
+file.
+
 <!--END CORE DOCUMENTATION-->
