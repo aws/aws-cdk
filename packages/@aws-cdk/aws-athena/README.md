@@ -23,36 +23,27 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-```ts nofixture
-import * as athena from '@aws-cdk/aws-athena';
-```
-
 Amazon Athena is an interactive query service that makes it easy to analyze data in Amazon S3 using standard SQL. Athena is serverless, so there is no infrastructure to manage, and you pay only for the queries that you run.
-
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## WorkGroup
 
 Workgroup helps to separate query executions, query history and set limits on amounts of data usage for Users, Teams, or Applications running under the same AWS account.
 
 ```ts
-import * as athena from '@aws-cdk/aws-athena';
-import * as s3 from '@aws-cdk/aws-s3';
+declare const resultsBucket: s3.Bucket;
 
-const workgroup = new athena.WorkGroup(this, 'Workgroup', {
-      workGroupName: 'example-workgroup',
-      description: 'An example workgroup',
-      configuration: {
+new athena.WorkGroup(this, 'Workgroup', {
+    workGroupName: 'example-workgroup',
+    description: 'An example workgroup',
+    state: athena.WorkGroupState.ENABLED,
+    configuration: {
+        engineVersion: athena.EngineVersion.V_3,
         resultConfigurations: {
-          engineVersion: athena.EngineVersion.AUTO,
-          encryptionConfiguration: {
-            encryptionOption: athena.EncryptionOption.S3_MANAGED,
-          },
-          outputLocation: {
-            bucket: new s3.Bucket(this, 'Bucket'),
-          },
+            outputLocation: {
+                bucket: resultsBucket,
+            },
         },
-      },
-    });
+    },
+});
 ```
 
