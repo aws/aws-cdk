@@ -9,6 +9,13 @@
 >
 > [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 ---
 
 <!--END STABILITY BANNER-->
@@ -19,21 +26,32 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 import * as athena from '@aws-cdk/aws-athena';
 ```
 
-<!--BEGIN CFNONLY DISCLAIMER-->
+Amazon Athena is an interactive query service that makes it easy to analyze data in Amazon S3 using standard SQL. Athena is serverless, so there is no infrastructure to manage, and you pay only for the queries that you run.
 
-There are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-- Search [Construct Hub for Athena construct libraries](https://constructs.dev/search?q=athena)
-- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Athena resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Athena.html) directly.
+## WorkGroup
 
+Workgroup helps to separate query executions, query history and set limits on amounts of data usage for Users, Teams, or Applications running under the same AWS account.
 
-<!--BEGIN CFNONLY DISCLAIMER-->
+```ts
+import * as athena from '@aws-cdk/aws-athena';
+import * as s3 from '@aws-cdk/aws-s3';
 
-There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 
-However, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.
+const workgroup = new athena.WorkGroup(this, 'Workgroup', {
+      workGroupName: 'example-workgroup',
+      description: 'An example workgroup',
+      configuration: {
+        resultConfigurations: {
+          engineVersion: athena.EngineVersion.AUTO,
+          encryptionConfiguration: {
+            encryptionOption: athena.EncryptionOption.S3_MANAGED,
+          },
+          outputLocation: {
+            bucket: new s3.Bucket(this, 'Bucket'),
+          },
+        },
+      },
+    });
+```
 
-For more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Athena](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Athena.html).
-
-(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)
-
-<!--END CFNONLY DISCLAIMER-->

@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d8b01509e317c31bcc2aa728dce91fba9a9fb5d533a6b61cf09948a178861951.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dcc852528d13399f0b8e2659e138972392596f9676ba54603aff074978ece89f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +33,22 @@
         "aws-cdk-athena-workgroup-tags.assets"
       ],
       "metadata": {
-        "/aws-cdk-athena-workgroup-tags/AthenaWorkgroup": [
+        "/aws-cdk-athena-workgroup-tags/Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AthenaWorkgroup"
+            "data": "Key961B73FD"
+          }
+        ],
+        "/aws-cdk-athena-workgroup-tags/AthenaBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AthenaBucketFA1FB7C3"
+          }
+        ],
+        "/aws-cdk-athena-workgroup-tags/AthenaWorkgroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AthenaWorkgroupC1B1E812"
           }
         ],
         "/aws-cdk-athena-workgroup-tags/BootstrapVersion": [
@@ -54,19 +66,19 @@
       },
       "displayName": "aws-cdk-athena-workgroup-tags"
     },
-    "athenaworkgrouptagstestDefaultTestDeployAssert5C4419AB.assets": {
+    "athenaworkgrouptestDefaultTestDeployAssertDE1DD9C2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "athenaworkgrouptagstestDefaultTestDeployAssert5C4419AB.assets.json",
+        "file": "athenaworkgrouptestDefaultTestDeployAssertDE1DD9C2.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "athenaworkgrouptagstestDefaultTestDeployAssert5C4419AB": {
+    "athenaworkgrouptestDefaultTestDeployAssertDE1DD9C2": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "athenaworkgrouptagstestDefaultTestDeployAssert5C4419AB.template.json",
+        "templateFile": "athenaworkgrouptestDefaultTestDeployAssertDE1DD9C2.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -74,7 +86,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "athenaworkgrouptagstestDefaultTestDeployAssert5C4419AB.assets"
+          "athenaworkgrouptestDefaultTestDeployAssertDE1DD9C2.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -83,23 +95,23 @@
         }
       },
       "dependencies": [
-        "athenaworkgrouptagstestDefaultTestDeployAssert5C4419AB.assets"
+        "athenaworkgrouptestDefaultTestDeployAssertDE1DD9C2.assets"
       ],
       "metadata": {
-        "/athena-workgroup-tags-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/athena-workgroup-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/athena-workgroup-tags-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/athena-workgroup-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "athena-workgroup-tags-test/DefaultTest/DeployAssert"
+      "displayName": "athena-workgroup-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

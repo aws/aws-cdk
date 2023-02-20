@@ -1,6 +1,46 @@
 {
  "Resources": {
-  "AthenaWorkgroup": {
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AthenaBucketFA1FB7C3": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AthenaWorkgroupC1B1E812": {
    "Type": "AWS::Athena::WorkGroup",
    "Properties": {
     "Name": "HelloWorld",
@@ -16,7 +56,38 @@
       "Key": "key2",
       "Value": "value2"
      }
-    ]
+    ],
+    "WorkGroupConfiguration": {
+     "BytesScannedCutoffPerQuery": 20000000,
+     "EnforceWorkGroupConfiguration": true,
+     "EngineVersion": {
+      "SelectedEngineVersion": "AUTO"
+     },
+     "PublishCloudWatchMetricsEnabled": true,
+     "ResultConfiguration": {
+      "EncryptionConfiguration": {
+       "EncryptionOption": "SSE_KMS",
+       "KmsKey": {
+        "Fn::GetAtt": [
+         "Key961B73FD",
+         "Arn"
+        ]
+       }
+      },
+      "OutputLocation": {
+       "Fn::Join": [
+        "",
+        [
+         "s3://",
+         {
+          "Ref": "AthenaBucketFA1FB7C3"
+         },
+         "/athena/results/"
+        ]
+       ]
+      }
+     }
+    }
    }
   }
  },

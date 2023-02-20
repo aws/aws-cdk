@@ -1,7 +1,7 @@
 {
   "version": "30.0.0",
   "files": {
-    "d8b01509e317c31bcc2aa728dce91fba9a9fb5d533a6b61cf09948a178861951": {
+    "dcc852528d13399f0b8e2659e138972392596f9676ba54603aff074978ece89f": {
       "source": {
         "path": "aws-cdk-athena-workgroup-tags.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d8b01509e317c31bcc2aa728dce91fba9a9fb5d533a6b61cf09948a178861951.json",
+          "objectKey": "dcc852528d13399f0b8e2659e138972392596f9676ba54603aff074978ece89f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
