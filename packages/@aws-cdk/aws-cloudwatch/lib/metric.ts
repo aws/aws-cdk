@@ -304,7 +304,7 @@ export class Metric implements IMetric {
       // There may be a new statistic that this lib does not support yet
       const label = props.label ? ` label "${props.label}"`: '';
       this.warnings = [
-        `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}",${label} and metric name "${props.metricName}".` +
+        `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
           ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
           ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.',
       ];
