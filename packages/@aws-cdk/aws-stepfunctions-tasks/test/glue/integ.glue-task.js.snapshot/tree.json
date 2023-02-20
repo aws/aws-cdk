@@ -38,6 +38,14 @@
             "id": "Glue Job Role",
             "path": "aws-stepfunctions-integ/Glue Job Role",
             "children": {
+              "ImportGlue Job Role": {
+                "id": "ImportGlue Job Role",
+                "path": "aws-stepfunctions-integ/Glue Job Role/ImportGlue Job Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-stepfunctions-integ/Glue Job Role/Resource",
@@ -227,6 +235,14 @@
                 "id": "Role",
                 "path": "aws-stepfunctions-integ/State Machine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-integ/State Machine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-integ/State Machine/Role/Resource",
@@ -393,7 +409,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

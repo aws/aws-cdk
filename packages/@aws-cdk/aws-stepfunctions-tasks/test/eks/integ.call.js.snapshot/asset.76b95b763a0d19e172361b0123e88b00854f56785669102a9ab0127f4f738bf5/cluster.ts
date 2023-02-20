@@ -136,10 +136,16 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
+    if (updates.updateLogging && updates.updateAccess) {
+      throw new Error('Cannot update logging and access at the same time');
+    }
+
     if (updates.updateLogging || updates.updateAccess) {
       const config: aws.EKS.UpdateClusterConfigRequest = {
         name: this.clusterName,
-        logging: this.newProps.logging,
+      };
+      if (updates.updateLogging) {
+        config.logging = this.newProps.logging;
       };
       if (updates.updateAccess) {
         // Updating the cluster with securityGroupIds and subnetIds (as specified in the warning here:
@@ -334,5 +340,5 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
 }
 
 function setsEqual(first: Set<string>, second: Set<string>) {
-  return first.size === second.size || [...first].every((e: string) => second.has(e));
+  return first.size === second.size && [...first].every((e: string) => second.has(e));
 }

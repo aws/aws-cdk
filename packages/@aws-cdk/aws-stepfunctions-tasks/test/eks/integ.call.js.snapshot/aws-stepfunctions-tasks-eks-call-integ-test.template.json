@@ -996,7 +996,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/ab1f5372b52388fd8dceda376970ae31c23eff6f926bb1d1c90889974acd8aa6.json"
+       "/8d5969a90e2e720721ef401f4a46a8d1c61cb13e72e729538898ef747c3641ac.json"
       ]
      ]
     },
@@ -1031,7 +1031,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d9569b5b5ca48d9e729a43807b8481526445aa96dbdc41909c05a0685ca01a5a.json"
+       "/2a398731934eca1054c33c88ad3e4128309643d200092ff00c7605e8965451cc.json"
       ]
      ]
     },
@@ -1131,7 +1131,9 @@
    },
    "DependsOn": [
     "Role1ABCC5F0"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

@@ -24,6 +24,14 @@
                 "id": "Role",
                 "path": "StepFunctionsRestApiDeploymentStack/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "StepFunctionsRestApiDeploymentStack/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "StepFunctionsRestApiDeploymentStack/StateMachine/Role/Resource",
@@ -104,6 +112,14 @@
                 "id": "CloudWatchRole",
                 "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/CloudWatchRole",
                 "children": {
+                  "ImportCloudWatchRole": {
+                    "id": "ImportCloudWatchRole",
+                    "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/CloudWatchRole/ImportCloudWatchRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/CloudWatchRole/Resource",
@@ -180,6 +196,14 @@
                         "id": "StartSyncExecutionRole",
                         "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole",
                         "children": {
+                          "ImportStartSyncExecutionRole": {
+                            "id": "ImportStartSyncExecutionRole",
+                            "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/ImportStartSyncExecutionRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "StepFunctionsRestApiDeploymentStack/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/Resource",
@@ -476,7 +500,7 @@
                 "path": "step-functions-restapi/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.237"
                 }
               },
               "DeployAssert": {
@@ -522,7 +546,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

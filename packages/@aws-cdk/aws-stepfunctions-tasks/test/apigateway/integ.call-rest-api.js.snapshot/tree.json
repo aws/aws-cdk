@@ -30,6 +30,14 @@
                 "id": "CloudWatchRole",
                 "path": "CallRestApiInteg/MyRestApi/CloudWatchRole",
                 "children": {
+                  "ImportCloudWatchRole": {
+                    "id": "ImportCloudWatchRole",
+                    "path": "CallRestApiInteg/MyRestApi/CloudWatchRole/ImportCloudWatchRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "CallRestApiInteg/MyRestApi/CloudWatchRole/Resource",
@@ -338,6 +346,14 @@
                 "id": "ServiceRole",
                 "path": "CallRestApiInteg/Hello/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CallRestApiInteg/Hello/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "CallRestApiInteg/Hello/ServiceRole/Resource",
@@ -429,6 +445,14 @@
                 "id": "Role",
                 "path": "CallRestApiInteg/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "CallRestApiInteg/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "CallRestApiInteg/StateMachine/Role/Resource",
@@ -614,7 +638,7 @@
                 "path": "call-rest-api/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.237"
                 }
               },
               "DeployAssert": {
@@ -660,7 +684,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

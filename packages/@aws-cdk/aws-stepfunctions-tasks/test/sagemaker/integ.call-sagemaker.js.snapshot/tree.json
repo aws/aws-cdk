@@ -105,6 +105,14 @@
                 "id": "SagemakerRole",
                 "path": "aws-stepfunctions-integ-sagemaker/Train Task/SagemakerRole",
                 "children": {
+                  "ImportSagemakerRole": {
+                    "id": "ImportSagemakerRole",
+                    "path": "aws-stepfunctions-integ-sagemaker/Train Task/SagemakerRole/ImportSagemakerRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-integ-sagemaker/Train Task/SagemakerRole/Resource",
@@ -286,6 +294,14 @@
                 "id": "SagemakerRole",
                 "path": "aws-stepfunctions-integ-sagemaker/Create Model/SagemakerRole",
                 "children": {
+                  "ImportSagemakerRole": {
+                    "id": "ImportSagemakerRole",
+                    "path": "aws-stepfunctions-integ-sagemaker/Create Model/SagemakerRole/ImportSagemakerRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-integ-sagemaker/Create Model/SagemakerRole/Resource",
@@ -430,6 +446,14 @@
                 "id": "Role",
                 "path": "aws-stepfunctions-integ-sagemaker/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-integ-sagemaker/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-integ-sagemaker/StateMachine/Role/Resource",
@@ -774,7 +798,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

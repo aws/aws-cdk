@@ -715,6 +715,14 @@
                     "id": "InstanceRole",
                     "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole",
                     "children": {
+                      "ImportInstanceRole": {
+                        "id": "ImportInstanceRole",
+                        "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/ImportInstanceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/Resource",
@@ -933,6 +941,14 @@
                             "id": "ServiceRole",
                             "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole",
                             "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.Resource",
+                                  "version": "0.0.0"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource",
@@ -1193,7 +1209,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.237"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1233,6 +1249,14 @@
                         "id": "Role",
                         "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource",
@@ -1381,6 +1405,14 @@
                 "id": "TaskRole",
                 "path": "aws-sfn-tasks-ecs-ec2-integ/TaskDef/TaskRole",
                 "children": {
+                  "ImportTaskRole": {
+                    "id": "ImportTaskRole",
+                    "path": "aws-sfn-tasks-ecs-ec2-integ/TaskDef/TaskRole/ImportTaskRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-sfn-tasks-ecs-ec2-integ/TaskDef/TaskRole/Resource",
@@ -1526,6 +1558,14 @@
                 "id": "ExecutionRole",
                 "path": "aws-sfn-tasks-ecs-ec2-integ/TaskDef/ExecutionRole",
                 "children": {
+                  "ImportExecutionRole": {
+                    "id": "ImportExecutionRole",
+                    "path": "aws-sfn-tasks-ecs-ec2-integ/TaskDef/ExecutionRole/ImportExecutionRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-sfn-tasks-ecs-ec2-integ/TaskDef/ExecutionRole/Resource",
@@ -1670,6 +1710,14 @@
                 "id": "Role",
                 "path": "aws-sfn-tasks-ecs-ec2-integ/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-sfn-tasks-ecs-ec2-integ/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-sfn-tasks-ecs-ec2-integ/StateMachine/Role/Resource",
@@ -1983,7 +2031,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },
