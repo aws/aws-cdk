@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-cdk-iam-managed-policy": {
         "id": "aws-cdk-iam-managed-policy",
         "path": "aws-cdk-iam-managed-policy",
@@ -60,6 +52,14 @@
             "id": "OneManagedPolicy",
             "path": "aws-cdk-iam-managed-policy/OneManagedPolicy",
             "children": {
+              "ImportedOneManagedPolicy": {
+                "id": "ImportedOneManagedPolicy",
+                "path": "aws-cdk-iam-managed-policy/OneManagedPolicy/ImportedOneManagedPolicy",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-iam-managed-policy/OneManagedPolicy/Resource",
@@ -111,6 +111,14 @@
             "id": "TwoManagedPolicy",
             "path": "aws-cdk-iam-managed-policy/TwoManagedPolicy",
             "children": {
+              "ImportedTwoManagedPolicy": {
+                "id": "ImportedTwoManagedPolicy",
+                "path": "aws-cdk-iam-managed-policy/TwoManagedPolicy/ImportedTwoManagedPolicy",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-iam-managed-policy/TwoManagedPolicy/Resource",
@@ -156,6 +164,14 @@
             "id": "Role",
             "path": "aws-cdk-iam-managed-policy/Role",
             "children": {
+              "ImportRole": {
+                "id": "ImportRole",
+                "path": "aws-cdk-iam-managed-policy/Role/ImportRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-iam-managed-policy/Role/Resource",
@@ -201,11 +217,27 @@
               "fqn": "@aws-cdk/aws-iam.Role",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-iam-managed-policy/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-iam-managed-policy/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       },
       "ManagedPolicyInteg": {
@@ -221,15 +253,33 @@
                 "path": "ManagedPolicyInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.249"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "ManagedPolicyInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ManagedPolicyInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ManagedPolicyInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -243,11 +293,19 @@
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.249"
+        }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.140"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }
