@@ -54,7 +54,9 @@
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "post": ["node ./build-tools/flag-report.js"]
+    "post": [
+      "node ./build-tools/flag-report.js"
+    ]
   },
   "author": {
     "name": "Amazon Web Services",
