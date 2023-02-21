@@ -58,17 +58,14 @@ export class KicsValidationPlugin implements IValidationPlugin {
     const results = JSON.parse(foo);
 
     results.queries.forEach((query: any) => {
-      query.files.forEach((file: any) => {
-        context.report.addViolation({
-          fix: 'N/A',
-          recommendation: query.description,
-          ruleName: query.query_name,
-          violatingResource: {
-            resourceName: file.resource_name,
-            templatePath: file.file_name,
-            locations: [file.search_key],
-          },
-        });
+      context.report.addViolation({
+        recommendation: query.description,
+        ruleName: query.query_name,
+        violatingResources: query.files.map((file: any) => ({
+          resourceName: file.resource_name,
+          templatePath: file.file_name,
+          locations: [file.search_key],
+        })),
       });
     });
 

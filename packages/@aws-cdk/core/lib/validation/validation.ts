@@ -161,8 +161,9 @@ export interface ValidationViolation {
 
   /**
    * How to fix the recommendation.
+   * @default - TODO
    */
-  readonly fix: string;
+  readonly fix?: string;
 }
 
 /**
@@ -172,18 +173,18 @@ export interface ValidationViolationResourceAware extends ValidationViolation {
   /**
    * The resources violating this rule.
    */
-  readonly violatingResource: ValidationViolatingResource;
+  readonly violatingResources: ValidationViolatingResource[];
 }
 
 /**
  * Validation produced by the validation plugin, in construct terms.
  */
-export interface ValidationViolationConstructAware extends ValidationViolation {
+export interface ValidationViolationResourceAware extends ValidationViolation {
 
   /**
    * The constructs violating this rule.
    */
-  readonly violatingConstruct: ValidationViolatingConstruct;
+  readonly violatingConstructs: ValidationViolatingConstruct[];
 }
 
 // we intentionally don't use an enum so that
@@ -258,23 +259,23 @@ export class ValidationReport {
 
     const template = this.stack.template;
     const tree = this.root.node.tryFindChild('Tree') as TreeMetadata;
-    const constructPath = template.Resources[violation.violatingResource.resourceName].Metadata['aws:cdk:path'];
-    const nodes = tree.nodesFromPath(constructPath);
-    const constructStack = nodes
-      .filter(n => n.constructInfo != null)
-      .map(n => `${n.constructInfo!.fqn} (${n.id})`)
-      .reverse();
+
+    // Just until we use the tree to generate the stack trace
+    // eslint-disable-next-line no-console
+    console.log(tree);
+
+    const constructs = violation.violatingResources.map(resource => ({
+      constructStack: ['TODO'],
+      constructPath: template.Resources[resource.resourceName].Metadata['aws:cdk:path'],
+      locations: resource.locations,
+      resourceName: resource.resourceName,
+      templatePath: resource.templatePath,
+    }));
 
     this.violations.push({
       ruleName: violation.ruleName,
       recommendation: violation.recommendation,
-      violatingConstruct: {
-        constructStack,
-        constructPath,
-        locations: violation.violatingResource.locations,
-        resourceName: violation.violatingResource.resourceName,
-        templatePath: violation.violatingResource.templatePath,
-      },
+      violatingConstructs: constructs,
       fix: violation.fix,
     });
   }
@@ -300,16 +301,6 @@ export class ValidationReport {
    * Transform the report to a well formatted table string.
    */
   public toString(): string {
-    // Doing the indexing here to avoid duplicating the logic in each plugin
-    const violations = new Map<string, ValidationViolationConstructAware[]>();
-    for (const violation of this.violations) {
-      if (violations.has(violation.ruleName)) {
-        violations.set(violation.ruleName, violations.get(violation.ruleName)!.concat(violation));
-      } else {
-        violations.set(violation.ruleName, [violation]);
-      }
-    }
-
     const json = this.toJson();
     const output = [json.title];
 
@@ -328,15 +319,15 @@ export class ValidationReport {
       output.push('(Violations)');
     }
 
-    violations.forEach((vs, name) => {
-      const occurrences = vs.length;
-      const title = reset(red(bright(`${name} (${occurrences} occurrences)`)));
+    json.violations.forEach((violation) => {
+      const constructs = violation.violatingConstructs;
+      const occurrences = constructs.length;
+      const title = reset(red(bright(`${violation.ruleName} (${occurrences} occurrences)`)));
       output.push('');
       output.push(title);
       output.push('');
       output.push('  Occurrences:');
-      for (const v of vs) {
-        const construct = v.violatingConstruct;
+      for (const construct of constructs) {
         output.push('');
         output.push(`    - Construct Path: ${construct.constructPath ?? 'N/A'}`);
         output.push(`    - Template Path: ${construct.templatePath}`);
@@ -350,8 +341,10 @@ export class ValidationReport {
         }
       }
       output.push('');
-      output.push(`  Recommendation: ${vs[0].recommendation}`);
-      output.push(`  How to fix: ${vs[0].fix}`);
+      output.push(`  Recommendation: ${json.violations[0].recommendation}`);
+      if (json.violations[0].fix) {
+        output.push(`  How to fix: ${json.violations[0].fix}`);
+      }
     });
 
     return output.join(os.EOL);
