@@ -1141,7 +1141,7 @@ export class PortMap {
 /**
  * ServiceConnect ValueObjectClass having by ContainerDefinition
  */
-class ServiceConnect {
+export class ServiceConnect {
   /**
    * Port mappings allow containers to access ports on the host container instance to send or receive traffic.
    */
