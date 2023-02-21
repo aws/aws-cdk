@@ -35,6 +35,70 @@ describe('container definition', () => {
       });
     });
 
+    describe('PortMap validates', () => {
+      test('throws when PortMapping.name is empty string.', () => {
+        // GIVEN
+        const portMapping: ecs.PortMapping = {
+          containerPort: 8080,
+          name: '',
+        };
+        const networkmode = ecs.NetworkMode.AWS_VPC;
+        const portMap = new ecs.PortMap(networkmode, portMapping);
+        // THEN
+        expect(() => {
+          portMap.validate();
+        }).toThrow();
+      });
+
+      describe('ContainerPort should not eqaul Hostport', () => {
+        test('when AWS_VPC Networkmode', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            hostPort: 8081,
+          };
+          const networkmode = ecs.NetworkMode.AWS_VPC;
+          const portMap = new ecs.PortMap(networkmode, portMapping);
+          // THEN
+          expect(() => {
+            portMap.validate();
+          }).toThrow();
+        });
+
+        test('when Host Networkmode', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            hostPort: 8081,
+          };
+          const networkmode = ecs.NetworkMode.HOST;
+          const portMap = new ecs.PortMap(networkmode, portMapping);
+          // THEN
+          expect(() => {
+            portMap.validate();
+          }).toThrow();
+        });
+      });
+
+      describe('ContainerPort can equal HostPort cases', () => {
+        test('when Bridge Networkmode', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            hostPort: 8080,
+          };
+          const networkmode = ecs.NetworkMode.BRIDGE;
+          const portMap = new ecs.PortMap(networkmode, portMapping);
+          // THEN
+          expect(() => {
+            portMap.validate();
+          }).not.toThrow();
+        });
+
+      });
+
+    });
+
     test('port mapping throws an error when appProtocol is set without name', () => {
       // GIVEN
       const stack = new cdk.Stack();
