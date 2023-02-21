@@ -102,6 +102,9 @@ properly (for example, permissions to invoke any Lambda functions you add to
 your workflow). A role will be created by default, but you can supply an
 existing one as well.
 
+Set the `removalPolicy` prop to `RemovalPolicy.RETAIN` if you want to retain the execution
+history when CloudFormation deletes your state machine.
+
 ## State Machine Data
 
 An Execution represents each time the State Machine is run. Every Execution has [State Machine

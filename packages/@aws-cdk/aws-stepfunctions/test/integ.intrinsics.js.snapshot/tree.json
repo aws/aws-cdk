@@ -24,6 +24,14 @@
                 "id": "Role",
                 "path": "aws-stepfunctions-intrinsics-integ/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-intrinsics-integ/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-intrinsics-integ/StateMachine/Role/Resource",
@@ -96,7 +104,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.237"
             }
           },
           "BootstrapVersion": {
@@ -134,7 +142,7 @@
                 "path": "StateMachineIntrinsicsTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.237"
                 }
               },
               "DeployAssert": {
@@ -154,7 +162,7 @@
                             "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.140"
+                              "version": "10.1.237"
                             }
                           }
                         },
@@ -226,7 +234,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.237"
                     }
                   },
                   "BootstrapVersion": {
@@ -268,7 +276,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

@@ -693,6 +693,14 @@
                 "id": "Ecs-Instance-Role",
                 "path": "aws-stepfunctions-integ/ComputeEnv/Ecs-Instance-Role",
                 "children": {
+                  "ImportEcs-Instance-Role": {
+                    "id": "ImportEcs-Instance-Role",
+                    "path": "aws-stepfunctions-integ/ComputeEnv/Ecs-Instance-Role/ImportEcs-Instance-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-integ/ComputeEnv/Ecs-Instance-Role/Resource",
@@ -760,6 +768,14 @@
                 "id": "Resource-Service-Instance-Role",
                 "path": "aws-stepfunctions-integ/ComputeEnv/Resource-Service-Instance-Role",
                 "children": {
+                  "ImportResource-Service-Instance-Role": {
+                    "id": "ImportResource-Service-Instance-Role",
+                    "path": "aws-stepfunctions-integ/ComputeEnv/Resource-Service-Instance-Role/ImportResource-Service-Instance-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-integ/ComputeEnv/Resource-Service-Instance-Role/Resource",
@@ -1052,6 +1068,14 @@
                 "id": "Role",
                 "path": "aws-stepfunctions-integ/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-integ/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-integ/StateMachine/Role/Resource",
@@ -1262,7 +1286,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

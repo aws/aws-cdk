@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.95"
-        }
-      },
       "integ-lambda-python-pipenv": {
         "id": "integ-lambda-python-pipenv",
         "path": "integ-lambda-python-pipenv",
@@ -24,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "integ-lambda-python-pipenv/my_handler_inline/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-lambda-python-pipenv/my_handler_inline/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-lambda-python-pipenv/my_handler_inline/ServiceRole/Resource",
@@ -105,7 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "803e66cf17a8155efd491fa5e68f796bb74ae8337c455b23b5e52d0e5927b2a7.zip"
+                      "s3Key": "2f3bbbf29fb95dea832d2f407fb3af92e2179a31a179650c1e9bad3d5d51afaf.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -136,6 +136,14 @@
                 "id": "ServiceRole",
                 "path": "integ-lambda-python-pipenv/my_handler_python_38/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-lambda-python-pipenv/my_handler_python_38/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-lambda-python-pipenv/my_handler_python_38/ServiceRole/Resource",
@@ -217,7 +225,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "2a6fcac567a26e1be604dec572e270fbd091180dccf23a209e21c5900ce24ff0.zip"
+                      "s3Key": "393d0817d83ce87664be2c627863e3f448f1106ceeb687e3f3c370b7957b9a21.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -248,6 +256,14 @@
                 "id": "ServiceRole",
                 "path": "integ-lambda-python-pipenv/my_handler_python_37/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-lambda-python-pipenv/my_handler_python_37/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-lambda-python-pipenv/my_handler_python_37/ServiceRole/Resource",
@@ -329,11 +345,371 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "e223ff54d4d46f8f1e5876b5697de59a81ba36113fa0bf2b46d29917fcbee403.zip"
+                      "s3Key": "f4e3739faf89086835a11fc5cdc60f9f437560fdc808ba5f7b8c717b280eb2b1.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
                         "myhandlerpython37ServiceRole45CBD18D",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "python3.7"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda-python.PythonFunction",
+              "version": "0.0.0"
+            }
+          },
+          "my_handler_inline_excludes": {
+            "id": "my_handler_inline_excludes",
+            "path": "integ-lambda-python-pipenv/my_handler_inline_excludes",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "integ-lambda-python-pipenv/my_handler_inline_excludes/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-lambda-python-pipenv/my_handler_inline_excludes/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-lambda-python-pipenv/my_handler_inline_excludes/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "integ-lambda-python-pipenv/my_handler_inline_excludes/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "integ-lambda-python-pipenv/my_handler_inline_excludes/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "integ-lambda-python-pipenv/my_handler_inline_excludes/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-lambda-python-pipenv/my_handler_inline_excludes/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "6259c1fcafbecaa6547531670fa651cce171cf49a597b58343c28ad4c6a4ba04.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "myhandlerinlineexcludesServiceRoleFF9028A3",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "python3.9"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda-python.PythonFunction",
+              "version": "0.0.0"
+            }
+          },
+          "my_handler_python_38_excludes": {
+            "id": "my_handler_python_38_excludes",
+            "path": "integ-lambda-python-pipenv/my_handler_python_38_excludes",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "integ-lambda-python-pipenv/my_handler_python_38_excludes/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-lambda-python-pipenv/my_handler_python_38_excludes/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-lambda-python-pipenv/my_handler_python_38_excludes/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "integ-lambda-python-pipenv/my_handler_python_38_excludes/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "integ-lambda-python-pipenv/my_handler_python_38_excludes/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "integ-lambda-python-pipenv/my_handler_python_38_excludes/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-lambda-python-pipenv/my_handler_python_38_excludes/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "7885d5d20a5bca7141b637a7e9db57f95730b26b0c4a5d7a6e6db0f392042f7e.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "myhandlerpython38excludesServiceRole05CD433C",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "python3.8"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda-python.PythonFunction",
+              "version": "0.0.0"
+            }
+          },
+          "my_handler_python_37_excludes": {
+            "id": "my_handler_python_37_excludes",
+            "path": "integ-lambda-python-pipenv/my_handler_python_37_excludes",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "integ-lambda-python-pipenv/my_handler_python_37_excludes/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-lambda-python-pipenv/my_handler_python_37_excludes/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-lambda-python-pipenv/my_handler_python_37_excludes/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "integ-lambda-python-pipenv/my_handler_python_37_excludes/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "integ-lambda-python-pipenv/my_handler_python_37_excludes/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "integ-lambda-python-pipenv/my_handler_python_37_excludes/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-lambda-python-pipenv/my_handler_python_37_excludes/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "53f2ca7d739f5ee14104a478b820bb6f429b8afaa9c00a9aed6cf32538cf7207.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "myhandlerpython37excludesServiceRole083BD595",
                         "Arn"
                       ]
                     },
@@ -379,11 +755,51 @@
                   "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
                 }
+              },
+              "Output{\"Ref\":\"myhandlerinlineexcludes9ACF1422\"}": {
+                "id": "Output{\"Ref\":\"myhandlerinlineexcludes9ACF1422\"}",
+                "path": "integ-lambda-python-pipenv/Exports/Output{\"Ref\":\"myhandlerinlineexcludes9ACF1422\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"myhandlerpython38excludes1CEDD615\"}": {
+                "id": "Output{\"Ref\":\"myhandlerpython38excludes1CEDD615\"}",
+                "path": "integ-lambda-python-pipenv/Exports/Output{\"Ref\":\"myhandlerpython38excludes1CEDD615\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"myhandlerpython37excludes977F9CDF\"}": {
+                "id": "Output{\"Ref\":\"myhandlerpython37excludes977F9CDF\"}",
+                "path": "integ-lambda-python-pipenv/Exports/Output{\"Ref\":\"myhandlerpython37excludes977F9CDF\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.95"
+              "version": "10.1.237"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-lambda-python-pipenv/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-lambda-python-pipenv/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
@@ -405,7 +821,7 @@
                 "path": "pipenv/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.95"
+                  "version": "10.1.237"
                 }
               },
               "DeployAssert": {
@@ -425,13 +841,13 @@
                             "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.95"
+                              "version": "10.1.237"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.95"
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
                         }
                       },
                       "Default": {
@@ -460,64 +876,18 @@
                           "version": "0.0.0"
                         }
                       },
-                      "AssertEqualsLambdainvoke": {
-                        "id": "AssertEqualsLambdainvoke",
-                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertEqualsLambdainvoke",
-                        "children": {
-                          "AssertionProvider": {
-                            "id": "AssertionProvider",
-                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertEqualsLambdainvoke/AssertionProvider",
-                            "children": {
-                              "AssertionsProvider": {
-                                "id": "AssertionsProvider",
-                                "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertEqualsLambdainvoke/AssertionProvider/AssertionsProvider",
-                                "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.1.95"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.95"
-                            }
-                          },
-                          "Default": {
-                            "id": "Default",
-                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertEqualsLambdainvoke/Default",
-                            "children": {
-                              "Default": {
-                                "id": "Default",
-                                "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertEqualsLambdainvoke/Default/Default",
-                                "constructInfo": {
-                                  "fqn": "@aws-cdk/core.CfnResource",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CustomResource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "AssertionResults": {
-                            "id": "AssertionResults",
-                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertEqualsLambdainvoke/AssertionResults",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnOutput",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertionResults",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.95"
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.95"
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
                     }
                   },
                   "SingletonFunction1488541a7b23466481b69b4408076b81": {
@@ -551,7 +921,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.95"
+                      "version": "10.1.237"
                     }
                   },
                   "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292": {
@@ -567,13 +937,13 @@
                             "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.95"
+                              "version": "10.1.237"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.95"
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
                         }
                       },
                       "Default": {
@@ -602,64 +972,18 @@
                           "version": "0.0.0"
                         }
                       },
-                      "AssertEqualsLambdainvoke": {
-                        "id": "AssertEqualsLambdainvoke",
-                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertEqualsLambdainvoke",
-                        "children": {
-                          "AssertionProvider": {
-                            "id": "AssertionProvider",
-                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertEqualsLambdainvoke/AssertionProvider",
-                            "children": {
-                              "AssertionsProvider": {
-                                "id": "AssertionsProvider",
-                                "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertEqualsLambdainvoke/AssertionProvider/AssertionsProvider",
-                                "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.1.95"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.95"
-                            }
-                          },
-                          "Default": {
-                            "id": "Default",
-                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertEqualsLambdainvoke/Default",
-                            "children": {
-                              "Default": {
-                                "id": "Default",
-                                "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertEqualsLambdainvoke/Default/Default",
-                                "constructInfo": {
-                                  "fqn": "@aws-cdk/core.CfnResource",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CustomResource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "AssertionResults": {
-                            "id": "AssertionResults",
-                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertEqualsLambdainvoke/AssertionResults",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnOutput",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertionResults",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.95"
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.95"
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
                     }
                   },
                   "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75": {
@@ -675,13 +999,13 @@
                             "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.95"
+                              "version": "10.1.237"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.95"
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
                         }
                       },
                       "Default": {
@@ -710,64 +1034,220 @@
                           "version": "0.0.0"
                         }
                       },
-                      "AssertEqualsLambdainvoke": {
-                        "id": "AssertEqualsLambdainvoke",
-                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertEqualsLambdainvoke",
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c": {
+                    "id": "LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c",
+                    "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c/SdkProvider",
                         "children": {
-                          "AssertionProvider": {
-                            "id": "AssertionProvider",
-                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertEqualsLambdainvoke/AssertionProvider",
-                            "children": {
-                              "AssertionsProvider": {
-                                "id": "AssertionsProvider",
-                                "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertEqualsLambdainvoke/AssertionProvider/AssertionsProvider",
-                                "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.1.95"
-                                }
-                              }
-                            },
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.95"
+                              "version": "10.1.237"
                             }
-                          },
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c/Default",
+                        "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertEqualsLambdainvoke/Default",
-                            "children": {
-                              "Default": {
-                                "id": "Default",
-                                "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertEqualsLambdainvoke/Default/Default",
-                                "constructInfo": {
-                                  "fqn": "@aws-cdk/core.CfnResource",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
+                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CustomResource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "AssertionResults": {
-                            "id": "AssertionResults",
-                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertEqualsLambdainvoke/AssertionResults",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnOutput",
+                              "fqn": "@aws-cdk/core.CfnResource",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.95"
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.95"
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7": {
+                    "id": "LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7",
+                    "path": "pipenv/DefaultTest/DeployAssert/LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.237"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LambdaInvoke26ce5a20d1ffee210d056cd2aa005172": {
+                    "id": "LambdaInvoke26ce5a20d1ffee210d056cd2aa005172",
+                    "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke26ce5a20d1ffee210d056cd2aa005172",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke26ce5a20d1ffee210d056cd2aa005172/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke26ce5a20d1ffee210d056cd2aa005172/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.237"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke26ce5a20d1ffee210d056cd2aa005172/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke26ce5a20d1ffee210d056cd2aa005172/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke26ce5a20d1ffee210d056cd2aa005172/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "pipenv/DefaultTest/DeployAssert/LambdaInvoke26ce5a20d1ffee210d056cd2aa005172/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "pipenv/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "pipenv/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -778,14 +1258,22 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.95"
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.95"
+          "version": "10.1.237"
         }
       }
     },

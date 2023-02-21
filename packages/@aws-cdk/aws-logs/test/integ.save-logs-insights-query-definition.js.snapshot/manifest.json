@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "29.0.0",
   "artifacts": {
     "aws-cdk-logs-insights-querydefinition-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6a0a51961925fbc37d9b81431449c256ed453f98089eb70f83850f237b4d722.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3546c78647ea20567832041c960a034787f9bfc0128226ea8fbc0894366a4dd0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,6 +43,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "QueryDefinition4190BC36"
+          }
+        ],
+        "/aws-cdk-logs-insights-querydefinition-integ/QueryDefinitionWithMultipleStatements/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryDefinitionWithMultipleStatements58A3EF74"
           }
         ],
         "/aws-cdk-logs-insights-querydefinition-integ/BootstrapVersion": [

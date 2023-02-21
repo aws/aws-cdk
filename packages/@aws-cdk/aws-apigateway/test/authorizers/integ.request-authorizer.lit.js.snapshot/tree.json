@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "RequestAuthorizerInteg": {
         "id": "RequestAuthorizerInteg",
         "path": "RequestAuthorizerInteg",
@@ -24,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "RequestAuthorizerInteg/MyAuthorizerFunction/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "RequestAuthorizerInteg/MyAuthorizerFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "RequestAuthorizerInteg/MyAuthorizerFunction/ServiceRole/Resource",
@@ -77,8 +77,8 @@
                     "id": "Stage",
                     "path": "RequestAuthorizerInteg/MyAuthorizerFunction/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -169,6 +169,54 @@
                   "fqn": "@aws-cdk/aws-lambda.CfnPermission",
                   "version": "0.0.0"
                 }
+              },
+              "RequestAuthorizerIntegMySecondAuthorizerCCC4ECED:Permissions": {
+                "id": "RequestAuthorizerIntegMySecondAuthorizerCCC4ECED:Permissions",
+                "path": "RequestAuthorizerInteg/MyAuthorizerFunction/RequestAuthorizerIntegMySecondAuthorizerCCC4ECED:Permissions",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "MyAuthorizerFunction70F1223E",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MyRestApi2D1F47A9"
+                          },
+                          "/authorizers/",
+                          {
+                            "Ref": "MySecondAuthorizer25A69B96"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -198,6 +246,14 @@
                 "id": "CloudWatchRole",
                 "path": "RequestAuthorizerInteg/MyRestApi/CloudWatchRole",
                 "children": {
+                  "ImportCloudWatchRole": {
+                    "id": "ImportCloudWatchRole",
+                    "path": "RequestAuthorizerInteg/MyRestApi/CloudWatchRole/ImportCloudWatchRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "RequestAuthorizerInteg/MyRestApi/CloudWatchRole/Resource",
@@ -303,7 +359,7 @@
                           "Ref": "MyRestApi2D1F47A9"
                         },
                         "deploymentId": {
-                          "Ref": "MyRestApiDeploymentB555B582dcff966d69deeda8d47e3bf409ce29cb"
+                          "Ref": "MyRestApiDeploymentB555B582d83364d66d67f510f848797cd89349d5"
                         },
                         "stageName": "prod"
                       }
@@ -323,8 +379,8 @@
                 "id": "Endpoint",
                 "path": "RequestAuthorizerInteg/MyRestApi/Endpoint",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "Default": {
@@ -382,6 +438,90 @@
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-apigateway.Method",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "auth": {
+                    "id": "auth",
+                    "path": "RequestAuthorizerInteg/MyRestApi/Default/auth",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "RequestAuthorizerInteg/MyRestApi/Default/auth/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "MyRestApi2D1F47A9",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "auth",
+                            "restApiId": {
+                              "Ref": "MyRestApi2D1F47A9"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "ANY": {
+                        "id": "ANY",
+                        "path": "RequestAuthorizerInteg/MyRestApi/Default/auth/ANY",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "RequestAuthorizerInteg/MyRestApi/Default/auth/ANY/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "httpMethod": "ANY",
+                                "resourceId": {
+                                  "Ref": "MyRestApiauth918A22B9"
+                                },
+                                "restApiId": {
+                                  "Ref": "MyRestApi2D1F47A9"
+                                },
+                                "authorizationType": "CUSTOM",
+                                "authorizerId": {
+                                  "Ref": "MySecondAuthorizer25A69B96"
+                                },
+                                "integration": {
+                                  "type": "MOCK",
+                                  "requestTemplates": {
+                                    "application/json": "{ \"statusCode\": 200 }"
+                                  },
+                                  "passthroughBehavior": "NEVER",
+                                  "integrationResponses": [
+                                    {
+                                      "statusCode": "200"
+                                    }
+                                  ]
+                                },
+                                "methodResponses": [
+                                  {
+                                    "statusCode": "200"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Method",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Resource",
                       "version": "0.0.0"
                     }
                   }
@@ -474,17 +614,119 @@
               "fqn": "@aws-cdk/aws-apigateway.RequestAuthorizer",
               "version": "0.0.0"
             }
+          },
+          "MySecondAuthorizer": {
+            "id": "MySecondAuthorizer",
+            "path": "RequestAuthorizerInteg/MySecondAuthorizer",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RequestAuthorizerInteg/MySecondAuthorizer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Authorizer",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "RequestAuthorizerIntegMySecondAuthorizerCCC4ECED",
+                    "restApiId": {
+                      "Ref": "MyRestApi2D1F47A9"
+                    },
+                    "type": "REQUEST",
+                    "authorizerUri": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Fn::Select": [
+                              1,
+                              {
+                                "Fn::Split": [
+                                  ":",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "MyAuthorizerFunction70F1223E",
+                                      "Arn"
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          ":apigateway:",
+                          {
+                            "Fn::Select": [
+                              3,
+                              {
+                                "Fn::Split": [
+                                  ":",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "MyAuthorizerFunction70F1223E",
+                                      "Arn"
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          ":lambda:path/2015-03-31/functions/",
+                          {
+                            "Fn::GetAtt": [
+                              "MyAuthorizerFunction70F1223E",
+                              "Arn"
+                            ]
+                          },
+                          "/invocations"
+                        ]
+                      ]
+                    },
+                    "identitySource": "method.request.header.Authorization,method.request.querystring.allow"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAuthorizer",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.RequestAuthorizer",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "RequestAuthorizerInteg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "RequestAuthorizerInteg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.189"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

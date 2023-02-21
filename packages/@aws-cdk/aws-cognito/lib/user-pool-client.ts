@@ -451,7 +451,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
         'DescribeCognitoUserPoolClient',
         {
           resourceType: 'Custom::DescribeCognitoUserPoolClient',
-          onCreate: {
+          onUpdate: {
             region: Stack.of(this).region,
             service: 'CognitoIdentityServiceProvider',
             action: 'describeUserPoolClient',

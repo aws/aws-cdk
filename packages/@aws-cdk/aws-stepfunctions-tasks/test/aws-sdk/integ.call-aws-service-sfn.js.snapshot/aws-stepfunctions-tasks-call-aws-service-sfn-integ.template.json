@@ -63,7 +63,9 @@
    "DependsOn": [
     "ChildStateMachineRoleDefaultPolicy8B4560F0",
     "ChildStateMachineRoleA7F7AB78"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ParentStateMachineRoleE902D002": {
    "Type": "AWS::IAM::Role",
@@ -134,7 +136,9 @@
    "DependsOn": [
     "ParentStateMachineRoleDefaultPolicyA368A0BA",
     "ParentStateMachineRoleE902D002"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

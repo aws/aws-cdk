@@ -14,19 +14,33 @@ import * as lambda from '../lib';
  */
 
 class TestStack extends Stack {
-  public readonly functionName: string;
+  public readonly functionNames: string[] = [];
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const fn = new lambda.PythonFunction(this, 'my_handler', {
+    const defaultFunction = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler'),
       runtime: Runtime.PYTHON_3_9,
     });
-    this.functionName = fn.functionName;
+    this.functionNames.push(defaultFunction.functionName);
 
-    new CfnOutput(this, 'FunctionArn', {
-      value: fn.functionArn,
+    new CfnOutput(this, 'DefaultFunctionArn', {
+      value: defaultFunction.functionArn,
     });
+
+    const functionWithExcludes = new lambda.PythonFunction(this, 'my_handler_excludes', {
+      entry: path.join(__dirname, 'lambda-handler'),
+      runtime: Runtime.PYTHON_3_9,
+      bundling: {
+        assetExcludes: ['.ignorefiles'],
+      },
+    });
+    this.functionNames.push(functionWithExcludes.functionName);
+
+    new CfnOutput(this, 'FunctionArnWithExcludes', {
+      value: functionWithExcludes.functionArn,
+    });
+
   }
 }
 
@@ -37,12 +51,14 @@ const integ = new IntegTest(app, 'lambda-python-function', {
   stackUpdateWorkflow: false,
 });
 
-const invoke = integ.assertions.invokeFunction({
-  functionName: testCase.functionName,
-});
+testCase.functionNames.forEach(functionName => {
+  const invoke = integ.assertions.invokeFunction({
+    functionName: functionName,
+  });
 
-invoke.expect(ExpectedResult.objectLike({
-  Payload: '200',
-}));
+  invoke.expect(ExpectedResult.objectLike({
+    Payload: '200',
+  }));
+});
 
 app.synth();

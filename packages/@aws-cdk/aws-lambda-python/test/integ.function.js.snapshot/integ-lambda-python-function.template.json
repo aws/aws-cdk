@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "75eef6be4f79fab5d65ef63569aac0de3aab47ca778c063cdea466e47c4ea755.zip"
+     "S3Key": "74aba657619dfbc372ad5df5cf98a022a4322098a338ee81683de7c8d01d4664.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -52,13 +52,74 @@
    "DependsOn": [
     "myhandlerServiceRole77891068"
    ]
+  },
+  "myhandlerexcludesServiceRoleBB475DCC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerexcludes0437E0D2": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "8e8d2a8b3838f7d231d348e1c27c9f8e682c8dd4ff9af71d88795db2009a6d51.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerexcludesServiceRoleBB475DCC",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "myhandlerexcludesServiceRoleBB475DCC"
+   ]
   }
  },
  "Outputs": {
-  "FunctionArn": {
+  "DefaultFunctionArn": {
    "Value": {
     "Fn::GetAtt": [
      "myhandlerD202FA8E",
+     "Arn"
+    ]
+   }
+  },
+  "FunctionArnWithExcludes": {
+   "Value": {
+    "Fn::GetAtt": [
+     "myhandlerexcludes0437E0D2",
      "Arn"
     ]
    }
@@ -69,6 +130,14 @@
    },
    "Export": {
     "Name": "integ-lambda-python-function:ExportsOutputRefmyhandlerD202FA8E369E8804"
+   }
+  },
+  "ExportsOutputRefmyhandlerexcludes0437E0D23D81F234": {
+   "Value": {
+    "Ref": "myhandlerexcludes0437E0D2"
+   },
+   "Export": {
+    "Name": "integ-lambda-python-function:ExportsOutputRefmyhandlerexcludes0437E0D23D81F234"
    }
   }
  },

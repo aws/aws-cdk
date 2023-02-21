@@ -63,4 +63,58 @@ describe('Cognito Authorizer', () => {
 
     expect(authorizer.authorizerArn.endsWith(`/authorizers/${authorizer.authorizerId}`)).toBeTruthy();
   });
+
+  test('rest api depends on the authorizer when @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
+    const stack = new Stack();
+    stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
+    const userPool1 = new cognito.UserPool(stack, 'UserPool');
+
+    const authorizer = new CognitoUserPoolsAuthorizer(stack, 'Authorizer', {
+      cognitoUserPools: [userPool1],
+    });
+
+    const restApi = new RestApi(stack, 'Api');
+
+    restApi.root.addMethod('ANY', undefined, {
+      authorizer,
+      authorizationType: AuthorizationType.COGNITO,
+    });
+
+    const template = Template.fromStack(stack);
+
+    const authorizerId = Object.keys(template.findResources('AWS::ApiGateway::Authorizer'))[0];
+    const deployment = Object.values(template.findResources('AWS::ApiGateway::Deployment'))[0];
+
+    expect(deployment.DependsOn).toEqual(expect.arrayContaining([authorizerId]));
+  });
+
+  test('a new deployment is created when a cognito user pool is re-created and @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId is enabled', () => {
+    const createApiTemplate = (userPoolId: string) => {
+      const stack = new Stack();
+      stack.node.setContext('@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId', true);
+
+      const userPool = new cognito.UserPool(stack, userPoolId);
+
+      const auth = new CognitoUserPoolsAuthorizer(stack, 'myauthorizer', {
+        resultsCacheTtl: Duration.seconds(0),
+        cognitoUserPools: [userPool],
+      });
+
+      const restApi = new RestApi(stack, 'myrestapi');
+      restApi.root.addMethod('ANY', undefined, {
+        authorizer: auth,
+        authorizationType: AuthorizationType.COGNITO,
+      });
+
+      return Template.fromStack(stack);
+    };
+
+    const oldTemplate = createApiTemplate('foo');
+    const newTemplate = createApiTemplate('bar');
+
+    const oldDeploymentId = Object.keys(oldTemplate.findResources('AWS::ApiGateway::Deployment'))[0];
+    const newDeploymentId = Object.keys(newTemplate.findResources('AWS::ApiGateway::Deployment'))[0];
+
+    expect(oldDeploymentId).not.toEqual(newDeploymentId);
+  });
 });

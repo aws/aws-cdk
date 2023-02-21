@@ -1,17 +1,18 @@
+import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
+import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
 import { CfnCluster } from './redshift.generated';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
-
 /**
  * Possible Node Types to use in the cluster
  * used for defining `ClusterProps.nodeType`.
@@ -365,6 +366,12 @@ export interface ClusterProps {
   readonly elasticIp?: string
 
   /**
+   * If this flag is set, the cluster will be rebooted when changes to the cluster's parameter group that require a restart to apply.
+   * @default false
+   */
+  readonly rebootForParameterChanges?: boolean
+
+  /**
    * If this flag is set, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC).
    *
    * @see https://docs.aws.amazon.com/redshift/latest/mgmt/enhanced-vpc-routing.html
@@ -592,7 +599,9 @@ export class Cluster extends ClusterBase {
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
-
+    if (props.rebootForParameterChanges) {
+      this.enableRebootForParameterChanges();
+    }
     // Add default role if specified and also available in the roles list
     if (props.defaultRole) {
       if (props.roles?.some(x => x === props.defaultRole)) {
@@ -687,6 +696,71 @@ export class Cluster extends ClusterBase {
     } else {
       throw new Error('Cannot add a parameter to an imported parameter group.');
     }
+  }
+
+  /**
+   * Enables automatic cluster rebooting when changes to the cluster's parameter group require a restart to apply.
+   */
+  public enableRebootForParameterChanges(): void {
+    if (this.node.tryFindChild('RedshiftClusterRebooterCustomResource')) {
+      return;
+    }
+    const rebootFunction = new lambda.SingletonFunction(this, 'RedshiftClusterRebooterFunction', {
+      uuid: '511e207f-13df-4b8b-b632-c32b30b65ac2',
+      runtime: lambda.Runtime.NODEJS_16_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'cluster-parameter-change-reboot-handler')),
+      handler: 'index.handler',
+      timeout: Duration.seconds(900),
+    });
+    rebootFunction.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['redshift:DescribeClusters'],
+      resources: ['*'],
+    }));
+    rebootFunction.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['redshift:RebootCluster'],
+      resources: [
+        Stack.of(this).formatArn({
+          service: 'redshift',
+          resource: 'cluster',
+          resourceName: this.clusterName,
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        }),
+      ],
+    }));
+    const provider = new Provider(this, 'ResourceProvider', {
+      onEventHandler: rebootFunction,
+    });
+    const customResource = new CustomResource(this, 'RedshiftClusterRebooterCustomResource', {
+      resourceType: 'Custom::RedshiftClusterRebooter',
+      serviceToken: provider.serviceToken,
+      properties: {
+        ClusterId: this.clusterName,
+        ParameterGroupName: Lazy.string({
+          produce: () => {
+            if (!this.parameterGroup) {
+              throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+            }
+            return this.parameterGroup.clusterParameterGroupName;
+          },
+        }),
+        ParametersString: Lazy.string({
+          produce: () => {
+            if (!(this.parameterGroup instanceof ClusterParameterGroup)) {
+              throw new Error('Cannot enable reboot for parameter changes when using an imported parameter group.');
+            }
+            return JSON.stringify(this.parameterGroup.parameters);
+          },
+        }),
+      },
+    });
+    Lazy.any({
+      produce: () => {
+        if (!this.parameterGroup) {
+          throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+        }
+        customResource.node.addDependency(this, this.parameterGroup);
+      },
+    });
   }
 
   /**

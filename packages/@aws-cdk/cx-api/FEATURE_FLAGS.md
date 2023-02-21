@@ -45,6 +45,7 @@ Flags come in three types:
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
+| [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
 
 <!-- END table -->
 
@@ -80,7 +81,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-route53-patters:useCertificate": true,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
     "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
-    "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true
+    "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
+    "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true
   }
 }
 ```
@@ -814,6 +816,22 @@ This is a feature flag as the old behavior was technically incorrect, but users 
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.65.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId
+
+*Include authorizer configuration in the calculation of the API deployment logical ID.* (fix)
+
+The logical ID of the AWS::ApiGateway::Deployment resource is calculated by hashing
+the API configuration, including methods, and resources, etc. Enable this feature flag
+to also include the configuration of any authorizer attached to the API in the
+calculation, so any changes made to an authorizer will create a new deployment.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.66.0 | `false` | `true` |
 
 
 <!-- END details -->

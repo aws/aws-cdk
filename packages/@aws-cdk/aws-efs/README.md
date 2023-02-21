@@ -61,6 +61,33 @@ const importedFileSystem = efs.FileSystem.fromFileSystemAttributes(this, 'existi
 });
 ```
 
+### IAM to control file system data access
+
+You can use both IAM identity policies and resource policies to control client access to Amazon EFS resources in a way that is scalable and optimized for cloud environments. Using IAM, you can permit clients to perform specific actions on a file system, including read-only, write, and root access.
+
+```ts
+const myFileSystemPolicy = new PolicyDocument({
+  statements: [new PolicyStatement({
+    actions: [
+      'elasticfilesystem:ClientWrite',
+      'elasticfilesystem:ClientMount',
+    ],
+    principals: [new AccountRootPrincipal()],
+    resources: ['*'],
+    conditions: {
+      Bool: {
+        'elasticfilesystem:AccessedViaMountTarget': 'true',
+      },
+    },
+  })],
+});
+
+const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
+  vpc: new ec2.Vpc(this, 'VPC'),
+  fileSystemPolicy: myFileSystemPolicy,
+});
+```
+
 ### Permissions
 
 If you need to grant file system permissions to another resource, you can use the `.grant()` API.

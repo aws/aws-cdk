@@ -35,6 +35,33 @@ class TestStack extends Stack {
       runtime: Runtime.PYTHON_3_7,
     });
     this.functionNames.push(pythonFunction37.functionName);
+
+    const pythonFunction39Excludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes', {
+      entry: path.join(__dirname, 'lambda-handler-pipenv'),
+      runtime: Runtime.PYTHON_3_9,
+      bundling: {
+        assetExcludes: ['.ignorefile'],
+      },
+    });
+    this.functionNames.push(pythonFunction39Excludes.functionName);
+
+    const pythonFunction38Excludes = new lambda.PythonFunction(this, 'my_handler_python_38_excludes', {
+      entry: path.join(__dirname, 'lambda-handler-pipenv'),
+      runtime: Runtime.PYTHON_3_8,
+      bundling: {
+        assetExcludes: ['.ignorefile'],
+      },
+    });
+    this.functionNames.push(pythonFunction38Excludes.functionName);
+
+    const pythonFunction37Excludes = new lambda.PythonFunction(this, 'my_handler_python_37_excludes', {
+      entry: path.join(__dirname, 'lambda-handler-pipenv'),
+      runtime: Runtime.PYTHON_3_7,
+      bundling: {
+        assetExcludes: ['.ignorefile'],
+      },
+    });
+    this.functionNames.push(pythonFunction37Excludes.functionName);
   }
 }
 

@@ -1,7 +1,7 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "files": {
-    "551baa1ebfdea9d8d905ffd1e2e8ac09982d0a49e669c97ad0d8f8c092cb96df": {
+    "81ccfaff55790eb0a0ba90c4ede5ca2168072939afb21004c5dcb5ca74295b40": {
       "source": {
         "path": "CognitoUserPoolsAuthorizerInteg.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "551baa1ebfdea9d8d905ffd1e2e8ac09982d0a49e669c97ad0d8f8c092cb96df.json",
+          "objectKey": "81ccfaff55790eb0a0ba90c4ede5ca2168072939afb21004c5dcb5ca74295b40.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

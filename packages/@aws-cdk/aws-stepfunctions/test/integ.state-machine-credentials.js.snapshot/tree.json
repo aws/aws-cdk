@@ -488,7 +488,7 @@
                 "path": "StateMachineCredentials/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.161"
+                  "version": "10.1.237"
                 }
               },
               "DeployAssert": {
@@ -534,7 +534,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.161"
+          "version": "10.1.237"
         }
       }
     },

@@ -1,7 +1,7 @@
 {
-  "version": "21.0.0",
+  "version": "30.0.0",
   "files": {
-    "1cc4cb24622e3fc2d2bc515ebe39d5aa68860b5ecd2e066b20a2a2add4b9590c": {
+    "f64891e6cb42d32d8a7ffe6a64a5e1ddfc5cbde0706f87dfe3d99321811fff2f": {
       "source": {
         "path": "aws-stepfunctions-tasks-run-lambda-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1cc4cb24622e3fc2d2bc515ebe39d5aa68860b5ecd2e066b20a2a2add4b9590c.json",
+          "objectKey": "f64891e6cb42d32d8a7ffe6a64a5e1ddfc5cbde0706f87dfe3d99321811fff2f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
