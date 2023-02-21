@@ -66,7 +66,7 @@ export class ValidationContext {
      */
     public readonly stdout?: boolean) {
 
-    this.report = new ValidationReport(plugin.name, stack);
+    this.report = new ValidationReport(plugin.name, root);
     this.logger = new ValidationLogger();
   }
 }
@@ -81,7 +81,7 @@ export class ValidationLogger {
    */
   public log(message: string) {
     // eslint-disable-next-line no-console
-    console.log(message);
+    console.error(message);
   }
 }
 
@@ -246,7 +246,8 @@ export class ValidationReport {
 
   constructor(
     private readonly pluginName: string,
-    private readonly stack: cxapi.CloudFormationStackArtifact) {
+    private readonly root: IConstruct,
+  ) {
   }
 
   /**
@@ -257,10 +258,9 @@ export class ValidationReport {
       throw new Error('Violations cannot be added to report after its submitted');
     }
 
-    const template = this.stack.template;
     const constructs = violation.violatingResources.map(resource => ({
       constructStack: this.trace(resource),
-      constructPath: template.Resources[resource.resourceName].Metadata['aws:cdk:path'],
+      constructPath: this.root.node.tryFindChild(resource.resourceName)?.node.path,
       locations: resource.locations,
       resourceName: resource.resourceName,
       templatePath: resource.templatePath,
