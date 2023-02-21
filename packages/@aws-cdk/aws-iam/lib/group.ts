@@ -1,4 +1,4 @@
-import { ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Annotations, ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -203,11 +203,16 @@ export class Group extends GroupBase {
   }
 
   /**
-   * Attaches a managed policy to this group.
+   * Attaches a managed policy to this group. See [IAM and AWS STS quotas, name requirements, and character limits]
+   * (https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entities)
+   * for quota of managed policies attached to an IAM group.
    * @param policy The managed policy to attach.
    */
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
+    if (this.managedPolicies.length > 10) {
+      Annotations.of(this).addWarning(`You added ${this.managedPolicies.length} to IAM Group ${this.groupName}. The maximum number of managed policies attached to an IAM group is 10.`);
+    }
     this.managedPolicies.push(policy);
   }
 }
