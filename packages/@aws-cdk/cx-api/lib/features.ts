@@ -79,6 +79,8 @@ export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAc
 export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
 export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
 export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
+export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
+export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -642,6 +644,32 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
     `,
+    introducedIn: { v2: '2.65.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP]: {
+    type: FlagType.BugFix,
+    summary: 'Remove CloudWatch alarms from deployment group',
+    detailsMd: `
+      Enable this flag to be able to remove all CloudWatch alarms from a deployment group by removing
+      the alarms from the construct. If this flag is not set, removing all alarms from the construct
+      will still leave the alarms configured for the deployment group.
+    `,
+    introducedIn: { v2: '2.65.0' },
+    recommendedValue: true,
+  },
+
+  [APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID]: {
+    type: FlagType.BugFix,
+    summary: 'Include authorizer configuration in the calculation of the API deployment logical ID.',
+    detailsMd: `
+      The logical ID of the AWS::ApiGateway::Deployment resource is calculated by hashing
+      the API configuration, including methods, and resources, etc. Enable this feature flag
+      to also include the configuration of any authorizer attached to the API in the
+      calculation, so any changes made to an authorizer will create a new deployment.
+      `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },

@@ -16,6 +16,14 @@
                 "id": "Role",
                 "path": "aws-stepfunctions-tasks-codebuild-start-build-integ/Project/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-tasks-codebuild-start-build-integ/Project/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-codebuild-start-build-integ/Project/Role/Resource",
@@ -247,6 +255,14 @@
                 "id": "Role",
                 "path": "aws-stepfunctions-tasks-codebuild-start-build-integ/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-tasks-codebuild-start-build-integ/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-codebuild-start-build-integ/StateMachine/Role/Resource",
@@ -411,7 +427,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

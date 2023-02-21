@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -20,6 +20,23 @@ describe('CodeDeploy Server Deployment Group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'ApplicationName': {
         'Ref': 'MyApp3CE31C26',
+      },
+    });
+  });
+
+  test('can create a deployment group with no alarms', () => {
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup', true);
+
+    const application = new codedeploy.ServerApplication(stack, 'MyApp');
+    new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
+      application,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      AlarmConfiguration: {
+        Enabled: false,
+        Alarms: Match.absent(),
       },
     });
   });

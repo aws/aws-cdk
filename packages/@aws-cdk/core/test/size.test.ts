@@ -15,6 +15,20 @@ describe('size', () => {
     );
   });
 
+  test('Size in bytes', () => {
+    const size = Size.bytes(1_099_511_627_776);
+
+    expect(size.toBytes()).toEqual(1_099_511_627_776);
+    expect(size.toKibibytes()).toEqual(1_073_741_824);
+    expect(size.toMebibytes()).toEqual(1_048_576);
+    expect(size.toGibibytes()).toEqual(1024);
+    expect(size.toTebibytes()).toEqual(1);
+    expect(() => size.toPebibytes()).toThrow(/'1099511627776 bytes' cannot be converted into a whole number/);
+    floatEqual(size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 1_099_511_627_776 / (1024 * 1024 * 1024 * 1024 * 1024));
+
+    expect(Size.bytes(4 * 1024 * 1024 * 1024).toGibibytes()).toEqual(4);
+  });
+
   test('Size in kibibytes', () => {
     const size = Size.kibibytes(4_294_967_296);
 

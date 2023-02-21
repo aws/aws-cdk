@@ -945,6 +945,18 @@ to allow users revert the stage to an old deployment manually.
 [Deployment]: https://docs.aws.amazon.com/apigateway/api-reference/resource/deployment/
 [Stage]: https://docs.aws.amazon.com/apigateway/api-reference/resource/stage/
 
+In order to also create a new deployment when changes are made to any authorizer attached to the API,
+the `@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId` [feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) can be enabled. This can be set
+in the `cdk.json` file.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true
+  }
+}
+```
+
 ## Custom Domains
 
 To associate an API with a custom domain, use the `domainName` configuration when
