@@ -143,15 +143,15 @@ class FileAccessLog extends AccessLog {
    * @default - no file based access logging
    */
   public readonly filePath: string;
-  public readonly virtualNodeLoggingFormat?: CfnVirtualNode.LoggingFormatProperty;
-  public readonly virtualGatewayLoggingFormat?: CfnVirtualGateway.LoggingFormatProperty;
+  private readonly virtualNodeLoggingFormat?: CfnVirtualNode.LoggingFormatProperty;
+  private readonly virtualGatewayLoggingFormat?: CfnVirtualGateway.LoggingFormatProperty;
 
   constructor(filePath: string, loggingFormat?: LoggingFormat) {
     super();
     this.filePath = filePath;
     // For now we have the same setting for Virtual Gateway and Virtual Nodes
-    this.virtualGatewayLoggingFormat = loggingFormat;
-    this.virtualNodeLoggingFormat = loggingFormat;
+    this.virtualGatewayLoggingFormat = loggingFormat?.bind().formatConfig;
+    this.virtualNodeLoggingFormat = loggingFormat?.bind().formatConfig;
   }
 
   public bind(_scope: Construct): AccessLogConfig {
@@ -173,53 +173,93 @@ class FileAccessLog extends AccessLog {
 }
 
 /**
- * Configuration for Envoy logging format
+ * All Properties for Envoy Access Logging Format for mesh endpoints
  */
-export class LoggingFormat {
+export interface LoggingFormatConfig {
+  /**
+   * CFN configuration for Access Logging Format
+   *
+   * @default - no access logging format
+   */
+  readonly formatConfig?: CfnVirtualNode.LoggingFormatProperty;
+}
+
+/**
+ * Configuration for Envoy Access Logging Format for mesh endpoints
+ */
+export abstract class LoggingFormat {
   /**
    * Generate logging format from text pattern
    */
   public static fromText(text: string): LoggingFormat {
-    return new LoggingFormat(text);
+    return new TextLoggingFormat(text);
   }
   /**
    * Generate logging format from json key pairs
    */
-  public static fromJson(jsonPairs :{[key:string]: string}): LoggingFormat {
+  public static fromJson(jsonLoggingFormat :{[key:string]: string}): LoggingFormat {
     const json: JsonFormatRef[] = [];
-    if (Object.keys(jsonPairs).length == 0) {
+    if (Object.keys(jsonLoggingFormat).length == 0) {
       throw new Error('Json key pairs cannot be empty.');
     }
 
-    for (const key in jsonPairs) {
-      json.push(new JsonFormatRef(key, jsonPairs[key]));
+    for (const key in jsonLoggingFormat) {
+      json.push(new JsonFormatRef(key, jsonLoggingFormat[key]));
     };
 
-    return new LoggingFormat(undefined, json);
+    return new JsonLoggingFormat(json);
   };
 
   /**
-   * Json pattern for the output logs
-   *
-   * @default - no format specified
+   * Called when the Access Log Format is initialized. Can be used to enforce
+   * mutual exclusivity with future properties
    */
-  readonly json?: Array<CfnVirtualNode.JsonFormatRefProperty>;
+  public abstract bind(): LoggingFormatConfig;
+}
 
+/**
+ * Configuration for Json logging format
+ */
+class JsonLoggingFormat extends LoggingFormat {
   /**
-   * Text pattern for the output logs
-   *
-   * @default - no text pattern specified
-   */
-  readonly text?: string;
-
-  constructor(text?: string, json?: Array<CfnVirtualNode.JsonFormatRefProperty>) {
-    if (text && json) {
-      throw new Error('Text and json format cannot be defined at the same time.');
-    }
-    this.text = text;
+  * Json pattern for the output logs
+  *
+  * @default - no json format specified
+  */
+  private readonly json?: Array<CfnVirtualNode.JsonFormatRefProperty>;
+  constructor(json: Array<CfnVirtualNode.JsonFormatRefProperty>) {
+    super();
     this.json = json;
   }
 
+  bind(): LoggingFormatConfig {
+    return {
+      formatConfig: {
+        json: this.json,
+      },
+    };
+  }
+}
+
+class TextLoggingFormat extends LoggingFormat {
+  /**
+  * Json pattern for the output logs
+  *
+  * @default - no text format specified
+  */
+  private readonly text?: string;
+  constructor(text: string) {
+    super();
+    this.text = text;
+  }
+
+  public bind(): LoggingFormatConfig {
+    return {
+      formatConfig: {
+        text: this.text,
+      },
+    };
+  }
 }
 
 /**
