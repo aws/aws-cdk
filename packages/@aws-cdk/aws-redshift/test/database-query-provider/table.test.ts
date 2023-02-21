@@ -270,6 +270,23 @@ describe('update', () => {
     }));
   });
 
+  test('does not replace if table columns name changed', async () => {
+    const newTableColumnName = 'col2';
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableColumns: [
+        { name: newTableColumnName, dataType: 'varchar(1)' },
+      ],
+    };
+
+    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO ${newTableColumnName}`,
+    }));
+  });
+
   describe('distStyle and distKey', () => {
     test('replaces if distStyle is added', async () => {
       const newResourceProperties: ResourcePropertiesType = {
