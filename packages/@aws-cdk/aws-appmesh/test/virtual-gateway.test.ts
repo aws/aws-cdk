@@ -152,7 +152,55 @@ describe('virtual gateway', () => {
         VirtualGatewayName: 'test-gateway',
       });
     });
+    test('without logging format', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
 
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        listeners: [appmesh.VirtualGatewayListener.grpc({
+          port: 80,
+          healthCheck: appmesh.HealthCheck.grpc(),
+        })],
+        mesh: mesh,
+        accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              HealthCheck: {
+                HealthyThreshold: 2,
+                IntervalMillis: 5000,
+                Port: 80,
+                Protocol: appmesh.Protocol.GRPC,
+                TimeoutMillis: 2000,
+                UnhealthyThreshold: 2,
+              },
+              PortMapping: {
+                Port: 80,
+                Protocol: appmesh.Protocol.GRPC,
+              },
+            },
+          ],
+          Logging: {
+            AccessLog: {
+              File: {
+                Path: '/dev/stdout',
+              },
+            },
+          },
+        },
+        VirtualGatewayName: 'test-gateway',
+      });
+    });
     test('with json logging format', () => {
       // GIVEN
       const stack = new cdk.Stack();
