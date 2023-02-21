@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { IValidationPlugin, ValidationContext } from '@aws-cdk/core';
 import { sync } from 'cross-spawn';
-import { IValidationPlugin, ValidationContext } from './validation';
 
 // NOTE: This class will eventually move out to a separate repository, but we're
 // keeping it here for now to make it easier to iterate on.

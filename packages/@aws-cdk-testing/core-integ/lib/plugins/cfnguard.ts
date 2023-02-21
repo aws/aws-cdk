@@ -1,5 +1,5 @@
+import { IValidationPlugin, ValidationContext } from '@aws-cdk/core';
 import { sync } from 'cross-spawn';
-import { IValidationPlugin, ValidationContext } from './validation';
 
 // Design decisions:
 // * We don't want to install cfnguard as a dependency of the CDK, so we'll just
