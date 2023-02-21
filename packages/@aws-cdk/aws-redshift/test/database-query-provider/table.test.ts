@@ -221,13 +221,14 @@ describe('update', () => {
     }));
   });
 
-  test('replaces if table name changes', async () => {
+  test('does not replace if table name changes', async () => {
     const newTableNamePrefix = 'newTableNamePrefix';
     const newResourceProperties = {
       ...resourceProperties,
       tableName: {
         ...resourceProperties.tableName,
         prefix: newTableNamePrefix,
+        generateSuffix: 'true',
       },
     };
 
@@ -235,7 +236,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${newTableNamePrefix}${requestIdTruncated}`)),
+      Sql: `ALTER TABLE ${physicalResourceId} RENAME TO ${newTableNamePrefix}${requestIdTruncated}`,
     }));
   });
 

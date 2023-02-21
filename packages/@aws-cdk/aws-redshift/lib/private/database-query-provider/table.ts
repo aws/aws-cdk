@@ -1,13 +1,13 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
+import { Column } from '../../table';
 import { executeStatement } from './redshift-data';
 import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
-import { Column } from '../../table';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
-  const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.RequestId.substring(0, 8)}` : '';
+  const tableNameSuffix = `${event.RequestId.substring(0, 8)}`;
   const tableColumns = props.tableColumns;
   const tableAndClusterProps = props;
 
@@ -87,11 +87,6 @@ async function updateTable(
     return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
   }
 
-  const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
-  if (tableNamePrefix !== oldTableNamePrefix) {
-    return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
-  }
-
   const oldTableColumns = oldResourceProperties.tableColumns;
   const columnDeletions = oldTableColumns.filter(oldColumn => (
     tableColumns.every(column => oldColumn.name !== column.name)
@@ -155,6 +150,11 @@ async function updateTable(
   }
 
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
+
+  const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
+  if (tableNamePrefix !== oldTableNamePrefix) {
+    await executeStatement(`ALTER TABLE ${tableName} RENAME TO ${tableNamePrefix + tableNameSuffix}`, tableAndClusterProps);
+  }
 
   return tableName;
 }
