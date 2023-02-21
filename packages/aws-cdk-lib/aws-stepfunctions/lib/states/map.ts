@@ -26,6 +26,25 @@ export enum MapStateMode {
   INLINE = 'INLINE'
 }
 
+
+/**
+ * Two modes of Map states are available in AWS Step Functions: INLINE AND DISTRIBUTED.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-map-process-modes.html
+ *
+ * @default INLINE
+ */
+export enum MapStateMode {
+  /**
+   * Distributed mode provides high concurrency and executes child workflows for each iteration.
+   */
+  DISTRIBUTED = 'DISTRIBUTED',
+  /**
+   * Inline mode provides limited concurrency.
+   */
+  INLINE = 'INLINE'
+}
+
 /**
  * Properties for defining a Map state
  */
