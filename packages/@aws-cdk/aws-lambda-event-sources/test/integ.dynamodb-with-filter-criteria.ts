@@ -2,8 +2,8 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import { DynamoEventSource } from '../lib';
 import { TestFunction } from './test-function';
+import { DynamoEventSource } from '../lib';
 
 const app = new cdk.App();
 

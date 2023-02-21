@@ -1,6 +1,6 @@
+import { anything, deepObjectLike, match, objectLike } from './have-resource-matchers';
 import { Assertion, JestFriendlyAssertion } from '../assertion';
 import { StackInspector } from '../inspector';
-import { anything, deepObjectLike, match, objectLike } from './have-resource-matchers';
 
 /**
  * Magic value to signify that a certain key should be absent from the property bag.

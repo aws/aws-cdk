@@ -1,5 +1,5 @@
-import { CfnCodeDeployBlueGreenHook, CfnTrafficRoutingType, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { CfnCodeDeployBlueGreenHook, CfnTrafficRoutingType, Stack } from '../lib';
 
 describe('CodeDeploy blue-green deployment Hook', () => {
   test('only renders the provided properties', () => {
