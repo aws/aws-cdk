@@ -29,7 +29,7 @@
     "@types/jest": "^27.5.2",
     "@types/license-checker": "^25.0.3",
     "@types/madge": "^5.0.0",
-    "@types/node": "18.11.18",
+    "@types/node": "18.11.19",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
     "eslint": "^8",
