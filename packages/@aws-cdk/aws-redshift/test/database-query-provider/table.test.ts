@@ -469,7 +469,7 @@ describe('update', () => {
       }));
     });
 
-    test('does not replace when differnt sortStyle: COMPOUND', async () => {
+    test('does not replace when different sortStyle: COMPOUND', async () => {
       const newEvent: AWSLambda.CloudFormationCustomResourceEvent = {
         ...event,
         OldResourceProperties: {
@@ -492,7 +492,7 @@ describe('update', () => {
       }));
     });
 
-    test('does not replace when differnt sortStyle: AUTO', async () => {
+    test('does not replace when different sortStyle: AUTO', async () => {
       const newEvent: AWSLambda.CloudFormationCustomResourceEvent = {
         ...event,
         OldResourceProperties: {
