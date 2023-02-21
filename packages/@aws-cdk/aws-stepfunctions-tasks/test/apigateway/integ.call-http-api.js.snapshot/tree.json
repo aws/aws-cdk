@@ -187,6 +187,14 @@
                 "id": "ServiceRole",
                 "path": "CallHttpApiInteg/HelloHandler/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CallHttpApiInteg/HelloHandler/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "CallHttpApiInteg/HelloHandler/ServiceRole/Resource",
@@ -278,6 +286,14 @@
                 "id": "Role",
                 "path": "CallHttpApiInteg/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "CallHttpApiInteg/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "CallHttpApiInteg/StateMachine/Role/Resource",
@@ -455,7 +471,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },
