@@ -4,6 +4,22 @@ import { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 
+
+/**
+ * X-Ray Tracing Modes (https://docs.aws.amazon.com/sns/latest/api/API_SetTopicAttributes.html)
+ */
+export enum Tracing {
+  /**
+   * SNS will respect any tracing header it receives from an upstream service.
+   * If no tracing header is received, SNS will vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true.
+   */
+  ACTIVE = 'Active',
+  /**
+   * SNS will pass through the tracing header it receives from an SNS publisher to its subscriptions.
+   */
+  PASS_THROUGH = 'PassThrough',
+}
+
 /**
  * Properties for a new SNS topic
  */
@@ -46,6 +62,13 @@ export interface TopicProps {
    * @default None
    */
   readonly fifo?: boolean;
+
+  /**
+   * Configure AWS X-Ray Tracing for SNS Topic.
+   *
+   * @default Tracing.PASS_THROUGH
+   */
+  readonly tracing?: Tracing;
 }
 
 /**
@@ -90,7 +113,7 @@ export class Topic extends TopicBase {
     if (props.fifo && props.topicName && !props.topicName.endsWith('.fifo')) {
       cfnTopicName = this.physicalName + '.fifo';
     } else if (props.fifo && !props.topicName) {
-      // Max lenght allowed by CloudFormation is 256, we subtract 5 to allow for ".fifo" suffix
+      // Max length allowed by CloudFormation is 256, we subtract 5 to allow for ".fifo" suffix
       const prefixName = Names.uniqueResourceName(this, {
         maxLength: 256 - 5,
         separator: '-',
@@ -100,12 +123,17 @@ export class Topic extends TopicBase {
       cfnTopicName = this.physicalName;
     }
 
+    if (props.fifo && Tracing.ACTIVE == props.tracing) {
+      throw new Error('Active tracing can only be enabled for standard SNS topics.');
+    }
+
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
       topicName: cfnTopicName,
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
       contentBasedDeduplication: props.contentBasedDeduplication,
       fifoTopic: props.fifo,
+      tracingConfig: props.tracing,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

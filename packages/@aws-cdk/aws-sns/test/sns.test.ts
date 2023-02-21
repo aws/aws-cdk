@@ -162,8 +162,37 @@ describe('Topic', () => {
       expect(() => new sns.Topic(stack, 'MyTopic', {
         contentBasedDeduplication: true,
       })).toThrow(/Content based deduplication can only be enabled for FIFO SNS topics./);
+    });
 
+    test('throws with active tracing on fifo topics', () => {
+      const stack = new cdk.Stack();
 
+      expect(() => new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+        tracing: sns.Tracing.ACTIVE,
+      })).toThrow(/Active tracing can only be enabled for standard SNS topics./);
+    });
+
+    test('with active tracing', () => {
+      const stack = new cdk.Stack();
+      new sns.Topic(stack, 'MyTopic', {
+        tracing: sns.Tracing.ACTIVE,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        TracingConfig: 'Active',
+      });
+    });
+
+    test('with passthrough tracing', () => {
+      const stack = new cdk.Stack();
+      new sns.Topic(stack, 'MyTopic', {
+        tracing: sns.Tracing.PASS_THROUGH,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        TracingConfig: 'PassThrough',
+      });
     });
   });
 
@@ -442,7 +471,7 @@ describe('Topic', () => {
     }));
 
     // THEN
-    expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one 'action' or 'notAction'/);
 
   });
 

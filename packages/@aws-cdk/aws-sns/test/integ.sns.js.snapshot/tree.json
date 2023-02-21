@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "SNSInteg": {
         "id": "SNSInteg",
         "path": "SNSInteg",
@@ -97,17 +89,105 @@
               "fqn": "@aws-cdk/aws-sns.Topic",
               "version": "0.0.0"
             }
+          },
+          "MyPassThroughTracingTopic": {
+            "id": "MyPassThroughTracingTopic",
+            "path": "SNSInteg/MyPassThroughTracingTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSInteg/MyPassThroughTracingTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "passThroughTracingDisplayName",
+                    "kmsMasterKeyId": {
+                      "Fn::GetAtt": [
+                        "CustomKey1E6D0D07",
+                        "Arn"
+                      ]
+                    },
+                    "topicName": "passThroughTracingTopic",
+                    "tracingConfig": "PassThrough"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "MyActiveTracingTopic": {
+            "id": "MyActiveTracingTopic",
+            "path": "SNSInteg/MyActiveTracingTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSInteg/MyActiveTracingTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "activeTracingDisplayName",
+                    "kmsMasterKeyId": {
+                      "Fn::GetAtt": [
+                        "CustomKey1E6D0D07",
+                        "Arn"
+                      ]
+                    },
+                    "topicName": "activeTracingTopic",
+                    "tracingConfig": "Active"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "SNSInteg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "SNSInteg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.249"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

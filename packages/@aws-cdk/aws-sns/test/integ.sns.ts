@@ -1,6 +1,6 @@
 import { Key } from '@aws-cdk/aws-kms';
 import { App, Stack, StackProps } from '@aws-cdk/core';
-import { Topic } from '../lib';
+import { Topic, Tracing } from '../lib';
 
 class SNSInteg extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -12,6 +12,20 @@ class SNSInteg extends Stack {
       topicName: 'fooTopic',
       displayName: 'fooDisplayName',
       masterKey: key,
+    });
+
+    new Topic(this, 'MyPassThroughTracingTopic', {
+      topicName: 'passThroughTracingTopic',
+      displayName: 'passThroughTracingDisplayName',
+      masterKey: key,
+      tracing: Tracing.PASS_THROUGH,
+    });
+
+    new Topic(this, 'MyActiveTracingTopic', {
+      topicName: 'activeTracingTopic',
+      displayName: 'activeTracingDisplayName',
+      masterKey: key,
+      tracing: Tracing.ACTIVE,
     });
   }
 }

@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "SNSInteg.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/abc29d4f06b918fce7d7beea18c92c833e7e6266f0863b256fd6927b69eb595f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c5edfebe50d01f486fd9994a8b1b24f46e582fd4869fa4999970d215ac088b43.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,6 +45,18 @@
             "data": "MyTopic86869434"
           }
         ],
+        "/SNSInteg/MyPassThroughTracingTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPassThroughTracingTopic1662EDED"
+          }
+        ],
+        "/SNSInteg/MyActiveTracingTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyActiveTracingTopicD5380E06"
+          }
+        ],
         "/SNSInteg/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -65,6 +71,12 @@
         ]
       },
       "displayName": "SNSInteg"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

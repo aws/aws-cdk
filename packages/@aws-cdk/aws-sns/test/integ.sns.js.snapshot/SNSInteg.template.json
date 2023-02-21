@@ -47,6 +47,34 @@
     },
     "TopicName": "fooTopic"
    }
+  },
+  "MyPassThroughTracingTopic1662EDED": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "passThroughTracingDisplayName",
+    "KmsMasterKeyId": {
+     "Fn::GetAtt": [
+      "CustomKey1E6D0D07",
+      "Arn"
+     ]
+    },
+    "TopicName": "passThroughTracingTopic",
+    "TracingConfig": "PassThrough"
+   }
+  },
+  "MyActiveTracingTopicD5380E06": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "activeTracingDisplayName",
+    "KmsMasterKeyId": {
+     "Fn::GetAtt": [
+      "CustomKey1E6D0D07",
+      "Arn"
+     ]
+    },
+    "TopicName": "activeTracingTopic",
+    "TracingConfig": "Active"
+   }
   }
  },
  "Parameters": {

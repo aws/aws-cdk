@@ -109,6 +109,20 @@ new sns.Subscription(this, 'Subscription', {
 });
 ```
 
+## X-Ray Tracing
+
+X-Ray can be used SNS to trace and analyze requests as they travel through SNS topics to SNS-supported subscription services.
+
+Enabling Active X-Ray tracing requires configuring an X-Ray resource policy which allows SNS to send trace data to X-Ray. See [Amazon SNS and AWS X-Ray docs](https://docs.aws.amazon.com/xray/latest/devguide/xray-services-sns.html) for examples for X-Ray resource-based policies.
+
+Example of SNS topic with Active X-Ray tracing.
+
+```ts
+new sns.Topic(this, 'Topic', {
+  tracing: sns.Tracing.ACTIVE,
+});
+```
+
 ## DLQ setup for SNS Subscription
 
 CDK can attach provided Queue as DLQ for your SNS subscription.
