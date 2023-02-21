@@ -179,7 +179,7 @@ export interface ValidationViolationResourceAware extends ValidationViolation {
 /**
  * Validation produced by the validation plugin, in construct terms.
  */
-export interface ValidationViolationResourceAware extends ValidationViolation {
+export interface ValidationViolationConstructAware extends ValidationViolation {
 
   /**
    * The constructs violating this rule.
