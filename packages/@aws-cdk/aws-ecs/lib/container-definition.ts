@@ -1087,9 +1087,16 @@ export interface PortMapping {
 /**
  * PortMap ValueObjectClass having by ContainerDefinition
  */
-class PortMap {
+export class PortMap {
 
+  /**
+   * The networking mode to use for the containers in the task.
+   */
   readonly networkmode: NetworkMode;
+
+  /**
+   * Port mappings allow containers to access ports on the host container instance to send or receive traffic.
+   */
   readonly portmapping: PortMapping;
 
   constructor(networkmode: NetworkMode, pm: PortMapping) {
@@ -1097,6 +1104,10 @@ class PortMap {
     this.portmapping = pm;
   }
 
+  /**
+   * validate invalid portmapping and networkmode parameters.
+   * throw Error when invalid parameters.
+   */
   public validate(): void {
     if (!this.isvalidPortName()) {
       throw new Error('Port mapping name cannot be an empty string.');
@@ -1131,7 +1142,14 @@ class PortMap {
  * ServiceConnect ValueObjectClass having by ContainerDefinition
  */
 class ServiceConnect {
+  /**
+   * Port mappings allow containers to access ports on the host container instance to send or receive traffic.
+   */
   readonly portmapping: PortMapping;
+
+  /**
+   * The networking mode to use for the containers in the task.
+   */
   readonly networkmode: NetworkMode;
 
   constructor(networkmode: NetworkMode, pm: PortMapping) {
@@ -1139,6 +1157,10 @@ class ServiceConnect {
     this.networkmode = networkmode;
   }
 
+  /**
+   * Judge parameters can be serviceconnect logick.
+   * If parameters can be serviceConnect return true.
+   */
   public isServiceConnect() :boolean {
     const hasPortname = this.portmapping.name;
     const hasAppProtcol = this.portmapping.appProtocol;
@@ -1146,6 +1168,10 @@ class ServiceConnect {
     return false;
   }
 
+  /**
+   * Judge serviceconnect parametes are valid.
+   * If invalid, throw Error.
+   */
   public validate() :void {
     if (!this.isValidNetworkmode()) {
       throw new Error(`Service connect related port mapping fields 'name' and 'appProtocol' are not supported for network mode ${this.networkmode}`);
