@@ -105,7 +105,7 @@ export abstract class MatchmakingRuleSetBase extends cdk.Resource implements IMa
       namespace: 'AWS/GameLift',
       metricName: metricName,
       dimensionsMap: {
-        FleetId: this.matchmakingRuleSetName,
+        MatchmakingRuleSetName: this.matchmakingRuleSetName,
       },
       ...props,
     }).attachTo(this);

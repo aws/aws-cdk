@@ -38,8 +38,9 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
     timeout: cdk.Duration.minutes(5),
     notifyDelayAfter: cdk.Duration.minutes(1),
     defaultArguments: {
-      arg1: 'value1',
-      arg2: 'value2',
+      'arg1': 'value1',
+      'arg2': 'value2',
+      '--conf': 'valueConf',
     },
     sparkUI: {
       enabled: true,
@@ -62,6 +63,8 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
       glueVersion,
       script,
     }),
+    workerType: glue.WorkerType.G_025X,
+    workerCount: 10,
     defaultArguments: {
       arg1: 'value1',
       arg2: 'value2',
@@ -95,6 +98,24 @@ new glue.Job(stack, 'ShellJob39', {
     pythonVersion: glue.PythonVersion.THREE_NINE,
     script,
   }),
+  defaultArguments: {
+    arg1: 'value1',
+    arg2: 'value2',
+  },
+  tags: {
+    key: 'value',
+  },
+});
+
+new glue.Job(stack, 'RayJob', {
+  jobName: 'RayJob',
+  executable: glue.JobExecutable.pythonRay({
+    glueVersion: glue.GlueVersion.V4_0,
+    pythonVersion: glue.PythonVersion.THREE_NINE,
+    script,
+  }),
+  workerType: glue.WorkerType.Z_2X,
+  workerCount: 2,
   defaultArguments: {
     arg1: 'value1',
     arg2: 'value2',

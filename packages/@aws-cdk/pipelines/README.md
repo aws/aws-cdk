@@ -525,12 +525,15 @@ pipeline.
 This will encrypt the artifact bucket(s), but incurs a cost for maintaining the
 KMS key.
 
+You may also wish to enable automatic key rotation for the created KMS key.
+
 Example:
 
 ```ts
 const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   // Encrypt artifacts, required for cross-account deployments
   crossAccountKeys: true,
+  enableKeyRotation: true, // optional
   synth: new pipelines.ShellStep('Synth', {
     input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
       connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
@@ -830,7 +833,7 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
   ) {
     super('MyJenkinsStep');
 
-    // This is necessary if your step accepts parametres, like environment variables,
+    // This is necessary if your step accepts parameters, like environment variables,
     // that may contain outputs from other steps. It doesn't matter what the
     // structure is, as long as it contains the values that may contain outputs.
     this.discoverReferencedOutputs({
@@ -861,27 +864,80 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
 }
 ```
 
+Another example, adding a lambda step referencing outputs from a stack:
+
+```ts
+class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActionFactory {
+  private stackOutputReference: pipelines.StackOutputReference
+
+  constructor(
+    private readonly function: lambda.Function,
+    stackOutput: CfnOutput,
+  ) {
+    super('MyLambdaStep');
+    this.stackOutputReference = pipelines.StackOutputReference.fromCfnOutput(stackOutput);
+  }
+
+  public produceAction(stage: codepipeline.IStage, options: pipelines.ProduceActionOptions): pipelines.CodePipelineActionFactoryResult {
+
+    stage.addAction(new cpactions.LambdaInvokeAction({
+      actionName: options.actionName,
+      runOrder: options.runOrder,
+      // Map the reference to the variable name the CDK has generated for you.
+      userParameters: {stackOutput: options.stackOutputsMap.toCodePipeline(this.stackOutputReference)},
+      lambda: this.function,
+    }));
+
+    return { runOrdersConsumed: 1 };
+  }
+
+  /**
+   * Expose stack output references, letting the CDK know
+   * we want these variables accessible for this step.
+   */
+  public get consumedStackOutputs(): pipelines.StackOutputReference[] {
+    return [this.stackOutputReference];
+  }
+}
+```
+
 ### Using an existing AWS Codepipeline
 
 If you wish to use an existing `CodePipeline.Pipeline` while using the modern API's
 methods and classes, you can pass in the existing `CodePipeline.Pipeline` to be built upon
 instead of having the `pipelines.CodePipeline` construct create a new `CodePipeline.Pipeline`.
 This also gives you more direct control over the underlying `CodePipeline.Pipeline` construct
-if the way the modern API creates it doesn't allow for desired configurations.
+if the way the modern API creates it doesn't allow for desired configurations. Use `CodePipelineFileset` to convert CodePipeline **artifacts** into CDK Pipelines **file sets**,
+that can be used everywhere a file set or file set producer is expected.
 
-Here's an example of passing in an existing pipeline:
+Here's an example of passing in an existing pipeline and using a *source* that's already
+in the pipeline:
 
 ```ts
 declare const codePipeline: codepipeline.Pipeline;
 
+const sourceArtifact = new codepipeline.Artifact('MySourceArtifact');
+
 const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  codePipeline: codePipeline,
   synth: new pipelines.ShellStep('Synth', {
-    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
-      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
-    }),
+    input: pipelines.CodePipelineFileSet.fromArtifact(sourceArtifact),
     commands: ['npm ci','npm run build','npx cdk synth'],
   }),
+});
+```
+
+If your existing pipeline already provides a synth step, pass the existing
+artifact in place of the `synth` step:
+
+```ts
+declare const codePipeline: codepipeline.Pipeline;
+
+const buildArtifact = new codepipeline.Artifact('MyBuildArtifact');
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   codePipeline: codePipeline,
+  synth: pipelines.CodePipelineFileSet.fromArtifact(buildArtifact),
 });
 ```
 

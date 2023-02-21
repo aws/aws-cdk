@@ -872,24 +872,6 @@ export class NoJsiiDep extends ValidationRule {
   }
 }
 
-/**
- * Verifies that the expected versions of node will be supported.
- */
-export class NodeCompatibility extends ValidationRule {
-  public readonly name = 'dependencies/node-version';
-
-  public validate(pkg: PackageJson): void {
-    const atTypesNode = pkg.getDevDependency('@types/node');
-    if (atTypesNode && !atTypesNode.startsWith('^14.')) {
-      pkg.report({
-        ruleName: this.name,
-        message: `packages must support node version 14 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^14.18.22'),
-      });
-    }
-  }
-}
-
 function isCdkModuleName(name: string) {
   return !!name.match(/^@aws-cdk\//);
 }
@@ -1676,6 +1658,7 @@ export class UbergenPackageVisibility extends ValidationRule {
     'cdk',
     'cdk-assets',
     '@aws-cdk/integ-runner',
+    '@aws-cdk-testing/cli-integ',
   ];
 
   public validate(pkg: PackageJson): void {

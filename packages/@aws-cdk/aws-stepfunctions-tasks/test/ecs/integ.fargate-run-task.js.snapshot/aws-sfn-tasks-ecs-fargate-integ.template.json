@@ -775,7 +775,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"FargateTask\"},\"FargateTask\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\",\"Timeout\":900},\"Next\":\"FargateTask\"},\"FargateTask\":{\"End\":true,\"Type\":\"Task\",\"TimeoutSecondsPath\":\"$.Timeout\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -809,7 +809,9 @@
    "DependsOn": [
     "StateMachineRoleDefaultPolicyDF1E6607",
     "StateMachineRoleB840431D"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

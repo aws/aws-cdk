@@ -64,6 +64,15 @@ export interface DockerImageSource {
   readonly dockerBuildArgs?: { [name: string]: string };
 
   /**
+   * Additional build secrets
+   *
+   * Only allowed when `directory` is set.
+   *
+   * @default - No additional build secrets
+   */
+  readonly dockerBuildSecrets?: { [name: string]: string };
+
+  /**
    * Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.
    *
    * Specify this property to build images on a specific networking mode.
@@ -80,6 +89,14 @@ export interface DockerImageSource {
    * @default - current machine platform
    */
   readonly platform?: string;
+
+  /**
+   * Outputs
+   *
+   * @default - no outputs are passed to the build command (default outputs are used)
+   * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
+   */
+  readonly dockerOutputs?: string[];
 }
 
 /**

@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
+import { Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CertificateProps, ICertificate } from './certificate';
 import { CertificateBase } from './certificate-base';
@@ -65,6 +66,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * validated using DNS validation against the specified Route 53 hosted zone.
  *
  * @resource AWS::CertificateManager::Certificate
+ * @deprecated use {@link Certificate} instead
  */
 export class DnsValidatedCertificate extends CertificateBase implements ICertificate, cdk.ITaggable {
   public readonly certificateArn: string;
@@ -87,7 +89,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.region = props.region;
     this.domainName = props.domainName;
     // check if domain name is 64 characters or less
-    if (this.domainName.length > 64) {
+    if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
       throw new Error('Domain name must be 64 characters or less');
     }
     this.normalizedZoneName = props.hostedZone.zoneName;

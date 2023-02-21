@@ -6,7 +6,6 @@ import subprocess
 import shutil
 import tempfile
 import zipfile
-from urllib.parse import urlparse, unquote
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -82,7 +81,7 @@ def helm_handler(event, context):
 
         if repository is not None and repository.startswith('oci://'):
             tmpdir = tempfile.TemporaryDirectory()
-            chart_dir = get_chart_from_oci(tmpdir.name, release, repository, version)
+            chart_dir = get_chart_from_oci(tmpdir.name, repository, version)
             chart = chart_dir
 
         helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
@@ -95,26 +94,25 @@ def helm_handler(event, context):
 
 def get_oci_cmd(repository, version):
     # Generates OCI command based on pattern. Public ECR vs Private ECR are treated differently.
-    cmnd = []
-    private_ecr_pattern = '\d+.dkr.ecr.[a-z]+-[a-z]+-\d.amazonaws.com'
-    public_ecr = 'public.ecr.aws'
+    private_ecr_pattern = 'oci://(?P<registry>\d+.dkr.ecr.(?P<region>[a-z]+-[a-z]+-\d).amazonaws.com)*'
+    public_ecr_pattern = 'oci://(?P<registry>public.ecr.aws)*'
 
-    registry = repository.rsplit('/', 1)[0].replace('oci://', '')
+    private_registry = re.match(private_ecr_pattern, repository).groupdict()
+    public_registry = re.match(public_ecr_pattern, repository).groupdict()
 
-    if re.fullmatch(private_ecr_pattern, registry) is not None:
+    if private_registry['registry'] is not None:
         logger.info("Found AWS private repository")
-        region = registry.replace('.amazonaws.com', '').split('.')[-1]
         cmnd = [
-            f"aws ecr get-login-password --region {region} | " \
-            f"helm registry login --username AWS --password-stdin {registry}; helm pull {repository} --version {version} --untar"
+            f"aws ecr get-login-password --region {private_registry['region']} | " \
+            f"helm registry login --username AWS --password-stdin {private_registry['registry']}; helm pull {repository} --version {version} --untar"
             ]
-    elif registry.startswith(public_ecr):
+    elif public_registry['registry'] is not None:
         logger.info("Found AWS public repository, will use default region as deployment")
         region = os.environ.get('AWS_REGION', 'us-east-1')
 
         cmnd = [
             f"aws ecr-public get-login-password --region {region} | " \
-            f"helm registry login --username AWS --password-stdin {public_ecr}; helm pull {repository} --version {version} --untar"
+            f"helm registry login --username AWS --password-stdin {public_registry['registry']}; helm pull {repository} --version {version} --untar"
             ]
     else:
         logger.error("OCI repository format not recognized, falling back to helm pull")
@@ -123,7 +121,7 @@ def get_oci_cmd(repository, version):
     return cmnd
 
 
-def get_chart_from_oci(tmpdir, release, repository = None, version = None):
+def get_chart_from_oci(tmpdir, repository = None, version = None):
 
     cmnd = get_oci_cmd(repository, version)
 
@@ -135,7 +133,9 @@ def get_chart_from_oci(tmpdir, release, repository = None, version = None):
             output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, shell=True)
             logger.info(output)
 
-            return os.path.join(tmpdir, release)
+            # effectively returns "$tmpDir/$lastPartOfOCIUrl", because this is how helm pull saves OCI artifact. 
+            # Eg. if we have oci://9999999999.dkr.ecr.us-east-1.amazonaws.com/foo/bar/pet-service repository, helm saves artifact under $tmpDir/pet-service
+            return os.path.join(tmpdir, repository.rpartition('/')[-1])
         except subprocess.CalledProcessError as exc:
             output = exc.output
             if b'Broken pipe' in output:

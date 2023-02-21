@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "DefaultIamRoleInteg/DefaultTest": {
+      "stacks": [
+        "redshift-defaultiamrole-integ"
+      ],
+      "assertionStack": "DefaultIamRoleInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "DefaultIamRoleIntegDefaultTestDeployAssert161B8D72"
+    }
+  }
+}

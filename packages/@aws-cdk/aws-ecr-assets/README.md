@@ -56,6 +56,9 @@ the `buildArgs` property. It is recommended to skip hashing of `buildArgs` for
 values that can change between different machines to maintain a consistent
 asset hash.
 
+Additionally, you can supply `buildSecrets`. Your system must have Buildkit
+enabled, see https://docs.docker.com/build/buildkit/.
+
 ```ts
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
@@ -103,6 +106,18 @@ import { DockerImageAsset, Platform } from '@aws-cdk/aws-ecr-assets';
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   platform: Platform.LINUX_ARM64,
+})
+```
+
+You can optionally pass an array of outputs to the `docker build` command by specifying
+the `outputs` property:
+
+```ts
+import { DockerImageAsset, Platform } from '@aws-cdk/aws-ecr-assets';
+
+const asset = new DockerImageAsset(this, 'MyBuildImage', {
+  directory: path.join(__dirname, 'my-image'),
+  outputs: ['type=local,dest=out'],
 })
 ```
 

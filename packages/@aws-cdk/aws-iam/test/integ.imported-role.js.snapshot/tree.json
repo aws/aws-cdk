@@ -1,0 +1,400 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-iam-imported-role-role-stack": {
+        "id": "integ-iam-imported-role-role-stack",
+        "path": "integ-iam-imported-role-role-stack",
+        "children": {
+          "TestRole": {
+            "id": "TestRole",
+            "path": "integ-iam-imported-role-role-stack/TestRole",
+            "children": {
+              "ImportTestRole": {
+                "id": "ImportTestRole",
+                "path": "integ-iam-imported-role-role-stack/TestRole/ImportTestRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-imported-role-role-stack/TestRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "sqs.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "integ-iam-imported-role-role-stack/Exports",
+            "children": {
+              "Output{\"Ref\":\"TestRole6C9272DF\"}": {
+                "id": "Output{\"Ref\":\"TestRole6C9272DF\"}",
+                "path": "integ-iam-imported-role-role-stack/Exports/Output{\"Ref\":\"TestRole6C9272DF\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.249"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-iam-imported-role-role-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-iam-imported-role-role-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-iam-imported-role-1": {
+        "id": "integ-iam-imported-role-1",
+        "path": "integ-iam-imported-role-1",
+        "children": {
+          "Role": {
+            "id": "Role",
+            "path": "integ-iam-imported-role-1/Role",
+            "children": {
+              "Policyintegiamimportedrole1RoleC415C68D": {
+                "id": "Policyintegiamimportedrole1RoleC415C68D",
+                "path": "integ-iam-imported-role-1/Role/Policyintegiamimportedrole1RoleC415C68D",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-iam-imported-role-1/Role/Policyintegiamimportedrole1RoleC415C68D/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Effect": "Allow",
+                              "Resource": "arn:aws:sqs:*:*:firstQueue"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "Policyintegiamimportedrole1RoleC415C68D",
+                        "roles": [
+                          {
+                            "Fn::ImportValue": "integ-iam-imported-role-role-stack:ExportsOutputRefTestRole6C9272DF9DD89F08"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-iam-imported-role-1/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-iam-imported-role-1/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-iam-imported-role-2": {
+        "id": "integ-iam-imported-role-2",
+        "path": "integ-iam-imported-role-2",
+        "children": {
+          "Role": {
+            "id": "Role",
+            "path": "integ-iam-imported-role-2/Role",
+            "children": {
+              "Policyintegiamimportedrole2Role396F2F48": {
+                "id": "Policyintegiamimportedrole2Role396F2F48",
+                "path": "integ-iam-imported-role-2/Role/Policyintegiamimportedrole2Role396F2F48",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-iam-imported-role-2/Role/Policyintegiamimportedrole2Role396F2F48/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Effect": "Allow",
+                              "Resource": "arn:aws:sqs:*:*:secondQueue"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "Policyintegiamimportedrole2Role396F2F48",
+                        "roles": [
+                          {
+                            "Fn::ImportValue": "integ-iam-imported-role-role-stack:ExportsOutputRefTestRole6C9272DF9DD89F08"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-iam-imported-role-2/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-iam-imported-role-2/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ImportedRoleTestAssertions": {
+        "id": "ImportedRoleTestAssertions",
+        "path": "ImportedRoleTestAssertions",
+        "children": {
+          "AwsApiCallIAMlistRolePolicies": {
+            "id": "AwsApiCallIAMlistRolePolicies",
+            "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistRolePolicies",
+            "children": {
+              "SdkProvider": {
+                "id": "SdkProvider",
+                "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistRolePolicies/SdkProvider",
+                "children": {
+                  "AssertionsProvider": {
+                    "id": "AssertionsProvider",
+                    "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistRolePolicies/SdkProvider/AssertionsProvider",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.249"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistRolePolicies/Default",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistRolePolicies/Default/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              },
+              "AssertionResults": {
+                "id": "AssertionResults",
+                "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistRolePolicies/AssertionResults",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+              "version": "0.0.0"
+            }
+          },
+          "SingletonFunction1488541a7b23466481b69b4408076b81": {
+            "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+            "path": "ImportedRoleTestAssertions/SingletonFunction1488541a7b23466481b69b4408076b81",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "ImportedRoleTestAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "ImportedRoleTestAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "ImportedRoleTestAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.249"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ImportedRoleTestAssertions/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ImportedRoleTestAssertions/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ImportedRoleTest": {
+        "id": "ImportedRoleTest",
+        "path": "ImportedRoleTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ImportedRoleTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ImportedRoleTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.249"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.249"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

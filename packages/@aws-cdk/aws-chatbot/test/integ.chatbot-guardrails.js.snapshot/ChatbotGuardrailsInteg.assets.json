@@ -1,0 +1,19 @@
+{
+  "version": "29.0.0",
+  "files": {
+    "6c1ea5243130449f4b215f7eac487f2dd07715c6751857440bbbfeb883e736ce": {
+      "source": {
+        "path": "ChatbotGuardrailsInteg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6c1ea5243130449f4b215f7eac487f2dd07715c6751857440bbbfeb883e736ce.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

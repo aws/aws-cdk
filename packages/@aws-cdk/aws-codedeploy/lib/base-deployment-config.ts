@@ -24,7 +24,7 @@ export interface IBaseDeploymentConfig {
 }
 
 /**
- * Construction properties of {@link BaseDeploymentConfig}.
+ * Construction properties of `BaseDeploymentConfig`.
  */
 export interface BaseDeploymentConfigOptions {
   /**

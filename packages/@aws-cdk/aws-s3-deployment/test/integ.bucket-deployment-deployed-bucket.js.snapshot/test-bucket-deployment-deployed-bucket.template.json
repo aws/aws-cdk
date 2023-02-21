@@ -1,0 +1,535 @@
+{
+ "Resources": {
+  "Destination920A3C57": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     },
+     {
+      "Key": "aws-cdk:cr-owned:4b49afe7",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DestinationPolicy7982387E": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "Destination920A3C57"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Destination920A3C57",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Destination920A3C57",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "DestinationAutoDeleteObjectsCustomResource15E926BA": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "Destination920A3C57"
+    }
+   },
+   "DependsOn": [
+    "DestinationPolicy7982387E"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "33e2651435a0d472a75c1e033c9832b21321d9e56711926b04c5705e5f63874c.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "Destination920A3C57"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
+  "DeployMe5AwsCliLayerF0F79631": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "DeployMe5CustomResource44BEE629": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     }
+    ],
+    "SourceObjectKeys": [
+     "a94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cb.zip"
+    ],
+    "DestinationBucketName": {
+     "Ref": "Destination920A3C57"
+    },
+    "RetainOnDelete": false,
+    "Prune": true,
+    "DestinationBucketArn": {
+     "Fn::GetAtt": [
+      "Destination920A3C57",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Destination920A3C57",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Destination920A3C57",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+    "Roles": [
+     {
+      "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+     }
+    ]
+   }
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "2bc265c5e0569aeb24a6349c15bd54e76e845892376515e036627ab0cc70bb64.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "DeployMe5AwsCliLayerF0F79631"
+     }
+    ],
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportWebsiteUrl": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::Select": [
+        0,
+        {
+         "Fn::Split": [
+          "/",
+          {
+           "Fn::Select": [
+            5,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Fn::GetAtt": [
+                "DeployMe5CustomResource44BEE629",
+                "DestinationBucketArn"
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".",
+      {
+       "Fn::FindInMap": [
+        "S3staticwebsiteMap",
+        {
+         "Ref": "AWS::Region"
+        },
+        "endpoint"
+       ]
+      }
+     ]
+    ]
+   },
+   "Export": {
+    "Name": "WebsiteUrl"
+   }
+  }
+ },
+ "Mappings": {
+  "S3staticwebsiteMap": {
+   "af-south-1": {
+    "endpoint": "s3-website.af-south-1.amazonaws.com"
+   },
+   "ap-east-1": {
+    "endpoint": "s3-website.ap-east-1.amazonaws.com"
+   },
+   "ap-northeast-1": {
+    "endpoint": "s3-website-ap-northeast-1.amazonaws.com"
+   },
+   "ap-northeast-2": {
+    "endpoint": "s3-website.ap-northeast-2.amazonaws.com"
+   },
+   "ap-northeast-3": {
+    "endpoint": "s3-website.ap-northeast-3.amazonaws.com"
+   },
+   "ap-south-1": {
+    "endpoint": "s3-website.ap-south-1.amazonaws.com"
+   },
+   "ap-south-2": {
+    "endpoint": "s3-website.ap-south-2.amazonaws.com"
+   },
+   "ap-southeast-1": {
+    "endpoint": "s3-website-ap-southeast-1.amazonaws.com"
+   },
+   "ap-southeast-2": {
+    "endpoint": "s3-website-ap-southeast-2.amazonaws.com"
+   },
+   "ap-southeast-3": {
+    "endpoint": "s3-website.ap-southeast-3.amazonaws.com"
+   },
+   "ca-central-1": {
+    "endpoint": "s3-website.ca-central-1.amazonaws.com"
+   },
+   "cn-north-1": {
+    "endpoint": "s3-website.cn-north-1.amazonaws.com.cn"
+   },
+   "cn-northwest-1": {
+    "endpoint": "s3-website.cn-northwest-1.amazonaws.com.cn"
+   },
+   "eu-central-1": {
+    "endpoint": "s3-website.eu-central-1.amazonaws.com"
+   },
+   "eu-central-2": {
+    "endpoint": "s3-website.eu-central-2.amazonaws.com"
+   },
+   "eu-north-1": {
+    "endpoint": "s3-website.eu-north-1.amazonaws.com"
+   },
+   "eu-south-1": {
+    "endpoint": "s3-website.eu-south-1.amazonaws.com"
+   },
+   "eu-south-2": {
+    "endpoint": "s3-website.eu-south-2.amazonaws.com"
+   },
+   "eu-west-1": {
+    "endpoint": "s3-website-eu-west-1.amazonaws.com"
+   },
+   "eu-west-2": {
+    "endpoint": "s3-website.eu-west-2.amazonaws.com"
+   },
+   "eu-west-3": {
+    "endpoint": "s3-website.eu-west-3.amazonaws.com"
+   },
+   "me-central-1": {
+    "endpoint": "s3-website.me-central-1.amazonaws.com"
+   },
+   "me-south-1": {
+    "endpoint": "s3-website.me-south-1.amazonaws.com"
+   },
+   "sa-east-1": {
+    "endpoint": "s3-website-sa-east-1.amazonaws.com"
+   },
+   "us-east-1": {
+    "endpoint": "s3-website-us-east-1.amazonaws.com"
+   },
+   "us-east-2": {
+    "endpoint": "s3-website.us-east-2.amazonaws.com"
+   },
+   "us-gov-east-1": {
+    "endpoint": "s3-website.us-gov-east-1.amazonaws.com"
+   },
+   "us-gov-west-1": {
+    "endpoint": "s3-website-us-gov-west-1.amazonaws.com"
+   },
+   "us-iso-east-1": {
+    "endpoint": "s3-website.us-iso-east-1.c2s.ic.gov"
+   },
+   "us-iso-west-1": {
+    "endpoint": "s3-website.us-iso-west-1.c2s.ic.gov"
+   },
+   "us-isob-east-1": {
+    "endpoint": "s3-website.us-isob-east-1.sc2s.sgov.gov"
+   },
+   "us-west-1": {
+    "endpoint": "s3-website-us-west-1.amazonaws.com"
+   },
+   "us-west-2": {
+    "endpoint": "s3-website-us-west-2.amazonaws.com"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

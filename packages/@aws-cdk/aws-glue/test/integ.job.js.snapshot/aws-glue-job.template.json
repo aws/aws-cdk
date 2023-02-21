@@ -173,7 +173,8 @@
       ]
      },
      "arg1": "value1",
-     "arg2": "value2"
+     "arg2": "value2",
+     "--conf": "valueConf"
     },
     "ExecutionProperty": {
      "MaxConcurrentRuns": 2
@@ -349,9 +350,11 @@
     },
     "GlueVersion": "2.0",
     "Name": "StreamingJob2.0",
+    "NumberOfWorkers": 10,
     "Tags": {
      "key": "value"
-    }
+    },
+    "WorkerType": "G.025X"
    }
   },
   "EtlJob30ServiceRole8E675579": {
@@ -527,7 +530,8 @@
       ]
      },
      "arg1": "value1",
-     "arg2": "value2"
+     "arg2": "value2",
+     "--conf": "valueConf"
     },
     "ExecutionProperty": {
      "MaxConcurrentRuns": 2
@@ -703,9 +707,11 @@
     },
     "GlueVersion": "3.0",
     "Name": "StreamingJob3.0",
+    "NumberOfWorkers": 10,
     "Tags": {
      "key": "value"
-    }
+    },
+    "WorkerType": "G.025X"
    }
   },
   "EtlJob40ServiceRoleBDD9998A": {
@@ -881,7 +887,8 @@
       ]
      },
      "arg1": "value1",
-     "arg2": "value2"
+     "arg2": "value2",
+     "--conf": "valueConf"
     },
     "ExecutionProperty": {
      "MaxConcurrentRuns": 2
@@ -1057,9 +1064,11 @@
     },
     "GlueVersion": "4.0",
     "Name": "StreamingJob4.0",
+    "NumberOfWorkers": 10,
     "Tags": {
      "key": "value"
-    }
+    },
+    "WorkerType": "G.025X"
    }
   },
   "ShellJobServiceRoleCF97BC4B": {
@@ -1310,6 +1319,133 @@
     "Tags": {
      "key": "value"
     }
+   }
+  },
+  "RayJobServiceRole51433C3D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "RayJobServiceRoleDefaultPolicyA615640D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RayJobServiceRoleDefaultPolicyA615640D",
+    "Roles": [
+     {
+      "Ref": "RayJobServiceRole51433C3D"
+     }
+    ]
+   }
+  },
+  "RayJob2F7864D9": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueray",
+     "PythonVersion": "3.9",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "RayJobServiceRole51433C3D",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "GlueVersion": "4.0",
+    "Name": "RayJob",
+    "NumberOfWorkers": 2,
+    "Tags": {
+     "key": "value"
+    },
+    "WorkerType": "Z.2X"
    }
   }
  },

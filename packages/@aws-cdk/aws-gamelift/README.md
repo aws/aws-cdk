@@ -52,6 +52,44 @@ configuration or game server fleet management system.
 
 ## GameLift FlexMatch
 
+### Defining a Matchmaking configuration
+
+FlexMatch is available both as a GameLift game hosting solution (including
+Realtime Servers) and as a standalone matchmaking service. To set up a
+FlexMatch matchmaker to process matchmaking requests, you have to create a
+matchmaking configuration based on a RuleSet.
+
+More details about matchmaking ruleSet are covered [below](#matchmaking-ruleset).
+
+There is two types of Matchmaking configuration:
+
+Through a game session queue system to let FlexMatch forms matches and uses the specified GameLift queue to start a game session for the match.
+
+```ts
+declare const queue: gamelift.GameSessionQueue;
+declare const ruleSet: gamelift.MatchmakingRuleSet;
+
+new gamelift.QueuedMatchmakingConfiguration(this, 'QueuedMatchmakingConfiguration', {
+  matchmakingConfigurationName: 'test-queued-config-name',
+  gameSessionQueues: [queue],
+  ruleSet: ruleSet,
+});
+```
+
+Or through a standalone version to let FlexMatch forms matches and returns match information in an event.
+
+```ts
+declare const ruleSet: gamelift.MatchmakingRuleSet;
+
+new gamelift.StandaloneMatchmakingConfiguration(this, 'StandaloneMatchmaking', {
+  matchmakingConfigurationName: 'test-standalone-config-name',
+  ruleSet: ruleSet,
+});
+```
+
+
+More details about Game session queue are covered [below](#game-session-queue).
+
 ### Matchmaking RuleSet
 
 Every FlexMatch matchmaker must have a rule set. The rule set determines the

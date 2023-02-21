@@ -155,6 +155,13 @@
                         "type": "string"
                     }
                 },
+                "dockerBuildSecrets": {
+                    "description": "Additional build secrets\n\nOnly allowed when `directory` is set. (Default - No additional build secrets)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "networkMode": {
                     "description": "Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.\n\nSpecify this property to build images on a specific networking mode. (Default - no networking mode specified)",
                     "type": "string"
@@ -162,6 +169,13 @@
                 "platform": {
                     "description": "Platform to build for. _Requires Docker Buildx_.\n\nSpecify this property to build images on a specific platform/architecture. (Default - current machine platform)",
                     "type": "string"
+                },
+                "dockerOutputs": {
+                    "description": "Outputs (Default - no outputs are passed to the build command (default outputs are used))",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
