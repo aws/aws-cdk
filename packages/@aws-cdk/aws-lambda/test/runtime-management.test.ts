@@ -20,7 +20,7 @@ describe('runtime', () => {
       },
     });
   });
-  test('Runtime Management Function Update', () => {
+  test('Runtime Management FunctionUpdate', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
@@ -33,7 +33,7 @@ describe('runtime', () => {
     // WHEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       RuntimeManagementConfig: {
-        UpdateRuntimeOn: 'Function update',
+        UpdateRuntimeOn: 'FunctionUpdate',
       },
     });
   });

@@ -16,7 +16,7 @@ export class RuntimeManagementMode {
    * With this mode, you can detect and mitigate rare runtime update incompatibilities early.
    * When using this mode, you must regularly update your functions to keep their runtime up to date.
    */
-  public static readonly FUNCTION_UPDATE = new RuntimeManagementMode('Function update');
+  public static readonly FUNCTION_UPDATE = new RuntimeManagementMode('FunctionUpdate');
   /**
    * You specify a runtime version in your function configuration.
    * The function uses this runtime version indefinitely.
