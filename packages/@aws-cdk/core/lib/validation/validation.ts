@@ -1,8 +1,9 @@
 import * as os from 'os';
+import * as path from 'path';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
 import { table } from 'table';
-import { TreeMetadata } from '../private/tree-metadata';
 
 /**
    * TODO docs
@@ -65,7 +66,7 @@ export class ValidationContext {
      */
     public readonly stdout?: boolean) {
 
-    this.report = new ValidationReport(plugin.name, stack, root);
+    this.report = new ValidationReport(plugin.name, stack);
     this.logger = new ValidationLogger();
   }
 }
@@ -245,8 +246,7 @@ export class ValidationReport {
 
   constructor(
     private readonly pluginName: string,
-    private readonly stack: cxapi.CloudFormationStackArtifact,
-    private readonly root: IConstruct) {
+    private readonly stack: cxapi.CloudFormationStackArtifact) {
   }
 
   /**
@@ -258,14 +258,8 @@ export class ValidationReport {
     }
 
     const template = this.stack.template;
-    const tree = this.root.node.tryFindChild('Tree') as TreeMetadata;
-
-    // Just until we use the tree to generate the stack trace
-    // eslint-disable-next-line no-console
-    console.log(tree);
-
     const constructs = violation.violatingResources.map(resource => ({
-      constructStack: ['TODO'],
+      constructStack: this.trace(resource),
       constructPath: template.Resources[resource.resourceName].Metadata['aws:cdk:path'],
       locations: resource.locations,
       resourceName: resource.resourceName,
@@ -348,6 +342,25 @@ export class ValidationReport {
     });
 
     return output.join(os.EOL);
+  }
+
+  private trace(resource: ValidationViolatingResource): string[] {
+    const resourceName = resource.resourceName;
+    const manifestPath = path.join(process.cwd(), resource.templatePath, '../manifest.json');
+    const manifest = Manifest.loadAssemblyManifest(manifestPath);
+
+    for (const stack of Object.values(manifest.artifacts ?? {})) {
+      if (stack.type === 'aws:cloudformation:stack') {
+        for (const md of Object.values(stack.metadata ?? {})) {
+          for (const x of md) {
+            if (x.type === 'aws:cdk:logicalId' && x.data === resourceName) {
+              return x.trace ?? [];
+            }
+          }
+        }
+      }
+    }
+    return [];
   }
 
   /**

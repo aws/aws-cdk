@@ -75,29 +75,6 @@ export class TreeMetadata extends Construct {
     });
   }
 
-  nodesFromPath(constructPath: string): Node[] {
-    const ids = ['App'].concat(constructPath.split('/'));
-    return this.trail(this.tree, ids);
-  }
-
-  private trail(node: Node | undefined, ids: string[], acc: Node[] = []): Node[] {
-    if (ids.length === 0 || node == null || node.id !== ids[0]) {
-      throw new Error(`Invalid path: ${ids.join('/')}`);
-    }
-
-    acc.push(node);
-    if (ids.length === 1) {
-      return acc;
-    }
-
-    const child = Object
-      .entries(node.children || {})
-      .find(([id]) => id === ids[1])
-      ?.[1];
-
-    return this.trail(child, ids.slice(1), acc);
-  }
-
   private synthAttributes(construct: IConstruct): { [key: string]: any } | undefined {
     // check if a construct implements IInspectable
     function canInspect(inspectable: any): inspectable is IInspectable {
