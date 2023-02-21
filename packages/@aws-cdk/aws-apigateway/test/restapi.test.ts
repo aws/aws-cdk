@@ -890,7 +890,31 @@ describe('restapi', () => {
       MinimumCompressionSize: 1024,
     });
   });
+
+  testDeprecated('RestApi minimumCompressionSize', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
+    });
+
+    const stack = new Stack(app);
+    const api = new apigw.RestApi(stack, 'RestApi', {
+      minimumCompressionSize: 1024,
+    });
+
+    // WHEN
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: 'RestApi',
+      MinimumCompressionSize: 1024,
+    });
+  });
 });
+
 
 describe('Import', () => {
   test('fromRestApiId()', () => {

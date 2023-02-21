@@ -217,7 +217,12 @@ export interface RestApiProps extends RestApiOptions {
   readonly binaryMediaTypes?: string[];
 
   /**
-   * Deprecated
+   * A nullable integer that is used to enable compression (with non-negative
+   * between 0 and 10485760 (10M) bytes, inclusive) or disable compression
+   * (when undefined) on an API. When compression is enabled, compression or
+   * decompression is not applied on the payload if the payload size is
+   * smaller than this value. Setting it to zero allows compression for any
+   * payload size.
    *
    * @default - Compression is disabled.
    * @deprecated - superseded by `minCompressionSize`
@@ -225,7 +230,7 @@ export interface RestApiProps extends RestApiOptions {
   readonly minimumCompressionSize?: number;
 
   /**
-   * A nullable integer that is used to enable compression (with non-negative
+   * A Size(in bytes, kibibytes, mebibytes etc) that is used to enable compression (with non-negative
    * between 0 and 10485760 (10M) bytes, inclusive) or disable compression
    * (when undefined) on an API. When compression is enabled, compression or
    * decompression is not applied on the payload if the payload size is
@@ -271,7 +276,7 @@ export interface SpecRestApiProps extends RestApiBaseProps {
   readonly apiDefinition: ApiDefinition;
 
   /**
-   * A nullable integer that is used to enable compression (with non-negative
+   * A Size(in bytes, kibibytes, mebibytes etc) that is used to enable compression (with non-negative
    * between 0 and 10485760 (10M) bytes, inclusive) or disable compression
    * (when undefined) on an API. When compression is enabled, compression or
    * decompression is not applied on the payload if the payload size is
@@ -784,7 +789,7 @@ export class RestApi extends RestApiBase {
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
-      minimumCompressionSize: props.minCompressionSize?.toBytes(),
+      minimumCompressionSize: props.minCompressionSize?.toBytes() || props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
       endpointConfiguration: this._configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
