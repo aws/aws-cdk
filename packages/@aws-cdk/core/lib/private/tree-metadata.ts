@@ -18,8 +18,6 @@ const FILE_PATH = 'tree.json';
  *
  */
 export class TreeMetadata extends Construct {
-  private tree?: Node;
-
   constructor(scope: Construct) {
     super(scope, 'Tree');
   }
@@ -57,11 +55,9 @@ export class TreeMetadata extends Construct {
       return node;
     };
 
-    this.tree = visit(this.node.root);
-
     const tree = {
       version: 'tree-0.1',
-      tree: this.tree,
+      tree: visit(this.node.root),
     };
 
     const builder = session.assembly;
@@ -92,7 +88,7 @@ export class TreeMetadata extends Construct {
   }
 }
 
-export interface Node {
+interface Node {
   readonly id: string;
   readonly path: string;
   readonly children?: { [key: string]: Node };
