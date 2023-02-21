@@ -16,18 +16,42 @@ export interface QueryStringProps {
   readonly fields?: string[];
 
   /**
-  * Extracts data from a log field and creates one or more ephemeral fields that you can process further in the query.
+  * A single statement for parsing data from a log field and creating ephemeral fields that can
+  * be processed further in the query.
   *
+  * @deprecated Use `parseStatements` instead
   * @default - no parse in QueryString
   */
   readonly parse?: string;
 
   /**
-  * Filters the results of a query that's based on one or more conditions.
+  * An array of one or more statements for parsing data from a log field and creating ephemeral
+  * fields that can be processed further in the query. Each provided statement generates a separate
+  * parse line in the query string.
   *
+  * Note: If provided, this property overrides any value provided for the `parse` property.
+  *
+  * @default - no parse in QueryString
+  */
+  readonly parseStatements?: string[];
+
+  /**
+  * A single statement for filtering the results of a query based on a boolean expression.
+  *
+  * @deprecated Use `filterStatements` instead
   * @default - no filter in QueryString
   */
   readonly filter?: string;
+
+  /**
+  * An array of one or more statements for filtering the results of a query based on a boolean
+  * expression. Each provided statement generates a separate filter line in the query string.
+  *
+  * Note: If provided, this property overrides any value provided for the `filter` property.
+  *
+  * @default - no filter in QueryString
+  */
+  readonly filterStatements?: string[];
 
   /**
   * Uses log field values to calculate aggregate statistics.
@@ -58,23 +82,13 @@ export interface QueryStringProps {
   readonly display?: string;
 }
 
-interface QueryStringMap {
-  readonly fields?: string,
-  readonly parse?: string,
-  readonly filter?: string,
-  readonly stats?: string,
-  readonly sort?: string,
-  readonly limit?: Number,
-  readonly display?: string,
-}
-
 /**
  * Define a QueryString
  */
 export class QueryString {
   private readonly fields?: string[];
-  private readonly parse?: string;
-  private readonly filter?: string;
+  private readonly parse: string[];
+  private readonly filter: string[];
   private readonly stats?: string;
   private readonly sort?: string;
   private readonly limit?: Number;
@@ -82,38 +96,74 @@ export class QueryString {
 
   constructor(props: QueryStringProps = {}) {
     this.fields = props.fields;
-    this.parse = props.parse;
-    this.filter = props.filter;
     this.stats = props.stats;
     this.sort = props.sort;
     this.limit = props.limit;
     this.display = props.display;
+
+    // Determine parsing by either the parseStatements or parse properties, or default to empty array
+    if (props.parseStatements) {
+      this.parse = props.parseStatements;
+    } else if (props.parse) {
+      this.parse = [props.parse];
+    } else {
+      this.parse = [];
+    }
+
+    // Determine filtering by either the filterStatements or filter properties, or default to empty array
+    if (props.filterStatements) {
+      this.filter = props.filterStatements;
+    } else if (props.filter) {
+      this.filter = [props.filter];
+    } else {
+      this.filter = [];
+    }
   }
 
   /**
   * String representation of this QueryString.
   */
   public toString(): string {
-    return noUndef({
-      fields: this.fields !== undefined ? this.fields.join(', ') : this.fields,
-      parse: this.parse,
-      filter: this.filter,
-      stats: this.stats,
-      sort: this.sort,
-      limit: this.limit,
-      display: this.display,
-    }).join('\n| ');
+    return [
+      this.buildQueryLine('fields', this.fields?.join(', ')),
+      ...this.buildQueryLines('parse', this.parse),
+      ...this.buildQueryLines('filter', this.filter),
+      this.buildQueryLine('stats', this.stats),
+      this.buildQueryLine('sort', this.sort),
+      this.buildQueryLine('limit', this.limit?.toString()),
+      this.buildQueryLine('display', this.display),
+    ].filter(
+      (queryLine) => queryLine !== undefined && queryLine.length > 0,
+    ).join('\n| ');
   }
-}
 
-function noUndef(x: QueryStringMap): string[] {
-  const ret: string[] = [];
-  for (const [key, value] of Object.entries(x)) {
-    if (value !== undefined) {
-      ret.push(`${key} ${value}`);
+  /**
+   * Build an array of query lines given a command and statement(s).
+   *
+   * @param command a query command
+   * @param statements one or more query statements for the specified command, or undefined
+   * @returns an array of the query string lines generated from the provided command and statements
+   */
+  private buildQueryLines(command: string, statements?: string[]): string[] {
+    if (statements === undefined) {
+      return [];
     }
+
+    return statements.map(
+      (statement: string): string => this.buildQueryLine(command, statement),
+    );
   }
-  return ret;
+
+  /**
+   * Build a single query line given a command and statement.
+   *
+   * @param command a query command
+   * @param statement a single query statement
+   * @returns a single query string line generated from the provided command and statement
+   */
+  private buildQueryLine(command: string, statement?: string): string {
+    return statement ? `${command} ${statement}` : '';
+  }
 }
 
 /**
