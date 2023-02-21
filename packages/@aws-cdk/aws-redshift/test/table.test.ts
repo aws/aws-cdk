@@ -6,8 +6,8 @@ import * as redshift from '../lib';
 describe('cluster table', () => {
   const tableName = 'tableName';
   const tableColumns: redshift.Column[] = [
-    { name: 'col1', dataType: 'varchar(4)' },
-    { name: 'col2', dataType: 'float' },
+    { name: 'col1', id: 'Table', dataType: 'varchar(4)' },
+    { name: 'col2', id: 'Table', dataType: 'float' },
   ];
 
   let stack: cdk.Stack;
@@ -84,7 +84,7 @@ describe('cluster table', () => {
     });
 
     expect(table.tableName).toBe(tableName);
-    expect(table.tableColumns).toBe(tableColumns);
+    expect(table.tableColumns).toStrictEqual(tableColumns);
     expect(table.cluster).toBe(cluster);
     expect(table.databaseName).toBe('databaseName');
   });

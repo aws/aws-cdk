@@ -94,17 +94,30 @@ async function updateTable(
 
   const oldTableColumns = oldResourceProperties.tableColumns;
   const columnDeletions = oldTableColumns.filter(oldColumn => (
-    tableColumns.every(column => oldColumn.name !== column.name)
+    tableColumns.every(column => oldColumn.id !== column.id)
   ));
   if (columnDeletions.length > 0) {
     alterationStatements.push(...columnDeletions.map(column => `ALTER TABLE ${tableName} DROP COLUMN ${column.name}`));
   }
 
   const columnAdditions = tableColumns.filter(column => {
-    return !oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.dataType === oldColumn.dataType);
+    return !oldTableColumns.some(oldColumn => column.id === oldColumn.id);
   }).map(column => `ADD ${column.name} ${column.dataType}`);
   if (columnAdditions.length > 0) {
     alterationStatements.push(...columnAdditions.map(addition => `ALTER TABLE ${tableName} ${addition}`));
+  }
+
+  const columnNameUpdates = tableColumns.reduce((updates, column) => {
+    const oldColumn = oldTableColumns.find(oldCol => oldCol.id === column.id);
+    if (oldColumn && oldColumn.name !== column.name) {
+      updates[oldColumn.name] = column.name;
+    }
+    return updates;
+  }, {} as Record<string, string>);
+  if (Object.keys(columnNameUpdates).length > 0) {
+    alterationStatements.push(...Object.entries(columnNameUpdates).map(([oldName, newName]) => (
+      `ALTER TABLE ${tableName} RENAME COLUMN ${oldName} TO ${newName}`
+    )));
   }
 
   const oldDistStyle = oldResourceProperties.distStyle;

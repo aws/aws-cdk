@@ -55,9 +55,14 @@ export enum TableAction {
  */
 export interface Column {
   /**
-   * The unique name/identifier of the column.
+   * The unique identifier of the column.
    *
-   * **NOTE**. After deploying this column, you cannot change its name. Doing so will cause the column to be dropped and recreated.
+   * @default - an unique id is generated
+   */
+  readonly id?: string;
+
+  /**
+   * The name of the column.
    */
   readonly name: string;
 
@@ -201,7 +206,10 @@ export class Table extends TableBase {
   static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
     return new class extends TableBase {
       readonly tableName = attrs.tableName;
-      readonly tableColumns = attrs.tableColumns;
+      readonly tableColumns = attrs.tableColumns.map((column) => ({
+        id: cdk.Names.uniqueId(this),
+        ...column,
+      }));
       readonly cluster = attrs.cluster;
       readonly databaseName = attrs.databaseName;
     }(scope, id);
@@ -225,7 +233,10 @@ export class Table extends TableBase {
       this.validateSortStyle(props.sortStyle, props.tableColumns);
     }
 
-    this.tableColumns = props.tableColumns;
+    this.tableColumns = props.tableColumns.map((column) => ({
+      id: column.id ?? cdk.Names.uniqueId(this),
+      ...column,
+    }));
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
 

@@ -256,7 +256,7 @@ describe('update', () => {
   test('does not replace if table columns added', async () => {
     const newTableColumnName = 'col2';
     const newTableColumnDataType = 'varchar(1)';
-    const newTableColumns = [{ name: 'col1', dataType: 'varchar(1)' }, { name: newTableColumnName, dataType: newTableColumnDataType }];
+    const newTableColumns = [{ id: 'col1', name: 'col1', dataType: 'varchar(1)' }, { id: 'col2', name: newTableColumnName, dataType: newTableColumnDataType }];
     const newResourceProperties = {
       ...resourceProperties,
       tableColumns: newTableColumns,
