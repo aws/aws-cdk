@@ -10,7 +10,7 @@ describe('Map State', () => {
     const map = new stepfunctions.Map(stack, 'Map State', {
       maxConcurrency: 1,
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
-      parameters: {
+      itemSelector: {
         foo: 'foo',
         bar: stepfunctions.JsonPath.stringAt('$.bar'),
       },
@@ -24,11 +24,14 @@ describe('Map State', () => {
         'Map State': {
           Type: 'Map',
           End: true,
-          Parameters: {
+          ItemSelector: {
             'foo': 'foo',
             'bar.$': '$.bar',
           },
-          Iterator: {
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.MapStateMode.INLINE,
+            },
             StartAt: 'Pass State',
             States: {
               'Pass State': {
@@ -66,7 +69,10 @@ describe('Map State', () => {
         'Map State': {
           Type: 'Map',
           End: true,
-          Iterator: {
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.MapStateMode.INLINE,
+            },
             StartAt: 'Pass State',
             States: {
               'Pass State': {

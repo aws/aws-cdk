@@ -7,6 +7,25 @@ import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 
+
+/**
+ * Two modes of Map states are available in AWS Step Functions: INLINE AND DISTRIBUTED.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-map-process-modes.html
+ *
+ * @default INLINE
+ */
+export enum MapStateMode {
+  /**
+   * Distributed mode provides high concurrency and executes child workflows for each iteration.
+   */
+  DISTRIBUTED = 'DISTRIBUTED',
+  /**
+   * Inline mode provides limited concurrency.
+   */
+  INLINE = 'INLINE'
+}
+
 /**
  * Properties for defining a Map state
  */
@@ -59,8 +78,25 @@ export interface MapProps {
    * The JSON that you want to override your default iteration input
    *
    * @default $
+   * @deprecated Step Functions has deprecated the `parameters` field in favor of
+   * the new `itemSelector` field.
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-itemselector.html
    */
   readonly parameters?: { [key: string]: any };
+
+  /**
+   * The JSON that you want to override your default iteration input
+   *
+   * Step Functions has deprecated the `parameters` field in favor of
+   * the new `itemSelector` field.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-itemselector.html
+   *
+   * @default $
+   */
+  readonly itemSelector?: { [key: string]: any };
 
   /**
    * The JSON that will replace the state's raw result and become the effective
@@ -111,16 +147,25 @@ export const isPositiveInteger = (value: number) => {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-map-state.html
  */
 export class Map extends State implements INextable {
+
+  /**
+   * Map state mode to be used by the ItemProcessor.ProcessorConfig
+   */
+  static readonly MODE: MapStateMode = MapStateMode.INLINE
+
   public readonly endStates: INextable[];
 
   private readonly maxConcurrency: number | undefined;
   private readonly itemsPath?: string;
+  private readonly itemSelector?: { [key: string]: any };
+
 
   constructor(scope: Construct, id: string, props: MapProps = {}) {
     super(scope, id, props);
     this.endStates = [this];
     this.maxConcurrency = props.maxConcurrency;
     this.itemsPath = props.itemsPath;
+    this.itemSelector = props.itemSelector;
   }
 
   /**
@@ -172,10 +217,10 @@ export class Map extends State implements INextable {
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderNextEnd(),
       ...this.renderInputOutput(),
-      ...this.renderParameters(),
+      ...this.renderItemSelector(),
       ...this.renderResultSelector(),
       ...this.renderRetryCatch(),
-      ...this.renderIterator(),
+      ...this.renderItemProcessor(),
       ...this.renderItemsPath(),
       MaxConcurrency: this.maxConcurrency,
     };
@@ -195,6 +240,10 @@ export class Map extends State implements INextable {
       errors.push('maxConcurrency has to be a positive integer');
     }
 
+    if (this.parameters !== undefined && this.itemSelector !== undefined) {
+      errors.push('parameters has been deprecated and only itemSelector should be provided');
+    }
+
     return errors;
   }
 
@@ -205,11 +254,28 @@ export class Map extends State implements INextable {
   }
 
   /**
-   * Render Parameters in ASL JSON format
+   * Render ItemSelector in ASL JSON format
    */
-  private renderParameters(): any {
+  private renderItemSelector(): any {
     return FieldUtils.renderObject({
-      Parameters: this.parameters,
+      ItemSelector: this.itemSelector,
+    });
+  }
+
+  /**
+   * Render ItemProcessor in ASL JSON format
+   */
+  private renderItemProcessor(): any {
+
+    var iterator = this.renderIterator();
+
+    return FieldUtils.renderObject({
+      ItemProcessor: {
+        ProcessorConfig: {
+          Mode: Map.MODE,
+        },
+        ...iterator.Iterator,
+      },
     });
   }
 }
