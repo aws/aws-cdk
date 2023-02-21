@@ -1174,7 +1174,7 @@
      },
      {
       "name": "col3",
-      "dataType": "int",
+      "dataType": "float",
       "comment": "A test column",
       "encoding": "RAW"
      }

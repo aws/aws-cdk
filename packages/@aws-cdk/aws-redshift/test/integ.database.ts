@@ -45,7 +45,7 @@ const table = new redshift.Table(stack, 'Table', {
   tableColumns: [
     { name: 'col1', dataType: 'varchar(4)', distKey: true, comment: 'A test column', encoding: redshift.ColumnEncoding.LZO },
     { name: 'col2', dataType: 'float', sortKey: true, comment: 'A test column' },
-    { name: 'col3', dataType: 'int', comment: 'A test column', encoding: redshift.ColumnEncoding.RAW },
+    { name: 'col3', dataType: 'float', comment: 'A test column', encoding: redshift.ColumnEncoding.RAW },
   ],
   distStyle: redshift.TableDistStyle.KEY,
   sortStyle: redshift.TableSortStyle.INTERLEAVED,
