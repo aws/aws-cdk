@@ -14,6 +14,7 @@ import { Account } from './sdk-provider';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 const regionUtil = require('aws-sdk/lib/region_config');
+require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 /* eslint-enable @typescript-eslint/no-require-imports */
 
 if (!regionUtil.getEndpointSuffix) {

@@ -956,7 +956,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/078e55288c69daf4cbec71071e06b4521696cfc95fc10f09a77d592a5fec7c63.json"
+       "/64935f5256b8a6a408fe03c069615fe7d74eedd9e98cfab64bfc6de60e4207bf.json"
       ]
      ]
     },
@@ -1320,7 +1320,9 @@
    "DependsOn": [
     "StateMachineRoleDefaultPolicyDF1E6607",
     "StateMachineRoleB840431D"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
