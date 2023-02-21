@@ -36,7 +36,7 @@ export interface SubscriptionOptions {
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicy? : { [attribute: string]: SubscriptionFilter };
+  readonly filterPolicy?: { [attribute: string]: SubscriptionFilter };
 
   /**
    * The filter policy that is applied on the message body.
@@ -44,12 +44,12 @@ export interface SubscriptionOptions {
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicyWithMessageBody? : {[attribute: string]: FilterOrPolicy };
+  readonly filterPolicyWithMessageBody?: { [attribute: string]: FilterOrPolicy };
 
   /**
    * The region where the topic resides, in the case of cross-region subscriptions
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-region
-   * @default - the region where the CloudFormation stack is being deployed.
+   * @default - thFiltere region where the CloudFormation stack is being deployed.
    */
   readonly region?: string;
 
@@ -93,7 +93,7 @@ export class Subscription extends Resource {
 
   private readonly filterPolicy?: { [attribute: string]: any[] };
 
-  private readonly filterPolicyWithMessageBody? : {[attribute: string]: FilterOrPolicy };
+  private readonly filterPolicyWithMessageBody?: { [attribute: string]: FilterOrPolicy };
 
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
@@ -136,13 +136,18 @@ export class Subscription extends Resource {
       throw new Error('Subscription role arn is required field for subscriptions with a firehose protocol.');
     }
 
+    // Format filter policy
+    const filterPolicy = this.filterPolicyWithMessageBody
+      ? buildFilterPolicyWithMessageBody(this.filterPolicyWithMessageBody)
+      : this.filterPolicy;
+
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,
       protocol: props.protocol,
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
-      filterPolicy: FilterOrPolicy.bind(this.filterPolicyWithMessageBody) || this.filterPolicy,
+      filterPolicy,
       filterPolicyScope: this.filterPolicyWithMessageBody ? 'MessageBody' : undefined,
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
@@ -180,6 +185,31 @@ export class Subscription extends Resource {
     }
   }
 }
+
+function buildFilterPolicyWithMessageBody(
+  inputObject: { [key: string]: FilterOrPolicy },
+  depth = 1,
+  totalCombinationValues = [1],
+): { [key: string]: any } {
+  const result: { [key: string]: any } = {};
+
+  for (const [key, filterOrPolicy] of Object.entries(inputObject)) {
+    if (filterOrPolicy.isPolicy()) {
+      result[key] = buildFilterPolicyWithMessageBody(filterOrPolicy.policyDoc, depth + 1, totalCombinationValues);
+    } else if (filterOrPolicy.isFilter()) {
+      const filter = filterOrPolicy.filterDoc.conditions;
+      result[key] = filter;
+      totalCombinationValues[0] *= filter.length * depth;
+    }
+  }
+
+  // https://docs.aws.amazon.com/sns/latest/dg/subscription-filter-policy-constraints.html
+  if (totalCombinationValues[0] > 150) {
+    throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 150.`);
+  }
+
+  return result;
+};
 
 /**
  * The type of subscription, controlling the type of the endpoint parameter.
@@ -249,7 +279,6 @@ export enum FilterOrPolicyType {
  * Class for building the FilterPolicy by avoiding union types
  */
 export abstract class FilterOrPolicy {
-
   /**
    * Filter of MessageBody
    * @param filter
@@ -269,55 +298,23 @@ export abstract class FilterOrPolicy {
   }
 
   /**
-   * DFS Method for building the MessageBody FilterPolicy
-   * @param result
-   * @param depth
-   * @param totalCombinationValues
-   * @returns
+   * Type switch for disambiguating between subclasses
    */
-  public static buildFilterPolicyWithMessageBody(result: any, depth = 1, totalCombinationValues = [1]): any {
-    for (const [key, filterOrPolicy] of Object.entries(JSON.parse(JSON.stringify(this.policy)))) {
-      if (filterOrPolicy && typeof filterOrPolicy === 'object' && 'conditions' in filterOrPolicy) {
-        const filter = filterOrPolicy as { conditions: any[]};
-        if (Array.isArray(filter.conditions)) {
-          result[key] = filter.conditions;
-          totalCombinationValues[0] *= filter.conditions.length * depth;
-          continue;
-        }
-      }
-      result[key] = filterOrPolicy;
-      this.buildFilterPolicyWithMessageBody(result[key], depth + 1, totalCombinationValues);
-    }
-    // https://docs.aws.amazon.com/sns/latest/dg/subscription-filter-policy-constraints.html
-    if (totalCombinationValues[0] > 150) {
-      throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 150.`);
-    }
-    return result;
-  };
+  abstract readonly type: FilterOrPolicyType;
 
   /**
-   * Type of FilterOrPolicy at a given key in the nested FilterPolicy object
+   * Check if instance is `Policy` type
    */
-  public abstract readonly type: FilterOrPolicyType;
-
-  /**
-   * Constructor receiving the plain FilterPolicy json object
-   * @param json
-   */
-  public constructor(private readonly json: any) {}
-  /**
-   * Overrides bind method
-   */
-  public abstract bind(): any;
-
-  /**
-   * Overrides toJSON method
-   * @returns json object of FilterOrPolicy
-   */
-  public toJSON() {
-    return this.json;
+  public isPolicy(): this is Policy {
+    return this.type === FilterOrPolicyType.POLICY;
   }
 
+  /**
+   * Check if instance is `Filter` type
+   */
+  public isFilter(): this is Filter {
+    return this.type === FilterOrPolicyType.FILTER;
+  }
 }
 
 /**
@@ -333,14 +330,8 @@ export class Filter extends FilterOrPolicy {
    * Filter constructor
    * @param filter
    */
-  public constructor(private readonly filter: SubscriptionFilter) {
-    super(filter);
-  }
-  /**
-   * Overrides bind method
-   */
-  public bind(): any {
-    return Filter.buildFilterPolicyWithMessageBody(this.filter);
+  public constructor(public readonly filterDoc: SubscriptionFilter) {
+    super();
   }
 }
 
@@ -355,15 +346,9 @@ export class Policy extends FilterOrPolicy {
 
   /**
    * Policy constructor
-   * @param policy
+   * @param policyDoc
    */
-  public constructor(private readonly policy: { [attribute: string]: FilterOrPolicy }) {
-    super(policy);
-  }
-  /**
-   * Overrides bind method
-   */
-  public bind(): any {
-    return Policy.buildFilterPolicyWithMessageBody(this.policy);
+  public constructor(public readonly policyDoc: { [attribute: string]: FilterOrPolicy }) {
+    super();
   }
 }
