@@ -1,10 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Resource, IResource, ArnFormat, Arn, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { IBaseDeploymentConfig } from '../base-deployment-config';
-import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { isPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { validateName } from './utils';
+import { IBaseDeploymentConfig } from '../base-deployment-config';
+import { CfnDeploymentGroup } from '../codedeploy.generated';
 
 /**
  * Structural typing, not jsii compatible but doesn't need to be

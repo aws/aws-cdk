@@ -4,13 +4,13 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as fs from 'fs-extra';
-import { traceMethods } from '../../util/tracing';
 import { debug, warning } from './_env';
 import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
 import { Mode } from './credentials';
 import { ISDK, SDK, isUnrecoverableAwsError } from './sdk';
+import { traceMethods } from '../../util/tracing';
 
 
 // Some configuration that can only be achieved by setting

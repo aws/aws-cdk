@@ -89,7 +89,8 @@
     "aws-cdk": "0.0.0",
     "constructs": "^10.0.0",
     "jest": "^27.5.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "jsii": "v4.9-next"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

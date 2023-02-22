@@ -1,5 +1,5 @@
-import { schema } from '../lib';
 import { detectScrutinyTypes } from './scrutiny';
+import { schema } from '../lib';
 
 export function massageSpec(spec: schema.Specification) {
   detectScrutinyTypes(spec);
