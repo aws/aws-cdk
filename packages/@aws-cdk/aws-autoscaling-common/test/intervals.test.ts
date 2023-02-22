@@ -1,7 +1,7 @@
 import * as fc from 'fast-check';
+import { arbitrary_complete_intervals } from './util';
 import * as appscaling from '../lib';
 import { findAlarmThresholds, normalizeIntervals } from '../lib/interval-utils';
-import { arbitrary_complete_intervals } from './util';
 
 describe('intervals', () => {
   test('test bounds propagation', () => {

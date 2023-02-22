@@ -31,7 +31,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1673270420990"
+    "salt": "1677027448917"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -100,6 +100,15 @@
            ]
           }
          ]
+        },
+        {
+         "Action": [
+          "kafka:GetBootstrapBrokers"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -115,7 +124,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "278d42fa865f60954d898636503d0ee86a6689d73dc50eb912fac62def0ef6a4.zip"
+     "S3Key": "1f3c2cfb18e102edc713fe4c4b4d87572f4297ee4a5e80a5960adf526ee9ea28.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
