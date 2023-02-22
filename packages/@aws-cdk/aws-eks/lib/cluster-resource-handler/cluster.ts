@@ -326,8 +326,8 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
   return {
     replaceName: newProps.name !== oldProps.name,
     replaceVpc:
-      JSON.stringify(newVpcProps.subnetIds) !== JSON.stringify(oldVpcProps.subnetIds) ||
-      JSON.stringify(newVpcProps.securityGroupIds) !== JSON.stringify(oldVpcProps.securityGroupIds),
+      JSON.stringify(newVpcProps.subnetIds?.sort()) !== JSON.stringify(oldVpcProps.subnetIds?.sort()) ||
+      JSON.stringify(newVpcProps.securityGroupIds?.sort()) !== JSON.stringify(oldVpcProps.securityGroupIds?.sort()),
     updateAccess:
       newVpcProps.endpointPrivateAccess !== oldVpcProps.endpointPrivateAccess ||
       newVpcProps.endpointPublicAccess !== oldVpcProps.endpointPublicAccess ||
