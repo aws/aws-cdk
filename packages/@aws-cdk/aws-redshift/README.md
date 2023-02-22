@@ -166,7 +166,7 @@ with the supplied schema.
 
 ```ts fixture=cluster
 new Table(this, 'Table', {
-  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(4)' }, { id: 'col2', name: 'col2', dataType: 'float' }],
   cluster: cluster,
   databaseName: 'databaseName',
 });
@@ -177,8 +177,8 @@ The table can be configured to have distStyle attribute and a distKey column:
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', distKey: true },
-    { name: 'col2', dataType: 'float' },
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)', distKey: true },
+    { id: 'col2', name: 'col2', dataType: 'float' },
   ],
   cluster: cluster,
   databaseName: 'databaseName',
@@ -191,8 +191,8 @@ The table can also be configured to have sortStyle attribute and sortKey columns
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', sortKey: true },
-    { name: 'col2', dataType: 'float', sortKey: true },
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)', sortKey: true },
+    { id: 'col2', name: 'col2', dataType: 'float', sortKey: true },
   ],
   cluster: cluster,
   databaseName: 'databaseName',
@@ -205,8 +205,8 @@ Tables can also be configured with a comment:
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)' }, 
-    { name: 'col2', dataType: 'float' }
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)' }, 
+    { id: 'col2', name: 'col2', dataType: 'float' }
   ],
   cluster: cluster,
   databaseName: 'databaseName',
@@ -225,7 +225,7 @@ const user = new User(this, 'User', {
   databaseName: 'databaseName',
 });
 const table = new Table(this, 'Table', {
-  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(4)' }, { id: 'col2', name: 'col2', dataType: 'float' }],
   cluster: cluster,
   databaseName: 'databaseName',
 });
@@ -250,7 +250,7 @@ const user = new User(this, 'User', {
   databaseName: databaseName,
 });
 const table = new Table(this, 'Table', {
-  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(4)' }, { id: 'col2', name: 'col2', dataType: 'float' }],
   cluster: cluster,
   databaseName: databaseName,
 });
@@ -273,7 +273,7 @@ const user = User.fromUserAttributes(this, 'User', {
 });
 const table = Table.fromTableAttributes(this, 'Table', {
   tableName: tableName,
-  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(4)' }, { id: 'col2', name: 'col2', dataType: 'float' }],
   cluster: cluster,
   databaseName: 'databaseName',
 });
