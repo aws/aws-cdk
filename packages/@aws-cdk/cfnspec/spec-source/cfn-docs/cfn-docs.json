@@ -10532,7 +10532,7 @@
       "properties": {
         "AllSupported": "Specifies whether AWS Config records configuration changes for every supported type of regional resource.\n\nIf you set this option to `true` , when AWS Config adds support for a new type of regional resource, it starts recording resources of that type automatically.\n\nIf you set this option to `true` , you cannot enumerate a list of `resourceTypes` .",
         "IncludeGlobalResourceTypes": "Specifies whether AWS Config includes all supported types of global resources (for example, IAM resources) with the resources that it records.\n\nBefore you can set this option to `true` , you must set the `AllSupported` option to `true` .\n\nIf you set this option to `true` , when AWS Config adds support for a new type of global resource, it starts recording resources of that type automatically.\n\nThe configuration details for any global resource are the same in all regions. To prevent duplicate configuration items, you should consider customizing AWS Config in only one region to record global resources.",
-        "ResourceTypes": "A comma-separated list that specifies the types of AWS resources for which AWS Config records configuration changes (for example, `AWS::EC2::Instance` or `AWS::CloudTrail::Trail` ).\n\nTo record all configuration changes, you must set the `AllSupported` option to `false` .\n\nIf you set this option to `true` , when AWS Config adds support for a new type of resource, it will not record resources of that type unless you manually add that type to your recording group.\n\nFor a list of valid `resourceTypes` values, see the *resourceType Value* column in [Supported AWS Resource Types](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources) ."
+        "ResourceTypes": "A comma-separated list that specifies the types of AWS resources for which AWS Config records configuration changes (for example, `AWS::EC2::Instance` or `AWS::CloudTrail::Trail` ).\n\nTo record all configuration changes, you must set the `AllSupported` option to `false` .\n\nIf you set the `AllSupported` option to false and populate the `ResourceTypes` option with values, when AWS Config adds support for a new type of resource, it will not record resources of that type unless you manually add that type to your recording group.\n\nFor a list of valid `resourceTypes` values, see the *resourceType Value* column in [Supported AWS Resource Types](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources) ."
       }
     },
     "AWS::Config::ConformancePack": {
@@ -10863,7 +10863,7 @@
       "description": "The encryption configuration.",
       "properties": {
         "EncryptionType": "The type of encryption.",
-        "KeyId": "The full ARN of the encryption key.\n\n> Be sure to provide the full ARN of the encryption key, not just the ID."
+        "KeyId": "The full ARN of the encryption key.\n\n> Be sure to provide the full ARN of the encryption key, not just the ID.\n> \n> Amazon Connect supports only KMS keys with the default key spec of [`SYMMETRIC_DEFAULT`](https://docs.aws.amazon.com/kms/latest/developerguide/asymmetric-key-specs.html#key-spec-symmetric-default) ."
       }
     },
     "AWS::Connect::InstanceStorageConfig.KinesisFirehoseConfig": {
@@ -17777,7 +17777,7 @@
     },
     "AWS::EKS::Cluster.ControlPlanePlacement": {
       "attributes": {},
-      "description": "The placement configuration for all the control plane instances of your local Amazon EKS cluster on an AWS Outpost. For more information, see [Capacity considerations](https://docs.aws.amazon.com/eks/latest/userguide/eks-outposts-capacity-considerations.html) in the *Amazon EKS User Guide*",
+      "description": "The placement configuration for all the control plane instances of your local Amazon EKS cluster on an AWS Outpost. For more information, see [Capacity considerations](https://docs.aws.amazon.com/eks/latest/userguide/eks-outposts-capacity-considerations.html) in the Amazon EKS User Guide.",
       "properties": {
         "GroupName": "The name of the placement group for the Kubernetes control plane instances."
       }
@@ -17826,7 +17826,7 @@
       "attributes": {},
       "description": "Identifies the AWS Key Management Service ( AWS KMS ) key used to encrypt the secrets.",
       "properties": {
-        "KeyArn": "Amazon Resource Name (ARN) or alias of the KMS key. The KMS key must be symmetric, created in the same region as the cluster, and if the KMS key was created in a different account, the user must have access to the KMS key. For more information, see [Allowing Users in Other Accounts to Use a KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html) in the *AWS Key Management Service Developer Guide* ."
+        "KeyArn": "Amazon Resource Name (ARN) or alias of the KMS key. The KMS key must be symmetric and created in the same AWS Region as the cluster. If the KMS key was created in a different account, the [IAM principal](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html) must have access to the KMS key. For more information, see [Allowing users in other accounts to use a KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html) in the *AWS Key Management Service Developer Guide* ."
       }
     },
     "AWS::EKS::Cluster.ResourcesVpcConfig": {
@@ -23860,7 +23860,7 @@
       "description": "The `AWS::GuardDuty::Filter` resource specifies a new filter defined by the provided `findingCriteria` .",
       "properties": {
         "Action": "Specifies the action that is to be applied to the findings that match the filter.",
-        "Description": "The description of the filter. Valid special characters include period (.), underscore (_), dash (-), and whitespace. The new line character is considered to be an invalid input for description.",
+        "Description": "The description of the filter. Valid characters include alphanumeric characters, and special characters such as `-` , `.` , `:` , `{ }` , `[ ]` , `( )` , `/` , `\\t` , `\\n` , `\\x0B` , `\\f` , `\\r` , `_` , and whitespace.",
         "DetectorId": "The ID of the detector belonging to the GuardDuty account that you want to create a filter for.",
         "FindingCriteria": "Represents the criteria to be used in the filter for querying findings.",
         "Name": "The name of the filter. Valid characters include period (.), underscore (_), dash (-), and alphanumeric characters. A whitespace is considered to be an invalid character.",
@@ -44457,7 +44457,7 @@
         "Subscription": "The Amazon SNS subscriptions (endpoints) for this topic.",
         "Tags": "The list of tags to add to a new topic.\n\n> To be able to tag a topic on creation, you must have the `sns:CreateTopic` and `sns:TagResource` permissions.",
         "TopicName": "The name of the topic you want to create. Topic names must include only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens, and must be between 1 and 256 characters long. FIFO topic names must end with `.fifo` .\n\nIf you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the topic name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
-        "TracingConfig": "Tracing mode of an Amazon SNS topic. By default `TracingConfig` is set to `PassThrough` , and the topic passes through the tracing header it receives from an SNS publisher to its subscriptions. If set to Active, SNS will vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true. Only supported on standard topics."
+        "TracingConfig": "Tracing mode of an Amazon SNS topic. By default `TracingConfig` is set to `PassThrough` , and the topic passes through the tracing header it receives from an SNS publisher to its subscriptions. If set to `Active` , SNS will vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true. Only supported on standard topics."
       }
     },
     "AWS::SNS::Topic.Subscription": {
