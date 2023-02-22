@@ -222,6 +222,7 @@ export class Table extends TableBase {
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
+    this.validateColumnIds(props.tableColumns);
     this.validateDistKeyColumns(props.tableColumns);
     if (props.distStyle) {
       this.validateDistStyle(props.distStyle, props.tableColumns);
@@ -301,6 +302,16 @@ export class Table extends TableBase {
   private getDefaultSortStyle(columns: Column[]): TableSortStyle {
     const sortKeyColumns = getSortKeyColumns(columns);
     return (sortKeyColumns.length === 0) ? TableSortStyle.AUTO : TableSortStyle.COMPOUND;
+  }
+
+  private validateColumnIds(columns: Column[]): void {
+    const columnIds = new Set<string>();
+    for (const column of columns) {
+      if (columnIds.has(column.id)) {
+        throw new Error(`Column id '${column.id}' is not unique.`);
+      }
+      columnIds.add(column.id);
+    }
   }
 }
 

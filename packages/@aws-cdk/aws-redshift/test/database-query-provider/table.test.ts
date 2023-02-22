@@ -1,14 +1,14 @@
 /* eslint-disable-next-line import/no-unresolved */
 import type * as AWSLambda from 'aws-lambda';
-import { Column, TableDistStyle, TableSortStyle } from '../../lib';
-import { handler as manageTable } from '../../lib/private/database-query-provider/table';
-import { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
 
 const mockExecuteStatement = jest.fn(() => ({ promise: jest.fn(() => ({ Id: 'statementId' })) }));
 jest.mock('aws-sdk/clients/redshiftdata', () => class {
   executeStatement = mockExecuteStatement;
   describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
 });
+import { Column, TableDistStyle, TableSortStyle } from '../../lib';
+import { handler as manageTable } from '../../lib/private/database-query-provider/table';
+import { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
 
 type ResourcePropertiesType = TableAndClusterProps & { ServiceToken: string };
 
@@ -268,6 +268,21 @@ describe('update', () => {
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `ALTER TABLE ${physicalResourceId} ADD ${newTableColumnName} ${newTableColumnDataType}`,
     }));
+  });
+
+  test('does not replace if column ids are similar, but throws', async () => {
+    const newResourceProperties = {
+      ...resourceProperties,
+      tableColumns: [
+        { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+        { id: 'col1', name: 'col2', dataType: 'varchar(1)' },
+      ],
+    };
+
+    await expect(manageTable(newResourceProperties, event)).rejects.toThrow(
+      "Column id 'col1' is not unique.",
+    );
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
   });
 
   describe('column name', () => {
