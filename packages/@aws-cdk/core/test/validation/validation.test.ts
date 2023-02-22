@@ -1,5 +1,5 @@
 import * as core from '../../lib';
-
+import { ValidationReportStatus } from '../../lib';
 
 let stderrMock: jest.SpyInstance;
 beforeEach(() => {
@@ -14,7 +14,7 @@ describe('validations', () => {
   test('validation failure', () => {
     const app = new core.App({
       validationPlugins: [
-        new TestValidations(),
+        new TestValidations(core.ValidationReportStatus.FAILURE),
       ],
     });
     const stack = new core.Stack(app);
@@ -33,7 +33,7 @@ describe('validations', () => {
   test('validation success', () => {
     const app = new core.App({
       validationPlugins: [
-        new TestValidations(),
+        new TestValidations(core.ValidationReportStatus.SUCCESS),
       ],
     });
     const stack = new core.Stack(app);
@@ -52,22 +52,22 @@ describe('validations', () => {
 class TestValidations implements core.IValidationPlugin {
   public readonly name = 'test-plugin';
 
+  constructor(private readonly result: ValidationReportStatus) {}
+
   public validate(context: core.ValidationContext): void {
-    const template = context.stack.template;
-    const result = template.Resources.DefaultResource.Properties.result;
-    if (result === 'failure') {
+    if (this.result === 'failure') {
       context.report.addViolation({
         ruleName: 'test-rule',
         recommendation: 'test recommendation',
         violatingResources: [{
           locations: [],
           resourceName: '',
-          templatePath: context.stack.templateFullPath,
+          templatePath: context.templateFullPath,
         }],
       });
     }
 
-    context.report.submit(result);
+    context.report.submit(this.result);
   }
 
   public isReady(): boolean {

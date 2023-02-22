@@ -6,23 +6,72 @@ import { IConstruct } from 'constructs';
 import { table } from 'table';
 
 /**
-   * TODO docs
-   */
+ * Represents a validation plugin that will be executed during synthesis
+ *
+ * @example
+ * class MyCustomValidatorPlugin implements IValidationPlugin {
+ *    public readonly name = 'my-custom-plugin';
+ *
+ *    public isReady(): boolean {
+ *      // check if the plugin tool is installed
+ *      return true;
+ *    }
+ *
+ *    public validate(context: ValidationContext): void {
+ *      const templatePath = context.stack.templateFullPath;
+ *      // perform validation on the template
+ *      // if there are any failures report them
+ *      context.report.addViolation({
+ *        ruleName: 'rule-name',
+ *        recommendation: 'description of the rule',
+ *        violatingResources: [{
+ *          resourceName: 'FailingResource',
+ *          templatePath,
+ *        }],
+ *      });
+ *    }
+ * }
+ */
 export interface IValidationPlugin {
   /**
-   * TODO docs
+   * The name of the plugin that will be displayed in the validation
+   * report
    */
   readonly name: string;
 
   /**
-   * TODO docs
+   * The method that will be called by the CDK framework to perform
+   * validations. This is where the plugin will evaluate the CloudFormation
+   * templates for compliance and report and violations
    */
   validate(context: ValidationContext): void;
 
   /**
-   * TODO docs
+   * This method returns whether or not the plugin is ready to execute
    */
   isReady(): boolean;
+}
+
+export interface ValidationContextProps {
+  /**
+    * TODO docs
+    */
+  readonly plugin: IValidationPlugin,
+
+  /**
+    * TODO docs
+    */
+  readonly root: IConstruct,
+
+  /**
+    * TODO docs
+    */
+  readonly stack: cxapi.CloudFormationStackArtifact,
+
+  /**
+    * Whether or not the synth command was executed with --stdout.
+    */
+  readonly stdout?: boolean
 }
 
 /**
@@ -44,29 +93,14 @@ export class ValidationContext {
    */
   public readonly logger: ValidationLogger;
 
-  constructor(
+  /**
+   * The full path to the CloudFormation template in the Cloud Assembly
+   */
+  public readonly templateFullPath: string;
 
-    /**
-     * TODO docs
-     */
-    public readonly plugin: IValidationPlugin,
-
-    /**
-     * TODO docs
-     */
-    public readonly root: IConstruct,
-
-    /**
-     * TODO docs
-     */
-    public readonly stack: cxapi.CloudFormationStackArtifact,
-
-    /**
-     * Whether or not the synth command was executed with --stdout.
-     */
-    public readonly stdout?: boolean) {
-
-    this.report = new ValidationReport(plugin.name, root);
+  constructor(props: ValidationContextProps) {
+    this.templateFullPath = props.stack.templateFullPath;
+    this.report = new ValidationReport(props.plugin.name, props.root);
     this.logger = new ValidationLogger();
   }
 }
@@ -86,23 +120,6 @@ export class ValidationLogger {
 }
 
 /**
- * Contract between cdk8s and third-parties looking to implement validation plugins.
- */
-export interface IValidation {
-
-  /**
-   * Run the validation logic.
-   *
-   * - Use `context.manifests` to retrieve the list of manifests to validate.
-   * - Use `context.report` to access and build the resulting report.
-   *
-   * Make sure to call `context.report.pass()` or `context.report.fail()` before returning, otherwise the validation is considered incomplete.
-   */
-  validate(context: ValidationContext): Promise<void>;
-
-}
-
-/**
  * Resource violating a specific rule.
  */
 export interface ValidationViolatingResource {
@@ -113,12 +130,12 @@ export interface ValidationViolatingResource {
   readonly resourceName: string;
 
   /**
-   * The locations in its config that pose the violations.
+   * The locations in the CloudFormation template that pose the violations.
    */
   readonly locations: string[];
 
   /**
-   * The manifest this resource is defined in.
+   * The path to the CloudFormation template that contains this resource
    */
   readonly templatePath: string;
 
@@ -131,10 +148,8 @@ export interface ValidationViolatingConstruct extends ValidationViolatingResourc
 
   /**
    * The construct path as defined in the application.
-   *
-   * @default - TODO
    */
-  readonly constructPath?: string;
+  readonly constructPath: string;
 
   /**
    * A stack of constructs that lead to the violation.
@@ -142,7 +157,6 @@ export interface ValidationViolatingConstruct extends ValidationViolatingResourc
    * @default - TODO
    */
   readonly constructStack?: string[];
-
 }
 
 /**
@@ -188,9 +202,13 @@ export interface ValidationViolationConstructAware extends ValidationViolation {
   readonly violatingConstructs: ValidationViolatingConstruct[];
 }
 
-// we intentionally don't use an enum so that
-// plugins don't have to import the cli at runtime.
-export type ValidationReportStatus = 'success' | 'failure';
+/**
+ * The final status of the validation report
+ */
+export enum ValidationReportStatus {
+  SUCCESS = 'success',
+  FAILURE = 'failure',
+}
 
 /**
  * Summary of the report.
@@ -198,14 +216,14 @@ export type ValidationReportStatus = 'success' | 'failure';
 export interface ValidationReportSummary {
 
   /**
-   * TODO docs
+   * The final status of the validation (pass/fail)
    */
   readonly status: ValidationReportStatus;
 
   /**
-   * TODO docs
+   * The name of the plugin that created the report
    */
-  readonly plugin: string;
+  readonly pluginName: string;
 
   /**
    * TODO docs
@@ -260,7 +278,7 @@ export class ValidationReport {
 
     const constructs = violation.violatingResources.map(resource => ({
       constructStack: this.trace(resource),
-      constructPath: this.root.node.tryFindChild(resource.resourceName)?.node.path,
+      constructPath: this.root.node.tryFindChild(resource.resourceName)?.node.path ?? 'N/A',
       locations: resource.locations,
       resourceName: resource.resourceName,
       templatePath: resource.templatePath,
@@ -278,7 +296,7 @@ export class ValidationReport {
    * Submit the report with a status and additional metadata.
    */
   public submit(status: ValidationReportStatus, metadata?: { readonly [key: string]: string }) {
-    this._summary = { status, plugin: this.pluginName, metadata };
+    this._summary = { status, pluginName: this.pluginName, metadata };
   }
 
   /**
@@ -304,7 +322,7 @@ export class ValidationReport {
     output.push('');
     output.push(table([
       ['Status', json.summary.status],
-      ['Plugin', json.summary.plugin],
+      ['Plugin', json.summary.pluginName],
       ...Object.entries(json.summary.metadata ?? {}),
     ]));
 

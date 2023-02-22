@@ -70,11 +70,11 @@ function invokeValidationPlugins(root: IConstruct, assembly: cxapi.CloudAssembly
     }
 
     assembly.stacks.forEach(stack => {
-      const validationContext = new ValidationContext(
+      const validationContext = new ValidationContext({
         plugin,
         root,
         stack,
-      );
+      });
 
       plugin.validate(validationContext);
       const report = validationContext.report;

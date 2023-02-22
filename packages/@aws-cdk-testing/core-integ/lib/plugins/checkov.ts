@@ -33,7 +33,7 @@ export class CheckovValidationPlugin implements IValidationPlugin {
    * TODO docs
    */
   validate(context: ValidationContext) {
-    const templatePath = context.stack.templateFullPath;
+    const templatePath = context.templateFullPath;
     const flags = [
       '-f',
       templatePath,
