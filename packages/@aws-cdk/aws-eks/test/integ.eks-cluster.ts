@@ -32,9 +32,16 @@ class EksClusterStack extends Stack {
     // just need one nat gateway to simplify the test
     this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
+    // Changing the subnets order should be supported
+    const vpcSubnets: ec2.SubnetSelection[] = [
+      { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      { subnetType: ec2.SubnetType.PUBLIC },
+    ];
+
     // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
+      vpcSubnets,
       mastersRole,
       defaultCapacity: 2,
       ...getClusterVersionConfig(this),
