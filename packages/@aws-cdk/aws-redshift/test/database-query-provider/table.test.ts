@@ -222,21 +222,52 @@ describe('update', () => {
   });
 
   test('does not replace if table name changes', async () => {
+    const newEvent = {
+      ...event,
+      OldResourceProperties: {
+        ...event.OldResourceProperties,
+        tableName: 'oldTableName',
+      },
+    };
     const newTableNamePrefix = 'newTableNamePrefix';
     const newResourceProperties = {
       ...resourceProperties,
       tableName: {
         ...resourceProperties.tableName,
         prefix: newTableNamePrefix,
+        generateSuffix: 'false',
+      },
+    };
+
+    await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `ALTER TABLE ${physicalResourceId} RENAME TO ${newTableNamePrefix}`,
+    }));
+  });
+
+  test('does not replace if table name removed', async () => {
+    const newEvent = {
+      ...event,
+      OldResourceProperties: {
+        ...event.OldResourceProperties,
+        tableName: 'oldTableName',
+      },
+    };
+    const newResourceProperties = {
+      ...resourceProperties,
+      tableName: {
+        prefix: 'Table',
         generateSuffix: 'true',
       },
     };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+    await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `ALTER TABLE ${physicalResourceId} RENAME TO ${newTableNamePrefix}${requestIdTruncated}`,
+      Sql: expect.stringMatching(new RegExp(`ALTER TABLE ${physicalResourceId} RENAME TO .+${requestIdTruncated}`)),
     }));
   });
 
