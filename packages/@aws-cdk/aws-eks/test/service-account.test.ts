@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
-import * as eks from '../lib';
 import { testFixture, testFixtureCluster } from './util';
+import * as eks from '../lib';
 
 /* eslint-disable max-len */
 

@@ -6,13 +6,13 @@ import * as sns from '@aws-cdk/aws-sns';
 import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
+import { DeployCdkStackAction } from './actions';
+import { CdkPipeline } from './pipeline';
 import { AssetType } from '../blueprint/asset-type';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { pipelineSynth } from '../private/construct-internals';
 import { topologicalSort } from '../private/toposort';
-import { DeployCdkStackAction } from './actions';
-import { CdkPipeline } from './pipeline';
 
 /**
  * Construction properties for a CdkStage

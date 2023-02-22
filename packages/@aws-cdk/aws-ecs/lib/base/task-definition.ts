@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { ImportedTaskDefinition } from './_imported-task-definition';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -9,7 +10,6 @@ import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
 import { RuntimePlatform } from '../runtime-platform';
-import { ImportedTaskDefinition } from './_imported-task-definition';
 
 /**
  * The interface for all task definitions.

@@ -1,5 +1,5 @@
-import { CloudAssembly } from '../cloud-assembly';
 import { NestedCloudAssemblyArtifact } from './nested-cloud-assembly-artifact';
+import { CloudAssembly } from '../cloud-assembly';
 
 const cacheSym = Symbol();
 
