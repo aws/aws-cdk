@@ -62,6 +62,36 @@
               "version": "0.0.0"
             }
           },
+          "QueryDefinitionWithMultipleStatements": {
+            "id": "QueryDefinitionWithMultipleStatements",
+            "path": "aws-cdk-logs-insights-querydefinition-integ/QueryDefinitionWithMultipleStatements",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-logs-insights-querydefinition-integ/QueryDefinitionWithMultipleStatements/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::QueryDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "QueryDefinitionWithMultipleStatements",
+                    "queryString": "fields @timestamp, @message\n| parse @message \"[*] *\" as loggingType, loggingMessage\n| parse @message \"<*>: *\" as differentLoggingType, differentLoggingMessage\n| filter loggingType = \"ERROR\"\n| filter loggingMessage = \"A very strange error occurred!\"\n| sort @timestamp desc\n| limit 20\n| display loggingMessage",
+                    "logGroupNames": [
+                      {
+                        "Ref": "LogGroupF5B46931"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnQueryDefinition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.QueryDefinition",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-logs-insights-querydefinition-integ/BootstrapVersion",
@@ -97,7 +127,7 @@
                 "path": "LogsInsightsQueryDefinitionIntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.161"
+                  "version": "10.1.237"
                 }
               },
               "DeployAssert": {
@@ -143,7 +173,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.161"
+          "version": "10.1.237"
         }
       }
     },

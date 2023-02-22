@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { shell } from '../src/api/_shell';
 import { Package } from './_package';
+import { shell } from '../src/api/_shell';
 
 test('validate', () => {
 

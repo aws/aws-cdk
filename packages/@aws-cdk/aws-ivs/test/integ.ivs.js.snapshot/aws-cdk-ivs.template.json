@@ -3,8 +3,8 @@
   "PlaybackKeyPairBE17315B": {
    "Type": "AWS::IVS::PlaybackKeyPair",
    "Properties": {
-    "PublicKeyMaterial": "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEs6k8Xf6WyFq3yZXoup8G/gH6DntSATqD\nYfo83eX0GJCKxJ8fr09h9LP9HDGof8/bo66P+SGHeAARGF/O9WPAQVUgSlm/KMFX\nEPtPtOm1s0GR9k1ydU5hkI++f9CoZ5lM\n-----END PUBLIC KEY-----",
-    "Name": "IVSIntegrationTestPlaybackKeyPair"
+    "Name": "IVSIntegrationTestPlaybackKeyPair",
+    "PublicKeyMaterial": "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEs6k8Xf6WyFq3yZXoup8G/gH6DntSATqD\nYfo83eX0GJCKxJ8fr09h9LP9HDGof8/bo66P+SGHeAARGF/O9WPAQVUgSlm/KMFX\nEPtPtOm1s0GR9k1ydU5hkI++f9CoZ5lM\n-----END PUBLIC KEY-----"
    }
   },
   "Channel4048F119": {
