@@ -163,6 +163,16 @@ module.exports = {
       }
     ],
 
+    // Relying on truthiness checks for numbers is going to cause problems
+    '@typescript-eslint/strict-boolean-expressions': [
+      'error',
+      {
+        // Mostly the defaults, with a couple of changes
+        allowNumber: false,
+        allowNullableString: true,
+      },
+    ],
+
     // Oh ho ho naming. Everyone's favorite topic!
     // FIXME: there's no way to do this properly. The proposed tslint replacement
     // works very differently, also checking names in object literals, which we use all over the
