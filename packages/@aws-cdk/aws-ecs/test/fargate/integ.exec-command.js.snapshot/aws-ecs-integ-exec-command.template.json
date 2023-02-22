@@ -673,6 +673,15 @@
     "ContainerDefinitions": [
      {
       "Essential": true,
+      "HealthCheck": {
+       "Command": [
+        "CMD-SHELL",
+        "curl localhost:8000"
+       ],
+       "Interval": 60,
+       "Retries": 3,
+       "Timeout": 40
+      },
       "Image": "amazon/amazon-ecs-sample",
       "Name": "web"
      }

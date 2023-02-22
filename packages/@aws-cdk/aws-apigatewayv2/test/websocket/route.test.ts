@@ -120,6 +120,50 @@ describe('WebSocketRoute', () => {
 
     Template.fromStack(stack).hasResource('AWS::ApiGatewayV2::Integration', 2);
   });
+
+  test('default RouteResponseSelectionExpression is set if route will return a response to the client', () => {
+    // GIVEN
+    const stack = new Stack();
+    const webSocketApi = new WebSocketApi(stack, 'Api');
+
+    // WHEN
+    const route = new WebSocketRoute(stack, 'Route', {
+      webSocketApi,
+      integration: new DummyIntegration(),
+      routeKey: 'message',
+      returnResponse: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(webSocketApi.apiId),
+      RouteKey: 'message',
+      RouteResponseSelectionExpression: '$default',
+      Target: {
+        'Fn::Join': [
+          '',
+          [
+            'integrations/',
+            {
+              Ref: 'RouteDummyIntegrationE40E82B4',
+            },
+          ],
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::RouteResponse', {
+      ApiId: stack.resolve(webSocketApi.apiId),
+      RouteId: stack.resolve(route.routeId),
+      RouteResponseKey: '$default',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      ApiId: stack.resolve(webSocketApi.apiId),
+      IntegrationType: 'AWS_PROXY',
+      IntegrationUri: 'some-uri',
+    });
+  });
 });
 
 
