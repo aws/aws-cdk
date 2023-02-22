@@ -1,0 +1,352 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-stepfunctions-kinesis-integ": {
+        "id": "aws-stepfunctions-kinesis-integ",
+        "path": "aws-stepfunctions-kinesis-integ",
+        "children": {
+          "MytestStream": {
+            "id": "MytestStream",
+            "path": "aws-stepfunctions-kinesis-integ/MytestStream",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-kinesis-integ/MytestStream/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Kinesis::Stream",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionPeriodHours": 24,
+                    "shardCount": 1,
+                    "streamEncryption": {
+                      "Fn::If": [
+                        "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+                        {
+                          "Ref": "AWS::NoValue"
+                        },
+                        {
+                          "EncryptionType": "KMS",
+                          "KeyId": "alias/aws/kinesis"
+                        }
+                      ]
+                    },
+                    "streamModeDetails": {
+                      "streamMode": "PROVISIONED"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kinesis.CfnStream",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kinesis.Stream",
+              "version": "0.0.0"
+            }
+          },
+          "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+            "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "path": "aws-stepfunctions-kinesis-integ/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnCondition",
+              "version": "0.0.0"
+            }
+          },
+          "GetSharedInt": {
+            "id": "GetSharedInt",
+            "path": "aws-stepfunctions-kinesis-integ/GetSharedInt",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.TaskStateBase",
+              "version": "0.0.0"
+            }
+          },
+          "GetRecords": {
+            "id": "GetRecords",
+            "path": "aws-stepfunctions-kinesis-integ/GetRecords",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.TaskStateBase",
+              "version": "0.0.0"
+            }
+          },
+          "MyStateMachine": {
+            "id": "MyStateMachine",
+            "path": "aws-stepfunctions-kinesis-integ/MyStateMachine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-kinesis-integ/MyStateMachine/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-kinesis-integ/MyStateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-kinesis-integ/MyStateMachine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-kinesis-integ/MyStateMachine/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-kinesis-integ/MyStateMachine/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "kinesis:GetShardIterator",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:aws:kinesis:*:*:stream/",
+                                        {
+                                          "Ref": "MytestStream5022FD46"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "kinesis:DescribeStream",
+                                    "kinesis:GetRecords"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":kinesis:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "MytestStream5022FD46"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyStateMachineRoleDefaultPolicyE468EB18",
+                            "roles": [
+                              {
+                                "Ref": "MyStateMachineRoleD59FFEBC"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-kinesis-integ/MyStateMachine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "MyStateMachineRoleD59FFEBC",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"GetSharedInt\",\"States\":{\"GetSharedInt\":{\"Next\":\"GetRecords\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::aws-sdk:kinesis:getShardIterator\",\"Parameters\":{\"StreamName\":\"",
+                          {
+                            "Ref": "MytestStream5022FD46"
+                          },
+                          "\",\"ShardId\":\"shardId-000000000000\",\"ShardIteratorType\":\"LATEST\"}},\"GetRecords\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::aws-sdk:kinesis:getRecords\",\"Parameters\":{\"StreamARN\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":kinesis:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MytestStream5022FD46"
+                          },
+                          "\",\"ShardIterator\":\"$$.Task.Result.ShardIterator\",\"Limit\":10000}}}}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachineARN": {
+            "id": "StateMachineARN",
+            "path": "aws-stepfunctions-kinesis-integ/StateMachineARN",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-stepfunctions-kinesis-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-stepfunctions-kinesis-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "LambdaTest": {
+        "id": "LambdaTest",
+        "path": "LambdaTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LambdaTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LambdaTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.249"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LambdaTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LambdaTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LambdaTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.249"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

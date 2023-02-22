@@ -1,0 +1,19 @@
+{
+  "version": "30.0.0",
+  "files": {
+    "68912ff26c780c7eb5223c8da5472c0478022d4c8d5163df730fe6e9d94bdb3d": {
+      "source": {
+        "path": "aws-stepfunctions-kinesis-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "68912ff26c780c7eb5223c8da5472c0478022d4c8d5163df730fe6e9d94bdb3d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
