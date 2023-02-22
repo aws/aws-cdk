@@ -110,7 +110,7 @@ else
     echo "⚠️ Dependency warning: Unknown container client detected. You have set \"CDK_DOCKER=$CDK_DOCKER\"."
     check_which $container_client "(unknown version requirement)"
     echo "While any docker compatible client can be used as a drop-in replacement, support for \"$CDK_DOCKER\" is unknown."
-    echo "Proceed with caution." 
+    echo "Proceed with caution."
     echo -e "Checking if $container_client is running... \c"
     client_running=$($container_client ps)
     if [ $? -eq 0 ]
