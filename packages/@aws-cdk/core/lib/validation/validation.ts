@@ -346,7 +346,7 @@ export class ValidationReport {
 
   private trace(resource: ValidationViolatingResource): string[] {
     const resourceName = resource.resourceName;
-    const manifestPath = path.join(process.cwd(), resource.templatePath, '../manifest.json');
+    const manifestPath = path.join(resource.templatePath, '../manifest.json');
     const manifest = Manifest.loadAssemblyManifest(manifestPath);
 
     for (const stack of Object.values(manifest.artifacts ?? {})) {
