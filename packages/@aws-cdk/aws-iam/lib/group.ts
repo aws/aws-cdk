@@ -200,6 +200,8 @@ export class Group extends GroupBase {
       // Removes leading slash from path
       resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
+
+    this.managedPoliciesExceededWarning();
   }
 
   /**
@@ -210,9 +212,13 @@ export class Group extends GroupBase {
    */
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
-    if (this.managedPolicies.length > 10) {
-      Annotations.of(this).addWarning(`You added ${this.managedPolicies.length} to IAM Group ${this.groupName}. The maximum number of managed policies attached to an IAM group is 10.`);
-    }
     this.managedPolicies.push(policy);
+    this.managedPoliciesExceededWarning();
+  }
+
+  private managedPoliciesExceededWarning() {
+    if (this.managedPolicies.length > 10) {
+      Annotations.of(this).addWarning(`You added ${this.managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`);
+    }
   }
 }
