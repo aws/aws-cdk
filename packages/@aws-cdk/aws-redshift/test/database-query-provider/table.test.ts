@@ -270,21 +270,6 @@ describe('update', () => {
     }));
   });
 
-  test('does not replace if column ids are similar, but throws', async () => {
-    const newResourceProperties = {
-      ...resourceProperties,
-      tableColumns: [
-        { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
-        { id: 'col1', name: 'col2', dataType: 'varchar(1)' },
-      ],
-    };
-
-    await expect(manageTable(newResourceProperties, event)).rejects.toThrow(
-      "Column id 'col1' is not unique.",
-    );
-    expect(mockExecuteStatement).not.toHaveBeenCalled();
-  });
-
   describe('column name', () => {
     test('does not replace if column name changed', async () => {
       const newEvent = {

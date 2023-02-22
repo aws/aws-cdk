@@ -139,6 +139,20 @@ describe('cluster table', () => {
     });
   });
 
+  it('throws if column ids are similar', async () => {
+    const updatedTableColumns: redshift.Column[] = [
+      { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+      { id: 'col1', name: 'col2', dataType: 'float' },
+    ];
+
+    expect(
+      () => new redshift.Table(stack, 'Table', {
+        ...databaseOptions,
+        tableColumns: updatedTableColumns,
+      }),
+    ).toThrow("Column id 'col1' is not unique.");
+  });
+
   describe('distKey and distStyle', () => {
     it('throws if more than one distKeys are configured', () => {
       const updatedTableColumns: redshift.Column[] = [
