@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.66.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.66.0-alpha.0...v2.66.1-alpha.0) (2023-02-22)
+
+
+### Features
+
+* **msk:** add Kafka versions 3.1.1, 3.2.0, and  and 3.3.1 ([#23918](https://github.com/aws/aws-cdk/issues/23918)) ([e1b4dec](https://github.com/aws/aws-cdk/commit/e1b4dec5faeed0b121287ca952f48926efe39fdf)), closes [#23899](https://github.com/aws/aws-cdk/issues/23899)
+
 ## [2.66.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.65.0-alpha.0...v2.66.0-alpha.0) (2023-02-21)
 
 

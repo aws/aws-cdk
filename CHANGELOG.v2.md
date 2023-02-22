@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.66.1](https://github.com/aws/aws-cdk/compare/v2.66.0...v2.66.1) (2023-02-22)
+
+
+### Bug Fixes
+
+* Correct SamlConsolePrincipal for non-China ([#24277](https://github.com/aws/aws-cdk/issues/24277)) ([da1b8c6](https://github.com/aws/aws-cdk/commit/da1b8c6c157ce3f66057489226b0449ab308ff51)), closes [#24243](https://github.com/aws/aws-cdk/issues/24243)
+* Correct SamlConsolePrincipal for non-China ([#24277](https://github.com/aws/aws-cdk/issues/24277)) ([0c67d18](https://github.com/aws/aws-cdk/commit/0c67d181ead9874fa4969bedc421e13e83866a4b)), closes [#24243](https://github.com/aws/aws-cdk/issues/24243)
+* **eks:** integ tests errors ([#24276](https://github.com/aws/aws-cdk/issues/24276)) ([198b58e](https://github.com/aws/aws-cdk/commit/198b58e644a6fed3352cb28f7665aa5269630bb5))
+
 ## [2.66.0](https://github.com/aws/aws-cdk/compare/v2.65.0...v2.66.0) (2023-02-21)
 
 
