@@ -9,9 +9,9 @@ import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-24';
 import * as constructs from 'constructs';
-import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+import * as eks from '../lib';
 
 
 class EksClusterStack extends Stack {

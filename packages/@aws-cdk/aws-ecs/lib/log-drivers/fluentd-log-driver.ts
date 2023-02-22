@@ -1,9 +1,9 @@
 import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { renderCommonLogDriverOptions, stringifyOptions } from './utils';
+import { ContainerDefinition } from '../container-definition';
 
 /**
  * Specifies the fluentd log driver configuration options.
