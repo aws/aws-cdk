@@ -1,13 +1,13 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
-import { Column } from '../../table';
 import { executeStatement } from './redshift-data';
 import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
+import { Column } from '../../table';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
-  const tableNameSuffix = `${event.RequestId.substring(0, 8)}`;
+  const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.RequestId.substring(0, 8)}` : '';
   const tableColumns = props.tableColumns;
   const tableAndClusterProps = props;
 
@@ -154,6 +154,7 @@ async function updateTable(
   const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
   if (tableNamePrefix !== oldTableNamePrefix) {
     await executeStatement(`ALTER TABLE ${tableName} RENAME TO ${tableNamePrefix + tableNameSuffix}`, tableAndClusterProps);
+    return tableNamePrefix + tableNameSuffix;
   }
 
   return tableName;
