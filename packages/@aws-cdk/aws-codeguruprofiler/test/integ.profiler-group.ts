@@ -27,5 +27,3 @@ const app = new App();
 new IntegTest(app, 'cdk-code-guru-profiler-group', {
   testCases: [new ProfilerGroupIntegrationTest(app, 'ProfilerGroupIntegrationTest')],
 });
-
-app.synth();
