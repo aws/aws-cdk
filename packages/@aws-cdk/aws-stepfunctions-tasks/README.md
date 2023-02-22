@@ -924,7 +924,7 @@ You can call the `startCrawler` API from a `Task` state.
 
 ```ts
 new tasks.GlueStartCrawlerRun(this, 'Task', {
-  'my-crawler-job',
+  glueCrawlerName: 'my-crawler-job',
 });
 ```
 
