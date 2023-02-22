@@ -67,11 +67,6 @@ export interface ValidationContextProps {
     * TODO docs
     */
   readonly stack: cxapi.CloudFormationStackArtifact,
-
-  /**
-    * Whether or not the synth command was executed with --stdout.
-    */
-  readonly stdout?: boolean
 }
 
 /**
@@ -341,7 +336,7 @@ export class ValidationReport {
       output.push('  Occurrences:');
       for (const construct of constructs) {
         output.push('');
-        output.push(`    - Construct Path: ${construct.constructPath ?? 'N/A'}`);
+        output.push(`    - Construct Path: ${construct.constructPath}`);
         output.push(`    - Template Path: ${construct.templatePath}`);
         output.push(`    - Creation Stack:\n\t${construct.constructStack?.join('\n\t')}`);
         output.push(`    - Resource Name: ${construct.resourceName}`);
