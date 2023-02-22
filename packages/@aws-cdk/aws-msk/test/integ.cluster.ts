@@ -199,6 +199,7 @@ const objects = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
 const assertionProvider = objects.node.tryFindChild('SdkProvider') as AssertionsProvider;
 assertionProvider.addPolicyStatementFromSdkCall('s3', 'ListBucket', [stack.bucketArn]);
 assertionProvider.addPolicyStatementFromSdkCall('s3', 'GetObject', [`${stack.bucketArn}/*`]);
+assertionProvider.addPolicyStatementFromSdkCall('kafka', 'GetBootstrapBrokers', ['*']);
 
 objects.expect(ExpectedResult.objectLike({
   KeyCount: 1,
