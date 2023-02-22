@@ -73,8 +73,6 @@ export async function main() {
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
   await copyTemplateFiles(templateDir, targetDir);
 
-  // await runBuild(targetDir);
-
   if (clean) {
     await fs.remove(path.resolve(targetDir));
   }
