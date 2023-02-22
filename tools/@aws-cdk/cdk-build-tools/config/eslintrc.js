@@ -170,6 +170,8 @@ module.exports = {
         // Mostly the defaults, with a couple of changes
         allowNumber: false,
         allowNullableString: true,
+        allowNullableBoolean: true,
+        allowAny: true,
       },
     ],
 
