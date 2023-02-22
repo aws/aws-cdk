@@ -114,7 +114,7 @@ def get_oci_cmd(repository, version):
 
         cmnd = [
             f"aws ecr-public get-login-password --region us-east-1 | " \
-            f"helm registry login --username AWS --password-stdin {public_ecr}; helm pull {repository} --version {version} --untar"
+            f"helm registry login --username AWS --password-stdin {public_registry['registry']}; helm pull {repository} --version {version} --untar"
             ]
     else:
         logger.error("OCI repository format not recognized, falling back to helm pull")
