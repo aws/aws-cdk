@@ -7,20 +7,22 @@ import * as awsCdkMigration from 'aws-cdk-migration';
 import * as fs from 'fs-extra';
 
 // The directory where our 'package.json' lives
-const MONOPACKAGE_ROOT = process.cwd();
 
-const ROOT_PATH = findWorkspacePath();
-const UBER_PACKAGE_JSON_PATH = path.join(MONOPACKAGE_ROOT, 'package.json');
+export interface Config {
+  monoPackageRoot: string;
+  rootPath: string;
+  uberPackageJsonPath: string;
+  excludedPackages: string[];
+  skipCodeGen?: boolean;
+}
 
-const EXCLUDED_PACKAGES = ['@aws-cdk/example-construct-library'];
-
-export async function main() {
-  console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
-  const uberPackageJson = await fs.readJson(UBER_PACKAGE_JSON_PATH) as PackageJson;
-  const libraries = await findLibrariesToPackage(uberPackageJson);
-  await verifyDependencies(uberPackageJson, libraries);
-  await prepareSourceFiles(libraries, uberPackageJson);
-  await combineRosettaFixtures(libraries, uberPackageJson);
+export async function main(config: Config): Promise<readonly LibraryReference[]> {
+  console.log(`🌴  workspace root path is: ${config.rootPath}`);
+  const uberPackageJson = await fs.readJson(config.uberPackageJsonPath) as PackageJson;
+  const libraries = await findLibrariesToPackage(uberPackageJson, config);
+  await verifyDependencies(uberPackageJson, libraries, config);
+  await prepareSourceFiles(libraries, uberPackageJson, config);
+  await combineRosettaFixtures(libraries, uberPackageJson, config);
 
   // if explicitExports is set to `false`, remove the "exports" section from package.json
   const explicitExports = uberPackageJson.ubergen?.explicitExports ?? true;
@@ -29,22 +31,23 @@ export async function main() {
   }
 
   // Rewrite package.json (exports will have changed)
-  await fs.writeJson(UBER_PACKAGE_JSON_PATH, uberPackageJson, { spaces: 2 });
+  await fs.writeJson(config.uberPackageJsonPath, uberPackageJson, { spaces: 2 });
+  return libraries;
 }
 
-interface LibraryReference {
+export interface LibraryReference {
   readonly packageJson: PackageJson;
   readonly root: string;
   readonly shortName: string;
 }
 
-type Export = string | {
+export type Export = string | {
   readonly types?: string;
   readonly import?: string;
   readonly require?: string;
 };
 
-interface PackageJson {
+export interface PackageJson {
   readonly main?: string;
   readonly description?: string;
   readonly bundleDependencies?: readonly string[];
@@ -106,7 +109,7 @@ interface PackageJson {
 /**
  * Find the workspace root path. Walk up the directory tree until you find lerna.json
  */
-function findWorkspacePath(): string {
+export function findWorkspacePath(): string {
 
   return _findRootPath(process.cwd());
 
@@ -123,17 +126,17 @@ function findWorkspacePath(): string {
   }
 }
 
-async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<readonly LibraryReference[]> {
+export async function findLibrariesToPackage(uberPackageJson: PackageJson, config: Config): Promise<readonly LibraryReference[]> {
   console.log('🔍 Discovering libraries that need packaging...');
 
   const deprecatedPackages = uberPackageJson.ubergen?.deprecatedPackages;
   const result = new Array<LibraryReference>();
-  const librariesRoot = path.resolve(ROOT_PATH, 'packages', '@aws-cdk');
+  const librariesRoot = path.resolve(config.rootPath, 'packages', '@aws-cdk');
 
   for (const dir of await fs.readdir(librariesRoot)) {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
 
-    if (packageJson.ubergen?.exclude || EXCLUDED_PACKAGES.includes(packageJson.name)) {
+    if (packageJson.ubergen?.exclude || config.excludedPackages.includes(packageJson.name)) {
       console.log(`\t⚠️ Skipping (ubergen excluded):   ${packageJson.name}`);
       continue;
     } else if (packageJson.jsii == null ) {
@@ -160,7 +163,7 @@ async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<rea
   return result;
 }
 
-async function verifyDependencies(packageJson: any, libraries: readonly LibraryReference[]): Promise<void> {
+export async function verifyDependencies(packageJson: any, libraries: readonly LibraryReference[], config: Config): Promise<void> {
   console.log('🧐 Verifying dependencies are complete...');
 
   let changed = false;
@@ -193,7 +196,7 @@ async function verifyDependencies(packageJson: any, libraries: readonly LibraryR
       [library.packageJson.name]: library.packageJson.version,
     });
   }
-  const workspacePath = path.resolve(ROOT_PATH, 'package.json');
+  const workspacePath = path.resolve(config.rootPath, 'package.json');
   const workspace = await fs.readJson(workspacePath);
   let workspaceChanged = false;
 
@@ -242,24 +245,24 @@ async function verifyDependencies(packageJson: any, libraries: readonly LibraryR
   }
 
   if (changed) {
-    await fs.writeFile(UBER_PACKAGE_JSON_PATH, JSON.stringify(packageJson, null, 2) + '\n', { encoding: 'utf8' });
+    await fs.writeFile(config.uberPackageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', { encoding: 'utf8' });
 
     throw new Error('Fixed dependency inconsistencies. Commit the updated package.json file.');
   }
   console.log('\t✅ Dependencies are correct!');
 }
 
-async function prepareSourceFiles(libraries: readonly LibraryReference[], packageJson: PackageJson) {
+async function prepareSourceFiles(libraries: readonly LibraryReference[], packageJson: PackageJson, config: Config) {
   console.log('📝 Preparing source files...');
 
-  if (packageJson.ubergen?.excludeExperimentalModules) {
+  if (packageJson.ubergen?.excludeExperimentalModules && !config.skipCodeGen) {
     console.log('\t 👩🏻‍🔬 \'excludeExperimentalModules\' enabled. Regenerating all experimental modules as L1s using cfn2ts...');
   }
 
-  const libRoot = resolveLibRoot(packageJson);
+  const libRoot = resolveLibRoot(packageJson, config.monoPackageRoot);
 
   // Should not remove collection directory if we're currently in it. The OS would be unhappy.
-  if (libRoot !== process.cwd()) {
+  if (libRoot !== process.cwd() && libRoot !== config.monoPackageRoot) {
     await fs.remove(libRoot);
   }
 
@@ -294,7 +297,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 
   for (const library of libraries) {
     const libDir = path.join(libRoot, library.shortName);
-    const copied = await transformPackage(library, packageJson, libDir, libraries);
+    const copied = await transformPackage(library, packageJson, libDir, libraries, config);
 
     if (!copied) {
       continue;
@@ -326,7 +329,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
  * Replace the original 'main' export with an export of the new '<submodule>/index.ts` file we've written
  * in 'transformPackage'.
  */
-function copySubmoduleExports(targetExports: Record<string, Export>, library: LibraryReference, subdirectory: string) {
+export function copySubmoduleExports(targetExports: Record<string, Export>, library: LibraryReference, subdirectory: string) {
   const visibleName = library.shortName;
 
   // Do both REAL "exports" section, as well as virtual, ubergen-only "exports" section
@@ -351,10 +354,10 @@ function copySubmoduleExports(targetExports: Record<string, Export>, library: Li
   }
 }
 
-async function combineRosettaFixtures(libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
+async function combineRosettaFixtures(libraries: readonly LibraryReference[], uberPackageJson: PackageJson, config: Config) {
   console.log('📝 Combining Rosetta fixtures...');
 
-  const uberRosettaDir = path.resolve(MONOPACKAGE_ROOT, 'rosetta');
+  const uberRosettaDir = path.resolve(config.monoPackageRoot, 'rosetta');
   await fs.remove(uberRosettaDir);
   await fs.mkdir(uberRosettaDir);
 
@@ -382,15 +385,17 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[], ub
   console.log('\t🍺 Success!');
 }
 
-async function transformPackage(
+export async function transformPackage(
   library: LibraryReference,
   uberPackageJson: PackageJson,
   destination: string,
   allLibraries: readonly LibraryReference[],
+  config: Config,
+  // monoPackageRoot: string,
 ) {
   await fs.mkdirp(destination);
 
-  if (uberPackageJson.ubergen?.excludeExperimentalModules && library.packageJson.stability === 'experimental') {
+  if (uberPackageJson.ubergen?.excludeExperimentalModules && library.packageJson.stability === 'experimental' && !config.skipCodeGen) {
     // when stripExperimental is enabled, we only want to add the L1s of experimental modules.
     let cfnScopes = library.packageJson['cdk-build']?.cloudformation;
 
@@ -414,10 +419,10 @@ async function transformPackage(
         .join('\n'));
     await pkglint.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'), alphaPackageName);
 
-    await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
+    await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson, config.monoPackageRoot);
   } else {
-    await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
-    await copyLiterateSources(path.join(library.root, 'test'), path.join(destination, 'test'), allLibraries, uberPackageJson);
+    await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson, config.monoPackageRoot);
+    await copyLiterateSources(path.join(library.root, 'test'), path.join(destination, 'test'), allLibraries, uberPackageJson, config.monoPackageRoot);
   }
 
   await fs.writeFile(
@@ -427,11 +432,10 @@ async function transformPackage(
   );
 
   if (library.shortName !== 'core') {
-    const config = uberPackageJson.jsii.targets;
     await fs.writeJson(
       path.join(destination, '.jsiirc.json'),
       {
-        targets: transformTargets(config, library.packageJson.jsii.targets),
+        targets: transformTargets(uberPackageJson.jsii.targets, library.packageJson.jsii.targets),
       },
       { spaces: 2 },
     );
@@ -443,7 +447,7 @@ async function transformPackage(
   const relativeLibRoot = uberPackageJson.ubergen?.libRoot;
   if (relativeLibRoot && relativeLibRoot !== '.') {
     await fs.writeFile(
-      path.resolve(MONOPACKAGE_ROOT, `${library.shortName}.ts`),
+      path.resolve(config.monoPackageRoot, `${library.shortName}.ts`),
       `export * from './${relativeLibRoot}/${library.shortName}';\n`,
       { encoding: 'utf8' },
     );
@@ -504,8 +508,14 @@ function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: P
   return result;
 }
 
-async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
-  const libRoot = resolveLibRoot(uberPackageJson);
+export async function copyOrTransformFiles(
+  from: string,
+  to: string,
+  libraries: readonly LibraryReference[],
+  uberPackageJson: PackageJson,
+  monoPackageRoot: string,
+) {
+  const libRoot = resolveLibRoot(uberPackageJson, monoPackageRoot);
   const promises = (await fs.readdir(from)).map(async name => {
     if (shouldIgnoreFile(name)) { return; }
 
@@ -522,7 +532,7 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     const stat = await fs.stat(source);
     if (stat.isDirectory()) {
       await fs.mkdirp(destination);
-      return copyOrTransformFiles(source, destination, libraries, uberPackageJson);
+      return copyOrTransformFiles(source, destination, libraries, uberPackageJson, monoPackageRoot);
     }
 
     if (name.endsWith('.ts')) {
@@ -564,14 +574,20 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
   await Promise.all(promises);
 }
 
-async function copyLiterateSources(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
-  const libRoot = resolveLibRoot(uberPackageJson);
+export async function copyLiterateSources(
+  from: string,
+  to: string,
+  libraries: readonly LibraryReference[],
+  uberPackageJson: PackageJson,
+  monoPackageRoot: string,
+) {
+  const libRoot = resolveLibRoot(uberPackageJson, monoPackageRoot);
   await Promise.all((await fs.readdir(from)).flatMap(async name => {
     const source = path.join(from, name);
     const stat = await fs.stat(source);
 
     if (stat.isDirectory()) {
-      await copyLiterateSources(source, path.join(to, name), libraries, uberPackageJson);
+      await copyLiterateSources(source, path.join(to, name), libraries, uberPackageJson, monoPackageRoot);
       return;
     }
 
@@ -674,6 +690,6 @@ function unixPath(x: string) {
  * @param uberPackageJson package.json contents of the uber package
  * @returns The directory where we should collect all the libraries.
  */
-function resolveLibRoot(uberPackageJson: PackageJson): string {
-  return path.resolve(uberPackageJson.ubergen?.libRoot ?? MONOPACKAGE_ROOT);
+function resolveLibRoot(uberPackageJson: PackageJson, monoPackageRoot: string): string {
+  return path.resolve(uberPackageJson.ubergen?.libRoot ?? monoPackageRoot);
 }

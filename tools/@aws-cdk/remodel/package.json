@@ -1,29 +1,53 @@
 {
-  "name": "remodel",
+  "name": "@aws-cdk/remodel",
+  "private": true,
   "version": "0.0.0",
-  "description": "",
+  "description": "Restructure the aws-cdk repository and delete all V1 only code",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "tools/@aws-cdk/remodel"
+  },
   "main": "index.js",
   "bin": {
     "remodel": "bin/remodel"
   },
   "scripts": {
-    "build": "tsc -b && chmod +x bin/remodel",
-    "test": "echo success",
-    "watch": "tsc -b --watch"
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "pkglint": "pkglint -f",
+    "build+test": "yarn build",
+    "build+extract": "yarn build",
+    "build+test+package": "yarn build+test",
+    "build+test+extract": "yarn build+test"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@aws-cdk/ubergen": "0.0.0",
     "fs-extra": "^9.1.0",
+    "yargs": "^17.6.2"
+  },
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
     "ts-node": "^10.9.1",
     "typescript": "~3.9.10",
-    "yargs": "^17.6.2"
+    "@aws-cdk/pkglint": "0.0.0"
   },
   "engines": {
     "node": ">= 14.15.0"
   },
   "ubergen": {
     "exclude": true
-  }
+  },
+  "homepage": "https://github.com/aws/aws-cdk"
 }
