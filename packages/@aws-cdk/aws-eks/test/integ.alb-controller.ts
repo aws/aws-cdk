@@ -4,9 +4,9 @@ import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-24';
-import * as eks from '../lib';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { Pinger } from './pinger/pinger';
+import * as eks from '../lib';
 
 class EksClusterAlbControllerStack extends Stack {
 

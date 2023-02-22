@@ -4,10 +4,10 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
 import { AppProtocol } from '../lib';
-import { Duration } from '@aws-cdk/core';
 
 describe('container definition', () => {
   describe('When creating a Task Definition', () => {

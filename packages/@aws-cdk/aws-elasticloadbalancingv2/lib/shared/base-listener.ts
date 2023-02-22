@@ -2,9 +2,9 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Annotations, ContextProvider, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from './listener-action';
 import { mapTagMapToCxschema } from './util';
+import { CfnListener } from '../elasticloadbalancingv2.generated';
 
 /**
  * Options for listener lookup
