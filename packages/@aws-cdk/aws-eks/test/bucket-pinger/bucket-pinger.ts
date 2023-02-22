@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 
 export interface BucketPingerProps {
   readonly bucketName: string;
+  readonly timeout?: Duration;
 }
 export class BucketPinger extends Construct {
 
@@ -18,7 +19,7 @@ export class BucketPinger extends Construct {
       code: lambda.Code.fromAsset(`${__dirname}/function`),
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
-      timeout: Duration.minutes(1),
+      timeout: props.timeout ?? Duration.minutes(1),
       environment: {
         BUCKET_NAME: props.bucketName,
       },
