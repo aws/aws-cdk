@@ -4,10 +4,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Token } from '@aws-cdk/core';
 import { RequestContext } from '.';
+import { AwsIntegration } from './aws';
 import { IntegrationConfig, IntegrationOptions, PassthroughBehavior } from '../integration';
 import { Method } from '../method';
 import { Model } from '../model';
-import { AwsIntegration } from './aws';
 /**
  * Options when configuring Step Functions synchronous integration with Rest API
  */

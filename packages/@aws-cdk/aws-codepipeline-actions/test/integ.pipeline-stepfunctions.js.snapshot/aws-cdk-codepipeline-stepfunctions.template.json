@@ -30,7 +30,9 @@
    },
    "DependsOn": [
     "SimpleStateMachineRole0CBC135A"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3": {
    "Type": "AWS::KMS::Key",

@@ -1,8 +1,8 @@
 import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Arn, ArnComponents, ArnFormat, Aws, CfnOutput, ScopedAws, Stack, Token } from '../lib';
-import { Intrinsic } from '../lib/private/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
 import { toCloudFormation } from './util';
+import { Arn, ArnComponents, ArnFormat, Aws, CfnOutput, ScopedAws, Stack, Token } from '../lib';
+import { Intrinsic } from '../lib/private/intrinsic';
 
 describe('arn', () => {
   test('create from components with defaults', () => {

@@ -112,8 +112,8 @@ export class Subscription extends Resource {
 
       let total = 1;
       Object.values(this.filterPolicy).forEach(filter => { total *= filter.length; });
-      if (total > 100) {
-        throw new Error(`The total combination of values (${total}) must not exceed 100.`);
+      if (total > 150) {
+        throw new Error(`The total combination of values (${total}) must not exceed 150.`);
       }
     }
 
