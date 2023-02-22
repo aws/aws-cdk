@@ -16,12 +16,12 @@ main()
 
 async function main() {
   // Generate all L1s based on config in scope-map.json
-  const cfnScopeMapPath = path.join(__dirname, 'scope-map.json');
-  const cfnScopeMap: Record<string, string[]> = await fs.readJson(cfnScopeMapPath);
+  const scopeMapPath = path.join(__dirname, 'scope-map.json');
+
   const generated = await generateAll(srcDir, {
     coreImport: '../../core',
     cloudwatchImport: '../../aws-cloudwatch',
-    scopeMap: cfnScopeMap,
+    scopeMapPath,
   });
 
   // Add any new cfn modules to exports in package.json and index.ts
@@ -35,7 +35,7 @@ async function main() {
         [moduleName]: scopes,
       }
     }, {});
-  await fs.writeJson(cfnScopeMapPath, newScopeMap, { spaces: 2 });
+  await fs.writeJson(scopeMapPath, newScopeMap, { spaces: 2 });
 
   // Generate additional files for specific modules
   const moduleBasePath = path.resolve(__dirname, '..', 'lib');

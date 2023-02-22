@@ -50,14 +50,20 @@ export default async function generate(
   return outputFiles;
 }
 
-export interface GeneratorOptions extends CodeGeneratorOptions, AugmentationsGeneratorOptions {
-
+/**
+ * Configuration options for the generateAll function
+ */
+export interface GenerateAllOptions extends CodeGeneratorOptions, AugmentationsGeneratorOptions {
   /**
-    * Map of CFN Scopes to modules
+    * Path of the file containing the map of module names to their CFN Scopes
     */
-  scopeMap: Record<string, string[]>;
+  scopeMapPath: string;
 }
 
+/**
+ * A data structure holding information about generated modules. It maps
+ * module names to their full module definition and their CFN scopes.
+ */
 export interface ModuleMap {
   [moduleName: string]: {
     module?: pkglint.ModuleDefinition;
@@ -65,19 +71,20 @@ export interface ModuleMap {
   }
 }
 
+/**
+ * Generates L1s for all submodules of a monomodule. Modules to generate are
+ * chosen based on the contents of the `scopeMapPath` file. This is intended for
+ * use in generated L1s in aws-cdk-lib.
+ * @param outPath The root directory to generate L1s in
+ * @param param1  Options
+ * @returns       A ModuleMap containing the ModuleDefinition and CFN scopes for each generated module.
+ */
 export async function generateAll(
   outPath: string,
-  { scopeMap, ...options }: GeneratorOptions,
+  { scopeMapPath, ...options }: GenerateAllOptions,
 ): Promise<ModuleMap> {
   const scopes = cfnSpec.namespaces();
-
-  const moduleMap: ModuleMap = Object.entries(scopeMap)
-    .reduce((accum, [name, moduleScopes]) => {
-      return {
-        ...accum,
-        [name]: { scopes: moduleScopes },
-      };
-    }, {});
+  const moduleMap = await readScopeMap(scopeMapPath);
 
   // Make sure all scopes have their own dedicated package/namespace.
   // Adds new submodules for new namespaces.
@@ -93,7 +100,6 @@ export async function generateAll(
       module,
     };
   }
-
 
   await Promise.all(Object.entries(moduleMap).map(
     async ([moduleName, { scopes: moduleScopes, module }]) => {
@@ -160,4 +166,18 @@ function computeAffix(scope: string, allScopes: string[]): string {
     return version;
   }
   return '';
+}
+
+/**
+ * Reads the scope map from a file and transforms it into the type we need.
+ */
+async function readScopeMap(filepath: string) : Promise<ModuleMap> {
+  const scopeMap: Record<string, string[]> = await fs.readJson(filepath);
+  return Object.entries(scopeMap)
+    .reduce((accum, [name, moduleScopes]) => {
+      return {
+        ...accum,
+        [name]: { scopes: moduleScopes },
+      };
+    }, {});
 }
