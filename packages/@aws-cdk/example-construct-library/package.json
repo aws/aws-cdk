@@ -78,7 +78,8 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "jsii": "v4.9-next"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
