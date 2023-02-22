@@ -913,6 +913,24 @@ describe('restapi', () => {
       MinimumCompressionSize: 1024,
     });
   });
+
+  testDeprecated('throws error when both minimumCompressionSize and minCompressionSize are used', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
+    });
+
+    // WHEN
+    const stack = new Stack(app);
+
+    // THEN
+    expect(() => new apigw.RestApi(stack, 'RestApi', {
+      minCompressionSize: Size.bytes(1024),
+      minimumCompressionSize: 1024,
+    })).toThrow(/"both properties minCompressionSize" and "minimumCompressionSize" cannot be set at once./);
+  });
 });
 
 
