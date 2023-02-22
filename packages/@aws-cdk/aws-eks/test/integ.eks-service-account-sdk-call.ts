@@ -45,9 +45,7 @@ new kplus.Deployment(chart, 'Deployment', {
   serviceAccount: kplusServiceAccount,
 });
 
-const sdkCall = cluster.addCdk8sChart('sdk-call', chart);
-
-sdkCall.node.addDependency(serviceAccount);
+cluster.addCdk8sChart('sdk-call', chart).node.addDependency(serviceAccount);
 
 serviceAccount.role.addToPrincipalPolicy(
   new iam.PolicyStatement({
