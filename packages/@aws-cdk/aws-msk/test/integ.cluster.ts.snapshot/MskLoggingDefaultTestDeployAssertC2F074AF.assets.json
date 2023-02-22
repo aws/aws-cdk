@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "29.0.0",
   "files": {
     "1f3c2cfb18e102edc713fe4c4b4d87572f4297ee4a5e80a5960adf526ee9ea28": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "e05a31925a856f753d012d462f51a3f4b884235b0fe9c3cea1b63e4c95fcd2c4": {
+    "590a48e60582a848d497da5d11a76229c47a402f1783e32eafe9b08e69ca2c50": {
       "source": {
         "path": "MskLoggingDefaultTestDeployAssertC2F074AF.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e05a31925a856f753d012d462f51a3f4b884235b0fe9c3cea1b63e4c95fcd2c4.json",
+          "objectKey": "590a48e60582a848d497da5d11a76229c47a402f1783e32eafe9b08e69ca2c50.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
