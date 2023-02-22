@@ -1,19 +1,19 @@
 /* eslint-disable-next-line import/no-unresolved */
 import type * as AWSLambda from 'aws-lambda';
+import { Column, TableDistStyle, TableSortStyle } from '../../lib';
+import { handler as manageTable } from '../../lib/private/database-query-provider/table';
+import { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
 
 const mockExecuteStatement = jest.fn(() => ({ promise: jest.fn(() => ({ Id: 'statementId' })) }));
 jest.mock('aws-sdk/clients/redshiftdata', () => class {
   executeStatement = mockExecuteStatement;
   describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
 });
-import { Column, TableDistStyle, TableSortStyle } from '../../lib';
-import { handler as manageTable } from '../../lib/private/database-query-provider/table';
-import { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
 
 type ResourcePropertiesType = TableAndClusterProps & { ServiceToken: string };
 
 const tableNamePrefix = 'tableNamePrefix';
-const tableColumns = [{ name: 'col1', dataType: 'varchar(1)' }];
+const tableColumns = [{ id: 'col1', name: 'col1', dataType: 'varchar(1)' }];
 const clusterName = 'clusterName';
 const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
@@ -85,7 +85,7 @@ describe('create', () => {
     const event = baseEvent;
     const newResourceProperties: ResourcePropertiesType = {
       ...resourceProperties,
-      tableColumns: [{ name: 'col1', dataType: 'varchar(1)', distKey: true }],
+      tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(1)', distKey: true }],
       distStyle: TableDistStyle.KEY,
     };
 
@@ -101,9 +101,9 @@ describe('create', () => {
     const newResourceProperties: ResourcePropertiesType = {
       ...resourceProperties,
       tableColumns: [
-        { name: 'col1', dataType: 'varchar(1)', sortKey: true },
-        { name: 'col2', dataType: 'varchar(1)' },
-        { name: 'col3', dataType: 'varchar(1)', sortKey: true },
+        { id: 'col1', name: 'col1', dataType: 'varchar(1)', sortKey: true },
+        { id: 'col2', name: 'col2', dataType: 'varchar(1)' },
+        { id: 'col3', name: 'col3', dataType: 'varchar(1)', sortKey: true },
       ],
       sortStyle: TableSortStyle.COMPOUND,
     };
@@ -120,9 +120,9 @@ describe('create', () => {
     const newResourceProperties: ResourcePropertiesType = {
       ...resourceProperties,
       tableColumns: [
-        { name: 'col1', dataType: 'varchar(4)', distKey: 'true' as unknown as boolean },
-        { name: 'col2', dataType: 'float', sortKey: 'true' as unknown as boolean },
-        { name: 'col3', dataType: 'float', sortKey: 'true' as unknown as boolean },
+        { id: 'col1', name: 'col1', dataType: 'varchar(4)', distKey: 'true' as unknown as boolean },
+        { id: 'col2', name: 'col2', dataType: 'float', sortKey: 'true' as unknown as boolean },
+        { id: 'col3', name: 'col3', dataType: 'float', sortKey: 'true' as unknown as boolean },
       ],
       distStyle: TableDistStyle.KEY,
       sortStyle: TableSortStyle.COMPOUND,
@@ -270,21 +270,57 @@ describe('update', () => {
     }));
   });
 
-  test('does not replace if table columns name changed', async () => {
-    const newTableColumnName = 'col2';
-    const newResourceProperties: ResourcePropertiesType = {
-      ...resourceProperties,
-      tableColumns: [
-        { name: newTableColumnName, dataType: 'varchar(1)' },
-      ],
-    };
+  describe('column name', () => {
+    test('does not replace if column name changed', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [
+            { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+          ],
+        },
+      };
+      const newTableColumnName = 'col2';
+      const newResourceProperties: ResourcePropertiesType = {
+        ...resourceProperties,
+        tableColumns: [
+          { id: 'col1', name: newTableColumnName, dataType: 'varchar(1)' },
+        ],
+      };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
-      PhysicalResourceId: physicalResourceId,
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO ${newTableColumnName}`,
+      }));
     });
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO ${newTableColumnName}`,
-    }));
+
+    test('does not replace if column id assigned, from undefined', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [
+            { name: 'col1', dataType: 'varchar(1)' },
+          ],
+        },
+      };
+      const newResourceProperties: ResourcePropertiesType = {
+        ...resourceProperties,
+        tableColumns: [
+          { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+        ],
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO col1`,
+      }));
+    });
   });
 
   describe('distStyle and distKey', () => {
@@ -347,7 +383,7 @@ describe('update', () => {
     test('replaces if distKey is added', async () => {
       const newResourceProperties: ResourcePropertiesType = {
         ...resourceProperties,
-        tableColumns: [{ name: 'col1', dataType: 'varchar(1)', distKey: true }],
+        tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(1)', distKey: true }],
       };
 
       await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
@@ -393,8 +429,8 @@ describe('update', () => {
       const newResourceProperties: ResourcePropertiesType = {
         ...resourceProperties,
         tableColumns: [
-          { name: 'col1', dataType: 'varchar(1)' },
-          { name: 'col2', dataType: 'varchar(1)', distKey: true },
+          { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+          { id: 'col2', name: 'col2', dataType: 'varchar(1)', distKey: true },
         ],
       };
 
@@ -409,12 +445,12 @@ describe('update', () => {
 
   describe('sortStyle and sortKeys', () => {
     const oldTableColumnsWithSortKeys: Column[] = [
-      { name: 'col1', dataType: 'varchar(1)', sortKey: true },
-      { name: 'col2', dataType: 'varchar(1)' },
+      { id: 'col1', name: 'col1', dataType: 'varchar(1)', sortKey: true },
+      { id: 'col2', name: 'col2', dataType: 'varchar(1)' },
     ];
     const newTableColumnsWithSortKeys: Column[] = [
-      { name: 'col1', dataType: 'varchar(1)' },
-      { name: 'col2', dataType: 'varchar(1)', sortKey: true },
+      { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+      { id: 'col2', name: 'col2', dataType: 'varchar(1)', sortKey: true },
     ];
 
     test('replaces when same sortStyle, different sortKey columns: INTERLEAVED', async () => {

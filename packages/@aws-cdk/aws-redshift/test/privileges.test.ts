@@ -9,7 +9,7 @@ describe('table privileges', () => {
   let cluster: redshift.ICluster;
   const databaseName = 'databaseName';
   let databaseOptions: redshift.DatabaseOptions;
-  const tableColumns = [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }];
+  const tableColumns = [{ id: 'col1', name: 'col1', dataType: 'varchar(4)' }, { id: 'col2', name: 'col2', dataType: 'float' }];
   let table: redshift.ITable;
   let table2: redshift.ITable;
 

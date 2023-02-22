@@ -94,21 +94,21 @@ async function updateTable(
 
   const oldTableColumns = oldResourceProperties.tableColumns;
   const columnDeletions = oldTableColumns.filter(oldColumn => (
-    tableColumns.every(column => oldColumn.id !== column.id)
+    tableColumns.every(column => oldColumn.id ? oldColumn.id !== column.id : oldColumn.name !== column.name)
   ));
   if (columnDeletions.length > 0) {
     alterationStatements.push(...columnDeletions.map(column => `ALTER TABLE ${tableName} DROP COLUMN ${column.name}`));
   }
 
   const columnAdditions = tableColumns.filter(column => {
-    return !oldTableColumns.some(oldColumn => column.id === oldColumn.id);
+    return !oldTableColumns.some(oldColumn => oldColumn.id ? column.id === oldColumn.id : column.name === oldColumn.name);
   }).map(column => `ADD ${column.name} ${column.dataType}`);
   if (columnAdditions.length > 0) {
     alterationStatements.push(...columnAdditions.map(addition => `ALTER TABLE ${tableName} ${addition}`));
   }
 
   const columnNameUpdates = tableColumns.reduce((updates, column) => {
-    const oldColumn = oldTableColumns.find(oldCol => oldCol.id === column.id);
+    const oldColumn = oldTableColumns.find(oldCol => oldCol.id && oldCol.id === column.id);
     if (oldColumn && oldColumn.name !== column.name) {
       updates[oldColumn.name] = column.name;
     }

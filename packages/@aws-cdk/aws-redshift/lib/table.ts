@@ -57,12 +57,12 @@ export interface Column {
   /**
    * The unique identifier of the column.
    *
-   * @default - an unique id is generated
+   * **NOTE** - this is not the name of the column, and renaming this identifier will cause a new column to be created and the old column to be dropped.
    */
-  readonly id?: string;
+  readonly id: string;
 
   /**
-   * The name of the column.
+   * The name of the column. This will appear on Amazon Redshift.
    */
   readonly name: string;
 
@@ -206,10 +206,7 @@ export class Table extends TableBase {
   static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
     return new class extends TableBase {
       readonly tableName = attrs.tableName;
-      readonly tableColumns = attrs.tableColumns.map((column) => ({
-        id: cdk.Names.uniqueId(this),
-        ...column,
-      }));
+      readonly tableColumns = attrs.tableColumns;
       readonly cluster = attrs.cluster;
       readonly databaseName = attrs.databaseName;
     }(scope, id);
@@ -233,10 +230,7 @@ export class Table extends TableBase {
       this.validateSortStyle(props.sortStyle, props.tableColumns);
     }
 
-    this.tableColumns = props.tableColumns.map((column) => ({
-      id: column.id ?? cdk.Names.uniqueId(this),
-      ...column,
-    }));
+    this.tableColumns = props.tableColumns;
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
 

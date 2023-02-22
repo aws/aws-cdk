@@ -143,8 +143,8 @@ describe('cluster table', () => {
     it('throws if more than one distKeys are configured', () => {
       const updatedTableColumns: redshift.Column[] = [
         ...tableColumns,
-        { name: 'col3', dataType: 'varchar(4)', distKey: true },
-        { name: 'col4', dataType: 'float', distKey: true },
+        { id: 'col3', name: 'col3', dataType: 'varchar(4)', distKey: true },
+        { id: 'col3', name: 'col4', dataType: 'float', distKey: true },
       ];
 
       expect(
@@ -158,7 +158,7 @@ describe('cluster table', () => {
     it('throws if distStyle other than KEY is configured with configured distKey column', () => {
       const updatedTableColumns: redshift.Column[] = [
         ...tableColumns,
-        { name: 'col3', dataType: 'varchar(4)', distKey: true },
+        { id: 'col3', name: 'col3', dataType: 'varchar(4)', distKey: true },
       ];
 
       expect(
@@ -202,7 +202,7 @@ describe('cluster table', () => {
       // GIVEN
       const tableColumnsWithSortKey: redshift.Column[] = [
         ...tableColumns,
-        { name: 'col3', dataType: 'varchar(4)', sortKey: true },
+        { id: 'col3', name: 'col3', dataType: 'varchar(4)', sortKey: true },
       ];
 
       // WHEN
@@ -231,7 +231,7 @@ describe('cluster table', () => {
       // GIVEN
       const tableColumnsWithSortKey: redshift.Column[] = [
         ...tableColumns,
-        { name: 'col3', dataType: 'varchar(4)', sortKey: true },
+        { id: 'col3', name: 'col3', dataType: 'varchar(4)', sortKey: true },
       ];
 
       // THEN

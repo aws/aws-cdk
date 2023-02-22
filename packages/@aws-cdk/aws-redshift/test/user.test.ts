@@ -209,7 +209,7 @@ describe('cluster user', () => {
     });
     const table = redshift.Table.fromTableAttributes(stack, 'Table', {
       tableName: 'tableName',
-      tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+      tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(4)' }, { id: 'col2', name: 'col2', dataType: 'float' }],
       cluster,
       databaseName: 'databaseName',
     });
