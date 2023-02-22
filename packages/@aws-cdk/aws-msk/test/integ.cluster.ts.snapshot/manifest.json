@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "29.0.0",
   "artifacts": {
     "aws-cdk-msk-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5c5b94db03f045cf89b28c56612a2b112fa3d83037d4f96122b61ebcfaaa1383.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e5d997c666eb86c6c0c1e116829573aa1e21fde15597a93cab458f1dd03454df.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -353,94 +353,34 @@
             "data": "BootstrapBrokers5"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/SecurityGroup/Resource": [
+        "/aws-cdk-msk-integ/Cluster4/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV311SecurityGroupABBE5779"
+            "data": "Cluster4SecurityGroupABBFAE17"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/Resource": [
+        "/aws-cdk-msk-integ/Cluster4/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV311F7E1C843"
+            "data": "Cluster4567CABC4"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
+        "/aws-cdk-msk-integ/Cluster4/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV311BootstrapBrokersBootstrapBrokerStringTls2DE11AD7"
+            "data": "Cluster4BootstrapBrokersBootstrapBrokerStringTlsA77D8E9C"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/Cluster4/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C"
+            "data": "Cluster4BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy47625D85"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapBrokers6"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV320SecurityGroup6CF1C0F9"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV320997D57C6"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsDF31241F"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812"
-          }
-        ],
-        "/aws-cdk-msk-integ/BootstrapBrokers7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapBrokers7"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV331SecurityGroup332504D8"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV33111A3F7AB"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV331BootstrapBrokersBootstrapBrokerStringTls2574EE93"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08"
-          }
-        ],
-        "/aws-cdk-msk-integ/BootstrapBrokers8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapBrokers8"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapVersion": [
@@ -474,7 +414,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e05a31925a856f753d012d462f51a3f4b884235b0fe9c3cea1b63e4c95fcd2c4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/590a48e60582a848d497da5d11a76229c47a402f1783e32eafe9b08e69ca2c50.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

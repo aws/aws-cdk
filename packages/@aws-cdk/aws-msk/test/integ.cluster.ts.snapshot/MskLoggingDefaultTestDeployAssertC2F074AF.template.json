@@ -31,7 +31,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1677027448917"
+    "salt": "1676187604269"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -99,15 +99,6 @@
             ]
            ]
           }
-         ]
-        },
-        {
-         "Action": [
-          "kafka:GetBootstrapBrokers"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
          ]
         }
        ]
