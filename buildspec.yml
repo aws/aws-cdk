@@ -1,0 +1,10 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo 'build stuff'
+artifacts:
+  files:
+    - "**/*"
+  base-directory: ${HOME}/remodel
