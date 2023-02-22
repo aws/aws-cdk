@@ -1,6 +1,6 @@
 import { Lambda } from 'aws-sdk';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
 import * as setup from './hotswap-test-setup';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateLambdaConfiguration: (
