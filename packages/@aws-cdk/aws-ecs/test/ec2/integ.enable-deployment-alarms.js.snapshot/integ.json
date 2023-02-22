@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "EnableDeploymentAlarms/DefaultTest": {
+      "stacks": [
+        "integ-enable-deployment-alarms"
+      ],
+      "assertionStack": "EnableDeploymentAlarms/DefaultTest/DeployAssert",
+      "assertionStackName": "EnableDeploymentAlarmsDefaultTestDeployAssertE54AEF0B"
+    }
+  }
+}

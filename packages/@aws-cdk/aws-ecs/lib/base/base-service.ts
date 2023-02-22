@@ -607,7 +607,35 @@ export abstract class BaseService extends Resource
         this.executeCommandLogConfiguration();
       }
     }
+    // Enable deployment alarms
+    this.enableDeploymentAlarms(props.deploymentAlarms);
     this.node.defaultChild = this.resource;
+  }
+
+  /**
+   *   Enable Deployment Alarms which take advantage of arbitrary alarms and configure them after service initialization
+  */
+  public enableDeploymentAlarms(alarmConfig?: DeploymentAlarmConfig) {
+    const deploymentConfiguration = this.resource.deploymentConfiguration as CfnService.DeploymentConfigurationProperty;
+    // Throw an error if deployment alarms are already configured
+    if (deploymentConfiguration?.alarms) {
+      throw new Error('Deployment alarms are already configured.');
+    }
+    if (alarmConfig) {
+      // Throw an error if alarms array is empty
+      if (alarmConfig.alarms.length === 0) {
+        throw new Error('Alarms must be one or more.');
+      }
+      // 3. Add unit test
+      this.resource.deploymentConfiguration = {
+        ...this.resource.deploymentConfiguration,
+        alarms: {
+          alarmNames: alarmConfig.alarms.map(alarm => alarm.alarmName),
+          enable: true,
+          rollback: alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM,
+        },
+      };
+    }
   }
 
   /**   * Enable Service Connect
