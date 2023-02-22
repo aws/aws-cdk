@@ -5,6 +5,7 @@
 // library support.
 
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as cloudwatch from '../lib';
 
 const app = new cdk.App();
@@ -70,5 +71,9 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Current total messages in queue',
   metrics: [sumExpression],
 }));
+
+new IntegTest(app, 'cdk-integ-math-alarm-and-dashboard', {
+  testCases: [stack],
+});
 
 app.synth();

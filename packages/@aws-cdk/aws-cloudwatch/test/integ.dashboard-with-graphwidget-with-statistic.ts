@@ -1,4 +1,5 @@
 import { App, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Dashboard, Metric, Stats, GraphWidget } from '../lib';
 
 class DashboardWithGraphWidgetWithStatisticIntegrationTest extends Stack {
@@ -46,7 +47,8 @@ class DashboardWithGraphWidgetWithStatisticIntegrationTest extends Stack {
 }
 
 const app = new App();
-
-new DashboardWithGraphWidgetWithStatisticIntegrationTest(app, 'DashboardWithGraphWidgetWithStatisticIntegrationTest');
+new IntegTest(app, 'cdk-integ-dashboard-with-graph-widget-with-statistic', {
+  testCases: [new DashboardWithGraphWidgetWithStatisticIntegrationTest(app, 'DashboardWithGraphWidgetWithStatisticIntegrationTest')],
+});
 
 app.synth();
