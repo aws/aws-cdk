@@ -927,9 +927,9 @@ describe('restapi', () => {
 
     // THEN
     expect(() => new apigw.RestApi(stack, 'RestApi', {
-      minCompressionSize: Size.bytes(1024),
+      minCompressionSize: Size.bytes(500),
       minimumCompressionSize: 1024,
-    })).toThrow(/"both properties minCompressionSize" and "minimumCompressionSize" cannot be set at once./);
+    })).toThrow(/both properties minCompressionSize and minimumCompressionSize cannot be set at once./);
   });
 });
 

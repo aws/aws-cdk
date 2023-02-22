@@ -784,8 +784,8 @@ export class RestApi extends RestApiBase {
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, props);
 
-    if (props.minCompressionSize && props.minimumCompressionSize) {
-      throw new Error('"both properties minCompressionSize" and "minimumCompressionSize" cannot be set at once.');
+    if (props.minCompressionSize?.toBytes()! >= 0 && props.minimumCompressionSize! >= 0) {
+      throw new Error('both properties minCompressionSize and minimumCompressionSize cannot be set at once.');
     }
 
     const resource = new CfnRestApi(this, 'Resource', {
