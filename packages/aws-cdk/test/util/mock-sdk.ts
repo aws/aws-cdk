@@ -137,6 +137,10 @@ export class MockSdkProvider extends SdkProvider {
   public stubGetEndpointSuffix(stub: () => string) {
     this.sdk.getEndpointSuffix = stub;
   }
+
+  public stubQuickSight(stubs: SyncHandlerSubsetOf<AWS.QuickSight>) {
+    (this.sdk as any).quickSight = jest.fn().mockReturnValue(partialAwsService<AWS.QuickSight>(stubs));
+  }
 }
 
 export class MockSdk implements ISDK {
@@ -160,6 +164,7 @@ export class MockSdk implements ISDK {
   public readonly getEndpointSuffix = jest.fn();
   public readonly appendCustomUserAgent = jest.fn();
   public readonly removeCustomUserAgent = jest.fn();
+  public readonly quickSight = jest.fn();
 
   public currentAccount(): Promise<Account> {
     return Promise.resolve({ accountId: '123456789012', partition: 'aws' });

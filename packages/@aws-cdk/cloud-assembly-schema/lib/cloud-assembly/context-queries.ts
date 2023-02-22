@@ -58,6 +58,71 @@ export enum ContextProvider {
    * A plugin provider (the actual plugin name will be in the properties)
    */
   PLUGIN = 'plugin',
+
+  /**
+   * QuickSight Data Source provider
+   */
+  QUICKSIGHT_DATA_SOURCE_PROVIDER = 'quicksight-data-source-provider',
+
+  /**
+   * QuickSight Data Permissions Source provider
+   */
+  QUICKSIGHT_DATA_SOURCE_PERMISSIONS_PROVIDER = 'quicksight-data-source-permissions-provider',
+
+  /**
+   * QuickSight DataSet provider
+   */
+  QUICKSIGHT_DATA_SET_PROVIDER = 'quicksight-data-set-provider',
+
+  /**
+   * QuickSight DataSet Permissions provider
+   */
+  QUICKSIGHT_DATA_SET_PERMISSIONS_PROVIDER = 'quicksight-data-set-permissions-provider',
+
+  /**
+   * QuickSight Template provider
+   */
+  QUICKSIGHT_TEMPLATE_PROVIDER = 'quicksight-template-provider',
+
+  /**
+   * QuickSight Template Permissions provider
+   */
+  QUICKSIGHT_TEMPLATE_PERMISSIONS_PROVIDER = 'quicksight-template-permissions-provider',
+
+  /**
+   * QuickSight Dashboard provider
+   */
+  QUICKSIGHT_DASHBOARD_PROVIDER = 'quicksight-dashboard-provider',
+
+  /**
+   * QuickSight Dashboard Permissions provider
+   */
+  QUICKSIGHT_DASHBOARD_PERMISSIONS_PROVIDER = 'quicksight-dashboard-permissions-provider',
+
+  /**
+   * QuickSight Analysis provider
+   */
+  QUICKSIGHT_ANALYSIS_PROVIDER = 'quicksight-analysis-provider',
+
+  /**
+   * QuickSight Analysis Permissions provider
+   */
+  QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER = 'quicksight-analysis-permissions-provider',
+
+  /**
+   * QuickSight Theme provider
+   */
+  QUICKSIGHT_THEME_PROVIDER = 'quicksight-theme-provider',
+
+  /**
+   * QuickSight Theme Permissions provider
+   */
+  QUICKSIGHT_THEME_PERMISSIONS_PROVIDER = 'quicksight-theme-permissions-provider',
+
+  /**
+   * QuickSight Theme provider
+   */
+  QUICKSIGHT_TAGS_PROVIDER = 'quicksight-tags-provider',
 }
 
 /**
@@ -496,6 +561,202 @@ export interface PluginContextQuery {
   [key: string]: any;
 }
 
+/**
+ * TODO
+ */
+export interface QuickSightDataSourceContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly dataSourceId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightDataSetContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly dataSetId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightTemplateContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly templateId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightDashboardContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly dashboardId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightAnalysisContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly analysisId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightThemeContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly themeId: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * TODO
+ */
+export interface QuickSightTagsContextQuery {
+
+  /**
+   * TODO
+   */
+  readonly resourceArn: string;
+
+  /**
+   * TODO
+   */
+  readonly account: string;
+
+  /**
+   * TODO
+   */
+  readonly region: string;
+
+  /**
+   * TODO
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+}
+
 export type ContextQueryProperties = AmiContextQuery
 | AvailabilityZonesContextQuery
 | HostedZoneContextQuery
@@ -506,5 +767,12 @@ export type ContextQueryProperties = AmiContextQuery
 | LoadBalancerListenerContextQuery
 | SecurityGroupContextQuery
 | KeyContextQuery
-| PluginContextQuery;
+| PluginContextQuery
+| QuickSightDataSourceContextQuery
+| QuickSightDataSetContextQuery
+| QuickSightTemplateContextQuery
+| QuickSightDashboardContextQuery
+| QuickSightAnalysisContextQuery
+| QuickSightThemeContextQuery
+| QuickSightTagsContextQuery;
 

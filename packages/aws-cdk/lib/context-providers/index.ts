@@ -15,6 +15,7 @@ import { LoadBalancerContextProviderPlugin, LoadBalancerListenerContextProviderP
 import { SecurityGroupContextProviderPlugin } from './security-groups';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
+import * as QuickSightProviderPlugins from './quicksight';
 
 export type ContextProviderFactory = ((sdk: SdkProvider) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ContextProviderFactory};
@@ -117,4 +118,23 @@ const availableContextProviders: ProviderMap = {
   [cxschema.ContextProvider.LOAD_BALANCER_PROVIDER]: (s) => new LoadBalancerContextProviderPlugin(s),
   [cxschema.ContextProvider.LOAD_BALANCER_LISTENER_PROVIDER]: (s) => new LoadBalancerListenerContextProviderPlugin(s),
   [cxschema.ContextProvider.KEY_PROVIDER]: (s) => new KeyContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_DATA_SOURCE_PROVIDER]: (s) => new QuickSightProviderPlugins.DataSourceContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_DATA_SOURCE_PERMISSIONS_PROVIDER]: (s) =>
+    new QuickSightProviderPlugins.DataSourcePermissionsContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_DATA_SET_PROVIDER]: (s) => new QuickSightProviderPlugins.DataSetContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_DATA_SET_PERMISSIONS_PROVIDER]: (s) =>
+    new QuickSightProviderPlugins.DataSetPermissionsContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_TEMPLATE_PROVIDER]: (s) => new QuickSightProviderPlugins.TemplateContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_TEMPLATE_PERMISSIONS_PROVIDER]: (s) =>
+    new QuickSightProviderPlugins.TemplatePermissionsContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_DASHBOARD_PROVIDER]: (s) => new QuickSightProviderPlugins.DashboardContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_DASHBOARD_PERMISSIONS_PROVIDER]: (s) =>
+    new QuickSightProviderPlugins.DashboardPermissionsContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PROVIDER]: (s) => new QuickSightProviderPlugins.AnalysisContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_ANALYSIS_PERMISSIONS_PROVIDER]: (s) =>
+    new QuickSightProviderPlugins.AnalysisPermissionsContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_THEME_PROVIDER]: (s) => new QuickSightProviderPlugins.ThemeContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_THEME_PERMISSIONS_PROVIDER]: (s) =>
+    new QuickSightProviderPlugins.ThemePermissionsContextProviderPlugin(s),
+  [cxschema.ContextProvider.QUICKSIGHT_TAGS_PROVIDER]: (s) => new QuickSightProviderPlugins.QuickSightTagsContextProviderPlugin(s),
 };
