@@ -27,7 +27,14 @@ class EksClusterAlbControllerStack extends Stack {
     const chart = new cdk8s.Chart(new cdk8s.App(), 'hello-server');
 
     const ingress = new kplus.Deployment(chart, 'Deployment', {
-      containers: [{ image: 'hashicorp/http-echo', args: ['-text', 'hello'], port: 5678 }],
+      containers: [{
+        image: 'hashicorp/http-echo',
+        args: ['-text', 'hello'],
+        port: 5678,
+        securityContext: {
+          user: 1005,
+        },
+      }],
     })
       .exposeViaService({ serviceType: kplus.ServiceType.NODE_PORT })
       .exposeViaIngress('/');
@@ -49,6 +56,9 @@ class EksClusterAlbControllerStack extends Stack {
       url: `http://${loadBalancerAddress}`,
       vpc: cluster.vpc,
     });
+
+    // the pinger must wait for the ingress and echoServer to be deployed.
+    pinger.node.addDependency(ingress, echoServer);
 
     // this should display the 'hello' text we gave to the server
     new CfnOutput(this, 'IngressPingerResponse', {
