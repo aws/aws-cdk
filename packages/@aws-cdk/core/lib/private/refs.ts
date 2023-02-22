@@ -4,6 +4,10 @@
 
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
+import { CfnReference } from './cfn-reference';
+import { Intrinsic } from './intrinsic';
+import { findTokens } from './resolve';
+import { makeUniqueId } from './uniqueid';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
@@ -14,10 +18,6 @@ import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
-import { CfnReference } from './cfn-reference';
-import { Intrinsic } from './intrinsic';
-import { findTokens } from './resolve';
-import { makeUniqueId } from './uniqueid';
 
 /**
  * This is called from the App level to resolve all references defined. Each

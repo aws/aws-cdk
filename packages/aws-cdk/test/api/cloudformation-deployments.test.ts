@@ -7,15 +7,15 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import { FakeCloudformationStack } from './fake-cloudformation-stack';
 import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployments';
 import { deployStack } from '../../lib/api/deploy-stack';
+import { HotswapMode } from '../../lib/api/hotswap/common';
 import { EcrRepositoryInfo, ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 import { buildAssets, publishAssets } from '../../lib/util/asset-publishing';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
-import { FakeCloudformationStack } from './fake-cloudformation-stack';
-import { HotswapMode } from '../../lib/api/hotswap/common';
 
 let sdkProvider: MockSdkProvider;
 let deployments: CloudFormationDeployments;

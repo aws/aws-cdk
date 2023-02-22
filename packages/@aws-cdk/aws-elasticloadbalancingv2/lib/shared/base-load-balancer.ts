@@ -7,8 +7,8 @@ import { ContextProvider, IResource, Lazy, Resource, Stack, Token } from '@aws-c
 import * as cxapi from '@aws-cdk/cx-api';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { Construct } from 'constructs';
-import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
+import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 
 /**
  * Shared properties of both Application and Network Load Balancers

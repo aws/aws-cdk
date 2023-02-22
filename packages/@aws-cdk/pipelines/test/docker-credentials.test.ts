@@ -4,9 +4,9 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import { DockerAssetApp, TestApp } from './testhelpers';
 import * as cdkp from '../lib';
 import { ShellStep } from '../lib';
-import { DockerAssetApp, TestApp } from './testhelpers';
 
 let app: cdk.App;
 let stack: cdk.Stack;

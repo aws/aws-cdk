@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { Duration } from '@aws-cdk/core';
-import * as ga from '../lib';
 import { testFixture } from './util';
+import * as ga from '../lib';
 
 test('create accelerator', () => {
   // GIVEN

@@ -1,11 +1,11 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
-import { IListenerAction } from '../shared/listener-action';
 import { IApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
+import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import { IListenerAction } from '../shared/listener-action';
 
 /**
  * Basic properties for defining a rule on a listener

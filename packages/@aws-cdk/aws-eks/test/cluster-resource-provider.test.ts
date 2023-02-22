@@ -1,5 +1,5 @@
-import { ClusterResourceHandler } from '../lib/cluster-resource-handler/cluster';
 import * as mocks from './cluster-resource-handler-mocks';
+import { ClusterResourceHandler } from '../lib/cluster-resource-handler/cluster';
 
 describe('cluster resource provider', () => {
   beforeEach(() => {

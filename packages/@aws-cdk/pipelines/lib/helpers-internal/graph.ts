@@ -1,8 +1,8 @@
 /**
  * A library for nested graphs
  */
-import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 import { topoSort } from './toposort';
+import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 
 export interface GraphNodeProps<A> {
   readonly data?: A;

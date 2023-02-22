@@ -5,6 +5,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Annotations, App, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
+import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
+import { SimpleSynthAction } from './synths';
 import { AssetType } from '../blueprint/asset-type';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../docker-credentials';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
@@ -12,9 +15,6 @@ import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { CachedFnSub } from '../private/cached-fnsub';
 import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
-import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
-import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
-import { SimpleSynthAction } from './synths';
 
 const CODE_BUILD_LENGTH_LIMIT = 100;
 /**

@@ -1,10 +1,10 @@
+import { CfnUtils } from './cfn-utils-provider';
+import { INTRINSIC_KEY_PREFIX, resolvedTypeHint } from './resolve';
 import { Lazy } from '../lazy';
 import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
-import { CfnUtils } from './cfn-utils-provider';
-import { INTRINSIC_KEY_PREFIX, resolvedTypeHint } from './resolve';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level

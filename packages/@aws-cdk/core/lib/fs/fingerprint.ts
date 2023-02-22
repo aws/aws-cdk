@@ -1,10 +1,10 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Cache } from '../private/cache';
 import { IgnoreStrategy } from './ignore';
 import { FingerprintOptions, IgnoreMode, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
+import { Cache } from '../private/cache';
 
 const BUFFER_SIZE = 8 * 1024;
 const CTRL_SOH = '\x01';

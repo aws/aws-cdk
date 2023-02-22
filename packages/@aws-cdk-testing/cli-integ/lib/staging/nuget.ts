@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-import { writeFile } from '../files';
-import { shell } from '../shell';
 import { LoginInformation } from './codeartifact';
 import { parallelShell } from './parallel-shell';
 import { UsageDir } from './usage-dir';
+import { writeFile } from '../files';
+import { shell } from '../shell';
 
 export async function nugetLogin(login: LoginInformation, usageDir: UsageDir) {
   // NuGet.Config MUST live in the current directory or in the home directory, and there is no environment

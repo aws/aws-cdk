@@ -4,10 +4,10 @@
 // implemented here.
 
 import { IConstruct } from 'constructs';
+import { partitionPrincipals } from './comparable-principal';
 import { PolicyStatement, EstimateSizeOptions, deriveEstimateSizeOptions } from '../policy-statement';
 import { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
-import { partitionPrincipals } from './comparable-principal';
 
 
 /*

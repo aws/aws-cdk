@@ -1,5 +1,5 @@
-import { App, CfnOutput, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { App, CfnOutput, CfnResource, Stack } from '../lib';
 
 let app: App;
 let stack: Stack;

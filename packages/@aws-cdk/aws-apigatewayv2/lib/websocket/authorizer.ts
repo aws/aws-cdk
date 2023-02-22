@@ -1,10 +1,10 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IWebSocketApi } from './api';
+import { IWebSocketRoute } from './route';
 import { CfnAuthorizer } from '../apigatewayv2.generated';
 
 import { IAuthorizer } from '../common';
-import { IWebSocketApi } from './api';
-import { IWebSocketRoute } from './route';
 
 /**
  * Supported Authorizer types

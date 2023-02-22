@@ -1,6 +1,6 @@
 import { StepFunctions } from 'aws-sdk';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
 import * as setup from './hotswap-test-setup';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;

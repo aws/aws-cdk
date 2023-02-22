@@ -1,8 +1,8 @@
 import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as sources from '../lib';
 import { TestFunction } from './test-function';
+import * as sources from '../lib';
 
 /* eslint-disable quote-props */
 

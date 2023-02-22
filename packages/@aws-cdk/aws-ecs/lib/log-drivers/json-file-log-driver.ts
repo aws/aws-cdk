@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { joinWithCommas, stringifyOptions } from './utils';
+import { ContainerDefinition } from '../container-definition';
 
 /**
  * Specifies the json-file log driver configuration options.

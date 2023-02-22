@@ -1,8 +1,8 @@
-import { IMetric } from '../metric-types';
 import { DropEmptyObjectAtTheEndOfAnArray } from './drop-empty-object-at-the-end-of-an-array-token';
 import { accountIfDifferentFromStack, regionIfDifferentFromStack } from './env-tokens';
 import { dispatchMetric, metricKey } from './metric-util';
 import { dropUndefined } from './object';
+import { IMetric } from '../metric-types';
 
 /**
  * Return the JSON structure which represents these metrics in a graph.

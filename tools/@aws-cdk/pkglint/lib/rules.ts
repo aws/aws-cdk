@@ -16,8 +16,8 @@ import {
   monoRepoRoot,
 } from './util';
 
-const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
+const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 
 /**
  * Verify that the package name matches the directory name

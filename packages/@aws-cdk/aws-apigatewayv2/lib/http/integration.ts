@@ -1,11 +1,11 @@
 import { IRole } from '@aws-cdk/aws-iam';
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IHttpApi } from './api';
+import { HttpMethod, IHttpRoute } from './route';
 import { CfnIntegration } from '../apigatewayv2.generated';
 import { IIntegration } from '../common';
 import { ParameterMapping } from '../parameter-mapping';
-import { IHttpApi } from './api';
-import { HttpMethod, IHttpRoute } from './route';
 
 /**
  * Represents an Integration for an HTTP API.

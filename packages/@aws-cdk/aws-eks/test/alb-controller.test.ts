@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
-import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
 import { testFixture } from './util';
+import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
 
 test('all vended policies are valid', () => {
   const addOnsDir = path.join(__dirname, '..', 'lib', 'addons');

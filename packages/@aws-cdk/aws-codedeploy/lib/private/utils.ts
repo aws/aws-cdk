@@ -1,9 +1,9 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Token, Stack, ArnFormat, Arn, Fn, Aws, IResource } from '@aws-cdk/core';
+import { IPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
-import { IPredefinedDeploymentConfig } from './predefined-deployment-config';
 
 export function arnForApplication(stack: Stack, applicationName: string): string {
   return stack.formatArn({

@@ -1,6 +1,6 @@
+import { DockerFactory } from './docker';
 import { IAws } from '../aws';
 import { EventType } from '../progress';
-import { DockerFactory } from './docker';
 
 /**
  * Handler for asset building and publishing.

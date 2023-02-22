@@ -1,11 +1,11 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
-import { IRoute } from '../common';
 import { IHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
+import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
+import { IRoute } from '../common';
 
 /**
  * Represents a Route for an HTTP API.

@@ -1,7 +1,7 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { S3EventSource } from '../lib';
 import { TestFunction } from './test-function';
+import { S3EventSource } from '../lib';
 
 class S3EventSourceTest extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

@@ -1,5 +1,7 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
+import { ExportReader } from './export-reader-provider';
+import { CrossRegionExports, SSM_EXPORT_PATH_PREFIX, ExportWriterCRProps } from './types';
 import { CfnDynamicReference, CfnDynamicReferenceService } from '../../cfn-dynamic-reference';
 import { CustomResource } from '../../custom-resource';
 import { Lazy } from '../../lazy';
@@ -8,8 +10,6 @@ import { makeUniqueId } from '../../private/uniqueid';
 import { Reference } from '../../reference';
 import { Stack } from '../../stack';
 import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
-import { ExportReader } from './export-reader-provider';
-import { CrossRegionExports, SSM_EXPORT_PATH_PREFIX, ExportWriterCRProps } from './types';
 
 /**
  * Properties for an ExportReader

@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import * as cloudfront from '../lib';
 import { TestOrigin } from './test-origin';
+import * as cloudfront from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-distribution-key-group');
