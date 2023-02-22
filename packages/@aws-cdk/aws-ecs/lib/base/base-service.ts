@@ -19,12 +19,12 @@ import {
 import * as cxapi from '@aws-cdk/cx-api';
 
 import { Construct } from 'constructs';
+import { ScalableTaskCount } from './scalable-task-count';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
-import { ScalableTaskCount } from './scalable-task-count';
 
 /**
  * The interface for a service.

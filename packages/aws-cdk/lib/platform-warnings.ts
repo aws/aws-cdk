@@ -1,6 +1,6 @@
 import * as os from 'os';
-import * as logging from './logging';
 import * as fs from 'fs-extra';
+import * as logging from './logging';
 
 export async function checkForPlatformWarnings() {
   if (await hasDockerCopyBug()) {

@@ -56,18 +56,7 @@
                           "Action": "sts:AssumeRoleWithSAML",
                           "Condition": {
                             "StringEquals": {
-                              "SAML:aud": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "https://signin.",
-                                    {
-                                      "Ref": "AWS::URLSuffix"
-                                    },
-                                    "/saml"
-                                  ]
-                                ]
-                              }
+                              "SAML:aud": "https://signin.aws.amazon.com/saml"
                             }
                           },
                           "Effect": "Allow",
@@ -79,8 +68,7 @@
                         }
                       ],
                       "Version": "2012-10-17"
-                    },
-                    "description": "fix the partition issue"
+                    }
                   }
                 },
                 "constructInfo": {

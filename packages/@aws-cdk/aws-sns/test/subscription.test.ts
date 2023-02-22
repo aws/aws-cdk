@@ -256,7 +256,7 @@ describe('Subscription', () => {
 
   });
 
-  test('throws with more than 100 conditions in a filter policy', () => {
+  test('throws with more than 150 conditions in a filter policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
@@ -269,9 +269,9 @@ describe('Subscription', () => {
       filterPolicy: {
         a: { conditions: [...Array.from(Array(2).keys())] },
         b: { conditions: [...Array.from(Array(10).keys())] },
-        c: { conditions: [...Array.from(Array(6).keys())] },
+        c: { conditions: [...Array.from(Array(8).keys())] },
       },
-    })).toThrow(/\(120\) must not exceed 100/);
+    })).toThrow(/\(160\) must not exceed 150/);
 
   });
 
