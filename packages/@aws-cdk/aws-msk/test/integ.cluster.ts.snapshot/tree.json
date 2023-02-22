@@ -1107,7 +1107,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.249"
+              "version": "10.1.237"
             }
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
@@ -1750,17 +1750,17 @@
               "version": "0.0.0"
             }
           },
-          "Cluster_V3_1_1": {
-            "id": "Cluster_V3_1_1",
-            "path": "aws-cdk-msk-integ/Cluster_V3_1_1",
+          "Cluster4": {
+            "id": "Cluster4",
+            "path": "aws-cdk-msk-integ/Cluster4",
             "children": {
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-msk-integ/Cluster_V3_1_1/SecurityGroup",
+                "path": "aws-cdk-msk-integ/Cluster4/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_1_1/SecurityGroup/Resource",
+                    "path": "aws-cdk-msk-integ/Cluster4/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -1790,7 +1790,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-msk-integ/Cluster_V3_1_1/Resource",
+                "path": "aws-cdk-msk-integ/Cluster4/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
                   "aws:cdk:cloudformation:props": {
@@ -1807,7 +1807,7 @@
                       "securityGroups": [
                         {
                           "Fn::GetAtt": [
-                            "ClusterV311SecurityGroupABBE5779",
+                            "Cluster4SecurityGroupABBFAE17",
                             "GroupId"
                           ]
                         }
@@ -1818,389 +1818,7 @@
                         }
                       }
                     },
-                    "clusterName": "integ-test-v3-1-1",
-                    "kafkaVersion": "3.1.1",
-                    "numberOfBrokerNodes": 2,
-                    "encryptionInfo": {
-                      "encryptionInTransit": {
-                        "clientBroker": "TLS",
-                        "inCluster": true
-                      }
-                    },
-                    "loggingInfo": {
-                      "brokerLogs": {
-                        "cloudWatchLogs": {
-                          "enabled": false
-                        },
-                        "firehose": {
-                          "enabled": false
-                        },
-                        "s3": {
-                          "enabled": true,
-                          "bucket": {
-                            "Ref": "LoggingBucket1E5A6F3B"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-msk.CfnCluster",
-                  "version": "0.0.0"
-                }
-              },
-              "BootstrapBrokersBootstrapBrokerStringTls": {
-                "id": "BootstrapBrokersBootstrapBrokerStringTls",
-                "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls",
-                "children": {
-                  "Provider": {
-                    "id": "Provider",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Provider",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CustomResource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CustomResourcePolicy": {
-                    "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "kafka:GetBootstrapBrokers",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Ref": "ClusterV311F7E1C843"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C",
-                            "roles": [
-                              {
-                                "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/custom-resources.AwsCustomResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk.Cluster",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapBrokers6": {
-            "id": "BootstrapBrokers6",
-            "path": "aws-cdk-msk-integ/BootstrapBrokers6",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "Cluster_V3_2_0": {
-            "id": "Cluster_V3_2_0",
-            "path": "aws-cdk-msk-integ/Cluster_V3_2_0",
-            "children": {
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "aws-cdk-msk-integ/Cluster_V3_2_0/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_2_0/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "MSK security group",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-msk-integ/Cluster_V3_2_0/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
-                  "aws:cdk:cloudformation:props": {
-                    "brokerNodeGroupInfo": {
-                      "instanceType": "kafka.m5.large",
-                      "clientSubnets": [
-                        {
-                          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-                        },
-                        {
-                          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
-                        }
-                      ],
-                      "securityGroups": [
-                        {
-                          "Fn::GetAtt": [
-                            "ClusterV320SecurityGroup6CF1C0F9",
-                            "GroupId"
-                          ]
-                        }
-                      ],
-                      "storageInfo": {
-                        "ebsStorageInfo": {
-                          "volumeSize": 1000
-                        }
-                      }
-                    },
-                    "clusterName": "integ-test-v3-2-0",
-                    "kafkaVersion": "3.2.0",
-                    "numberOfBrokerNodes": 2,
-                    "encryptionInfo": {
-                      "encryptionInTransit": {
-                        "clientBroker": "TLS",
-                        "inCluster": true
-                      }
-                    },
-                    "loggingInfo": {
-                      "brokerLogs": {
-                        "cloudWatchLogs": {
-                          "enabled": false
-                        },
-                        "firehose": {
-                          "enabled": false
-                        },
-                        "s3": {
-                          "enabled": true,
-                          "bucket": {
-                            "Ref": "LoggingBucket1E5A6F3B"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-msk.CfnCluster",
-                  "version": "0.0.0"
-                }
-              },
-              "BootstrapBrokersBootstrapBrokerStringTls": {
-                "id": "BootstrapBrokersBootstrapBrokerStringTls",
-                "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls",
-                "children": {
-                  "Provider": {
-                    "id": "Provider",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Provider",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CustomResource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CustomResourcePolicy": {
-                    "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "kafka:GetBootstrapBrokers",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Ref": "ClusterV320997D57C6"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812",
-                            "roles": [
-                              {
-                                "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/custom-resources.AwsCustomResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk.Cluster",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapBrokers7": {
-            "id": "BootstrapBrokers7",
-            "path": "aws-cdk-msk-integ/BootstrapBrokers7",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "Cluster_V3_3_1": {
-            "id": "Cluster_V3_3_1",
-            "path": "aws-cdk-msk-integ/Cluster_V3_3_1",
-            "children": {
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "aws-cdk-msk-integ/Cluster_V3_3_1/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_3_1/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "MSK security group",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-msk-integ/Cluster_V3_3_1/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
-                  "aws:cdk:cloudformation:props": {
-                    "brokerNodeGroupInfo": {
-                      "instanceType": "kafka.m5.large",
-                      "clientSubnets": [
-                        {
-                          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-                        },
-                        {
-                          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
-                        }
-                      ],
-                      "securityGroups": [
-                        {
-                          "Fn::GetAtt": [
-                            "ClusterV331SecurityGroup332504D8",
-                            "GroupId"
-                          ]
-                        }
-                      ],
-                      "storageInfo": {
-                        "ebsStorageInfo": {
-                          "volumeSize": 1000
-                        }
-                      }
-                    },
-                    "clusterName": "integ-test-v3-3-1",
+                    "clusterName": "integ-test-v311",
                     "kafkaVersion": "3.3.1",
                     "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
@@ -2234,11 +1852,11 @@
               },
               "BootstrapBrokersBootstrapBrokerStringTls": {
                 "id": "BootstrapBrokersBootstrapBrokerStringTls",
-                "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls",
+                "path": "aws-cdk-msk-integ/Cluster4/BootstrapBrokersBootstrapBrokerStringTls",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Provider",
+                    "path": "aws-cdk-msk-integ/Cluster4/BootstrapBrokersBootstrapBrokerStringTls/Provider",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -2246,11 +1864,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Resource",
+                    "path": "aws-cdk-msk-integ/Cluster4/BootstrapBrokersBootstrapBrokerStringTls/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default",
+                        "path": "aws-cdk-msk-integ/Cluster4/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default",
                         "constructInfo": {
                           "fqn": "@aws-cdk/core.CfnResource",
                           "version": "0.0.0"
@@ -2264,11 +1882,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy",
+                    "path": "aws-cdk-msk-integ/Cluster4/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource",
+                        "path": "aws-cdk-msk-integ/Cluster4/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -2278,13 +1896,13 @@
                                   "Action": "kafka:GetBootstrapBrokers",
                                   "Effect": "Allow",
                                   "Resource": {
-                                    "Ref": "ClusterV33111A3F7AB"
+                                    "Ref": "Cluster4567CABC4"
                                   }
                                 }
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08",
+                            "policyName": "Cluster4BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy47625D85",
                             "roles": [
                               {
                                 "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -2315,9 +1933,9 @@
               "version": "0.0.0"
             }
           },
-          "BootstrapBrokers8": {
-            "id": "BootstrapBrokers8",
-            "path": "aws-cdk-msk-integ/BootstrapBrokers8",
+          "BootstrapBrokers6": {
+            "id": "BootstrapBrokers6",
+            "path": "aws-cdk-msk-integ/BootstrapBrokers6",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
@@ -2358,7 +1976,7 @@
                 "path": "MskLogging/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.249"
+                  "version": "10.1.237"
                 }
               },
               "DeployAssert": {
@@ -2378,7 +1996,7 @@
                             "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.249"
+                              "version": "10.1.237"
                             }
                           }
                         },
@@ -2450,7 +2068,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.249"
+                      "version": "10.1.237"
                     }
                   },
                   "BootstrapVersion": {
@@ -2492,7 +2110,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.249"
+          "version": "10.1.237"
         }
       }
     },
