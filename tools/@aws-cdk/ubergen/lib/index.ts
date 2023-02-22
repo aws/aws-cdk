@@ -432,11 +432,10 @@ export async function transformPackage(
   );
 
   if (library.shortName !== 'core') {
-    const config = uberPackageJson.jsii.targets;
     await fs.writeJson(
       path.join(destination, '.jsiirc.json'),
       {
-        targets: transformTargets(config, library.packageJson.jsii.targets),
+        targets: transformTargets(uberPackageJson.jsii.targets, library.packageJson.jsii.targets),
       },
       { spaces: 2 },
     );
