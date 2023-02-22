@@ -715,6 +715,14 @@
                     "id": "InstanceRole",
                     "path": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/InstanceRole",
                     "children": {
+                      "ImportInstanceRole": {
+                        "id": "ImportInstanceRole",
+                        "path": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/InstanceRole/ImportInstanceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/InstanceRole/Resource",
@@ -933,6 +941,14 @@
                             "id": "ServiceRole",
                             "path": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole",
                             "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.Resource",
+                                  "version": "0.0.0"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource",
@@ -1193,7 +1209,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.237"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1233,6 +1249,14 @@
                         "id": "Role",
                         "path": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource",
@@ -1381,6 +1405,14 @@
                 "id": "TaskRole",
                 "path": "aws-ecs-integ2/TaskDef/TaskRole",
                 "children": {
+                  "ImportTaskRole": {
+                    "id": "ImportTaskRole",
+                    "path": "aws-ecs-integ2/TaskDef/TaskRole/ImportTaskRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-ecs-integ2/TaskDef/TaskRole/Resource",
@@ -1526,6 +1558,14 @@
                 "id": "ExecutionRole",
                 "path": "aws-ecs-integ2/TaskDef/ExecutionRole",
                 "children": {
+                  "ImportExecutionRole": {
+                    "id": "ImportExecutionRole",
+                    "path": "aws-ecs-integ2/TaskDef/ExecutionRole/ImportExecutionRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-ecs-integ2/TaskDef/ExecutionRole/Resource",
@@ -1670,6 +1710,14 @@
                 "id": "Role",
                 "path": "aws-ecs-integ2/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-ecs-integ2/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-ecs-integ2/StateMachine/Role/Resource",
@@ -1871,7 +1919,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },
