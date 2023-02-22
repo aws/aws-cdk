@@ -1,0 +1,45 @@
+#
+#####################################
+##           Gherkin               ##
+#####################################
+# Rule Identifier:
+#    S3_BUCKET_PUBLIC_READ_PROHIBITED
+#
+# Description:
+#   Checks if your Amazon S3 buckets do not allow public read access. The rule checks the Block Public
+#   Access settings, the bucket policy, and the bucket access control list (ACL).
+#
+# Reports on:
+#    AWS::S3::Bucket
+#
+# Evaluates:
+#    AWS CloudFormation
+#
+# Rule Parameters:
+#    NA
+#
+# Scenarios:
+# a) SKIP: when there are no S3 resource present
+# b) PASS: when all S3 resources Public Access Block Configuration element is present and properties are set to true
+# c) FAIL: when all S3 resources do not have the Public Access Block Configuration element present or all properties set to true
+# d) SKIP: when metadata includes the suppression for rule S3_BUCKET_PUBLIC_READ_PROHIBITED
+
+#
+# Select all S3 resources from incoming template (payload)
+#
+let s3_bucket_public_read_prohibited = Resources.*[ Type == 'AWS::S3::Bucket'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "S3_BUCKET_PUBLIC_READ_PROHIBITED"
+]
+
+rule S3_BUCKET_PUBLIC_READ_PROHIBITED when %s3_bucket_public_read_prohibited !empty {
+  %s3_bucket_public_read_prohibited.Properties.PublicAccessBlockConfiguration exists
+  %s3_bucket_public_read_prohibited.Properties.PublicAccessBlockConfiguration.BlockPublicAcls == true
+  %s3_bucket_public_read_prohibited.Properties.PublicAccessBlockConfiguration.BlockPublicPolicy == true
+  %s3_bucket_public_read_prohibited.Properties.PublicAccessBlockConfiguration.IgnorePublicAcls == true
+  %s3_bucket_public_read_prohibited.Properties.PublicAccessBlockConfiguration.RestrictPublicBuckets == true
+  <<
+    Violation: S3 Bucket Public Write Access controls need to be restricted.
+    Fix: Set S3 Bucket PublicAccessBlockConfiguration properties for BlockPublicAcls, BlockPublicPolicy, IgnorePublicAcls, RestrictPublicBuckets parameters to true.
+  >>
+}

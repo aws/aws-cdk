@@ -52,6 +52,9 @@ export interface IValidationPlugin {
   isReady(): boolean;
 }
 
+/**
+ * TODO: docs
+ */
 export interface ValidationContextProps {
   /**
     * TODO docs

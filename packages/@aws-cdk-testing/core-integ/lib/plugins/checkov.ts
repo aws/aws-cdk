@@ -1,4 +1,4 @@
-import { IValidationPlugin, ValidationContext } from '@aws-cdk/core';
+import { IValidationPlugin, ValidationContext, ValidationReportStatus } from '@aws-cdk/core';
 import { sync } from 'cross-spawn';
 
 // NOTE: This class will eventually move out to a separate repository, but we're
@@ -70,6 +70,6 @@ export class CheckovValidationPlugin implements IValidationPlugin {
       });
     });
 
-    context.report.submit(status == 0 ? 'success' : 'failure');
+    context.report.submit(status == 0 ? ValidationReportStatus.SUCCESS : ValidationReportStatus.FAILURE);
   }
 }

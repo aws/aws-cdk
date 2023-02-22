@@ -64,6 +64,8 @@ function invokeValidationPlugins(root: IConstruct, assembly: cxapi.CloudAssembly
     throw new Error('Cannot validate a construct tree which is not attached to a Stage');
   }
 
+  let failed = false;
+
   for (const plugin of stage.validationPlugins) {
     if (!plugin.isReady()) {
       throw new Error('Validation plugin is not ready');
@@ -80,9 +82,12 @@ function invokeValidationPlugins(root: IConstruct, assembly: cxapi.CloudAssembly
       const report = validationContext.report;
       if (!report.success) {
         validationContext.logger.log(report.toString());
-        throw new Error(`Validation failed for stack ${stack.name}`);
+        failed = true;
       }
     });
+  }
+  if (failed) {
+    throw new Error('Validation failed!');
   }
 }
 

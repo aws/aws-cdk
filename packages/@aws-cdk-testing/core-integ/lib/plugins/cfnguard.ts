@@ -1,4 +1,4 @@
-import { IValidationPlugin, ValidationContext } from '@aws-cdk/core';
+import { IValidationPlugin, ValidationContext, ValidationReportStatus } from '@aws-cdk/core';
 import { sync } from 'cross-spawn';
 
 // Design decisions:
@@ -35,7 +35,7 @@ export class CfnguardValidationPlugin implements IValidationPlugin {
    * TODO docs
    */
   validate(context: ValidationContext) {
-    const templatePath = context.stack.templateFullPath;
+    const templatePath = context.templateFullPath;
     const flags = [
       'validate',
       '--rules',
@@ -48,26 +48,26 @@ export class CfnguardValidationPlugin implements IValidationPlugin {
       'none',
     ];
 
-    const { status } = sync('cfn-guard', flags, {
+    const { status, output } = sync('cfn-guard', flags, {
       encoding: 'utf-8',
       stdio: 'pipe',
     });
 
-    // const result = JSON.parse((output ?? []).join(''));
-    // result.not_compliant.forEach((check: any) => {
-    //   context.report.addViolation({
-    //     fix: check.Rule.checks[0].Clause.Unary.context,
-    //     recommendation: check.Rule.checks[0].Clause.Unary.messages.custom_message,
-    //     ruleName: check.Rule.name,
-    //     violatingResource: {
-    //       resourceName: check.Rule.checks[0].Clause.Unary.check.UnResolved.value.traversed_to.path.split('/')[2],
-    //       templatePath,
-    //       locations: [check.Rule.checks[0].Clause.Unary.check.UnResolved.value.remaining_query],
-    //     },
-    //   });
-    // });
+    const result = JSON.parse((output ?? []).join(''));
+    result.not_compliant.forEach((check: any) => {
+      context.report.addViolation({
+        fix: check.Rule.checks[0].Clause.Unary.context,
+        recommendation: check.Rule.checks[0].Clause.Unary.messages.custom_message,
+        ruleName: check.Rule.name,
+        violatingResources: [{
+          resourceName: check.Rule.checks[0].Clause.Unary.check.UnResolved.value.traversed_to.path.split('/')[2],
+          templatePath,
+          locations: [check.Rule.checks[0].Clause.Unary.check.UnResolved.value.remaining_query],
+        }],
+      });
+    });
 
     // eslint-disable-next-line no-console
-    context.report.submit(status == 0 ? 'success' : 'failure');
+    context.report.submit(status == 0 ? ValidationReportStatus.SUCCESS : ValidationReportStatus.FAILURE);
   }
 }
