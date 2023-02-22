@@ -33,7 +33,7 @@ Third-party Language Deprecation: language version is only supported until its E
 \
 Jump To:
 [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide) |
-[API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
+[API Reference](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-construct-library.html) |
 [Getting Started](#getting-started) |
 [Getting Help](#getting-help) |
 [Contributing](#contributing) |

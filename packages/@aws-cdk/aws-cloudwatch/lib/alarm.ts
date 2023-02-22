@@ -9,7 +9,7 @@ import { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-type
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
-import { parseStatistic } from './private/statistic';
+import { normalizeStatistic, parseStatistic } from './private/statistic';
 
 /**
  * Properties for Alarms
@@ -413,7 +413,7 @@ function renderIfSimpleStatistic(statistic?: string): string | undefined {
 
   const parsed = parseStatistic(statistic);
   if (parsed.type === 'simple') {
-    return parsed.statistic;
+    return normalizeStatistic(parsed);
   }
   return undefined;
 }
@@ -422,14 +422,9 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
   if (statistic === undefined) { return undefined; }
 
   const parsed = parseStatistic(statistic);
-  if (parsed.type === 'percentile') {
-    // Already percentile. Avoid parsing because we might get into
-    // floating point rounding issues, return as-is but lowercase the p.
-    return statistic.toLowerCase();
-  } else if (parsed.type === 'generic') {
-    return statistic;
+  if (parsed.type === 'single' || parsed.type === 'pair') {
+    return normalizeStatistic(parsed);
   }
-
   return undefined;
 }
 

@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "30.0.0",
   "artifacts": {
     "aws-cdk-firehose-delivery-stream-source-stream.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f4e60312984ef4ca44937d8f3e578fa321f70ee8539a44440450bb169a0cadb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bed7f066b95b247a6396828e923d49752e448cf9b273ff54a37a205cc961034e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

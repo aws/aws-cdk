@@ -23,7 +23,7 @@ abstract class StackAssociatorBase implements IAspect {
       if (Stage.isStage(childNode)) {
         var stageAssociated = this.applicationAssociator?.isStageAssociated(childNode);
         if (stageAssociated === false) {
-          this.error(childNode, 'Associate Stage: ' + childNode.stageName + ' to ensure all stacks in your cdk app are associated with AppRegistry. '
+          this.warning(childNode, 'Associate Stage: ' + childNode.stageName + ' to ensure all stacks in your cdk app are associated with AppRegistry. '
                         + 'You can use ApplicationAssociator.associateStage to associate any stage.');
         }
       }
@@ -43,16 +43,6 @@ abstract class StackAssociatorBase implements IAspect {
    */
   private associate(node: Stack): void {
     this.application.associateApplicationWithStack(node);
-  }
-
-  /**
-   * Adds an error annotation to a node.
-   *
-   * @param node The scope to add the error to.
-   * @param message The error message.
-   */
-  private error(node: IConstruct, message: string): void {
-    Annotations.of(node).addError(message);
   }
 
   /**
