@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "CapacityProviders/DefaultTest": {
+      "stacks": [
+        "integ-default-capacity-provider"
+      ],
+      "assertionStack": "CapacityProviders/DefaultTest/DeployAssert",
+      "assertionStackName": "CapacityProvidersDefaultTestDeployAssert30F9785A"
+    }
+  }
+}
