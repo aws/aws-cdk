@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
 /* eslint-disable no-console */
+import { IsCompleteResponse, OnEventResponse } from '../types';
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
 import { invokeFunction, startExecution } from './outbound';
 import { getEnv, log } from './util';
-import { IsCompleteResponse, OnEventResponse } from '../types';
 
 // use consts for handler names to compiler-enforce the coupling with construction code.
 export = {
