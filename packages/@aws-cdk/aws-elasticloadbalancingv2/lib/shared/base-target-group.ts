@@ -1,9 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
-import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
+import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
  * Basic properties of both Application and Network Target Groups
