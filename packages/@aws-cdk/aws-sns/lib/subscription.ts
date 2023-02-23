@@ -44,7 +44,7 @@ export interface SubscriptionOptions {
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicyWithMessageBody? : {[attribute: string]: FilterOrPolicy };
+  readonly filterPolicyWithMessageBody?: { [attribute: string]: FilterOrPolicy };
 
   /**
    * The region where the topic resides, in the case of cross-region subscriptions
@@ -136,13 +136,18 @@ export class Subscription extends Resource {
       throw new Error('Subscription role arn is required field for subscriptions with a firehose protocol.');
     }
 
+    // Format filter policy
+    const filterPolicy = this.filterPolicyWithMessageBody
+      ? buildFilterPolicyWithMessageBody(this.filterPolicyWithMessageBody)
+      : this.filterPolicy;
+
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,
       protocol: props.protocol,
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
-      filterPolicy: this.filterPolicyWithMessageBody ? Policy.policy(this.filterPolicyWithMessageBody).bind() : this.filterPolicy,
+      filterPolicy,
       filterPolicyScope: this.filterPolicyWithMessageBody ? 'MessageBody' : undefined,
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
@@ -231,11 +236,49 @@ export enum SubscriptionProtocol {
   FIREHOSE = 'firehose'
 }
 
+function buildFilterPolicyWithMessageBody(
+  inputObject: { [key: string]: FilterOrPolicy },
+  depth = 1,
+  totalCombinationValues = [1],
+): { [key: string]: any } {
+  const result: { [key: string]: any } = {};
+
+  for (const [key, filterOrPolicy] of Object.entries(inputObject)) {
+    if (filterOrPolicy.isPolicy()) {
+      result[key] = buildFilterPolicyWithMessageBody(filterOrPolicy.policyDoc, depth + 1, totalCombinationValues);
+    } else if (filterOrPolicy.isFilter()) {
+      const filter = filterOrPolicy.filterDoc.conditions;
+      result[key] = filter;
+      totalCombinationValues[0] *= filter.length * depth;
+    }
+  }
+
+  // https://docs.aws.amazon.com/sns/latest/dg/subscription-filter-policy-constraints.html
+  if (totalCombinationValues[0] > 150) {
+    throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 150.`);
+  }
+
+  return result;
+};
+
+/**
+ * The type of the MessageBody at a given key value pair
+ */
+export enum FilterOrPolicyType {
+  /**
+   * The filter of the MessageBody
+   */
+  FILTER,
+  /**
+   * A nested key of the MessageBody
+   */
+  POLICY,
+}
+
 /**
  * Class for building the FilterPolicy by avoiding union types
  */
 export abstract class FilterOrPolicy {
-
   /**
    * Filter of MessageBody
    * @param filter
@@ -244,38 +287,34 @@ export abstract class FilterOrPolicy {
   public static filter(filter: SubscriptionFilter) {
     return new Filter(filter);
   }
+
   /**
    * Policy of MessageBody
    * @param policy
    * @returns
    */
-  public static policy(policy: { [attribute: string]: FilterOrPolicy } | undefined) {
+  public static policy(policy: { [attribute: string]: FilterOrPolicy }) {
     return new Policy(policy);
   }
+
   /**
-   * DFS Method for building the MessageBody FilterPolicy
-   * @param result
-   * @param depth
-   * @param totalCombinationValues
-   * @returns
+   * Type switch for disambiguating between subclasses
    */
-  protected buildFilterPolicyWithMessageBody(filterPolicy: any, result: any, depth = 1, totalCombinationValues = [1]): any {
-    const filterOrPolicyJSON = Object.entries(JSON.parse(JSON.stringify(filterPolicy)));
-    for (const [key, filterOrPolicy] of filterOrPolicyJSON) {
-      if (Array.isArray(filterOrPolicy)) {
-        result[key] = filterOrPolicy;
-        totalCombinationValues[0] *= filterOrPolicy.length * depth;
-      } else {
-        result[key] = filterOrPolicy;
-        this.buildFilterPolicyWithMessageBody(filterOrPolicy, result[key], depth + 1, totalCombinationValues);
-      }
-    }
-    // https://docs.aws.amazon.com/sns/latest/dg/subscription-filter-policy-constraints.html
-    if (totalCombinationValues[0] > 150) {
-      throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 150.`);
-    }
-    return result;
-  };
+  abstract readonly type: FilterOrPolicyType;
+
+  /**
+   * Check if instance is `Policy` type
+   */
+  public isPolicy(): this is Policy {
+    return this.type === FilterOrPolicyType.POLICY;
+  }
+
+  /**
+   * Check if instance is `Filter` type
+   */
+  public isFilter(): this is Filter {
+    return this.type === FilterOrPolicyType.FILTER;
+  }
 }
 
 /**
@@ -283,19 +322,15 @@ export abstract class FilterOrPolicy {
  */
 export class Filter extends FilterOrPolicy {
   /**
-   * Filter constructor
-   * @param filter
+   * Type used in DFS buildFilterPolicyWithMessageBody to determine json value type
    */
-  public constructor(private readonly filter: SubscriptionFilter) {
-    super();
-  }
+  public readonly type = FilterOrPolicyType.FILTER;
   /**
-   * Overrides toJSON method
-   * @returns json object of FilterOrPolicy
+   * Policy constructor
+   * @param filterDoc filter argument to construct
    */
-  public toJSON() {
-    const filter = this.filter as { conditions: any[]};
-    return filter.conditions;
+  public constructor(public readonly filterDoc: SubscriptionFilter) {
+    super();
   }
 }
 
@@ -304,23 +339,14 @@ export class Filter extends FilterOrPolicy {
  */
 export class Policy extends FilterOrPolicy {
   /**
+   * Type used in DFS buildFilterPolicyWithMessageBody to determine json value type
+   */
+  public readonly type = FilterOrPolicyType.POLICY;
+  /**
    * Policy constructor
-   * @param policy
+   * @param policyDoc policy argument to construct
    */
-  public constructor(private readonly policy: { [attribute: string]: FilterOrPolicy } | undefined) {
+  public constructor(public readonly policyDoc: { [attribute: string]: FilterOrPolicy }) {
     super();
-  }
-  /**
-   * Overrides bind method
-   */
-  public bind(): any {
-    return this.buildFilterPolicyWithMessageBody(this.policy, {});
-  }
-  /**
-   * Overrides toJSON method
-   * @returns json object of FilterOrPolicy
-   */
-  public toJSON() {
-    return this.policy;
   }
 }
