@@ -24,7 +24,8 @@ export interface ApplicationAssociatorProps {
  * in case of a `Pipeline` stack, stage underneath the pipeline will not automatically be associated and
  * needs to be associated separately.
  *
- * If cross account stack is detected, then this construct will automatically share the application to consumer accounts.
+ * If cross account stack is detected, then this construct will by default automatically share the application
+ * to consumer accounts. To edit this behavior, set the `enableApplicationSharing` value in TargetApplicationOptions.
  * Cross account feature will only work for non environment agnostic stacks.
  */
 export class ApplicationAssociator extends Construct {
@@ -33,6 +34,7 @@ export class ApplicationAssociator extends Construct {
    */
   private readonly application: IApplication;
   private readonly associatedStages: Set<cdk.Stage> = new Set();
+  private readonly enableApplicationSharing?: boolean;
 
   constructor(scope: cdk.App, id: string, props: ApplicationAssociatorProps) {
     super(scope, id);
@@ -42,8 +44,12 @@ export class ApplicationAssociator extends Construct {
     }
 
     const targetApplication = props.applications[0];
-    this.application = targetApplication.bind(scope).application;
-    cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this));
+    const targetBindResult = targetApplication.bind(scope);
+    this.application = targetBindResult.application;
+    this.enableApplicationSharing = targetBindResult.enableApplicationSharing;
+    cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this, {
+      enableApplicationSharing: this.enableApplicationSharing,
+    }));
   }
 
   /**
@@ -52,7 +58,9 @@ export class ApplicationAssociator extends Construct {
    */
   public associateStage(stage: cdk.Stage): cdk.Stage {
     this.associatedStages.add(stage);
-    cdk.Aspects.of(stage).add(new CheckedStageStackAssociator(this));
+    cdk.Aspects.of(stage).add(new CheckedStageStackAssociator(this, {
+      enableApplicationSharing: this.enableApplicationSharing,
+    }));
     return stage;
   }
 

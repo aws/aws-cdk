@@ -97,7 +97,38 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     });
   }),
 
-  test('ApplicationAssociator with cross region stacks inside cdkApp throws error', () => {
+  test('ApplicationAssociator with cross account stacks inside cdkApp does not give warning if enableApplicationSharing is not provided', () => {
+    new appreg.ApplicationAssociator(app, 'MyApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
+        stackName: 'MyAssociatedApplicationStack',
+        env: { account: 'account2', region: 'region' },
+      })],
+    });
+
+    const crossAccountStack = new cdk.Stack(app, 'crossRegionStack', {
+      env: { account: 'account', region: 'region' },
+    });
+    Annotations.fromStack(crossAccountStack).hasNoWarning('*', 'Cross-account stack detected but application sharing and association will be skipped because cross-account sharing option is not enabled.');
+  });
+
+  test('ApplicationAssociator with cross account stacks inside cdkApp gives warning if enableApplicationSharing is set to false', () => {
+    new appreg.ApplicationAssociator(app, 'MyApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
+        stackName: 'MyAssociatedApplicationStack',
+        enableApplicationSharing: false,
+        env: { account: 'account', region: 'region' },
+      })],
+    });
+
+    const crossAccountStack = new cdk.Stack(app, 'crossRegionStack', {
+      env: { account: 'account2', region: 'region' },
+    });
+    Annotations.fromStack(crossAccountStack).hasWarning('*', 'Cross-account stack detected but application sharing and association will be skipped because cross-account sharing option is not enabled.');
+  });
+
+  test('ApplicationAssociator with cross region stacks inside cdkApp gives warning', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
       applications: [appreg.TargetApplication.createApplicationStack({
         applicationName: 'MyAssociatedApplication',

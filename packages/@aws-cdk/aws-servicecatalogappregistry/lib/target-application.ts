@@ -14,6 +14,14 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
     * @deprecated - Use `stackName` instead to control the name and id of the stack
     */
   readonly stackId?: string;
+
+  /**
+    * Indicator to determine if the target application should be shared with the accounts of any cross-account stacks defined in the
+    * CDK app definition.
+    *
+    * @default - true
+    */
+  readonly enableApplicationSharing?: boolean;
 }
 
 
@@ -79,6 +87,10 @@ export interface BindTargetApplicationResult {
    * Created or imported application.
    */
   readonly application: IApplication;
+  /**
+   * Indicator for cross-account sharing of the target application to the owners of cross-account stacks.
+   */
+  readonly enableApplicationSharing: boolean;
 }
 
 /**
@@ -107,6 +119,7 @@ class CreateTargetApplication extends TargetApplication {
 
     return {
       application: appRegApplication,
+      enableApplicationSharing: this.applicationOptions.enableApplicationSharing ?? true,
     };
   }
 }
@@ -129,6 +142,7 @@ class ExistingTargetApplication extends TargetApplication {
     const appRegApplication = Application.fromApplicationArn(applicationStack, 'ExistingApplication', this.applicationOptions.applicationArnValue);
     return {
       application: appRegApplication,
+      enableApplicationSharing: this.applicationOptions.enableApplicationSharing ?? true,
     };
   }
 }
