@@ -1,10 +1,8 @@
-/// !cdk-integ *
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as kms from '../lib';
 
 const app = new cdk.App();
-
-/// !show
 
 /**
  * Stack that defines the key
@@ -38,7 +36,7 @@ class UseStack extends cdk.Stack {
 }
 
 const keyStack = new KeyStack(app, 'KeyStack');
-new UseStack(app, 'UseStack', { key: keyStack.key });
-/// !hide
 
-app.synth();
+new IntegTest(app, 'cdk-integ-key-sharing', {
+  testCases: [new UseStack(app, 'UseStack', { key: keyStack.key })],
+});

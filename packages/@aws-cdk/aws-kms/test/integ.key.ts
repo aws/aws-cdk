@@ -1,11 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Key, KeySpec, KeyUsage } from '../lib';
 
 const app = new App();
-
 const stack = new Stack(app, 'aws-cdk-kms-1');
-
 const key = new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 
 key.addToResourcePolicy(new iam.PolicyStatement({
@@ -22,4 +21,6 @@ new Key(stack, 'AsymmetricKey', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-app.synth();
+new IntegTest(app, 'cdk-integ-kms', {
+  testCases: [stack],
+});
