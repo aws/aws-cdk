@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-inference-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d87e1c1ee1b93fa7d8adcbdf9cf88d124c64fe6686a26dd48a32f5ed2bff7c10.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/131e26ab8ac8c0fbd4ab469fe6480d8b75772cc44d08a78150d6ada479b1e1fe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -162,7 +162,10 @@
         "/aws-cdk-eks-cluster-inference-test/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference-test/Cluster/Role/Resource": [
@@ -332,7 +335,10 @@
         "/aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInferenceInstancesLaunchConfig03BF48FE"
+            "data": "ClusterInferenceInstancesLaunchConfig03BF48FE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/ASG": [

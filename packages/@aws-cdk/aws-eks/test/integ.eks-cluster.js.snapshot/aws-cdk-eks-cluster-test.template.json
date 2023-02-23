@@ -3375,11 +3375,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-<<<<<<< HEAD
        "/5ad32d3779c377d583b69cdb21780913d0d71329afefdcb5b5f22f12c9397c6e.json"
-=======
-       "/75fd222d3cfcd10500fc5f21c62741c1f6073af502f726a7395c5a9ce7baeb02.json"
->>>>>>> c5314994bb (Add unit testing and integ testing reuslt.)
       ]
      ]
     },
@@ -3410,11 +3406,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-<<<<<<< HEAD
        "/5ae9306474c5c23767a5fd25baabe8b6bc0784ab276ad7318f1a2152323b253a.json"
-=======
-       "/d54a107ad08d7ce3731fff25fa8dd33fd5dabdaf0217dff11f26a92fdd34cdd5.json"
->>>>>>> c5314994bb (Add unit testing and integ testing reuslt.)
       ]
      ]
     },
