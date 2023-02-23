@@ -3,10 +3,10 @@ jest.mock('child_process');
 import * as fs from 'fs';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
-import { AssetManifest, AssetPublishing } from '../lib';
-import * as dockercreds from '../lib/private/docker-credentials';
 import { mockAws, mockedApiFailure, mockedApiResult } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
+import { AssetManifest, AssetPublishing } from '../lib';
+import * as dockercreds from '../lib/private/docker-credentials';
 
 
 let aws: ReturnType<typeof mockAws>;

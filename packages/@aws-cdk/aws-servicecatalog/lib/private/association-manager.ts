@@ -1,6 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { hashValues } from './util';
+import { InputValidator } from './validation';
 import {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions, StackSetsConstraintOptions,
   TagUpdateConstraintOptions, TemplateRule, TemplateRuleAssertion,
@@ -12,8 +14,6 @@ import {
   CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOptionAssociation,
 } from '../servicecatalog.generated';
 import { TagOptions } from '../tag-options';
-import { hashValues } from './util';
-import { InputValidator } from './validation';
 
 export class AssociationManager {
   public static associateProductWithPortfolio(

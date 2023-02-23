@@ -1,7 +1,6 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
-import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
@@ -14,6 +13,7 @@ import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-depl
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { loadCurrentTemplateWithNestedStacks, NestedStackNames } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
+import { print } from '../logging';
 
 type HotswapDetector = (
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate

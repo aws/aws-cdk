@@ -1,8 +1,8 @@
 /// !cdk-integ *
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as cloudfront from '../lib';
 import { TestOrigin } from './test-origin';
+import * as cloudfront from '../lib';
 
 const app = new cdk.App();
 

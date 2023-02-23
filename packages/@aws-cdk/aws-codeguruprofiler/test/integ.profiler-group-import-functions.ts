@@ -71,5 +71,3 @@ describe.assertAtPath('Stacks.0.Outputs.2.OutputValue', ExpectedResult.stringLik
 
 describe.assertAtPath('Stacks.0.Outputs.3.OutputKey', ExpectedResult.stringLikeRegexp('ImportedFromArnProfilingGroupArn'));
 describe.assertAtPath('Stacks.0.Outputs.3.OutputValue', ExpectedResult.stringLikeRegexp('arn:aws:codeguru-profiler:a-region-1:1234567890:profilingGroup/MyAwesomeProfilingGroup'));
-
-app.synth();

@@ -1,10 +1,10 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as codepipeline from '../lib';
-import * as validations from '../lib/private/validation';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
+import * as codepipeline from '../lib';
+import * as validations from '../lib/private/validation';
 
 /* eslint-disable quote-props */
 

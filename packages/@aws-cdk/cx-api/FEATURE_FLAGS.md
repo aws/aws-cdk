@@ -818,20 +818,4 @@ This is a feature flag as the old behavior was technically incorrect, but users 
 | 2.65.0 | `false` | `true` |
 
 
-### @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId
-
-*Include authorizer configuration in the calculation of the API deployment logical ID.* (fix)
-
-The logical ID of the AWS::ApiGateway::Deployment resource is calculated by hashing
-the API configuration, including methods, and resources, etc. Enable this feature flag
-to also include the configuration of any authorizer attached to the API in the
-calculation, so any changes made to an authorizer will create a new deployment.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-
 <!-- END details -->
