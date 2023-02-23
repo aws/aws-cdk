@@ -1,9 +1,9 @@
 import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { ensureInRange, ensurePositiveInteger, renderCommonLogDriverOptions, stringifyOptions } from './utils';
+import { ContainerDefinition } from '../container-definition';
 
 /**
  * The type of compression the GELF driver uses to compress each log message.
