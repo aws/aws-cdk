@@ -111,7 +111,7 @@ def get_oci_cmd(repository, version):
         region = os.environ.get('AWS_REGION', 'us-east-1')
 
         cmnd = [
-            f"aws ecr-public get-login-password --region {region} | " \
+            f"aws ecr-public get-login-password --region us-east-1 | " \
             f"helm registry login --username AWS --password-stdin {public_registry['registry']}; helm pull {repository} --version {version} --untar"
             ]
     else:
