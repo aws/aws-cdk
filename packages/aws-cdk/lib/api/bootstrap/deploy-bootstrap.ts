@@ -71,11 +71,11 @@ export class BootstrapStack {
         stackArn: this.currentToolkitInfo.bootstrapStack.stackId,
       };
 
-      // Validate that the bootstrap stack we're trying to replace is from the same vendor as the one we're trying to deploy
-      const currentVendor = this.currentToolkitInfo.vendor;
-      const newVendor = bootstrapVendorFromTemplate(template);
-      if (currentVendor !== newVendor) {
-        logging.warning(`Bootstrap stack already exists, authored by ${currentVendor}. Not overwriting it with a template authored by ${newVendor} (use --force if you intend to overwrite)`);
+      // Validate that the bootstrap stack we're trying to replace is from the same flavor as the one we're trying to deploy
+      const currentFlavor = this.currentToolkitInfo.flavor;
+      const newFlavor = bootstrapFlavorFromTemplate(template);
+      if (currentFlavor !== newFlavor) {
+        logging.warning(`Bootstrap stack already exists, containing '${currentFlavor}'. Not overwriting it with a template containing '${newFlavor}' (use --force if you intend to overwrite)`);
         return abortResponse;
       }
 
@@ -141,6 +141,6 @@ export function bootstrapVersionFromTemplate(template: any): number {
   return 0;
 }
 
-export function bootstrapVendorFromTemplate(template: any): string {
+export function bootstrapFlavorFromTemplate(template: any): string {
   return template.Parameters?.[BOOTSTRAP_FLAVOR_PARAMETER]?.Default ?? DEFAULT_BOOTSTRAP_FLAVOR;
 }

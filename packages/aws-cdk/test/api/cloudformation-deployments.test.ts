@@ -16,6 +16,7 @@ import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 import { buildAssets, publishAssets } from '../../lib/util/asset-publishing';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
+import { DEFAULT_BOOTSTRAP_FLAVOR } from '../../lib';
 
 let sdkProvider: MockSdkProvider;
 let deployments: CloudFormationDeployments;
@@ -931,6 +932,7 @@ function testStackWithAssetManifest() {
     public found: boolean = true;
     public bucketUrl: string = 's3://fake/here';
     public bucketName: string = 'fake';
+    public flavor: string = DEFAULT_BOOTSTRAP_FLAVOR;
     public version: number = 1234;
     public get bootstrapStack(): CloudFormationStack {
       throw new Error('This should never happen');

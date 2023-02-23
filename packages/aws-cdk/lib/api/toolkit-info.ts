@@ -102,7 +102,7 @@ export abstract class ToolkitInfo {
   public abstract readonly bucketUrl: string;
   public abstract readonly bucketName: string;
   public abstract readonly version: number;
-  public abstract readonly vendor: string;
+  public abstract readonly flavor: string;
   public abstract readonly bootstrapStack: CloudFormationStack;
 
   constructor(protected readonly sdk: ISDK) {
@@ -133,7 +133,7 @@ class ExistingToolkitInfo extends ToolkitInfo {
     return parseInt(this.bootstrapStack.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
   }
 
-  public get vendor() {
+  public get flavor() {
     return this.bootstrapStack.parameters[BOOTSTRAP_FLAVOR_PARAMETER] ?? DEFAULT_BOOTSTRAP_FLAVOR;
   }
 
@@ -263,7 +263,7 @@ class BootstrapStackNotFoundInfo extends ToolkitInfo {
     throw new Error(this.errorMessage);
   }
 
-  public get vendor(): string {
+  public get flavor(): string {
     throw new Error(this.errorMessage);
   }
 
