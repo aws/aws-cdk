@@ -2637,6 +2637,14 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
         ],
       },
     },
+    SecurityGroups: [
+      {
+        'Fn::GetAtt': [
+          'asgBottlerocketInstanceSecurityGroup6563698C',
+          'GroupId',
+        ],
+      },
+    ],
   });
 
   // THEN AmazonLinux2 LaunchConfiguration
@@ -2659,6 +2667,14 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
         ],
       },
     },
+    SecurityGroups: [
+      {
+        'Fn::GetAtt': [
+          'asgal2InstanceSecurityGroup16510CAC',
+          'GroupId',
+        ],
+      },
+    ],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
