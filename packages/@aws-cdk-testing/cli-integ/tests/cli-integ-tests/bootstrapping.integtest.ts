@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as yaml from 'yaml';
 import * as path from 'path';
 import { integTest, randomString, withoutBootstrap } from '../../lib';
 
@@ -194,6 +195,39 @@ integTest('can dump the template, modify and use it to deploy a custom bootstrap
     template: filename,
     cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
   });
+}));
+
+integTest('a customized template vendor will not overwrite the default template', withoutBootstrap(async (fixture) => {
+  // Initial bootstrap
+  const toolkitStackName = fixture.bootstrapStackName;
+  await fixture.cdkBootstrapModern({
+    toolkitStackName,
+    cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
+  });
+
+  // Customize template
+  const templateStr = await fixture.cdkBootstrapModern({
+    // toolkitStackName doesn't matter for this particular invocation
+    toolkitStackName,
+    showTemplate: true,
+    cliOptions: {
+      captureStderr: false,
+    },
+  });
+
+  const template = yaml.parse(templateStr, { schema: 'core' });
+  template.Parameters.BootstrapFlavor.Default = 'CustomizedVendor';
+  const filename = path.join(fixture.integTestDir, `${fixture.qualifier}-template.yaml`);
+  fs.writeFileSync(filename, yaml.stringify(obj, { schema: 'yaml-1.1' }), { encoding: 'utf-8' });
+
+  // Rebootstrap, expect this to fail,
+  const output = await fixture.cdkBootstrapModern({
+    toolkitStackName,
+    template: filename,
+    cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
+    allowErrExit: true,
+  });
+  expect(output).toContain('CustomizedVendor');
 }));
 
 integTest('can use the default permissions boundary to bootstrap', withoutBootstrap(async (fixture) => {

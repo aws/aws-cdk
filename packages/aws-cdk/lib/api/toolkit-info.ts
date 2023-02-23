@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { ISDK } from './aws-auth';
-import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap/bootstrap-props';
+import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT, BOOTSTRAP_FLAVOR_PARAMETER, DEFAULT_BOOTSTRAP_FLAVOR } from './bootstrap/bootstrap-props';
 import { stabilizeStack, CloudFormationStack } from './util/cloudformation';
 import { debug, warning } from '../logging';
 
@@ -102,6 +102,7 @@ export abstract class ToolkitInfo {
   public abstract readonly bucketUrl: string;
   public abstract readonly bucketName: string;
   public abstract readonly version: number;
+  public abstract readonly vendor: string;
   public abstract readonly bootstrapStack: CloudFormationStack;
 
   constructor(protected readonly sdk: ISDK) {
@@ -130,6 +131,10 @@ class ExistingToolkitInfo extends ToolkitInfo {
 
   public get version() {
     return parseInt(this.bootstrapStack.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
+  }
+
+  public get vendor() {
+    return this.bootstrapStack.parameters[BOOTSTRAP_FLAVOR_PARAMETER] ?? DEFAULT_BOOTSTRAP_FLAVOR;
   }
 
   public get parameters(): Record<string, string> {
@@ -255,6 +260,10 @@ class BootstrapStackNotFoundInfo extends ToolkitInfo {
   }
 
   public get version(): number {
+    throw new Error(this.errorMessage);
+  }
+
+  public get vendor(): string {
     throw new Error(this.errorMessage);
   }
 
