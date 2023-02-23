@@ -69,5 +69,3 @@ const app = new App();
 new IntegTest(app, 'cdk-integ-composite-alarm', {
   testCases: [new CompositeAlarmIntegrationTest(app, 'CompositeAlarmIntegrationTest')],
 });
-
-app.synth();

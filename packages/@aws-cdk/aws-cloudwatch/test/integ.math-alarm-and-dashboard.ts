@@ -75,5 +75,3 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 new IntegTest(app, 'cdk-integ-math-alarm-and-dashboard', {
   testCases: [stack],
 });
-
-app.synth();

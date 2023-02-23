@@ -111,5 +111,3 @@ dashboard.addWidgets(new cloudwatch.CustomWidget({
 new IntegTest(app, 'cdk-cloudwatch-alarms-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

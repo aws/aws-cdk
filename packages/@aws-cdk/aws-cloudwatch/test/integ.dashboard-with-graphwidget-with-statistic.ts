@@ -50,5 +50,3 @@ const app = new App();
 new IntegTest(app, 'cdk-integ-dashboard-with-graph-widget-with-statistic', {
   testCases: [new DashboardWithGraphWidgetWithStatisticIntegrationTest(app, 'DashboardWithGraphWidgetWithStatisticIntegrationTest')],
 });
-
-app.synth();
