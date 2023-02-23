@@ -1,5 +1,6 @@
 import { AccountRootPrincipal, Role } from '@aws-cdk/aws-iam';
 import { App, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { ProfilingGroup } from '../lib';
 
 class ProfilerGroupIntegrationTest extends Stack {
@@ -23,6 +24,6 @@ class ProfilerGroupIntegrationTest extends Stack {
 
 const app = new App();
 
-new ProfilerGroupIntegrationTest(app, 'ProfilerGroupIntegrationTest');
-
-app.synth();
+new IntegTest(app, 'cdk-code-guru-profiler-group', {
+  testCases: [new ProfilerGroupIntegrationTest(app, 'ProfilerGroupIntegrationTest')],
+});

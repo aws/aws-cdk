@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "ProfilingGroupTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -112,7 +112,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2914aef3cda3df4a0f050f14b3a5803d1f46293b7ca9cfc4cf47365d4e2a7614.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e51b2c629006e30d7618615cf17b5d29aa5cb1da4626d887df4bb7d5295d1316.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

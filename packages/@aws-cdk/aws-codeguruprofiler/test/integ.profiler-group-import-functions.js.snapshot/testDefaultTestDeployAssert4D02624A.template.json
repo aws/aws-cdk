@@ -20,7 +20,7 @@
     "outputPaths": [
      "Stacks.0.Outputs.3.OutputValue"
     ],
-    "salt": "1674095556814"
+    "salt": "1677109923936"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -74,7 +74,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "278d42fa865f60954d898636503d0ee86a6689d73dc50eb912fac62def0ef6a4.zip"
+     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
