@@ -1,9 +1,10 @@
 import * as os from 'os';
-import * as path from 'path';
-import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct } from 'constructs';
+import { IConstruct, Construct } from 'constructs';
 import { table } from 'table';
+import { CfnResource } from '../cfn-resource';
+import { TreeMetadata, Node } from '../private/tree-metadata';
+import { Stack } from '../stack';
 
 /**
  * Represents a validation plugin that will be executed during synthesis
@@ -131,7 +132,7 @@ export interface ValidationViolatingConstruct extends ValidationViolatingResourc
   /**
    * A stack of constructs that lead to the violation.
    */
-  readonly constructStack: string[];
+  readonly constructStack?: string;
 }
 
 /**
@@ -236,11 +237,22 @@ export interface ValidationReportJson {
 
 }
 
+interface ConstructTrace {
+  readonly id: string;
+  readonly path: string;
+  readonly parent?: ConstructTrace;
+  readonly library?: string;
+  readonly libraryVersion?: string;
+  readonly location?: string;
+}
+
 /**
  * The report emitted by the plugin after evaluation.
  */
 export class ValidationReport {
   private readonly violations: ValidationViolationConstructAware[] = [];
+  private readonly constructTreeByNodeId = new Map<string, Construct>();
+  private readonly constructTreeByResourceName = new Map<string, Construct>();
 
   private _summary?: ValidationReportSummary;
 
@@ -248,6 +260,16 @@ export class ValidationReport {
     private readonly pluginName: string,
     private readonly root: IConstruct,
   ) {
+    this.constructTreeByNodeId.set(this.root.node.id, root);
+    // do this once at the start so we don't have to traverse
+    // the entire tree everytime we want to find a nested node
+    this.root.node.findAll().forEach(child => {
+      this.constructTreeByNodeId.set(child.node.id, child);
+      const defaultChild = child.node.defaultChild;
+      if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
+        this.constructTreeByResourceName.set(Stack.of(child).resolve(defaultChild.logicalId), child);
+      }
+    });
   }
 
   /**
@@ -258,13 +280,16 @@ export class ValidationReport {
       throw new Error('Violations cannot be added to report after its submitted');
     }
 
-    const constructs = violation.violatingResources.map(resource => ({
-      constructStack: this.trace(resource),
-      constructPath: this.root.node.tryFindChild(resource.resourceName)?.node.path ?? 'N/A',
-      locations: resource.locations,
-      resourceName: resource.resourceName,
-      templatePath: resource.templatePath,
-    }));
+    const constructs: ValidationViolatingConstruct[] = violation.violatingResources.map(resource => {
+      const constructPath = this.constructTreeByResourceName.get(resource.resourceName)?.node.path;
+      return {
+        constructStack: this.trace(constructPath),
+        constructPath: constructPath ?? 'N/A',
+        locations: resource.locations,
+        resourceName: resource.resourceName,
+        templatePath: resource.templatePath,
+      };
+    });
 
     this.violations.push({
       ruleName: violation.ruleName,
@@ -325,7 +350,7 @@ export class ValidationReport {
         output.push('');
         output.push(`    - Construct Path: ${construct.constructPath}`);
         output.push(`    - Template Path: ${construct.templatePath}`);
-        output.push(`    - Creation Stack:\n\t${construct.constructStack?.join('\n\t')}`);
+        output.push(`    - Creation Stack:\n\t${construct.constructStack}`);
         output.push(`    - Resource Name: ${construct.resourceName}`);
         if (construct.locations) {
           output.push('    - Locations:');
@@ -344,23 +369,79 @@ export class ValidationReport {
     return output.join(os.EOL);
   }
 
-  private trace(resource: ValidationViolatingResource): string[] {
-    const resourceName = resource.resourceName;
-    const manifestPath = path.join(resource.templatePath, '../manifest.json');
-    const manifest = Manifest.loadAssemblyManifest(manifestPath);
-
-    for (const stack of Object.values(manifest.artifacts ?? {})) {
-      if (stack.type === 'aws:cloudformation:stack') {
-        for (const md of Object.values(stack.metadata ?? {})) {
-          for (const x of md) {
-            if (x.type === 'aws:cdk:logicalId' && x.data === resourceName) {
-              return x.trace ?? [];
-            }
-          }
-        }
+  /**
+   * Get the stack trace from the construct node metadata.
+   * The stack trace only gets recorded if the node is a `CfnResource`,
+   * but the stack trace will have entries for all types of parent construct
+   * scopes
+   */
+  private getTraceMetadata(node?: Node): string[] {
+    if (node) {
+      if (this.constructTreeByNodeId.has(node.id)) {
+        return this.constructTreeByNodeId.get(node.id)
+          ?.node.defaultChild
+          ?.node.metadata
+          .find(meta => !!meta.trace)?.trace ?? [];
       }
     }
     return [];
+  }
+
+  /**
+   * Construct the stack trace of constructs. This will start with the
+   * resource that has a violation and then go up through it's parents
+   */
+  private getConstructTrace(node: Node, locations?: string[]): ConstructTrace {
+    const metadata = locations ?? this.getTraceMetadata(node);
+    const thisLocation = metadata.shift();
+    return {
+      id: node.id,
+      path: node.path,
+      parent: node.parent ? this.getConstructTrace(node?.parent, metadata) : undefined,
+      library: node.constructInfo?.fqn,
+      libraryVersion: node.constructInfo?.version,
+      location: thisLocation,
+    };
+  }
+
+  /**
+   * - Creation Stack:
+   *     └──  Bucket (validator-test/MyCustomL3Construct/Bucket)
+   *          │ Library: @aws-cdk/aws-s3.Bucket
+   *          │ Library Version: 0.0.0
+   *          │ Location: new Bucket (node_modules/@aws-cdk/aws-s3/lib/bucket.js:688:26)
+   *          └──  MyCustomL3Construct (validator-test/MyCustomL3Construct)
+   *               │ Library: constructs.Construct
+   *               │ Library Version: 10.1.235
+   *               │ Location: new MyCustomL3Construct (/home/packages/@aws-cdk-testing/core-integ/test/integ.core-validations.js:30:9)
+   *               └──  validator-test (validator-test)
+   *                    │ Library: @aws-cdk/core.Stack
+   *                    │ Library Version: 0.0.0
+   *                    │ Location: new MyStack (/home/packages/@aws-cdk-testing/core-integ/test/integ.core-validations.js:24:9)
+   */
+  private trace(constructPath?: string): string | undefined {
+    const starter = '└── ';
+    const vertical = '│';
+    function renderTraceInfo(info?: ConstructTrace, indent?: string, start: string = starter): string {
+      const indentation = indent ?? ' '.repeat(starter.length+1);
+      const result: string[] = [
+        `${start} ${info?.id} (${info?.path})`,
+        `${indentation}${vertical} Library: ${info?.library}`,
+        `${indentation}${vertical} Library Version: ${info?.libraryVersion}`,
+        `${indentation}${vertical} Location: ${info?.location}`,
+        ...info?.parent ? [renderTraceInfo(info?.parent, ' '.repeat(indentation.length+starter.length+1), indentation+starter)] : [],
+      ];
+      return result.join('\n\t');
+    }
+    if (constructPath) {
+      const tree = this.root.node.tryFindChild('Tree') as TreeMetadata;
+      const treeNode = tree.getTreeNode(constructPath);
+      if (treeNode) {
+        const traceInfo = this.getConstructTrace(treeNode);
+        return renderTraceInfo(traceInfo);
+      }
+    }
+    return;
   }
 
   /**

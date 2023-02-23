@@ -3,11 +3,11 @@ import * as path from 'path';
 
 import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
 import { Construct, IConstruct } from 'constructs';
+import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
 import { Annotations } from '../annotations';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers';
 import { IInspectable, TreeInspector } from '../tree';
-import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
 
 const FILE_PATH = 'tree.json';
 
@@ -18,6 +18,7 @@ const FILE_PATH = 'tree.json';
  *
  */
 export class TreeMetadata extends Construct {
+  private _tree?: { [path: string]: Node };
   constructor(scope: Construct) {
     super(scope, 'Tree');
   }
@@ -42,9 +43,15 @@ export class TreeMetadata extends Construct {
         .filter((child) => child !== undefined)
         .reduce((map, child) => Object.assign(map, { [child!.id]: child }), {});
 
+      const parent = construct.node.scope;
       const node: Node = {
         id: construct.node.id || 'App',
         path: construct.node.path,
+        parent: parent && parent.node.path ? {
+          id: parent.node.id,
+          path: parent.node.path,
+          constructInfo: constructInfoFromConstruct(parent),
+        } : undefined,
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
         attributes: this.synthAttributes(construct),
         constructInfo: constructInfoFromConstruct(construct),
@@ -59,6 +66,7 @@ export class TreeMetadata extends Construct {
       version: 'tree-0.1',
       tree: visit(this.node.root),
     };
+    this._tree = lookup;
 
     const builder = session.assembly;
     fs.writeFileSync(path.join(builder.outdir, FILE_PATH), JSON.stringify(tree, undefined, 2), { encoding: 'utf-8' });
@@ -69,6 +77,28 @@ export class TreeMetadata extends Construct {
         file: FILE_PATH,
       },
     });
+  }
+
+  /**
+   * TODO: docs
+   *
+   * @internal
+   */
+  public getTreeNode(constructPath: string): Node | undefined {
+    if (!this._tree) {
+      throw new Error('tree has not been created yet!');
+    }
+    const tree = this._tree[constructPath];
+    return {
+      id: tree.id,
+      path: tree.path,
+      children: tree.children,
+      attributes: tree.attributes,
+      constructInfo: tree.constructInfo,
+      // need to re-add the parent because the current node
+      // won't have the parent's parent
+      parent: tree.parent ? this._tree[tree.parent.path] : undefined,
+    };
   }
 
   private synthAttributes(construct: IConstruct): { [key: string]: any } | undefined {
@@ -88,9 +118,10 @@ export class TreeMetadata extends Construct {
   }
 }
 
-interface Node {
+export interface Node {
   readonly id: string;
   readonly path: string;
+  readonly parent?: Node;
   readonly children?: { [key: string]: Node };
   readonly attributes?: { [key: string]: any };
 
