@@ -1456,7 +1456,7 @@ describe('bucket', () => {
       });
     });
 
-    test('grant only allowedActions when specified', () => {
+    test('grant only allowedActionPatterns when specified', () => {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');

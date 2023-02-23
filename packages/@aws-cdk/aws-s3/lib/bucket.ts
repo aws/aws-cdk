@@ -204,7 +204,7 @@ export interface IBucket extends IResource {
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   * @param allowedActionPatterns: Restrict the permissions to certain list of action patterns
+   * @param allowedActionPatterns Restrict the permissions to certain list of action patterns
    */
   grantWrite(identity: iam.IGrantable, objectsKeyPattern?: any, ...allowedActionPatterns: string[]): iam.Grant;
 
