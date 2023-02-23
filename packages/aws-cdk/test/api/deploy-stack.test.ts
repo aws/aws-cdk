@@ -1,6 +1,6 @@
 import { deployStack, DeployStackOptions, ToolkitInfo } from '../../lib/api';
-import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { HotswapMode } from '../../lib/api/hotswap/common';
+import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { setCI } from '../../lib/logging';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';

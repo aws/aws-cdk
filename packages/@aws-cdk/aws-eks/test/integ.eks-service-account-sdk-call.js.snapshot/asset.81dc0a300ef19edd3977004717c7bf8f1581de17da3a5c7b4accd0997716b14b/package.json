@@ -1,0 +1,7 @@
+{
+  "name": "eks-service-account-sdk-call-integ-test",
+  "private": "true",
+  "dependencies": {
+    "aws-sdk": "^2.1313.0"
+  }
+}
