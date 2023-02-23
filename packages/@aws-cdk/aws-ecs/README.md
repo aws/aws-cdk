@@ -1153,6 +1153,43 @@ new ecs.Ec2Service(this, 'EC2Service', {
 });
 ```
 
+### Cluster Default Provider Strategy
+
+A capacity provider strategy determines whether ECS tasks are launched on EC2 instances or Fargate/Fargate Spot. It can be specified at the cluster, service, or task level, and consists of one or more capacity providers. You can specify an optional base and weight value for finer control of how tasks are launched. The `base` specifies a minimum number of tasks on one capacity provider, and the `weight`s of each capacity provider determine how tasks are distributed after `base` is satisfied.
+
+You can associate a default capacity provider strategy with an Amazon ECS cluster. After you do this, a default capacity provider strategy is used when creating a service or running a standalone task in the cluster and whenever a custom capacity provider strategy or a launch type isn't specified. We recommend that you define a default capacity provider strategy for each cluster.
+
+For more information visit https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-capacity-providers.html
+
+When the service does not have a capacity provider strategy, the cluster's default capacity provider strategy will be used. Default Capacity Provider Strategy can be added by using the method `addDefaultCapacityProviderStrategy`. A capacity provider strategy cannot contain a mix of EC2 Autoscaling Group capacity providers and Fargate providers.
+
+```ts
+declare const capacityProvider: ecs.CapacityProvider;
+
+const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+  enableFargateCapacityProviders: true,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+cluster.addDefaultCapacityProviderStrategy([
+  { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+  { capacityProvider: 'FARGATE_SPOT', weight: 50 },
+]);
+```
+
+```ts
+declare const capacityProvider: ecs.CapacityProvider;
+
+const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+  enableFargateCapacityProviders: true,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+cluster.addDefaultCapacityProviderStrategy([
+  { capacityProvider: capacityProvider.capacityProviderName },
+]);
+```
+
 ## Elastic Inference Accelerators
 
 Currently, this feature is only supported for services with EC2 launch types.

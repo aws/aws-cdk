@@ -1,5 +1,5 @@
-import * as cdk from '../lib';
 import { toCloudFormation } from './util';
+import * as cdk from '../lib';
 
 describe('condition', () => {
   test('chain conditions', () => {
