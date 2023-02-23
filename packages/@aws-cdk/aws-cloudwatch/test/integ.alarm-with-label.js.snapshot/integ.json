@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.alarm-with-label": {
+    "cdk-cloudwatch-alarms-with-label-integ-test/DefaultTest": {
       "stacks": [
         "AlarmWithLabelIntegrationTest"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-cloudwatch-alarms-with-label-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkcloudwatchalarmswithlabelintegtestDefaultTestDeployAssert045C663E"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
