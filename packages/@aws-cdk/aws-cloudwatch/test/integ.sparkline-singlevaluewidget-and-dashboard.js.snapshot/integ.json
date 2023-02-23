@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
     "singlevaluewidget-with-sparkline/DefaultTest": {
       "stacks": [
         "aws-cdk-cloudwatch-singlevaluewidget-sparkline-integ"
       ],
-      "assertionStack": "singlevaluewidget-with-sparkline/DefaultTest/DeployAssert"
+      "assertionStack": "singlevaluewidget-with-sparkline/DefaultTest/DeployAssert",
+      "assertionStackName": "singlevaluewidgetwithsparklineDefaultTestDeployAssert6B085881"
     }
   }
 }
