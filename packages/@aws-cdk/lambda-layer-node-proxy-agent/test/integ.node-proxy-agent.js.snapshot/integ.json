@@ -1,11 +1,10 @@
 {
-  "version": "22.0.0",
+  "version": "30.0.0",
   "testCases": {
     "lambda-layer-node-proxy-agent-integ-test/DefaultTest": {
       "stacks": [
         "lambda-layer-node-proxy-agent-integ-stack"
       ],
-      "diffAssets": true,
       "cdkCommandOptions": {
         "deploy": {
           "args": {
