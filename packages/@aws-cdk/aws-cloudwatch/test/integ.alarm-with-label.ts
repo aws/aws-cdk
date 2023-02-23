@@ -1,4 +1,5 @@
 import { App, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Alarm, Metric } from '../lib';
 
 class AlarmWithLabelIntegrationTest extends Stack {
@@ -27,6 +28,6 @@ class AlarmWithLabelIntegrationTest extends Stack {
 
 const app = new App();
 
-new AlarmWithLabelIntegrationTest(app, 'AlarmWithLabelIntegrationTest');
-
-app.synth();
+new IntegTest(app, 'cdk-cloudwatch-alarms-with-label-integ-test', {
+  testCases: [new AlarmWithLabelIntegrationTest(app, 'AlarmWithLabelIntegrationTest')],
+});
