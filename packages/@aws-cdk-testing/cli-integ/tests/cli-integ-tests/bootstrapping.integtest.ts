@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import * as yaml from 'yaml';
 import * as path from 'path';
+import * as yaml from 'yaml';
 import { integTest, randomString, withoutBootstrap } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
@@ -218,16 +218,14 @@ integTest('a customized template vendor will not overwrite the default template'
   const template = yaml.parse(templateStr, { schema: 'core' });
   template.Parameters.BootstrapFlavor.Default = 'CustomizedVendor';
   const filename = path.join(fixture.integTestDir, `${fixture.qualifier}-template.yaml`);
-  fs.writeFileSync(filename, yaml.stringify(obj, { schema: 'yaml-1.1' }), { encoding: 'utf-8' });
+  fs.writeFileSync(filename, yaml.stringify(template, { schema: 'yaml-1.1' }), { encoding: 'utf-8' });
 
   // Rebootstrap, expect this to fail,
-  const output = await fixture.cdkBootstrapModern({
+  await expect(() => fixture.cdkBootstrapModern({
     toolkitStackName,
     template: filename,
     cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
-    allowErrExit: true,
-  });
-  expect(output).toContain('CustomizedVendor');
+  })).rejects.toThrow(/CustomizedVendor/);
 }));
 
 integTest('can use the default permissions boundary to bootstrap', withoutBootstrap(async (fixture) => {
