@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { INetworkListener } from './network-listener';
 import {
   BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
@@ -8,7 +9,6 @@ import {
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { parseLoadBalancerFullName, parseTargetGroupFullName, validateNetworkProtocol } from '../shared/util';
-import { INetworkListener } from './network-listener';
 
 /**
  * Properties for a new Network Target Group

@@ -1,8 +1,8 @@
 import { AssertionError } from 'assert';
 import * as cfnspec from '@aws-cdk/cfnspec';
+import { deepEqual } from './util';
 import { IamChanges } from '../iam/iam-changes';
 import { SecurityGroupChanges } from '../network/security-group-changes';
-import { deepEqual } from './util';
 
 export type PropertyMap = {[key: string]: any };
 
