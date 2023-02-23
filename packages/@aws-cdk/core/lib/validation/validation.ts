@@ -86,13 +86,6 @@ export class ValidationContext {
   public readonly report: ValidationReport;
 
   /**
-   * Logger for the validation.
-   *
-   * Plugins should interact with this object to log messages during validation.
-   */
-  public readonly logger: ValidationLogger;
-
-  /**
    * The full path to the CloudFormation template in the Cloud Assembly
    */
   public readonly templateFullPath: string;
@@ -100,21 +93,6 @@ export class ValidationContext {
   constructor(props: ValidationContextProps) {
     this.templateFullPath = props.stack.templateFullPath;
     this.report = new ValidationReport(props.plugin.name, props.root);
-    this.logger = new ValidationLogger();
-  }
-}
-
-/**
- * Logger available to plugins during validation. Use this instead of `console.log`.
- */
-export class ValidationLogger {
-
-  /**
-   * Log a message.
-   */
-  public log(message: string) {
-    // eslint-disable-next-line no-console
-    console.error(message);
   }
 }
 

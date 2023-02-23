@@ -81,7 +81,8 @@ function invokeValidationPlugins(root: IConstruct, assembly: cxapi.CloudAssembly
       plugin.validate(validationContext);
       const report = validationContext.report;
       if (!report.success) {
-        validationContext.logger.log(report.toString());
+        // eslint-disable-next-line no-console
+        console.log(report.toString());
         failed = true;
       }
     });
