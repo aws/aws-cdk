@@ -55,7 +55,7 @@ export class CfnguardValidationPlugin implements IValidationPlugin {
 
     const result = JSON.parse((output ?? []).join(''));
     result.not_compliant.forEach((check: any) => {
-      context.report.addViolation({
+      context.report.addViolation(this.name, {
         fix: check.Rule.checks[0].Clause.Unary.context,
         recommendation: check.Rule.checks[0].Clause.Unary.messages.custom_message,
         ruleName: check.Rule.name,
@@ -68,6 +68,6 @@ export class CfnguardValidationPlugin implements IValidationPlugin {
     });
 
     // eslint-disable-next-line no-console
-    context.report.submit(status == 0 ? ValidationReportStatus.SUCCESS : ValidationReportStatus.FAILURE);
+    context.report.submit(this.name, status == 0 ? ValidationReportStatus.SUCCESS : ValidationReportStatus.FAILURE);
   }
 }

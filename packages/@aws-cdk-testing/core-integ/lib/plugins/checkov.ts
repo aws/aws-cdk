@@ -58,7 +58,7 @@ export class CheckovValidationPlugin implements IValidationPlugin {
     });
 
     failedChecks.forEach((checks: any[], id: string) => {
-      context.report.addViolation({
+      context.report.addViolation(this.name, {
         ruleName: id,
         recommendation: checks[0].check_name,
         fix: checks[0].guideline,
@@ -70,6 +70,6 @@ export class CheckovValidationPlugin implements IValidationPlugin {
       });
     });
 
-    context.report.submit(status == 0 ? ValidationReportStatus.SUCCESS : ValidationReportStatus.FAILURE);
+    context.report.submit(this.name, status == 0 ? ValidationReportStatus.SUCCESS : ValidationReportStatus.FAILURE);
   }
 }

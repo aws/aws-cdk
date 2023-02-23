@@ -58,27 +58,18 @@ export interface IValidationPlugin {
  */
 export interface ValidationContextProps {
   /**
-    * The validation plugin that should be used to perform validations
-    * in this context.
-    */
-  readonly plugin: IValidationPlugin,
-
-  /**
-    * The top-level construct that is being synthesized.
-    */
-  readonly root: IConstruct,
-
-  /**
     * The stack to be validated.
     */
-  readonly stack: cxapi.CloudFormationStackArtifact,
+  readonly stack: cxapi.CloudFormationStackArtifact;
+
+
+  readonly root: IConstruct;
 }
 
 /**
  * Context available to plugins during validation.
  */
 export class ValidationContext {
-
   /**
    * Report emitted by the validation.
    *
@@ -93,7 +84,7 @@ export class ValidationContext {
 
   constructor(props: ValidationContextProps) {
     this.templateFullPath = props.stack.templateFullPath;
-    this.report = new ValidationReport(props.plugin.name, props.root);
+    this.report = new ValidationReport(props.root);
   }
 }
 
@@ -226,6 +217,13 @@ export interface ValidationReportJson {
   readonly title: string;
 
   /**
+   * TODO: docs
+   */
+  readonly pluginReports: PluginReportJson[];
+}
+
+export interface PluginReportJson {
+  /**
    * List of violations in the rerpot.
    */
   readonly violations: ValidationViolationConstructAware[];
@@ -234,7 +232,6 @@ export interface ValidationReportJson {
    * Report summary.
    */
   readonly summary: ValidationReportSummary;
-
 }
 
 interface ConstructTrace {
@@ -250,14 +247,14 @@ interface ConstructTrace {
  * The report emitted by the plugin after evaluation.
  */
 export class ValidationReport {
-  private readonly violations: ValidationViolationConstructAware[] = [];
+  private readonly violations = new Map<string, ValidationViolationConstructAware[]>();
   private readonly constructTreeByNodeId = new Map<string, Construct>();
   private readonly constructTreeByResourceName = new Map<string, Construct>();
+  private readonly _traceCache = new Map<string, ConstructTrace>();
 
-  private _summary?: ValidationReportSummary;
+  private readonly _summary = new Map<string, ValidationReportSummary>();
 
   constructor(
-    private readonly pluginName: string,
     private readonly root: IConstruct,
   ) {
     this.constructTreeByNodeId.set(this.root.node.id, root);
@@ -275,8 +272,8 @@ export class ValidationReport {
   /**
    * Add a violation to the report.
    */
-  public addViolation(violation: ValidationViolationResourceAware) {
-    if (this._summary) {
+  public addViolation(pluginName: string, violation: ValidationViolationResourceAware) {
+    if (this._summary.has(pluginName)) {
       throw new Error('Violations cannot be added to report after its submitted');
     }
 
@@ -291,29 +288,36 @@ export class ValidationReport {
       };
     });
 
-    this.violations.push({
+    const violations = {
       ruleName: violation.ruleName,
       recommendation: violation.recommendation,
       violatingConstructs: constructs,
       fix: violation.fix,
-    });
+    };
+    if (this.violations.has(pluginName)) {
+      const res = this.violations.get(pluginName)!;
+      res.push(violations);
+      this.violations.set(pluginName, res);
+    } else {
+      this.violations.set(pluginName, [violations]);
+    }
   }
 
   /**
    * Submit the report with a status and additional metadata.
    */
-  public submit(status: ValidationReportStatus, metadata?: { readonly [key: string]: string }) {
-    this._summary = { status, pluginName: this.pluginName, metadata };
+  public submit(pluginName: string, status: ValidationReportStatus, metadata?: { readonly [key: string]: string }) {
+    this._summary.set(pluginName, { status, pluginName, metadata });
   }
 
   /**
    * Whether or not the report was successfull.
    */
   public get success(): boolean {
-    if (!this._summary) {
+    if (this._summary.size === 0) {
       throw new Error('Unable to determine report status: Report is incomplete. Call \'report.submit\'');
     }
-    return this._summary.status === 'success';
+    return Array.from(this._summary.values()).every(item => item.status === ValidationReportStatus.SUCCESS);
   }
 
   /**
@@ -324,46 +328,49 @@ export class ValidationReport {
     const output = [json.title];
 
     output.push('-'.repeat(json.title.length));
-    output.push('');
-    output.push('(Summary)');
-    output.push('');
-    output.push(table([
-      ['Status', json.summary.status],
-      ['Plugin', json.summary.pluginName],
-      ...Object.entries(json.summary.metadata ?? {}),
-    ]));
+    json.pluginReports.forEach(plugin => {
+      output.push('');
+      output.push('(Summary)');
+      output.push('');
+      output.push(table([
+        ['Status', plugin.summary.status],
+        ['Plugin', plugin.summary.pluginName],
+        ...Object.entries(plugin.summary.metadata ?? {}),
+      ]));
 
-    if (json.violations) {
-      output.push('');
-      output.push('(Violations)');
-    }
-
-    json.violations.forEach((violation) => {
-      const constructs = violation.violatingConstructs;
-      const occurrences = constructs.length;
-      const title = reset(red(bright(`${violation.ruleName} (${occurrences} occurrences)`)));
-      output.push('');
-      output.push(title);
-      output.push('');
-      output.push('  Occurrences:');
-      for (const construct of constructs) {
+      if (plugin.violations) {
         output.push('');
-        output.push(`    - Construct Path: ${construct.constructPath}`);
-        output.push(`    - Template Path: ${construct.templatePath}`);
-        output.push(`    - Creation Stack:\n\t${construct.constructStack}`);
-        output.push(`    - Resource Name: ${construct.resourceName}`);
-        if (construct.locations) {
-          output.push('    - Locations:');
-          for (const location of construct.locations) {
-            output.push(`      > ${location}`);
+        output.push('(Violations)');
+      }
+
+      plugin.violations.forEach((violation) => {
+        const constructs = violation.violatingConstructs;
+        const occurrences = constructs.length;
+        const title = reset(red(bright(`${violation.ruleName} (${occurrences} occurrences)`)));
+        output.push('');
+        output.push(title);
+        output.push('');
+        output.push('  Occurrences:');
+        for (const construct of constructs) {
+          output.push('');
+          output.push(`    - Construct Path: ${construct.constructPath}`);
+          output.push(`    - Template Path: ${construct.templatePath}`);
+          output.push(`    - Creation Stack:\n\t${construct.constructStack}`);
+          output.push(`    - Resource Name: ${construct.resourceName}`);
+          if (construct.locations) {
+            output.push('    - Locations:');
+            for (const location of construct.locations) {
+              output.push(`      > ${location}`);
+            }
           }
         }
-      }
-      output.push('');
-      output.push(`  Recommendation: ${json.violations[0].recommendation}`);
-      if (json.violations[0].fix) {
-        output.push(`  How to fix: ${json.violations[0].fix}`);
-      }
+        output.push('');
+        output.push(`  Recommendation: ${plugin.violations[0].recommendation}`);
+        if (plugin.violations[0].fix) {
+          output.push(`  How to fix: ${plugin.violations[0].fix}`);
+        }
+      });
+
     });
 
     return output.join(os.EOL);
@@ -378,10 +385,8 @@ export class ValidationReport {
   private getTraceMetadata(node?: Node): string[] {
     if (node) {
       if (this.constructTreeByNodeId.has(node.id)) {
-        return this.constructTreeByNodeId.get(node.id)
-          ?.node.defaultChild
-          ?.node.metadata
-          .find(meta => !!meta.trace)?.trace ?? [];
+        const trace = this.constructTreeByNodeId.get(node.id)?.node.defaultChild?.node.metadata.find(meta => !!meta.trace)?.trace ?? [];
+        return Object.create(trace);
       }
     }
     return [];
@@ -392,9 +397,12 @@ export class ValidationReport {
    * resource that has a violation and then go up through it's parents
    */
   private getConstructTrace(node: Node, locations?: string[]): ConstructTrace {
+    if (this._traceCache.has(node.id)) {
+      return this._traceCache.get(node.id)!;
+    }
     const metadata = locations ?? this.getTraceMetadata(node);
     const thisLocation = metadata.shift();
-    return {
+    const constructTrace = {
       id: node.id,
       path: node.path,
       parent: node.parent ? this.getConstructTrace(node?.parent, metadata) : undefined,
@@ -402,6 +410,8 @@ export class ValidationReport {
       libraryVersion: node.constructInfo?.version,
       location: thisLocation,
     };
+    this._traceCache.set(constructTrace.id, constructTrace);
+    return constructTrace;
   }
 
   /**
@@ -453,8 +463,14 @@ export class ValidationReport {
     }
     return {
       title: 'Validation Report',
-      violations: this.violations,
-      summary: this._summary,
+      pluginReports: Array.from(this._summary.values()).map(summary => {
+        const violations = this.violations.get(summary.pluginName);
+        if (!violations) throw new Error('No violations!');
+        return {
+          summary: summary,
+          violations,
+        };
+      }),
     };
   }
 

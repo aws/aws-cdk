@@ -74,7 +74,7 @@ class TestValidations implements core.IValidationPlugin {
 
   public validate(context: core.ValidationContext): void {
     if (this.result === 'failure') {
-      context.report.addViolation({
+      context.report.addViolation(this.name, {
         ruleName: 'test-rule',
         recommendation: 'test recommendation',
         violatingResources: [{
@@ -85,7 +85,7 @@ class TestValidations implements core.IValidationPlugin {
       });
     }
 
-    context.report.submit(this.result);
+    context.report.submit(this.name, this.result);
   }
 
   public isReady(): boolean {

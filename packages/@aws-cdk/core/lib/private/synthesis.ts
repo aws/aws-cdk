@@ -65,28 +65,24 @@ function invokeValidationPlugins(root: IConstruct, assembly: cxapi.CloudAssembly
   }
 
   let failed = false;
-
-  for (const plugin of stage.validationPlugins) {
-    if (!plugin.isReady()) {
-      throw new Error(`Validation plugin '${plugin.name}' is not ready`);
-    }
-
-    assembly.stacks.forEach(stack => {
-      const validationContext = new ValidationContext({
-        plugin,
-        root,
-        stack,
-      });
-
-      plugin.validate(validationContext);
-      const report = validationContext.report;
-      if (!report.success) {
-        // eslint-disable-next-line no-console
-        console.log(report.toString());
-        failed = true;
-      }
+  assembly.stacks.forEach(stack => {
+    const validationContext = new ValidationContext({
+      root,
+      stack,
     });
-  }
+    for (const plugin of stage.validationPlugins) {
+      if (!plugin.isReady()) {
+        throw new Error(`Validation plugin '${plugin.name}' is not ready`);
+      }
+      plugin.validate(validationContext);
+
+    }
+    if (!validationContext.report.success) {
+      // eslint-disable-next-line no-console
+      console.log(validationContext.report.toString());
+      failed = true;
+    }
+  });
   if (failed) {
     throw new Error('Validation failed!');
   }
