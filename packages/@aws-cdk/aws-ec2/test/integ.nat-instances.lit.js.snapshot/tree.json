@@ -48,7 +48,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "us-east-1a",
+                        "availabilityZone": "test-region-1a",
                         "cidrBlock": "10.0.0.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -169,11 +169,11 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                           "aws:cdk:cloudformation:props": {
-                            "availabilityZone": "us-east-1a",
+                            "availabilityZone": "test-region-1a",
                             "iamInstanceProfile": {
                               "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
                             },
-                            "imageId": "ami-0c1062d67d276c699",
+                            "imageId": "ami-1234",
                             "instanceType": "t3.small",
                             "launchTemplate": {
                               "launchTemplateName": "awscdkvpcnatinstancesMyVpcPublicSubnet1NatInstanceLaunchTemplate520F27E8",
@@ -256,7 +256,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "us-east-1b",
+                        "availabilityZone": "test-region-1b",
                         "cidrBlock": "10.0.32.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -377,11 +377,11 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                           "aws:cdk:cloudformation:props": {
-                            "availabilityZone": "us-east-1b",
+                            "availabilityZone": "test-region-1b",
                             "iamInstanceProfile": {
                               "Ref": "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6"
                             },
-                            "imageId": "ami-0c1062d67d276c699",
+                            "imageId": "ami-1234",
                             "instanceType": "t3.small",
                             "launchTemplate": {
                               "launchTemplateName": "awscdkvpcnatinstancesMyVpcPublicSubnet2NatInstanceLaunchTemplate0B065260",
@@ -464,7 +464,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "us-east-1c",
+                        "availabilityZone": "test-region-1c",
                         "cidrBlock": "10.0.64.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -576,7 +576,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "us-east-1a",
+                        "availabilityZone": "test-region-1a",
                         "cidrBlock": "10.0.96.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -688,7 +688,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "us-east-1b",
+                        "availabilityZone": "test-region-1b",
                         "cidrBlock": "10.0.128.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -800,7 +800,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "us-east-1c",
+                        "availabilityZone": "test-region-1c",
                         "cidrBlock": "10.0.160.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
