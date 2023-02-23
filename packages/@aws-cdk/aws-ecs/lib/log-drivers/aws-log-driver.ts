@@ -1,8 +1,8 @@
 import * as logs from '@aws-cdk/aws-logs';
 import { Construct } from 'constructs';
-import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
+import { ContainerDefinition } from '../container-definition';
 
 /**
  * awslogs provides two modes for delivering messages from the container to the log driver

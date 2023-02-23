@@ -55,4 +55,17 @@ export interface VpcLookupOptions {
    * @default Current stack's environment region
    */
   readonly region?: string;
+
+  /**
+   * Whether to look up whether a VPN Gateway is attached to the looked up VPC.
+   * You can set this to `false` if you know the VPC does not have a VPN Gateway
+   * attached, in order to avoid an API call.
+   *
+   * If you change this property from `false` to `true` or undefined, you may
+   * need to clear the corresponding context entry in `cdk.context.json` in
+   * order to trigger a new lookup.
+   *
+   * @default true
+   */
+  readonly returnVpnGateways?: boolean;
 }

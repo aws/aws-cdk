@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Chain } from '../chain';
-import { IChainable, INextable } from '../types';
 import { StateType } from './private/state-type';
 import { State } from './state';
+import { Chain } from '../chain';
+import { IChainable, INextable } from '../types';
 
 /**
  * Represents the Wait state which delays a state machine from continuing for a specified time
