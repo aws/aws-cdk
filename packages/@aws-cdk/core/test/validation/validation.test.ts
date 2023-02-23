@@ -26,7 +26,7 @@ describe('validations', () => {
     });
     expect(() => {
       app.synth();
-    }).toThrow(/Validation failed for stack Default/);
+    }).toThrow(/Validation failed/);
     expect(stderrMock.mock.calls[0][0]).toEqual(validationReport(app.outdir));
   });
 
@@ -45,14 +45,32 @@ describe('validations', () => {
     });
     expect(() => {
       app.synth();
-    }).not.toThrow(/Validation failed for stack Default/);
+    }).not.toThrow(/Validation failed/);
+  });
+
+  test('plugin not ready', () => {
+    const app = new core.App({
+      validationPlugins: [
+        new TestValidations(core.ValidationReportStatus.SUCCESS, false),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'success',
+      },
+    });
+    expect(() => {
+      app.synth();
+    }).toThrow(/Validation plugin 'test-plugin' is not ready/);
   });
 });
 
 class TestValidations implements core.IValidationPlugin {
   public readonly name = 'test-plugin';
 
-  constructor(private readonly result: ValidationReportStatus) {}
+  constructor(private readonly result: ValidationReportStatus, private readonly ready: boolean = true) {}
 
   public validate(context: core.ValidationContext): void {
     if (this.result === 'failure') {
@@ -71,7 +89,7 @@ class TestValidations implements core.IValidationPlugin {
   }
 
   public isReady(): boolean {
-    return true;
+    return this.ready;
   }
 }
 
