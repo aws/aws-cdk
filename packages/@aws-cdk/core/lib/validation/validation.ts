@@ -57,17 +57,18 @@ export interface IValidationPlugin {
  */
 export interface ValidationContextProps {
   /**
-    * TODO docs
+    * The validation plugin that should be used to perform validations
+    * in this context.
     */
   readonly plugin: IValidationPlugin,
 
   /**
-    * TODO docs
+    * The top-level construct that is being synthesized.
     */
   readonly root: IConstruct,
 
   /**
-    * TODO docs
+    * The stack to be validated.
     */
   readonly stack: cxapi.CloudFormationStackArtifact,
 }
@@ -151,10 +152,8 @@ export interface ValidationViolatingConstruct extends ValidationViolatingResourc
 
   /**
    * A stack of constructs that lead to the violation.
-   *
-   * @default - TODO
    */
-  readonly constructStack?: string[];
+  readonly constructStack: string[];
 }
 
 /**
@@ -204,7 +203,14 @@ export interface ValidationViolationConstructAware extends ValidationViolation {
  * The final status of the validation report
  */
 export enum ValidationReportStatus {
+  /**
+   * No violations were found
+   */
   SUCCESS = 'success',
+
+  /**
+   * At least one violation was found
+   */
   FAILURE = 'failure',
 }
 

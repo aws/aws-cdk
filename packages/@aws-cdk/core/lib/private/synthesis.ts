@@ -68,7 +68,7 @@ function invokeValidationPlugins(root: IConstruct, assembly: cxapi.CloudAssembly
 
   for (const plugin of stage.validationPlugins) {
     if (!plugin.isReady()) {
-      throw new Error('Validation plugin is not ready');
+      throw new Error(`Validation plugin '${plugin.name}' is not ready`);
     }
 
     assembly.stacks.forEach(stack => {
