@@ -45,5 +45,3 @@ new Rule(stack, 'MyRule', {
 new IntegTest(app, 'IntegTest-BatchDefaultEnvVarsStack', {
   testCases: [stack],
 });
-
-app.synth();
