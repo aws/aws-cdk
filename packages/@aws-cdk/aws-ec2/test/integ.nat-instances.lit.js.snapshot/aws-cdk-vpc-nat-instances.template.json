@@ -99,6 +99,15 @@
     },
     "ImageId": "ami-1234",
     "InstanceType": "t3.small",
+    "LaunchTemplate": {
+     "LaunchTemplateName": "awscdkvpcnatinstancesMyVpcPublicSubnet1NatInstanceLaunchTemplate520F27E8",
+     "Version": {
+      "Fn::GetAtt": [
+       "MyVpcPublicSubnet1NatInstanceLaunchTemplate51509C79",
+       "LatestVersionNumber"
+      ]
+     }
+    },
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -124,6 +133,17 @@
    "DependsOn": [
     "MyVpcNatRoleF1616EE9"
    ]
+  },
+  "MyVpcPublicSubnet1NatInstanceLaunchTemplate51509C79": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "MetadataOptions": {
+      "HttpTokens": "required"
+     }
+    },
+    "LaunchTemplateName": "awscdkvpcnatinstancesMyVpcPublicSubnet1NatInstanceLaunchTemplate520F27E8"
+   }
   },
   "MyVpcPublicSubnet2Subnet492B6BFB": {
    "Type": "AWS::EC2::Subnet",
@@ -209,6 +229,15 @@
     },
     "ImageId": "ami-1234",
     "InstanceType": "t3.small",
+    "LaunchTemplate": {
+     "LaunchTemplateName": "awscdkvpcnatinstancesMyVpcPublicSubnet2NatInstanceLaunchTemplate0B065260",
+     "Version": {
+      "Fn::GetAtt": [
+       "MyVpcPublicSubnet2NatInstanceLaunchTemplate8422748E",
+       "LatestVersionNumber"
+      ]
+     }
+    },
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -234,6 +263,17 @@
    "DependsOn": [
     "MyVpcNatRoleF1616EE9"
    ]
+  },
+  "MyVpcPublicSubnet2NatInstanceLaunchTemplate8422748E": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "MetadataOptions": {
+      "HttpTokens": "required"
+     }
+    },
+    "LaunchTemplateName": "awscdkvpcnatinstancesMyVpcPublicSubnet2NatInstanceLaunchTemplate0B065260"
+   }
   },
   "MyVpcPublicSubnet3Subnet57EEE236": {
    "Type": "AWS::EC2::Subnet",

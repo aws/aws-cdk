@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.123"
-        }
-      },
       "aws-cdk-vpc-nat-instances": {
         "id": "aws-cdk-vpc-nat-instances",
         "path": "aws-cdk-vpc-nat-instances",
@@ -56,7 +48,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": "us-east-1a",
                         "cidrBlock": "10.0.0.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -177,12 +169,21 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                           "aws:cdk:cloudformation:props": {
-                            "availabilityZone": "test-region-1a",
+                            "availabilityZone": "us-east-1a",
                             "iamInstanceProfile": {
                               "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
                             },
-                            "imageId": "ami-1234",
+                            "imageId": "ami-0c1062d67d276c699",
                             "instanceType": "t3.small",
+                            "launchTemplate": {
+                              "launchTemplateName": "awscdkvpcnatinstancesMyVpcPublicSubnet1NatInstanceLaunchTemplate520F27E8",
+                              "version": {
+                                "Fn::GetAtt": [
+                                  "MyVpcPublicSubnet1NatInstanceLaunchTemplate51509C79",
+                                  "LatestVersionNumber"
+                                ]
+                              }
+                            },
                             "securityGroupIds": [
                               {
                                 "Fn::GetAtt": [
@@ -208,6 +209,25 @@
                         },
                         "constructInfo": {
                           "fqn": "@aws-cdk/aws-ec2.CfnInstance",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "LaunchTemplate": {
+                        "id": "LaunchTemplate",
+                        "path": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/NatInstance/LaunchTemplate",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                          "aws:cdk:cloudformation:props": {
+                            "launchTemplateData": {
+                              "metadataOptions": {
+                                "httpTokens": "required"
+                              }
+                            },
+                            "launchTemplateName": "awscdkvpcnatinstancesMyVpcPublicSubnet1NatInstanceLaunchTemplate520F27E8"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-ec2.CfnLaunchTemplate",
                           "version": "0.0.0"
                         }
                       }
@@ -236,7 +256,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": "us-east-1b",
                         "cidrBlock": "10.0.32.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -357,12 +377,21 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                           "aws:cdk:cloudformation:props": {
-                            "availabilityZone": "test-region-1b",
+                            "availabilityZone": "us-east-1b",
                             "iamInstanceProfile": {
                               "Ref": "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6"
                             },
-                            "imageId": "ami-1234",
+                            "imageId": "ami-0c1062d67d276c699",
                             "instanceType": "t3.small",
+                            "launchTemplate": {
+                              "launchTemplateName": "awscdkvpcnatinstancesMyVpcPublicSubnet2NatInstanceLaunchTemplate0B065260",
+                              "version": {
+                                "Fn::GetAtt": [
+                                  "MyVpcPublicSubnet2NatInstanceLaunchTemplate8422748E",
+                                  "LatestVersionNumber"
+                                ]
+                              }
+                            },
                             "securityGroupIds": [
                               {
                                 "Fn::GetAtt": [
@@ -388,6 +417,25 @@
                         },
                         "constructInfo": {
                           "fqn": "@aws-cdk/aws-ec2.CfnInstance",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "LaunchTemplate": {
+                        "id": "LaunchTemplate",
+                        "path": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/NatInstance/LaunchTemplate",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                          "aws:cdk:cloudformation:props": {
+                            "launchTemplateData": {
+                              "metadataOptions": {
+                                "httpTokens": "required"
+                              }
+                            },
+                            "launchTemplateName": "awscdkvpcnatinstancesMyVpcPublicSubnet2NatInstanceLaunchTemplate0B065260"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-ec2.CfnLaunchTemplate",
                           "version": "0.0.0"
                         }
                       }
@@ -416,7 +464,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1c",
+                        "availabilityZone": "us-east-1c",
                         "cidrBlock": "10.0.64.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -528,7 +576,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": "us-east-1a",
                         "cidrBlock": "10.0.96.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -640,7 +688,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": "us-east-1b",
                         "cidrBlock": "10.0.128.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -752,7 +800,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1c",
+                        "availabilityZone": "us-east-1c",
                         "cidrBlock": "10.0.160.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -940,6 +988,14 @@
                 "id": "NatRole",
                 "path": "aws-cdk-vpc-nat-instances/MyVpc/NatRole",
                 "children": {
+                  "ImportNatRole": {
+                    "id": "ImportNatRole",
+                    "path": "aws-cdk-vpc-nat-instances/MyVpc/NatRole/ImportNatRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-vpc-nat-instances/MyVpc/NatRole/Resource",
@@ -982,11 +1038,89 @@
               "fqn": "@aws-cdk/aws-ec2.Vpc",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-vpc-nat-instances/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-vpc-nat-instances/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "vpc-nat-instances": {
+        "id": "vpc-nat-instances",
+        "path": "vpc-nat-instances",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "vpc-nat-instances/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "vpc-nat-instances/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.249"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "vpc-nat-instances/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "vpc-nat-instances/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "vpc-nat-instances/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.249"
         }
       }
     },

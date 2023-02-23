@@ -1,5 +1,6 @@
 /// !cdk-integ pragma:enable-lookups
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as ec2 from '../lib';
 
 class NatInstanceStack extends cdk.Stack {
@@ -10,6 +11,7 @@ class NatInstanceStack extends cdk.Stack {
     // Configure the `natGatewayProvider` when defining a Vpc
     const natGatewayProvider = ec2.NatProvider.instance({
       instanceType: new ec2.InstanceType('t3.small'),
+      requireImdsv2: true,
     });
 
     const vpc = new ec2.Vpc(this, 'MyVpc', {
@@ -26,10 +28,16 @@ class NatInstanceStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new NatInstanceStack(app, 'aws-cdk-vpc-nat-instances', {
+
+const stack = new NatInstanceStack(app, 'aws-cdk-vpc-nat-instances', {
   env: {
     account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
   },
 });
+
+new IntegTest(app, 'vpc-nat-instances', {
+  testCases: [stack],
+});
+
 app.synth();
