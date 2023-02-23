@@ -1,7 +1,7 @@
 {
   "version": "30.0.0",
   "files": {
-    "adc0eedec883653ef9cbd8c66ae68791bf952df8f678cf586e78e02997e2674c": {
+    "3b60cda5eb73f658ff1ab1a242bd0e399cc5307d4d6493cea0171e543c6f1cc8": {
       "source": {
         "path": "cdk-saml-provider.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "adc0eedec883653ef9cbd8c66ae68791bf952df8f678cf586e78e02997e2674c.json",
+          "objectKey": "3b60cda5eb73f658ff1ab1a242bd0e399cc5307d4d6493cea0171e543c6f1cc8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

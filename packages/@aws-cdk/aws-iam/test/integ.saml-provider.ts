@@ -1,3 +1,4 @@
+/// !cdk-integ saml*
 import * as path from 'path';
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
@@ -14,7 +15,6 @@ class TestStack extends Stack {
 
     new iam.Role(this, 'Role', {
       assumedBy: new iam.SamlConsolePrincipal(provider),
-      description: 'fix the partition issue',
     });
   }
 }
