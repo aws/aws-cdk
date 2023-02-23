@@ -65,12 +65,66 @@
           "version": "0.0.0"
         }
       },
+      "cdk-integ-dashboard-with-graph-widget-with-statistic": {
+        "id": "cdk-integ-dashboard-with-graph-widget-with-statistic",
+        "path": "cdk-integ-dashboard-with-graph-widget-with-statistic",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-dashboard-with-graph-widget-with-statistic/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-dashboard-with-graph-widget-with-statistic/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.252"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-dashboard-with-graph-widget-with-statistic/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-integ-dashboard-with-graph-widget-with-statistic/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-integ-dashboard-with-graph-widget-with-statistic/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.161"
+          "version": "10.1.252"
         }
       }
     },
