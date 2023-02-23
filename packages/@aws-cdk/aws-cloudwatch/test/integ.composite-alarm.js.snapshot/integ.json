@@ -1,14 +1,12 @@
 {
-  "version": "21.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.composite-alarm": {
+    "cdk-integ-composite-alarm/DefaultTest": {
       "stacks": [
         "CompositeAlarmIntegrationTest"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-integ-composite-alarm/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegcompositealarmDefaultTestDeployAssertF4EF969E"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
