@@ -2050,7 +2050,7 @@
         "ConnectorLabel": "The label used for registering the connector.",
         "ConnectorProvisioningConfig": "The configuration required for registering the connector.",
         "ConnectorProvisioningType": "The provisioning type used to register the connector.",
-        "Description": "A description of the connector entity field."
+        "Description": "A description about the connector runtime setting."
       }
     },
     "AWS::AppFlow::Connector.ConnectorProvisioningConfig": {
@@ -2341,13 +2341,13 @@
       "properties": {
         "BucketName": "A name for the associated Amazon S3 bucket.",
         "BucketPrefix": "The object key for the destination bucket in which Amazon AppFlow places the files.",
-        "ClusterIdentifier": "The unique ID that's assigned to an Amazon Redshift cluster.",
-        "DataApiRoleArn": "The Amazon Resource Name (ARN) of an IAM role that permits Amazon AppFlow to access your Amazon Redshift database through the Data API. For more information, and for the polices that you attach to this role, see [Allow Amazon AppFlow to access Amazon Redshift databases with the Data API](https://docs.aws.amazon.com/appflow/latest/userguide/security_iam_service-role-policies.html#access-redshift) .",
-        "DatabaseName": "The name of an Amazon Redshift database.",
+        "ClusterIdentifier": "",
+        "DataApiRoleArn": "",
+        "DatabaseName": "",
         "DatabaseUrl": "The JDBC URL of the Amazon Redshift cluster.",
-        "IsRedshiftServerless": "Indicates whether the connector profile defines a connection to an Amazon Redshift Serverless data warehouse.",
+        "IsRedshiftServerless": "",
         "RoleArn": "The Amazon Resource Name (ARN) of IAM role that grants Amazon Redshift read-only access to Amazon S3. For more information, and for the polices that you attach to this role, see [Allow Amazon Redshift to access your Amazon AppFlow data in Amazon S3](https://docs.aws.amazon.com/appflow/latest/userguide/security_iam_service-role-policies.html#redshift-access-s3) .",
-        "WorkgroupName": "The name of an Amazon Redshift workgroup."
+        "WorkgroupName": ""
       }
     },
     "AWS::AppFlow::ConnectorProfile.SAPODataConnectorProfileCredentials": {
@@ -2511,7 +2511,7 @@
       "description": "The aggregation settings that you can use to customize the output format of your flow data.",
       "properties": {
         "AggregationType": "Specifies whether Amazon AppFlow aggregates the flow records into a single file, or leave them unaggregated.",
-        "TargetFileSize": "The desired file size, in MB, for each output file that Amazon AppFlow writes to the flow destination. For each file, Amazon AppFlow attempts to achieve the size that you specify. The actual file sizes might differ from this target based on the number and size of the records that each file contains."
+        "TargetFileSize": ""
       }
     },
     "AWS::AppFlow::Flow.AmplitudeSourceProperties": {
@@ -2675,9 +2675,9 @@
     },
     "AWS::AppFlow::Flow.MetadataCatalogConfig": {
       "attributes": {},
-      "description": "Specifies the configuration that Amazon AppFlow uses when it catalogs your data. When Amazon AppFlow catalogs your data, it stores metadata in a data catalog.",
+      "description": "",
       "properties": {
-        "GlueDataCatalog": "Specifies the configuration that Amazon AppFlow uses when it catalogs your data with the AWS Glue Data Catalog ."
+        "GlueDataCatalog": ""
       }
     },
     "AWS::AppFlow::Flow.PardotSourceProperties": {
@@ -2691,7 +2691,7 @@
       "attributes": {},
       "description": "Specifies elements that Amazon AppFlow includes in the file and folder names in the flow destination.",
       "properties": {
-        "PathPrefixHierarchy": "Specifies whether the destination file path includes either or both of the following elements:\n\n- **EXECUTION_ID** - The ID that Amazon AppFlow assigns to the flow run.\n- **SCHEMA_VERSION** - The version number of your data schema. Amazon AppFlow assigns this version number. The version number increases by one when you change any of the following settings in your flow configuration:\n\n- Source-to-destination field mappings\n- Field data types\n- Partition keys",
+        "PathPrefixHierarchy": "",
         "PrefixFormat": "Determines the level of granularity for the date and time that's included in the prefix.",
         "PrefixType": "Determines the format of the prefix, and whether it applies to the file name, file path, or both."
       }
@@ -2854,7 +2854,7 @@
       "properties": {
         "ApiVersion": "The API version of the connector when it's used as a source in the flow.",
         "ConnectorProfileName": "The name of the connector profile. This name must be unique for each connector profile in the AWS account .",
-        "ConnectorType": "The type of source connector, such as Salesforce, Amplitude, and so on.\n\n*Allowed Values* : S3 | Amplitude | Datadog | Dynatrace | Googleanalytics | Infornexus | Salesforce | Servicenow | Singular | Slack | Trendmicro | Veeva | Zendesk",
+        "ConnectorType": "The type of connector, such as Salesforce, Amplitude, and so on.",
         "IncrementalPullConfig": "Defines the configuration for a scheduled incremental data pull. If a valid configuration is provided, the fields specified in the configuration are used when querying for the incremental data pull.",
         "SourceConnectorProperties": "Specifies the information that is required to query a particular source connector."
       }
@@ -8648,7 +8648,7 @@
         "EnableLogFileValidation": "Specifies whether log file validation is enabled. The default is false.\n\n> When you disable log file integrity validation, the chain of digest files is broken after one hour. CloudTrail does not create digest files for log files that were delivered during a period in which log file integrity validation was disabled. For example, if you enable log file integrity validation at noon on January 1, disable it at noon on January 2, and re-enable it at noon on January 10, digest files will not be created for the log files delivered from noon on January 2 to noon on January 10. The same applies whenever you stop CloudTrail logging or delete a trail.",
         "EventSelectors": "Use event selectors to further specify the management and data event settings for your trail. By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.",
         "IncludeGlobalServiceEvents": "Specifies whether the trail is publishing events from global services such as IAM to the log files.",
-        "InsightSelectors": "A JSON string that contains the insight types you want to log on a trail. `ApiCallRateInsight` and `ApiErrorRateInsight` are valid insight types.",
+        "InsightSelectors": "A JSON string that contains the insight types you want to log on a trail. `ApiCallRateInsight` and `ApiErrorRateInsight` are valid Insight types.\n\nThe `ApiCallRateInsight` Insights type analyzes write-only management API calls that are aggregated per minute against a baseline API call volume.\n\nThe `ApiErrorRateInsight` Insights type analyzes management API calls that result in error codes. The error is shown if the API call is unsuccessful.",
         "IsLogging": "Whether the CloudTrail trail is currently logging AWS API calls.",
         "IsMultiRegionTrail": "Specifies whether the trail applies only to the current region or to all regions. The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted. As a best practice, consider using trails that log events in all regions.",
         "IsOrganizationTrail": "Specifies whether the trail is applied to all accounts in an organization in AWS Organizations , or only for the current AWS account . The default is false, and cannot be true unless the call is made on behalf of an AWS account that is the management account or delegated administrator account for an organization in AWS Organizations . If the trail is not an organization trail and this is set to `true` , the trail will be created in all AWS accounts that belong to the organization. If the trail is an organization trail and this is set to `false` , the trail will remain in the current AWS account but be deleted from all member accounts in the organization.",
@@ -8680,9 +8680,9 @@
     },
     "AWS::CloudTrail::Trail.InsightSelector": {
       "attributes": {},
-      "description": "A JSON string that contains a list of insight types that are logged on a trail.",
+      "description": "A JSON string that contains a list of Insights types that are logged on a trail.",
       "properties": {
-        "InsightType": "The type of insights to log on a trail. `ApiCallRateInsight` and `ApiErrorRateInsight` are valid insight types."
+        "InsightType": "The type of Insights events to log on a trail. `ApiCallRateInsight` and `ApiErrorRateInsight` are valid Insight types.\n\nThe `ApiCallRateInsight` Insights type analyzes write-only management API calls that are aggregated per minute against a baseline API call volume.\n\nThe `ApiErrorRateInsight` Insights type analyzes management API calls that result in error codes. The error is shown if the API call is unsuccessful."
       }
     },
     "AWS::CloudWatch::Alarm": {
@@ -12948,7 +12948,7 @@
       "attributes": {},
       "description": "Specifies the version of the Server Message Block (SMB) protocol that AWS DataSync uses to access an SMB file server.",
       "properties": {
-        "Version": "By default, DataSync automatically chooses an SMB protocol version based on negotiation with your SMB file server. You also can configure DataSync to use a specific SMB version, but we recommend doing this only if DataSync has trouble negotiating with the SMB file server automatically.\n\nThese are the following options for configuring the SMB version:\n\n- `AUTOMATIC` (default): DataSync and the SMB file server negotiate a protocol version that they mutually support. (DataSync supports SMB versions 1.0 and later.)\n\nThis is the recommended option. If you instead choose a specific version that your file server doesn't support, you may get an `Operation Not Supported` error.\n- `SMB3` : Restricts the protocol negotiation to only SMB version 3.0.2.\n- `SMB2` : Restricts the protocol negotiation to only SMB version 2.1.\n- `SMB2_0` : Restricts the protocol negotiation to only SMB version 2.0.\n- `SMB1` : Restricts the protocol negotiation to only SMB version 1.0.\n\n> The `SMB1` option isn't available when [creating an Amazon FSx for NetApp ONTAP location](https://docs.aws.amazon.com/datasync/latest/userguide/API_CreateLocationFsxOntap.html) ."
+        "Version": "By default, DataSync automatically chooses an SMB protocol version based on negotiation with your SMB file server. You also can configure DataSync to use a specific SMB version, but we recommend doing this only if DataSync has trouble negotiating with the SMB file server automatically.\n\nThese are the following options for configuring the SMB version:\n\n- `AUTOMATIC` (default): DataSync and the SMB file server negotiate the highest version of SMB that they mutually support between 2.1 and 3.1.1.\n\nThis is the recommended option. If you instead choose a specific version that your file server doesn't support, you may get an `Operation Not Supported` error.\n- `SMB3` : Restricts the protocol negotiation to only SMB version 3.0.2.\n- `SMB2` : Restricts the protocol negotiation to only SMB version 2.1.\n- `SMB2_0` : Restricts the protocol negotiation to only SMB version 2.0.\n- `SMB1` : Restricts the protocol negotiation to only SMB version 1.0.\n\n> The `SMB1` option isn't available when [creating an Amazon FSx for NetApp ONTAP location](https://docs.aws.amazon.com/datasync/latest/userguide/API_CreateLocationFsxOntap.html) ."
       }
     },
     "AWS::DataSync::LocationFSxOpenZFS": {
@@ -13136,7 +13136,7 @@
       "attributes": {},
       "description": "Specifies the version of the SMB protocol that DataSync uses to access your SMB file server.",
       "properties": {
-        "Version": "By default, DataSync automatically chooses an SMB protocol version based on negotiation with your SMB file server. You also can configure DataSync to use a specific SMB version, but we recommend doing this only if DataSync has trouble negotiating with the SMB file server automatically.\n\nThese are the following options for configuring the SMB version:\n\n- `AUTOMATIC` (default): DataSync and the SMB file server negotiate a protocol version that they mutually support. (DataSync supports SMB versions 1.0 and later.)\n\nThis is the recommended option. If you instead choose a specific version that your file server doesn't support, you may get an `Operation Not Supported` error.\n- `SMB3` : Restricts the protocol negotiation to only SMB version 3.0.2.\n- `SMB2` : Restricts the protocol negotiation to only SMB version 2.1.\n- `SMB2_0` : Restricts the protocol negotiation to only SMB version 2.0.\n- `SMB1` : Restricts the protocol negotiation to only SMB version 1.0.\n\n> The `SMB1` option isn't available when [creating an Amazon FSx for NetApp ONTAP location](https://docs.aws.amazon.com/datasync/latest/userguide/API_CreateLocationFsxOntap.html) ."
+        "Version": "By default, DataSync automatically chooses an SMB protocol version based on negotiation with your SMB file server. You also can configure DataSync to use a specific SMB version, but we recommend doing this only if DataSync has trouble negotiating with the SMB file server automatically.\n\nThese are the following options for configuring the SMB version:\n\n- `AUTOMATIC` (default): DataSync and the SMB file server negotiate the highest version of SMB that they mutually support between 2.1 and 3.1.1.\n\nThis is the recommended option. If you instead choose a specific version that your file server doesn't support, you may get an `Operation Not Supported` error.\n- `SMB3` : Restricts the protocol negotiation to only SMB version 3.0.2.\n- `SMB2` : Restricts the protocol negotiation to only SMB version 2.1.\n- `SMB2_0` : Restricts the protocol negotiation to only SMB version 2.0.\n- `SMB1` : Restricts the protocol negotiation to only SMB version 1.0.\n\n> The `SMB1` option isn't available when [creating an Amazon FSx for NetApp ONTAP location](https://docs.aws.amazon.com/datasync/latest/userguide/API_CreateLocationFsxOntap.html) ."
       }
     },
     "AWS::DataSync::Task": {
@@ -17751,7 +17751,7 @@
         "EncryptionConfigKeyArn": "Amazon Resource Name (ARN) or alias of the customer master key (CMK).",
         "Endpoint": "The endpoint for your Kubernetes API server, such as `https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com` .",
         "Id": "The ID of your local Amazon EKS cluster on an AWS Outpost. This property isn't available for an Amazon EKS cluster on the AWS cloud.",
-        "KubernetesNetworkConfig.ServiceIpv6Cidr": "The CIDR block that Kubernetes Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified `ipv6` for *ipFamily* when you created the cluster. Kubernetes assigns Service addresses from the unique local address range ( `fc00::/7` ) because you can't specify a custom IPv6 CIDR block when you create the cluster.",
+        "KubernetesNetworkConfig.ServiceIpv6Cidr": "The CIDR block that Kubernetes Service IP addresses are assigned from if you created a `1.21` or later cluster with version `>1.10.1` or later of the Amazon VPC CNI add-on and specified `ipv6` for *ipFamily* when you created the cluster. Kubernetes assigns Service addresses from the unique local address range ( `fc00::/7` ) because you can't specify a custom `IPv6` CIDR block when you create the cluster.",
         "OpenIdConnectIssuerUrl": "The issuer URL for the OIDC identity provider.",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myCluster\" }`\n\nFor the Amazon EKS cluster `myCluster` , `Ref` returns the name of the cluster."
       },
@@ -17764,7 +17764,7 @@
         "OutpostConfig": "An object representing the configuration of your local Amazon EKS cluster on an AWS Outpost. This object isn't available for clusters on the AWS cloud.",
         "ResourcesVpcConfig": "The VPC configuration that's used by the cluster control plane. Amazon EKS VPC resources have specific requirements to work properly with Kubernetes. For more information, see [Cluster VPC Considerations](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) and [Cluster Security Group Considerations](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html) in the *Amazon EKS User Guide* . You must specify at least two subnets. You can specify up to five security groups, but we recommend that you use a dedicated security group for your cluster control plane.\n\n> Updates require replacement of the `SecurityGroupIds` and `SubnetIds` sub-properties.",
         "RoleArn": "The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf. For more information, see [Amazon EKS Service IAM Role](https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html) in the **Amazon EKS User Guide** .",
-        "Tags": "The metadata that you apply to the cluster to assist with categorization and organization. Each tag consists of a key and an optional value, both of which you define. Cluster tags don't propagate to any other resources associated with the cluster.\n\n> You must have the `eks:TagResource` and `eks:UntagResource` permissions in your IAM user or IAM role used to manage the CloudFormation stack. If you don't have these permissions, there might be unexpected behavior with stack-level tags propagating to the resource during resource creation and update.",
+        "Tags": "The metadata that you apply to the cluster to assist with categorization and organization. Each tag consists of a key and an optional value, both of which you define. Cluster tags don't propagate to any other resources associated with the cluster.\n\n> You must have the `eks:TagResource` and `eks:UntagResource` permissions for your [IAM principal](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html) to manage the AWS CloudFormation stack. If you don't have these permissions, there might be unexpected behavior with stack-level tags propagating to the resource during resource creation and update.",
         "Version": "The desired Kubernetes version for your cluster. If you don't specify a value here, the default version available in Amazon EKS is used.\n\n> The default version might not be the latest version available."
       }
     },
@@ -42349,42 +42349,42 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "The state of the certificate revocation list (CRL) after a read or write operation.",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The revocation record for a certificate, following the x509 v3 standard.",
+        "Enabled": "Indicates whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the CRL.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
     "AWS::RolesAnywhere::Profile": {
       "attributes": {
-        "ProfileArn": "",
+        "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "A list of tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
       "attributes": {
         "Ref": "`Ref` returns `TrustAnchorId` .",
         "TrustAnchorArn": "The ARN of the trust anchor.",
-        "TrustAnchorId": ""
+        "TrustAnchorId": "The unique primary identifier of the TrustAnchor"
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "The state of the trust anchor after a read or write operation.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -42394,15 +42394,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the trust anchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -49536,7 +49536,7 @@
       "properties": {
         "LogDestinationConfigs": "The logging destination configuration that you want to associate with the web ACL.\n\n> You can associate one logging destination to a web ACL.",
         "LoggingFilter": "Filtering that specifies which web requests are kept in the logs and which are dropped. You can filter on the rule action and on the web request labels that were applied by matching rules during web ACL evaluation.",
-        "RedactedFields": "The parts of the request that you want to keep out of the logs. For example, if you redact the `SingleHeader` field, the `HEADER` field in the logs will be `xxx` .\n\n> You can specify only the following fields for redaction: `UriPath` , `QueryString` , `SingleHeader` , `Method` , and `JsonBody` .",
+        "RedactedFields": "The parts of the request that you want to keep out of the logs. For example, if you redact the `SingleHeader` field, the `HEADER` field in the logs will be `REDACTED` .\n\n> You can specify only the following fields for redaction: `UriPath` , `QueryString` , `SingleHeader` , `Method` , and `JsonBody` .",
         "ResourceArn": "The Amazon Resource Name (ARN) of the web ACL that you want to associate with `LogDestinationConfigs` ."
       }
     },
