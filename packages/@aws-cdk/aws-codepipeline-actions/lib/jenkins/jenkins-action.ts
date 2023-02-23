@@ -1,7 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Construct } from 'constructs';
-import { Action } from '../action';
 import { IJenkinsProvider, jenkinsArtifactsBounds } from './jenkins-provider';
+import { Action } from '../action';
 
 /**
  * The type of the Jenkins Action that determines its CodePipeline Category -
@@ -22,7 +22,7 @@ export enum JenkinsActionType {
 }
 
 /**
- * Construction properties of {@link JenkinsAction}.
+ * Construction properties of `JenkinsAction`.
  */
 export interface JenkinsActionProps extends codepipeline.CommonActionProps {
   /**

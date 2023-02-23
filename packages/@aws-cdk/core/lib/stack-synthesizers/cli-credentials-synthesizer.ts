@@ -1,12 +1,12 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { Stack } from '../stack';
-import { Token } from '../token';
 import { assertBound, StringSpecializer } from './_shared';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import { BOOTSTRAP_QUALIFIER_CONTEXT, DefaultStackSynthesizer } from './default-synthesizer';
 import { StackSynthesizer } from './stack-synthesizer';
-import { ISynthesisSession } from './types';
+import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import { Stack } from '../stack';
+import { Token } from '../token';
 
 /**
  * Properties for the CliCredentialsStackSynthesizer
@@ -86,7 +86,7 @@ export interface CliCredentialsStackSynthesizerProps {
  * of the Bootstrap Stack V2 (also known as "modern bootstrap stack"). You can override
  * the default names using the synthesizer's construction properties.
  */
-export class CliCredentialsStackSynthesizer extends StackSynthesizer {
+export class CliCredentialsStackSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer, IBoundStackSynthesizer {
   private qualifier?: string;
   private bucketName?: string;
   private repositoryName?: string;
@@ -138,6 +138,18 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer {
     this.bucketPrefix = spec.specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
     this.dockerTagPrefix = spec.specialize(this.props.dockerTagPrefix ?? DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX);
     /* eslint-enable max-len */
+  }
+
+  /**
+   * Produce a bound Stack Synthesizer for the given stack.
+   *
+   * This method may be called more than once on the same object.
+   */
+  public reusableBind(stack: Stack): IBoundStackSynthesizer {
+    // Create a copy of the current object and bind that
+    const copy = Object.create(this);
+    copy.bind(stack);
+    return copy;
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {

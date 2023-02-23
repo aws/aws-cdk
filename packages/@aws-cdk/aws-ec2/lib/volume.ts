@@ -50,14 +50,14 @@ export interface EbsDeviceOptionsBase {
   /**
    * The number of I/O operations per second (IOPS) to provision for the volume.
    *
-   * Must only be set for {@link volumeType}: {@link EbsDeviceVolumeType.IO1}
+   * Must only be set for `volumeType`: `EbsDeviceVolumeType.IO1`
    *
    * The maximum ratio of IOPS to volume size (in GiB) is 50:1, so for 5,000 provisioned IOPS,
    * you need at least 100 GiB storage on the volume.
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    *
-   * @default - none, required for {@link EbsDeviceVolumeType.IO1}
+   * @default - none, required for `EbsDeviceVolumeType.IO1`
    */
   readonly iops?: number;
 
@@ -65,7 +65,7 @@ export interface EbsDeviceOptionsBase {
    * The EBS volume type
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    *
-   * @default {@link EbsDeviceVolumeType.GP2}
+   * @default `EbsDeviceVolumeType.GP2`
    */
   readonly volumeType?: EbsDeviceVolumeType;
 }
@@ -271,7 +271,7 @@ export interface IVolume extends IResource {
    * Grants permission to attach this Volume to an instance.
    * CAUTION: Granting an instance permission to attach to itself using this method will lead to
    * an unresolvable circular reference between the instance role and the instance.
-   * Use {@link IVolume.grantAttachVolumeToSelf} to grant an instance permission to attach this
+   * Use `IVolume.grantAttachVolumeToSelf` to grant an instance permission to attach this
    * volume to itself.
    *
    * @param grantee  the principal being granted permission.
@@ -302,7 +302,7 @@ export interface IVolume extends IResource {
    * Grants permission to detach this Volume from an instance
    * CAUTION: Granting an instance permission to detach from itself using this method will lead to
    * an unresolvable circular reference between the instance role and the instance.
-   * Use {@link IVolume.grantDetachVolumeFromSelf} to grant an instance permission to detach this
+   * Use `IVolume.grantDetachVolumeFromSelf` to grant an instance permission to detach this
    * volume from itself.
    *
    * @param grantee  the principal being granted permission.
@@ -315,7 +315,7 @@ export interface IVolume extends IResource {
   /**
    * Grants permission to detach the Volume by a ResourceTag condition.
    *
-   * This is implemented via the same mechanism as {@link IVolume.grantAttachVolumeByResourceTag},
+   * This is implemented via the same mechanism as `IVolume.grantAttachVolumeByResourceTag`,
    * and is subject to the same conditions.
    *
    * @param grantee    the principal being granted permission.
@@ -344,7 +344,7 @@ export interface VolumeProps {
 
   /**
    * The size of the volume, in GiBs. You must specify either a snapshot ID or a volume size.
-   * See {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html}
+   * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
    * for details on the allowable size for each type of volume.
    *
    * @default If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.
@@ -360,7 +360,7 @@ export interface VolumeProps {
 
   /**
    * Indicates whether Amazon EBS Multi-Attach is enabled.
-   * See {@link https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volumes-multi.html#considerations|Considerations and limitations}
+   * See [Considerations and limitations](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volumes-multi.html#considerations)
    * for the constraints of multi-attach.
    *
    * @default false
@@ -370,11 +370,11 @@ export interface VolumeProps {
   /**
    * Specifies whether the volume should be encrypted. The effect of setting the encryption state to true depends on the volume origin
    * (new or from a snapshot), starting encryption state, ownership, and whether encryption by default is enabled. For more information,
-   * see {@link https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default|Encryption by Default}
+   * see [Encryption by Default](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default)
    * in the Amazon Elastic Compute Cloud User Guide.
    *
    * Encrypted Amazon EBS volumes must be attached to instances that support Amazon EBS encryption. For more information, see
-   * {@link https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption_supported_instances|Supported Instance Types.}
+   * [Supported Instance Types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption_supported_instances).
    *
    * @default false
    */
@@ -384,7 +384,7 @@ export interface VolumeProps {
    * The customer-managed encryption key that is used to encrypt the Volume. The encrypted property must
    * be true if this is provided.
    *
-   * Note: If using an {@link aws-kms.IKey} created from a {@link aws-kms.Key.fromKeyArn()} here,
+   * Note: If using an `aws-kms.IKey` created from a `aws-kms.Key.fromKeyArn()` here,
    * then the KMS key **must** have the following in its Key policy; otherwise, the Volume
    * will fail to create.
    *
@@ -420,14 +420,14 @@ export interface VolumeProps {
   /**
    * The type of the volume; what type of storage to use to form the EBS Volume.
    *
-   * @default {@link EbsDeviceVolumeType.GENERAL_PURPOSE_SSD}
+   * @default `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD`
    */
   readonly volumeType?: EbsDeviceVolumeType;
 
   /**
    * The number of I/O operations per second (IOPS) to provision for the volume. The maximum ratio is 50 IOPS/GiB for PROVISIONED_IOPS_SSD,
    * and 500 IOPS/GiB for both PROVISIONED_IOPS_SSD_IO2 and GENERAL_PURPOSE_SSD_GP3.
-   * See {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html}
+   * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
    * for more information.
    *
    * This parameter is valid only for PROVISIONED_IOPS_SSD, PROVISIONED_IOPS_SSD_IO2 and GENERAL_PURPOSE_SSD_GP3 volumes.
@@ -620,6 +620,7 @@ export class Volume extends VolumeBase {
       multiAttachEnabled: props.enableMultiAttach ?? false,
       size: props.size?.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }),
       snapshotId: props.snapshotId,
+      throughput: props.throughput,
       volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     });
     resource.applyRemovalPolicy(props.removalPolicy);

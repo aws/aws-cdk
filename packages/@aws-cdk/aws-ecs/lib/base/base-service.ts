@@ -19,12 +19,12 @@ import {
 import * as cxapi from '@aws-cdk/cx-api';
 
 import { Construct } from 'constructs';
+import { ScalableTaskCount } from './scalable-task-count';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
-import { ScalableTaskCount } from './scalable-task-count';
 
 /**
  * The interface for a service.
@@ -971,6 +971,10 @@ export abstract class BaseService extends Resource
     const sdNamespace = options.cloudMapNamespace ?? this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
       throw new Error('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.');
+    }
+
+    if (sdNamespace.type === cloudmap.NamespaceType.HTTP) {
+      throw new Error('Cannot enable DNS service discovery for HTTP Cloudmap Namespace.');
     }
 
     // Determine DNS type based on network mode

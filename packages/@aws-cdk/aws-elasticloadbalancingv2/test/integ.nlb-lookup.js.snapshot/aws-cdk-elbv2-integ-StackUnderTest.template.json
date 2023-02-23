@@ -1,0 +1,370 @@
+{
+ "Resources": {
+  "NlbByHardcodedArnAlarmFlowCount60A46641": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": "network/my-load-balancer/50dc6c495c0c9188"
+     }
+    ],
+    "MetricName": "ActiveFlowCount",
+    "Namespace": "AWS/NetworkELB",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 0
+   }
+  },
+  "NlbByCfnOutputsFromAnotherStackOutsideCdkAlarmFlowCountD9A1D5AC": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "NlbArn"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "NlbArn"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "NlbArn"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     }
+    ],
+    "MetricName": "ActiveFlowCount",
+    "Namespace": "AWS/NetworkELB",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 0
+   }
+  },
+  "NlbByCfnOutputsFromAnotherStackWithinCdkAlarmFlowCountD865DB84": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     }
+    ],
+    "MetricName": "ActiveFlowCount",
+    "Namespace": "AWS/NetworkELB",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 0
+   }
+  },
+  "TgByHardcodedArnHealthyHostCount433C0E6E": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": "net/my-load-balancer/50dc6c495c0c9188"
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": "targetgroup/my-target-group/50dc6c495c0c9188"
+     }
+    ],
+    "MetricName": "HealthyHostCount",
+    "Namespace": "AWS/NetworkELB",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 0
+   }
+  },
+  "TgByCfnOutputsFromAnotherStackOutsideCdkHealthyHostCount3DA06734": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "NlbArn"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "NlbArn"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "NlbArn"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": {
+       "Fn::Select": [
+        5,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::ImportValue": "TgArn"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ],
+    "MetricName": "HealthyHostCount",
+    "Namespace": "AWS/NetworkELB",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 0
+   }
+  },
+  "TgByCfnOutputsFromAnotherStackWithinCdkHealthyHostCountD4851E85": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": {
+       "Fn::Select": [
+        5,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLBListenerTargetGroupGroup07C223BF73476D0D"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ],
+    "MetricName": "HealthyHostCount",
+    "Namespace": "AWS/NetworkELB",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 0
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

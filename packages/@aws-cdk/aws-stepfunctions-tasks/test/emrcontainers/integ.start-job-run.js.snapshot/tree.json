@@ -707,6 +707,14 @@
                 "id": "Role",
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Role/Resource",
@@ -794,6 +802,14 @@
                     "id": "CreationRole",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource/CreationRole",
                     "children": {
+                      "ImportCreationRole": {
+                        "id": "ImportCreationRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource/CreationRole/ImportCreationRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource/CreationRole/Resource",
@@ -944,7 +960,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.252"
                 }
               },
               "KubectlReadyBarrier": {
@@ -967,6 +983,14 @@
                 "id": "MastersRole",
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/MastersRole",
                 "children": {
+                  "ImportMastersRole": {
+                    "id": "ImportMastersRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/MastersRole/ImportMastersRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/MastersRole/Resource",
@@ -1059,6 +1083,14 @@
                     "id": "NodeGroupRole",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole",
                     "children": {
+                      "ImportNodeGroupRole": {
+                        "id": "ImportNodeGroupRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource",
@@ -1320,6 +1352,14 @@
                     "id": "ServiceRole",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource",
@@ -1442,7 +1482,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "73edfa4462023915a2f13bf570acae05c5111817c606f9837f832152920ba517.zip"
+                          "s3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1485,6 +1525,14 @@
                     "id": "ServiceRole",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource",
@@ -1607,7 +1655,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "73edfa4462023915a2f13bf570acae05c5111817c606f9837f832152920ba517.zip"
+                          "s3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1654,6 +1702,14 @@
                         "id": "ServiceRole",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource",
@@ -1822,7 +1878,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -1874,6 +1930,14 @@
                         "id": "ServiceRole",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource",
@@ -2035,7 +2099,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2084,6 +2148,14 @@
                         "id": "ServiceRole",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource",
@@ -2245,7 +2317,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2294,6 +2366,14 @@
                         "id": "Role",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource",
@@ -2416,7 +2496,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.252"
                     }
                   }
                 },
@@ -2473,7 +2553,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/35095179411a39bfcf3668f0b9792ab6c226f9bbfed6ed11f64266838c2fb3f3.json"
+                          "/d808c7b09f17a5b8142a9ee7eff4287d5ce8461eced11312cb8d647602e4f2f4.json"
                         ]
                       ]
                     },
@@ -2495,7 +2575,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.252"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2510,6 +2590,14 @@
                     "id": "ServiceRole",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource",
@@ -2562,6 +2650,18 @@
                                       "Ref": "AWS::Partition"
                                     },
                                     ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
                                   ]
                                 ]
                               }
@@ -2663,7 +2763,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33.zip"
+                          "s3Key": "c17e6c5822dd39738b3ba669bef4bb7c8fceaea76b51477bf94d6745d0c201c8.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -2836,6 +2936,14 @@
                         "id": "ServiceRole",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource",
@@ -2989,7 +3097,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -3125,7 +3233,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/e089d05accc52f6f51c5b40401a767550506efa521391b1c3aad9366e5582d33.json"
+                          "/e5f80caa912def8e04aa645be0d878c4be62a3c71e5ed2335f37702f0e365e33.json"
                         ]
                       ]
                     },
@@ -3165,7 +3273,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.252"
             }
           },
           "Virtual Cluster": {
@@ -3192,6 +3300,14 @@
                 "id": "Job-Execution-Role",
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Job-Execution-Role",
                 "children": {
+                  "ImportJob-Execution-Role": {
+                    "id": "ImportJob-Execution-Role",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Job-Execution-Role/ImportJob-Execution-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Job-Execution-Role/Resource",
@@ -3435,6 +3551,14 @@
                         "id": "ServiceRole",
                         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/Resource",
@@ -3576,7 +3700,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -3649,6 +3773,14 @@
                 "id": "ServiceRole",
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
@@ -3762,6 +3894,14 @@
                 "id": "ServiceRole",
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/Resource",
@@ -3958,6 +4098,14 @@
                 "id": "Role",
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/StateMachine/Role/Resource",
@@ -4191,7 +4339,7 @@
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
@@ -4237,7 +4385,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.252"
         }
       }
     },

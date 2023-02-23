@@ -1,6 +1,6 @@
 module.exports = {
-  plugins: ['rulesdir'],
+  plugins: ['@aws-cdk'],
   rules: {
-    'rulesdir/no-core-construct': [ 'error' ],
+    '@aws-cdk/no-core-construct': [ 'error' ],
   }
 }

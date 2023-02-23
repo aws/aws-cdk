@@ -8,8 +8,8 @@ import { renderReportGroupArn, reportGroupArnComponents } from './report-group-u
 /**
  * The interface representing the ReportGroup resource -
  * either an existing one, imported using the
- * {@link ReportGroup.fromReportGroupName} method,
- * or a new one, created with the {@link ReportGroup} class.
+ * `ReportGroup.fromReportGroupName` method,
+ * or a new one, created with the `ReportGroup` class.
  */
 export interface IReportGroup extends cdk.IResource {
   /**
@@ -75,7 +75,7 @@ export enum ReportGroupType {
 }
 
 /**
- * Construction properties for {@link ReportGroup}.
+ * Construction properties for `ReportGroup`.
  */
 export interface ReportGroupProps {
   /**
@@ -95,7 +95,7 @@ export interface ReportGroupProps {
   /**
    * Whether to output the report files into the export bucket as-is,
    * or create a ZIP from them before doing the export.
-   * Ignored if {@link exportBucket} has not been provided.
+   * Ignored if `exportBucket` has not been provided.
    *
    * @default - false (the files will not be ZIPped)
    */

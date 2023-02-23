@@ -725,6 +725,7 @@ export class Cluster extends ClusterBase {
         policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
           resources: [this.clusterArn],
         }),
+        installLatestAwsSdk: false,
       });
     }
     return this._clusterDescription.getResponseField(`ClusterInfo.${responseField}`);
@@ -774,6 +775,8 @@ export class Cluster extends ClusterBase {
         policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
           resources: [this.clusterArn],
         }),
+        // APIs are available in 2.1055.0
+        installLatestAwsSdk: false,
       });
     }
     return this._clusterBootstrapBrokers.getResponseField(responseField);
@@ -866,6 +869,7 @@ export class Cluster extends ClusterBase {
             resources: [this.clusterArn],
           }),
         ]),
+        installLatestAwsSdk: false,
       });
     } else {
       throw Error(

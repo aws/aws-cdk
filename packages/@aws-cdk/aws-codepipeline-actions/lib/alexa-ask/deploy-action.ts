@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { Action } from '../action';
 
 /**
- * Construction properties of the {@link AlexaSkillDeployAction Alexa deploy Action}.
+ * Construction properties of the `AlexaSkillDeployAction Alexa deploy Action`.
  */
 export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionProps {
   /**

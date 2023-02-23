@@ -93,7 +93,31 @@ describe('User Pool Client', () => {
             ],
           ],
         },
-        InstallLatestAwsSdk: true,
+        Update: {
+          'Fn::Join': [
+            '',
+            [
+              '{"region":"',
+              {
+                Ref: 'AWS::Region',
+              },
+              '","service":"CognitoIdentityServiceProvider","action":"describeUserPoolClient","parameters":{"UserPoolId":"',
+              {
+                Ref: 'PoolD3F588B8',
+              },
+              '","ClientId":"',
+              {
+                Ref: 'clientWithSecretD25031A8',
+              },
+              '"},"physicalResourceId":{"id":"',
+              {
+                Ref: 'clientWithSecretD25031A8',
+              },
+              '"}}',
+            ],
+          ],
+        },
+        InstallLatestAwsSdk: false,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

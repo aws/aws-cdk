@@ -8,7 +8,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
 
 let app: TestApp;
 
@@ -80,6 +80,11 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
     expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
       pipelineName: 'randomName',
     }).create()).toThrowError('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+  test('Providing codePipeline parameter and enableKeyRotation parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      enableKeyRotation: true,
+    }).create()).toThrowError('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
   });
   test('Providing codePipeline parameter and crossAccountKeys parameter should throw error', () => {
     expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
@@ -192,6 +197,60 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
   });
 });
 
+test('CodePipeline throws when key rotation is enabled without enabling cross account keys', ()=>{
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const repo = new ccommit.Repository(pipelineStack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  expect(() => new CodePipeline(pipelineStack, 'Pipeline', {
+    enableKeyRotation: true,
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+  }).buildPipeline()).toThrowError('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
+});
+
+
+test('CodePipeline enables key rotation on cross account keys', ()=>{
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const repo = new ccommit.Repository(pipelineStack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  new CodePipeline(pipelineStack, 'Pipeline', {
+    enableKeyRotation: true,
+    crossAccountKeys: true, // requirement of key rotation
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+  });
+
+  const template = Template.fromStack(pipelineStack);
+
+  template.hasResourceProperties('AWS::KMS::Key', {
+    EnableKeyRotation: true,
+  });
+});
+
 test('CodePipeline supports use of existing role', () => {
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   const repo = new ccommit.Repository(pipelineStack, 'Repo', {
@@ -298,6 +357,103 @@ describe('deployment of stack', () => {
   });
 });
 
+test('action name is calculated properly if it has cross-stack dependencies', () => {
+  // GIVEN
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+  });
+
+  // WHEN
+  const s1step = new cdkp.ManualApprovalStep('S1');
+  const s2step = new cdkp.ManualApprovalStep('S2');
+  s1step.addStepDependency(s2step);
+
+  // The issue we were diagnosing only manifests if the stacks don't have
+  // a dependency on each other
+  const stage = new TwoStackApp(app, 'TheApp', { withDependency: false });
+  pipeline.addStage(stage, {
+    stackSteps: [
+      { stack: stage.stack1, post: [s1step] },
+      { stack: stage.stack2, post: [s2step] },
+    ],
+  });
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'TheApp',
+      Actions: Match.arrayWith([
+        Match.objectLike({ Name: 'Stack2.S2', RunOrder: 3 }),
+        Match.objectLike({ Name: 'Stack1.S1', RunOrder: 4 }),
+      ]),
+    }]),
+  });
+});
+
+test('synths with change set approvers', () => {
+  // GIVEN
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+  // WHEN
+  const csApproval = new cdkp.ManualApprovalStep('ChangeSetApproval');
+
+  // The issue we were diagnosing only manifests if the stacks don't have
+  // a dependency on each other
+  const stage = new TwoStackApp(app, 'TheApp', { withDependency: false });
+  pipeline.addStage(stage, {
+    stackSteps: [
+      { stack: stage.stack1, changeSet: [csApproval] },
+      { stack: stage.stack2, changeSet: [csApproval] },
+    ],
+  });
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'TheApp',
+      Actions: Match.arrayWith([
+        Match.objectLike({ Name: 'Stack1.Prepare', RunOrder: 1 }),
+        Match.objectLike({ Name: 'Stack2.Prepare', RunOrder: 1 }),
+        Match.objectLike({ Name: 'Stack1.ChangeSetApproval', RunOrder: 2 }),
+        Match.objectLike({ Name: 'Stack1.Deploy', RunOrder: 3 }),
+        Match.objectLike({ Name: 'Stack2.Deploy', RunOrder: 3 }),
+      ]),
+    }]),
+  });
+});
+
+test('selfMutationProject can be accessed after buildPipeline', () => {
+  // GIVEN
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+  pipeline.addStage(new StageWithStackOutput(pipelineStack, 'Stage'));
+
+  // WHEN
+  pipeline.buildPipeline();
+
+  // THEN
+  expect(pipeline.selfMutationProject).toBeTruthy();
+});
+
+test('selfMutationProject is undefined if switched off', () => {
+  // GIVEN
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    selfMutation: false,
+  });
+  pipeline.addStage(new StageWithStackOutput(pipelineStack, 'Stage'));
+
+  // WHEN
+  pipeline.buildPipeline();
+
+  // THEN
+  expect(() => pipeline.selfMutationProject).toThrow(/No selfMutationProject/);
+});
+
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
   reuseCrossRegionSupportStacks?: boolean;
 }
@@ -358,6 +514,7 @@ class ReuseStack extends cdk.Stack {
 interface CodePipelineStackProps extends cdk.StackProps {
   pipelineName?: string;
   crossAccountKeys?: boolean;
+  enableKeyRotation?: boolean;
   reuseCrossRegionSupportStacks?: boolean;
   role?: iam.IRole;
 }
@@ -379,21 +536,28 @@ class CodePipelinePropsCheckTest extends cdk.Stack {
     if (this.cProps.crossAccountKeys !== undefined) {
       new cdkp.CodePipeline(this, 'CodePipeline2', {
         crossAccountKeys: this.cProps.crossAccountKeys,
-        codePipeline: new Pipeline(this, 'Pipline2'),
+        codePipeline: new Pipeline(this, 'Pipeline2'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.enableKeyRotation !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline3', {
+        enableKeyRotation: this.cProps.enableKeyRotation,
+        codePipeline: new Pipeline(this, 'Pipeline3'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }
     if (this.cProps.reuseCrossRegionSupportStacks !== undefined) {
-      new cdkp.CodePipeline(this, 'CodePipeline3', {
+      new cdkp.CodePipeline(this, 'CodePipeline4', {
         reuseCrossRegionSupportStacks: this.cProps.reuseCrossRegionSupportStacks,
-        codePipeline: new Pipeline(this, 'Pipline3'),
+        codePipeline: new Pipeline(this, 'Pipeline4'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }
     if (this.cProps.role !== undefined) {
-      new cdkp.CodePipeline(this, 'CodePipeline4', {
+      new cdkp.CodePipeline(this, 'CodePipeline5', {
         role: this.cProps.role,
-        codePipeline: new Pipeline(this, 'Pipline4'),
+        codePipeline: new Pipeline(this, 'Pipeline5'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }

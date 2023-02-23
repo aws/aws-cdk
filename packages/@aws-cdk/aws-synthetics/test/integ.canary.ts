@@ -31,7 +31,7 @@ new synthetics.Canary(stack, 'MyCanary', {
   }),
   schedule: synthetics.Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 new synthetics.Canary(stack, 'MyCanaryOne', {
@@ -40,7 +40,8 @@ new synthetics.Canary(stack, 'MyCanaryOne', {
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+  enableAutoDeleteLambdas: true,
 });
 
 new synthetics.Canary(stack, 'MyCanaryTwo', {
@@ -49,7 +50,7 @@ new synthetics.Canary(stack, 'MyCanaryTwo', {
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 new synthetics.Canary(stack, 'MyCanaryThree', {
@@ -58,7 +59,7 @@ new synthetics.Canary(stack, 'MyCanaryThree', {
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 new synthetics.Canary(stack, 'MyCanaryFour', {
@@ -67,7 +68,7 @@ new synthetics.Canary(stack, 'MyCanaryFour', {
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_7,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 new synthetics.Canary(stack, 'MyCanaryRuntime38', {
@@ -76,7 +77,7 @@ new synthetics.Canary(stack, 'MyCanaryRuntime38', {
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 new synthetics.Canary(stack, 'MyPythonCanary', {
@@ -85,7 +86,7 @@ new synthetics.Canary(stack, 'MyPythonCanary', {
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+  runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_3,
 });
 
 app.synth();

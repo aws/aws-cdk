@@ -244,7 +244,7 @@ export interface JobDefinitionContainer {
 }
 
 /**
- * Construction properties of the {@link JobDefinition} construct.
+ * Construction properties of the `JobDefinition` construct.
  */
 export interface JobDefinitionProps {
   /**
@@ -361,14 +361,14 @@ export interface INodeRangeProps {
    * to the number of nodes associated with the job. You may nest node ranges, for example 0:10 and 4:5,
    * in which case the 4:5 range properties override the 0:10 properties.
    *
-   * @default {@link IMultiNodeprops.count}
+   * @default `IMultiNodeprops.count`
    */
   toNodeIndex?: number;
 }
 
 /**
  * An interface representing a job definition - either a new one, created with the CDK, *using the
- * {@link JobDefinition} class, or existing ones, referenced using the {@link JobDefinition.fromJobDefinitionArn} method.
+ * `JobDefinition` class, or existing ones, referenced using the `JobDefinition.fromJobDefinitionArn` method.
  */
 export interface IJobDefinition extends IResource {
   /**

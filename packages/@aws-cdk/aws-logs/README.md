@@ -71,6 +71,13 @@ const logGroup = new logs.LogGroup(this, 'LogGroup');
 logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
+Similarily, read permissions can be granted to the log group as follows.
+
+```ts
+const logGroup = new logs.LogGroup(this, 'LogGroup');
+logGroup.grantRead(new iam.ServicePrincipal('es.amazonaws.com'));
+```
+
 Be aware that any ARNs or tokenized values passed to the resource policy will be converted into AWS Account IDs.
 This is because CloudWatch Logs Resource Policies do not accept ARNs as principals, but they do accept
 Account ID strings. Non-ARN principals, like Service principals or Any principals, are accepted by CloudWatch.
@@ -165,7 +172,8 @@ const mf = new logs.MetricFilter(this, 'MetricFilter', {
   metricValue: '$.latency',
   dimensions: {
     ErrorCode: '$.errorCode',
-  }
+  },
+  unit: Unit.MILLISECONDS,
 });
 
 //expose a metric from the metric filter
@@ -322,6 +330,14 @@ new logs.QueryDefinition(this, 'QueryDefinition', {
   queryDefinitionName: 'MyQuery',
   queryString: new logs.QueryString({
     fields: ['@timestamp', '@message'],
+    parseStatements: [
+      '@message "[*] *" as loggingType, loggingMessage',
+      '@message "<*>: *" as differentLoggingType, differentLoggingMessage',
+    ],
+    filterStatements: [
+      'loggingType = "ERROR"',
+      'loggingMessage = "A very strange error occurred!"',
+    ],
     sort: '@timestamp desc',
     limit: 20,
   }),

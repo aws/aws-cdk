@@ -1,8 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Arn, ArnFormat, Duration, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Arn, ArnFormat, Duration, FeatureFlags, Lazy, Names, Stack } from '@aws-cdk/core';
+import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { CfnAuthorizer } from '../apigateway.generated';
+import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { IRestApi } from '../restapi';
 
@@ -20,10 +21,10 @@ export interface LambdaAuthorizerProps {
   /**
    * The handler for the authorizer lambda function.
    *
-   * The handler must follow a very specific protocol on the input it receives and the output it needs to produce.
-   * API Gateway has documented the handler's input specification
-   * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-input.html | here} and output specification
-   * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html | here}.
+   * The handler must follow a very specific protocol on the input it receives
+   * and the output it needs to produce.  API Gateway has documented the
+   * handler's [input specification](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-input.html)
+   * and [output specification](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html).
    */
   readonly handler: lambda.IFunction;
 
@@ -69,6 +70,8 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
 
   protected restApiId?: string;
 
+  protected abstract readonly authorizerProps: CfnAuthorizerProps;
+
   protected constructor(scope: Construct, id: string, props: LambdaAuthorizerProps) {
     super(scope, id);
 
@@ -90,6 +93,28 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     }
 
     this.restApiId = restApi.restApiId;
+
+    const deployment = restApi.latestDeployment;
+    const addToLogicalId = FeatureFlags.of(this).isEnabled(APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID);
+
+    if (deployment && addToLogicalId) {
+      let functionName;
+
+      if (this.handler instanceof lambda.Function) {
+        // if not imported, attempt to get the function name, which
+        // may be a token
+        functionName = (this.handler.node.defaultChild as lambda.CfnFunction).functionName;
+      } else {
+        // if imported, the function name will be a token
+        functionName = this.handler.functionName;
+      }
+
+      deployment.node.addDependency(this);
+      deployment.addToLogicalId({
+        authorizer: this.authorizerProps,
+        authorizerToken: functionName,
+      });
+    }
   }
 
   /**
@@ -163,11 +188,14 @@ export class TokenAuthorizer extends LambdaAuthorizer {
 
   public readonly authorizerArn: string;
 
+  protected readonly authorizerProps: CfnAuthorizerProps;
+
   constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
     super(scope, id, props);
 
     const restApiId = this.lazyRestApiId();
-    const resource = new CfnAuthorizer(this, 'Resource', {
+
+    const authorizerProps: CfnAuthorizerProps = {
       name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'TOKEN',
@@ -176,7 +204,11 @@ export class TokenAuthorizer extends LambdaAuthorizer {
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySource || 'method.request.header.Authorization',
       identityValidationExpression: props.validationRegex,
-    });
+    };
+
+    this.authorizerProps = authorizerProps;
+
+    const resource = new CfnAuthorizer(this, 'Resource', authorizerProps);
 
     this.authorizerId = resource.ref;
     this.authorizerArn = Stack.of(this).formatArn({
@@ -221,6 +253,8 @@ export class RequestAuthorizer extends LambdaAuthorizer {
 
   public readonly authorizerArn: string;
 
+  protected readonly authorizerProps: CfnAuthorizerProps;
+
   constructor(scope: Construct, id: string, props: RequestAuthorizerProps) {
     super(scope, id, props);
 
@@ -229,7 +263,8 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     }
 
     const restApiId = this.lazyRestApiId();
-    const resource = new CfnAuthorizer(this, 'Resource', {
+
+    const authorizerProps: CfnAuthorizerProps = {
       name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'REQUEST',
@@ -237,7 +272,11 @@ export class RequestAuthorizer extends LambdaAuthorizer {
       authorizerCredentials: props.assumeRole?.roleArn,
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySources.map(is => is.toString()).join(','),
-    });
+    };
+
+    this.authorizerProps = authorizerProps;
+
+    const resource = new CfnAuthorizer(this, 'Resource', authorizerProps);
 
     this.authorizerId = resource.ref;
     this.authorizerArn = Stack.of(this).formatArn({

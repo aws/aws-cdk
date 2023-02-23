@@ -26,7 +26,7 @@ jobs:
 
       - name: Locate Yarn cache
         id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - name: Restore Yarn cache
         uses: actions/cache@v3
@@ -39,34 +39,29 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Install Tools
         run: |-
-          npm -g install lerna npm-check-updates@^9.0.0
+          npm -g install lerna npm-check-updates
       - name: Build CLI
-        run: cd packages/aws-cdk && ../../scripts/buildup
+        run: lerna run build --scope aws-cdk --include-dependencies --stream
       - name: Build Integ Runner
-        run: cd packages/@aws-cdk/integ-runner && ../../../scripts/buildup
+        run: lerna run build --scope @aws-cdk/integ-runner --include-dependencies --stream
       - name: List Mono-Repo Packages
         id: list-packages
         # These need to be ignored from the `ncu` runs!
         run: |-
-          echo -n "::set-output name=list::"
-          node -p "$(lerna ls --all --json 2>/dev/null).map(item => item.name).join(',')"
+          echo "list=$(lerna ls --all --json 2>/dev/null | jq -r 'map(.name) | join(",")')" >> $GITHUB_OUTPUT
       - name: Run "ncu -u"
-        # We special-case @types/node because we want to stay on the current major (minimum supported node release)
-        # We special-case @types/fs-extra because the current major (9.x) is broken with @types/node >= 10
-        # We special-case aws-sdk because of breaking changes with TS interface exports in recent minor versions - https://github.com/aws/aws-sdk-js/issues/3453
-        # We special-case typescript because it's not semantically versionned
+        # We special-case some @types because they need to be pinned to specific versions due to breaking changes in minor upgrades https://github.com/DefinitelyTyped/DefinitelyTyped/issues/64266
+        # We special-case typescript because it's not semantically versioned
         # We special-case constructs because we want to stay in control of the minimum compatible version
         # We special-case lerna because we have a patch on it that stops applying if Lerna upgrades. Remove this once https://github.com/lerna/lerna/pull/2874 releases.
         # We special-case aws-sdk-mock because of breaking changes in type exports https://github.com/dwyl/aws-sdk-mock/pull/260. We are not respecting `@ts-ignore`
         run: |-
           # Upgrade dependencies at repository root
-          ncu --upgrade --filter=@types/node,@types/fs-extra --target=minor
           ncu --upgrade --filter=typescript --target=patch
-          ncu --upgrade --reject=@types/node,@types/prettier,@types/fs-extra,constructs,typescript,lerna --target=minor
+          ncu --upgrade --reject=@types/node,@types/prettier,constructs,typescript,lerna --target=minor
           # Upgrade all the packages
-          lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
-          lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/prettier,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
+          lerna exec --parallel ncu -- --upgrade --filter=typescript,lerna --target=patch
+          lerna exec --parallel ncu -- --upgrade --reject='@types/conventional-commits-parser,@types/node,@types/prettier,constructs,typescript,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
       - name: Run "yarn install"

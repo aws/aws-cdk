@@ -3,13 +3,14 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { IEcsApplication, EcsApplication } from './application';
+import { EcsDeploymentConfig, IEcsDeploymentConfig } from './deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
-import { IEcsApplication, EcsApplication } from './application';
-import { EcsDeploymentConfig, IEcsDeploymentConfig } from './deployment-config';
 
 /**
  * Interface for an ECS deployment group.
@@ -111,7 +112,7 @@ export interface EcsBlueGreenDeploymentConfig {
 }
 
 /**
- * Construction properties for {@link EcsDeploymentGroup}.
+ * Construction properties for `EcsDeploymentGroup`.
  */
 export interface EcsDeploymentGroupProps {
   /**
@@ -140,7 +141,7 @@ export interface EcsDeploymentGroupProps {
    * CodeDeploy will stop (and optionally roll back)
    * a deployment if during it any of the alarms trigger.
    *
-   * Alarms can also be added after the Deployment Group is created using the {@link #addAlarm} method.
+   * Alarms can also be added after the Deployment Group is created using the `#addAlarm` method.
    *
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
@@ -222,7 +223,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     this.alarms = props.alarms || [];
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
-    this.deploymentConfig = props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE;
+    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
 
     if (cdk.Resource.isOwnedResource(props.service)) {
       const cfnSvc = (props.service as ecs.BaseService).node.defaultChild as ecs.CfnService;
@@ -239,6 +240,8 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
         );
       }
     }
+
+    const removeAlarmsFromDeploymentGroup = cdk.FeatureFlags.of(this).isEnabled(CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP);
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
@@ -257,7 +260,9 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
         produce: () => this.renderBlueGreenDeploymentConfiguration(props.blueGreenDeploymentConfig),
       }),
       loadBalancerInfo: cdk.Lazy.any({ produce: () => this.renderLoadBalancerInfo(props.blueGreenDeploymentConfig) }),
-      alarmConfiguration: cdk.Lazy.any({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
+      alarmConfiguration: cdk.Lazy.any({
+        produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure, removeAlarmsFromDeploymentGroup),
+      }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
@@ -358,6 +363,6 @@ class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements 
     });
 
     this.application = props.application;
-    this.deploymentConfig = props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE;
+    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
   }
 }

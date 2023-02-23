@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.129"
-        }
-      },
       "ProfilingGroupTestStack": {
         "id": "ProfilingGroupTestStack",
         "path": "ProfilingGroupTestStack",
@@ -68,6 +60,14 @@
             "id": "PublishAppRole",
             "path": "ProfilingGroupTestStack/PublishAppRole",
             "children": {
+              "ImportPublishAppRole": {
+                "id": "ImportPublishAppRole",
+                "path": "ProfilingGroupTestStack/PublishAppRole/ImportPublishAppRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "ProfilingGroupTestStack/PublishAppRole/Resource",
@@ -185,6 +185,14 @@
               "version": "0.0.0"
             }
           },
+          "ImportedProfilingGroupFromArn": {
+            "id": "ImportedProfilingGroupFromArn",
+            "path": "ProfilingGroupTestStack/ImportedProfilingGroupFromArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
           "ExplicitlySetProfilingGroupName": {
             "id": "ExplicitlySetProfilingGroupName",
             "path": "ProfilingGroupTestStack/ExplicitlySetProfilingGroupName",
@@ -198,6 +206,38 @@
             "path": "ProfilingGroupTestStack/ImplicitlySetProfilingGroupName",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedFromArnProfilingGroupName": {
+            "id": "ImportedFromArnProfilingGroupName",
+            "path": "ProfilingGroupTestStack/ImportedFromArnProfilingGroupName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedFromArnProfilingGroupArn": {
+            "id": "ImportedFromArnProfilingGroupArn",
+            "path": "ProfilingGroupTestStack/ImportedFromArnProfilingGroupArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ProfilingGroupTestStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ProfilingGroupTestStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
             }
           }
@@ -220,7 +260,7 @@
                 "path": "test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.129"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
@@ -240,7 +280,7 @@
                             "path": "test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.129"
+                              "version": "10.1.252"
                             }
                           }
                         },
@@ -312,7 +352,23 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.129"
+                      "version": "10.1.252"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -331,6 +387,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.252"
         }
       }
     },

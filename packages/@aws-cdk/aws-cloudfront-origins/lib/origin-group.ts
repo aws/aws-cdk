@@ -1,7 +1,7 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import { Construct } from 'constructs';
 
-/** Construction properties for {@link OriginGroup}. */
+/** Construction properties for `OriginGroup`. */
 export interface OriginGroupProps {
   /**
    * The primary origin that should serve requests for this group.
