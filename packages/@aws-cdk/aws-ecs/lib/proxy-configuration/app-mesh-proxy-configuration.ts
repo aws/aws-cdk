@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
+import { ProxyConfiguration } from './proxy-configuration';
 import { TaskDefinition } from '../base/task-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
-import { ProxyConfiguration } from './proxy-configuration';
 
 /**
  * Interface for setting the properties of proxy configuration.

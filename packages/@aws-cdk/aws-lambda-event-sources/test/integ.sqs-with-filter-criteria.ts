@@ -2,8 +2,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import { SqsEventSource } from '../lib';
 import { TestFunction } from './test-function';
+import { SqsEventSource } from '../lib';
 
 const app = new cdk.App();
 

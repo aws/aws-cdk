@@ -1,10 +1,10 @@
 import { Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { WebSocketRoute, WebSocketRouteOptions } from './route';
 import { CfnApi } from '../apigatewayv2.generated';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
-import { WebSocketRoute, WebSocketRouteOptions } from './route';
 
 /**
  * Represents a WebSocket API
