@@ -141,7 +141,9 @@
    "DependsOn": [
     "MyStateMachineRoleDefaultPolicyE468EB18",
     "MyStateMachineRoleD59FFEBC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Conditions": {
