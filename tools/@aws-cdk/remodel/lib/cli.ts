@@ -175,10 +175,17 @@ async function makeAwsCdkLib(target: string) {
 
   await fs.writeJson(pkgJsonPath, {
     ...pkgJson,
-    main: 'lib/index.js',
-    types: 'lib/index.d.ts',
+    main: 'js-dist/index.js',
+    types: 'js-dist/index.d.ts',
     exports: {
       ...newPkgJsonExports,
+    },
+    jsii: {
+      ...pkgJson.jsii,
+      tsc: {
+        ...pkgJson.jsii.tsc,
+        outDir: 'js-dist',
+      },
     },
     ubergen: {
       ...pkgJson.ubergen,
@@ -203,7 +210,7 @@ async function makeAwsCdkLib(target: string) {
 // Reformat existing relative path to prepend with "./lib"
 function pathReformat(str: string): string {
   const split = str.split(/.(.*)/s);
-  const newVal = ['./lib', split[1]].join('');
+  const newVal = ['./js-dist', split[1]].join('');
   return newVal;
 }
 
@@ -228,6 +235,22 @@ function formatPkgJsonExports(exports: Record<string, Export>): Record<string, E
 
   return Object.fromEntries(entries);
 }
+
+// function makeTypesVersions(exports: Record<string, Export>) {
+//   const dontFormat = ['.', './package.json', './.jsii', './.warnings.jsii.js'];
+//   const entries = Object.entries(exports)
+//     .filter(([k]) => !dontFormat.includes(k));
+
+//   return {
+//     '<4.7': entries.reduce((accum, [k, v]) => {
+//       if (typeof v !== 'string') return accum;
+//       return {
+//         ...accum,
+//         [k]: v.replace('.js', '.d.ts'),
+//       }
+//     }, {}),
+//   }
+// }
 
 // Creates a map of directories to the cloudformations scopes that should be
 // generated within that directory. Preserves information such as the "core"

@@ -66,12 +66,10 @@ async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {
         }
       }
 
-      const exports = [`./${moduleConfig.name}`, `/${moduleConfig.name}`];
-      exports.forEach((exportName) => {
-        if (!pkgJson.exports[exportName]) {
-          pkgJson.exports[exportName]  =`./lib/${moduleConfig.name}/index.js`;
-        }
-      });
+      const exportName = `./${moduleConfig.name}`;
+      if (!pkgJson.exports[exportName]) {
+        pkgJson.exports[exportName] = `./lib/${moduleConfig.name}/index.js`;
+      }
 
       if (!topLevelIndexFileEntries.find(e => e.includes(moduleConfig.name))) {
         topLevelIndexFileEntries.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
