@@ -1,7 +1,7 @@
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
-import { SnsEventSource } from '../lib';
 import { TestFunction } from './test-function';
+import { SnsEventSource } from '../lib';
 
 class SqsEventSourceTest extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

@@ -1,6 +1,6 @@
+import { isSuperObject } from './have-resource';
 import { Assertion, JestFriendlyAssertion } from '../assertion';
 import { StackInspector } from '../inspector';
-import { isSuperObject } from './have-resource';
 
 /**
  * An assertion to check whether a resource of a given type and with the given properties exists, disregarding properties

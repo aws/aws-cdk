@@ -1,6 +1,6 @@
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { StackSynthesizer } from './stack-synthesizer';
 import { IStackSynthesizer, ISynthesisSession } from './types';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 
 /**
  * Synthesizer for a nested stack

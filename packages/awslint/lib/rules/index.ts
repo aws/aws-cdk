@@ -1,4 +1,3 @@
-import { AggregateLinter } from '../linter';
 import { apiLinter } from './api';
 import { attributesLinter } from './attributes';
 import { cfnResourceLinter } from './cfn-resource';
@@ -13,6 +12,7 @@ import { moduleLinter } from './module';
 import { noUnusedTypeLinter } from './no-unused-type';
 import { publicStaticPropertiesLinter } from './public-static-properties';
 import { resourceLinter } from './resource';
+import { AggregateLinter } from '../linter';
 
 export const ALL_RULES_LINTER = new AggregateLinter(
   moduleLinter,

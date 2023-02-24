@@ -1,10 +1,10 @@
-import { IResolvable } from '../resolvable';
-import { TokenizedStringFragments } from '../string-fragments';
-import { isResolvableObject, Token } from '../token';
 import {
   BEGIN_LIST_TOKEN_MARKER, BEGIN_STRING_TOKEN_MARKER, createTokenDouble,
   END_TOKEN_MARKER, extractTokenDouble, TokenString, VALID_KEY_CHARS,
 } from './encoding';
+import { IResolvable } from '../resolvable';
+import { TokenizedStringFragments } from '../string-fragments';
+import { isResolvableObject, Token } from '../token';
 
 const glob = global as any;
 

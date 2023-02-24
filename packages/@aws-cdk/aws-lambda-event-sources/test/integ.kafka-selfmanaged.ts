@@ -2,8 +2,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import { AuthenticationMethod, SelfManagedKafkaEventSource } from '../lib';
 import { TestFunction } from './test-function';
+import { AuthenticationMethod, SelfManagedKafkaEventSource } from '../lib';
 
 class KafkaSelfManagedEventSourceTest extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

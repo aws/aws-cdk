@@ -3,8 +3,8 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { getResourceArn } from '../resource-arn-suffix';
 import { ContainerOverride } from './run-ecs-task-base-types';
+import { getResourceArn } from '../resource-arn-suffix';
 
 /**
  * Basic properties for ECS Tasks

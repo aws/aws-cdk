@@ -48,3 +48,6 @@ yarn-error.log
 
 /.versionrc.json
 RELEASE_NOTES.md
+
+# Produced by integ tests
+read*lock

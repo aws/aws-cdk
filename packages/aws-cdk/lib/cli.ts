@@ -4,6 +4,11 @@ import * as chalk from 'chalk';
 import { install as enableSourceMapSupport } from 'source-map-support';
 
 import type { Argv } from 'yargs';
+import { DeploymentMethod } from './api';
+import { HotswapMode } from './api/hotswap/common';
+import { ILock } from './api/util/rwlock';
+import { checkForPlatformWarnings } from './platform-warnings';
+import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
@@ -23,11 +28,6 @@ import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
-import { DeploymentMethod } from './api';
-import { HotswapMode } from './api/hotswap/common';
-import { ILock } from './api/util/rwlock';
-import { checkForPlatformWarnings } from './platform-warnings';
-import { enableTracing } from './util/tracing';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492

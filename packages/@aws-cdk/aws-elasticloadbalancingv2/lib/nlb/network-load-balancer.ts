@@ -4,10 +4,10 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Resource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { parseLoadBalancerFullName } from '../shared/util';
-import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 
 /**
  * Properties for a network load balancer

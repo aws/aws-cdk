@@ -1,6 +1,6 @@
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
-import { CfnInclude, CfnOutput, CfnParameter, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { CfnInclude, CfnOutput, CfnParameter, CfnResource, Stack } from '../lib';
 
 describeDeprecated('include', () => {
   test('the Include construct can be used to embed an existing template as-is into a stack', () => {

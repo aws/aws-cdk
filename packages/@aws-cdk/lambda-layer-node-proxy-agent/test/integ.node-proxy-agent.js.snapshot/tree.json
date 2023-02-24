@@ -446,7 +446,7 @@
                 "path": "lambda-layer-node-proxy-agent-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.168"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
@@ -492,7 +492,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.168"
+          "version": "10.1.252"
         }
       }
     },

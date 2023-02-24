@@ -2,12 +2,12 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { renderJsonPath, State } from './state';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { Credentials } from '../task-credentials';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
-import { renderJsonPath, State } from './state';
 
 
 /**

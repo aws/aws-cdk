@@ -1,6 +1,6 @@
-import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { IVpcEndpointService } from '@aws-cdk/aws-ec2';
 import { Fn, Names, Stack } from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { IPublicHostedZone, TxtRecord } from '../lib';

@@ -1,5 +1,5 @@
-import { CustomResource, RemovalPolicy, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { CustomResource, RemovalPolicy, Stack } from '../lib';
 
 describe('custom resource', () => {
   test('simple case provider identified by service token', () => {

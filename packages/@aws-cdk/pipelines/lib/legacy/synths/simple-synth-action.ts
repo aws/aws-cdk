@@ -8,9 +8,9 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { copyEnvironmentVariables, filterEmpty } from './_util';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../../docker-credentials';
 import { toPosixPath } from '../../private/fs';
-import { copyEnvironmentVariables, filterEmpty } from './_util';
 
 const DEFAULT_OUTPUT_DIR = 'cdk.out';
 

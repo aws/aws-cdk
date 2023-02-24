@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.1.0",
   "testCases": {
-    "integ.imagescan": {
+    "cdk-integ-ecr-image-scan/DefaultTest": {
       "stacks": [
         "aws-ecr-integ-stack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-integ-ecr-image-scan/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegecrimagescanDefaultTestDeployAssert2E4CA4F5"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

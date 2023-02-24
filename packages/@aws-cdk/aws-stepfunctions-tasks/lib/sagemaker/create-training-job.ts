@@ -3,9 +3,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration, Lazy, Size, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig, S3DataType, StoppingCondition, VpcConfig } from './base-types';
 import { renderEnvironment, renderTags } from './private/utils';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for creating an Amazon SageMaker training job

@@ -4,8 +4,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { CustomResource, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import * as cr from '../../../lib';
 import * as api from './s3-file-handler/api';
+import * as cr from '../../../lib';
 
 interface S3FileProps {
   /**

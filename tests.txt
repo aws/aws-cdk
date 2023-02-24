@@ -210,7 +210,6 @@ aws-dynamodb/test/integ.dynamodb.ondemand.js
 aws-dynamodb/test/integ.dynamodb.sse.js
 aws-dynamodb/test/integ.global-replicas-provisioned.js
 aws-dynamodb/test/integ.global.js
-aws-dynamodb-global/test/integ.dynamodb.global.js
 aws-ec2/test/integ.bastion-host-arm-support.js
 aws-ec2/test/integ.bastion-host.js
 aws-ec2/test/integ.client-vpn-endpoint.js

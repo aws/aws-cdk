@@ -2,8 +2,8 @@ import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import { KinesisEventSource } from '../lib';
 import { TestFunction } from './test-function';
+import { KinesisEventSource } from '../lib';
 
 const app = new App();
 

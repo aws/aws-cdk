@@ -3,8 +3,8 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
-import * as sources from '../lib';
 import { TestFunction } from './test-function';
+import * as sources from '../lib';
 
 /* eslint-disable quote-props */
 

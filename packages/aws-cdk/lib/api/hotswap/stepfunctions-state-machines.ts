@@ -1,6 +1,6 @@
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate } from './common';
 
 export async function isHotswappableStateMachineChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,

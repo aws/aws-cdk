@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "ProfilerGroupIntegrationTest": {
         "id": "ProfilerGroupIntegrationTest",
         "path": "ProfilerGroupIntegrationTest",
@@ -44,6 +36,14 @@
             "id": "PublishAppRole",
             "path": "ProfilerGroupIntegrationTest/PublishAppRole",
             "children": {
+              "ImportPublishAppRole": {
+                "id": "ImportPublishAppRole",
+                "path": "ProfilerGroupIntegrationTest/PublishAppRole/ImportPublishAppRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "ProfilerGroupIntegrationTest/PublishAppRole/Resource",
@@ -141,6 +141,14 @@
             "id": "ReadAppRole",
             "path": "ProfilerGroupIntegrationTest/ReadAppRole",
             "children": {
+              "ImportReadAppRole": {
+                "id": "ImportReadAppRole",
+                "path": "ProfilerGroupIntegrationTest/ReadAppRole/ImportReadAppRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "ProfilerGroupIntegrationTest/ReadAppRole/Resource",
@@ -233,17 +241,95 @@
               "fqn": "@aws-cdk/aws-iam.Role",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ProfilerGroupIntegrationTest/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ProfilerGroupIntegrationTest/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-code-guru-profiler-group": {
+        "id": "cdk-code-guru-profiler-group",
+        "path": "cdk-code-guru-profiler-group",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-code-guru-profiler-group/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-code-guru-profiler-group/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.252"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-code-guru-profiler-group/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-code-guru-profiler-group/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-code-guru-profiler-group/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.252"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

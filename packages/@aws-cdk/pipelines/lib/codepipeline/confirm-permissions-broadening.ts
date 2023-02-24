@@ -3,10 +3,10 @@ import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as sns from '@aws-cdk/aws-sns';
 import { Stage } from '@aws-cdk/core';
 import { Node } from 'constructs';
-import { Step } from '../blueprint';
-import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { CodePipeline } from './codepipeline';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory, ProduceActionOptions } from './codepipeline-action-factory';
+import { Step } from '../blueprint';
+import { ApplicationSecurityCheck } from '../private/application-security-check';
 
 /**
  * Properties for a `PermissionsBroadeningCheck`

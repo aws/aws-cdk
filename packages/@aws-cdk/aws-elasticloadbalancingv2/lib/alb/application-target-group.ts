@@ -2,6 +2,8 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Aws, Annotations, Duration, Token } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
+import { IApplicationListener } from './application-listener';
+import { HttpCodeTarget } from './application-load-balancer';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
@@ -10,8 +12,6 @@ import {
 import { ApplicationProtocol, ApplicationProtocolVersion, Protocol, TargetType, TargetGroupLoadBalancingAlgorithmType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort, parseLoadBalancerFullName, parseTargetGroupFullName } from '../shared/util';
-import { IApplicationListener } from './application-listener';
-import { HttpCodeTarget } from './application-load-balancer';
 
 /**
  * Properties for defining an Application Target Group

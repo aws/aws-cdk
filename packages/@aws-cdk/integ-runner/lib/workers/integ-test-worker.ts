@@ -1,8 +1,8 @@
 import * as workerpool from 'workerpool';
+import { printResults, printSummary, IntegBatchResponse, IntegTestOptions, IntegRunnerMetrics } from './common';
 import * as logger from '../logger';
 import { IntegTestInfo } from '../runner/integration-tests';
 import { flatten } from '../utils';
-import { printResults, printSummary, IntegBatchResponse, IntegTestOptions, IntegRunnerMetrics } from './common';
 
 /**
  * Options for an integration test batch

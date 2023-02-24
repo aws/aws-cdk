@@ -1,11 +1,11 @@
 import * as crypto from 'crypto';
 import { Node } from 'constructs';
+import { TokenMap } from './token-map';
 import { Names } from '../names';
 import { IResolvable, IResolveContext } from '../resolvable';
 import { IResource } from '../resource';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { TokenMap } from './token-map';
 
 export function generatePhysicalName(resource: IResource): string {
   const stack = Stack.of(resource);

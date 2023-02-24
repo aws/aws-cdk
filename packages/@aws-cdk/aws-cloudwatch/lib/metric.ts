@@ -609,9 +609,9 @@ export class MathExpression implements IMetric {
     // we can add warnings.
     const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(i => !this.usingMetrics[i]);
 
-    const warnings = [];
+    const warnings: string[] = [];
 
-    if (!this.expression.toUpperCase().match('\\s*SELECT\\s.*') && missingIdentifiers.length > 0) {
+    if (!this.expression.toUpperCase().match('\\s*SELECT|SEARCH|METRICS\\s.*') && missingIdentifiers.length > 0) {
       warnings.push(`Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`);
     }
 

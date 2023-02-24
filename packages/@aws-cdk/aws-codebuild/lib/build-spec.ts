@@ -1,5 +1,8 @@
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { IResolveContext, Lazy, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as yaml_cfn from './private/yaml-cfn';
+import { Project } from './project';
 
 /**
  * BuildSpec for CodeBuild projects
@@ -28,6 +31,15 @@ export abstract class BuildSpec {
   }
 
   /**
+    * Use the contents of a local file as the build spec string
+    *
+    * Use this if you have a local .yml or .json file that you want to use as the buildspec
+    */
+  public static fromAsset(path: string): BuildSpec {
+    return new AssetBuildSpec(path);
+  }
+
+  /**
    * Whether the buildspec is directly available or deferred until build-time
    */
   public abstract readonly isImmediate: boolean;
@@ -38,7 +50,43 @@ export abstract class BuildSpec {
   /**
    * Render the represented BuildSpec
    */
-  public abstract toBuildSpec(): string;
+  public abstract toBuildSpec(scope?: Construct): string;
+}
+
+/**
+ * BuildSpec that just returns the contents of a local file
+ */
+class AssetBuildSpec extends BuildSpec {
+  public readonly isImmediate: boolean = true;
+  public asset?: s3_assets.Asset;
+
+  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+    super();
+  }
+
+  public toBuildSpec(scope?: Project): string {
+    if (!scope) {
+      throw new Error('`AssetBuildSpec` requires a `scope` argument');
+    }
+
+    // If the same AssetCode is used multiple times, retain only the first instantiation.
+    if (!this.asset) {
+      this.asset = new s3_assets.Asset(scope, 'Code', {
+        path: this.path,
+        ...this.options,
+      });
+    } else if (Stack.of(this.asset) !== Stack.of(scope)) {
+      throw new Error(`Asset is already associated with another stack '${Stack.of(this.asset).stackName}'. ` +
+        'Create a new BuildSpec instance for every stack.');
+    }
+
+    this.asset.grantRead(scope);
+    return this.asset.bucket.arnForObjects(this.asset.s3ObjectKey);
+  }
+
+  public toString() {
+    return `<buildspec file: ${this.path}>`;
+  }
 }
 
 /**

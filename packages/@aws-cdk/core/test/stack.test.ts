@@ -2,6 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { Construct, Node } from 'constructs';
+import { toCloudFormation } from './util';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Lazy, ScopedAws, Stack, validateString,
@@ -16,7 +17,6 @@ import {
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
-import { toCloudFormation } from './util';
 
 describe('stack', () => {
   test('a stack can be serialized into a CloudFormation template, initially it\'s empty', () => {

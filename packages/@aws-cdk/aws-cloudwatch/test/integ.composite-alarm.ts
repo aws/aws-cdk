@@ -1,4 +1,5 @@
 import { App, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from '../lib';
 
 class CompositeAlarmIntegrationTest extends Stack {
@@ -65,6 +66,6 @@ class CompositeAlarmIntegrationTest extends Stack {
 
 const app = new App();
 
-new CompositeAlarmIntegrationTest(app, 'CompositeAlarmIntegrationTest');
-
-app.synth();
+new IntegTest(app, 'cdk-integ-composite-alarm', {
+  testCases: [new CompositeAlarmIntegrationTest(app, 'CompositeAlarmIntegrationTest')],
+});

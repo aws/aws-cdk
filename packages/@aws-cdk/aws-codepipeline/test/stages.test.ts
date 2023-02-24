@@ -1,9 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import * as codepipeline from '../lib';
-import { Stage } from '../lib/private/stage';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
+import * as codepipeline from '../lib';
+import { Stage } from '../lib/private/stage';
 
 /* eslint-disable quote-props */
 

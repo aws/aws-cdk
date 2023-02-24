@@ -1,7 +1,7 @@
-import { IApplicationLoadBalancerTarget, IApplicationTargetGroup } from '../alb/application-target-group';
-import { INetworkLoadBalancerTarget, INetworkTargetGroup } from '../nlb/network-target-group';
 import { ITargetGroup, LoadBalancerTargetProps } from './base-target-group';
 import { TargetType } from './enums';
+import { IApplicationLoadBalancerTarget, IApplicationTargetGroup } from '../alb/application-target-group';
+import { INetworkLoadBalancerTarget, INetworkTargetGroup } from '../nlb/network-target-group';
 
 /**
  * An EC2 instance that is the target for load balancing

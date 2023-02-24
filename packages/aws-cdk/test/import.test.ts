@@ -7,10 +7,10 @@ jest.mock('promptly', () => {
 });
 
 import * as promptly from 'promptly';
-import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
-import { ResourceImporter, ImportMap } from '../lib/import';
 import { testStack } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
+import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
+import { ResourceImporter, ImportMap } from '../lib/import';
 
 const promptlyConfirm = promptly.confirm as jest.Mock;
 const promptlyPrompt = promptly.prompt as jest.Mock;

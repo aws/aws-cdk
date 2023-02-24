@@ -1,9 +1,9 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ConstructOrder, IConstruct } from 'constructs';
+import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 import { Names } from '../lib';
 import { Annotations } from '../lib/annotations';
-import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 

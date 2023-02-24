@@ -260,7 +260,7 @@
                 "path": "test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
@@ -280,7 +280,7 @@
                             "path": "test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.189"
+                              "version": "10.1.252"
                             }
                           }
                         },
@@ -352,7 +352,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "version": "10.1.252"
                     }
                   },
                   "BootstrapVersion": {
@@ -394,7 +394,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.252"
         }
       }
     },

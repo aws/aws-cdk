@@ -1,11 +1,11 @@
 import { Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { StateType } from './private/state-type';
+import { renderJsonPath, State } from './state';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
-import { StateType } from './private/state-type';
-import { renderJsonPath, State } from './state';
 
 /**
  * Properties for defining a Map state

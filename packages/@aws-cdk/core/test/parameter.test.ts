@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnParameter, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { CfnParameter, CfnResource, Stack } from '../lib';
 
 describe('parameter', () => {
   test('parameters can be used and referenced using param.ref', () => {

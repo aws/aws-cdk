@@ -1,10 +1,10 @@
 import * as path from 'path';
 import { parse as parseUrl } from 'url';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
-import { isAssetManifest } from '../private/cloud-assembly-internals';
 import { AssetType } from './asset-type';
 import { Step } from './step';
+import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
+import { isAssetManifest } from '../private/cloud-assembly-internals';
 
 /**
  * Properties for a `StackDeployment`

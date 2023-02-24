@@ -1272,6 +1272,7 @@ export class Vpc extends VpcBase {
         ...overrides,
         filter,
         returnAsymmetricSubnets: true,
+        returnVpnGateways: options.returnVpnGateways,
         subnetGroupNameTag: options.subnetGroupNameTag,
       } as cxschema.VpcContextQuery,
       dummyValue: undefined,

@@ -7,8 +7,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as ec2 from '../lib';
 import { stringLike } from './util';
+import * as ec2 from '../lib';
 
 let app: App;
 let stack: Stack;

@@ -1,5 +1,5 @@
-import { CfnRule, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { CfnRule, Fn, Stack } from '../lib';
 
 describe('rule', () => {
   test('Rule can be used to create rules', () => {

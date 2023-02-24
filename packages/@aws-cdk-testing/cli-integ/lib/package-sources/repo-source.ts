@@ -1,9 +1,9 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import { IPackageSourceSetup, IPackageSource } from './source';
 import { findUp } from '../files';
 import { shell, addToShellPath } from '../shell';
-import { IPackageSourceSetup, IPackageSource } from './source';
 
 export class RepoPackageSourceSetup implements IPackageSourceSetup {
   readonly name = 'repo';

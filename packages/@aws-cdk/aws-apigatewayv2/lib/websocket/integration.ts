@@ -1,9 +1,9 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnIntegration } from '../apigatewayv2.generated';
-import { IIntegration } from '../common';
 import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
+import { CfnIntegration } from '../apigatewayv2.generated';
+import { IIntegration } from '../common';
 
 /**
  * Represents an Integration for an WebSocket API.
