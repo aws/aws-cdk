@@ -1376,7 +1376,7 @@ be added to the report using the `addViolation()` method:
 declare context: ValidationContext;
 
 // Using hard-coded values for better clarity:
-context.report.addViolation({
+context.report.addViolation('MyCheckovPlugin', {
   ruleName: 'CKV_AWS_117',
   recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
   fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
@@ -1394,7 +1394,7 @@ to indicate whether it represents a failure or success:
 ```ts
 declare context: ValidationContext;
 
-context.report.submit(ValidationReportStatus.FAILURE);
+context.report.submit('MyCheckovPlugin', ValidationReportStatus.FAILURE);
 ```
 
 If your plugin depends on an external tool, keep in mind that some developers may
