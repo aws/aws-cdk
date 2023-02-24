@@ -16,5 +16,3 @@ const app = new App();
 new integ.IntegTest(app, 'PlaceIndexTest', {
   testCases: [new TestStack(app, 'cdk-integ-location-place-index')],
 });
-
-app.synth();
