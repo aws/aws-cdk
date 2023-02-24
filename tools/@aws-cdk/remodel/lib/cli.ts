@@ -180,8 +180,13 @@ async function makeAwsCdkLib(target: string) {
     exports: {
       ...newPkgJsonExports,
     },
+    typesVersions: makeTypesVersions(newPkgJsonExports),
     jsii: {
       ...pkgJson.jsii,
+      excludeTypescript: [
+        ...pkgJson.jsii.excludeTypescript,
+        "scripts",
+      ],
       tsc: {
         ...pkgJson.jsii.tsc,
         outDir: 'js-dist',
@@ -195,6 +200,14 @@ async function makeAwsCdkLib(target: string) {
       ...pkgJson.scripts,
       gen: 'ts-node scripts/gen.ts',
       build: 'cdk-build',
+    },
+    'cdk-build': {
+      ...pkgJson['cdk-build'],
+      post: [
+        "ts-node ./scripts/verify-imports-resolve-same.ts",
+        "ts-node ./scripts/verify-imports-shielded.ts",
+        "/bin/bash ./scripts/minify-sources.sh"
+      ],
     },
     devDependencies: {
       ...filteredDevDeps,
@@ -236,21 +249,21 @@ function formatPkgJsonExports(exports: Record<string, Export>): Record<string, E
   return Object.fromEntries(entries);
 }
 
-// function makeTypesVersions(exports: Record<string, Export>) {
-//   const dontFormat = ['.', './package.json', './.jsii', './.warnings.jsii.js'];
-//   const entries = Object.entries(exports)
-//     .filter(([k]) => !dontFormat.includes(k));
+function makeTypesVersions(exports: Record<string, Export>) {
+  const dontFormat = ['.', './package.json', './.jsii', './.warnings.jsii.js'];
+  const entries = Object.entries(exports)
+    .filter(([k]) => !dontFormat.includes(k));
 
-//   return {
-//     '<4.7': entries.reduce((accum, [k, v]) => {
-//       if (typeof v !== 'string') return accum;
-//       return {
-//         ...accum,
-//         [k]: v.replace('.js', '.d.ts'),
-//       }
-//     }, {}),
-//   }
-// }
+  return {
+    '*': entries.reduce((accum, [k, v]) => {
+      if (typeof v !== 'string') return accum;
+      return {
+        ...accum,
+        [k.replace('./', '')]: v.replace('.js', '.d.ts'),
+      }
+    }, {}),
+  }
+}
 
 // Creates a map of directories to the cloudformations scopes that should be
 // generated within that directory. Preserves information such as the "core"

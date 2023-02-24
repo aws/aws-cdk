@@ -56,6 +56,8 @@ export interface PackageJson {
   readonly dependencies?: { readonly [name: string]: string };
   readonly devDependencies?: { readonly [name: string]: string };
   readonly jsii: {
+    readonly tsc: { [key: string]: unknown },
+    readonly excludeTypescript: string[],
     readonly targets?: {
       readonly dotnet?: {
         readonly namespace: string;
