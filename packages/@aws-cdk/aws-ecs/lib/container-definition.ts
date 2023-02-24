@@ -349,6 +349,15 @@ export interface ContainerDefinitionOptions {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols
    */
   readonly systemControls?: SystemControl[];
+
+  /**
+   * When this parameter is true, a TTY is allocated. This parameter maps to Tty in the "Create a container section" of the
+   * Docker Remote API and the --tty option to `docker run`.
+   *
+   * @default - false
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_pseudoterminal
+   */
+  readonly pseudoTerminal?: boolean;
 }
 
 /**
@@ -446,6 +455,11 @@ export class ContainerDefinition extends Construct {
   private readonly inferenceAcceleratorResources: string[] = [];
 
   /**
+   * Specifies whether a TTY must be allocated for this container.
+   */
+  public readonly pseudoTerminal?: boolean;
+
+  /**
    * The configured container links
    */
   private readonly links = new Array<string>();
@@ -512,6 +526,8 @@ export class ContainerDefinition extends Construct {
     if (props.inferenceAcceleratorResources) {
       this.addInferenceAcceleratorResource(...props.inferenceAcceleratorResources);
     }
+
+    this.pseudoTerminal = props.pseudoTerminal;
   }
 
   /**
@@ -756,6 +772,7 @@ export class ContainerDefinition extends Construct {
       name: this.containerName,
       portMappings: cdk.Lazy.any({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
       privileged: this.props.privileged,
+      pseudoTerminal: this.props.pseudoTerminal,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
       startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
