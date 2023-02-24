@@ -3,7 +3,6 @@ import * as path from 'path';
 import {
   main as ubergen,
   Config,
-  Export,
   LibraryReference,
   PackageJson as UbgPkgJson,
 } from '@aws-cdk/ubergen';
@@ -87,9 +86,6 @@ async function makeAwsCdkLib(target: string) {
   const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
   const pkgJson: PackageJson = await fs.readJson(pkgJsonPath);
 
-  const pkgJsonExports = pkgJson.exports ?? {};
-
-
   // Local packages that remain unbundled as dev dependencies
   const localDevDeps = [
     'cdk-build-tools',
@@ -139,33 +135,6 @@ async function makeAwsCdkLib(target: string) {
     };
   }, {});
 
-  const newPkgJsonExports = formatPkgJsonExports(pkgJsonExports);
-
-  // Move all source files into 'lib' to make working on package easier
-  // Exclude stuff like package.json and other config files
-  const rootFiles = await fs.readdir(awsCdkLibDir);
-  const excludeNesting = [
-    'tsconfig.json',
-    '.eslintrc.js',
-    '.gitignore',
-    '.npmignore',
-    'LICENSE',
-    'NOTICE',
-    'package.json',
-    'README.md',
-    'tsconfig.json',
-    'scripts',
-  ];
-
-  await Promise.all(rootFiles.map((file: string) => {
-    if (excludeNesting.includes(file)) {
-      return Promise.resolve();
-    }
-
-    const old = path.join(awsCdkLibDir, file);
-    return fs.move(old, path.join(awsCdkLibDir, 'lib', file));
-  }));
-
   // Create scope map for codegen usage
   await fs.writeJson(
     path.join(awsCdkLibDir, 'scripts', 'scope-map.json'),
@@ -175,22 +144,12 @@ async function makeAwsCdkLib(target: string) {
 
   await fs.writeJson(pkgJsonPath, {
     ...pkgJson,
-    main: 'js-dist/index.js',
-    types: 'js-dist/index.d.ts',
-    exports: {
-      ...newPkgJsonExports,
-    },
-    typesVersions: makeTypesVersions(newPkgJsonExports),
     jsii: {
       ...pkgJson.jsii,
       excludeTypescript: [
         ...pkgJson.jsii.excludeTypescript,
         "scripts",
       ],
-      tsc: {
-        ...pkgJson.jsii.tsc,
-        outDir: 'js-dist',
-      },
     },
     ubergen: {
       ...pkgJson.ubergen,
@@ -200,13 +159,18 @@ async function makeAwsCdkLib(target: string) {
       ...pkgJson.scripts,
       gen: 'ts-node scripts/gen.ts',
       build: 'cdk-build',
+      test: 'jest',
     },
     'cdk-build': {
       ...pkgJson['cdk-build'],
+      pre: [
+        `(cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)`,
+        '(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)',
+        '(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)'
+      ],
       post: [
-        "ts-node ./scripts/verify-imports-resolve-same.ts",
-        "ts-node ./scripts/verify-imports-shielded.ts",
-        "/bin/bash ./scripts/minify-sources.sh"
+        'ts-node ./scripts/verify-imports-resolve-same.ts',
+        'ts-node ./scripts/verify-imports-shielded.ts',
       ],
     },
     devDependencies: {
@@ -218,51 +182,6 @@ async function makeAwsCdkLib(target: string) {
   // TODO: Cleanup
   // 1. lib/aws-events-targets/build-tools, moved to gen.ts step
   // 2. All bundled and deprecated packages
-}
-
-// Reformat existing relative path to prepend with "./lib"
-function pathReformat(str: string): string {
-  const split = str.split(/.(.*)/s);
-  const newVal = ['./js-dist', split[1]].join('');
-  return newVal;
-}
-
-// Reformat all of the paths in `exports` field of package.json so that they
-//  correctly include the new `lib` directory.
-function formatPkgJsonExports(exports: Record<string, Export>): Record<string, Export> {
-  const dontFormat = ['./package.json', './.jsii', './.warnings.jsii.js'];
-  const entries = Object.entries(exports).map(([k, v]) => {
-    if (typeof v === 'string') {
-      const newValue = dontFormat.includes(v) ? v : pathReformat(v);
-      return [k, newValue];
-    }
-
-    const nested = Object.entries(v).map(([nk, nv]) => {
-      if (nv) {
-        return [nk, pathReformat(nv)];
-      } else {return [nk, nv];}
-    });
-
-    return [k, Object.fromEntries(nested)];
-  });
-
-  return Object.fromEntries(entries);
-}
-
-function makeTypesVersions(exports: Record<string, Export>) {
-  const dontFormat = ['.', './package.json', './.jsii', './.warnings.jsii.js'];
-  const entries = Object.entries(exports)
-    .filter(([k]) => !dontFormat.includes(k));
-
-  return {
-    '*': entries.reduce((accum, [k, v]) => {
-      if (typeof v !== 'string') return accum;
-      return {
-        ...accum,
-        [k.replace('./', '')]: v.replace('.js', '.d.ts'),
-      }
-    }, {}),
-  }
 }
 
 // Creates a map of directories to the cloudformations scopes that should be

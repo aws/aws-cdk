@@ -651,7 +651,7 @@ async function rewriteRosettaFixtureImports(fromFile: string, libName: string): 
 const IGNORED_FILE_NAMES = new Set([
   '.eslintrc.js',
   '.gitignore',
-  '.jest.config.js',
+  'jest.config.js',
   '.jsii',
   '.npmignore',
   'node_modules',

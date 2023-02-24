@@ -1,12 +1,11 @@
 import { generateAll, ModuleMap } from '@aws-cdk/cfn2ts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { main as genRegionInfoBuiltins } from '../lib/region-info/build-tools/generate-static-data';
+import { main as genRegionInfoBuiltins } from '../region-info/build-tools/generate-static-data';
 
 const awsCdkLibDir = path.join(__dirname, '..');
-const srcDir = path.join(awsCdkLibDir, 'lib');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
-const topLevelIndexFilePath = path.join(srcDir, 'index.ts');
+const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
 
 main()
   .then(() => process.exit(0))
@@ -17,7 +16,7 @@ async function main() {
   // Generate all L1s based on config in scope-map.json
   const scopeMapPath = path.join(__dirname, 'scope-map.json');
 
-  const generated = await generateAll(srcDir, {
+  const generated = await generateAll(awsCdkLibDir, {
     coreImport: '../../core',
     cloudwatchImport: '../../aws-cloudwatch',
     scopeMapPath,
@@ -38,7 +37,8 @@ async function main() {
 
   // Call build-tools within modules for other codegen
   // TODO: Move these up into aws-cdk-libs/scripts
-  require('../lib/aws-events-targets/build-tools/gen.js');
+  require('../aws-events-targets/build-tools/gen.js');
+  require('../cloudformation-include/build.js');
   await genRegionInfoBuiltins();
 }
 
@@ -68,12 +68,7 @@ async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {
 
       const exportName = `./${moduleConfig.name}`;
       if (!pkgJson.exports[exportName]) {
-        pkgJson.exports[exportName] = `./lib/${moduleConfig.name}/index.js`;
-      }
-
-      const typeExportsName = `${moduleConfig.name}`;
-      if (!pkgJson.typesVersions['*'][typeExportsName]) {
-        pkgJson.typesVersions['*'][typeExportsName] = `./js-dist/${moduleConfig.name}/index.d.ts`;
+        pkgJson.exports[exportName] = `./${moduleConfig.name}/index.js`;
       }
 
       if (!topLevelIndexFileEntries.find(e => e.includes(moduleConfig.name))) {
