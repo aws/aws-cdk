@@ -1316,36 +1316,16 @@ will be printed to the console.
 
 ### For application developers
 
-<!-- Should we write a real, concrete example of a plugin here (e.g., CFN Guard) or
-just a hypothetical one? Using a concrete one is better, but if we do it, we are
-committing ourselves to including it in the first release. -->
+To use one or more validation plugins in your application, use the
+`validationPlugins` property of `Stage`:
 
 ```ts
 // globally for the entire app (an app is a stage)
-import { CfnGuardValidator } from '@aws-cdk/cfn-guard-validator';
-
 const app = new App({
   validationPlugins: [
-    new CfnGuardValidator({
-      rules: [
-        // rules can be specified inline
-        Rules.fromAsset('../my-local-rules'),
-        
-        // or from a remote location
-        Rules.fromDownload('https://somelocation.com/company-rules', {
-          auth: {},
-        }),
-        
-        // or from an S3 location
-        Rules.fromS3(s3Location),
-        
-        // or by calling an external endpoint
-        Rules.fromRequest('POST', 'https://someendpoint.com/validate'),
-      ],
-      options: {
-        someOption: "value",
-      },
-    }),
+    // These hypothetical classes implement IValidationPlugin:
+    new ThirdPartyPluginX(), 
+    new ThirdPartyPluginY(),
   ],
 });
 
@@ -1354,6 +1334,11 @@ const prodStage = new Stage(app, 'ProdStage', {
   validationPlugins: [...],
 });
 ```
+
+Immediately after synthesis, all plugins registered this way will be invoked to
+validate all the templates generated in the scope you defined. In particular, if
+you register the templates in the `App` object, all templates will be subject to
+validation.
 
 ### For plugin authors
 
@@ -1364,32 +1349,53 @@ implement: the plugin name (by overriding the `name` property), and the two
 methods `isReady()` and `validate()`.
 
 The method `isReady()` is called first in the workflow, to make sure that the
-plugin is in a valid state to be used. For example, most plugins will have an
-external dependency, such as a CLI, which must be installed for the plugin to
+plugin is in a valid state and can be used. For example, most plugins will have
+an external dependency, such as a CLI, which must be installed for the plugin to
 work. To signal to the framework that it can go ahead and use the plugin, you
 can check whether the CLI is installed by checking the version:
 
 ```ts
-isReady(): boolean {
-  const { status } = sync('cfn-guard', ['--version'], {
-    encoding: 'utf-8',
-    stdio: 'pipe',
-  });
+declare function invokeSomeCliVersionCommand(): number;
 
+isReady(): boolean {
+  const status = invokeSomeCliVersionCommand();
+
+  // exit status of the CLI command
   return status === 0;
 }
 ```
 
-<!-- TODO Talk more about the interface when we have stabilized it:
+If the plugin is ready, the framework will call `validate()`, passing a
+`ValidationContext` object. The location of the plugin to be validated is given
+by `templateFullPath`. The context also provides the plugin with a
+`ValidationReport` object. This object represents the report that the user will
+receive at the end of the synthesis. Every violation found by the plugin should
+be added to the report using the `addViolation()` method:
 
-- How to build a report
-- How to use the logger
+```ts
+declare context: ValidationContext;
 
--->
+// Using hard-coded values for better clarity:
+context.report.addViolation({
+  ruleName: 'CKV_AWS_117',
+  recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
+  fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
+  violatingResources: [{
+    resourceName: 'MyFunction3BAA72D1',
+    templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
+    locations: 'Properties/VpcConfig',
+  }],
+});
+```
 
-<!-- Other topics:
+When all violations have been added, the report must be concluded by calling the `submit()` method,
+to indicate whether it represents a failure or success:
 
-<!-- Guidelines on how to configure your plugin -->
+```ts
+declare context: ValidationContext;
+
+context.report.submit(ValidationReportStatus.FAILURE);
+```
 
 If your plugin depends on an external tool, keep in mind that some developers may
 not have that tool installed in their workstations yet. To minimize friction, we
