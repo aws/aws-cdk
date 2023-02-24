@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
 import { MetadataResource } from './metadata-resource';
@@ -53,40 +54,39 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 
   const assembly = builder.buildAssembly();
 
-  invokeValidationPlugins(root, assembly);
+  invokeValidationPlugins(root);
 
   return assembly;
 }
 
-function invokeValidationPlugins(root: IConstruct, assembly: cxapi.CloudAssembly) {
-  const stage = Stage.isStage(root) ? root : App.of(root);
-
-  if (!stage) {
-    throw new Error('Cannot validate a construct tree which is not attached to a Stage');
-  }
+function invokeValidationPlugins(root: IConstruct) {
   const tree = new ConstructTree(root);
-
   let failed = false;
-  assembly.stacks.forEach(stack => {
-    const validationContext = new ValidationContext({
-      tree,
-      stack,
-    });
-    for (const plugin of stage.validationPlugins) {
-      if (!plugin.isReady()) {
-        throw new Error(`Validation plugin '${plugin.name}' is not ready`);
-      }
-      plugin.validate(validationContext);
+  visit(root, 'post', construct => {
+    if (Stage.isStage(construct)) {
+      const stacks: Stack[] = construct.node.findAll().filter(node => Stack.isStack(node)) as Stack[];
+      stacks.forEach(stack => {
+        const validationContext = new ValidationContext({
+          tree,
+          stackTemplatePath: path.join(construct.outdir, stack.templateFile),
+        });
+        for (const plugin of construct.validationPlugins) {
+          if (!plugin.isReady()) {
+            throw new Error(`Validation plugin '${plugin.name}' is not ready`);
+          }
+          plugin.validate(validationContext);
 
-    }
-    if (!validationContext.report.success) {
-      // eslint-disable-next-line no-console
-      console.log(validationContext.report.toString());
-      failed = true;
+        }
+        if (!validationContext.report.success) {
+          // eslint-disable-next-line no-console
+          console.log(validationContext.report.toString());
+          failed = true;
+        }
+      });
     }
   });
   if (failed) {
-    throw new Error('Validation failed!');
+    throw new Error('Validation failed. See the validation report above for details');
   }
 }
 

@@ -1,4 +1,3 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import { ConstructTree } from './construct-tree';
 import { ValidationReport } from './report';
 import { IValidationReport } from '../report';
@@ -12,7 +11,7 @@ export interface ValidationContextProps {
   /**
     * The stack to be validated.
     */
-  readonly stack: cxapi.CloudFormationStackArtifact;
+  readonly stackTemplatePath: string;
 
   /**
    * The root of the construct tree being validated
@@ -37,7 +36,7 @@ export class ValidationContext implements IValidationContext {
   public readonly templateFullPath: string;
 
   constructor(props: ValidationContextProps) {
-    this.templateFullPath = props.stack.templateFullPath;
+    this.templateFullPath = props.stackTemplatePath;
     this.report = new ValidationReport(props.tree);
   }
 }
