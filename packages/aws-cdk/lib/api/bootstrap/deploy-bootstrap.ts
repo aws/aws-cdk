@@ -3,11 +3,11 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
+import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSION_RESOURCE } from './bootstrap-props';
 import * as logging from '../../logging';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
-import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSION_RESOURCE } from './bootstrap-props';
 
 /**
  * A class to hold state around stack bootstrapping
