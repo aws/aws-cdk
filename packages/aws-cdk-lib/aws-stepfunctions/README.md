@@ -444,6 +444,12 @@ const success = new sfn.Fail(this, 'Fail', {
 
 ### Map
 
+By default, Map states runs in Inline mode. In Inline mode, the Map state accepts only a JSON array as input. It receives this array from a previous step in the workflow. In this mode, each iteration of the Map state runs in the context of the workflow that contains the Map state. Step Functions adds the execution history of these iterations to the parent workflow's execution history.
+
+In this mode, the Map state supports up to 40 concurrent iterations.
+
+A Map state set to Inline is known as an Inline Map state. Use the Map state in Inline mode if your workflow's execution history won't exceed 25,000 entries, or if you don't require more than 40 concurrent iterations.
+
 A `Map` state can be used to run a set of steps for each element of an input array.
 A `Map` state will execute the same steps for multiple entries of an array in the state input.
 
@@ -456,6 +462,43 @@ const map = new sfn.Map(this, 'Map State', {
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
 });
 map.iterator(new sfn.Pass(this, 'Pass State'));
+```
+
+### Distributed Map
+
+Step Functions provides a high-concurrency mode for the Map state known as Distributed mode. In this mode, the Map state can accept input from large-scale Amazon S3 data sources. For example, your input can be a JSON or CSV file stored in an Amazon S3 bucket, or a JSON array passed from a previous step in the workflow. A Map state set to Distributed is known as a Distributed Map state. In this mode, the Map state runs each iteration as a child workflow execution, which enables high concurrency of up to 10,000 parallel child workflow executions. Each child workflow execution has its own, separate execution history from that of the parent workflow.
+
+Use the Map state in Distributed mode when you need to orchestrate large-scale parallel workloads that meet any combination of the following conditions:
+
+* The size of your dataset exceeds 256 KB.
+* The workflow's execution event history exceeds 25,000 entries.
+* You need a concurrency of more than 40 parallel iterations.
+
+A `DistributedMap` state can be used to run a set of steps for each element of an input array with high concurrency.
+A `DistributedMap` state will execute the same steps for multiple entries of an array in the state input or from S3 objects.
+
+```ts
+const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
+  maxConcurrency: 1,
+  itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
+});
+map.iterator(new sfn.Pass(this, 'Pass State'));
+```
+
+You can provide optional `itemReader` and `resultWriter` properties to control the behavior of the Distributed Map state. 
+
+```ts
+const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
+  itemReader: new sfn.S3JsonItemReader({
+    bucket: 'my-bucket',
+    key: 'my-key.json',
+  }),
+  resultWriter: new sfn.ResultWriter({
+    bucket: 'my-bucket',
+    prefix: 'my-prefix',
+  })
+});
+distributedMap.iterator(new sfn.Pass(this, 'Pass State'));
 ```
 
 ### Custom State
