@@ -283,19 +283,6 @@ const version = new lambda.Version(this, 'MyVersion', {
 });
 ```
 
-Or setting the `currentVersionOptions` when creating a new lambda
-
-```ts
-new lambda.Function(this, 'MyVersionedLambda', {
-  runtime: lambda.Runtime.NODEJS_18_X,
-  handler: 'index.handler',
-  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  currentVersionOptions: {
-    provisionedConcurrentExecutions: 3,
-  },
-});
-```
-
 The major caveat to know here is that a function version must always point to a
 specific 'version' of the function. When the function is modified, the version
 will continue to point to the 'then version' of the function.
@@ -1050,6 +1037,31 @@ const codeSigningConfig = new lambda.CodeSigningConfig(this, 'CodeSigningConfig'
 
 new lambda.Function(this, 'Function', {
   codeSigningConfig,
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+## Runtime updates
+
+Lambda runtime management controls help reduce the risk of impact to your workloads in the rare event of a runtime version incompatibility.
+For more information, see [Runtime management controls](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html#runtime-management-controls)
+
+```ts
+new Function(stack, 'Lambda', {
+  runtimeManagementMode: RuntimeManagementMode.AUTO,
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+If you want to set the "Manual" setting, using the ARN of the runtime version as the argument.
+
+```ts
+new Function(stack, 'Lambda', {
+  runtimeManagementMode: RuntimeManagementMode.manual('runtimeVersion-arn'),
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),

@@ -195,42 +195,6 @@
     "VPCVPCGW99B986DC"
    ]
   },
-  "VPCPublicSubnet2EIP4947BC00": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsFeatureFlag/VPC/PublicSubnet2"
-     }
-    ]
-   }
-  },
-  "VPCPublicSubnet2NATGateway3C070193": {
-   "Type": "AWS::EC2::NatGateway",
-   "Properties": {
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet2Subnet74179F39"
-    },
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "VPCPublicSubnet2EIP4947BC00",
-      "AllocationId"
-     ]
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "FlowLogsFeatureFlag/VPC/PublicSubnet2"
-     }
-    ]
-   },
-   "DependsOn": [
-    "VPCPublicSubnet2DefaultRouteB7481BBA",
-    "VPCPublicSubnet2RouteTableAssociation5A808732"
-   ]
-  },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -365,7 +329,7 @@
     },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "VPCPublicSubnet2NATGateway3C070193"
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
     }
    }
   },
@@ -524,7 +488,6 @@
      "Ref": "VPCB9E5F0B4"
     },
     "ResourceType": "VPC",
-    "TrafficType": "ALL",
     "LogDestination": {
      "Fn::GetAtt": [
       "VPCFlowLogsS3BucketFB7DC2BE",
@@ -537,8 +500,12 @@
       "Key": "Name",
       "Value": "FlowLogsFeatureFlag/VPC"
      }
-    ]
-   }
+    ],
+    "TrafficType": "ALL"
+   },
+   "DependsOn": [
+    "VPCFlowLogsS3BucketPolicyB2C2A045"
+   ]
   },
   "VPCFlowLogsS3WithDestinationOptionsBucket1B7AC456": {
    "Type": "AWS::S3::Bucket",
@@ -673,7 +640,6 @@
      "Ref": "VPCB9E5F0B4"
     },
     "ResourceType": "VPC",
-    "TrafficType": "ALL",
     "DestinationOptions": {
      "fileFormat": "plain-text",
      "perHourPartition": false,
@@ -691,8 +657,12 @@
       "Key": "Name",
       "Value": "FlowLogsFeatureFlag/VPC"
      }
-    ]
-   }
+    ],
+    "TrafficType": "ALL"
+   },
+   "DependsOn": [
+    "VPCFlowLogsS3WithDestinationOptionsBucketPolicy35257B71"
+   ]
   },
   "FlowLogsInstanceInstanceSecurityGroupF61782E0": {
    "Type": "AWS::EC2::SecurityGroup",

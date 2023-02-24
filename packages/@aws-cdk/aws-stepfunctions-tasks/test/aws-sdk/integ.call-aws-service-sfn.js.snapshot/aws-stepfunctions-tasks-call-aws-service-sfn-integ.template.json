@@ -1,0 +1,188 @@
+{
+ "Resources": {
+  "ChildStateMachineRoleA7F7AB78": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ChildStateMachineRoleDefaultPolicy8B4560F0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:sendTaskSuccess",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ChildStateMachineRoleDefaultPolicy8B4560F0",
+    "Roles": [
+     {
+      "Ref": "ChildStateMachineRoleA7F7AB78"
+     }
+    ]
+   }
+  },
+  "ChildStateMachine9133117F": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ChildStateMachineRoleA7F7AB78",
+      "Arn"
+     ]
+    },
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"SendTaskSuccess\",\"States\":{\"SendTaskSuccess\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:sfn:sendTaskSuccess\",\"Parameters\":{\"Output.$\":\"$.output\",\"TaskToken.$\":\"$.taskToken\"}}}}"
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "ChildStateMachineRoleDefaultPolicy8B4560F0",
+    "ChildStateMachineRoleA7F7AB78"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ParentStateMachineRoleE902D002": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ParentStateMachineRoleDefaultPolicyA368A0BA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ChildStateMachine9133117F"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ParentStateMachineRoleDefaultPolicyA368A0BA",
+    "Roles": [
+     {
+      "Ref": "ParentStateMachineRoleE902D002"
+     }
+    ]
+   }
+  },
+  "ParentStateMachine74EA937A": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ParentStateMachineRoleE902D002",
+      "Arn"
+     ]
+    },
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"StepFunctionsStartExecution\",\"States\":{\"StepFunctionsStartExecution\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::states:startExecution.waitForTaskToken\",\"Parameters\":{\"Input\":{\"output.$\":\"$\",\"taskToken.$\":\"$$.Task.Token\"},\"StateMachineArn\":\"",
+       {
+        "Ref": "ChildStateMachine9133117F"
+       },
+       "\"}}}}"
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "ParentStateMachineRoleDefaultPolicyA368A0BA",
+    "ParentStateMachineRoleE902D002"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefParentStateMachine74EA937A758ECF42": {
+   "Value": {
+    "Ref": "ParentStateMachine74EA937A"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-tasks-call-aws-service-sfn-integ:ExportsOutputRefParentStateMachine74EA937A758ECF42"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

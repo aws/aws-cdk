@@ -33,6 +33,16 @@ export class WorkerType {
   public static readonly G_2X = new WorkerType('G.2X');
 
   /**
+   * Each worker maps to 0.25 DPU (2 vCPU, 4 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for low volume streaming jobs.
+   */
+  public static readonly G_025X = new WorkerType('G.025X');
+
+  /**
+   * Each worker maps to 2 high-memory DPU [M-DPU] (8 vCPU, 64 GB of memory, 128 GB disk). Supported in Ray jobs.
+   */
+  public static readonly Z_2X = new WorkerType('Z.2X');
+
+  /**
    * Custom worker type
    * @param workerType custom worker type
    */
@@ -692,7 +702,7 @@ export class Job extends JobBase {
    */
   private checkNoReservedArgs(defaultArguments?: { [key: string]: string }) {
     if (defaultArguments) {
-      const reservedArgs = new Set(['--conf', '--debug', '--mode', '--JOB_NAME']);
+      const reservedArgs = new Set(['--debug', '--mode', '--JOB_NAME']);
       Object.keys(defaultArguments).forEach((arg) => {
         if (reservedArgs.has(arg)) {
           throw new Error(`The ${arg} argument is reserved by Glue. Don't set it`);
@@ -726,6 +736,8 @@ export class Job extends JobBase {
   private setupSparkUI(executable: JobExecutableConfig, role: iam.IRole, props: SparkUIProps) {
     if (JobType.PYTHON_SHELL === executable.type) {
       throw new Error('Spark UI is not available for JobType.PYTHON_SHELL jobs');
+    } else if (JobType.RAY === executable.type) {
+      throw new Error('Spark UI is not available for JobType.RAY jobs');
     }
 
     const bucket = props.bucket ?? new s3.Bucket(this, 'SparkUIBucket');

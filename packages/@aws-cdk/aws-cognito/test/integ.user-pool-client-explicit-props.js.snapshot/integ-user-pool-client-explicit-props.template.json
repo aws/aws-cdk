@@ -132,7 +132,31 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": true
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"service\":\"CognitoIdentityServiceProvider\",\"action\":\"describeUserPoolClient\",\"parameters\":{\"UserPoolId\":\"",
+       {
+        "Ref": "myuserpool01998219"
+       },
+       "\",\"ClientId\":\"",
+       {
+        "Ref": "myuserpoolmyuserpoolclientAFB2274E"
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"",
+       {
+        "Ref": "myuserpoolmyuserpoolclientAFB2274E"
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyF83BED40"

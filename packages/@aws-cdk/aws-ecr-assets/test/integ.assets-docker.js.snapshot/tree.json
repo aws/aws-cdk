@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-assets-docker": {
         "id": "integ-assets-docker",
         "path": "integ-assets-docker",
@@ -24,8 +16,8 @@
                 "id": "Staging",
                 "path": "integ-assets-docker/DockerImage/Staging",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
                 }
               },
               "Repository": {
@@ -50,8 +42,8 @@
                 "id": "Staging",
                 "path": "integ-assets-docker/DockerImage2/Staging",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
                 }
               },
               "Repository": {
@@ -76,13 +68,65 @@
                 "id": "Staging",
                 "path": "integ-assets-docker/DockerImage3/Staging",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
                 }
               },
               "Repository": {
                 "id": "Repository",
                 "path": "integ-assets-docker/DockerImage3/Repository",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
+              "version": "0.0.0"
+            }
+          },
+          "DockerImage4": {
+            "id": "DockerImage4",
+            "path": "integ-assets-docker/DockerImage4",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "integ-assets-docker/DockerImage4/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Repository": {
+                "id": "Repository",
+                "path": "integ-assets-docker/DockerImage4/Repository",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
+              "version": "0.0.0"
+            }
+          },
+          "DockerImage5": {
+            "id": "DockerImage5",
+            "path": "integ-assets-docker/DockerImage5",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "integ-assets-docker/DockerImage5/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Repository": {
+                "id": "Repository",
+                "path": "integ-assets-docker/DockerImage5/Repository",
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
                   "version": "0.0.0"
@@ -190,36 +234,76 @@
             "id": "ImageUri",
             "path": "integ-assets-docker/ImageUri",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "ImageUri2": {
             "id": "ImageUri2",
             "path": "integ-assets-docker/ImageUri2",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "ImageUri3": {
             "id": "ImageUri3",
             "path": "integ-assets-docker/ImageUri3",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ImageUri4": {
+            "id": "ImageUri4",
+            "path": "integ-assets-docker/ImageUri4",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ImageUri5": {
+            "id": "ImageUri5",
+            "path": "integ-assets-docker/ImageUri5",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-assets-docker/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-assets-docker/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.216"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

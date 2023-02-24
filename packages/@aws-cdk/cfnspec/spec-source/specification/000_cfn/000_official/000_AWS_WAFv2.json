@@ -1,5 +1,5 @@
 {
-  "$version": "106.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::WAFv2::LoggingConfiguration.ActionCondition": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-loggingconfiguration-actioncondition.html",
@@ -172,11 +172,11 @@
         }
       }
     },
-    "AWS::WAFv2::RuleGroup.Allow": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-allow.html",
+    "AWS::WAFv2::RuleGroup.AllowAction": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-allowaction.html",
       "Properties": {
         "CustomRequestHandling": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-allow.html#cfn-wafv2-rulegroup-allow-customrequesthandling",
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-allowaction.html#cfn-wafv2-rulegroup-allowaction-customrequesthandling",
           "Required": false,
           "Type": "CustomRequestHandling",
           "UpdateType": "Mutable"
@@ -196,11 +196,11 @@
         }
       }
     },
-    "AWS::WAFv2::RuleGroup.Block": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-block.html",
+    "AWS::WAFv2::RuleGroup.BlockAction": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-blockaction.html",
       "Properties": {
         "CustomResponse": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-block.html#cfn-wafv2-rulegroup-block-customresponse",
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-blockaction.html#cfn-wafv2-rulegroup-blockaction-customresponse",
           "Required": false,
           "Type": "CustomResponse",
           "UpdateType": "Mutable"
@@ -255,11 +255,11 @@
         }
       }
     },
-    "AWS::WAFv2::RuleGroup.Captcha": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-captcha.html",
+    "AWS::WAFv2::RuleGroup.CaptchaAction": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-captchaaction.html",
       "Properties": {
         "CustomRequestHandling": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-captcha.html#cfn-wafv2-rulegroup-captcha-customrequesthandling",
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-captchaaction.html#cfn-wafv2-rulegroup-captchaaction-customrequesthandling",
           "Required": false,
           "Type": "CustomRequestHandling",
           "UpdateType": "Mutable"
@@ -277,11 +277,11 @@
         }
       }
     },
-    "AWS::WAFv2::RuleGroup.Challenge": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-challenge.html",
+    "AWS::WAFv2::RuleGroup.ChallengeAction": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-challengeaction.html",
       "Properties": {
         "CustomRequestHandling": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-challenge.html#cfn-wafv2-rulegroup-challenge-customrequesthandling",
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-challengeaction.html#cfn-wafv2-rulegroup-challengeaction-customrequesthandling",
           "Required": false,
           "Type": "CustomRequestHandling",
           "UpdateType": "Mutable"
@@ -349,11 +349,11 @@
         }
       }
     },
-    "AWS::WAFv2::RuleGroup.Count": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-count.html",
+    "AWS::WAFv2::RuleGroup.CountAction": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-countaction.html",
       "Properties": {
         "CustomRequestHandling": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-count.html#cfn-wafv2-rulegroup-count-customrequesthandling",
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-countaction.html#cfn-wafv2-rulegroup-countaction-customrequesthandling",
           "Required": false,
           "Type": "CustomRequestHandling",
           "UpdateType": "Mutable"
@@ -885,31 +885,31 @@
         "Allow": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-ruleaction.html#cfn-wafv2-rulegroup-ruleaction-allow",
           "Required": false,
-          "Type": "Allow",
+          "Type": "AllowAction",
           "UpdateType": "Mutable"
         },
         "Block": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-ruleaction.html#cfn-wafv2-rulegroup-ruleaction-block",
           "Required": false,
-          "Type": "Block",
+          "Type": "BlockAction",
           "UpdateType": "Mutable"
         },
         "Captcha": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-ruleaction.html#cfn-wafv2-rulegroup-ruleaction-captcha",
           "Required": false,
-          "Type": "Captcha",
+          "Type": "CaptchaAction",
           "UpdateType": "Mutable"
         },
         "Challenge": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-ruleaction.html#cfn-wafv2-rulegroup-ruleaction-challenge",
           "Required": false,
-          "Type": "Challenge",
+          "Type": "ChallengeAction",
           "UpdateType": "Mutable"
         },
         "Count": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-ruleaction.html#cfn-wafv2-rulegroup-ruleaction-count",
           "Required": false,
-          "Type": "Count",
+          "Type": "CountAction",
           "UpdateType": "Mutable"
         }
       }

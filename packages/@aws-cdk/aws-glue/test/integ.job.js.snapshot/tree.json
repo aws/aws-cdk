@@ -203,13 +203,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Code93a4952ea654434aca8481fb2bc2a836": {
-                "id": "Code93a4952ea654434aca8481fb2bc2a836",
-                "path": "aws-glue-job/EtlJob2.0/Code93a4952ea654434aca8481fb2bc2a836",
+              "Codebeaf1c9f157c9b396ec6972f85317dbc": {
+                "id": "Codebeaf1c9f157c9b396ec6972f85317dbc",
+                "path": "aws-glue-job/EtlJob2.0/Codebeaf1c9f157c9b396ec6972f85317dbc",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-job/EtlJob2.0/Code93a4952ea654434aca8481fb2bc2a836/Stage",
+                    "path": "aws-glue-job/EtlJob2.0/Codebeaf1c9f157c9b396ec6972f85317dbc/Stage",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.AssetStaging",
                       "version": "0.0.0"
@@ -217,7 +217,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-job/EtlJob2.0/Code93a4952ea654434aca8481fb2bc2a836/AssetBucket",
+                    "path": "aws-glue-job/EtlJob2.0/Codebeaf1c9f157c9b396ec6972f85317dbc/AssetBucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.BucketBase",
                       "version": "0.0.0"
@@ -275,7 +275,8 @@
                         ]
                       },
                       "arg1": "value1",
-                      "arg2": "value2"
+                      "arg2": "value2",
+                      "--conf": "valueConf"
                     },
                     "executionProperty": {
                       "maxConcurrentRuns": 2
@@ -531,9 +532,11 @@
                     },
                     "glueVersion": "2.0",
                     "name": "StreamingJob2.0",
+                    "numberOfWorkers": 10,
                     "tags": {
                       "key": "value"
-                    }
+                    },
+                    "workerType": "G.025X"
                   }
                 },
                 "constructInfo": {
@@ -788,7 +791,8 @@
                         ]
                       },
                       "arg1": "value1",
-                      "arg2": "value2"
+                      "arg2": "value2",
+                      "--conf": "valueConf"
                     },
                     "executionProperty": {
                       "maxConcurrentRuns": 2
@@ -1044,9 +1048,11 @@
                     },
                     "glueVersion": "3.0",
                     "name": "StreamingJob3.0",
+                    "numberOfWorkers": 10,
                     "tags": {
                       "key": "value"
-                    }
+                    },
+                    "workerType": "G.025X"
                   }
                 },
                 "constructInfo": {
@@ -1301,7 +1307,8 @@
                         ]
                       },
                       "arg1": "value1",
-                      "arg2": "value2"
+                      "arg2": "value2",
+                      "--conf": "valueConf"
                     },
                     "executionProperty": {
                       "maxConcurrentRuns": 2
@@ -1557,9 +1564,11 @@
                     },
                     "glueVersion": "4.0",
                     "name": "StreamingJob4.0",
+                    "numberOfWorkers": 10,
                     "tags": {
                       "key": "value"
-                    }
+                    },
+                    "workerType": "G.025X"
                   }
                 },
                 "constructInfo": {
@@ -1947,6 +1956,195 @@
               "version": "0.0.0"
             }
           },
+          "RayJob": {
+            "id": "RayJob",
+            "path": "aws-glue-job/RayJob",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-glue-job/RayJob/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-glue-job/RayJob/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-glue-job/RayJob/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "glue.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSGlueServiceRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-glue-job/RayJob/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-glue-job/RayJob/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "RayJobServiceRoleDefaultPolicyA615640D",
+                            "roles": [
+                              {
+                                "Ref": "RayJobServiceRole51433C3D"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-glue-job/RayJob/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+                  "aws:cdk:cloudformation:props": {
+                    "command": {
+                      "name": "glueray",
+                      "scriptLocation": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                            },
+                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+                          ]
+                        ]
+                      },
+                      "pythonVersion": "3.9"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "RayJobServiceRole51433C3D",
+                        "Arn"
+                      ]
+                    },
+                    "defaultArguments": {
+                      "--job-language": "python",
+                      "arg1": "value1",
+                      "arg2": "value2"
+                    },
+                    "glueVersion": "4.0",
+                    "name": "RayJob",
+                    "numberOfWorkers": 2,
+                    "tags": {
+                      "key": "value"
+                    },
+                    "workerType": "Z.2X"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-glue.CfnJob",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue.Job",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-glue-job/BootstrapVersion",
@@ -1974,7 +2172,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.168"
+          "version": "10.1.209"
         }
       }
     },

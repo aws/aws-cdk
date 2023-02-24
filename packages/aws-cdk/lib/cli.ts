@@ -1,14 +1,19 @@
-import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as chalk from 'chalk';
+import { install as enableSourceMapSupport } from 'source-map-support';
 
 import type { Argv } from 'yargs';
+import { DeploymentMethod } from './api';
+import { HotswapMode } from './api/hotswap/common';
+import { ILock } from './api/util/rwlock';
+import { checkForPlatformWarnings } from './platform-warnings';
+import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
-import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
+import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
@@ -23,9 +28,6 @@ import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
-import { DeploymentMethod } from './api';
-import { enableTracing } from './util/tracing';
-import { checkForPlatformWarnings } from './platform-warnings';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -35,7 +37,7 @@ const yargs = require('yargs');
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
 
-async function parseCommandLineArguments() {
+async function parseCommandLineArguments(args: string[]) {
   // Use the following configuration for array arguments:
   //
   //     { type: 'array', default: [], nargs: 1, requiresArg: true }
@@ -78,7 +80,7 @@ async function parseCommandLineArguments() {
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
-    .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
+    .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable the copy of assets which allows local debugging via the SAM CLI to reference the original source files)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('notices', { type: 'boolean', desc: 'Show relevant notices' })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
@@ -140,6 +142,13 @@ async function parseCommandLineArguments() {
       // Hack to get '-R' as an alias for '--no-rollback', suggested by: https://github.com/yargs/yargs/issues/1729
       .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
       .option('hotswap', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
+          'Do not use this in production environments',
+      })
+      .option('hotswap-fallback', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
           'which skips CloudFormation and updates the resources directly, ' +
@@ -221,9 +230,15 @@ async function parseCommandLineArguments() {
       .option('hotswap', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
-          'which skips CloudFormation and updates the resources directly, ' +
-          'and falls back to a full deployment if that is not possible. ' +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
           "'true' by default, use --no-hotswap to turn off",
+      })
+      .option('hotswap-fallback', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'which skips CloudFormation and updates the resources directly, ' +
+          'and falls back to a full deployment if that is not possible.',
       })
       .options('logs', {
         type: 'boolean',
@@ -274,7 +289,7 @@ async function parseCommandLineArguments() {
       'If your app has a single stack, there is no need to specify the stack name',
       'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
     ].join('\n\n'))
-    .argv;
+    .parse(args);
 }
 
 if (!process.stdout.isTTY) {
@@ -282,8 +297,13 @@ if (!process.stdout.isTTY) {
   process.env.FORCE_COLOR = '0';
 }
 
-async function initCommandLine() {
-  const argv = await parseCommandLineArguments();
+export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
+  const argv = await parseCommandLineArguments(args);
+
+  if (argv.debug) {
+    enableSourceMapSupport();
+  }
+
   if (argv.verbose) {
     setLogLevel(argv.verbose);
 
@@ -329,10 +349,19 @@ async function initCommandLine() {
 
   const cloudFormation = new CloudFormationDeployments({ sdkProvider });
 
+  let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
     configuration,
     sdkProvider,
-    synthesizer: execProgram,
+    synthesizer: synthesizer ?? (async (aws, config) => {
+      // Invoke 'execProgram', and copy the lock for the directory in the global
+      // variable here. It will be released when the CLI exits. Locks are not re-entrant
+      // so release it if we have to synthesize more than once (because of context lookups).
+      await outDirLock?.release();
+      const { assembly, lock } = await execProgram(aws, config);
+      outDirLock = lock;
+      return assembly;
+    }),
   });
 
   /** Function to load plug-ins, using configurations additively. */
@@ -373,6 +402,10 @@ async function initCommandLine() {
   try {
     return await main(cmd, argv);
   } finally {
+    // If we locked the 'cdk.out' directory, release it here.
+    await outDirLock?.release();
+
+    // Do PSAs here
     await version.displayVersionMessage();
 
     if (shouldDisplayNotices()) {
@@ -529,7 +562,7 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
@@ -567,7 +600,7 @@ async function initCommandLine() {
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback, true),
           traceLogs: args.logs,
           concurrency: args.concurrency,
         });
@@ -686,8 +719,29 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
-export function cli() {
-  initCommandLine()
+function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {
+  if (hotswap && hotswapFallback) {
+    throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
+  } else if (!hotswap && !hotswapFallback) {
+    if (hotswap === undefined && hotswapFallback === undefined) {
+      return watch ? HotswapMode.HOTSWAP_ONLY : HotswapMode.FULL_DEPLOYMENT;
+    } else if (hotswap === false || hotswapFallback === false) {
+      return HotswapMode.FULL_DEPLOYMENT;
+    }
+  }
+
+  let hotswapMode: HotswapMode;
+  if (hotswap) {
+    hotswapMode = HotswapMode.HOTSWAP_ONLY;
+  } else /*if (hotswapFallback)*/ {
+    hotswapMode = HotswapMode.FALL_BACK;
+  }
+
+  return hotswapMode;
+}
+
+export function cli(args: string[] = process.argv.slice(2)) {
+  exec(args)
     .then(async (value) => {
       if (typeof value === 'number') {
         process.exitCode = value;

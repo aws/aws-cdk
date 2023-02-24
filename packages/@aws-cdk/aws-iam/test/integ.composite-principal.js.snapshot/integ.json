@@ -1,14 +1,12 @@
 {
-  "version": "21.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.composite-principal": {
+    "iam-integ-composite-principal-test/DefaultTest": {
       "stacks": [
         "iam-integ-composite-principal"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "iam-integ-composite-principal-test/DefaultTest/DeployAssert",
+      "assertionStackName": "iamintegcompositeprincipaltestDefaultTestDeployAssertDD256D71"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

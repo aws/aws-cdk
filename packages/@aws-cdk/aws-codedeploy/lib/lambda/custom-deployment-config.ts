@@ -1,8 +1,8 @@
 import { Duration, Names, Resource } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
-import { arnForDeploymentConfig, validateName } from '../private/utils';
 import { ILambdaDeploymentConfig } from './deployment-config';
+import { arnForDeploymentConfig, validateName } from '../private/utils';
 
 /**
  * Lambda Deployment config type
@@ -151,6 +151,8 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      // APIs are available in 2.1055.0
+      installLatestAwsSdk: false,
     });
 
     this.node.addValidation({ validate: () => validateName('Deployment config', this.deploymentConfigName) });

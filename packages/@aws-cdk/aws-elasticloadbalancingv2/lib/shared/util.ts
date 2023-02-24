@@ -1,4 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Arn, ArnFormat, Fn, Token } from '@aws-cdk/core';
 import { ApplicationProtocol, Protocol } from './enums';
 
 export type Attributes = { [key: string]: string | undefined };
@@ -89,4 +90,41 @@ export function validateNetworkProtocol(protocol: Protocol) {
 export function mapTagMapToCxschema(tagMap: Record<string, string>): cxschema.Tag[] {
   return Object.entries(tagMap)
     .map(([key, value]) => ({ key, value }));
+}
+
+export function parseLoadBalancerFullName(arn: string): string {
+  if (Token.isUnresolved(arn)) {
+    // Unfortunately it is not possible to use Arn.split() because the ARNs have this shape:
+    //
+    //   arn:...:loadbalancer/net/my-load-balancer/123456
+    //
+    // And the way that Arn.split() handles this situation is not enough to obtain the full name
+    const arnParts = Fn.split('/', arn);
+    return `${Fn.select(1, arnParts)}/${Fn.select(2, arnParts)}/${Fn.select(3, arnParts)}`;
+  } else {
+    const arnComponents = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME);
+    const resourceName = arnComponents.resourceName;
+    if (!resourceName) {
+      throw new Error(`Provided ARN does not belong to a load balancer: ${arn}`);
+    }
+    return resourceName;
+  }
+}
+
+/**
+ * Transforms:
+ *
+ *   arn:aws:elasticloadbalancing:us-east-1:123456789:targetgroup/my-target-group/da693d633af407a0
+ *
+ * Into:
+ *
+ *   targetgroup/my-target-group/da693d633af407a0
+ */
+export function parseTargetGroupFullName(arn: string): string {
+  const arnComponents = Arn.split(arn, ArnFormat.NO_RESOURCE_NAME);
+  const resource = arnComponents.resource;
+  if (!resource) {
+    throw new Error(`Provided ARN does not belong to a target group: ${arn}`);
+  }
+  return resource;
 }

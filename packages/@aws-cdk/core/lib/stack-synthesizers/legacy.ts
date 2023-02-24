@@ -1,12 +1,13 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { assertBound } from './_shared';
+import { StackSynthesizer } from './stack-synthesizer';
+import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { FileAssetParameters } from '../private/asset-parameters';
-import { assertBound } from './_shared';
-import { StackSynthesizer } from './stack-synthesizer';
-import { ISynthesisSession } from './types';
+import { Stack } from '../stack';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker
@@ -44,7 +45,7 @@ const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-n
  * This is the only StackSynthesizer that supports customizing asset behavior
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.
  */
-export class LegacyStackSynthesizer extends StackSynthesizer {
+export class LegacyStackSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer, IBoundStackSynthesizer {
   private cycle = false;
 
   /**
@@ -109,6 +110,18 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     this.emitArtifact(session);
   }
 
+  /**
+   * Produce a bound Stack Synthesizer for the given stack.
+   *
+   * This method may be called more than once on the same object.
+   */
+  public reusableBind(stack: Stack): IBoundStackSynthesizer {
+    // Create a copy of the current object and bind that
+    const copy = Object.create(this);
+    copy.bind(stack);
+    return copy;
+  }
+
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     // check if we have an override from context
     const repositoryNameOverride = this.boundStack.node.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
@@ -134,6 +147,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
         file: asset.dockerFile,
         networkMode: asset.networkMode,
         platform: asset.platform,
+        outputs: asset.dockerOutputs,
       };
 
       this.boundStack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);

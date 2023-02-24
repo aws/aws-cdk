@@ -1,11 +1,12 @@
 {
-  "lerna": "3.15.0",
+  "lerna": "^4.0.0",
   "npmClient": "yarn",
   "useWorkspaces": true,
   "packages": [
     "packages/*",
     "packages/@aws-cdk/*",
     "packages/@aws-cdk-containers/*",
+    "packages/@aws-cdk-testing/*",
     "packages/@aws-cdk/*/lambda-packages/*",
     "tools/*",
     "tools/@aws-cdk/*",

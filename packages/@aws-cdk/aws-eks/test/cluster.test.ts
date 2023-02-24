@@ -10,11 +10,11 @@ import * as cdk from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 import * as YAML from 'yaml';
+import { testFixture, testFixtureNoVpc } from './util';
 import * as eks from '../lib';
 import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
-import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
@@ -1566,7 +1566,7 @@ describe('cluster', () => {
     test('EksOptimizedImage() with no nodeType always uses STANDARD with LATEST_KUBERNETES_VERSION', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
-      const LATEST_KUBERNETES_VERSION = '1.14';
+      const LATEST_KUBERNETES_VERSION = '1.24';
 
       // WHEN
       new eks.EksOptimizedImage().getImage(stack);
@@ -2103,6 +2103,13 @@ describe('cluster', () => {
               ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
             ]],
           },
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
+            ]],
+          },
         ],
       });
     });
@@ -2295,6 +2302,13 @@ describe('cluster', () => {
               'arn:',
               { Ref: 'AWS::Partition' },
               ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+            ]],
+          },
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
             ]],
           },
         ],

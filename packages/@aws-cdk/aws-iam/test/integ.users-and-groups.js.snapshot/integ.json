@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.users-and-groups": {
+    "iam-role-test/DefaultTest": {
       "stacks": [
         "integ-iam-role-1"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "iam-role-test/DefaultTest/DeployAssert",
+      "assertionStackName": "iamroletestDefaultTestDeployAssert00952CFF"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

@@ -16,8 +16,8 @@ import {
   monoRepoRoot,
 } from './util';
 
-const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
+const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 
 /**
  * Verify that the package name matches the directory name
@@ -860,6 +860,12 @@ export class NoJsiiDep extends ValidationRule {
   public readonly name = 'dependencies/no-jsii';
 
   public validate(pkg: PackageJson): void {
+    /// TEMPORARY: Use pre-release of jsii for experimental packages...
+    if (pkg.json.stability === 'experimental' && pkg.json.jsii != null) {
+      // v4.9-next is the dist-tag for the pre-release stream of jsii 4.9.x
+      return expectDevDependency('dependencies/jsii-next', pkg, 'jsii', 'v4.9-next');
+    }
+
     const predicate = (s: string) => s.startsWith('jsii');
 
     if (pkg.getDevDependency(predicate)) {
@@ -867,24 +873,6 @@ export class NoJsiiDep extends ValidationRule {
         ruleName: this.name,
         message: 'packages should not have a devDep on jsii since it is defined at the repo level',
         fix: () => pkg.removeDevDependency(predicate),
-      });
-    }
-  }
-}
-
-/**
- * Verifies that the expected versions of node will be supported.
- */
-export class NodeCompatibility extends ValidationRule {
-  public readonly name = 'dependencies/node-version';
-
-  public validate(pkg: PackageJson): void {
-    const atTypesNode = pkg.getDevDependency('@types/node');
-    if (atTypesNode && !atTypesNode.startsWith('^14.')) {
-      pkg.report({
-        ruleName: this.name,
-        message: `packages must support node version 14 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^14.18.22'),
       });
     }
   }
@@ -1676,6 +1664,7 @@ export class UbergenPackageVisibility extends ValidationRule {
     'cdk',
     'cdk-assets',
     '@aws-cdk/integ-runner',
+    '@aws-cdk-testing/cli-integ',
   ];
 
   public validate(pkg: PackageJson): void {

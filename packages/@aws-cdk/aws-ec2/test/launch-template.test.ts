@@ -12,6 +12,7 @@ import {
   Stack,
   Tags,
 } from '@aws-cdk/core';
+import { stringLike } from './util';
 import {
   AmazonLinuxImage,
   BlockDevice,
@@ -31,7 +32,6 @@ import {
   WindowsImage,
   WindowsVersion,
 } from '../lib';
-import { stringLike } from './util';
 
 /* eslint-disable jest/expect-expect */
 

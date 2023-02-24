@@ -1,11 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { Stack } from '../stack';
-import { Token } from '../token';
 import { assertBound, StringSpecializer } from './_shared';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import { StackSynthesizer } from './stack-synthesizer';
-import { ISynthesisSession } from './types';
+import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import { Stack } from '../stack';
+import { Token } from '../token';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -227,7 +227,7 @@ export interface DefaultStackSynthesizerProps {
  * check to the template, to make sure the bootstrap stack is recent enough
  * to support all features expected by this synthesizer.
  */
-export class DefaultStackSynthesizer extends StackSynthesizer {
+export class DefaultStackSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer, IBoundStackSynthesizer {
   /**
    * Default ARN qualifier
    */
@@ -322,6 +322,18 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
         ].join(', '));
       }
     }
+  }
+
+  /**
+   * Produce a bound Stack Synthesizer for the given stack.
+   *
+   * This method may be called more than once on the same object.
+   */
+  public reusableBind(stack: Stack): IBoundStackSynthesizer {
+    // Create a copy of the current object and bind that
+    const copy = Object.create(this);
+    copy.bind(stack);
+    return copy;
   }
 
   /**

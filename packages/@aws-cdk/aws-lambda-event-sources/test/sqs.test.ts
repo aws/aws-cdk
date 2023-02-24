@@ -4,8 +4,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
-import * as sources from '../lib';
 import { TestFunction } from './test-function';
+import * as sources from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -422,5 +422,47 @@ describe('SQSEventSource', () => {
         ],
       },
     });
+  });
+
+  test('fails if maxConcurrency < 2', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      maxConcurrency: 1,
+    }))).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
+  });
+
+  test('adding maxConcurrency of 5', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      maxConcurrency: 5,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      ScalingConfig: { MaximumConcurrency: 5 },
+    });
+
+  });
+
+  test('fails if maxConcurrency > 1001', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      maxConcurrency: 1,
+    }))).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
   });
 });

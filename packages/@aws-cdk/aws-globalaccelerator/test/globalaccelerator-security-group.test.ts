@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ga from '../lib';
 import { testFixture } from './util';
+import * as ga from '../lib';
 
 test('custom resource exists', () => {
   // GIVEN
@@ -42,7 +42,7 @@ test('custom resource exists', () => {
           ],
         ],
       },
-      InstallLatestAwsSdk: true,
+      InstallLatestAwsSdk: false,
     },
     DependsOn: [
       'GroupGlobalAcceleratorSGCustomResourceCustomResourcePolicy9C957AD2',
