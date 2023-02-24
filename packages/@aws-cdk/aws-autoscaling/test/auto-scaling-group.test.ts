@@ -1809,7 +1809,7 @@ describe('auto scaling group', () => {
     // THEN
     expect(() => {
       asg.userData;
-    }).not.toThrow();
+    }).toThrow('The provided launch template does not expose its user data.');
 
     expect(() => {
       asg.connections;
