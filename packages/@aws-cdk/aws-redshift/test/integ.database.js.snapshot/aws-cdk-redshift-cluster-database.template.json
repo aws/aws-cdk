@@ -1004,7 +1004,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "151284c8d3ae9ce6e117fb39a8b0d6b642011ed5ad9a7b71c1d51f219476e63d.zip"
+     "S3Key": "ab58b1384030fef0fc8663c06f6fd62196fb3ae8807ab82e4559967d3b885b08.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1155,8 +1155,8 @@
     },
     "databaseName": "my_db",
     "tableName": {
-     "prefix": "IntegTable",
-     "generateSuffix": "false"
+     "prefix": "awscdkredshiftclusterdatabaseTable24923533",
+     "generateSuffix": "true"
     },
     "tableColumns": [
      {
