@@ -1330,7 +1330,7 @@ describe('ec2 service', () => {
       }).toThrow('Alarms must be one or more.');
     });
 
-    test('add alarm config enableDeploymentAlarms method if deploymentAlarms config is specified with no behavior', () => {
+    test('alarm behavior defaults to "ROLLBACK"', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1369,7 +1369,7 @@ describe('ec2 service', () => {
       });
     });
 
-    test('add alarm config with enableDeploymentAlarms method if deploymentAlarms config is specified with rollback behavior', () => {
+    test('alarm with rollback behavior', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1409,7 +1409,7 @@ describe('ec2 service', () => {
       });
     });
 
-    test('add alarm config using enableDeploymentAlarms method if deploymentAlarms config is specified with failed behavior', () => {
+    test('alarm with failed behavior', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});

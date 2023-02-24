@@ -494,6 +494,11 @@ export abstract class BaseService extends Resource
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
 
   /**
+   * Deployment alarms config
+   */
+  protected deploymentAlarms?: CfnService.DeploymentAlarmsProperty;
+
+  /**
    * The details of the service discovery registries to assign to this service.
    * For more information, see Service Discovery.
    */
@@ -534,6 +539,13 @@ export abstract class BaseService extends Resource
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
     const deploymentController = this.getDeploymentController(props);
+    if (props.deploymentAlarms) {
+      this.deploymentAlarms = {
+        alarmNames: props.deploymentAlarms.alarms.map(alarm => alarm.alarmName),
+        enable: true,
+        rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
+      };
+    }
 
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
@@ -546,6 +558,7 @@ export abstract class BaseService extends Resource
           enable: true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
+        alarms: Lazy.any({ produce: () => this.deploymentAlarms }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
@@ -607,35 +620,26 @@ export abstract class BaseService extends Resource
         this.executeCommandLogConfiguration();
       }
     }
-    // Enable deployment alarms
-    this.enableDeploymentAlarms(props.deploymentAlarms);
     this.node.defaultChild = this.resource;
   }
 
   /**
    *   Enable Deployment Alarms which take advantage of arbitrary alarms and configure them after service initialization
   */
-  public enableDeploymentAlarms(alarmConfig?: DeploymentAlarmConfig) {
-    const deploymentConfiguration = this.resource.deploymentConfiguration as CfnService.DeploymentConfigurationProperty;
+  public enableDeploymentAlarms(alarmConfig: DeploymentAlarmConfig) {
     // Throw an error if deployment alarms are already configured
-    if (deploymentConfiguration?.alarms) {
+    if (this.deploymentAlarms) {
       throw new Error('Deployment alarms are already configured.');
     }
-    if (alarmConfig) {
-      // Throw an error if alarms array is empty
-      if (alarmConfig.alarms.length === 0) {
-        throw new Error('Alarms must be one or more.');
-      }
-      // 3. Add unit test
-      this.resource.deploymentConfiguration = {
-        ...this.resource.deploymentConfiguration,
-        alarms: {
-          alarmNames: alarmConfig.alarms.map(alarm => alarm.alarmName),
-          enable: true,
-          rollback: alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM,
-        },
-      };
+    // Throw an error if alarms array is empty
+    if (alarmConfig.alarms.length === 0) {
+      throw new Error('Alarms must be one or more.');
     }
+    this.deploymentAlarms = {
+      alarmNames: alarmConfig.alarms.map(alarm => alarm.alarmName),
+      enable: true,
+      rollback: alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM,
+    };
   }
 
   /**   * Enable Service Connect
