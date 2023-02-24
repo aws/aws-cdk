@@ -9,7 +9,8 @@ import { Aspects, IAspect } from '../aspect';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
-import { ValidationContext } from '../validation';
+import { ConstructTree } from '../validation/private/construct-tree';
+import { ValidationContext } from '../validation/private/plugin';
 
 /**
  * Options for `synthesize()`
@@ -63,11 +64,12 @@ function invokeValidationPlugins(root: IConstruct, assembly: cxapi.CloudAssembly
   if (!stage) {
     throw new Error('Cannot validate a construct tree which is not attached to a Stage');
   }
+  const tree = new ConstructTree(root);
 
   let failed = false;
   assembly.stacks.forEach(stack => {
     const validationContext = new ValidationContext({
-      root,
+      tree,
       stack,
     });
     for (const plugin of stage.validationPlugins) {

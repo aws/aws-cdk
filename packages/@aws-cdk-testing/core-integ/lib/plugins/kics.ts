@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { IValidationPlugin, ValidationContext, ValidationReportStatus } from '@aws-cdk/core';
+import { IValidationPlugin, IValidationContext, ValidationReportStatus } from '@aws-cdk/core';
 import { sync } from 'cross-spawn';
 
 // NOTE: This class will eventually move out to a separate repository, but we're
@@ -20,7 +20,7 @@ export class KicsValidationPlugin implements IValidationPlugin {
   /**
    * TODO docs
    */
-  validate(context: ValidationContext) {
+  validate(context: IValidationContext) {
     const templatePath = context.templateFullPath;
     const [templateFolder, templateFileName] = this.splitPathAndFile(templatePath);
 
@@ -58,7 +58,7 @@ export class KicsValidationPlugin implements IValidationPlugin {
     const results = JSON.parse(foo);
 
     results.queries.forEach((query: any) => {
-      context.report.addViolation({
+      context.report.addViolation(this.name, {
         recommendation: query.description,
         ruleName: query.query_name,
         violatingResources: query.files.map((file: any) => ({
@@ -69,7 +69,7 @@ export class KicsValidationPlugin implements IValidationPlugin {
       });
     });
 
-    context.report.submit(status == 0 ? ValidationReportStatus.SUCCESS : ValidationReportStatus.FAILURE);
+    context.report.submit(this.name, status == 0 ? ValidationReportStatus.SUCCESS : ValidationReportStatus.FAILURE);
   }
 
   splitPathAndFile(templatePath: string): [any, any] {

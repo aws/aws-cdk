@@ -1,4 +1,4 @@
-import { IValidationPlugin, ValidationContext, ValidationReportStatus } from '@aws-cdk/core';
+import { IValidationPlugin, IValidationContext, ValidationReportStatus } from '@aws-cdk/core';
 import { sync } from 'cross-spawn';
 
 // NOTE: This class will eventually move out to a separate repository, but we're
@@ -32,7 +32,7 @@ export class CheckovValidationPlugin implements IValidationPlugin {
   /**
    * TODO docs
    */
-  validate(context: ValidationContext) {
+  validate(context: IValidationContext) {
     const templatePath = context.templateFullPath;
     const flags = [
       '-f',

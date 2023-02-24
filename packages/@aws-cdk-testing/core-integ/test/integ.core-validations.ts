@@ -37,7 +37,8 @@ class MyCustomL3Construct extends Construct {
 }
 
 const stack = new MyStack(app, 'validator-test');
+const stack2 = new MyStack(app, 'validator-test2');
 
 new integ.IntegTest(app, 'integ-test', {
-  testCases: [stack],
+  testCases: [stack, stack2],
 });

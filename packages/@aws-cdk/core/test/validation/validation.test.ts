@@ -72,7 +72,7 @@ class TestValidations implements core.IValidationPlugin {
 
   constructor(private readonly result: ValidationReportStatus, private readonly ready: boolean = true) {}
 
-  public validate(context: core.ValidationContext): void {
+  public validate(context: core.IValidationContext): void {
     if (this.result === 'failure') {
       context.report.addViolation(this.name, {
         ruleName: 'test-rule',

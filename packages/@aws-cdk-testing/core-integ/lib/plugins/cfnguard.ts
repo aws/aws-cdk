@@ -1,4 +1,4 @@
-import { IValidationPlugin, ValidationContext, ValidationReportStatus } from '@aws-cdk/core';
+import { IValidationPlugin, IValidationContext, ValidationReportStatus } from '@aws-cdk/core';
 import { sync } from 'cross-spawn';
 
 // Design decisions:
@@ -34,7 +34,7 @@ export class CfnguardValidationPlugin implements IValidationPlugin {
   /**
    * TODO docs
    */
-  validate(context: ValidationContext) {
+  validate(context: IValidationContext) {
     const templatePath = context.templateFullPath;
     const flags = [
       'validate',
