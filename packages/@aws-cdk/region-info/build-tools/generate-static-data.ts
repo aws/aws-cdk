@@ -13,7 +13,7 @@ import {
 } from '../lib/aws-entities';
 import { Default } from '../lib/default';
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   checkRegions(APPMESH_ECR_ACCOUNTS);
   checkRegions(DLC_REPOSITORY_ACCOUNTS);
   checkRegions(ELBV2_ACCOUNTS);

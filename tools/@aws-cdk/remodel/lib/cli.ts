@@ -104,6 +104,8 @@ async function makeAwsCdkLib(target: string) {
     excludedPackages: ['@aws-cdk/example-construct-library', ...localDevDeps],
     // Don't do codegen because we do it as part of the build of the package
     skipCodeGen: true,
+    // Include tests in copied artifacts
+    ignoreTests: false,
   };
 
   // Call ubergen to copy all package source files and rewrite import statements
@@ -192,12 +194,6 @@ async function makeAwsCdkLib(target: string) {
       '@aws-cdk/cfn2ts': '0.0.0',
     },
   }, { spaces: 2 });
-
-  // Clean up all build-tools directories in sub folders
-  await Promise.all(packagesToBundle.map(async (pkg) => {
-    const buildToolsDir = path.join(awsCdkLibDir, 'lib', pkg.shortName, 'build-tools');
-    await fs.remove(buildToolsDir);
-  }));
 
   // TODO: Cleanup
   // 1. lib/aws-events-targets/build-tools, moved to gen.ts step

@@ -14,6 +14,7 @@ export interface Config {
   uberPackageJsonPath: string;
   excludedPackages: string[];
   skipCodeGen?: boolean;
+  ignoreTests?: boolean;
 }
 
 export async function main(config: Config): Promise<readonly LibraryReference[]> {
@@ -419,9 +420,9 @@ export async function transformPackage(
         .join('\n'));
     await pkglint.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'), alphaPackageName);
 
-    await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson, config.monoPackageRoot);
+    await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson, config);
   } else {
-    await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson, config.monoPackageRoot);
+    await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson, config);
     await copyLiterateSources(path.join(library.root, 'test'), path.join(destination, 'test'), allLibraries, uberPackageJson, config.monoPackageRoot);
   }
 
@@ -513,11 +514,12 @@ export async function copyOrTransformFiles(
   to: string,
   libraries: readonly LibraryReference[],
   uberPackageJson: PackageJson,
-  monoPackageRoot: string,
+  config: Config,
 ) {
+  const { monoPackageRoot, ignoreTests = true } = config;
   const libRoot = resolveLibRoot(uberPackageJson, monoPackageRoot);
   const promises = (await fs.readdir(from)).map(async name => {
-    if (shouldIgnoreFile(name)) { return; }
+    if (shouldIgnoreFile(name, ignoreTests)) { return; }
 
     if (name.endsWith('.d.ts') || name.endsWith('.js')) {
       if (await fs.pathExists(path.join(from, name.replace(/\.(d\.ts|js)$/, '.ts')))) {
@@ -532,7 +534,7 @@ export async function copyOrTransformFiles(
     const stat = await fs.stat(source);
     if (stat.isDirectory()) {
       await fs.mkdirp(destination);
-      return copyOrTransformFiles(source, destination, libraries, uberPackageJson, monoPackageRoot);
+      return copyOrTransformFiles(source, destination, libraries, uberPackageJson, config);
     }
 
     if (name.endsWith('.ts')) {
@@ -652,15 +654,18 @@ const IGNORED_FILE_NAMES = new Set([
   '.npmignore',
   'node_modules',
   'package.json',
-  'test',
   'tsconfig.json',
   'tsconfig.tsbuildinfo',
   'LICENSE',
   'NOTICE',
 ]);
 
-function shouldIgnoreFile(name: string): boolean {
-  return IGNORED_FILE_NAMES.has(name);
+function shouldIgnoreFile(name: string, ignoreTests: boolean): boolean {
+  const ignored = new Set([
+    ...IGNORED_FILE_NAMES,
+    ...(ignoreTests ? ['test'] : []),
+  ]);
+  return ignored.has(name);
 }
 
 function sortObject<T>(obj: Record<string, T>): Record<string, T> {
