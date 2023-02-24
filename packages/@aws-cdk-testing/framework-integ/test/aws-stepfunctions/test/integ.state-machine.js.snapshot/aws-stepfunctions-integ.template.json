@@ -123,9 +123,6 @@
     },
     "DefinitionString": "{\"StartAt\":\"wait time\",\"States\":{\"wait time\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.waitSeconds\",\"End\":true}}}"
    },
-   "DependsOn": [
-    "StateMachineRoleB840431D"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }

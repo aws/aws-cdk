@@ -104,7 +104,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.237"
+              "version": "10.1.252"
             }
           },
           "BootstrapVersion": {
@@ -142,7 +142,7 @@
                 "path": "StateMachineIntrinsicsTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.237"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
@@ -162,7 +162,7 @@
                             "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.237"
+                              "version": "10.1.252"
                             }
                           }
                         },
@@ -234,7 +234,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.237"
+                      "version": "10.1.252"
                     }
                   },
                   "BootstrapVersion": {
@@ -276,7 +276,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.1.252"
         }
       }
     },

@@ -28,9 +28,6 @@
     },
     "DefinitionString": "{\"StartAt\":\"PRL\",\"States\":{\"PRL\":{\"Type\":\"Parallel\",\"ResultPath\":\"$\",\"Next\":\"JP\",\"Branches\":[{\"StartAt\":\"PSL\",\"States\":{\"PSL\":{\"Type\":\"Pass\",\"Parameters\":{\"newStringList.$\":\"$.stringList\"},\"End\":true}}},{\"StartAt\":\"PSS\",\"States\":{\"PSS\":{\"Type\":\"Pass\",\"Parameters\":{\"newSingleString.$\":\"$.singleString\"},\"End\":true}}}]},\"JP\":{\"Type\":\"Pass\",\"Parameters\":{\"resultStringList.$.$\":\"$[0].newStringList\",\"newSingleString.$\":\"$[1].newSingleString\"},\"End\":true}},\"TimeoutSeconds\":30}"
    },
-   "DependsOn": [
-    "StateMachineRoleB840431D"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }

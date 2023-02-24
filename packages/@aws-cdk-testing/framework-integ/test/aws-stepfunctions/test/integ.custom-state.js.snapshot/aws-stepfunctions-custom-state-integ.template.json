@@ -28,9 +28,6 @@
     },
     "DefinitionString": "{\"StartAt\":\"my custom task\",\"States\":{\"my custom task\":{\"Next\":\"final step\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}},\"ResultPath\":null},\"final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
    },
-   "DependsOn": [
-    "StateMachineRoleB840431D"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
