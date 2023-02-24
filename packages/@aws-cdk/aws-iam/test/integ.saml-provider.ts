@@ -1,3 +1,4 @@
+/// !cdk-integ saml*
 import * as path from 'path';
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
