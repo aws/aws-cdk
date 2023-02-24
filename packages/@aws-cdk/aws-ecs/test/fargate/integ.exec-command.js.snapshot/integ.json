@@ -1,14 +1,20 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.exec-command": {
+    "exec-command-integ-test/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-exec-command"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "exec-command-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "execcommandintegtestDefaultTestDeployAssert4F7706FE"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

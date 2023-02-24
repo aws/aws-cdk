@@ -1,10 +1,10 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnRoute } from '../apigatewayv2.generated';
-import { IRoute } from '../common';
 import { IWebSocketApi } from './api';
 import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
 import { WebSocketRouteIntegration } from './integration';
+import { CfnRoute, CfnRouteResponse } from '../apigatewayv2.generated';
+import { IRoute } from '../common';
 
 /**
  * Represents a Route for an WebSocket API.
@@ -37,6 +37,13 @@ export interface WebSocketRouteOptions {
    * @default - No Authorizer
    */
   readonly authorizer?: IWebSocketRouteAuthorizer;
+
+  /**
+   * Should the route send a response to the client
+   * @default false
+   */
+  readonly returnResponse?: boolean;
+
 }
 
 /**
@@ -102,7 +109,15 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
       target: `integrations/${config.integrationId}`,
       authorizerId: authBindResult.authorizerId,
       authorizationType: authBindResult.authorizationType,
+      routeResponseSelectionExpression: props.returnResponse ? '$default' : undefined,
     });
     this.routeId = route.ref;
+    if (props.returnResponse) {
+      new CfnRouteResponse(this, 'Response', {
+        apiId: props.webSocketApi.apiId,
+        routeId: route.ref,
+        routeResponseKey: '$default',
+      });
+    }
   }
 }

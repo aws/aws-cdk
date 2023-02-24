@@ -6,13 +6,13 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { IServerApplication, ServerApplication } from './application';
+import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
+import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
-import { IServerApplication, ServerApplication } from './application';
-import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
-import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
 
 export interface IServerDeploymentGroup extends cdk.IResource {
   readonly application: IServerApplication;

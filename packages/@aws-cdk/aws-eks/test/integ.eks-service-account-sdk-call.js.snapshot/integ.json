@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "30.1.0",
   "testCases": {
     "aws-cdk-eks-service-account-sdk-call/DefaultTest": {
       "stacks": [
