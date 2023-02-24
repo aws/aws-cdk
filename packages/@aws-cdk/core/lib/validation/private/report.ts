@@ -162,19 +162,23 @@ export class ValidationReport implements report.IValidationReport {
    *                    │ Library Version: 0.0.0
    *                    │ Location: new MyStack (/home/packages/@aws-cdk-testing/core-integ/test/integ.core-validations.js:24:9)
    */
-  private trace(constructPath?: string): string | undefined {
+  private trace(constructPath?: string): string {
+    const notAvailableMessage = '\tConstruct trace not available. Rerun with `--debug` to see trace information';
     const starter = '└── ';
     const vertical = '│';
     function renderTraceInfo(info?: ConstructTrace, indent?: string, start: string = starter): string {
-      const indentation = indent ?? ' '.repeat(starter.length+1);
-      const result: string[] = [
-        `${start} ${info?.id} (${info?.path})`,
-        `${indentation}${vertical} Library: ${info?.library}`,
-        `${indentation}${vertical} Library Version: ${info?.libraryVersion}`,
-        `${indentation}${vertical} Location: ${info?.location}`,
-        ...info?.parent ? [renderTraceInfo(info?.parent, ' '.repeat(indentation.length+starter.length+1), indentation+starter)] : [],
-      ];
-      return result.join('\n\t');
+      if (info) {
+        const indentation = indent ?? ' '.repeat(starter.length+1);
+        const result: string[] = [
+          `${start} ${info?.id} (${info?.path})`,
+          `${indentation}${vertical} Library: ${info?.library}`,
+          `${indentation}${vertical} Library Version: ${info?.libraryVersion}`,
+          `${indentation}${vertical} Location: ${info?.location}`,
+          ...info?.parent ? [renderTraceInfo(info?.parent, ' '.repeat(indentation.length+starter.length+1), indentation+starter)] : [],
+        ];
+        return result.join('\n\t');
+      }
+      return notAvailableMessage;
     }
     if (constructPath) {
       const treeNode = this.tree.getTreeNode(constructPath);
@@ -183,7 +187,7 @@ export class ValidationReport implements report.IValidationReport {
         return renderTraceInfo(traceInfo);
       }
     }
-    return;
+    return notAvailableMessage;
   }
 
   public toJson(): report.ValidationReportJson {

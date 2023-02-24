@@ -50,6 +50,7 @@ export interface ValidationViolatingConstruct extends ValidationViolatingResourc
 
   /**
    * A stack of constructs that lead to the violation.
+   * @default - stack will be empty if cli not run with `--debug`
    */
   readonly constructStack?: string;
 }
@@ -126,6 +127,9 @@ export interface ValidationReportJson {
   readonly pluginReports: PluginReportJson[];
 }
 
+/**
+ * A report from a single plugin
+ */
 export interface PluginReportJson {
   /**
    * List of violations in the rerpot.
@@ -138,6 +142,9 @@ export interface PluginReportJson {
   readonly summary: ValidationReportSummary;
 }
 
+/**
+ * The report emitted by the plugin after evaluation.
+ */
 export interface IValidationReport {
   /**
    * Whether or not the report was successfull.
@@ -164,4 +171,3 @@ export interface IValidationReport {
    */
   toJson(): ValidationReportJson;
 }
-

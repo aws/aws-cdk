@@ -47,6 +47,9 @@ export interface IValidationPlugin {
   isReady(): boolean;
 }
 
+/**
+ * Context available to the validation plugin
+ */
 export interface IValidationContext {
   /**
    * Report emitted by the validation.

@@ -1,13 +1,13 @@
 import * as core from '../../lib';
 import { ValidationReportStatus } from '../../lib';
 
-let stderrMock: jest.SpyInstance;
+let logMock: jest.SpyInstance;
 beforeEach(() => {
-  stderrMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
+  logMock = jest.spyOn(console, 'log').mockImplementation(() => { return true; });
 });
 
 afterEach(() => {
-  stderrMock.mockRestore();
+  logMock.mockRestore();
 });
 
 describe('validations', () => {
@@ -27,7 +27,7 @@ describe('validations', () => {
     expect(() => {
       app.synth();
     }).toThrow(/Validation failed/);
-    expect(stderrMock.mock.calls[0][0]).toEqual(validationReport(app.outdir));
+    expect(logMock.mock.calls[0][0]).toEqual(validationReport(app.outdir));
   });
 
   test('validation success', () => {
@@ -118,7 +118,7 @@ const validationReport = (dir: string) => {
     '    - Construct Path: N/A',
     `    - Template Path: ${dir}/Default.template.json`,
     '    - Creation Stack:',
-    '\t',
+    '\t\tConstruct trace not available. Rerun with `--debug` to see trace information',
     '    - Resource Name: ',
     '    - Locations:',
     '',
