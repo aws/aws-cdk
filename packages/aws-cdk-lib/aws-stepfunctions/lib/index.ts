@@ -19,6 +19,7 @@ export * from './states/succeed';
 export * from './states/task';
 export * from './states/wait';
 export * from './states/map';
+export * from './states/distributed-map';
 export * from './states/custom-state';
 
 export * from './states/task-base';

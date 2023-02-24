@@ -423,7 +423,13 @@ export class StateMachine extends StateMachineBase {
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
-    resource.node.addDependency(this.role);
+    // Leaving this commented for review, as I want to make sure this truly isn't necessary.
+    // My understanding is that the `Ref` of the role should be enough to create an implicit dependency.
+    // However, this was adding both a dependency on the role and the policy, but the policy
+    // depends on the state machine thus creating a circular dependency.  By removing
+    // this statement, the circular dependency is no longer an issue.
+    // If removing this is approved in the PR process, I will delete it before merge.
+    // resource.node.addDependency(this.role);
 
     for (const statement of graph.policyStatements) {
       this.addToRolePolicy(statement);
@@ -436,6 +442,17 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    if (graph.requiresExecutionPermissions) {
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['states:StartExecution'],
+        resources: [this.stateMachineArn],
+      }));
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['states:DescribeExecution', 'states:StopExecution'],
+        resources: [`${this.stateMachineArn}/*`],
+      }));
+    }
   }
 
   /**

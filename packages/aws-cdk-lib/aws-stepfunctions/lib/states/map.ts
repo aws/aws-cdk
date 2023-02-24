@@ -26,25 +26,6 @@ export enum MapStateMode {
   INLINE = 'INLINE'
 }
 
-
-/**
- * Two modes of Map states are available in AWS Step Functions: INLINE AND DISTRIBUTED.
- *
- * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-map-process-modes.html
- *
- * @default INLINE
- */
-export enum MapStateMode {
-  /**
-   * Distributed mode provides high concurrency and executes child workflows for each iteration.
-   */
-  DISTRIBUTED = 'DISTRIBUTED',
-  /**
-   * Inline mode provides limited concurrency.
-   */
-  INLINE = 'INLINE'
-}
-
 /**
  * Properties for defining a Map state
  */
@@ -167,17 +148,12 @@ export const isPositiveInteger = (value: number) => {
  */
 export class Map extends State implements INextable {
 
-  /**
-   * Map state mode to be used by the ItemProcessor.ProcessorConfig
-   */
-  static readonly MODE: MapStateMode = MapStateMode.INLINE
-
   public readonly endStates: INextable[];
 
-  private readonly maxConcurrency: number | undefined;
-  private readonly itemsPath?: string;
-  private readonly itemSelector?: { [key: string]: any };
-
+  protected readonly maxConcurrency: number | undefined;
+  protected readonly itemsPath?: string;
+  protected readonly itemSelector?: { [key: string]: any };
+  protected readonly mode: MapStateMode = MapStateMode.INLINE
 
   constructor(scope: Construct, id: string, props: MapProps = {}) {
     super(scope, id, props);
@@ -291,7 +267,7 @@ export class Map extends State implements INextable {
     return FieldUtils.renderObject({
       ItemProcessor: {
         ProcessorConfig: {
-          Mode: Map.MODE,
+          Mode: this.mode,
         },
         ...iterator.Iterator,
       },

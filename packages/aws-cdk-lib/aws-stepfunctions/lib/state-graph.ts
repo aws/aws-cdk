@@ -1,3 +1,4 @@
+import { DistributedMap } from './states/distributed-map';
 import { State } from './states/state';
 import * as iam from '../../aws-iam';
 import { Duration } from '../../core';
@@ -56,6 +57,11 @@ export class StateGraph {
   private superGraph?: StateGraph;
 
   /**
+   * Informs the state machine whether or not to update role with state machine execution IAM policy
+   */
+  public requiresExecutionPermissions: boolean = false;
+
+  /**
    * @param startState state that gets executed when the state machine is launched
    * @param graphDescription description of the state machine
    */
@@ -72,6 +78,9 @@ export class StateGraph {
   public registerState(state: State) {
     this.registerContainedState(state.stateId, this);
     this.allStates.add(state);
+    if (state instanceof DistributedMap) {
+      this.requiresExecutionPermissions = true;
+    }
   }
 
   /**

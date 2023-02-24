@@ -676,31 +676,32 @@ describe('State Machine Resources', () => {
       { 'input.$': '$.myField' },
       Type: 'Pass',
     });
-  }),
-
-  test('State machines must depend on their roles', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task', {
-      policies: [
-        new iam.PolicyStatement({
-          resources: ['resource'],
-          actions: ['lambda:InvokeFunction'],
-        }),
-      ],
-    });
-    new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResource('AWS::StepFunctions::StateMachine', {
-      DependsOn: [
-        'StateMachineRoleDefaultPolicyDF1E6607',
-        'StateMachineRoleB840431D',
-      ],
-    });
   });
+
+  // Leaving this commented for review.  See comment in `state-machine.ts`.
+  // test('State machines must depend on their roles', () => {
+  //   // GIVEN
+  //   const stack = new cdk.Stack();
+  //   const task = new FakeTask(stack, 'Task', {
+  //     policies: [
+  //       new iam.PolicyStatement({
+  //         resources: ['resource'],
+  //         actions: ['lambda:InvokeFunction'],
+  //       }),
+  //     ],
+  //   });
+  //   new stepfunctions.StateMachine(stack, 'StateMachine', {
+  //     definition: task,
+  //   });
+
+  //   // THEN
+  //   Template.fromStack(stack).hasResource('AWS::StepFunctions::StateMachine', {
+  //     DependsOn: [
+  //       'StateMachineRoleDefaultPolicyDF1E6607',
+  //       'StateMachineRoleB840431D',
+  //     ],
+  //   });
+  // });
 
 });
 
