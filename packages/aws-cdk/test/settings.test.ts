@@ -155,3 +155,14 @@ test('providing a build arg', () => {
   // THEN
   expect(settings.get(['build'])).toEqual('mvn package');
 });
+
+test('providing a quiet option', () => {
+  // GIVEN
+  const settings = Settings.fromCommandLineArguments({
+    _: [Command.SYNTH],
+    quiet: true,
+  });
+
+  // THEN
+  expect(settings.get(['quiet'])).toEqual(true);
+});
