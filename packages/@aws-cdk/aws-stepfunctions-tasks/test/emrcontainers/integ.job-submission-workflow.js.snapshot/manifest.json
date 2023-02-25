@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8662d9a0c24ddd076682929e683932742480ec48e502a42fa69b66a32863c925.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d03c5e0f7dbc36bcaa35f8075d3a647b0834fe48fed378a7970bf3adae7a27e8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -471,10 +471,10 @@
             "data": "JobExecutionRoleF19B4342"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/Job-Execution-Role/PolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B924/Resource": [
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/Job-Execution-Role/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "JobExecutionRolePolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B9247FE1E8DE"
+            "data": "JobExecutionRolePolicy6968CCB9"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/Start a Job Run/Monitoring Log Group/Resource": [
@@ -523,6 +523,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "JobExecutionRolePolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B9247FE1E8DE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JobExecutionRolePolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B9247FE1E8DE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

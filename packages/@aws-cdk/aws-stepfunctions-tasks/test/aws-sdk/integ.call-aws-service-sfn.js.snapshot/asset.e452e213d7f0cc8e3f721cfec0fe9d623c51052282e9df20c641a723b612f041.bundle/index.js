@@ -1,4 +1,3 @@
-"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -18,10 +17,6 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
@@ -38,9 +33,6 @@ module.exports = __toCommonJS(lambda_handler_exports);
 
 // ../assertions/lib/matcher.ts
 var Matcher = class {
-  /**
-   * Check whether the provided object is a subtype of the `IMatcher`.
-   */
   static isMatcher(x) {
     return x && x instanceof Matcher;
   }
@@ -56,16 +48,9 @@ var MatchResult = class {
     this._cost = 0;
     this.target = target;
   }
-  /**
-   * DEPRECATED
-   * @deprecated use recordFailure()
-   */
   push(matcher, path, message) {
     return this.recordFailure({ matcher, path, message });
   }
-  /**
-   * Record a new failure into this result at a specific path.
-   */
   recordFailure(failure) {
     const failKey = failure.path.join(".");
     let list = this.failuresHere.get(failKey);
@@ -79,26 +64,18 @@ var MatchResult = class {
     this._hasFailed = true;
     return this;
   }
-  /** Whether the match is a success */
   get isSuccess() {
     return !this._hasFailed;
   }
-  /** Does the result contain any failures. If not, the result is a success */
   hasFailed() {
     return this._hasFailed;
   }
-  /** The number of failures */
   get failCount() {
     return this._failCount;
   }
-  /** The cost of the failures so far */
   get failCost() {
     return this._cost;
   }
-  /**
-   * Compose the results of a previous match as a subtree.
-   * @param id the id of the parent tree.
-   */
   compose(id, inner) {
     if (inner.hasFailed()) {
       this._hasFailed = true;
@@ -111,10 +88,6 @@ var MatchResult = class {
     });
     return this;
   }
-  /**
-   * Prepare the result to be analyzed.
-   * This API *must* be called prior to analyzing these results.
-   */
   finished() {
     if (this.finalized) {
       return this;
@@ -125,13 +98,6 @@ var MatchResult = class {
     this.finalized = true;
     return this;
   }
-  /**
-   * Render the failed match in a presentable way
-   *
-   * Prefer using `renderMismatch` over this method. It is left for backwards
-   * compatibility for test suites that expect it, but `renderMismatch()` will
-   * produce better output.
-   */
   toHumanStrings() {
     const failures = new Array();
     debugger;
@@ -153,9 +119,6 @@ var MatchResult = class {
       }
     }
   }
-  /**
-   * Do a deep render of the match result, showing the structure mismatches in context
-   */
   renderMismatch() {
     if (!this.hasFailed()) {
       return "<match>";
@@ -285,9 +248,6 @@ ${indents.join("")}`));
       return x.replace(re, (_, spaces) => `!!${spaces.substring(0, spaces.length - 2)}`);
     }
   }
-  /**
-   * Record a capture against in this match result.
-   */
   recordCapture(options) {
     let values = this.captures.get(options.capture);
     if (values === void 0) {
@@ -381,74 +341,33 @@ function getType(obj) {
 
 // ../assertions/lib/match.ts
 var Match = class {
-  /**
-   * Use this matcher in the place of a field's value, if the field must not be present.
-   */
   static absent() {
     return new AbsentMatch("absent");
   }
-  /**
-   * Matches the specified pattern with the array found in the same relative path of the target.
-   * The set of elements (or matchers) must be in the same order as would be found.
-   * @param pattern the pattern to match
-   */
   static arrayWith(pattern) {
     return new ArrayMatch("arrayWith", pattern);
   }
-  /**
-   * Matches the specified pattern with the array found in the same relative path of the target.
-   * The set of elements (or matchers) must match exactly and in order.
-   * @param pattern the pattern to match
-   */
   static arrayEquals(pattern) {
     return new ArrayMatch("arrayEquals", pattern, { subsequence: false });
   }
-  /**
-   * Deep exact matching of the specified pattern to the target.
-   * @param pattern the pattern to match
-   */
   static exact(pattern) {
     return new LiteralMatch("exact", pattern, { partialObjects: false });
   }
-  /**
-   * Matches the specified pattern to an object found in the same relative path of the target.
-   * The keys and their values (or matchers) must be present in the target but the target can be a superset.
-   * @param pattern the pattern to match
-   */
   static objectLike(pattern) {
     return new ObjectMatch("objectLike", pattern);
   }
-  /**
-   * Matches the specified pattern to an object found in the same relative path of the target.
-   * The keys and their values (or matchers) must match exactly with the target.
-   * @param pattern the pattern to match
-   */
   static objectEquals(pattern) {
     return new ObjectMatch("objectEquals", pattern, { partial: false });
   }
-  /**
-   * Matches any target which does NOT follow the specified pattern.
-   * @param pattern the pattern to NOT match
-   */
   static not(pattern) {
     return new NotMatch("not", pattern);
   }
-  /**
-   * Matches any string-encoded JSON and applies the specified pattern after parsing it.
-   * @param pattern the pattern to match after parsing the encoded JSON.
-   */
   static serializedJson(pattern) {
     return new SerializedJson("serializedJson", pattern);
   }
-  /**
-   * Matches any non-null value at the target.
-   */
   static anyValue() {
     return new AnyMatch("anyValue");
   }
-  /**
-   * Matches targets according to a regular expression
-   */
   static stringLikeRegexp(pattern) {
     return new StringLikeRegexpMatch("stringLikeRegexp", pattern);
   }
@@ -564,7 +483,6 @@ var ArrayMatch = class extends Matcher {
           message: `arrayWith pattern ${spi} matched here`,
           path: [],
           cost: 0
-          // This is an informational message so it would be unfair to assign it cost
         }));
       }
       const failedMatches = matches.row(patternIdx);
@@ -576,7 +494,6 @@ var ArrayMatch = class extends Matcher {
           message: `Could not match arrayWith pattern ${patternIdx}. This is the closest match`,
           path: [`${index}`],
           cost: 0
-          //  Informational message
         });
         result.compose(`${index}`, innerResult);
       } else {
@@ -757,10 +674,6 @@ var CustomResourceHandler = class {
     this.event = event;
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
-  /**
-   * Handles executing the custom resource event. If `stateMachineArn` is present
-   * in the props then trigger the waiter statemachine
-   */
   async handle() {
     try {
       if ("stateMachineArn" in this.event.ResourceProperties) {
@@ -782,9 +695,6 @@ var CustomResourceHandler = class {
       clearTimeout(this.timeout);
     }
   }
-  /**
-   * Handle async requests from the waiter state machine
-   */
   async handleIsComplete() {
     try {
       const result = await this.processEvent(this.event.ResourceProperties);
@@ -796,10 +706,6 @@ var CustomResourceHandler = class {
       clearTimeout(this.timeout);
     }
   }
-  /**
-   * Start a step function state machine which will wait for the request
-   * to be successful.
-   */
   async startExecution(req) {
     try {
       const sfn = new AWS.StepFunctions();
@@ -892,65 +798,6 @@ var MatchCreator = class {
       matcher: obj
     };
   }
-  /**
-   * Return a Matcher that can be tested against the actual results.
-   * This will convert the encoded matchers into their corresponding
-   * assertions matcher.
-   *
-   * For example:
-   *
-   * ExpectedResult.objectLike({
-   *   Messages: [{
-   *     Body: Match.objectLike({
-   *       Elements: Match.arrayWith([{ Asdf: 3 }]),
-   *       Payload: Match.serializedJson({ key: 'value' }),
-   *     }),
-   *   }],
-   * });
-   *
-   * Will be encoded as:
-   * {
-   *   $ObjectLike: {
-   *     Messages: [{
-   *       Body: {
-   *         $ObjectLike: {
-   *           Elements: {
-   *             $ArrayWith: [{ Asdf: 3 }],
-   *           },
-   *           Payload: {
-   *             $SerializedJson: { key: 'value' }
-   *           }
-   *         },
-   *       },
-   *     }],
-   *   },
-   * }
-   *
-   * Which can then be parsed by this function. For each key (recursively)
-   * the parser will check if the value has one of the encoded matchers as a key
-   * and if so, it will set the value as the Matcher. So,
-   *
-   * {
-   *   Body: {
-   *     $ObjectLike: {
-   *       Elements: {
-   *         $ArrayWith: [{ Asdf: 3 }],
-   *       },
-   *       Payload: {
-   *         $SerializedJson: { key: 'value' }
-   *       }
-   *     },
-   *   },
-   * }
-   *
-   * Will be converted to
-   * {
-   *   Body: Match.objectLike({
-   *     Elements: Match.arrayWith([{ Asdf: 3 }]),
-   *     Payload: Match.serializedJson({ key: 'value' }),
-   *   }),
-   * }
-   */
   getMatcher() {
     try {
       const final = JSON.parse(JSON.stringify(this.parsedObj), function(_k, v) {
@@ -1100,7 +947,6 @@ async function handler(event, context) {
         await provider.respond({
           status: "SUCCESS",
           reason: "OK",
-          // return both the result of the API call _and_ the assertion results
           data: {
             ...assertionResult,
             ...result

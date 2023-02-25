@@ -30,9 +30,7 @@
    },
    "DependsOn": [
     "ChildRole1E3E0EF5"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   ]
   },
   "ParentRole5F0C366C": {
    "Type": "AWS::IAM::Role",
@@ -172,9 +170,7 @@
    "DependsOn": [
     "ParentRoleDefaultPolicy9BDC56DC",
     "ParentRole5F0C366C"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   ]
   }
  },
  "Outputs": {
