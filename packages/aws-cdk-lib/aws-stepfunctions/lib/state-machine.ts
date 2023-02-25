@@ -429,7 +429,7 @@ export class StateMachine extends StateMachineBase {
     // depends on the state machine thus creating a circular dependency.  By removing
     // this statement, the circular dependency is no longer an issue.
     // If removing this is approved in the PR process, I will delete it before merge.
-    // resource.node.addDependency(this.role);
+    resource.node.addDependency(this.role);
 
     for (const statement of graph.policyStatements) {
       this.addToRolePolicy(statement);
@@ -439,18 +439,30 @@ export class StateMachine extends StateMachineBase {
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
       service: 'states',
       resource: 'stateMachine',
-      resourceName: this.physicalName,
+      resourceName: this.stateMachineName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     if (graph.requiresExecutionPermissions) {
+      // this.grantStartExecution(this.role);
+      // this.grantExecution(this.role, 'states:DescribeExecution', 'states:StopExecution');
       this.addToRolePolicy(new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: [this.stateMachineArn],
+        resources: [this.stack.formatArn({
+          service: 'states',
+          resource: 'stateMachine',
+          resourceName: '*',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        })],
       }));
       this.addToRolePolicy(new iam.PolicyStatement({
         actions: ['states:DescribeExecution', 'states:StopExecution'],
-        resources: [`${this.stateMachineArn}/*`],
+        resources: [`${this.stack.formatArn({
+          service: 'states',
+          resource: 'execution',
+          resourceName: '*',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        })}:*`],
       }));
     }
   }

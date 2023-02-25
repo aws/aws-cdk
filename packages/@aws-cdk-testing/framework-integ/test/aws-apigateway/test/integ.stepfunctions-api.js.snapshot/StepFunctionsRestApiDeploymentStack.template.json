@@ -29,6 +29,9 @@
     "DefinitionString": "{\"StartAt\":\"PassTask\",\"States\":{\"PassTask\":{\"Type\":\"Pass\",\"Result\":\"Hello\",\"End\":true}}}",
     "StateMachineType": "EXPRESS"
    },
+   "DependsOn": [
+    "StateMachineRoleB840431D"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },

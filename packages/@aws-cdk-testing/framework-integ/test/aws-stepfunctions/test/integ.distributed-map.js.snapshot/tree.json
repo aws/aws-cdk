@@ -252,7 +252,24 @@
                                   "Action": "states:StartExecution",
                                   "Effect": "Allow",
                                   "Resource": {
-                                    "Ref": "StateMachine2E01A3A5"
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":states:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":stateMachine:*"
+                                      ]
+                                    ]
                                   }
                                 },
                                 {
@@ -265,10 +282,19 @@
                                     "Fn::Join": [
                                       "",
                                       [
+                                        "arn:",
                                         {
-                                          "Ref": "StateMachine2E01A3A5"
+                                          "Ref": "AWS::Partition"
                                         },
-                                        "/*"
+                                        ":states:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":execution:*/*"
                                       ]
                                     ]
                                   }
