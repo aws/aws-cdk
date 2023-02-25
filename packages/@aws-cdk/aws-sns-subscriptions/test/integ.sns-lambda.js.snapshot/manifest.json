@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-sns-lambda.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/451c86b70ff9eaa09b0558745f5aa97d2af847bd82e8960d44d5c91c88fa855a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b4d5d97a3217325cd1f06b3e725bdfbb9c4fd3c5c4a6adba15b286efa9146e23.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -105,6 +99,30 @@
             "data": "FilteredMyTopicC8395C27"
           }
         ],
+        "/aws-cdk-sns-lambda/FilteredMessageBody/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilteredMessageBodyServiceRoleB2EB82B3"
+          }
+        ],
+        "/aws-cdk-sns-lambda/FilteredMessageBody/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilteredMessageBody222AE8F1"
+          }
+        ],
+        "/aws-cdk-sns-lambda/FilteredMessageBody/AllowInvoke:awscdksnslambdaMyTopic6C62AB90": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilteredMessageBodyAllowInvokeawscdksnslambdaMyTopic6C62AB90FB54CEA4"
+          }
+        ],
+        "/aws-cdk-sns-lambda/FilteredMessageBody/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilteredMessageBodyMyTopicAD1F55C4"
+          }
+        ],
         "/aws-cdk-sns-lambda/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -119,6 +137,12 @@
         ]
       },
       "displayName": "aws-cdk-sns-lambda"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
