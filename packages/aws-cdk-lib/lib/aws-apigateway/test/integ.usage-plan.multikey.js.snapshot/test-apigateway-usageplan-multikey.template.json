@@ -1,0 +1,77 @@
+{
+ "Resources": {
+  "myusageplan4B391740": {
+   "Type": "AWS::ApiGateway::UsagePlan"
+  },
+  "myusageplanUsagePlanKeyResourcetestapigatewayusageplanmultikeymyapikey1DDABC389A2809A73": {
+   "Type": "AWS::ApiGateway::UsagePlanKey",
+   "Properties": {
+    "KeyId": {
+     "Ref": "myapikey18B056ACE"
+    },
+    "KeyType": "API_KEY",
+    "UsagePlanId": {
+     "Ref": "myusageplan4B391740"
+    }
+   }
+  },
+  "myusageplanUsagePlanKeyResourcetestapigatewayusageplanmultikeymyapikey29D6460C6AE8DE59D": {
+   "Type": "AWS::ApiGateway::UsagePlanKey",
+   "Properties": {
+    "KeyId": {
+     "Ref": "myapikey250C8F11B"
+    },
+    "KeyType": "API_KEY",
+    "UsagePlanId": {
+     "Ref": "myusageplan4B391740"
+    }
+   }
+  },
+  "myapikey18B056ACE": {
+   "Type": "AWS::ApiGateway::ApiKey",
+   "Properties": {
+    "Enabled": true
+   }
+  },
+  "myapikey250C8F11B": {
+   "Type": "AWS::ApiGateway::ApiKey",
+   "Properties": {
+    "Enabled": true
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

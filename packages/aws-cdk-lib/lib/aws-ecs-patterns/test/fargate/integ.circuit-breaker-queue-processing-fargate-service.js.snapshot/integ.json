@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "circuitBreakerQueueProcessingFargateTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-queue"
+      ],
+      "assertionStack": "circuitBreakerQueueProcessingFargateTest/DefaultTest/DeployAssert"
+    }
+  }
+}

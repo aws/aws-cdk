@@ -1,0 +1,89 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-cdk-codecommit-repo-contents-zip-file": {
+        "id": "aws-cdk-codecommit-repo-contents-zip-file",
+        "path": "aws-cdk-codecommit-repo-contents-zip-file",
+        "children": {
+          "Repo": {
+            "id": "Repo",
+            "path": "aws-cdk-codecommit-repo-contents-zip-file/Repo",
+            "children": {
+              "PathResolvedCodeAsset": {
+                "id": "PathResolvedCodeAsset",
+                "path": "aws-cdk-codecommit-repo-contents-zip-file/Repo/PathResolvedCodeAsset",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-cdk-codecommit-repo-contents-zip-file/Repo/PathResolvedCodeAsset/Stage",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-cdk-codecommit-repo-contents-zip-file/Repo/PathResolvedCodeAsset/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codecommit-repo-contents-zip-file/Repo/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeCommit::Repository",
+                  "aws:cdk:cloudformation:props": {
+                    "repositoryName": "aws-cdk-codecommit-repo-contents-zip-file",
+                    "code": {
+                      "s3": {
+                        "bucket": {
+                          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                        },
+                        "key": "ea7c70c09e0d23ef6105931ee931effc8b607184343aebf5e45e972807b3fc18.zip"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codecommit.CfnRepository",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-codecommit.Repository",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

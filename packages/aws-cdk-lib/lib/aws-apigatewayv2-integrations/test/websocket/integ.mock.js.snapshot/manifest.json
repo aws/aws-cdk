@@ -1,0 +1,100 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-mock-websocket-integration.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-mock-websocket-integration.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-mock-websocket-integration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-mock-websocket-integration.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aabdbe840e6768f96ec51dd87886969be769aeca5a21773e27cd16f1a90367fe.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-mock-websocket-integration.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-mock-websocket-integration.assets"
+      ],
+      "metadata": {
+        "/integ-mock-websocket-integration/mywsapi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapi32E6CE11"
+          }
+        ],
+        "/integ-mock-websocket-integration/mywsapi/$default-Route/DefaultIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
+          }
+        ],
+        "/integ-mock-websocket-integration/mywsapi/$default-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapidefaultRouteE9382DF8"
+          }
+        ],
+        "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/SendMessageIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
+          }
+        ],
+        "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapisendmessageRouteAE873328"
+          }
+        ],
+        "/integ-mock-websocket-integration/mystage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mystage114C35EC"
+          }
+        ],
+        "/integ-mock-websocket-integration/ApiEndpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiEndpoint"
+          }
+        ],
+        "/integ-mock-websocket-integration/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-mock-websocket-integration/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-mock-websocket-integration"
+    }
+  }
+}

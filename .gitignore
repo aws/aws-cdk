@@ -18,4 +18,8 @@ junit.xml
 !**/*.snapshot/**/asset.*/*.js
 !**/*.snapshot/**/asset.*/*.d.ts
 
-!**/*.snapshot/**/asset.*/**
+/.versionrc.json
+RELEASE_NOTES.md
+
+# Produced by integ tests
+read*lock

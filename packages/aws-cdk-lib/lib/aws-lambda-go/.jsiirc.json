@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.lambda.go"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Lambda.Go"
+    },
+    "python": {
+      "module": "aws_cdk.aws_lambda_go"
+    }
+  }
+}

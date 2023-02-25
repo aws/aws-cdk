@@ -1,0 +1,94 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-secret-hosted-rotation.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-secret-hosted-rotation.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-integ-secret-hosted-rotation": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-secret-hosted-rotation.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/80e7147ae17e29a7810c1890b8caa90a140f0089dcb2dce470bd13d88e5acc41.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-secret-hosted-rotation.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-secret-hosted-rotation.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-secret-hosted-rotation/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretA720EF05"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/Secret/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretSchedule18F2CB66"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/Secret/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretPolicy06C9821C"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/CustomSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSecret5DC95D87"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/CustomSecret/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSecretScheduleDD99F351"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/CustomSecret/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSecretPolicy8E81D2EB"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-secret-hosted-rotation"
+    }
+  }
+}

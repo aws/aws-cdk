@@ -1,0 +1,118 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-events.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-events.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-events": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-events.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40f1eae423d2996781cb7347b1717bca730a857f14e6fc797af3b31977997f82.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-events.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-events.assets"
+      ],
+      "metadata": {
+        "/lambda-events/MyFunc/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFuncServiceRole54065130"
+          }
+        ],
+        "/lambda-events/MyFunc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc8A243A2C"
+          }
+        ],
+        "/lambda-events/Timer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TimerBF6F831F"
+          }
+        ],
+        "/lambda-events/Timer/AllowEventRulelambdaeventsMyFunc910E580F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TimerAllowEventRulelambdaeventsMyFunc910E580F793D7BBB"
+          }
+        ],
+        "/lambda-events/Timer2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Timer2B6F162E9"
+          }
+        ],
+        "/lambda-events/Timer2/AllowEventRulelambdaeventsMyFunc910E580F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Timer2AllowEventRulelambdaeventsMyFunc910E580FCCD9CDCE"
+          }
+        ],
+        "/lambda-events/Timer3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Timer30894E3BB"
+          }
+        ],
+        "/lambda-events/Timer3/AllowEventRulelambdaeventsMyFunc910E580F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Timer3AllowEventRulelambdaeventsMyFunc910E580F79317F73"
+          }
+        ],
+        "/lambda-events/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/lambda-events/Queue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueuePolicy25439813"
+          }
+        ],
+        "/lambda-events/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-events/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-events"
+    }
+  }
+}

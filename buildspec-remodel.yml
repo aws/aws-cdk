@@ -28,12 +28,16 @@ phases:
   post_build:
     commands:
       - cd ${HOME}/remodel
-      - git checkout -B feat/remodel
       - git add -A
       - git commit -m "Execute remodel"
       - git remote add aws-cdk git@github.com:aws/aws-cdk.git
+      - git fetch aws-cdk
+      - git checkout -B feat/remodel aws-cdk/feat/remodel
+      - git config --global merge.renamelimit 12000
+      - git merge --squash --strategy-option theirs feat/repo-restructure
+      - git commit -m "Execute remodel"
       - git push -u aws-cdk feat/remodel
-
+      - codebuild-breakpoint
 artifacts:
   files:
     - "**/*"

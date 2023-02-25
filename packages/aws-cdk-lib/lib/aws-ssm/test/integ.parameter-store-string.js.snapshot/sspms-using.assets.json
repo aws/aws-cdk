@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "f6e392d82be8514b35d4085f6ff4e3df808815b1cf4cc7a119cb67ace46e03b9": {
+      "source": {
+        "path": "sspms-using.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f6e392d82be8514b35d4085f6ff4e3df808815b1cf4cc7a119cb67ace46e03b9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

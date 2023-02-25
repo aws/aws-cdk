@@ -5,6 +5,7 @@
 // library support.
 
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as cloudwatch from '../lib';
 
 const app = new cdk.App();
@@ -107,4 +108,6 @@ dashboard.addWidgets(new cloudwatch.CustomWidget({
   functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
 }));
 
-app.synth();
+new IntegTest(app, 'cdk-cloudwatch-alarms-integ-test', {
+  testCases: [stack],
+});

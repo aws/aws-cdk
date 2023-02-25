@@ -1,0 +1,7 @@
+# Lock versions of pip packages
+certifi==2022.12.7
+chardet==3.0.4
+idna==2.10
+urllib3==1.26.7
+# Requests used by this lambda
+requests==2.26.0

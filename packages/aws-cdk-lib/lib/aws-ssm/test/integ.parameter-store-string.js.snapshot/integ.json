@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "SSMParameterStoreTest/DefaultTest": {
+      "stacks": [
+        "sspms-using"
+      ],
+      "assertionStack": "sspms-cleanup",
+      "assertionStackName": "sspms-cleanup"
+    }
+  }
+}

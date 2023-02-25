@@ -1,0 +1,15 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "Vpc-Ipam/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-ipam-vpc"
+      ],
+      "allowDestroy": [
+        "EC2::IPAM"
+      ],
+      "assertionStack": "Vpc-Ipam/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcIpamDefaultTestDeployAssertB1CA1C3A"
+    }
+  }
+}

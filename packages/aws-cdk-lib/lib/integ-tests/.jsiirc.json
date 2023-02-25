@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.integtests"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.IntegTests"
+    },
+    "python": {
+      "module": "aws_cdk.integ_tests"
+    }
+  }
+}

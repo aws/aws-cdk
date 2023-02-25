@@ -1,0 +1,22 @@
+{
+ "Resources": {
+  "myusageplanUsagePlanKeyResourcetestapigatewayusageplanimportmyapikey14CF31667CCB4183": {
+   "Type": "AWS::ApiGateway::UsagePlanKey",
+   "Properties": {
+    "KeyId": {
+     "Ref": "myapikey5C116C09"
+    },
+    "KeyType": "API_KEY",
+    "UsagePlanId": {
+     "Fn::ImportValue": "test-apigateway-usageplan-create:ExportsOutputRefmyusageplan4B391740F6B819BA"
+    }
+   }
+  },
+  "myapikey5C116C09": {
+   "Type": "AWS::ApiGateway::ApiKey",
+   "Properties": {
+    "Enabled": true
+   }
+  }
+ }
+}

@@ -1,0 +1,261 @@
+{
+ "Resources": {
+  "IPAM": {
+   "Type": "AWS::EC2::IPAM",
+   "Properties": {
+    "OperatingRegions": [
+     {
+      "RegionName": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": {
+       "Ref": "AWS::StackId"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Pool": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv4",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IPAM",
+      "PrivateDefaultScopeId"
+     ]
+    },
+    "AutoImport": false,
+    "Description": "Testing pool",
+    "Locale": {
+     "Ref": "AWS::Region"
+    },
+    "ProvisionedCidrs": [
+     {
+      "Cidr": "100.100.0.0/16"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AwsIpamVpcD3A1DAEE": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Ipv4IpamPoolId": {
+     "Ref": "Pool"
+    },
+    "Ipv4NetmaskLength": 18,
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc"
+     }
+    ]
+   }
+  },
+  "AwsIpamVpcprivateSubnet1Subnet0AC8649F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "AwsIpamVpcD3A1DAEE"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::Cidr": [
+        {
+         "Fn::GetAtt": [
+          "AwsIpamVpcD3A1DAEE",
+          "CidrBlock"
+         ]
+        },
+        64,
+        "8"
+       ]
+      }
+     ]
+    },
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet1"
+     }
+    ]
+   }
+  },
+  "AwsIpamVpcprivateSubnet1RouteTable2A97E440": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "AwsIpamVpcD3A1DAEE"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet1"
+     }
+    ]
+   }
+  },
+  "AwsIpamVpcprivateSubnet1RouteTableAssociationE7D2E570": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "AwsIpamVpcprivateSubnet1RouteTable2A97E440"
+    },
+    "SubnetId": {
+     "Ref": "AwsIpamVpcprivateSubnet1Subnet0AC8649F"
+    }
+   }
+  },
+  "AwsIpamVpcprivateSubnet2Subnet577660DE": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "AwsIpamVpcD3A1DAEE"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::Cidr": [
+        {
+         "Fn::GetAtt": [
+          "AwsIpamVpcD3A1DAEE",
+          "CidrBlock"
+         ]
+        },
+        64,
+        "8"
+       ]
+      }
+     ]
+    },
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet2"
+     }
+    ]
+   }
+  },
+  "AwsIpamVpcprivateSubnet2RouteTableDDE2D1BF": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "AwsIpamVpcD3A1DAEE"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet2"
+     }
+    ]
+   }
+  },
+  "AwsIpamVpcprivateSubnet2RouteTableAssociation52A3C85A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "AwsIpamVpcprivateSubnet2RouteTableDDE2D1BF"
+    },
+    "SubnetId": {
+     "Ref": "AwsIpamVpcprivateSubnet2Subnet577660DE"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttAwsIpamVpcD3A1DAEEVpcId808CC597": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsIpamVpcD3A1DAEE",
+     "VpcId"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-ec2-ipam-vpc:ExportsOutputFnGetAttAwsIpamVpcD3A1DAEEVpcId808CC597"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "apigateway-domain-name/DefaultTest": {
+      "stacks": [
+        "aws-cdk-apigw-alias-integ"
+      ],
+      "assertionStack": "apigateway-domain-name/DefaultTest/DeployAssert"
+    }
+  }
+}

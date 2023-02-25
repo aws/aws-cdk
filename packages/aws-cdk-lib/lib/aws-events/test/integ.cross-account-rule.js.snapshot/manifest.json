@@ -1,0 +1,257 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "FromCrossAccountRuleStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "FromCrossAccountRuleStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "FromCrossAccountRuleStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://987654321/test-region",
+      "properties": {
+        "templateFile": "FromCrossAccountRuleStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::987654321:role/cdk-hnb659fds-deploy-role-987654321-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::987654321:role/cdk-hnb659fds-cfn-exec-role-987654321-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-987654321-test-region/c6101587e135a4563e666bf1dd45e671ba4c4bc60130f3b8167502cbc174aa70.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "FromCrossAccountRuleStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::987654321:role/cdk-hnb659fds-lookup-role-987654321-test-region",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventBusPolicy-987654321-test-region-12345678",
+        "FromCrossAccountRuleStack.assets"
+      ],
+      "metadata": {
+        "/FromCrossAccountRuleStack/MyRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRuleA44AB831"
+          }
+        ],
+        "/FromCrossAccountRuleStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/FromCrossAccountRuleStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "FromCrossAccountRuleStack"
+    },
+    "ToCrossAccountRuleStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ToCrossAccountRuleStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ToCrossAccountRuleStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://12345678/test-region",
+      "properties": {
+        "templateFile": "ToCrossAccountRuleStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/0d750187c0e1bc77f1edfc3af57e55036907d6dfaef463a7acfdc0c42325a18c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ToCrossAccountRuleStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "FromCrossAccountRuleStack",
+        "ToCrossAccountRuleStack.assets"
+      ],
+      "metadata": {
+        "/ToCrossAccountRuleStack/Queue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue"
+          }
+        ],
+        "/ToCrossAccountRuleStack/FromCrossAccountRuleStackMyRule68A189ED-SQS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromCrossAccountRuleStackMyRule68A189EDSQS1A422535"
+          }
+        ],
+        "/ToCrossAccountRuleStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ToCrossAccountRuleStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ToCrossAccountRuleStack"
+    },
+    "EventBusPolicy-987654321-test-region-12345678.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EventBusPolicy-987654321-test-region-12345678.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EventBusPolicy-987654321-test-region-12345678": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://12345678/test-region",
+      "properties": {
+        "templateFile": "EventBusPolicy-987654321-test-region-12345678.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/462c696e4c93ec0e97ebd5917666e8ded21f0a81055e38f6683a27853ca79fd4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EventBusPolicy-987654321-test-region-12345678.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "ToCrossAccountRuleStack-EventBusPolicy-support-test-region-987654321"
+      },
+      "dependencies": [
+        "EventBusPolicy-987654321-test-region-12345678.assets"
+      ],
+      "metadata": {
+        "/EventBusPolicy-987654321-test-region-12345678/GivePermToOtherAccount": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GivePermToOtherAccount"
+          }
+        ],
+        "/EventBusPolicy-987654321-test-region-12345678/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EventBusPolicy-987654321-test-region-12345678/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EventBusPolicy-987654321-test-region-12345678"
+    },
+    "CrossAccountDeployDefaultTestDeployAssertB5328BEF.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CrossAccountDeployDefaultTestDeployAssertB5328BEF.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CrossAccountDeployDefaultTestDeployAssertB5328BEF": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CrossAccountDeployDefaultTestDeployAssertB5328BEF.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06c797cad62334a220096d2292d9e1028ba01ed3582f081c5ddee52bc7e0c494.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CrossAccountDeployDefaultTestDeployAssertB5328BEF.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ToCrossAccountRuleStack",
+        "CrossAccountDeployDefaultTestDeployAssertB5328BEF.assets"
+      ],
+      "metadata": {
+        "/CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallEventBridgedescribeEventBus"
+          }
+        ],
+        "/CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/AssertEqualsEventBridgedescribeEventBus/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallEventBridgedescribeEventBusAssertEqualsEventBridgedescribeEventBusB063C036"
+          }
+        ],
+        "/CrossAccountDeploy/DefaultTest/DeployAssert/AwsApiCallEventBridgedescribeEventBus/AssertEqualsEventBridgedescribeEventBus/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAssertEqualsEventBridgedescribeEventBusfd3cf7d971587606ecf8442a4cb30f1b"
+          }
+        ],
+        "/CrossAccountDeploy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/CrossAccountDeploy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/CrossAccountDeploy/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CrossAccountDeploy/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CrossAccountDeploy/DefaultTest/DeployAssert"
+    }
+  }
+}

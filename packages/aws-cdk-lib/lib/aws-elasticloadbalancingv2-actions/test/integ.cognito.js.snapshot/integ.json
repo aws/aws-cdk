@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ-test-cognito/DefaultTest": {
+      "stacks": [
+        "integ-cognito"
+      ],
+      "assertionStack": "integ-test-cognito/DefaultTest/DeployAssert"
+    }
+  }
+}

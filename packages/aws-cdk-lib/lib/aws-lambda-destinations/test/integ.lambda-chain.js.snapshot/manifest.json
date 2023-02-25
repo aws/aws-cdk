@@ -1,0 +1,328 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-lambda-chain.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-lambda-chain.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-lambda-chain": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-lambda-chain.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/346b0f31aef9dba7bae2a5c33f01d10e8f1ca774a3fc50386c0c901037757662.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-lambda-chain.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-lambda-chain.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-lambda-chain/First/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstServiceRole097DB3A5"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstServiceRoleDefaultPolicyB5EF41C4"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "First8D4707F1"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/EventInvokeConfig/Failure/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstEventInvokeConfigFailureA1E005BC"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/EventInvokeConfig/Failure/AllowEventRuleawscdklambdachainErrorC073CD8D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstEventInvokeConfigFailureAllowEventRuleawscdklambdachainErrorC073CD8DCAD68018"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/EventInvokeConfig/Success/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstEventInvokeConfigSuccess865FF6FF"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/EventInvokeConfig/Success/AllowEventRuleawscdklambdachainSecond178F48F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstEventInvokeConfigSuccessAllowEventRuleawscdklambdachainSecond178F48F8A8DE2790"
+          }
+        ],
+        "/aws-cdk-lambda-chain/First/EventInvokeConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstEventInvokeConfig7DE6209E"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondServiceRole55940A31"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondServiceRoleDefaultPolicyB593E14A"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Second394350F9"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/EventInvokeConfig/Success/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondEventInvokeConfigSuccess53614893"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/EventInvokeConfig/Success/AllowEventRuleawscdklambdachainThird031C7FF6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondEventInvokeConfigSuccessAllowEventRuleawscdklambdachainThird031C7FF6ABA1C15A"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Second/EventInvokeConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondEventInvokeConfig3F9DE36C"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Third/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ThirdServiceRole42701801"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Third/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Third1125870F"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Error/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ErrorServiceRoleCE484966"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Error/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ErrorD9F0B79D"
+          }
+        ],
+        "/aws-cdk-lambda-chain/FirstFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstFunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-chain/ThirdFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ThirdFunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-chain/ErrorFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ErrorFunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Exports/Output{\"Ref\":\"First8D4707F1\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefFirst8D4707F1B3E37FDF"
+          }
+        ],
+        "/aws-cdk-lambda-chain/Exports/Output{\"Ref\":\"Third1125870F\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefThird1125870FF05390B4"
+          }
+        ],
+        "/aws-cdk-lambda-chain/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-lambda-chain/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-lambda-chain"
+    },
+    "LambdaDestChain3DefaultTestDeployAssertB72F10E8.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LambdaDestChain3DefaultTestDeployAssertB72F10E8.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LambdaDestChain3DefaultTestDeployAssertB72F10E8": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LambdaDestChain3DefaultTestDeployAssertB72F10E8.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/36ba0923aa26f9b7c5a2bea94bbcfb168d2cef9f3285309a32c1d8e4a98101aa.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LambdaDestChain3DefaultTestDeployAssertB72F10E8.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-lambda-chain",
+        "LambdaDestChain3DefaultTestDeployAssertB72F10E8.assets"
+      ],
+      "metadata": {
+        "/LambdaDestChain3/DefaultTest/DeployAssert/LambdaInvoke56ff6291852e7537dce00fa6e862a00b/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke56ff6291852e7537dce00fa6e862a00b"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/LambdaInvoke56ff6291852e7537dce00fa6e862a00b/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke56ff6291852e7537dce00fa6e862a00bInvokeA6B3FDE4"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogsfilterLogEvents"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogsfilterLogEventsWaitForIsCompleteProviderInvoke00D72D57"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogsfilterLogEventsWaitForTimeoutProviderInvoke3950C224"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogsfilterLogEventsWaitForRole9F1B78BD"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogsfilterLogEventsWaitFor64019274"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LambdaDestChain3/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LambdaDestChain3/DefaultTest/DeployAssert"
+    }
+  }
+}

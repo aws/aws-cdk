@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "LambdaDependencies/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-nodejs-dependencies",
+        "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3"
+      ],
+      "assertionStack": "LambdaDependencies/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaDependenciesDefaultTestDeployAssert259C940B"
+    }
+  }
+}

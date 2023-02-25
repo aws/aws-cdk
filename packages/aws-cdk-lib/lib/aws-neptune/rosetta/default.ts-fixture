@@ -1,0 +1,16 @@
+import { Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import * as iam from '@aws-cdk/aws-iam';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as logs from '@aws-cdk/aws-logs';
+import * as neptune from '@aws-cdk/aws-neptune';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2 });
+
+    /// here
+  }
+}

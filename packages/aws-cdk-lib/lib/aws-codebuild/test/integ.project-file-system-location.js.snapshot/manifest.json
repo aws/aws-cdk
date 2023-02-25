@@ -1,0 +1,166 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codebuild-file-system-locations.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-codebuild-file-system-locations.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-codebuild-file-system-locations": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codebuild-file-system-locations.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9457f5448d227a38f527c355ec896ecf067fe5c061372d7852b51f09b31e0f01.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-codebuild-file-system-locations.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-codebuild-file-system-locations.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCAFB07A31"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1Subnet0C75866A"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1RouteTable538A9511"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1RouteTableAssociation8A950D8E"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1DefaultRouteAF81AA9B"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1EIP5EB6147D"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPublicSubnet1NATGateway838228A5"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet1Subnet641543F4"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet1RouteTable133BD901"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet1RouteTableAssociation85DFBFBB"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCPrivateSubnet1DefaultRouteA8EE6636"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCIGW30AB6DD6"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyVPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVPCVPCGWE6F260E1"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/SecurityGroup1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroup1F554B36F"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRole9BBE5233"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRoleDefaultPolicyB19B7C29"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProject39F7B0AE"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/MyProject/PolicyDocument/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectPolicyDocument646EE0F2"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-codebuild-file-system-locations/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codebuild-file-system-locations"
+    }
+  }
+}

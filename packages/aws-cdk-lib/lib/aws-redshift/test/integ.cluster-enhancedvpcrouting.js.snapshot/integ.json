@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "EnhancedVpcRouting/DefaultTest": {
+      "stacks": [
+        "redshift-enhancedvpcrouting-integ"
+      ],
+      "assertionStack": "EnhancedVpcRouting/DefaultTest/DeployAssert",
+      "assertionStackName": "EnhancedVpcRoutingDefaultTestDeployAssert10B513A1"
+    }
+  }
+}

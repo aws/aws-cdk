@@ -1,0 +1,198 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "integ-user-pool-idp-amazon": {
+        "id": "integ-user-pool-idp-amazon",
+        "path": "integ-user-pool-idp-amazon",
+        "children": {
+          "pool": {
+            "id": "pool",
+            "path": "integ-user-pool-idp-amazon/pool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-idp-amazon/pool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "client": {
+                "id": "client",
+                "path": "integ-user-pool-idp-amazon/pool/client",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-pool-idp-amazon/pool/client/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "userPoolId": {
+                          "Ref": "pool056F3F7E"
+                        },
+                        "allowedOAuthFlows": [
+                          "implicit",
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://example.com"
+                        ],
+                        "supportedIdentityProviders": [
+                          {
+                            "Ref": "amazon2D32744A"
+                          },
+                          "COGNITO"
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolClient",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolClient",
+                  "version": "0.0.0"
+                }
+              },
+              "domain": {
+                "id": "domain",
+                "path": "integ-user-pool-idp-amazon/pool/domain",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-pool-idp-amazon/pool/domain/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "nija-test-pool",
+                        "userPoolId": {
+                          "Ref": "pool056F3F7E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolDomain",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "amazon": {
+            "id": "amazon",
+            "path": "integ-user-pool-idp-amazon/amazon",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-idp-amazon/amazon/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolIdentityProvider",
+                  "aws:cdk:cloudformation:props": {
+                    "providerName": "LoginWithAmazon",
+                    "providerType": "LoginWithAmazon",
+                    "userPoolId": {
+                      "Ref": "pool056F3F7E"
+                    },
+                    "attributeMapping": {
+                      "given_name": "name",
+                      "email": "email",
+                      "userId": "user_id"
+                    },
+                    "providerDetails": {
+                      "client_id": "amzn-client-id",
+                      "client_secret": "amzn-client-secret",
+                      "authorize_scopes": "profile"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPoolIdentityProvider",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazon",
+              "version": "0.0.0"
+            }
+          },
+          "SignInLink": {
+            "id": "SignInLink",
+            "path": "integ-user-pool-idp-amazon/SignInLink",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

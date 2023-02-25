@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.iot.actions"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.IoT.Actions"
+    },
+    "python": {
+      "module": "aws_cdk.aws_iot_actions"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+import * as ec2 from '../../aws-ec2';
+import * as cdk from '../../core';
+import * as lambda from '../lib';
+
+const app = new cdk.App();
+
+const stack = new cdk.Stack(app, 'aws-cdk-vpc-lambda');
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+
+new lambda.Function(stack, 'MyLambda', {
+  code: new lambda.InlineCode('def main(event, context): pass'),
+  handler: 'index.main',
+  runtime: lambda.Runtime.PYTHON_3_9,
+  vpc,
+});
+
+app.synth();

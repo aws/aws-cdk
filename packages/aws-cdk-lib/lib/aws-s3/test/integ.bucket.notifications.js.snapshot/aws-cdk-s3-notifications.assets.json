@@ -1,0 +1,19 @@
+{
+  "version": "22.0.0",
+  "files": {
+    "0950e270b55171f331f16b0a63f107106782d89c7816c2ec3ba14a69c11be52d": {
+      "source": {
+        "path": "aws-cdk-s3-notifications.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0950e270b55171f331f16b0a63f107106782d89c7816c2ec3ba14a69c11be52d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

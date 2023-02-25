@@ -33,6 +33,7 @@ tests/
 ├── init-python
 ├── init-typescript-app
 ├── init-typescript-lib
+├── init-go
 └── uberpackage
 ```
 

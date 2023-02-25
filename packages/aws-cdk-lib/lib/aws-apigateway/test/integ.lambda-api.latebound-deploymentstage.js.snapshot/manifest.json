@@ -1,0 +1,189 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "LateBoundDeploymentStageStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LateBoundDeploymentStageStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LateBoundDeploymentStageStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LateBoundDeploymentStageStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c1a731d07cab55159d00164c989b3f2af0010817f364f2212b19d0252b50b03.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LateBoundDeploymentStageStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "LateBoundDeploymentStageStack.assets"
+      ],
+      "metadata": {
+        "/LateBoundDeploymentStageStack/myfn/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myfnServiceRole7822DC24"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/myfn/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myfn8C66D016"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiF559E4F2"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiCloudWatchRoleA142878F"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiAccount856938D8"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default/{proxy+}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiproxyB0E963B7"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default/{proxy+}/ANY/ApiPermission.LateBoundDeploymentStageStacklambdarestapiCE6017F6.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiproxyANYApiPermissionLateBoundDeploymentStageStacklambdarestapiCE6017F6ANYproxy2C5460ED"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default/{proxy+}/ANY/ApiPermission.Test.LateBoundDeploymentStageStacklambdarestapiCE6017F6.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiproxyANYApiPermissionTestLateBoundDeploymentStageStacklambdarestapiCE6017F6ANYproxyCC4F6BB2"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default/{proxy+}/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiproxyANYC900233F"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default/ANY/ApiPermission.LateBoundDeploymentStageStacklambdarestapiCE6017F6.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiANYApiPermissionLateBoundDeploymentStageStacklambdarestapiCE6017F6ANY35688E13"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default/ANY/ApiPermission.Test.LateBoundDeploymentStageStacklambdarestapiCE6017F6.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiANYApiPermissionTestLateBoundDeploymentStageStacklambdarestapiCE6017F6ANY239CFD70"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/lambdarestapi/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiANYB9BB3FB2"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deployment3338197541aef5f15bf9a60b10e06fdbe72854f4"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/stage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stage0661E4AC"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LateBoundDeploymentStageStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LateBoundDeploymentStageStack"
+    },
+    "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.assets"
+      ],
+      "metadata": {
+        "/lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "integ.auth-apikey": {
+      "stacks": [
+        "aws-appsync-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

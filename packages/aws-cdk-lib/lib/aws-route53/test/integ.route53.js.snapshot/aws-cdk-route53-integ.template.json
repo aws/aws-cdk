@@ -1,0 +1,381 @@
+{
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-route53-integ/VPC"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1SubnetB4246D30": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/17",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-route53-integ/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1RouteTableFEE4B781": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-route53-integ/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    }
+   }
+  },
+  "VPCPublicSubnet1DefaultRoute91CEF279": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPublicSubnet1EIP6AD938E8": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-route53-integ/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1NATGatewayE0556630": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet1EIP6AD938E8",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-route53-integ/VPC/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
+  },
+  "VPCPrivateSubnet1Subnet8BCA10E0": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-route53-integ/VPC/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1RouteTableBE8A6027": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-route53-integ/VPC/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+    }
+   }
+  },
+  "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    }
+   }
+  },
+  "VPCIGWB7E252D3": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-route53-integ/VPC"
+     }
+    ]
+   }
+  },
+  "VPCVPCGW99B986DC": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "InternetGatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   }
+  },
+  "PrivateZone27242E85": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.local.",
+    "VPCs": [
+     {
+      "VPCId": {
+       "Ref": "VPCB9E5F0B4"
+      },
+      "VPCRegion": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ]
+   }
+  },
+  "PrivateZoneTXT83BB83CE": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "_foo.cdk.local.",
+    "Type": "TXT",
+    "HostedZoneId": {
+     "Ref": "PrivateZone27242E85"
+    },
+    "ResourceRecords": [
+     "\"Bar!\"",
+     "\"Baz?\""
+    ],
+    "TTL": "60"
+   }
+  },
+  "PublicZone2E1C4E34": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.test."
+   }
+  },
+  "PublicZonecdktestsubcdktest83558650": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "sub.cdk.test.",
+    "Type": "NS",
+    "HostedZoneId": {
+     "Ref": "PublicZone2E1C4E34"
+    },
+    "ResourceRecords": {
+     "Fn::GetAtt": [
+      "PublicSubZoneDBD26A0A",
+      "NameServers"
+     ]
+    },
+    "TTL": "172800"
+   }
+  },
+  "PublicSubZoneDBD26A0A": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "sub.cdk.test."
+   }
+  },
+  "CNAMEC70A2D52": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "www.cdk.local.",
+    "Type": "CNAME",
+    "HostedZoneId": {
+     "Ref": "PrivateZone27242E85"
+    },
+    "ResourceRecords": [
+     "server"
+    ],
+    "TTL": "1800"
+   }
+  },
+  "ACCC8ACD5": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "test.cdk.local.",
+    "Type": "A",
+    "HostedZoneId": {
+     "Ref": "PrivateZone27242E85"
+    },
+    "ResourceRecords": [
+     "1.2.3.4",
+     "5.6.7.8"
+    ],
+    "TTL": "1800"
+   }
+  },
+  "CaaAmazon40DF725F": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "cdk.test.",
+    "Type": "CAA",
+    "HostedZoneId": {
+     "Ref": "PublicZone2E1C4E34"
+    },
+    "ResourceRecords": [
+     "0 issue \"amazon.com\""
+    ],
+    "TTL": "1800"
+   }
+  },
+  "TXT0D5C5ACF": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "cdk.test.",
+    "Type": "TXT",
+    "HostedZoneId": {
+     "Ref": "PublicZone2E1C4E34"
+    },
+    "ResourceRecords": [
+     "\"this is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long s\"\"tring\""
+    ],
+    "TTL": "1800"
+   }
+  }
+ },
+ "Outputs": {
+  "PrivateZoneId": {
+   "Value": {
+    "Ref": "PrivateZone27242E85"
+   }
+  },
+  "PublicZoneId": {
+   "Value": {
+    "Ref": "PublicZone2E1C4E34"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

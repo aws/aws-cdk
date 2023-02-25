@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "lambda-docker-arm64/DefaultTest": {
+      "stacks": [
+        "lambda-ecr-docker-arm64"
+      ],
+      "assertionStack": "lambda-docker-arm64/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdadockerarm64DefaultTestDeployAssert07D408EF"
+    }
+  }
+}

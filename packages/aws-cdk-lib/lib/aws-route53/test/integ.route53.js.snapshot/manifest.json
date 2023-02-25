@@ -1,0 +1,202 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-route53-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-route53-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-route53-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-route53-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/00cd063646d893e6ee34f7fb3e022ab4f3c0de2c0388548e226905f45a0caec2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-route53-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-route53-integ.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-route53-integ/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/aws-cdk-route53-integ/PrivateZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateZone27242E85"
+          }
+        ],
+        "/aws-cdk-route53-integ/PrivateZone/TXT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateZoneTXT83BB83CE"
+          }
+        ],
+        "/aws-cdk-route53-integ/PublicZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicZone2E1C4E34"
+          }
+        ],
+        "/aws-cdk-route53-integ/PublicZone/cdk.test -> sub.cdk.test/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicZonecdktestsubcdktest83558650"
+          }
+        ],
+        "/aws-cdk-route53-integ/PublicSubZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubZoneDBD26A0A"
+          }
+        ],
+        "/aws-cdk-route53-integ/CNAME/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CNAMEC70A2D52"
+          }
+        ],
+        "/aws-cdk-route53-integ/A/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ACCC8ACD5"
+          }
+        ],
+        "/aws-cdk-route53-integ/CaaAmazon/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CaaAmazon40DF725F"
+          }
+        ],
+        "/aws-cdk-route53-integ/TXT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TXT0D5C5ACF"
+          }
+        ],
+        "/aws-cdk-route53-integ/PrivateZoneId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateZoneId"
+          }
+        ],
+        "/aws-cdk-route53-integ/PublicZoneId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicZoneId"
+          }
+        ],
+        "/aws-cdk-route53-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-route53-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-route53-integ"
+    }
+  }
+}

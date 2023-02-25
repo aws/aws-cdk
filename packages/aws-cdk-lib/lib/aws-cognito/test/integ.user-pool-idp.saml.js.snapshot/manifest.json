@@ -1,0 +1,135 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-user-pool-identity-provider-saml-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-user-pool-identity-provider-saml-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-user-pool-identity-provider-saml-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-identity-provider-saml-stack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6f6f07786415216f13b738979cec5ad81dbab3283fae83b99324965935cc1d60.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-user-pool-identity-provider-saml-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-user-pool-identity-provider-saml-stack.assets"
+      ],
+      "metadata": {
+        "/integ-user-pool-identity-provider-saml-stack/pool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pool056F3F7E"
+          }
+        ],
+        "/integ-user-pool-identity-provider-saml-stack/pool/client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolclient2623294C"
+          }
+        ],
+        "/integ-user-pool-identity-provider-saml-stack/pool/domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pooldomain430FA744"
+          }
+        ],
+        "/integ-user-pool-identity-provider-saml-stack/cdk/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdk52888317"
+          }
+        ],
+        "/integ-user-pool-identity-provider-saml-stack/SignInLink": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SignInLink"
+          }
+        ],
+        "/integ-user-pool-identity-provider-saml-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-user-pool-identity-provider-saml-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-identity-provider-saml-stack"
+    },
+    "integuserpoolidentityprovidersamltestDefaultTestDeployAssert97F09C26.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integuserpoolidentityprovidersamltestDefaultTestDeployAssert97F09C26.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integuserpoolidentityprovidersamltestDefaultTestDeployAssert97F09C26": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integuserpoolidentityprovidersamltestDefaultTestDeployAssert97F09C26.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integuserpoolidentityprovidersamltestDefaultTestDeployAssert97F09C26.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integuserpoolidentityprovidersamltestDefaultTestDeployAssert97F09C26.assets"
+      ],
+      "metadata": {
+        "/integ-user-pool-identity-provider-saml-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-user-pool-identity-provider-saml-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-identity-provider-saml-test/DefaultTest/DeployAssert"
+    }
+  }
+}

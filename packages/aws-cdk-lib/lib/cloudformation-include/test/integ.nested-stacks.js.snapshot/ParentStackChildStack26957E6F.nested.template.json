@@ -1,0 +1,26 @@
+{
+ "Parameters": {
+  "MyBucketParameter": {
+   "Type": "String",
+   "Default": "default-bucket-param-name"
+  }
+ },
+ "Resources": {
+  "BucketImport": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "-",
+      [
+       "bucket-name-prefix",
+       {
+        "Ref": "MyBucketParameter"
+       }
+      ]
+     ]
+    }
+   }
+  }
+ }
+}

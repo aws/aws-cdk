@@ -1,8 +1,7 @@
 import { generateAll, ModuleMap } from '@aws-cdk/cfn2ts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { main as genSdkApiMetadata } from './gen-sdk-api-metadata';
-import { main as genRegionInfoBuiltins } from './gen-region-info-builtins';
+import { main as genRegionInfoBuiltins } from '../lib/region-info/build-tools/generate-static-data';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const srcDir = path.join(awsCdkLibDir, 'lib');
@@ -37,21 +36,10 @@ async function main() {
     }, {});
   await fs.writeJson(scopeMapPath, newScopeMap, { spaces: 2 });
 
-  // Generate additional files for specific modules
-  const moduleBasePath = path.resolve(__dirname, '..', 'lib');
-  await genSdkApiMetadata(path.resolve(
-    moduleBasePath,
-    'aws-events-targets',
-    'lib',
-    'sdk-api-metadata.generated.ts',
-  ));
-
-  await genRegionInfoBuiltins(path.resolve(
-    moduleBasePath,
-    'region-info',
-    'lib',
-    'built-ins.generated.ts'
-  ));
+  // Call build-tools within modules for other codegen
+  // TODO: Move these up into aws-cdk-libs/scripts
+  require('../lib/aws-events-targets/build-tools/gen.js');
+  await genRegionInfoBuiltins();
 }
 
 async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {

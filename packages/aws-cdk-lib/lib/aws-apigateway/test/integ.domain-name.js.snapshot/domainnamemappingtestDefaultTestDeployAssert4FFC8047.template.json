@@ -1,0 +1,484 @@
+{
+ "Resources": {
+  "LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"201\"}}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+     },
+     "Payload": {
+      "Fn::Join": [
+       "",
+       [
+        "{\"hostname\":\"",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefIntegDomain624DF323D17B7540"
+        },
+        "\",\"path\":\"/orders/v1/items\"}"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1665514871380"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke6c82f4296e4da69e1d6905e3d20f761aInvokeF34C6427": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "456da4984f762c1c25e94bd5f2df6758d2b0884d0dae8ca59bb8f4e3de7c2136.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"202\"}}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+     },
+     "Payload": {
+      "Fn::Join": [
+       "",
+       [
+        "{\"hostname\":\"",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefIntegDomain624DF323D17B7540"
+        },
+        "\",\"path\":\"/orders/v2/items\"}"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1665514871381"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320InvokeC08B85F1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvokef718aff12f12e7e6e6dd823f91dfce23": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"201\"}}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+     },
+     "Payload": {
+      "Fn::Join": [
+       "",
+       [
+        "{\"hostname\":\"",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInteg2Domain70CCEA688A08551F"
+        },
+        "\",\"path\":\"/orders/items\"}"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1665514871382"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokef718aff12f12e7e6e6dd823f91dfce23Invoke0C7CC2F4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke2025c0c4c97e10064ec08312531cb316": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"202\"}}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+     },
+     "Payload": {
+      "Fn::Join": [
+       "",
+       [
+        "{\"hostname\":\"",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInteg2Domain70CCEA688A08551F"
+        },
+        "\",\"path\":\"/orders/v2/items\"}"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1665514871382"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke2025c0c4c97e10064ec08312531cb316Invoke5ACCC8A3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsLambdaInvoke6c82f4296e4da69e1d6905e3d20f761a": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokef718aff12f12e7e6e6dd823f91dfce23": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokef718aff12f12e7e6e6dd823f91dfce23",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke2025c0c4c97e10064ec08312531cb316": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke2025c0c4c97e10064ec08312531cb316",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

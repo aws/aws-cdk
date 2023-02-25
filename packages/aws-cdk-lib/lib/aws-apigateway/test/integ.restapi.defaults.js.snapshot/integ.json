@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "apigateway-restapi-defaults/DefaultTest": {
+      "stacks": [
+        "test-apigateway-restapi-defaults"
+      ],
+      "assertionStack": "apigateway-restapi-defaults/DefaultTest/DeployAssert"
+    }
+  }
+}

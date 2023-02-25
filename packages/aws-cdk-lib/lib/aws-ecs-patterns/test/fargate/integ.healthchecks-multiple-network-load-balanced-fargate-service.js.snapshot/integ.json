@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "Integ/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-multi-nlb-healthchecks"
+      ],
+      "assertionStack": "Integ/DefaultTest/DeployAssert"
+    }
+  }
+}

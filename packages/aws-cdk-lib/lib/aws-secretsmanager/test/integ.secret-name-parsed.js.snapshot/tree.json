@@ -1,0 +1,181 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "Integ-SecretsManager-ParsedSecretName": {
+        "id": "Integ-SecretsManager-ParsedSecretName",
+        "path": "Integ-SecretsManager-ParsedSecretName",
+        "children": {
+          "DefaultSecret": {
+            "id": "DefaultSecret",
+            "path": "Integ-SecretsManager-ParsedSecretName/DefaultSecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-ParsedSecretName/DefaultSecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "NamedSecret": {
+            "id": "NamedSecret",
+            "path": "Integ-SecretsManager-ParsedSecretName/NamedSecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-ParsedSecretName/NamedSecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {},
+                    "name": "namedSecret"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "NamedSecretWithHyphen": {
+            "id": "NamedSecretWithHyphen",
+            "path": "Integ-SecretsManager-ParsedSecretName/NamedSecretWithHyphen",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-ParsedSecretName/NamedSecretWithHyphen/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {},
+                    "name": "named-secret-1"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "AReallyLongLogicalIThatWillBeTrimmedBeforeItsUsedInTheName": {
+            "id": "AReallyLongLogicalIThatWillBeTrimmedBeforeItsUsedInTheName",
+            "path": "Integ-SecretsManager-ParsedSecretName/AReallyLongLogicalIThatWillBeTrimmedBeforeItsUsedInTheName",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Integ-SecretsManager-ParsedSecretName/AReallyLongLogicalIThatWillBeTrimmedBeforeItsUsedInTheName/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::IntegVerificationSecretNameMatchesCustomResourceProvider": {
+            "id": "Custom::IntegVerificationSecretNameMatchesCustomResourceProvider",
+            "path": "Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          },
+          "SecretNameVerification": {
+            "id": "SecretNameVerification",
+            "path": "Integ-SecretsManager-ParsedSecretName/SecretNameVerification",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Integ-SecretsManager-ParsedSecretName/SecretNameVerification/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

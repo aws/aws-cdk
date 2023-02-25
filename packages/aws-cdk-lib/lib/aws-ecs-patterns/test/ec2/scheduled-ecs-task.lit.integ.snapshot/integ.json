@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "scheduledEc2TaskTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-ecs"
+      ],
+      "assertionStack": "scheduledEc2TaskTestDefaultTestDeployAssertF02313CA"
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+ "Resources": {
+  "Namespace9B63B8C8": {
+   "Type": "AWS::ServiceDiscovery::PublicDnsNamespace",
+   "Properties": {
+    "Name": "foobar.com"
+   }
+  },
+  "NamespaceServiceCABDF534": {
+   "Type": "AWS::ServiceDiscovery::Service",
+   "Properties": {
+    "DnsConfig": {
+     "DnsRecords": [
+      {
+       "TTL": 30,
+       "Type": "A"
+      }
+     ],
+     "NamespaceId": {
+      "Fn::GetAtt": [
+       "Namespace9B63B8C8",
+       "Id"
+      ]
+     },
+     "RoutingPolicy": "MULTIVALUE"
+    },
+    "HealthCheckConfig": {
+     "FailureThreshold": 2,
+     "ResourcePath": "/healthcheck",
+     "Type": "HTTPS"
+    },
+    "Name": "foo",
+    "NamespaceId": {
+     "Fn::GetAtt": [
+      "Namespace9B63B8C8",
+      "Id"
+     ]
+    }
+   }
+  },
+  "NamespaceServiceIpInstanceCCED93E7": {
+   "Type": "AWS::ServiceDiscovery::Instance",
+   "Properties": {
+    "InstanceAttributes": {
+     "AWS_INSTANCE_IPV4": "54.239.25.192",
+     "AWS_INSTANCE_PORT": "443"
+    },
+    "ServiceId": {
+     "Fn::GetAtt": [
+      "NamespaceServiceCABDF534",
+      "Id"
+     ]
+    },
+    "InstanceId": "awsservicediscoveryintegNamespaceServiceIpInstance5A6845D4"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

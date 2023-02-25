@@ -1,0 +1,178 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-restapi-import-RootStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-restapi-import-RootStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-restapi-import-RootStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-restapi-import-RootStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6849599551963dc4cd40238860f77914226f82e391747b4166e2bcda2cc01d04.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-restapi-import-RootStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-restapi-import-RootStack.assets"
+      ],
+      "metadata": {
+        "/integ-restapi-import-RootStack/RestApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApi0C43BF4B"
+          }
+        ],
+        "/integ-restapi-import-RootStack/RestApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApiCloudWatchRoleE3ED6605"
+          }
+        ],
+        "/integ-restapi-import-RootStack/RestApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApiAccount7C83CF5A"
+          }
+        ],
+        "/integ-restapi-import-RootStack/RestApi/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApiANYA7C1DC94"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-PetsStack/RestApi/Default/pets/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApipetsC5A41236"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-PetsStack/RestApi/Default/pets/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApipetsGET4375532C"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-PetsStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetointegrestapiimportRootStackRestApi2647DA4CRootResourceId"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-PetsStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-PetsStack.NestedStack/integ-restapi-import-PetsStack.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrestapiimportPetsStackNestedStackintegrestapiimportPetsStackNestedStackResource2B31898B"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-BooksStack/RestApi/Default/books/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApibooksA2500ABD"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-BooksStack/RestApi/Default/books/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApibooksGET46F66C0A"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-BooksStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetointegrestapiimportRootStackRestApi2647DA4CRootResourceId"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-BooksStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-BooksStack.NestedStack/integ-restapi-import-BooksStack.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrestapiimportBooksStackNestedStackintegrestapiimportBooksStackNestedStackResource395C2C9B"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-DeployStack/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Deployment37BBD5E4"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-DeployStack/Stage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Stage0E8C2AF5"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-DeployStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+          }
+        ],
+        "/integ-restapi-import-RootStack/integ-restapi-import-DeployStack.NestedStack/integ-restapi-import-DeployStack.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrestapiimportDeployStackNestedStackintegrestapiimportDeployStackNestedStackResource0D0EE737"
+          }
+        ],
+        "/integ-restapi-import-RootStack/PetsURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PetsURL"
+          }
+        ],
+        "/integ-restapi-import-RootStack/BooksURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksURL"
+          }
+        ],
+        "/integ-restapi-import-RootStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-restapi-import-RootStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-restapi-import-RootStack"
+    }
+  }
+}

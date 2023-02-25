@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "TopicRule/DefaultTest": {
+      "stacks": [
+        "topic-rule-test-stack"
+      ],
+      "assertionStack": "TopicRule/DefaultTest/DeployAssert",
+      "assertionStackName": "TopicRuleDefaultTestDeployAssert86D4DD8C"
+    }
+  }
+}

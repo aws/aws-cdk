@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "NotificationTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-notifications"
+      ],
+      "assertionStack": "NotificationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NotificationTestDefaultTestDeployAssertBFB81666"
+    }
+  }
+}

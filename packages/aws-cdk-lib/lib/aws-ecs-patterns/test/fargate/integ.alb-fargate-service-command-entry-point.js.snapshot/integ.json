@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "AlbFargateServiceWithCommandAndEntryPoint/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-lb-fargate-cmd-entrypoint-test"
+      ],
+      "assertionStack": "AlbFargateServiceWithCommandAndEntryPoint/DefaultTest/DeployAssert",
+      "assertionStackName": "AlbFargateServiceWithCommandAndEntryPointDefaultTestDeployAssert84DAACDF"
+    }
+  }
+}

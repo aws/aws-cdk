@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "EcsTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-ecs"
+      ],
+      "assertionStack": "EcsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsTestDefaultTestDeployAssert8B2741C4"
+    }
+  }
+}

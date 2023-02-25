@@ -1,0 +1,134 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-cdk-dynamodb-gsi": {
+        "id": "aws-cdk-dynamodb-gsi",
+        "path": "aws-cdk-dynamodb-gsi",
+        "children": {
+          "Table": {
+            "id": "Table",
+            "path": "aws-cdk-dynamodb-gsi/Table",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb-gsi/Table/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "pkey",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "pkey",
+                        "attributeType": "N"
+                      },
+                      {
+                        "attributeName": "foo",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "baz",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "bar",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "globalSecondaryIndexes": [
+                      {
+                        "indexName": "IndexA",
+                        "keySchema": [
+                          {
+                            "attributeName": "foo",
+                            "keyType": "HASH"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "INCLUDE",
+                          "nonKeyAttributes": [
+                            "bar"
+                          ]
+                        },
+                        "provisionedThroughput": {
+                          "readCapacityUnits": 5,
+                          "writeCapacityUnits": 5
+                        }
+                      },
+                      {
+                        "indexName": "IndexB",
+                        "keySchema": [
+                          {
+                            "attributeName": "baz",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "bar",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "INCLUDE",
+                          "nonKeyAttributes": [
+                            "blah"
+                          ]
+                        },
+                        "provisionedThroughput": {
+                          "readCapacityUnits": 5,
+                          "writeCapacityUnits": 5
+                        }
+                      }
+                    ],
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 5,
+                      "writeCapacityUnits": 5
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-dynamodb-gsi/Table/ScalingRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

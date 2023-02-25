@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "cloudwatch-logs-disabled/DefaultTest": {
+      "stacks": [
+        "default-api"
+      ],
+      "assertionStack": "cloudwatch-logs-disabled/DefaultTest/DeployAssert"
+    }
+  }
+}

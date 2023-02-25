@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "vpc-reserved-azs/DefaultTest": {
+      "stacks": [
+        "integtest-vpc-reserved-azs"
+      ],
+      "assertionStack": "vpc-reserved-azs/DefaultTest/DeployAssert",
+      "assertionStackName": "vpcreservedazsDefaultTestDeployAssertE48D2C6D"
+    }
+  }
+}

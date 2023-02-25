@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "lambda-python-nodeps/DefaultTest": {
+      "stacks": [
+        "integ-lambda-python-nodeps"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-nodeps/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythonnodepsDefaultTestDeployAssert72A584F7"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.kinesisanalytics.flink"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Kinesisanalytics.Flink"
+    },
+    "python": {
+      "module": "aws_cdk.aws_kinesisanalytics_flink"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "PolicyInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-iam-policy"
+      ],
+      "assertionStack": "PolicyInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "PolicyIntegDefaultTestDeployAssert274BB918"
+    }
+  }
+}

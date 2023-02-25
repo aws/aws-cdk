@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "InstanceGp3Test/DefaultTest": {
+      "stacks": [
+        "cdk-integ-rds-instance-gp3"
+      ],
+      "assertionStack": "InstanceGp3Test/DefaultTest/DeployAssert",
+      "assertionStackName": "InstanceGp3TestDefaultTestDeployAssert21C147A7"
+    }
+  }
+}

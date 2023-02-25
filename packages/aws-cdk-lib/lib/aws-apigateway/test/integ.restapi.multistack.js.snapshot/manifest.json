@@ -1,0 +1,237 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "FirstStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "FirstStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "FirstStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "FirstStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/892dbfd38c62318708aabc18a86c2f63bdc2684b26c2e0a4e40f46f526b380d4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "FirstStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "FirstStack.assets"
+      ],
+      "metadata": {
+        "/FirstStack/firstLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "firstLambdaServiceRoleB6408C31"
+          }
+        ],
+        "/FirstStack/firstLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "firstLambda395F9ADE"
+          }
+        ],
+        "/FirstStack/Exports/Output{\"Fn::GetAtt\":[\"firstLambda395F9ADE\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttfirstLambda395F9ADEArn1A9B3BC3"
+          }
+        ],
+        "/FirstStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/FirstStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "FirstStack"
+    },
+    "SecondStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SecondStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SecondStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SecondStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2e258abd1d0de4718235d5a5e08d813e7a8b7cf97b8bc7f8b2c8b697aadc1a5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SecondStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "FirstStack",
+        "SecondStack.assets"
+      ],
+      "metadata": {
+        "/SecondStack/BooksApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApi60AC975F"
+          }
+        ],
+        "/SecondStack/BooksApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiCloudWatchRoleB120ADBA"
+          }
+        ],
+        "/SecondStack/BooksApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiAccount9C44AF8E"
+          }
+        ],
+        "/SecondStack/BooksApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiDeployment86CA39AF4ff82f86c127f53c9de94d266b1906be"
+          }
+        ],
+        "/SecondStack/BooksApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiDeploymentStageprod0693B760"
+          }
+        ],
+        "/SecondStack/BooksApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiEndpointF2AA70A2"
+          }
+        ],
+        "/SecondStack/BooksApi/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApiANY0C4EABE3"
+          }
+        ],
+        "/SecondStack/BooksApi/Default/books/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApibooks1F745538"
+          }
+        ],
+        "/SecondStack/BooksApi/Default/books/GET/ApiPermission.SecondStackBooksApi2660DEC5.GET..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApibooksGETApiPermissionSecondStackBooksApi2660DEC5GETbooksE54B6E9B"
+          }
+        ],
+        "/SecondStack/BooksApi/Default/books/GET/ApiPermission.Test.SecondStackBooksApi2660DEC5.GET..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApibooksGETApiPermissionTestSecondStackBooksApi2660DEC5GETbooks0B7ED39D"
+          }
+        ],
+        "/SecondStack/BooksApi/Default/books/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksApibooksGET6066BF7E"
+          }
+        ],
+        "/SecondStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SecondStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SecondStack"
+    },
+    "restapimultistackDefaultTestDeployAssertFCCAE394.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "restapimultistackDefaultTestDeployAssertFCCAE394.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "restapimultistackDefaultTestDeployAssertFCCAE394": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "restapimultistackDefaultTestDeployAssertFCCAE394.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "restapimultistackDefaultTestDeployAssertFCCAE394.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "restapimultistackDefaultTestDeployAssertFCCAE394.assets"
+      ],
+      "metadata": {
+        "/restapi-multistack/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/restapi-multistack/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "restapi-multistack/DefaultTest/DeployAssert"
+    }
+  }
+}

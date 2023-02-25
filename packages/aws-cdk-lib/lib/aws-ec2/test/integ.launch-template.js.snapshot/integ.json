@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "LambdaTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-lt-metadata-1"
+      ],
+      "assertionStack": "LambdaTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaTestDefaultTestDeployAssert1AF2B360"
+    }
+  }
+}

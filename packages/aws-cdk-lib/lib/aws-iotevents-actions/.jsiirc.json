@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.iotevents.actions"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.IoTEvents.Actions"
+    },
+    "python": {
+      "module": "aws_cdk.aws_iotevents_actions"
+    }
+  }
+}

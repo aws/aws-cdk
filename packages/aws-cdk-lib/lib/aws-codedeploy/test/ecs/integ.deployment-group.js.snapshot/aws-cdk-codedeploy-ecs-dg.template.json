@@ -1,0 +1,1325 @@
+{
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1SubnetB4246D30": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1RouteTableFEE4B781": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    }
+   }
+  },
+  "VPCPublicSubnet1DefaultRoute91CEF279": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPublicSubnet1EIP6AD938E8": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1NATGatewayE0556630": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet1EIP6AD938E8",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
+  },
+  "VPCPublicSubnet2Subnet74179F39": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2RouteTable6F1A15F1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2RouteTableAssociation5A808732": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    }
+   }
+  },
+  "VPCPublicSubnet2DefaultRouteB7481BBA": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPublicSubnet2EIP4947BC00": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2NATGateway3C070193": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet2EIP4947BC00",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
+  },
+  "VPCPrivateSubnet1Subnet8BCA10E0": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1RouteTableBE8A6027": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+    }
+   }
+  },
+  "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    }
+   }
+  },
+  "VPCPrivateSubnet2SubnetCFCDAA7A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet2RouteTable0A19E10E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    }
+   }
+  },
+  "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet2NATGateway3C070193"
+    }
+   }
+  },
+  "VPCIGWB7E252D3": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-codedeploy-ecs-dg/VPC"
+     }
+    ]
+   }
+  },
+  "VPCVPCGW99B986DC": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    },
+    "InternetGatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    }
+   }
+  },
+  "EcsCluster97242B84": {
+   "Type": "AWS::ECS::Cluster"
+  },
+  "TaskDefTaskRole1EDB4A67": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TaskDef54694570": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+      "Name": "Container",
+      "PortMappings": [
+       {
+        "ContainerPort": 80,
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "256",
+    "Family": "awscdkcodedeployecsdgTaskDef25A5A14D",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "TaskDefTaskRole1EDB4A67",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "FargateServiceAC2B3B85": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "EcsCluster97242B84"
+    },
+    "DeploymentConfiguration": {
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DeploymentController": {
+     "Type": "CODE_DEPLOY"
+    },
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "Container",
+      "ContainerPort": 80,
+      "TargetGroupArn": {
+       "Ref": "ServiceLBProdListenerBlueTGGroupB47699CD"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "FargateServiceSecurityGroup0A0E79CB",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+       },
+       {
+        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+       }
+      ]
+     }
+    },
+    "TaskDefinition": "awscdkcodedeployecsdgTaskDef25A5A14D"
+   },
+   "DependsOn": [
+    "GreenTG71A27F2F",
+    "ServiceLBProdListenerBlueTGGroupB47699CD",
+    "ServiceLBProdListener0E7627EE",
+    "ServiceLBTestListener3EA49939",
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67",
+    "TaskDef2C6A35A16",
+    "TaskDef2TaskRole5A51C717"
+   ]
+  },
+  "FargateServiceSecurityGroup0A0E79CB": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-codedeploy-ecs-dg/FargateService/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "GreenTG71A27F2F",
+    "ServiceLBTestListener3EA49939",
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67",
+    "TaskDef2C6A35A16",
+    "TaskDef2TaskRole5A51C717"
+   ]
+  },
+  "FargateServiceSecurityGroupfromawscdkcodedeployecsdgServiceLBSecurityGroupEC967688803C3B1119": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "FargateServiceSecurityGroup0A0E79CB",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ServiceLBSecurityGroup2EA7EDA1",
+      "GroupId"
+     ]
+    },
+    "ToPort": 80
+   },
+   "DependsOn": [
+    "GreenTG71A27F2F",
+    "ServiceLBTestListener3EA49939",
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67",
+    "TaskDef2C6A35A16",
+    "TaskDef2TaskRole5A51C717"
+   ]
+  },
+  "TaskDef2TaskRole5A51C717": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TaskDef2C6A35A16": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+      "Name": "Container",
+      "PortMappings": [
+       {
+        "ContainerPort": 80,
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "256",
+    "Family": "awscdkcodedeployecsdgTaskDef22B5CE8FC",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "TaskDef2TaskRole5A51C717",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ServiceLBBDAD0B9B": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "ServiceLBSecurityGroup2EA7EDA1",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ],
+    "Type": "application"
+   }
+  },
+  "ServiceLBSecurityGroup2EA7EDA1": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awscdkcodedeployecsdgServiceLB2A9D4A45",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     },
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 9002",
+      "FromPort": 9002,
+      "IpProtocol": "tcp",
+      "ToPort": 9002
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "ServiceLBSecurityGrouptoawscdkcodedeployecsdgFargateServiceSecurityGroup64C2B62E8071D2502F": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "GroupId": {
+     "Fn::GetAtt": [
+      "ServiceLBSecurityGroup2EA7EDA1",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "FargateServiceSecurityGroup0A0E79CB",
+      "GroupId"
+     ]
+    },
+    "FromPort": 80,
+    "ToPort": 80
+   }
+  },
+  "ServiceLBProdListener0E7627EE": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "ServiceLBProdListenerBlueTGGroupB47699CD"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "ServiceLBBDAD0B9B"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   },
+   "DependsOn": [
+    "GreenTG71A27F2F"
+   ]
+  },
+  "ServiceLBProdListenerBlueTGGroupB47699CD": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckIntervalSeconds": 5,
+    "HealthCheckTimeoutSeconds": 4,
+    "HealthyThresholdCount": 2,
+    "Matcher": {
+     "HttpCode": "200"
+    },
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "deregistration_delay.timeout_seconds",
+      "Value": "30"
+     },
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "UnhealthyThresholdCount": 3,
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "GreenTG71A27F2F"
+   ]
+  },
+  "ServiceLBTestListener3EA49939": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "GreenTG71A27F2F"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "ServiceLBBDAD0B9B"
+    },
+    "Port": 9002,
+    "Protocol": "HTTP"
+   },
+   "DependsOn": [
+    "ServiceLBProdListenerBlueTGGroupB47699CD"
+   ]
+  },
+  "GreenTG71A27F2F": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckIntervalSeconds": 5,
+    "HealthCheckTimeoutSeconds": 4,
+    "HealthyThresholdCount": 2,
+    "Matcher": {
+     "HttpCode": "200"
+    },
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "deregistration_delay.timeout_seconds",
+      "Value": "30"
+     },
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "UnhealthyThresholdCount": 3,
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "BlueUnhealthyHosts48919A97": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 2,
+    "AlarmName": "aws-cdk-codedeploy-ecs-dg-Unhealthy-Hosts-Blue",
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": {
+       "Fn::GetAtt": [
+        "ServiceLBProdListenerBlueTGGroupB47699CD",
+        "TargetGroupFullName"
+       ]
+      }
+     }
+    ],
+    "MetricName": "UnHealthyHostCount",
+    "Namespace": "AWS/ApplicationELB",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Blue5xx7E9798A6": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "AlarmName": "aws-cdk-codedeploy-ecs-dg-Http-500-Blue",
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBProdListener0E7627EE"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": {
+       "Fn::GetAtt": [
+        "ServiceLBProdListenerBlueTGGroupB47699CD",
+        "TargetGroupFullName"
+       ]
+      }
+     }
+    ],
+    "MetricName": "HTTPCode_Target_5XX_Count",
+    "Namespace": "AWS/ApplicationELB",
+    "Period": 60,
+    "Statistic": "Sum",
+    "Threshold": 1
+   }
+  },
+  "GreenUnhealthyHosts8D9D09C1": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 2,
+    "AlarmName": "aws-cdk-codedeploy-ecs-dg-Unhealthy-Hosts-Green",
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": {
+       "Fn::GetAtt": [
+        "GreenTG71A27F2F",
+        "TargetGroupFullName"
+       ]
+      }
+     }
+    ],
+    "MetricName": "UnHealthyHostCount",
+    "Namespace": "AWS/ApplicationELB",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Green5xx1A511A06": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "AlarmName": "aws-cdk-codedeploy-ecs-dg-Http-500-Green",
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         },
+         "/",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Ref": "ServiceLBTestListener3EA49939"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Name": "TargetGroup",
+      "Value": {
+       "Fn::GetAtt": [
+        "GreenTG71A27F2F",
+        "TargetGroupFullName"
+       ]
+      }
+     }
+    ],
+    "MetricName": "HTTPCode_Target_5XX_Count",
+    "Namespace": "AWS/ApplicationELB",
+    "Period": 60,
+    "Statistic": "Sum",
+    "Threshold": 1
+   }
+  },
+  "CanaryConfig039778DD": {
+   "Type": "AWS::CodeDeploy::DeploymentConfig",
+   "Properties": {
+    "ComputePlatform": "ECS",
+    "TrafficRoutingConfig": {
+     "TimeBasedCanary": {
+      "CanaryInterval": 1,
+      "CanaryPercentage": 20
+     },
+     "Type": "TimeBasedCanary"
+    }
+   }
+  },
+  "BlueGreenDGApplication3649479D": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ComputePlatform": "ECS"
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "BlueGreenDGServiceRole33E3BCAC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codedeploy.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSCodeDeployRoleForECS"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "BlueGreenDG373AB9B0": {
+   "Type": "AWS::CodeDeploy::DeploymentGroup",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "BlueGreenDGApplication3649479D"
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "BlueGreenDGServiceRole33E3BCAC",
+      "Arn"
+     ]
+    },
+    "AlarmConfiguration": {
+     "Alarms": [
+      {
+       "Name": {
+        "Ref": "BlueUnhealthyHosts48919A97"
+       }
+      },
+      {
+       "Name": {
+        "Ref": "Blue5xx7E9798A6"
+       }
+      },
+      {
+       "Name": {
+        "Ref": "GreenUnhealthyHosts8D9D09C1"
+       }
+      },
+      {
+       "Name": {
+        "Ref": "Green5xx1A511A06"
+       }
+      }
+     ],
+     "Enabled": true
+    },
+    "AutoRollbackConfiguration": {
+     "Enabled": true,
+     "Events": [
+      "DEPLOYMENT_FAILURE",
+      "DEPLOYMENT_STOP_ON_REQUEST",
+      "DEPLOYMENT_STOP_ON_ALARM"
+     ]
+    },
+    "BlueGreenDeploymentConfiguration": {
+     "DeploymentReadyOption": {
+      "ActionOnTimeout": "CONTINUE_DEPLOYMENT",
+      "WaitTimeInMinutes": 0
+     },
+     "TerminateBlueInstancesOnDeploymentSuccess": {
+      "Action": "TERMINATE",
+      "TerminationWaitTimeInMinutes": 1
+     }
+    },
+    "DeploymentConfigName": {
+     "Ref": "CanaryConfig039778DD"
+    },
+    "DeploymentStyle": {
+     "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+     "DeploymentType": "BLUE_GREEN"
+    },
+    "ECSServices": [
+     {
+      "ClusterName": {
+       "Ref": "EcsCluster97242B84"
+      },
+      "ServiceName": {
+       "Fn::GetAtt": [
+        "FargateServiceAC2B3B85",
+        "Name"
+       ]
+      }
+     }
+    ],
+    "LoadBalancerInfo": {
+     "TargetGroupPairInfoList": [
+      {
+       "ProdTrafficRoute": {
+        "ListenerArns": [
+         {
+          "Ref": "ServiceLBProdListener0E7627EE"
+         }
+        ]
+       },
+       "TargetGroups": [
+        {
+         "Name": {
+          "Fn::GetAtt": [
+           "ServiceLBProdListenerBlueTGGroupB47699CD",
+           "TargetGroupName"
+          ]
+         }
+        },
+        {
+         "Name": {
+          "Fn::GetAtt": [
+           "GreenTG71A27F2F",
+           "TargetGroupName"
+          ]
+         }
+        }
+       ],
+       "TestTrafficRoute": {
+        "ListenerArns": [
+         {
+          "Ref": "ServiceLBTestListener3EA49939"
+         }
+        ]
+       }
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  }
+ },
+ "Outputs": {
+  "NewTaskDefinition": {
+   "Value": {
+    "Ref": "TaskDef2C6A35A16"
+   }
+  },
+  "Subnet1Id": {
+   "Value": {
+    "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+   }
+  },
+  "Subnet2Id": {
+   "Value": {
+    "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+   }
+  },
+  "SecurityGroupId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FargateServiceSecurityGroup0A0E79CB",
+     "GroupId"
+    ]
+   }
+  },
+  "CodeDeployApplicationName": {
+   "Value": {
+    "Ref": "BlueGreenDGApplication3649479D"
+   }
+  },
+  "CodeDeployDeploymentGroupName": {
+   "Value": {
+    "Ref": "BlueGreenDG373AB9B0"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "ecr-source-action/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-ecr-source"
+      ],
+      "assertionStack": "ecr-source-action/DefaultTest/DeployAssert"
+    }
+  }
+}

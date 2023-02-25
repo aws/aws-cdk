@@ -1,0 +1,100 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-firehose-event-target.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-firehose-event-target.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-firehose-event-target": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-firehose-event-target.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6457769307fd3526412febc04e6c5b83e19d7ad1412576568122162244f0ea86.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-firehose-event-target.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-firehose-event-target.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-firehose-event-target/firehose-bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "firehosebucket84C8AE0B"
+          }
+        ],
+        "/aws-cdk-firehose-event-target/firehose-role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "firehoseroleDDC4CF0E"
+          }
+        ],
+        "/aws-cdk-firehose-event-target/firehose-role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "firehoseroleDefaultPolicy3F3F850D"
+          }
+        ],
+        "/aws-cdk-firehose-event-target/MyStream": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStream"
+          }
+        ],
+        "/aws-cdk-firehose-event-target/MyStream/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStreamEventsRole5B6CC6AF"
+          }
+        ],
+        "/aws-cdk-firehose-event-target/MyStream/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStreamEventsRoleDefaultPolicy2089B49E"
+          }
+        ],
+        "/aws-cdk-firehose-event-target/EveryMinute/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EveryMinute2BBCEA8F"
+          }
+        ],
+        "/aws-cdk-firehose-event-target/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-firehose-event-target/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-firehose-event-target"
+    }
+  }
+}
