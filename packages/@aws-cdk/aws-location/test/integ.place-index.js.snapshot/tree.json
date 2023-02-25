@@ -68,7 +68,7 @@
                 "path": "PlaceIndexTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
@@ -114,7 +114,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.252"
         }
       }
     },

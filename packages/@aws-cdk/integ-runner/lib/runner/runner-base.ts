@@ -3,11 +3,11 @@ import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_PROJECT_CONTEXT } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
-import { flatten } from '../utils';
-import { DestructiveChange } from '../workers/common';
 import { IntegTestSuite, LegacyIntegTestSuite } from './integ-test-suite';
 import { IntegTest } from './integration-tests';
 import { AssemblyManifestReader, ManifestTrace } from './private/cloud-assembly';
+import { flatten } from '../utils';
+import { DestructiveChange } from '../workers/common';
 
 const DESTRUCTIVE_CHANGES = '!!DESTRUCTIVE_CHANGES:';
 
