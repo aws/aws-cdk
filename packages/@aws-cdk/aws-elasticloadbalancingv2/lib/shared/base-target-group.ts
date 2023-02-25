@@ -1,9 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
-import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
+import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
  * Basic properties of both Application and Network Target Groups
@@ -74,8 +74,9 @@ export interface HealthCheck {
 
   /**
    * The approximate number of seconds between health checks for an individual target.
+   * Must be 5 to 300 seconds
    *
-   * @default Duration.seconds(30)
+   * @default 10 seconds if protocol is `GENEVE`, 35 seconds if target type is `lambda`, else 30 seconds
    */
   readonly interval?: cdk.Duration;
 

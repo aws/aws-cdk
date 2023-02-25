@@ -75,6 +75,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
       protocol: sns.SubscriptionProtocol.SQS,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
+      filterPolicyWithMessageBody: this.props.filterPolicyWithMessageBody,
       region: this.regionFromArn(topic),
       deadLetterQueue: this.props.deadLetterQueue,
       subscriptionDependency: queuePolicyDependable,

@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "30.0.0",
   "artifacts": {
     "integ-principal-with-conditions.assets": {
       "type": "cdk:asset-manifest",

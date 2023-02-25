@@ -656,6 +656,76 @@
                   "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnLoadBalancer",
                   "version": "0.0.0"
                 }
+              },
+              "Listener": {
+                "id": "Listener",
+                "path": "aws-cdk-elbv2-StackWithLb/LB/Listener",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-elbv2-StackWithLb/LB/Listener/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
+                      "aws:cdk:cloudformation:props": {
+                        "defaultActions": [
+                          {
+                            "type": "forward",
+                            "targetGroupArn": {
+                              "Ref": "LBListenerTargetGroupGroup07C223BF"
+                            }
+                          }
+                        ],
+                        "loadBalancerArn": {
+                          "Ref": "LB8A12904C"
+                        },
+                        "port": 443,
+                        "protocol": "TCP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnListener",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "TargetGroupGroup": {
+                    "id": "TargetGroupGroup",
+                    "path": "aws-cdk-elbv2-StackWithLb/LB/Listener/TargetGroupGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-elbv2-StackWithLb/LB/Listener/TargetGroupGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "port": 443,
+                            "protocol": "TCP",
+                            "targets": [
+                              {
+                                "id": "10.0.1.1"
+                              }
+                            ],
+                            "targetType": "ip",
+                            "vpcId": {
+                              "Ref": "VPCB9E5F0B4"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnTargetGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-elasticloadbalancingv2.NetworkTargetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-elasticloadbalancingv2.NetworkListener",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -671,6 +741,14 @@
               "version": "0.0.0"
             }
           },
+          "TgArn": {
+            "id": "TgArn",
+            "path": "aws-cdk-elbv2-StackWithLb/TgArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
           "Exports": {
             "id": "Exports",
             "path": "aws-cdk-elbv2-StackWithLb/Exports",
@@ -678,6 +756,14 @@
               "Output{\"Ref\":\"LB8A12904C\"}": {
                 "id": "Output{\"Ref\":\"LB8A12904C\"}",
                 "path": "aws-cdk-elbv2-StackWithLb/Exports/Output{\"Ref\":\"LB8A12904C\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"LBListenerTargetGroupGroup07C223BF\"}": {
+                "id": "Output{\"Ref\":\"LBListenerTargetGroupGroup07C223BF\"}",
+                "path": "aws-cdk-elbv2-StackWithLb/Exports/Output{\"Ref\":\"LBListenerTargetGroupGroup07C223BF\"}",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
@@ -1002,6 +1088,268 @@
                       }
                     ],
                     "metricName": "ActiveFlowCount",
+                    "namespace": "AWS/NetworkELB",
+                    "period": 300,
+                    "statistic": "Average",
+                    "threshold": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "TgByHardcodedArn": {
+            "id": "TgByHardcodedArn",
+            "path": "aws-cdk-elbv2-integ-StackUnderTest/TgByHardcodedArn",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.237"
+            }
+          },
+          "TgByHardcodedArn_HealthyHostCount": {
+            "id": "TgByHardcodedArn_HealthyHostCount",
+            "path": "aws-cdk-elbv2-integ-StackUnderTest/TgByHardcodedArn_HealthyHostCount",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-elbv2-integ-StackUnderTest/TgByHardcodedArn_HealthyHostCount/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "dimensions": [
+                      {
+                        "name": "LoadBalancer",
+                        "value": "net/my-load-balancer/50dc6c495c0c9188"
+                      },
+                      {
+                        "name": "TargetGroup",
+                        "value": "targetgroup/my-target-group/50dc6c495c0c9188"
+                      }
+                    ],
+                    "metricName": "HealthyHostCount",
+                    "namespace": "AWS/NetworkELB",
+                    "period": 300,
+                    "statistic": "Average",
+                    "threshold": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "TgByCfnOutputsFromAnotherStackOutsideCdk": {
+            "id": "TgByCfnOutputsFromAnotherStackOutsideCdk",
+            "path": "aws-cdk-elbv2-integ-StackUnderTest/TgByCfnOutputsFromAnotherStackOutsideCdk",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.237"
+            }
+          },
+          "TgByCfnOutputsFromAnotherStackOutsideCdk_HealthyHostCount": {
+            "id": "TgByCfnOutputsFromAnotherStackOutsideCdk_HealthyHostCount",
+            "path": "aws-cdk-elbv2-integ-StackUnderTest/TgByCfnOutputsFromAnotherStackOutsideCdk_HealthyHostCount",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-elbv2-integ-StackUnderTest/TgByCfnOutputsFromAnotherStackOutsideCdk_HealthyHostCount/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "dimensions": [
+                      {
+                        "name": "LoadBalancer",
+                        "value": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::ImportValue": "NlbArn"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  2,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::ImportValue": "NlbArn"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  3,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::ImportValue": "NlbArn"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "name": "TargetGroup",
+                        "value": {
+                          "Fn::Select": [
+                            5,
+                            {
+                              "Fn::Split": [
+                                ":",
+                                {
+                                  "Fn::ImportValue": "TgArn"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "metricName": "HealthyHostCount",
+                    "namespace": "AWS/NetworkELB",
+                    "period": 300,
+                    "statistic": "Average",
+                    "threshold": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "TgByCfnOutputsFromAnotherStackWithinCdk": {
+            "id": "TgByCfnOutputsFromAnotherStackWithinCdk",
+            "path": "aws-cdk-elbv2-integ-StackUnderTest/TgByCfnOutputsFromAnotherStackWithinCdk",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.237"
+            }
+          },
+          "TgByCfnOutputsFromAnotherStackWithinCdk_HealthyHostCount": {
+            "id": "TgByCfnOutputsFromAnotherStackWithinCdk_HealthyHostCount",
+            "path": "aws-cdk-elbv2-integ-StackUnderTest/TgByCfnOutputsFromAnotherStackWithinCdk_HealthyHostCount",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-elbv2-integ-StackUnderTest/TgByCfnOutputsFromAnotherStackWithinCdk_HealthyHostCount/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "dimensions": [
+                      {
+                        "name": "LoadBalancer",
+                        "value": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  2,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  3,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLB8A12904C1150D6A6"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "name": "TargetGroup",
+                        "value": {
+                          "Fn::Select": [
+                            5,
+                            {
+                              "Fn::Split": [
+                                ":",
+                                {
+                                  "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputRefLBListenerTargetGroupGroup07C223BF73476D0D"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "metricName": "HealthyHostCount",
                     "namespace": "AWS/NetworkELB",
                     "period": 300,
                     "statistic": "Average",
