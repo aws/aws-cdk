@@ -464,6 +464,15 @@
      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
     }
    }
+  },
+  "AccessPointE936DE82": {
+   "Type": "AWS::EFS::AccessPoint",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "FileSystem8A8E25C0"
+    },
+    "RootDirectory": {}
+   }
   }
  },
  "Parameters": {
