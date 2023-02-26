@@ -1,7 +1,7 @@
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
-import { SqsEventSource } from '../lib';
 import { TestFunction } from './test-function';
+import { SqsEventSource } from '../lib';
 
 class SqsEventSourceTest extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

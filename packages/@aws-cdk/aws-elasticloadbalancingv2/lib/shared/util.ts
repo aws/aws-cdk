@@ -110,3 +110,21 @@ export function parseLoadBalancerFullName(arn: string): string {
     return resourceName;
   }
 }
+
+/**
+ * Transforms:
+ *
+ *   arn:aws:elasticloadbalancing:us-east-1:123456789:targetgroup/my-target-group/da693d633af407a0
+ *
+ * Into:
+ *
+ *   targetgroup/my-target-group/da693d633af407a0
+ */
+export function parseTargetGroupFullName(arn: string): string {
+  const arnComponents = Arn.split(arn, ArnFormat.NO_RESOURCE_NAME);
+  const resource = arnComponents.resource;
+  if (!resource) {
+    throw new Error(`Provided ARN does not belong to a target group: ${arn}`);
+  }
+  return resource;
+}

@@ -2,9 +2,9 @@ import * as crypto from 'crypto';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Node, IConstruct } from 'constructs';
+import { ISynthesisSession } from './types';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { ISynthesisSession } from './types';
 
 /**
  * Shared logic of writing stack artifact to the Cloud Assembly
