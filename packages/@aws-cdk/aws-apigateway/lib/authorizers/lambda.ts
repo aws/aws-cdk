@@ -121,21 +121,35 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    * Sets up the permissions necessary for the API Gateway service to invoke the Lambda function.
    */
   protected setupPermissions() {
-    if (!this.role) {
-      this.handler.addPermission(`${Names.uniqueId(this)}:Permissions`, {
-        principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-        sourceArn: this.authorizerArn,
-      });
-    } else if (this.role instanceof iam.Role) { // i.e. not imported
-      this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
-        statements: [
-          new iam.PolicyStatement({
-            resources: this.handler.resourceArnsForGrantInvoke,
-            actions: ['lambda:InvokeFunction'],
-          }),
-        ],
-      }));
+    if (this.role instanceof iam.Role) {
+      this.addLambdaInvokePermission(this.role);
+      return;
     }
+    this.addDefaultPermisionRole();
+  }
+
+  /**
+   * Add Default Permission Role for handler
+   */
+  private addDefaultPermisionRole() :void {
+    this.handler.addPermission(`${Names.uniqueId(this)}:Permissions`, {
+      principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+      sourceArn: this.authorizerArn,
+    });
+  }
+
+  /**
+   * Add Lambda Invoke Permission for LambdaAurhorizer's role
+   */
+  private addLambdaInvokePermission(role: iam.Role) :void {
+    role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
+      statements: [
+        new iam.PolicyStatement({
+          resources: this.handler.resourceArnsForGrantInvoke,
+          actions: ['lambda:InvokeFunction'],
+        }),
+      ],
+    }));
   }
 
   /**
