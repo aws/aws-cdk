@@ -9,12 +9,12 @@ import { IValidationContext } from '../validation';
  */
 export interface ValidationContextProps {
   /**
-    * The stack to be validated.
+    * The path to the template being validated
     */
   readonly stackTemplatePath: string;
 
   /**
-   * The root of the construct tree being validated
+   * The construct tree being validated
    */
   readonly tree: ConstructTree;
 }

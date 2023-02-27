@@ -14,7 +14,8 @@ export interface ValidationViolation {
 
   /**
    * How to fix the recommendation.
-   * @default - TODO
+   *
+   * @default - no fix is provided
    */
   readonly fix?: string;
 }
@@ -50,7 +51,8 @@ export interface ValidationViolatingConstruct extends ValidationViolatingResourc
 
   /**
    * A stack of constructs that lead to the violation.
-   * @default - stack will be empty if cli not run with `--debug`
+   *
+   * @default - stack will be empty if the cli is not run with `--debug`
    */
   readonly constructStack?: string;
 }
@@ -66,7 +68,7 @@ export interface ValidationViolationConstructAware extends ValidationViolation {
 }
 
 /**
- * TODO docs
+ * Validation produced by the validation plugin, in CFN resource terms
  */
 export interface ValidationViolationResourceAware extends ValidationViolation {
   /**
@@ -122,7 +124,8 @@ export interface ValidationReportJson {
   readonly title: string;
 
   /**
-   * TODO: docs
+   * Reports for all of the validation plugins registered
+   * in the app
    */
   readonly pluginReports: PluginReportJson[];
 }
@@ -132,7 +135,7 @@ export interface ValidationReportJson {
  */
 export interface PluginReportJson {
   /**
-   * List of violations in the rerpot.
+   * List of violations in the report.
    */
   readonly violations: ValidationViolationConstructAware[];
 
@@ -147,7 +150,7 @@ export interface PluginReportJson {
  */
 export interface IValidationReport {
   /**
-   * Whether or not the report was successfull.
+   * Whether or not the report was successful.
    */
   readonly success: boolean;
 
