@@ -795,16 +795,16 @@
      "resourcesVpcConfig": {
       "subnetIds": [
        {
-        "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-       },
-       {
-        "Ref": "VpcPublicSubnet2Subnet691E08A3"
-       },
-       {
         "Ref": "VpcPrivateSubnet1Subnet536B997A"
        },
        {
         "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+       },
+       {
+        "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+       },
+       {
+        "Ref": "VpcPublicSubnet2Subnet691E08A3"
        }
       ],
       "securityGroupIds": [
@@ -3375,7 +3375,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/69f164dd4dec7ac272dc31108c91cbd3f9192d3155d0b805cb41723b2e127ed1.json"
+       "/5ad32d3779c377d583b69cdb21780913d0d71329afefdcb5b5f22f12c9397c6e.json"
       ]
      ]
     },
@@ -3406,7 +3406,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/3a4ff35d302b1defe4c8e7d48af9ceac8a25f20ecf3decc0422fcdc8bd8cdea2.json"
+       "/8036bc5a59e7909aeeb9b09610d5b223033cd2bff3abae01c6b616800daf868f.json"
       ]
      ]
     },

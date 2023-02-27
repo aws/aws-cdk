@@ -95,6 +95,14 @@
                 "id": "Role",
                 "path": "stringset-after-parallel/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "stringset-after-parallel/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "stringset-after-parallel/StateMachine/Role/Resource",
@@ -263,7 +271,7 @@
                 "path": "StringSetAfterParallel/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.237"
                 }
               },
               "DeployAssert": {
@@ -309,7 +317,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

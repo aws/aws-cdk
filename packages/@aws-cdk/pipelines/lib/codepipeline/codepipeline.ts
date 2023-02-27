@@ -8,6 +8,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { ArtifactMap } from './artifact-map';
+import { CodeBuildStep } from './codebuild-step';
+import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
+import { namespaceStepOutputs } from './private/outputs';
+import { StackOutputsMap } from './stack-outputs-map';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
@@ -20,12 +26,6 @@ import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { ArtifactMap } from './artifact-map';
-import { CodeBuildStep } from './codebuild-step';
-import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
-import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
-import { namespaceStepOutputs } from './private/outputs';
-import { StackOutputsMap } from './stack-outputs-map';
 
 
 /**
@@ -317,11 +317,15 @@ export interface CodeBuildOptions {
  * users that don't need to switch out engines.
  */
 export class CodePipeline extends PipelineBase {
+  /**
+   * Whether SelfMutation is enabled for this CDK Pipeline
+   */
+  public readonly selfMutationEnabled: boolean;
+
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
   private _synthProject?: cb.IProject;
   private _selfMutationProject?: cb.IProject;
-  private readonly selfMutation: boolean;
   private readonly useChangeSets: boolean;
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
@@ -346,7 +350,7 @@ export class CodePipeline extends PipelineBase {
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {
     super(scope, id, props);
 
-    this.selfMutation = props.selfMutation ?? true;
+    this.selfMutationEnabled = props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
     this.cliVersion = props.cliVersion ?? preferredCliVersion();
@@ -370,14 +374,14 @@ export class CodePipeline extends PipelineBase {
    * The CodeBuild project that performs the SelfMutation
    *
    * Will throw an error if this is accessed before `buildPipeline()`
-   * is called.
-   *
-   * May return no value if `selfMutation` was set to `false` when
-   * the `CodePipeline` was defined.
+   * is called, or if selfMutation has been disabled.
    */
-  public get selfMutationProject(): cb.IProject | undefined {
+  public get selfMutationProject(): cb.IProject {
     if (!this._pipeline) {
       throw new Error('Call pipeline.buildPipeline() before reading this property');
+    }
+    if (!this._selfMutationProject) {
+      throw new Error('No selfMutationProject since the selfMutation property was set to false');
     }
     return this._selfMutationProject;
   }
@@ -434,7 +438,7 @@ export class CodePipeline extends PipelineBase {
     }
 
     const graphFromBp = new PipelineGraph(this, {
-      selfMutation: this.selfMutation,
+      selfMutation: this.selfMutationEnabled,
       singlePublisherPerAssetType: this.singlePublisherPerAssetType,
       prepareStep: this.useChangeSets,
     });
@@ -465,7 +469,7 @@ export class CodePipeline extends PipelineBase {
 
   private pipelineStagesAndActionsFromGraph(structure: PipelineGraph) {
     // Translate graph into Pipeline Stages and Actions
-    let beforeSelfMutation = this.selfMutation;
+    let beforeSelfMutation = this.selfMutationEnabled;
     for (const stageNode of flatten(structure.graph.sortedChildren())) {
       if (!isGraph(stageNode)) {
         throw new Error(`Top-level children must be graphs, got '${stageNode}'`);

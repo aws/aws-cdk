@@ -1,6 +1,6 @@
 import { bold, reset, green, yellow, red } from 'chalk';
-import { HistoryActivityPrinter } from '../../lib/api/util/cloudformation/stack-activity-monitor';
 import { stderr } from './console-listener';
+import { HistoryActivityPrinter } from '../../lib/api/util/cloudformation/stack-activity-monitor';
 
 let TIMESTAMP: number;
 let HUMAN_TIME: string;

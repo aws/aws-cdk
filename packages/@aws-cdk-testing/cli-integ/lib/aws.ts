@@ -1,5 +1,8 @@
 import * as AWS from 'aws-sdk';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+require('aws-sdk/lib/maintenance_mode_message').suppress = true;
+
 export class AwsClients {
   public static async default(output: NodeJS.WritableStream) {
     const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';

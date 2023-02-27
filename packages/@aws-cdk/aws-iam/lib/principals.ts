@@ -273,6 +273,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
     const existingValue = this.additionalConditions[key];
     if (!existingValue) {
       this.additionalConditions[key] = value;
+      return;
     }
     validateConditionObject(existingValue);
 
@@ -736,7 +737,7 @@ export class SamlConsolePrincipal extends SamlPrincipal {
     super(samlProvider, {
       ...conditions,
       StringEquals: {
-        'SAML:aud': cdk.Aws.PARTITION==='aws-cn'? 'https://signin.amazonaws.cn/saml': `https://signin.${cdk.Aws.URL_SUFFIX}/saml`,
+        'SAML:aud': cdk.Aws.PARTITION==='aws-cn'? 'https://signin.amazonaws.cn/saml': 'https://signin.aws.amazon.com/saml',
       },
     });
   }
