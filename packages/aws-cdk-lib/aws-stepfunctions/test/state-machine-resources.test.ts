@@ -676,7 +676,7 @@ describe('State Machine Resources', () => {
       { 'input.$': '$.myField' },
       Type: 'Pass',
     });
-  });
+  }),
 
   test('State machines must depend on their roles', () => {
     // GIVEN
