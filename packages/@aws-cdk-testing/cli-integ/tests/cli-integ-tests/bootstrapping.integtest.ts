@@ -220,12 +220,16 @@ integTest('a customized template vendor will not overwrite the default template'
   const filename = path.join(fixture.integTestDir, `${fixture.qualifier}-template.yaml`);
   fs.writeFileSync(filename, yaml.stringify(template, { schema: 'yaml-1.1' }), { encoding: 'utf-8' });
 
-  // Rebootstrap, expect this to fail,
-  await expect(() => fixture.cdkBootstrapModern({
+  // Rebootstrap. For some reason, this doesn't cause a failure, it's a successful no-op.
+  const output = await fixture.cdkBootstrapModern({
     toolkitStackName,
     template: filename,
     cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
-  })).rejects.toThrow(/CustomizedVendor/);
+    cliOptions: {
+      captureStderr: true,
+    },
+  });
+  expect(output).toContain('Not overwriting it with a template containing');
 }));
 
 integTest('can use the default permissions boundary to bootstrap', withoutBootstrap(async (fixture) => {
