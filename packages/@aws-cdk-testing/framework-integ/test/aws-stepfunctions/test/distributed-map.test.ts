@@ -49,7 +49,6 @@ describe('Distributed Map State', () => {
         },
       },
     });
-
   }),
 
   test('State Machine With Distributed Map State and ResultSelector', () => {
@@ -154,7 +153,6 @@ describe('Distributed Map State', () => {
         },
       },
     });
-
   }),
 
   test('State Machine With Distributed Map State and S3JsonItemReader', () => {
@@ -216,7 +214,6 @@ describe('Distributed Map State', () => {
         },
       },
     });
-
   }),
 
   test('State Machine With Distributed Map State and First Row S3CsvItemReader', () => {
@@ -280,7 +277,6 @@ describe('Distributed Map State', () => {
         },
       },
     });
-
   }),
 
   test('State Machine With Distributed Map State and Given S3CsvItemReader', () => {
@@ -345,7 +341,6 @@ describe('Distributed Map State', () => {
         },
       },
     });
-
   }),
 
   test('State Machine With Distributed Map State and S3ManifestItemReader', () => {
@@ -407,7 +402,6 @@ describe('Distributed Map State', () => {
         },
       },
     });
-
   }),
 
   test('State Machine With Distributed Map State and ResultWriter', () => {
@@ -468,7 +462,6 @@ describe('Distributed Map State', () => {
         },
       },
     });
-
   }),
 
   test('State Machine With Distributed Map State', () => {
@@ -534,7 +527,6 @@ describe('Distributed Map State', () => {
         },
       },
     });
-
   }),
 
   test('synth is successful', () => {
