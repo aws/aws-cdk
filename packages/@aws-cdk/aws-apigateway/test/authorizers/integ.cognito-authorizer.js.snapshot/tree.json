@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "CognitoUserPoolsAuthorizerInteg": {
         "id": "CognitoUserPoolsAuthorizerInteg",
         "path": "CognitoUserPoolsAuthorizerInteg",
@@ -122,6 +114,14 @@
                 "id": "CloudWatchRole",
                 "path": "CognitoUserPoolsAuthorizerInteg/myrestapi/CloudWatchRole",
                 "children": {
+                  "ImportCloudWatchRole": {
+                    "id": "ImportCloudWatchRole",
+                    "path": "CognitoUserPoolsAuthorizerInteg/myrestapi/CloudWatchRole/ImportCloudWatchRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "CognitoUserPoolsAuthorizerInteg/myrestapi/CloudWatchRole/Resource",
@@ -227,7 +227,7 @@
                           "Ref": "myrestapi551C8392"
                         },
                         "deploymentId": {
-                          "Ref": "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a"
+                          "Ref": "myrestapiDeployment419B1464d5146a3a0aa3a9f79024a52930571dc6"
                         },
                         "stageName": "prod"
                       }
@@ -247,8 +247,8 @@
                 "id": "Endpoint",
                 "path": "CognitoUserPoolsAuthorizerInteg/myrestapi/Endpoint",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "Default": {
@@ -320,11 +320,27 @@
               "fqn": "@aws-cdk/aws-apigateway.RestApi",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CognitoUserPoolsAuthorizerInteg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CognitoUserPoolsAuthorizerInteg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       },
       "cognito-authorizer": {
@@ -340,15 +356,33 @@
                 "path": "cognito-authorizer/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.168"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "cognito-authorizer/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cognito-authorizer/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cognito-authorizer/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -362,11 +396,19 @@
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.168"
+        }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

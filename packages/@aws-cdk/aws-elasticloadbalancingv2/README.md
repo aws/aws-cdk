@@ -158,7 +158,7 @@ listener.addAction('Fixed', {
     elbv2.ListenerCondition.pathPatterns(['/ok']),
   ],
   action: elbv2.ListenerAction.fixedResponse(200, {
-    contentType: elbv2.ContentType.TEXT_PLAIN,
+    contentType: 'text/plain',
     messageBody: 'OK',
   })
 });
@@ -603,4 +603,51 @@ const listener = elbv2.NetworkListener.fromLookup(this, 'ALBListener', {
   listenerProtocol: elbv2.Protocol.TCP,
   listenerPort: 12345,
 });
+```
+
+## Metrics
+
+You may create metrics for Load Balancers and Target Groups through the `metrics` attribute:
+
+**Load Balancer:**
+
+```ts
+declare const alb: elbv2.IApplicationLoadBalancer;
+
+const albMetrics: elbv2.IApplicationLoadBalancerMetrics = alb.metrics;
+const metricConnectionCount: cloudwatch.Metric = albMetrics.activeConnectionCount();
+```
+
+**Target Group:**
+
+```ts
+declare const targetGroup: elbv2.IApplicationTargetGroup;
+
+const targetGroupMetrics: elbv2.IApplicationTargetGroupMetrics = targetGroup.metrics;
+const metricHealthyHostCount: cloudwatch.Metric = targetGroupMetrics.healthyHostCount();
+```
+
+Metrics are also available to imported resources:
+
+```ts
+declare const stack: Stack;
+
+const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'MyTargetGroup', {
+  targetGroupArn: Fn.importValue('TargetGroupArn'),
+  loadBalancerArns: Fn.importValue('LoadBalancerArn'),
+});
+
+const targetGroupMetrics: elbv2.IApplicationTargetGroupMetrics = targetGroup.metrics;
+```
+
+Notice that TargetGroups must be imported by supplying the Load Balancer too, otherwise accessing the `metrics` will
+throw an error:
+
+```ts
+declare const stack: Stack;
+const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'MyTargetGroup', {
+  targetGroupArn: Fn.importValue('TargetGroupArn'),
+});
+
+const targetGroupMetrics: elbv2.IApplicationTargetGroupMetrics = targetGroup.metrics; // throws an Error()
 ```

@@ -12,6 +12,8 @@ import {
   Stack,
   Tags,
 } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { stringLike } from './util';
 import {
   AmazonLinuxImage,
   BlockDevice,
@@ -31,7 +33,6 @@ import {
   WindowsImage,
   WindowsVersion,
 } from '../lib';
-import { stringLike } from './util';
 
 /* eslint-disable jest/expect-expect */
 
@@ -364,6 +365,44 @@ describe('LaunchTemplate', () => {
           },
         ],
       },
+    });
+  });
+
+  describe('feature flag @aws-cdk/aws-ec2:launchTemplateDefaultUserData', () => {
+    test('Given machineImage (Linux)', () => {
+      // WHEN
+      stack.node.setContext(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA, true);
+      const template = new LaunchTemplate(stack, 'Template', {
+        machineImage: new AmazonLinuxImage(),
+      });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+        LaunchTemplateData: {
+          ImageId: {
+            Ref: stringLike('SsmParameterValueawsserviceamiamazonlinuxlatestamznami.*Parameter'),
+          },
+        },
+      });
+      expect(template.osType).toBe(OperatingSystemType.LINUX);
+      expect(template.userData).toBeDefined();
+    });
+
+    test('Given machineImage (Windows)', () => {
+      // WHEN
+      stack.node.setContext(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA, true);
+      const template = new LaunchTemplate(stack, 'Template', {
+        machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE),
+      });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+        LaunchTemplateData: {
+          ImageId: {
+            Ref: stringLike('SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullBase.*Parameter'),
+          },
+        },
+      });
+      expect(template.osType).toBe(OperatingSystemType.WINDOWS);
+      expect(template.userData).toBeDefined();
     });
   });
 
@@ -901,6 +940,5 @@ describe('LaunchTemplate metadataOptions', () => {
         },
       },
     });
-
   });
 });

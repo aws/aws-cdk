@@ -3,8 +3,8 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Action } from '../action';
 import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
+import { Action } from '../action';
 
 /**
  * Properties common to all CloudFormation actions

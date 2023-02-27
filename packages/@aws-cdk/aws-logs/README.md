@@ -330,6 +330,14 @@ new logs.QueryDefinition(this, 'QueryDefinition', {
   queryDefinitionName: 'MyQuery',
   queryString: new logs.QueryString({
     fields: ['@timestamp', '@message'],
+    parseStatements: [
+      '@message "[*] *" as loggingType, loggingMessage',
+      '@message "<*>: *" as differentLoggingType, differentLoggingMessage',
+    ],
+    filterStatements: [
+      'loggingType = "ERROR"',
+      'loggingMessage = "A very strange error occurred!"',
+    ],
     sort: '@timestamp desc',
     limit: 20,
   }),

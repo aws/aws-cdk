@@ -605,7 +605,7 @@ export class Stack extends Construct implements ITaggable {
    * app, and also supports nested stacks.
    */
   public addDependency(target: Stack, reason?: string) {
-    addDependency(this, target, reason);
+    addDependency(this, target, reason ?? `{${this.node.path}}.addDependency({${target.node.path}})`);
   }
 
   /**
@@ -1702,6 +1702,7 @@ function count(xs: string[]): Record<string, number> {
 }
 
 // These imports have to be at the end to prevent circular imports
+/* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
 import { addDependency, Element } from './deps';
 import { FileSystem } from './fs';
@@ -1717,4 +1718,4 @@ import { getExportable } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
-
+/* eslint-enable import/order */

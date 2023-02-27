@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "CognitoUserPoolsAuthorizerInteg.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/551baa1ebfdea9d8d905ffd1e2e8ac09982d0a49e669c97ad0d8f8c092cb96df.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/81ccfaff55790eb0a0ba90c4ede5ca2168072939afb21004c5dcb5ca74295b40.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -72,7 +66,7 @@
         "/CognitoUserPoolsAuthorizerInteg/myrestapi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a"
+            "data": "myrestapiDeployment419B1464d5146a3a0aa3a9f79024a52930571dc6"
           }
         ],
         "/CognitoUserPoolsAuthorizerInteg/myrestapi/DeploymentStage.prod/Resource": [
@@ -103,6 +97,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -154,6 +157,12 @@
         ]
       },
       "displayName": "cognito-authorizer/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
