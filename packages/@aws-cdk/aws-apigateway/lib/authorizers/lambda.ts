@@ -123,7 +123,6 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
   protected setupPermissions() {
     if (!this.role) {
       this.addDefaultPermisionRole();
-      return;
     } else if (this.role instanceof iam.Role) {
       this.addLambdaInvokePermission(this.role);
     }
