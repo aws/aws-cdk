@@ -1,5 +1,6 @@
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockPublishVersion: jest.Mock<Lambda.FunctionConfiguration, Lambda.PublishVersionRequest[]>;
@@ -19,37 +20,17 @@ beforeEach(() => {
   });
 });
 
-test('hotswaps a Version if it points to a changed Function, even if it itself is unchanged', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            S3Bucket: 'current-bucket',
-            S3Key: 'current-key',
-          },
-          FunctionName: 'my-function',
-        },
-      },
-      Version: {
-        Type: 'AWS::Lambda::Version',
-        Properties: {
-          FunctionName: { Ref: 'Func' },
-        },
-      },
-    },
-  });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
+describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+  test('hotswaps a Version if it points to a changed Function, even if it itself is unchanged', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
       Resources: {
         Func: {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
               S3Bucket: 'current-bucket',
-              S3Key: 'new-key',
+              S3Key: 'current-key',
             },
             FunctionName: 'my-function',
           },
@@ -61,118 +42,110 @@ test('hotswaps a Version if it points to a changed Function, even if it itself i
           },
         },
       },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockPublishVersion).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-  });
-});
-
-test('hotswaps a Version if it points to a changed Function, even if it itself is replaced', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            S3Bucket: 'current-bucket',
-            S3Key: 'current-key',
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          Func: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                S3Bucket: 'current-bucket',
+                S3Key: 'new-key',
+              },
+              FunctionName: 'my-function',
+            },
           },
-          FunctionName: 'my-function',
+          Version: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'Func' },
+            },
+          },
         },
       },
-      Version1: {
-        Type: 'AWS::Lambda::Version',
-        Properties: {
-          FunctionName: { Ref: 'Func' },
-        },
-      },
-    },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockPublishVersion).toHaveBeenCalledWith({
+      FunctionName: 'my-function',
+    });
   });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
+
+  test('hotswaps a Version if it points to a changed Function, even if it itself is replaced', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
       Resources: {
         Func: {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
               S3Bucket: 'current-bucket',
-              S3Key: 'new-key',
+              S3Key: 'current-key',
             },
             FunctionName: 'my-function',
           },
         },
-        Version2: {
+        Version1: {
           Type: 'AWS::Lambda::Version',
           Properties: {
             FunctionName: { Ref: 'Func' },
           },
         },
       },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockPublishVersion).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-  });
-});
-
-test('hotswaps a Version and an Alias if the Function they point to changed', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            S3Bucket: 'current-bucket',
-            S3Key: 'current-key',
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          Func: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                S3Bucket: 'current-bucket',
+                S3Key: 'new-key',
+              },
+              FunctionName: 'my-function',
+            },
           },
-          FunctionName: 'my-function',
+          Version2: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'Func' },
+            },
+          },
         },
       },
-      Version1: {
-        Type: 'AWS::Lambda::Version',
-        Properties: {
-          FunctionName: { Ref: 'Func' },
-        },
-      },
-      Alias: {
-        Type: 'AWS::Lambda::Alias',
-        Properties: {
-          FunctionName: { Ref: 'Func' },
-          FunctionVersion: { 'Fn::GetAtt': ['Version1', 'Version'] },
-          Name: 'dev',
-        },
-      },
-    },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockPublishVersion).toHaveBeenCalledWith({
+      FunctionName: 'my-function',
+    });
   });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
+
+  test('hotswaps a Version and an Alias if the Function they point to changed', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
       Resources: {
         Func: {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
               S3Bucket: 'current-bucket',
-              S3Key: 'new-key',
+              S3Key: 'current-key',
             },
             FunctionName: 'my-function',
           },
         },
-        Version2: {
+        Version1: {
           Type: 'AWS::Lambda::Version',
           Properties: {
             FunctionName: { Ref: 'Func' },
@@ -182,25 +155,55 @@ test('hotswaps a Version and an Alias if the Function they point to changed', as
           Type: 'AWS::Lambda::Alias',
           Properties: {
             FunctionName: { Ref: 'Func' },
-            FunctionVersion: { 'Fn::GetAtt': ['Version2', 'Version'] },
+            FunctionVersion: { 'Fn::GetAtt': ['Version1', 'Version'] },
             Name: 'dev',
           },
         },
       },
-    },
-  });
-  mockPublishVersion.mockReturnValue({
-    Version: 'v2',
-  });
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          Func: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                S3Bucket: 'current-bucket',
+                S3Key: 'new-key',
+              },
+              FunctionName: 'my-function',
+            },
+          },
+          Version2: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'Func' },
+            },
+          },
+          Alias: {
+            Type: 'AWS::Lambda::Alias',
+            Properties: {
+              FunctionName: { Ref: 'Func' },
+              FunctionVersion: { 'Fn::GetAtt': ['Version2', 'Version'] },
+              Name: 'dev',
+            },
+          },
+        },
+      },
+    });
+    mockPublishVersion.mockReturnValue({
+      Version: 'v2',
+    });
 
-  // WHEN
-  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockUpdateAlias).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-    FunctionVersion: 'v2',
-    Name: 'dev',
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateAlias).toHaveBeenCalledWith({
+      FunctionName: 'my-function',
+      FunctionVersion: 'v2',
+      Name: 'dev',
+    });
   });
 });

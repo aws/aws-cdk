@@ -114,6 +114,58 @@ const gitHubSource = codebuild.Source.gitHub({
 });
 ```
 
+## BuildSpec
+
+The build spec can be provided from a number of different sources
+
+### File path relative to the root of the source
+
+You can specify a specific filename that exists within the project's source artifact to use as the buildspec.
+
+```ts
+const project = new codebuild.Project(this, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromSourceFileName('my-buildspec.yml'),
+  source: codebuild.Source.gitHub({
+    owner: 'awslabs',
+    repo: 'aws-cdk',
+  })
+});
+```
+
+This will use `my-buildspec.yml` file within the `awslabs/aws-cdk` repository as the build spec.
+
+### File within the CDK project codebuild
+
+You can also specify a file within your cdk project directory to use as the buildspec.
+
+```ts
+const project = new codebuild.Project(this, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromAsset('my-buildspec.yml'),
+});
+```
+
+This file will be uploaded to S3 and referenced from the codebuild project.
+
+### Inline object
+
+```ts
+const project = new codebuild.Project(this, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+});
+```
+
+This will result in the buildspec being rendered as JSON within the codebuild project, if you prefer it to be rendered as YAML, use `fromObjectToYaml`.
+
+```ts
+const project = new codebuild.Project(this, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+    version: '0.2',
+  }),
+});
+```
+
 ## Artifacts
 
 CodeBuild Projects can produce Artifacts and upload them to S3. For example:
@@ -134,9 +186,6 @@ const project = new codebuild.Project(this, 'MyProject', {
     }),
 });
 ```
-
-If you'd prefer your buildspec to be rendered as YAML in the template,
-use the `fromObjectToYaml()` method instead of `fromObject()`.
 
 Because we've not set the `name` property, this example will set the
 `overrideArtifactName` parameter, and produce an artifact named as defined in
