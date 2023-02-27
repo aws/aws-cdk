@@ -46,6 +46,7 @@ Flags come in three types:
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
+| [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -833,6 +834,29 @@ calculation, so any changes made to an authorizer will create a new deployment.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.66.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-redshift:columnId
+
+*Whether to use an ID to track Redshift column changes* (fix)
+
+Redshift columns are identified by their `name`. If a column is renamed, the old column
+will be dropped and a new column will be created. This can cause data loss.
+
+This flag enables the use of an `id` attribute for Redshift columns. If this flag is enabled, the
+internal CDK architecture will track changes of Redshift columns through their `id`, rather
+than their `name`. This will prevent data loss when columns are renamed.
+
+**NOTE** - Enabling this flag comes at a **risk**. When enabled, update the `id`s of all columns,
+**however** do not change the `names`s of the columns. If the `name`s of the columns are changed during
+initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
+of the `id`s, the `name`s of the columns can be changed without data loss.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
