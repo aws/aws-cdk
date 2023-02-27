@@ -228,6 +228,7 @@ are supported:
 * [`Succeed`](#succeed)
 * [`Fail`](#fail)
 * [`Map`](#map)
+* [`Distributed Map`](#distributed-map)
 * [`Custom State`](#custom-state)
 
 An arbitrary JSON object (specified at execution start) is passed from state to

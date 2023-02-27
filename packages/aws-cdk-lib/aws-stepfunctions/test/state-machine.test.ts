@@ -126,7 +126,7 @@ describe('State Machine', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':execution:*/*',
+                  ':execution:*:*',
                 ],
               ],
             },
