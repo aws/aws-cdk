@@ -294,7 +294,7 @@
                                         {
                                           "Ref": "AWS::AccountId"
                                         },
-                                        ":execution:*/*"
+                                        ":execution:*:*"
                                       ]
                                     ]
                                   }
