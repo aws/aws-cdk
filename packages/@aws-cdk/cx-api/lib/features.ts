@@ -688,9 +688,9 @@ export const FLAGS: Record<string, FlagInfo> = {
       than their \`name\`. This will prevent data loss when columns are renamed.
 
       **NOTE** - Enabling this flag comes at a **risk**. When enabled, update the \`id\`s of all columns,
-      **however** do not change the \`names\`s of the columns. If the \`names\` of the columns are changed during
+      **however** do not change the \`names\`s of the columns. If the \`name\`s of the columns are changed during
       initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
-      of the ids, the \`names\` of the columns can be changed without data loss.
+      of the \`id\`s, the \`name\`s of the columns can be changed without data loss.
       `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

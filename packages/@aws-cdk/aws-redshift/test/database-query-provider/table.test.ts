@@ -19,6 +19,7 @@ const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
 const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties: ResourcePropertiesType = {
+  useColumnIds: true,
   tableName: {
     prefix: tableNamePrefix,
     generateSuffix: 'true',

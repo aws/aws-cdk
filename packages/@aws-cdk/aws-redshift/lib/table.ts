@@ -1,4 +1,6 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as cdk from '@aws-cdk/core';
+import { REDSHIFT_COLUMN_ID } from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
@@ -235,6 +237,8 @@ export class Table extends TableBase {
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
 
+    const useColumnIds = !!cdk.FeatureFlags.of(this).isEnabled(REDSHIFT_COLUMN_ID);
+
     this.resource = new DatabaseQuery<TableHandlerProps>(this, 'Resource', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       ...props,
@@ -248,6 +252,7 @@ export class Table extends TableBase {
         distStyle: props.distStyle,
         sortStyle: props.sortStyle ?? this.getDefaultSortStyle(props.tableColumns),
         tableComment: props.tableComment,
+        useColumnIds,
       },
     });
 

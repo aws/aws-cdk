@@ -8,7 +8,8 @@ import * as integ from '@aws-cdk/integ-tests';
 import * as constructs from 'constructs';
 import * as redshift from '../lib';
 
-const useColumnIds = { [REDSHIFT_COLUMN_ID]: false };
+const useColumnIds = { [REDSHIFT_COLUMN_ID]: 'true' };
+
 const app = new cdk.App({
   context: useColumnIds,
 });
@@ -38,14 +39,11 @@ const cluster = new redshift.Cluster(stack, 'Cluster', {
   encryptionKey: key,
 });
 
-cluster.addToParameterGroup('enable_user_activity_logging', 'true');
-
 const databaseOptions = {
   cluster: cluster,
   databaseName: databaseName,
 };
-const user = new redshift.User(stack, 'User', databaseOptions);
-const table = new redshift.Table(stack, 'Table', {
+new redshift.Table(stack, 'Table', {
   ...databaseOptions,
   tableColumns: [
     { id: 'col1', name: 'col1', dataType: 'varchar(4)', distKey: true },
@@ -56,7 +54,6 @@ const table = new redshift.Table(stack, 'Table', {
   sortStyle: redshift.TableSortStyle.INTERLEAVED,
   tableComment: 'A test table',
 });
-table.grant(user, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
 
 new integ.IntegTest(app, 'redshift-cluster-database-integ', {
   testCases: [stack],
