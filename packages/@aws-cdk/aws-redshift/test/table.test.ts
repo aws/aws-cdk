@@ -258,4 +258,18 @@ describe('cluster table', () => {
       ).toThrow(`sortStyle of '${redshift.TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`);
     });
   });
+
+  it('throws if 2 or more column ids are similar', () => {
+    const updatedTableColumns: redshift.Column[] = [
+      { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+      { id: 'col1', name: 'col2', dataType: 'float' },
+    ];
+
+    expect(
+      () => new redshift.Table(stack, 'Table', {
+        ...databaseOptions,
+        tableColumns: updatedTableColumns,
+      }),
+    ).toThrow("Column id 'col1' is not unique.");
+  });
 });
