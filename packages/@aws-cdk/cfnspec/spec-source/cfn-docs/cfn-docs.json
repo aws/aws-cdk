@@ -1521,7 +1521,8 @@
     },
     "AWS::ApiGateway::VpcLink": {
       "attributes": {
-        "Ref": "`Ref` returns the ID of the `VpcLink` ."
+        "Ref": "`Ref` returns the ID of the `VpcLink` .",
+        "VpcLinkId": ""
       },
       "description": "The `AWS::ApiGateway::VpcLink` resource creates an API Gateway VPC link for a REST API to access resources in an Amazon Virtual Private Cloud (VPC). For more information, see [vpclink:create](https://docs.aws.amazon.com/apigateway/latest/api/API_CreateVpcLink.html) in the `Amazon API Gateway REST API Reference` .",
       "properties": {
@@ -1833,8 +1834,7 @@
     },
     "AWS::ApiGatewayV2::RouteResponse": {
       "attributes": {
-        "Ref": "`Ref` returns the Route Response resource ID, such as `abc123` .",
-        "RouteResponseId": ""
+        "Ref": "`Ref` returns the Route Response resource ID, such as `abc123` ."
       },
       "description": "The `AWS::ApiGatewayV2::RouteResponse` resource creates a route response for a WebSocket API. For more information, see [Set up Route Responses for a WebSocket API in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-route-response.html) in the *API Gateway Developer Guide* .",
       "properties": {
@@ -1844,6 +1844,13 @@
         "ResponseParameters": "The route response parameters.",
         "RouteId": "The route ID.",
         "RouteResponseKey": "The route response key."
+      }
+    },
+    "AWS::ApiGatewayV2::RouteResponse.ParameterConstraints": {
+      "attributes": {},
+      "description": "Specifies whether the parameter is required.",
+      "properties": {
+        "Required": "Specifies whether the parameter is required."
       }
     },
     "AWS::ApiGatewayV2::Stage": {
@@ -2037,7 +2044,8 @@
         "Content": "The content of the configuration or the configuration data.",
         "ContentType": "A standard MIME type describing the format of the configuration content. For more information, see [Content-Type](https://docs.aws.amazon.com/https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17) .",
         "Description": "A description of the configuration.",
-        "LatestVersionNumber": "An optional locking token used to prevent race conditions from overwriting configuration updates when creating a new version. To ensure your data is not overwritten when creating multiple hosted configuration versions in rapid succession, specify the version number of the latest hosted configuration version."
+        "LatestVersionNumber": "An optional locking token used to prevent race conditions from overwriting configuration updates when creating a new version. To ensure your data is not overwritten when creating multiple hosted configuration versions in rapid succession, specify the version number of the latest hosted configuration version.",
+        "VersionLabel": "A user-defined label for an AWS AppConfig hosted configuration version."
       }
     },
     "AWS::AppFlow::Connector": {
@@ -12107,7 +12115,7 @@
         "ReplicationInstancePrivateIpAddresses": "One or more private IP addresses for the replication instance.",
         "ReplicationInstancePublicIpAddresses": "One or more public IP addresses for the replication instance."
       },
-      "description": "The `AWS::DMS::ReplicationInstance` resource creates an AWS DMS replication instance.",
+      "description": "The `AWS::DMS::ReplicationInstance` resource creates an AWS DMS replication instance. To create a ReplicationInstance, you need permissions to create instances. You'll need similar permissions to terminate instances when you delete stacks with instances.",
       "properties": {
         "AllocatedStorage": "The amount of storage (in gigabytes) to be initially allocated for the replication instance.",
         "AllowMajorVersionUpgrade": "Indicates that major version upgrades are allowed. Changing this parameter does not result in an outage, and the change is asynchronously applied as soon as possible.\n\nThis parameter must be set to `true` when specifying a value for the `EngineVersion` parameter that is a different major version than the replication instance's current version.",
@@ -16665,7 +16673,8 @@
     },
     "AWS::EC2::VPCEndpointService": {
       "attributes": {
-        "Ref": "`Ref` returns the ID of the VPC endpoint service configuration."
+        "Ref": "`Ref` returns the ID of the VPC endpoint service configuration.",
+        "ServiceId": ""
       },
       "description": "Creates a VPC endpoint service configuration to which service consumers ( AWS accounts, users, and IAM roles) can connect.\n\nTo create an endpoint service configuration, you must first create one of the following for your service:\n\n- A [Network Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html) . Service consumers connect to your service using an interface endpoint.\n- A [Gateway Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html) . Service consumers connect to your service using a Gateway Load Balancer endpoint.\n\nFor more information, see the [AWS PrivateLink User Guide](https://docs.aws.amazon.com/vpc/latest/privatelink/) .",
       "properties": {
@@ -19603,7 +19612,7 @@
         "HealthCheckPort": "The port the load balancer uses when performing health checks on targets. If the protocol is HTTP, HTTPS, TCP, TLS, UDP, or TCP_UDP, the default is `traffic-port` , which is the port on which each target receives traffic from the load balancer. If the protocol is GENEVE, the default is port 80.",
         "HealthCheckProtocol": "The protocol the load balancer uses when performing health checks on targets. For Application Load Balancers, the default is HTTP. For Network Load Balancers and Gateway Load Balancers, the default is TCP. The TCP protocol is not supported for health checks if the protocol of the target group is HTTP or HTTPS. The GENEVE, TLS, UDP, and TCP_UDP protocols are not supported for health checks.",
         "HealthCheckTimeoutSeconds": "The amount of time, in seconds, during which no response from a target means a failed health check. The range is 2\u2013120 seconds. For target groups with a protocol of HTTP, the default is 6 seconds. For target groups with a protocol of TCP, TLS or HTTPS, the default is 10 seconds. For target groups with a protocol of GENEVE, the default is 5 seconds. If the target type is `lambda` , the default is 30 seconds.",
-        "HealthyThresholdCount": "The number of consecutive health check successes required before considering a target healthy. The range is 2-10. If the target group protocol is TCP, TCP_UDP, UDP, TLS, HTTP or HTTPS, the default is 5. For target groups with a protocol of GENEVE, the default is 5. If the target type is `lambda` , the default is 5.",
+        "HealthyThresholdCount": "The number of consecutive health check successes required before considering a target healthy. The range is 2-10. If the target group protocol is TCP, TCP_UDP, UDP, TLS, HTTP or HTTPS, the default is 5. For target groups with a protocol of GENEVE, the default is 3. If the target type is `lambda` , the default is 5.",
         "IpAddressType": "The type of IP address used for this target group. The possible values are `ipv4` and `ipv6` . This is an optional parameter. If not specified, the IP address type defaults to `ipv4` .",
         "Matcher": "[HTTP/HTTPS health checks] The HTTP or gRPC codes to use when checking for a successful response from a target. For target groups with a protocol of TCP, TCP_UDP, UDP or TLS the range is 200-599. For target groups with a protocol of HTTP or HTTPS, the range is 200-499. For target groups with a protocol of GENEVE, the range is 200-399.",
         "Name": "The name of the target group.\n\nThis name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.",
@@ -19614,7 +19623,7 @@
         "TargetGroupAttributes": "The attributes.",
         "TargetType": "The type of target that you must specify when registering targets with this target group. You can't specify targets for a target group using more than one target type.\n\n- `instance` - Register targets by instance ID. This is the default value.\n- `ip` - Register targets by IP address. You can specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.\n- `lambda` - Register a single Lambda function as a target.\n- `alb` - Register a single Application Load Balancer as a target.",
         "Targets": "The targets.",
-        "UnhealthyThresholdCount": "The number of consecutive health check failures required before considering a target unhealthy. The range is 2-10. If the target group protocol is TCP, TCP_UDP, UDP, TLS, HTTP or HTTPS, the default is 2. For target groups with a protocol of GENEVE, the default is 2. If the target type is `lambda` , the default is 5.",
+        "UnhealthyThresholdCount": "The number of consecutive health check failures required before considering a target unhealthy. The range is 2-10. If the target group protocol is TCP, TCP_UDP, UDP, TLS, HTTP or HTTPS, the default is 2. For target groups with a protocol of GENEVE, the default is 3. If the target type is `lambda` , the default is 5.",
         "VpcId": "The identifier of the virtual private cloud (VPC). If the target is a Lambda function, this parameter does not apply. Otherwise, this parameter is required."
       }
     },
@@ -23850,7 +23859,7 @@
       "description": "The `AWS::GuardDuty::Filter` resource specifies a new filter defined by the provided `findingCriteria` .",
       "properties": {
         "Action": "Specifies the action that is to be applied to the findings that match the filter.",
-        "Description": "The description of the filter. Valid characters include alphanumeric characters, and special characters such as `-` , `.` , `:` , `{ }` , `[ ]` , `( )` , `/` , `\\t` , `\\n` , `\\x0B` , `\\f` , `\\r` , `_` , and whitespace.",
+        "Description": "The description of the filter. Valid characters include alphanumeric characters, and special characters such as hyphen, period, colon, underscore, parentheses ( `{ }` , `[ ]` , and `( )` ), forward slash, horizontal tab, vertical tab, newline, form feed, return, and whitespace.",
         "DetectorId": "The ID of the detector belonging to the GuardDuty account that you want to create a filter for.",
         "FindingCriteria": "Represents the criteria to be used in the filter for querying findings.",
         "Name": "The name of the filter. Valid characters include period (.), underscore (_), dash (-), and alphanumeric characters. A whitespace is considered to be an invalid character.",
@@ -30651,7 +30660,7 @@
       },
       "description": "The `AWS::Lambda::EventInvokeConfig` resource configures options for [asynchronous invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html) on a version or an alias.\n\nBy default, Lambda retries an asynchronous invocation twice if the function returns an error. It retains events in a queue for up to six hours. When an event fails all processing attempts or stays in the asynchronous invocation queue for too long, Lambda discards it.",
       "properties": {
-        "DestinationConfig": "A destination for events after they have been sent to a function for processing.\n\n**Destinations** - *Function* - The Amazon Resource Name (ARN) of a Lambda function.\n- *Queue* - The ARN of an SQS queue.\n- *Topic* - The ARN of an SNS topic.\n- *Event Bus* - The ARN of an Amazon EventBridge event bus.",
+        "DestinationConfig": "A destination for events after they have been sent to a function for processing.\n\n**Destinations** - *Function* - The Amazon Resource Name (ARN) of a Lambda function.\n- *Queue* - The ARN of a standard SQS queue.\n- *Topic* - The ARN of a standard SNS topic.\n- *Event Bus* - The ARN of an Amazon EventBridge event bus.",
         "FunctionName": "The name of the Lambda function.\n\n*Minimum* : `1`\n\n*Maximum* : `64`\n\n*Pattern* : `([a-zA-Z0-9-_]+)`",
         "MaximumEventAgeInSeconds": "The maximum age of a request that Lambda sends to a function for processing.",
         "MaximumRetryAttempts": "The maximum number of times to retry when the function returns an error.",
@@ -38740,7 +38749,7 @@
       "description": "Specifies the name and version of the message template to use for the message.",
       "properties": {
         "Name": "The name of the message template to use for the message. If specified, this value must match the name of an existing message template.",
-        "Version": "The unique identifier for the version of the message template to use for the message. If specified, this value must match the identifier for an existing template version. To retrieve a list of versions and version identifiers for a template, use the Template Versions resource.\n\nIf you don't specify a value for this property, Amazon Pinpoint uses the *active version* of the template. The *active version* is typically the version of a template that's been most recently reviewed and approved for use, depending on your workflow. It isn't necessarily the latest version of a template."
+        "Version": "The unique identifier for the version of the message template to use for the message. If specified, this value must match the identifier for an existing template version. To retrieve a list of versions and version identifiers for a template, use the [Template Versions](https://docs.aws.amazon.com/pinpoint/latest/apireference/templates-template-name-template-type-versions.html) resource.\n\nIf you don't specify a value for this property, Amazon Pinpoint uses the *active version* of the template. The *active version* is typically the version of a template that's been most recently reviewed and approved for use, depending on your workflow. It isn't necessarily the latest version of a template."
       }
     },
     "AWS::Pinpoint::Campaign.TemplateConfiguration": {
@@ -41482,8 +41491,8 @@
         "LoggingProperties": "Specifies logging information, such as queries and connection attempts, for the specified Amazon Redshift cluster.",
         "MaintenanceTrackName": "An optional parameter for the name of the maintenance track for the cluster. If you don't provide a maintenance track name, the cluster is assigned to the `current` track.",
         "ManualSnapshotRetentionPeriod": "The default number of days to retain a manual snapshot. If the value is -1, the snapshot is retained indefinitely. This setting doesn't change the retention period of existing snapshots.\n\nThe value must be either -1 or an integer between 1 and 3,653.",
-        "MasterUserPassword": "The password associated with the admin user account for the cluster that is being created.\n\nConstraints:\n\n- Must be between 8 and 64 characters in length.\n- Must contain at least one uppercase letter.\n- Must contain at least one lowercase letter.\n- Must contain one number.\n- Can be any printable ASCII character (ASCII code 33-126) except `'` (single quote), `\"` (double quote), `\\` , `/` , or `@` .",
-        "MasterUsername": "The user name associated with the admin user account for the cluster that is being created.\n\nConstraints:\n\n- Must be 1 - 128 alphanumeric characters or hyphens. The user name can't be `PUBLIC` .\n- Must contain only lowercase letters, numbers, underscore, plus sign, period (dot), at symbol (@), or hyphen.\n- The first character must be a letter.\n- Must not contain a colon (:) or a slash (/).\n- Cannot be a reserved word. A list of reserved words can be found in [Reserved Words](https://docs.aws.amazon.com/redshift/latest/dg/r_pg_keywords.html) in the Amazon Redshift Database Developer Guide.",
+        "MasterUserPassword": "The password associated with the admin user for the cluster that is being created.\n\nConstraints:\n\n- Must be between 8 and 64 characters in length.\n- Must contain at least one uppercase letter.\n- Must contain at least one lowercase letter.\n- Must contain one number.\n- Can be any printable ASCII character (ASCII code 33-126) except `'` (single quote), `\"` (double quote), `\\` , `/` , or `@` .",
+        "MasterUsername": "The user name associated with the admin user for the cluster that is being created.\n\nConstraints:\n\n- Must be 1 - 128 alphanumeric characters or hyphens. The user name can't be `PUBLIC` .\n- Must contain only lowercase letters, numbers, underscore, plus sign, period (dot), at symbol (@), or hyphen.\n- The first character must be a letter.\n- Must not contain a colon (:) or a slash (/).\n- Cannot be a reserved word. A list of reserved words can be found in [Reserved Words](https://docs.aws.amazon.com/redshift/latest/dg/r_pg_keywords.html) in the Amazon Redshift Database Developer Guide.",
         "NodeType": "The node type to be provisioned for the cluster. For information about node types, go to [Working with Clusters](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#how-many-nodes) in the *Amazon Redshift Cluster Management Guide* .\n\nValid Values: `ds2.xlarge` | `ds2.8xlarge` | `dc1.large` | `dc1.8xlarge` | `dc2.large` | `dc2.8xlarge` | `ra3.xlplus` | `ra3.4xlarge` | `ra3.16xlarge`",
         "NumberOfNodes": "The number of compute nodes in the cluster. This parameter is required when the *ClusterType* parameter is specified as `multi-node` .\n\nFor information about determining how many nodes you need, go to [Working with Clusters](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#how-many-nodes) in the *Amazon Redshift Cluster Management Guide* .\n\nIf you don't specify this parameter, you get a single-node cluster. When requesting a multi-node cluster, you must specify the number of nodes that you want in the cluster.\n\nDefault: `1`\n\nConstraints: Value must be at least 1 and no more than 100.",
         "OwnerAccount": "The AWS account used to create or copy the snapshot. Required if you are restoring a snapshot you do not own, optional if you own the snapshot.",
@@ -41493,7 +41502,7 @@
         "ResourceAction": "",
         "RevisionTarget": "",
         "RotateEncryptionKey": "",
-        "SnapshotClusterIdentifier": "The name of the cluster the source snapshot was created from. This parameter is required if your IAM user has a policy containing a snapshot resource element that specifies anything other than * for the cluster name.",
+        "SnapshotClusterIdentifier": "The name of the cluster the source snapshot was created from. This parameter is required if your IAM user or role has a policy containing a snapshot resource element that specifies anything other than * for the cluster name.",
         "SnapshotCopyGrantName": "The name of the snapshot copy grant.",
         "SnapshotCopyManual": "Indicates whether to apply the snapshot retention period to newly copied manual snapshots instead of automated snapshots.",
         "SnapshotCopyRetentionPeriod": "The number of days to retain automated snapshots in the destination AWS Region after they are copied from the source AWS Region .\n\nBy default, this only changes the retention period of copied automated snapshots.\n\nIf you decrease the retention period for automated snapshots that are copied to a destination AWS Region , Amazon Redshift deletes any existing automated snapshots that were copied to the destination AWS Region and that fall outside of the new retention period.\n\nConstraints: Must be at least 1 and no more than 35 for automated snapshots.\n\nIf you specify the `manual` option, only newly copied manual snapshots will have the new retention period.\n\nIf you specify the value of -1 newly copied manual snapshots are retained indefinitely.\n\nConstraints: The number of days must be either -1 or an integer between 1 and 3,653 for manual snapshots.",
@@ -41520,13 +41529,13 @@
     },
     "AWS::Redshift::ClusterParameterGroup": {
       "attributes": {
-        "ParameterGroupName": "The name of the parameter group.",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myClusterParameterGroup\" }`\n\nFor the Amazon Redshift cluster parameter group `myClusterParameterGroup` , `Ref` returns the name of the cluster parameter group."
       },
       "description": "Describes a parameter group.",
       "properties": {
         "Description": "The description of the parameter group.",
         "ParameterGroupFamily": "The name of the cluster parameter group family that this cluster parameter group is compatible with.",
+        "ParameterGroupName": "The name of the cluster parameter group.",
         "Parameters": "An array of parameters to be modified. A maximum of 20 parameters can be modified in a single request.\n\nFor each parameter to be modified, you must supply at least the parameter name and parameter value; other name-value pairs of the parameter are optional.\n\nFor the workload management (WLM) configuration, you must supply all the name-value pairs in the wlm_json_configuration parameter.",
         "Tags": "The list of tags for the cluster parameter group."
       }
@@ -42679,12 +42688,12 @@
     "AWS::Route53RecoveryControl::Cluster": {
       "attributes": {
         "ClusterArn": "The Amazon Resource Name (ARN) of the cluster.",
+        "ClusterEndpoints": "Endpoints for the cluster.",
         "Ref": "`Ref` returns the `ClusterArn` object.",
         "Status": "Deployment status of a resource. Status can be one of the following: PENDING, DEPLOYED, PENDING_DELETION."
       },
       "description": "Returns an array of all the clusters in an account.",
       "properties": {
-        "ClusterEndpoints": "",
         "Name": "Name of the cluster. You can use any non-white space character in the name.",
         "Tags": "The value for a tag."
       }
@@ -47790,12 +47799,13 @@
       "properties": {
         "ExcludeCharacters": "A string of the characters that you don't want in the password.",
         "KmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the secret. If you don't specify this value, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.",
-        "MasterSecretArn": "The ARN of the secret that contains elevated credentials. You must create the elevated secret before you can set this property. The Lambda rotation function uses this secret for the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) .\n\nYou can specify `MasterSecretArn` or `SuperuserSecretArn` but not both. They represent the same superuser secret.",
-        "MasterSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the elevated secret if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . If you don't specify this value and you use the alternating users strategy, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.\n\nYou can specify `MasterSecretKmsKeyArn` or `SuperuserSecretKmsKeyArn` but not both. They represent the same superuser secret KMS key .",
+        "MasterSecretArn": "The ARN of the secret that contains superuser credentials, if you use the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . CloudFormation grants the execution role for the Lambda rotation function `GetSecretValue` permission to the secret in this property. For more information, see [Lambda rotation function execution role permissions for Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-required-permissions-function.html) .\n\nYou must create the superuser secret before you can set this property.\n\nYou must also include the superuser secret ARN as a key in the JSON of the rotating secret so that the Lambda rotation function can find it. CloudFormation does not hardcode secret ARNs in the Lambda rotation function, so you can use the function to rotate multiple secrets. For more information, see [JSON structure of Secrets Manager secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_secret_json_structure.html) .\n\nYou can specify `MasterSecretArn` or `SuperuserSecretArn` but not both. They represent the same superuser secret.",
+        "MasterSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager used to encrypt the superuser secret, if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) and the superuser secret is encrypted with a customer managed key. You don't need to specify this property if the superuser secret is encrypted using the key `aws/secretsmanager` . CloudFormation grants the execution role for the Lambda rotation function `Decrypt` , `DescribeKey` , and `GenerateDataKey` permission to the key in this property. For more information, see [Lambda rotation function execution role permissions for Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-required-permissions-function.html) .\n\nYou can specify `MasterSecretKmsKeyArn` or `SuperuserSecretKmsKeyArn` but not both. They represent the same superuser secret KMS key .",
         "RotationLambdaName": "The name of the Lambda rotation function.",
         "RotationType": "The rotation template to base the rotation function on, one of the following:\n\n- `MySQLSingleUser` to use the template [SecretsManagerRDSMySQLRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mysql-singleuser) .\n- `MySQLMultiUser` to use the template [SecretsManagerRDSMySQLRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mysql-multiuser) .\n- `PostgreSQLSingleUser` to use the template [SecretsManagerRDSPostgreSQLRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-postgre-singleuser)\n- `PostgreSQLMultiUser` to use the template [SecretsManagerRDSPostgreSQLRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-postgre-multiuser) .\n- `OracleSingleUser` to use the template [SecretsManagerRDSOracleRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-oracle-singleuser) .\n- `OracleMultiUser` to use the template [SecretsManagerRDSOracleRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-oracle-multiuser) .\n- `MariaDBSingleUser` to use the template [SecretsManagerRDSMariaDBRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mariadb-singleuser) .\n- `MariaDBMultiUser` to use the template [SecretsManagerRDSMariaDBRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mariadb-multiuser) .\n- `SQLServerSingleUser` to use the template [SecretsManagerRDSSQLServerRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-sqlserver-singleuser) .\n- `SQLServerMultiUser` to use the template [SecretsManagerRDSSQLServerRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-sqlserver-multiuser) .\n- `RedshiftSingleUser` to use the template [SecretsManagerRedshiftRotationSingleUsr](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-redshift-singleuser) .\n- `RedshiftMultiUser` to use the template [SecretsManagerRedshiftRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-redshift-multiuser) .\n- `MongoDBSingleUser` to use the template [SecretsManagerMongoDBRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mongodb-singleuser) .\n- `MongoDBMultiUser` to use the template [SecretsManagerMongoDBRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mongodb-multiuser) .",
-        "SuperuserSecretArn": "The ARN of the secret that contains elevated credentials. You must create the superuser secret before you can set this property. The Lambda rotation function uses this secret for the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) .\n\nYou can specify `MasterSecretArn` or `SuperuserSecretArn` but not both. They represent the same superuser secret.",
-        "SuperuserSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the elevated secret if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . If you don't specify this value and you use the alternating users strategy, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.\n\nYou can specify `MasterSecretKmsKeyArn` or `SuperuserSecretKmsKeyArn` but not both. They represent the same superuser secret KMS key .",
+        "Runtime": "The Python runtime version associated with the Lambda function.",
+        "SuperuserSecretArn": "The ARN of the secret that contains superuser credentials, if you use the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . CloudFormation grants the execution role for the Lambda rotation function `GetSecretValue` permission to the secret in this property. For more information, see [Lambda rotation function execution role permissions for Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-required-permissions-function.html) .\n\nYou must create the superuser secret before you can set this property.\n\nYou must also include the superuser secret ARN as a key in the JSON of the rotating secret so that the Lambda rotation function can find it. CloudFormation does not hardcode secret ARNs in the Lambda rotation function, so you can use the function to rotate multiple secrets. For more information, see [JSON structure of Secrets Manager secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_secret_json_structure.html) .\n\nYou can specify `MasterSecretArn` or `SuperuserSecretArn` but not both. They represent the same superuser secret.",
+        "SuperuserSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager used to encrypt the superuser secret, if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) and the superuser secret is encrypted with a customer managed key. You don't need to specify this property if the superuser secret is encrypted using the key `aws/secretsmanager` . CloudFormation grants the execution role for the Lambda rotation function `Decrypt` , `DescribeKey` , and `GenerateDataKey` permission to the key in this property. For more information, see [Lambda rotation function execution role permissions for Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-required-permissions-function.html) .\n\nYou can specify `MasterSecretKmsKeyArn` or `SuperuserSecretKmsKeyArn` but not both. They represent the same superuser secret KMS key .",
         "VpcSecurityGroupIds": "A comma-separated list of security group IDs applied to the target database.\n\nThe templates applies the same security groups as on the Lambda rotation function that is created as part of this stack.",
         "VpcSubnetIds": "A comma separated list of VPC subnet IDs of the target database network. The Lambda rotation function is in the same subnet group."
       }
