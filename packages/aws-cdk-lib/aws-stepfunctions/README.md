@@ -486,7 +486,16 @@ const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
 map.iterator(new sfn.Pass(this, 'Pass State'));
 ```
 
-You can provide optional `itemReader` and `resultWriter` properties to control the behavior of the Distributed Map state. 
+Map states in Distributed mode support multiple sources for an array to iterate:
+* JSON array from the state input payload
+* objects in an S3 bucket and optional prefix
+* JSON array in a JSON file stored in S3
+* CSV file stored in S3
+* S3 inventory manifest stored in S3
+
+There are multiple classes that implement `IItemReader` that can be used to configure the iterator source.  These can be provided via the optional `itemReader` property.  The default behavior if `itemReader` is omitted is to use the input payload.
+
+Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriter` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
 
 ```ts
 const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
