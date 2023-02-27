@@ -1004,7 +1004,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9887f0946c4d591785e472bd60b9f9bf4f80f7e213f224e4ba157adb8a2f5de6.zip"
+     "S3Key": "ab58b1384030fef0fc8663c06f6fd62196fb3ae8807ab82e4559967d3b885b08.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1160,19 +1160,16 @@
     },
     "tableColumns": [
      {
-      "id": "col1",
       "name": "col1",
       "dataType": "varchar(4)",
       "distKey": true
      },
      {
-      "id": "col2",
       "name": "col2",
       "dataType": "float",
       "sortKey": true
      },
      {
-      "id": "col3",
       "name": "col3",
       "dataType": "float",
       "sortKey": true
