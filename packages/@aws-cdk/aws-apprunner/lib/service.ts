@@ -1137,7 +1137,7 @@ export class Service extends cdk.Resource {
   }
 
   private renderEnvironmentVariables(): EnvironmentVariable[] | undefined {
-    if (Object.keys(this.environmentVariables).length > 0) {
+    if (Object.keys(this.environmentVariables).length + this.variables.length > 0) {
       for (const [key, value] of Object.entries(this.environmentVariables)) {
         if (key.startsWith('AWSAPPRUNNER')) {
           throw new Error(`Environment variable key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
@@ -1151,7 +1151,7 @@ export class Service extends cdk.Resource {
   }
 
   private renderEnvironmentSecrets(): EnvironmentSecret[] | undefined {
-    if (Object.keys(this.environmentSecrets).length > 0 && this.instanceRole) {
+    if (Object.keys(this.environmentSecrets).length + this.secrets.length > 0 && this.instanceRole) {
       for (const [key, value] of Object.entries(this.environmentSecrets)) {
         if (key.startsWith('AWSAPPRUNNER')) {
           throw new Error(`Environment secret key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
