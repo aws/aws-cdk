@@ -20,7 +20,7 @@ export interface IItemReader {
   /**
    * Limits the number of items passed to the Distributed Map state
    *
-   * @default - No maxItems
+   * @default - Distribute Map state will iterate over all items provided by the ItemReader
    */
   readonly maxItems?: number
 
@@ -33,7 +33,6 @@ export interface IItemReader {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   providePolicyStatements(): iam.PolicyStatement[]
-
 }
 
 /**
@@ -49,7 +48,7 @@ interface ItemReaderProps {
   /**
    * Limits the number of items passed to the Distributed Map state
    *
-   * @default - No maxItems
+   * @default - Distribute Map state will iterate over all items provided by the ItemReader
    */
   readonly maxItems?: number
 }
@@ -91,6 +90,11 @@ export class S3ObjectsItemReader implements IItemReader {
    * @default - No maxItems
    */
   readonly maxItems?: number;
+
+  /**
+   * ARN for the `listObjectsV2` method of the S3 API
+   * This API method is used to iterate all objects in the S3 bucket/prefix
+   */
   private readonly resource: string = 'arn:aws:states:::s3:listObjectsV2'
 
   constructor(props: S3ObjectsItemReaderProps) {
@@ -119,7 +123,6 @@ export class S3ObjectsItemReader implements IItemReader {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
-
     const resource = `arn:aws:s3:::${this.bucket.bucketName}`;
 
     return [
@@ -137,19 +140,16 @@ export class S3ObjectsItemReader implements IItemReader {
  * Base interface for Item Reader configuration properties the iterate over entries in a S3 file
  */
 export interface S3ItemReaderProps extends ItemReaderProps {
-
   /**
    * Key of file stored in S3 bucket containing an array to iterate over
    */
   readonly key: string
-
 }
 
 /**
  * Base Item Reader configuration for iterating over entries in a S3 file
  */
 abstract class S3ItemReader implements IItemReader {
-
   /**
    * S3 Bucket containing a file with a list to iterate over
    */
@@ -166,6 +166,7 @@ abstract class S3ItemReader implements IItemReader {
    * @default - No maxItems
    */
   readonly maxItems?: number;
+
   protected readonly resource: string = 'arn:aws:states:::s3:getObject'
   protected abstract readonly inputType: string;
 
@@ -270,19 +271,16 @@ export class CsvHeaders {
     this.headerLocation = headerLocation;
     this.headers = headers;
   }
-
 }
 
 /**
  * Properties for configuring an Item Reader that iterates over items in a CSV file in S3
  */
 export interface S3CsvItemReaderProps extends S3ItemReaderProps {
-
   /**
    * CSV file header configuration
    */
   readonly csvHeaders: CsvHeaders
-
 }
 
 /**
@@ -684,7 +682,8 @@ export interface DistributedMapProps extends MapProps {
  */
 export class DistributedMap extends Map implements INextable {
 
-  protected readonly mode: MapStateMode = MapStateMode.DISTRIBUTED
+  protected readonly mode: MapStateMode = MapStateMode.DISTRIBUTED;
+
   private readonly mapExecutionType?: StateMachineType;
   private readonly itemReader?: IItemReader;
   private readonly toleratedFailurePercentage?: ToleratedFailurePercentage;
@@ -706,7 +705,6 @@ export class DistributedMap extends Map implements INextable {
     this.maxInputBytesPerBatch = props.maxInputBytesPerBatch;
     this.batchInput = props.batchInput;
     this.resultWriter = props.resultWriter;
-
   }
 
   /**
@@ -797,5 +795,4 @@ export class DistributedMap extends Map implements INextable {
       },
     };
   }
-
 }
