@@ -64,7 +64,6 @@
   "CompositeAlarmF4C3D082": {
    "Type": "AWS::CloudWatch::CompositeAlarm",
    "Properties": {
-    "AlarmName": "CompositeAlarmIntegrationTestCompositeAlarm742D2FBA",
     "AlarmRule": {
      "Fn::Join": [
       "",
@@ -115,7 +114,8 @@
      ]
     },
     "ActionsSuppressorExtensionPeriod": 60,
-    "ActionsSuppressorWaitPeriod": 60
+    "ActionsSuppressorWaitPeriod": 60,
+    "AlarmName": "CompositeAlarmIntegrationTestCompositeAlarm742D2FBA"
    }
   }
  },

@@ -19,5 +19,3 @@ const archive = new Archive(stack, 'Archive', {
 new IntegTest(app, 'ArchiveTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -671,7 +671,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       to also include the configuration of any authorizer attached to the API in the
       calculation, so any changes made to an authorizer will create a new deployment.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.66.0' },
     recommendedValue: true,
   },
 

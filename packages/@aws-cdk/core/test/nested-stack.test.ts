@@ -1,10 +1,10 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { readFileSync } from 'fs-extra';
+import { toCloudFormation } from './util';
 import {
   Stack, NestedStack, CfnStack, Resource, CfnResource, App, CfnOutput,
 } from '../lib';
-import { toCloudFormation } from './util';
 
 describe('nested-stack', () => {
   test('a nested-stack has a defaultChild', () => {

@@ -1,6 +1,6 @@
-import { CredentialProviderSource, PluginHost } from '../plugin';
 import { debug } from './_env';
 import { Mode } from './credentials';
+import { CredentialProviderSource, PluginHost } from '../plugin';
 
 /**
  * Cache for credential providers.
