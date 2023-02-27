@@ -59,7 +59,9 @@ export interface Column {
   /**
    * The unique identifier of the column.
    *
-   * **NOTE** - this is not the name of the column, and renaming this identifier will cause a new column to be created and the old column to be dropped.
+   * This is not the name of the column, and renaming this identifier will cause a new column to be created and the old column to be dropped.
+   *
+   * **NOTE** - This field is required, however, only by setting the `@aws-cdk/aws-redshift:columnId` feature flag will this field be used.
    */
   readonly id: string;
 
