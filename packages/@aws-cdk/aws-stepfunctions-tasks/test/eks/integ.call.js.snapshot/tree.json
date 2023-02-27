@@ -1486,7 +1486,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
+                          "s3Key": "0ea37e975532aea7fb43a2c33af232d37eb6a7adfa00cd7598c8e9649a3e872f.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1659,7 +1659,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
+                          "s3Key": "0ea37e975532aea7fb43a2c33af232d37eb6a7adfa00cd7598c8e9649a3e872f.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -2557,7 +2557,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/ce676dd00b6b83bd39d97745ba4264d3db3b983f6c1862784cb9a0c8b02466e7.json"
+                          "/62646743524bed02d574f6d14103e5fe05eae5fe53927e3b1fb5842ae0e9f327.json"
                         ]
                       ]
                     },
@@ -2654,18 +2654,6 @@
                                       "Ref": "AWS::Partition"
                                     },
                                     ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
                                   ]
                                 ]
                               }
@@ -3237,7 +3225,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/2f6232262f61ee4d0aaf7ccee2de42f40c122cd7d534b88592e9543db954213f.json"
+                          "/4584f13a60c3e28a144ee523a6aa3b8b1e238ef07dea3c4d4f2e8e66254a9aca.json"
                         ]
                       ]
                     },

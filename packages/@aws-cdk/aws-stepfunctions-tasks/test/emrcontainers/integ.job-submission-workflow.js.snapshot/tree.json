@@ -1426,7 +1426,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
+                          "s3Key": "0ea37e975532aea7fb43a2c33af232d37eb6a7adfa00cd7598c8e9649a3e872f.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1599,7 +1599,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
+                          "s3Key": "0ea37e975532aea7fb43a2c33af232d37eb6a7adfa00cd7598c8e9649a3e872f.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -2497,7 +2497,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/37b9bc4f34c2af7d98cff20053a09be46c63d26f7c9951e19230de787314a5f8.json"
+                          "/f6740ecec1b641bdbd77eaccd4de1d7ee616c58ec54c7449f093ec1e3c5d6b01.json"
                         ]
                       ]
                     },
@@ -2594,18 +2594,6 @@
                                       "Ref": "AWS::Partition"
                                     },
                                     ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
                                   ]
                                 ]
                               }
@@ -3177,7 +3165,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/1c293083c7ca2a85b9971a56b827528655c982c7cd525788c11f25281c50ff62.json"
+                          "/e61289f1f31472773dae3d545209398d88f362eba9cff2bf36a902e9bdc82063.json"
                         ]
                       ]
                     },
@@ -3278,13 +3266,13 @@
             "id": "Job-Execution-Role",
             "path": "aws-stepfunctions-tasks-emr-containers-all-services-test/Job-Execution-Role",
             "children": {
-              "PolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B924": {
-                "id": "PolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B924",
-                "path": "aws-stepfunctions-tasks-emr-containers-all-services-test/Job-Execution-Role/PolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B924",
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-stepfunctions-tasks-emr-containers-all-services-test/Job-Execution-Role/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-test/Job-Execution-Role/PolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B924/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services-test/Job-Execution-Role/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -3368,7 +3356,7 @@
                           ],
                           "Version": "2012-10-17"
                         },
-                        "policyName": "PolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B924",
+                        "policyName": "JobExecutionRolePolicy6968CCB9",
                         "roles": [
                           {
                             "Fn::Select": [

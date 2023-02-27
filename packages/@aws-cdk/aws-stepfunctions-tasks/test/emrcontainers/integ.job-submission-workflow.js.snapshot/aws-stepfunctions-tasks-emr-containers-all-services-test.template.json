@@ -921,7 +921,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/37b9bc4f34c2af7d98cff20053a09be46c63d26f7c9951e19230de787314a5f8.json"
+       "/f6740ecec1b641bdbd77eaccd4de1d7ee616c58ec54c7449f093ec1e3c5d6b01.json"
       ]
      ]
     },
@@ -956,7 +956,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/1c293083c7ca2a85b9971a56b827528655c982c7cd525788c11f25281c50ff62.json"
+       "/e61289f1f31472773dae3d545209398d88f362eba9cff2bf36a902e9bdc82063.json"
       ]
      ]
     },
@@ -1016,7 +1016,7 @@
     }
    }
   },
-  "JobExecutionRolePolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B9247FE1E8DE": {
+  "JobExecutionRolePolicy6968CCB9": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1099,7 +1099,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "PolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B924",
+    "PolicyName": "JobExecutionRolePolicy6968CCB9",
     "Roles": [
      {
       "Fn::Select": [
