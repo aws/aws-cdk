@@ -79,7 +79,7 @@ configures all other HTTP method calls to `/books` to a lambda proxy.
 ```ts
 import { HttpUrlIntegration, HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration', 'https://get-books-proxy.myproxy.internal');
+const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration', 'https://get-books-proxy.example.com');
 
 declare const booksDefaultFn: lambda.Function;
 const booksDefaultIntegration = new HttpLambdaIntegration('BooksIntegration', booksDefaultFn);
@@ -401,6 +401,19 @@ declare const messageHandler: lambda.Function;
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
 webSocketApi.addRoute('sendmessage', {
   integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
+});
+```
+
+To add a route that can return a result:
+
+```ts
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const messageHandler: lambda.Function;
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+webSocketApi.addRoute('sendmessage', {
+  integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
+  returnResponse: true,
 });
 ```
 

@@ -684,6 +684,59 @@ describe('AppSync Lambda Authorization', () => {
 
   });
 
+  test('Attach Lambda Authorization to two or more graphql api', () => {
+    // WHEN
+    new appsync.GraphqlApi(stack, 'api1', {
+      name: 'api1',
+      schema: appsync.SchemaFile.fromAsset(
+        path.join(__dirname, 'appsync.test.graphql'),
+      ),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.LAMBDA,
+          lambdaAuthorizerConfig: {
+            handler: fn,
+          },
+        },
+      },
+    });
+
+    new appsync.GraphqlApi(stack, 'api2', {
+      name: 'api2',
+      schema: appsync.SchemaFile.fromAsset(
+        path.join(__dirname, 'appsync.test.graphql'),
+      ),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.LAMBDA,
+          lambdaAuthorizerConfig: {
+            handler: fn,
+          },
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::AppSync::GraphQLApi',
+      {
+        AuthenticationType: 'AWS_LAMBDA',
+        LambdaAuthorizerConfig: {
+          AuthorizerUri: {
+            'Fn::GetAtt': ['authfunction96361832', 'Arn'],
+          },
+        },
+      },
+    );
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': ['authfunction96361832', 'Arn'],
+      },
+    });
+  });
+
   test('Lambda authorization configurable in default authorization', () => {
     // WHEN
     new appsync.GraphqlApi(stack, 'api', {

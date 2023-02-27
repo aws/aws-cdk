@@ -3,13 +3,13 @@
   "Topic198E71B3E": {
    "Type": "AWS::SNS::Topic",
    "DependsOn": [
-    "MyTriggerFunctionTrigger5424E7A7"
+    "MyFunctionTriggerDB129D7B"
    ]
   },
   "Topic269377B75": {
    "Type": "AWS::SNS::Topic"
   },
-  "MyTriggerFunctionServiceRole1BB78C29": {
+  "MyFunctionServiceRole3C357FF2": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -40,7 +40,7 @@
     ]
    }
   },
-  "MyTriggerFunction056842F6": {
+  "MyFunction3BAA72D1": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -48,18 +48,18 @@
     },
     "Role": {
      "Fn::GetAtt": [
-      "MyTriggerFunctionServiceRole1BB78C29",
+      "MyFunctionServiceRole3C357FF2",
       "Arn"
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs14.x"
    },
    "DependsOn": [
-    "MyTriggerFunctionServiceRole1BB78C29"
+    "MyFunctionServiceRole3C357FF2"
    ]
   },
-  "MyTriggerFunctionTrigger5424E7A7": {
+  "MyFunctionTriggerDB129D7B": {
    "Type": "Custom::Trigger",
    "Properties": {
     "ServiceToken": {
@@ -69,10 +69,8 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyTriggerFunctionCurrentVersion61957CE160cd5b4c06c4d00191dc10a647ea0777"
-    },
-    "InvocationType": "RequestResponse",
-    "Timeout": 120000
+     "Ref": "MyFunctionCurrentVersion197490AF2cb2bc11080c1ef11d3b49c1f1603957"
+    }
    },
    "DependsOn": [
     "Topic269377B75"
@@ -80,11 +78,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyTriggerFunctionCurrentVersion61957CE160cd5b4c06c4d00191dc10a647ea0777": {
+  "MyFunctionCurrentVersion197490AF2cb2bc11080c1ef11d3b49c1f1603957": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
-     "Ref": "MyTriggerFunction056842F6"
+     "Ref": "MyFunction3BAA72D1"
     }
    }
   },
@@ -126,29 +124,7 @@
             [
              {
               "Fn::GetAtt": [
-               "MyTriggerFunction056842F6",
-               "Arn"
-              ]
-             },
-             ":*"
-            ]
-           ]
-          }
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Action": [
-          "lambda:InvokeFunction"
-         ],
-         "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             {
-              "Fn::GetAtt": [
-               "MyLambdaFunction67CCA873",
+               "MyFunction3BAA72D1",
                "Arn"
               ]
              },
@@ -209,87 +185,6 @@
    "DependsOn": [
     "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A"
    ]
-  },
-  "MyLambdaFunctionServiceRole313A4D46": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "MyLambdaFunction67CCA873": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "ZipFile": "exports.handler = function() { await setTimeout(3*60*1000, \"hi\"); };"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "MyLambdaFunctionServiceRole313A4D46",
-      "Arn"
-     ]
-    },
-    "Handler": "index.handler",
-    "Runtime": "nodejs16.x",
-    "Timeout": 900
-   },
-   "DependsOn": [
-    "MyLambdaFunctionServiceRole313A4D46"
-   ]
-  },
-  "MyLambdaFunctionCurrentVersion4FAB80ECdc4d4e257bb2b44c9c4b9231f0d16f4c": {
-   "Type": "AWS::Lambda::Version",
-   "Properties": {
-    "FunctionName": {
-     "Ref": "MyLambdaFunction67CCA873"
-    }
-   }
-  },
-  "MyTrigger": {
-   "Type": "Custom::Trigger",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "AWSCDKTriggerCustomResourceProviderCustomResourceProviderHandler97BECD91",
-      "Arn"
-     ]
-    },
-    "HandlerArn": {
-     "Ref": "MyLambdaFunctionCurrentVersion4FAB80ECdc4d4e257bb2b44c9c4b9231f0d16f4c"
-    },
-    "InvocationType": "Event",
-    "Timeout": 60000
-   },
-   "DependsOn": [
-    "Topic198E71B3E",
-    "Topic269377B75"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "MySecondFunctionServiceRole5B930841": {
    "Type": "AWS::IAM::Role",
@@ -352,9 +247,7 @@
     },
     "HandlerArn": {
      "Ref": "MySecondFunctionCurrentVersion7D497B5D173a4bb1f758991022ea97d651403362"
-    },
-    "InvocationType": "RequestResponse",
-    "Timeout": 120000
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

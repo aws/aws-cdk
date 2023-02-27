@@ -2,11 +2,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
-import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
+import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
-import { normalizeStatistic, parseStatistic } from './private/statistic';
+import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
+import { Stats } from './stats';
 
-export type DimensionHash = {[dim: string]: any};
+export type DimensionHash = { [dim: string]: any };
 
 export type DimensionsMap = { [dim: string]: string };
 
@@ -24,6 +25,8 @@ export interface CommonMetricOptions {
   /**
    * What function to use for aggregating.
    *
+   * Use the `aws_cloudwatch.Stats` helper class to construct valid input strings.
+   *
    * Can be one of the following:
    *
    * - "Minimum" | "min"
@@ -37,8 +40,6 @@ export interface CommonMetricOptions {
    * - "wmNN.NN" | "wm(NN.NN%:NN.NN%)"
    * - "tcNN.NN" | "tc(NN.NN%:NN.NN%)"
    * - "tsNN.NN" | "ts(NN.NN%:NN.NN%)"
-   *
-   * Use the factory functions on the `Stats` object to construct valid input strings.
    *
    * @default Average
    */
@@ -197,13 +198,13 @@ export interface MathExpressionOptions {
   readonly searchAccount?: string;
 
   /**
-    * Region to evaluate search expressions within.
-    *
-    * Specifying a searchRegion has no effect to the region used
-    * for metrics within the expression (passed via usingMetrics).
-    *
-    * @default - Deployment region.
-    */
+   * Region to evaluate search expressions within.
+   *
+   * Specifying a searchRegion has no effect to the region used
+   * for metrics within the expression (passed via usingMetrics).
+   *
+   * @default - Deployment region.
+   */
   readonly searchRegion?: string;
 }
 
@@ -291,17 +292,30 @@ export class Metric implements IMetric {
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
       throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
+
+    this.warnings = undefined;
     this.dimensions = this.validateDimensions(props.dimensionsMap ?? props.dimensions);
     this.namespace = props.namespace;
     this.metricName = props.metricName;
-    // Try parsing, this will throw if it's not a valid stat
-    this.statistic = normalizeStatistic(props.statistic || 'Average');
+
+    const parsedStat = parseStatistic(props.statistic || Stats.AVERAGE);
+    if (parsedStat.type === 'generic') {
+      // Unrecognized statistic, do not throw, just warn
+      // There may be a new statistic that this lib does not support yet
+      const label = props.label ? `, label "${props.label}"`: '';
+      this.warnings = [
+        `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
+          ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
+          ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.',
+      ];
+    }
+    this.statistic = normalizeStatistic(parsedStat);
+
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
     this.account = props.account;
     this.region = props.region;
-    this.warnings = undefined;
   }
 
   /**
@@ -389,14 +403,22 @@ export class Metric implements IMetric {
       throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
-    const stat = parseStatistic(metricConfig.metricStat.statistic);
+    const parsed = parseStatistic(metricConfig.metricStat.statistic);
+
+    let extendedStatistic: string | undefined = undefined;
+    if (parsed.type === 'single') {
+      extendedStatistic = singleStatisticToString(parsed);
+    } else if (parsed.type === 'pair') {
+      extendedStatistic = pairStatisticToString(parsed);
+    }
+
     return {
       dimensions: metricConfig.metricStat.dimensions,
       namespace: metricConfig.metricStat.namespace,
       metricName: metricConfig.metricStat.metricName,
       period: metricConfig.metricStat.period.toSeconds(),
-      statistic: stat.type === 'simple' ? stat.statistic : undefined,
-      extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
+      statistic: parsed.type === 'simple' ? parsed.statistic as Statistic : undefined,
+      extendedStatistic,
       unit: this.unit,
     };
   }
@@ -587,9 +609,9 @@ export class MathExpression implements IMetric {
     // we can add warnings.
     const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(i => !this.usingMetrics[i]);
 
-    const warnings = [];
+    const warnings: string[] = [];
 
-    if (!this.expression.toUpperCase().match('\\s*SELECT\\s.*') && missingIdentifiers.length > 0) {
+    if (!this.expression.toUpperCase().match('\\s*SELECT|SEARCH|METRICS\\s.*') && missingIdentifiers.length > 0) {
       warnings.push(`Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`);
     }
 

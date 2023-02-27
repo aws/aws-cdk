@@ -8,9 +8,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
 import { Fn, SecretValue, Token } from '@aws-cdk/core';
 import { Node } from 'constructs';
-import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 import { makeCodePipelineOutput } from './private/outputs';
+import { FileSet, Step } from '../blueprint';
 
 /**
  * Factory for CodePipeline source steps
@@ -236,6 +236,12 @@ export interface GitHubSourceOptions {
    */
   readonly trigger?: GitHubTrigger;
 
+  /**
+   * The action name used for this source in the CodePipeline
+   *
+   * @default - The repository string
+   */
+  readonly actionName?: string;
 }
 
 /**
@@ -262,7 +268,7 @@ class GitHubSource extends CodePipelineSource {
   protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.GitHubSourceAction({
       output,
-      actionName,
+      actionName: this.props.actionName ?? actionName,
       runOrder,
       oauthToken: this.authentication,
       owner: this.owner,
@@ -379,7 +385,6 @@ export interface ConnectionSourceOptions {
    */
   readonly connectionArn: string;
 
-
   // long URL in @see
   /**
    * If this is set, the next CodeBuild job clones the repository (instead of CodePipeline downloading the files).
@@ -403,6 +408,13 @@ export interface ConnectionSourceOptions {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html
    */
   readonly triggerOnPush?: boolean;
+
+  /**
+   * The action name used for this source in the CodePipeline
+   *
+   * @default - The repository string
+   */
+  readonly actionName?: string;
 }
 
 class CodeStarConnectionSource extends CodePipelineSource {
@@ -424,7 +436,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
   protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.CodeStarConnectionsSourceAction({
       output,
-      actionName,
+      actionName: this.props.actionName ?? actionName,
       runOrder,
       connectionArn: this.props.connectionArn,
       owner: this.owner,
@@ -468,6 +480,13 @@ export interface CodeCommitSourceOptions {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
    */
   readonly codeBuildCloneOutput?: boolean;
+
+  /**
+   * The action name used for this source in the CodePipeline
+   *
+   * @default - The repository name
+   */
+  readonly actionName?: string;
 }
 
 class CodeCommitSource extends CodePipelineSource {
@@ -483,7 +502,7 @@ class CodeCommitSource extends CodePipelineSource {
     return new cp_actions.CodeCommitSourceAction({
       output,
       // Guaranteed to be okay as action name
-      actionName: this.repository.repositoryName,
+      actionName: this.props.actionName ?? this.repository.repositoryName,
       runOrder,
       branch: this.branch,
       trigger: this.props.trigger,

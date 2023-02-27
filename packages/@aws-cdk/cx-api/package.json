@@ -54,7 +54,9 @@
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "post": ["node ./build-tools/flag-report.js"]
+    "post": [
+      "node ./build-tools/flag-report.js"
+    ]
   },
   "author": {
     "name": "Amazon Web Services",
@@ -77,7 +79,7 @@
     "@types/mock-fs": "^4.13.1",
     "@types/semver": "^7.3.13",
     "jest": "^27.5.1",
-    "madge": "^5.0.1",
+    "madge": "^5.0.2",
     "mock-fs": "^4.14.0"
   },
   "repository": {

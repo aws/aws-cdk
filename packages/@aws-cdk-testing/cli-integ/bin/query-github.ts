@@ -25,7 +25,6 @@ async function main() {
       }))
     .demandCommand()
     .help()
-    .strictOptions()
     .showHelpOnFail(false)
     .argv;
 

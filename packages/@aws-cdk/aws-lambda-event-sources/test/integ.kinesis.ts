@@ -1,8 +1,8 @@
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { KinesisEventSource } from '../lib';
 import { TestFunction } from './test-function';
+import { KinesisEventSource } from '../lib';
 
 class KinesisEventSourceTest extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
