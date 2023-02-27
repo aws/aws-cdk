@@ -487,6 +487,7 @@ map.iterator(new sfn.Pass(this, 'Pass State'));
 ```
 
 Map states in Distributed mode support multiple sources for an array to iterate:
+
 * JSON array from the state input payload
 * objects in an S3 bucket and optional prefix
 * JSON array in a JSON file stored in S3
