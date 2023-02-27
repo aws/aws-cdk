@@ -21,7 +21,8 @@ export enum MapStateMode {
    */
   DISTRIBUTED = 'DISTRIBUTED',
   /**
-   * Inline mode provides limited concurrency.
+   * Inline mode provides limited concurrency. In this mode, the Map state supports up to 40 concurrent iterations.
+   * Concurrency can be configured with the MaxConcurrency field.
    */
   INLINE = 'INLINE'
 }
@@ -147,7 +148,6 @@ export const isPositiveInteger = (value: number) => {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-map-state.html
  */
 export class Map extends State implements INextable {
-
   public readonly endStates: INextable[];
 
   protected readonly maxConcurrency: number | undefined;
@@ -212,6 +212,7 @@ export class Map extends State implements INextable {
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderNextEnd(),
       ...this.renderInputOutput(),
+      ...this.renderParameters(),
       ...this.renderItemSelector(),
       ...this.renderResultSelector(),
       ...this.renderRetryCatch(),
@@ -257,6 +258,16 @@ export class Map extends State implements INextable {
     });
   }
 
+  /**
+   * Render Parameters in ASL JSON format
+   */
+  private renderParameters(): any {
+    if (this.parameters === undefined) { return undefined; }
+
+    return FieldUtils.renderObject({
+      Parameters: this.parameters,
+    });
+  }
   /**
    * Render ItemProcessor in ASL JSON format
    */
