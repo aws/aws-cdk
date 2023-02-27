@@ -1,5 +1,5 @@
 import {
-  Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
+  Connections, IConnectable, Instance, ISecurityGroup, IVpc, Peer, Port,
   SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
 } from '@aws-cdk/aws-ec2';
 import { Duration, Lazy, Resource } from '@aws-cdk/core';
@@ -400,6 +400,24 @@ export class LoadBalancer extends Resource implements IConnectable {
   }
 }
 
+/**
+ * An EC2 instance that is the target for load balancing
+ *
+ * If you register a target of this type, you are responsible for making
+ * sure the load balancer's security group can connect to the instance.
+ */
+export class InstanceTarget implements ILoadBalancerTarget {
+  /**
+   * Create a new Instance target.
+   *
+   * @param instance Instance to register to.
+   * @param connections The network connections associated with this resource.
+   */
+  constructor(public readonly instance: Instance, public readonly connections: Connections) {
+  }
+  public attachToClassicLB(_loadBalancer: LoadBalancer): void {
+  }
+}
 /**
  * Reference to a listener's port just created.
  *
