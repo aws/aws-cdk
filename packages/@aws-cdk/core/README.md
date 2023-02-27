@@ -1397,6 +1397,10 @@ declare context: ValidationContext;
 context.report.submit('MyCheckovPlugin', ValidationReportStatus.FAILURE);
 ```
 
+> **Note**
+> Plugins are not allowed to modify anything in the cloud assembly. Any attempt
+> to do so will result in synthesis failure.
+
 If your plugin depends on an external tool, keep in mind that some developers may
 not have that tool installed in their workstations yet. To minimize friction, we
 highly recommend that you provide some installation script along with your
