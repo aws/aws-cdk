@@ -1,3 +1,4 @@
+import { appendFileSync } from 'fs';
 import * as core from '../../lib';
 import { ValidationReportStatus } from '../../lib';
 
@@ -65,6 +66,24 @@ describe('validations', () => {
       app.synth();
     }).toThrow(/Validation plugin 'test-plugin' is not ready/);
   });
+
+  test('plugin tries to modify the cloud assembly', () => {
+    const app = new core.App({
+      validationPlugins: [
+        new RoguePlugin(),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'success',
+      },
+    });
+    expect(() => {
+      app.synth();
+    }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
+  });
 });
 
 class TestValidations implements core.IValidationPlugin {
@@ -90,6 +109,19 @@ class TestValidations implements core.IValidationPlugin {
 
   public isReady(): boolean {
     return this.ready;
+  }
+}
+
+class RoguePlugin implements core.IValidationPlugin {
+  public readonly name = 'rogue-plugin';
+
+  validate(context: core.IValidationContext): void {
+    appendFileSync(context.templateFullPath, 'malicious data');
+    context.report.submit(this.name, ValidationReportStatus.SUCCESS);
+  }
+
+  isReady(): boolean {
+    return true;
   }
 }
 

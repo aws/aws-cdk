@@ -1,3 +1,5 @@
+import { createHash, Hash } from 'crypto';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
@@ -54,12 +56,13 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 
   const assembly = builder.buildAssembly();
 
-  invokeValidationPlugins(root);
+  invokeValidationPlugins(root, builder.outdir);
 
   return assembly;
 }
 
-function invokeValidationPlugins(root: IConstruct) {
+function invokeValidationPlugins(root: IConstruct, outdir: string) {
+  const originalHash = computeChecksumOfFolder(outdir);
   const tree = new ConstructTree(root);
   let failed = false;
   visit(root, 'post', construct => {
@@ -75,9 +78,11 @@ function invokeValidationPlugins(root: IConstruct) {
             throw new Error(`Validation plugin '${plugin.name}' is not ready`);
           }
           plugin.validate(validationContext);
-
+          if (computeChecksumOfFolder(outdir) !== originalHash) {
+            throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+          }
         }
-        if (!validationContext.report.success) {
+        if (construct.validationPlugins.length > 0 && !validationContext.report.success) {
           // eslint-disable-next-line no-console
           console.log(validationContext.report.toString());
           failed = true;
@@ -88,6 +93,27 @@ function invokeValidationPlugins(root: IConstruct) {
   if (failed) {
     throw new Error('Validation failed. See the validation report above for details');
   }
+}
+
+function computeChecksumOfFolder(folder: string, inputHash: Hash | undefined = undefined): string {
+  const hash = inputHash ? inputHash : createHash('sha256');
+
+  const info = fs.readdirSync(folder, { withFileTypes: true });
+  for (let item of info) {
+    const fullPath = path.join(folder, item.name);
+    if (item.isFile()) {
+      hash.update(fs.readFileSync(fullPath));
+    } else if (item.isDirectory()) {
+      computeChecksumOfFolder(fullPath, hash);
+    }
+  }
+
+  if (!inputHash) {
+    return hash.digest().toString('hex');
+  }
+
+  // Will be ignored
+  return '';
 }
 
 const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
