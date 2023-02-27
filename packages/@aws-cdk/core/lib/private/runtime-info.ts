@@ -1,4 +1,5 @@
 import { IConstruct } from 'constructs';
+import { App } from '../app';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
 
@@ -39,6 +40,33 @@ export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo
 }
 
 /**
+ * Add analytics data for any validation plugins that are used.
+ * Since validation plugins are not constructs we have to handle them
+ * as a special case
+ */
+function addValidationPluginInfo(stack: Stack, allConstructInfos: ConstructInfo[]): void {
+  let stage = Stage.of(stack);
+  let done = false;
+  do {
+    if (App.isApp(stage)) {
+      done = true;
+    }
+    if (stage) {
+      allConstructInfos.push(...stage.validationPlugins.map(
+        plugin => {
+          return {
+            fqn: `validation.${plugin.name}`,
+            // TODO: what version should we have here?
+            version: '0.0.0',
+          };
+        },
+      ));
+      stage = Stage.of(stage);
+    }
+  } while (!done && stage);
+}
+
+/**
  * For a given stack, walks the tree and finds the runtime info for all constructs within the tree.
  * Returns the unique list of construct info present in the stack,
  * as long as the construct fully-qualified names match the defined allow list.
@@ -56,6 +84,8 @@ export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
     fqn: 'jsii-runtime.Runtime',
     version: getJsiiAgentVersion(),
   });
+
+  addValidationPluginInfo(stack, allConstructInfos);
 
   // Filter out duplicate values
   const uniqKeys = new Set();

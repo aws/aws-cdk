@@ -1,6 +1,6 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
-import { App, Stack } from '../lib';
+import { App, Stack, IValidationPlugin, IValidationContext, Stage, ValidationReportStatus } from '../lib';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
@@ -70,8 +70,42 @@ describe('MetadataResource', () => {
     expect(stackAnalytics()).not.toContain('TestConstruct');
   });
 
-  function stackAnalytics(stackName: string = 'Stack') {
-    const encodedAnalytics = app.synth().getStackByName(stackName).template.Resources?.CDKMetadata?.Properties?.Analytics as string;
+  test('validation plugins included', () => {
+    const newApp = new App({
+      analyticsReporting: true,
+      validationPlugins: [
+        new ValidationPlugin('plugin1'),
+      ],
+    });
+
+    const stage1 = new Stage(newApp, 'Stage1', {
+      validationPlugins: [
+        new ValidationPlugin('plugin11'),
+      ],
+    });
+
+    const stack1 = new Stack(stage1, 'Stack1', { stackName: 'stack1' });
+
+    const stage2 = new Stage(newApp, 'Stage2', {
+      validationPlugins: [
+        new ValidationPlugin('plugin12'),
+      ],
+    });
+    const stack2 = new Stack(stage2, 'Stack2', { stackName: 'stack1' });
+
+    expect(stackAnalytics(stage1, stack1.stackName)).toMatch(/validation.{plugin11,plugin1}/);
+    expect(stackAnalytics(stage2, stack2.stackName)).toMatch(/validation.{plugin12,plugin1}/);
+  });
+
+  function stackAnalytics(stage: Stage = app, stackName: string = 'Stack') {
+    let stackArtifact;
+    if (App.isApp(stage)) {
+      stackArtifact = stage.synth().getStackByName(stackName);
+    } else {
+      const a = App.of(stage)!;
+      stackArtifact = a.synth().getNestedAssembly(stage.artifactId).getStackByName(stackName);
+    }
+    let encodedAnalytics = stackArtifact.template.Resources?.CDKMetadata?.Properties?.Analytics as string;;
     return plaintextConstructsFromAnalytics(encodedAnalytics);
   }
 });
@@ -152,4 +186,18 @@ class TestConstruct extends Construct {
 class TestThirdPartyConstruct extends Construct {
   // @ts-ignore
   private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'mycoolthing.TestConstruct', version: '1.2.3' }
+}
+
+class ValidationPlugin implements IValidationPlugin {
+  constructor(public readonly name: string) {}
+
+  validate(context: IValidationContext): void {
+    context.report.submit(this.name, ValidationReportStatus.SUCCESS);
+
+    return;
+  }
+
+  isReady(): boolean {
+    return true;
+  }
 }
