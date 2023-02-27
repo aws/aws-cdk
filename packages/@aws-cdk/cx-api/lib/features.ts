@@ -81,6 +81,7 @@ export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:
 export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
 export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
 export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId';
+export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -669,6 +670,27 @@ export const FLAGS: Record<string, FlagInfo> = {
       the API configuration, including methods, and resources, etc. Enable this feature flag
       to also include the configuration of any authorizer attached to the API in the
       calculation, so any changes made to an authorizer will create a new deployment.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [REDSHIFT_COLUMN_ID]: {
+    type: FlagType.BugFix,
+    summary: 'Whether to use an ID to track Redshift column changes',
+    detailsMd: `
+      Redshift columns are identified by their \`name\`. If a column is renamed, the old column
+      will be dropped and a new column will be created. This can cause data loss.
+
+      This flag enables the use of an \`id\` attribute for Redshift columns. If this flag is enabled, the
+      internal CDK architecture will track changes of Redshift columns through their \`id\`, rather
+      than their \`name\`. This will prevent data loss when columns are renamed.
+
+      **NOTE** - Enabling this flag comes at a **risk**. When enabled, update the \`id\`s of all columns,
+      **however** do not change the \`names\`s of the columns. If the \`names\` of the columns are changed during
+      initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
+      of the ids, the \`names\` of the columns can be changed without data loss.
       `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
