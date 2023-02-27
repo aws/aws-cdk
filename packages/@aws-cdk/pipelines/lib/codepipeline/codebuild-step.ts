@@ -6,6 +6,7 @@ import { ShellStep, ShellStepProps } from '../blueprint';
 import { CloudWatchLoggingOption, S3LoggingOptions } from './codepipeline';
 import { mergeBuildSpecs } from './private/buildspecs';
 import { makeCodePipelineOutput } from './private/outputs';
+import { ShellStep, ShellStepProps } from '../blueprint';
 
 /**
  * Construction props for a CodeBuildStep
