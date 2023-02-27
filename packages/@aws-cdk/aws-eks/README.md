@@ -1193,6 +1193,20 @@ cluster.addHelmChart('ExternalSecretsOperator', {
 });
 ```
 
+Helm chart can come with Custom Resource Definitions (CRDs) defined that by default will be installed by helm as well. However in special cases it might be needed to skip the installation of CRDs, for that the property `skipCrds` can be used.
+
+```ts
+declare const cluster: eks.Cluster;
+// option 1: use a construct
+new eks.HelmChart(this, 'NginxIngress', {
+  cluster,
+  chart: 'nginx-ingress',
+  repository: 'https://helm.nginx.com/stable',
+  namespace: 'kube-system',
+  skipCrds: true,
+});
+```
+
 ### OCI Charts
 
 OCI charts are also supported.
