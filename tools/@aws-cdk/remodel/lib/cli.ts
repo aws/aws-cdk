@@ -72,6 +72,8 @@ export async function main() {
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
   await copyTemplateFiles(templateDir, targetDir);
 
+  await runBuild(targetDir);
+
   if (clean) {
     await fs.remove(path.resolve(targetDir));
   }
@@ -142,20 +144,29 @@ async function makeAwsCdkLib(target: string) {
     { spaces: 2 },
   );
 
+  // Explicitly copy some missing files that ubergen doesn't bring over for various reasons
+  // Ubergen ignores some of these contents because they are within nested `node_modules` directories
+  // for testing purposes
+  await fs.copy(
+    path.resolve(target, 'packages', '@aws-cdk', 'aws-synthetics', 'test', 'canaries'),
+    path.resolve(target, 'packages', 'aws-cdk-lib', 'aws-synthetics', 'test', 'canaries'),
+    { overwrite: true },
+  );
+
   await fs.writeJson(pkgJsonPath, {
     ...pkgJson,
-    jsii: {
+    'jsii': {
       ...pkgJson.jsii,
       excludeTypescript: [
         ...pkgJson.jsii.excludeTypescript,
-        "scripts",
+        'scripts',
       ],
     },
-    ubergen: {
+    'ubergen': {
       ...pkgJson.ubergen,
       libRoot: awsCdkLibDir,
     },
-    scripts: {
+    'scripts': {
       ...pkgJson.scripts,
       gen: 'ts-node scripts/gen.ts',
       build: 'cdk-build',
@@ -164,16 +175,17 @@ async function makeAwsCdkLib(target: string) {
     'cdk-build': {
       ...pkgJson['cdk-build'],
       pre: [
-        `(cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)`,
+        'esbuild --bundle integ-tests/lib/assertions/providers/lambda-handler/index.ts --target=node14 --platform=node --external:aws-sdk --outfile=integ-tests/lib/assertions/providers/lambda-handler.bundle/index.js',
+        '(cp -f $(node -p \'require.resolve(\"aws-sdk/apis/metadata.json\")\') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)',
         '(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)',
-        '(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)'
+        '(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)',
       ],
       post: [
         'ts-node ./scripts/verify-imports-resolve-same.ts',
         'ts-node ./scripts/verify-imports-shielded.ts',
       ],
     },
-    devDependencies: {
+    'devDependencies': {
       ...filteredDevDeps,
       '@aws-cdk/cfn2ts': '0.0.0',
     },
@@ -182,6 +194,16 @@ async function makeAwsCdkLib(target: string) {
   // TODO: Cleanup
   // 1. lib/aws-events-targets/build-tools, moved to gen.ts step
   // 2. All bundled and deprecated packages
+}
+
+// Build aws-cdk-lib and the alpha packages
+async function runBuild(dir: string) {
+  const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
+  await e('yarn install');
+  // build everything, including all V1 packages so we can transform them if needed
+  await e('npx lerna run build');
+
+  await e('./scripts/transform.sh');
 }
 
 // Creates a map of directories to the cloudformations scopes that should be

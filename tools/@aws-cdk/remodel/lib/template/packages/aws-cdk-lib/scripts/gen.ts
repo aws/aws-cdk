@@ -2,6 +2,7 @@ import { generateAll, ModuleMap } from '@aws-cdk/cfn2ts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { main as genRegionInfoBuiltins } from '../region-info/build-tools/generate-static-data';
+import { main as generateIncludeL1Map } from '../cloudformation-include/build';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
@@ -38,8 +39,11 @@ async function main() {
   // Call build-tools within modules for other codegen
   // TODO: Move these up into aws-cdk-libs/scripts
   require('../aws-events-targets/build-tools/gen.js');
-  require('../cloudformation-include/build.js');
+  // this can't actually be run because it's dependent of v1 module structure
+  // and in fact I'm pretty sure that cloudformation-include is just broken
+  // require('../cloudformation-include/build.js');
   await genRegionInfoBuiltins();
+  await generateIncludeL1Map();
 }
 
 async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {
