@@ -121,11 +121,12 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    * Sets up the permissions necessary for the API Gateway service to invoke the Lambda function.
    */
   protected setupPermissions() {
-    if (this.role instanceof iam.Role) {
-      this.addLambdaInvokePermission(this.role);
+    if (!this.role) {
+      this.addDefaultPermisionRole();
       return;
+    } else if (this.role instanceof iam.Role) {
+      this.addLambdaInvokePermission(this.role);
     }
-    this.addDefaultPermisionRole();
   }
 
   /**
