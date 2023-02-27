@@ -139,6 +139,10 @@ export class Bootstrapper {
     *    - the name indicating the custom permissions boundary to be used
     * Re-bootstrapping will NOT be blocked by either tightening or relaxing the permissions' boundary.
     */
+
+    // InputPermissionsBoundary is an `any` type and if it is not defined it
+    // appears as an empty string ''. We need to force it to evaluate an empty string
+    // as undefined
     const currentPermissionsBoundary: string | undefined = current.parameters.InputPermissionsBoundary || undefined;
     const inputPolicyName = params.examplePermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
     let policyName: string | undefined;
@@ -150,6 +154,8 @@ export class Bootstrapper {
     if (currentPermissionsBoundary !== policyName) {
       if (!currentPermissionsBoundary) {
         warning(`Adding new permissions boundary ${policyName}`);
+      } else if (!policyName) {
+        warning(`Removing existing permissions boundary ${currentPermissionsBoundary}`);
       } else {
         warning(`Changing permissions boundary from ${currentPermissionsBoundary} to ${policyName}`);
       }

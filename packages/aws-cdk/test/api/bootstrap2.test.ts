@@ -186,6 +186,26 @@ describe('Bootstrapping v2', () => {
     ]));
   });
 
+  test('removing existing permissions boundary', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: 'permissions-boundary-name',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {},
+    });
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Removing existing permissions boundary permissions-boundary-name/),
+      ]),
+    ]));
+  });
+
   test('passing trusted accounts without CFN managed policies results in an error', async () => {
     await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
