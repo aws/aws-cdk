@@ -42,7 +42,10 @@
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "userData": {
+                        "Fn::Base64": "#!/bin/bash"
+                      }
                     },
                     "tagSpecifications": [
                       {
@@ -118,7 +121,10 @@
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "userData": {
+                        "Fn::Base64": "#!/bin/bash"
+                      }
                     },
                     "tagSpecifications": [
                       {
@@ -1275,7 +1281,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.168"
+          "version": "10.1.189"
         }
       }
     },
