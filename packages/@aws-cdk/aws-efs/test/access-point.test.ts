@@ -37,11 +37,15 @@ test('support tags for AccessPoint', () => {
     fileSystem,
   });
   Tags.of(accessPoint).add('key1', 'value1');
+  Tags.of(accessPoint).add('key2', 'value2');
+  Tags.of(accessPoint).add('Name', 'MyAccessPointName');
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::AccessPoint', {
     AccessPointTags: [
       { Key: 'key1', Value: 'value1' },
+      { Key: 'key2', Value: 'value2' },
+      { Key: 'Name', Value: 'MyAccessPointName' },
     ],
   });
 });
