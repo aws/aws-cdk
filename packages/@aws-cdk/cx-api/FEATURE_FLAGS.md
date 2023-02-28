@@ -46,6 +46,7 @@ Flags come in three types:
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
+| [@aws-cdk/aws-ec2:launchTemplateDefaultUserData](#aws-cdkaws-ec2launchtemplatedefaultuserdata) | Define user data for a launch template by default when a machine image is provided. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -82,7 +83,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
     "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
-    "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true
+    "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
+    "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true
   }
 }
 ```
@@ -832,6 +834,21 @@ calculation, so any changes made to an authorizer will create a new deployment.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.66.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ec2:launchTemplateDefaultUserData
+
+*Define user data for a launch template by default when a machine image is provided.* (fix)
+
+The ec2.LaunchTemplate construct did not define user data when a machine image is
+provided despite the document. If this is set, a user data is automatically defined
+according to the OS of the machine image.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
