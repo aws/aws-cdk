@@ -568,6 +568,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_39 = MysqlEngineVersion.of('5.7.39', '5.7');
   /** Version "5.7.40". */
   public static readonly VER_5_7_40 = MysqlEngineVersion.of('5.7.40', '5.7');
+  /** Version "5.7.41". */
+  public static readonly VER_5_7_41 = MysqlEngineVersion.of('5.7.41', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -601,6 +603,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_30 = MysqlEngineVersion.of('8.0.30', '8.0');
   /** Version "8.0.31". */
   public static readonly VER_8_0_31 = MysqlEngineVersion.of('8.0.31', '8.0');
+  /** Version "8.0.32". */
+  public static readonly VER_8_0_32 = MysqlEngineVersion.of('8.0.32', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
