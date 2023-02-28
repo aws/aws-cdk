@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { App, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as s3 from '../lib';
 
@@ -35,5 +36,7 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-s3-bucket-auto-delete-objects');
-app.synth();
+
+new IntegTest(app, 'cdk-integ-s3-bucket-auto-delete-objects', {
+  testCases: [new TestStack(app, 'cdk-s3-bucket-auto-delete-objects')],
+});

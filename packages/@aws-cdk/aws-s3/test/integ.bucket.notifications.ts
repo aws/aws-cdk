@@ -15,5 +15,3 @@ new s3.Bucket(stack, 'MyEventBridgeBucket', {
 new integ.IntegTest(app, 'NotificationTest', {
   testCases: [stack],
 });
-
-app.synth();

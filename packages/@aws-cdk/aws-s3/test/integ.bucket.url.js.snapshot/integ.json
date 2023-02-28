@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "cdk-integ-s3-urls/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-urls"
+      ],
+      "assertionStack": "cdk-integ-s3-urls/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegs3urlsDefaultTestDeployAssertDB43F13E"
+    }
+  }
+}

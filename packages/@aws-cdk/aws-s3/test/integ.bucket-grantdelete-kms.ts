@@ -2,6 +2,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as s3 from '../lib';
 
 const app = new cdk.App();
@@ -18,4 +19,6 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
 // when
 bucket.grantDelete(deleter);
 
-app.synth();
+new IntegTest(app, 'cdk-integ-s3-grant-delete-kms', {
+  testCases: [stack],
+});
