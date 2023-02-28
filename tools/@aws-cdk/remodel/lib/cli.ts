@@ -72,7 +72,7 @@ export async function main() {
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
   await copyTemplateFiles(templateDir, targetDir);
 
-  await runBuild(targetDir);
+  await cleanup(targetDir);
 
   if (clean) {
     await fs.remove(path.resolve(targetDir));
@@ -196,14 +196,13 @@ async function makeAwsCdkLib(target: string) {
   // 2. All bundled and deprecated packages
 }
 
-// Build aws-cdk-lib and the alpha packages
-async function runBuild(dir: string) {
-  const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
-  await e('yarn install');
-  // build everything, including all V1 packages so we can transform them if needed
-  await e('npx lerna run build');
+async function cleanup(dir: string) {
+  const awsCdkLibDir = path.join(dir, 'packages', 'aws-cdk-lib');
 
-  await e('./scripts/transform.sh');
+  // Remove the `build.js` file within aws-cloudformation-include because this functionality is now
+  // handled during codegen
+  const cfnIncludeMapBuildPath = path.join(awsCdkLibDir, 'cloudformation-include', 'build.js');
+  await fs.remove(cfnIncludeMapBuildPath);
 }
 
 // Creates a map of directories to the cloudformations scopes that should be

@@ -2,7 +2,6 @@ import { generateAll, ModuleMap } from '@aws-cdk/cfn2ts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { main as genRegionInfoBuiltins } from '../region-info/build-tools/generate-static-data';
-import { main as generateIncludeL1Map } from '../cloudformation-include/build';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
@@ -42,8 +41,8 @@ async function main() {
   // this can't actually be run because it's dependent of v1 module structure
   // and in fact I'm pretty sure that cloudformation-include is just broken
   // require('../cloudformation-include/build.js');
+  await genCfnIncludeMap(generated);
   await genRegionInfoBuiltins();
-  await generateIncludeL1Map();
 }
 
 async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {
@@ -82,4 +81,17 @@ async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {
 
   await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
   await fs.writeFile(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n'));
+}
+
+async function genCfnIncludeMap(generated: ModuleMap) {
+  const classMap = {};
+  Object.entries(generated).forEach(([moduleName, { resources }]) => {
+    const modulePath = `aws-cdk-lib/${moduleName}`;
+    Object.entries(resources).forEach(([resourceName, resourceClassName]) => {
+      classMap[resourceName] = `${modulePath}.${resourceClassName}`;
+    });
+  });
+
+  const filePath = path.join(__dirname, '..', 'cloudformation-include', 'cfn-types-2-classes.json');
+  await fs.writeJson(filePath, classMap, { spaces: 2 });
 }
