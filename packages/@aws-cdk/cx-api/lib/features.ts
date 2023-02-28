@@ -82,6 +82,7 @@ export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databasePro
 export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
 export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId';
 export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
+export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -662,6 +663,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
+  //////////////////////////////////////////////////////////////////////
   [APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID]: {
     type: FlagType.BugFix,
     summary: 'Include authorizer configuration in the calculation of the API deployment logical ID.',
@@ -675,6 +677,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
+  //////////////////////////////////////////////////////////////////////
   [EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA]: {
     type: FlagType.BugFix,
     summary: 'Define user data for a launch template by default when a machine image is provided.',
@@ -682,6 +685,20 @@ export const FLAGS: Record<string, FlagInfo> = {
       The ec2.LaunchTemplate construct did not define user data when a machine image is
       provided despite the document. If this is set, a user data is automatically defined
       according to the OS of the machine image.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: 'V2NEXT' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'SecretTargetAttachments uses the ResourcePolicy of the attached Secret.',
+    detailsMd: `
+      Forward any additions to the resource policy to the original secret.
+      This is required because a secret can only have a single resource policy.
+      If we do not forward policy additions, a new policy resource is created using the secret attachment ARN.
+      This ends up being rejected by CloudFormation.
       `,
     recommendedValue: true,
     introducedIn: { v2: 'V2NEXT' },

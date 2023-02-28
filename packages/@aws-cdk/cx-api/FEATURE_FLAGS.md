@@ -47,6 +47,7 @@ Flags come in three types:
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
 | [@aws-cdk/aws-ec2:launchTemplateDefaultUserData](#aws-cdkaws-ec2launchtemplatedefaultuserdata) | Define user data for a launch template by default when a machine image is provided. | V2NEXT | (fix) |
+| [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -84,7 +85,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
     "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
-    "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true
+    "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
+    "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": true
   }
 }
 ```
@@ -843,6 +845,22 @@ calculation, so any changes made to an authorizer will create a new deployment.
 The ec2.LaunchTemplate construct did not define user data when a machine image is
 provided despite the document. If this is set, a user data is automatically defined
 according to the OS of the machine image.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments
+
+*SecretTargetAttachments uses the ResourcePolicy of the attached Secret.* (fix)
+
+Forward any additions to the resource policy to the original secret.
+This is required because a secret can only have a single resource policy.
+If we do not forward policy additions, a new policy resource is created using the secret attachment ARN.
+This ends up being rejected by CloudFormation.
 
 
 | Since | Default | Recommended |
