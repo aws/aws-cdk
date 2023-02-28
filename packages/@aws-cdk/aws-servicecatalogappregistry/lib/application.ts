@@ -250,11 +250,6 @@ export class Application extends ApplicationBase {
     });
   }
 
-  /**
-   * Application manager URL for the Application.
-   * @attribute
-   */
-  public readonly applicationManagerUrl?: cdk.CfnOutput;
   public readonly applicationArn: string;
   public readonly applicationId: string;
   public readonly applicationName?: string;
@@ -274,11 +269,6 @@ export class Application extends ApplicationBase {
     this.applicationId = application.attrId;
     this.applicationName = props.applicationName;
     this.nodeAddress = cdk.Names.nodeUniqueId(application.node);
-
-    this.applicationManagerUrl = new cdk.CfnOutput(this, 'ApplicationManagerUrl', {
-      value: `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`,
-      description: 'Application manager url for the application created.',
-    });
   }
 
   protected generateUniqueHash(resourceAddress: string): string {

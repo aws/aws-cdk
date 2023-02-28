@@ -105,6 +105,11 @@ class CreateTargetApplication extends TargetApplication {
     });
     cdk.Tags.of(appRegApplication).add('managedBy', 'CDK_Application_Associator');
 
+    new cdk.CfnOutput(appRegApplication, 'ApplicationManagerUrl', {
+      value: `https://${appRegApplication.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${appRegApplication.applicationName}`,
+      description: 'Application manager url for the application created.',
+    });
+
     return {
       application: appRegApplication,
     };
