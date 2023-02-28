@@ -776,6 +776,12 @@
                     "fileSystemId": {
                       "Ref": "FileSystem8A8E25C0"
                     },
+                    "accessPointTags": [
+                      {
+                        "key": "Name",
+                        "value": "MyAccessPoint"
+                      }
+                    ],
                     "rootDirectory": {}
                   }
                 },

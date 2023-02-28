@@ -34,7 +34,7 @@ const fileSystem = new FileSystem(stack, 'FileSystem', {
 const accessPoint = new AccessPoint(stack, 'AccessPoint', {
   fileSystem,
 });
-cdk.Tags.of(accessPoint).add('Name', 'AccessPoint');
+cdk.Tags.of(accessPoint).add('Name', 'MyAccessPoint');
 
 new integ.IntegTest(app, 'FileSystemPolicyTest', {
   testCases: [stack],
