@@ -1,0 +1,261 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-assets-tarball": {
+        "id": "integ-assets-tarball",
+        "path": "integ-assets-tarball",
+        "children": {
+          "DockerImage": {
+            "id": "DockerImage",
+            "path": "integ-assets-tarball/DockerImage",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "integ-assets-tarball/DockerImage/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Repository": {
+                "id": "Repository",
+                "path": "integ-assets-tarball/DockerImage/Repository",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecr-assets.TarballImageAsset",
+              "version": "0.0.0"
+            }
+          },
+          "DockerImage2": {
+            "id": "DockerImage2",
+            "path": "integ-assets-tarball/DockerImage2",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "integ-assets-tarball/DockerImage2/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Repository": {
+                "id": "Repository",
+                "path": "integ-assets-tarball/DockerImage2/Repository",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecr-assets.TarballImageAsset",
+              "version": "0.0.0"
+            }
+          },
+          "MyUser": {
+            "id": "MyUser",
+            "path": "integ-assets-tarball/MyUser",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-assets-tarball/MyUser/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "integ-assets-tarball/MyUser/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-assets-tarball/MyUser/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "ecr:BatchCheckLayerAvailability",
+                                "ecr:BatchGetImage",
+                                "ecr:GetDownloadUrlForLayer"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":ecr:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":repository/",
+                                    {
+                                      "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                                    }
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "ecr:GetAuthorizationToken",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "MyUserDefaultPolicy7B897426",
+                        "users": [
+                          {
+                            "Ref": "MyUserDC45028B"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "ImageUri": {
+            "id": "ImageUri",
+            "path": "integ-assets-tarball/ImageUri",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ImageUri2": {
+            "id": "ImageUri2",
+            "path": "integ-assets-tarball/ImageUri2",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-assets-tarball/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-assets-tarball/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "LoadFromTarball": {
+        "id": "LoadFromTarball",
+        "path": "LoadFromTarball",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LoadFromTarball/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LoadFromTarball/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.189"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LoadFromTarball/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LoadFromTarball/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LoadFromTarball/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.189"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

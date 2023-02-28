@@ -1,0 +1,36 @@
+{
+  "version": "22.0.0",
+  "files": {
+    "7e85363095650cdc9e77b849e3afda82da3123dd43f5d237b9601f816ddf583e": {
+      "source": {
+        "path": "integ-assets-tarball.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7e85363095650cdc9e77b849e3afda82da3123dd43f5d237b9601f816ddf583e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "a5fbe3aa4a0e49fac7d3fbe7b913cf022d307bfad6ef1e88e06cc2a229523474": {
+      "source": {
+        "executable": [
+          "sh",
+          "-c",
+          "docker load -i asset.a5fbe3aa4a0e49fac7d3fbe7b913cf022d307bfad6ef1e88e06cc2a229523474.tar | tail -n 1 | sed \"s/Loaded image: //g\""
+        ]
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "a5fbe3aa4a0e49fac7d3fbe7b913cf022d307bfad6ef1e88e06cc2a229523474",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}
