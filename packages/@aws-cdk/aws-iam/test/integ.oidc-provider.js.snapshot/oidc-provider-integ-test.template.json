@@ -10,7 +10,7 @@
      ]
     },
     "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2",
-    "CodeHash": "56b85a7bb756e34ab12549549eb40d34151db41531599e8f2be6c04e8ae66057"
+    "CodeHash": "2df5a59d801a1efa337d7f2787d401cc48d736faa94d1f42eccad2d88f3ce2e3"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -65,7 +65,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "56b85a7bb756e34ab12549549eb40d34151db41531599e8f2be6c04e8ae66057.zip"
+     "S3Key": "2df5a59d801a1efa337d7f2787d401cc48d736faa94d1f42eccad2d88f3ce2e3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -96,7 +96,7 @@
      "bar"
     ],
     "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3",
-    "CodeHash": "56b85a7bb756e34ab12549549eb40d34151db41531599e8f2be6c04e8ae66057"
+    "CodeHash": "2df5a59d801a1efa337d7f2787d401cc48d736faa94d1f42eccad2d88f3ce2e3"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -115,7 +115,7 @@
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
     ],
     "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4",
-    "CodeHash": "56b85a7bb756e34ab12549549eb40d34151db41531599e8f2be6c04e8ae66057"
+    "CodeHash": "2df5a59d801a1efa337d7f2787d401cc48d736faa94d1f42eccad2d88f3ce2e3"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "integ-test-bucket-deployments/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-deployed-bucket"
+      ],
+      "assertionStack": "integ-test-bucket-deployments/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentsDefaultTestDeployAssertCF25A2DF"
+    }
+  }
+}

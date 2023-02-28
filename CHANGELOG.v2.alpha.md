@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.66.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.66.0-alpha.0...v2.66.1-alpha.0) (2023-02-23)
+
+## [2.66.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.65.0-alpha.0...v2.66.0-alpha.0) (2023-02-21)
+
+
+### Features
+
+* **apigatewayv2:** allow websockets routes to return response to client ([#22984](https://github.com/aws/aws-cdk/issues/22984)) ([f8fe1d2](https://github.com/aws/aws-cdk/commit/f8fe1d292feb3fc39a99687bf454a829302c4ff5))
+* **lambda-python:** add optional poetry bundling exclusion list parameter ([#23670](https://github.com/aws/aws-cdk/issues/23670)) ([53beeae](https://github.com/aws/aws-cdk/commit/53beeaed04bfe295e9f840e65f9c89db00cac692)), closes [#22585](https://github.com/aws/aws-cdk/issues/22585) [#22585](https://github.com/aws/aws-cdk/issues/22585)
+* **redshift:** optionally reboot Clusters to apply parameter changes  ([#22063](https://github.com/aws/aws-cdk/issues/22063)) ([f61d950](https://github.com/aws/aws-cdk/commit/f61d950aaeba13bd6501b7c8971a9115f4a53f08)), closes [#22009](https://github.com/aws/aws-cdk/issues/22009) [#22055](https://github.com/aws/aws-cdk/issues/22055) [#22059](https://github.com/aws/aws-cdk/issues/22059)
+
+
+### Bug Fixes
+
+* **servicecatalogappregistry:** Allow user to control stack id via stack name for Application stack ([#24171](https://github.com/aws/aws-cdk/issues/24171)) ([0c7c7e4](https://github.com/aws/aws-cdk/commit/0c7c7e4a7c34957ff7877eda5171f82c5feaba1d)), closes [#24160](https://github.com/aws/aws-cdk/issues/24160)
+
+## [2.65.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.64.0-alpha.0...v2.65.0-alpha.0) (2023-02-15)
+
+
+### Features
+
+* **glue:** support Ray jobs ([#23822](https://github.com/aws/aws-cdk/issues/23822)) ([8de50d6](https://github.com/aws/aws-cdk/commit/8de50d624c8703a12713dcffbc764688868f22b0))
+* **redshift:** IAM roles can be attached to a cluster, post creation ([#23791](https://github.com/aws/aws-cdk/issues/23791)) ([1a46808](https://github.com/aws/aws-cdk/commit/1a46808b03e8f6d09846f999ae3dc65b190f5f26)), closes [#22632](https://github.com/aws/aws-cdk/issues/22632)
+* **synthetics:** support runtime 3.9 ([#24101](https://github.com/aws/aws-cdk/issues/24101)) ([9d23cad](https://github.com/aws/aws-cdk/commit/9d23caded8aca42d3b78de1bc7e89c38a4d6805e))
+
+## [2.64.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.63.2-alpha.0...v2.64.0-alpha.0) (2023-02-09)
+
+
+### Features
+
+* **cloud9:** support setting environment owner ([#23878](https://github.com/aws/aws-cdk/issues/23878)) ([08a2f36](https://github.com/aws/aws-cdk/commit/08a2f363093f39d04026778bb8d5d7f673698b57)), closes [#22474](https://github.com/aws/aws-cdk/issues/22474)
+* **redshift:** Tables can include comments ([#23847](https://github.com/aws/aws-cdk/issues/23847)) ([46cadd4](https://github.com/aws/aws-cdk/commit/46cadd4b2dd417e1484ba63389b33e1504cfd842)), closes [#22682](https://github.com/aws/aws-cdk/issues/22682)
+
+
+### Bug Fixes
+
+* **servicecatalogappregistry:** default stack name is not meaningful and causes conflict when multiple stacks deployed to the same account-region ([#23823](https://github.com/aws/aws-cdk/issues/23823)) ([420b5ff](https://github.com/aws/aws-cdk/commit/420b5ff2bd08311f2c8cabbe0787c0e0bf4f8ae3))
+
+## [2.63.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.63.1-alpha.0...v2.63.2-alpha.0) (2023-02-04)
+
+## [2.63.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.63.0-alpha.0...v2.63.1-alpha.0) (2023-02-03)
+
 ## [2.63.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.62.2-alpha.0...v2.63.0-alpha.0) (2023-01-31)
 
 
