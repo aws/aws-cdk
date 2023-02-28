@@ -1,8 +1,9 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as stepfunctions from '../lib';
 
 describe('Map State', () => {
-  test('State Machine With Map State', () => {
+  test('State Machine With Map State and ItemSelector', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -25,6 +26,51 @@ describe('Map State', () => {
           Type: 'Map',
           End: true,
           ItemSelector: {
+            'foo': 'foo',
+            'bar.$': '$.bar',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.MapStateMode.INLINE,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
+  testDeprecated('State Machine With Map State and Parameters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.Map(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      parameters: {
+        foo: 'foo',
+        bar: stepfunctions.JsonPath.stringAt('$.bar'),
+      },
+    });
+    map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          Parameters: {
             'foo': 'foo',
             'bar.$': '$.bar',
           },

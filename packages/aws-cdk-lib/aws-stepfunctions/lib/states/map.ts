@@ -80,7 +80,7 @@ export interface MapProps {
    *
    * @default $
    * @deprecated Step Functions has deprecated the `parameters` field in favor of
-   * the new `itemSelector` field.
+   * the new `itemSelector` field
    * @see
    * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-itemselector.html
    */
