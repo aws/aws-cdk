@@ -299,6 +299,21 @@ describe('Bootstrapping v2', () => {
     })).resolves.toEqual(expect.objectContaining({ noOp: true }));
   });
 
+  test('Do not allow overwriting bootstrap stack from a different vendor', async () => {
+    // GIVEN
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'BootstrapVariant',
+          ParameterValue: 'JoeSchmoe',
+        },
+      ],
+    });
+
+    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
+    })).resolves.toEqual(expect.objectContaining({ noOp: true }));
+  });
+
   test('bootstrap template has the right exports', async () => {
     let template: any;
     mockDeployStack.mockImplementation((args: DeployStackOptions) => {
