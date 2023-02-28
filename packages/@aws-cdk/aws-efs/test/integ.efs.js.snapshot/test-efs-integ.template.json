@@ -438,7 +438,7 @@
     "AccessPointTags": [
      {
       "Key": "Name",
-      "Value": "test-efs-integ/FileSystem"
+      "Value": "test-efs-integ/FileSystem/AccessPoint"
      }
     ],
     "PosixUser": {

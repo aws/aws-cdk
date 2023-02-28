@@ -766,7 +766,7 @@
                         "accessPointTags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Efs"
+                            "value": "aws-cdk-lambda-1/Efs/AccessPoint"
                           }
                         ],
                         "posixUser": {
