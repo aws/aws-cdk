@@ -81,6 +81,8 @@ export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:
 export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
 export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
 export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId';
+export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
+export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -661,6 +663,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
+  //////////////////////////////////////////////////////////////////////
   [APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID]: {
     type: FlagType.BugFix,
     summary: 'Include authorizer configuration in the calculation of the API deployment logical ID.',
@@ -670,8 +673,41 @@ export const FLAGS: Record<string, FlagInfo> = {
       to also include the configuration of any authorizer attached to the API in the
       calculation, so any changes made to an authorizer will create a new deployment.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.66.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA]: {
+    type: FlagType.BugFix,
+    summary: 'Define user data for a launch template by default when a machine image is provided.',
+    detailsMd: `
+      The ec2.LaunchTemplate construct did not define user data when a machine image is
+      provided despite the document. If this is set, a user data is automatically defined
+      according to the OS of the machine image.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: 'V2NEXT' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'SecretTargetAttachments uses the ResourcePolicy of the attached Secret.',
+    detailsMd: `
+      Enable this feature flag to make SecretTargetAttachments use the ResourcePolicy of the attached Secret.
+      SecretTargetAttachments are created to connect a Secret to a target resource. 
+      In CDK code, they behave like regular Secret and can be used as a stand-in in most situations.
+      Previously, adding to the ResourcePolicy of a SecretTargetAttachment did attempt to create a separate ResourcePolicy for the same Secret.
+      However Secrets can only have a single ResourcePolicy, causing the CloudFormation deployment to fail.
+
+      When enabling this feature flag for an existing Stack, ResourcePolicies created via a SecretTargetAttachment will need replacement.
+      This won't be possible without intervention due to limitation outlined above.
+      First remove all permissions granted to the Secret and deploy without the ResourcePolicies.
+      Then you can re-add the permissions and deploy again.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: 'V2NEXT' },
   },
 };
 
