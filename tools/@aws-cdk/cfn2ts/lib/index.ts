@@ -7,12 +7,21 @@ import { CannedMetricsGenerator } from './canned-metrics-generator';
 import CodeGenerator, { CodeGeneratorOptions } from './codegen';
 import { packageName } from './genspec';
 
+interface GenerateOutput {
+  outputFiles: string[];
+  resources: Record<string, string>;
+}
+
 export default async function generate(
   scopes: string | string[],
   outPath: string,
   options: CodeGeneratorOptions & AugmentationsGeneratorOptions = { },
-): Promise<string[]> {
-  const outputFiles: string[] = [];
+): Promise<GenerateOutput> {
+  const result: GenerateOutput = {
+    outputFiles: [],
+    resources: {},
+  };
+
   if (outPath !== '.') { await fs.mkdirp(outPath); }
 
   if (scopes === '*') {
@@ -32,22 +41,26 @@ export default async function generate(
     const generator = new CodeGenerator(name, spec, affix, options);
     generator.emitCode();
     await generator.save(outPath);
-    outputFiles.push(generator.outputFile);
+    result.outputFiles.push(generator.outputFile);
+    result.resources = {
+      ...result.resources,
+      ...generator.resources,
+    };
 
     const augs = new AugmentationGenerator(name, spec, affix, options);
     if (augs.emitCode()) {
       await augs.save(outPath);
-      outputFiles.push(augs.outputFile);
+      result.outputFiles.push(augs.outputFile);
     }
 
     const canned = new CannedMetricsGenerator(name, scope);
     if (canned.generate()) {
       await canned.save(outPath);
-      outputFiles.push(canned.outputFile);
+      result.outputFiles.push(canned.outputFile);
     }
   }
 
-  return outputFiles;
+  return result;
 }
 
 /**
@@ -68,6 +81,7 @@ export interface ModuleMap {
   [moduleName: string]: {
     module?: pkglint.ModuleDefinition;
     scopes: string[];
+    resources: Record<string, string>;
   }
 }
 
@@ -98,6 +112,7 @@ export async function generateAll(
     moduleMap[module.moduleName] = {
       scopes: newScopes,
       module,
+      resources: {},
     };
   }
 
@@ -107,7 +122,7 @@ export async function generateAll(
       const sourcePath = path.join(packagePath, 'lib');
 
       const isCore = moduleName === 'core';
-      const outputFiles = await generate(moduleScopes, sourcePath, {
+      const { outputFiles, resources } = await generate(moduleScopes, sourcePath, {
         ...options,
         coreImport: isCore ? '.' : options.coreImport,
       });
@@ -145,6 +160,9 @@ export async function generateAll(
         };
         await fs.writeJson(path.join(packagePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
       }
+
+      // Add generated resources to module in map
+      moduleMap[moduleName].resources = resources;
     }));
 
   return moduleMap;
