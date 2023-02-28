@@ -69,9 +69,10 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
     if (!this.associatedApplications.has(application.node.addr)) {
       const hashId = this.generateUniqueHash(application.node.addr);
       new CfnAttributeGroupAssociation(this, `ApplicationAttributeGroupAssociation${hashId}`, {
-        application: application.applicationId,
+        application: application.stack === cdk.Stack.of(this) ? application.applicationId : application.applicationName ?? application.applicationId,
         attributeGroup: this.attributeGroupId,
       });
+
       this.associatedApplications.add(application.node.addr);
     }
   }

@@ -4,7 +4,7 @@
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
     "Name": "TestApplication",
-    "Description": "Test application description"
+    "Description": "My application description"
    }
   },
   "TestApplicationResourceAssociationd232b63e52a8414E905D": {

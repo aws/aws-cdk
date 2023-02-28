@@ -102,7 +102,24 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 If you want to associate an Attribute Group with application created by `ApplicationAssociator`, then use as shown in the example below:
 
 ```ts
+import * as cdk from "@aws-cdk/core";
+
 const app = new App();
+
+class CustomAppRegistryAttributeGroup extends cdk.Stack {
+  public readonly attributeGroup: appreg.AttributeGroup
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+    const myAttributeGroup = new appreg.AttributeGroup(app, 'MyFirstAttributeGroup', {
+      attributeGroupName: 'MyAttributeGroupName',
+      description: 'Test attribute group',
+      attributes: {},
+    });
+
+    this.attributeGroup = myAttributeGroup;
+  }
+}
+
 const customAttributeGroup = new CustomAppRegistryAttributeGroup(app, 'AppRegistryAttributeGroup');
 
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
@@ -119,19 +136,6 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 // Associate application to the attribute group.
 customAttributeGroup.attributeGroup.associateApplicationWithAttributeGroup(associatedApp.appRegistryApplication());
 
-class CustomAppRegistryAttributeGroup extends cdk.Stack {
-  public readonly attributeGroup: appreg.AttributeGroup
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
-    const myAttributeGroup = new appreg.AttributeGroup(this, 'MyFirstAttributeGroup', {
-      attributeGroupName: 'MyAttributeGroupName',
-      description: 'Test attribute group',
-      attributes: {},
-    });
-
-    this.attributeGroup = myAttributeGroup;
-  }
-}
 ```
 
 If you are using CDK Pipelines to deploy your application, the application stacks will be inside Stages, and
