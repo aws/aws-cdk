@@ -56,6 +56,8 @@ export interface PackageJson {
   readonly dependencies?: { readonly [name: string]: string };
   readonly devDependencies?: { readonly [name: string]: string };
   readonly jsii: {
+    readonly tsc: { [key: string]: unknown },
+    readonly excludeTypescript: string[],
     readonly targets?: {
       readonly dotnet?: {
         readonly namespace: string;
@@ -649,7 +651,7 @@ async function rewriteRosettaFixtureImports(fromFile: string, libName: string): 
 const IGNORED_FILE_NAMES = new Set([
   '.eslintrc.js',
   '.gitignore',
-  '.jest.config.js',
+  'jest.config.js',
   '.jsii',
   '.npmignore',
   'node_modules',

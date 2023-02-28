@@ -3,7 +3,6 @@ import * as path from 'path';
 import {
   main as ubergen,
   Config,
-  Export,
   LibraryReference,
   PackageJson as UbgPkgJson,
 } from '@aws-cdk/ubergen';
@@ -73,6 +72,8 @@ export async function main() {
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
   await copyTemplateFiles(templateDir, targetDir);
 
+  await runBuild(targetDir);
+
   if (clean) {
     await fs.remove(path.resolve(targetDir));
   }
@@ -86,9 +87,6 @@ async function makeAwsCdkLib(target: string) {
   const awsCdkLibDir = path.join(target, 'packages', 'aws-cdk-lib');
   const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
   const pkgJson: PackageJson = await fs.readJson(pkgJsonPath);
-
-  const pkgJsonExports = pkgJson.exports ?? {};
-
 
   // Local packages that remain unbundled as dev dependencies
   const localDevDeps = [
@@ -139,33 +137,6 @@ async function makeAwsCdkLib(target: string) {
     };
   }, {});
 
-  const newPkgJsonExports = formatPkgJsonExports(pkgJsonExports);
-
-  // Move all source files into 'lib' to make working on package easier
-  // Exclude stuff like package.json and other config files
-  const rootFiles = await fs.readdir(awsCdkLibDir);
-  const excludeNesting = [
-    'tsconfig.json',
-    '.eslintrc.js',
-    '.gitignore',
-    '.npmignore',
-    'LICENSE',
-    'NOTICE',
-    'package.json',
-    'README.md',
-    'tsconfig.json',
-    'scripts',
-  ];
-
-  await Promise.all(rootFiles.map((file: string) => {
-    if (excludeNesting.includes(file)) {
-      return Promise.resolve();
-    }
-
-    const old = path.join(awsCdkLibDir, file);
-    return fs.move(old, path.join(awsCdkLibDir, 'lib', file));
-  }));
-
   // Create scope map for codegen usage
   await fs.writeJson(
     path.join(awsCdkLibDir, 'scripts', 'scope-map.json'),
@@ -173,23 +144,48 @@ async function makeAwsCdkLib(target: string) {
     { spaces: 2 },
   );
 
+  // Explicitly copy some missing files that ubergen doesn't bring over for various reasons
+  // Ubergen ignores some of these contents because they are within nested `node_modules` directories
+  // for testing purposes
+  await fs.copy(
+    path.resolve(target, 'packages', '@aws-cdk', 'aws-synthetics', 'test', 'canaries'),
+    path.resolve(target, 'packages', 'aws-cdk-lib', 'aws-synthetics', 'test', 'canaries'),
+    { overwrite: true },
+  );
+
   await fs.writeJson(pkgJsonPath, {
     ...pkgJson,
-    main: 'lib/index.js',
-    types: 'lib/index.d.ts',
-    exports: {
-      ...newPkgJsonExports,
+    'jsii': {
+      ...pkgJson.jsii,
+      excludeTypescript: [
+        ...pkgJson.jsii.excludeTypescript,
+        'scripts',
+      ],
     },
-    ubergen: {
+    'ubergen': {
       ...pkgJson.ubergen,
       libRoot: awsCdkLibDir,
     },
-    scripts: {
+    'scripts': {
       ...pkgJson.scripts,
       gen: 'ts-node scripts/gen.ts',
       build: 'cdk-build',
+      test: 'jest',
     },
-    devDependencies: {
+    'cdk-build': {
+      ...pkgJson['cdk-build'],
+      pre: [
+        'esbuild --bundle integ-tests/lib/assertions/providers/lambda-handler/index.ts --target=node14 --platform=node --external:aws-sdk --outfile=integ-tests/lib/assertions/providers/lambda-handler.bundle/index.js',
+        '(cp -f $(node -p \'require.resolve(\"aws-sdk/apis/metadata.json\")\') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)',
+        '(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)',
+        '(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)',
+      ],
+      post: [
+        'ts-node ./scripts/verify-imports-resolve-same.ts',
+        'ts-node ./scripts/verify-imports-shielded.ts',
+      ],
+    },
+    'devDependencies': {
       ...filteredDevDeps,
       '@aws-cdk/cfn2ts': '0.0.0',
     },
@@ -200,33 +196,14 @@ async function makeAwsCdkLib(target: string) {
   // 2. All bundled and deprecated packages
 }
 
-// Reformat existing relative path to prepend with "./lib"
-function pathReformat(str: string): string {
-  const split = str.split(/.(.*)/s);
-  const newVal = ['./lib', split[1]].join('');
-  return newVal;
-}
+// Build aws-cdk-lib and the alpha packages
+async function runBuild(dir: string) {
+  const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
+  await e('yarn install');
+  // build everything, including all V1 packages so we can transform them if needed
+  await e('npx lerna run build');
 
-// Reformat all of the paths in `exports` field of package.json so that they
-//  correctly include the new `lib` directory.
-function formatPkgJsonExports(exports: Record<string, Export>): Record<string, Export> {
-  const dontFormat = ['./package.json', './.jsii', './.warnings.jsii.js'];
-  const entries = Object.entries(exports).map(([k, v]) => {
-    if (typeof v === 'string') {
-      const newValue = dontFormat.includes(v) ? v : pathReformat(v);
-      return [k, newValue];
-    }
-
-    const nested = Object.entries(v).map(([nk, nv]) => {
-      if (nv) {
-        return [nk, pathReformat(nv)];
-      } else {return [nk, nv];}
-    });
-
-    return [k, Object.fromEntries(nested)];
-  });
-
-  return Object.fromEntries(entries);
+  await e('./scripts/transform.sh');
 }
 
 // Creates a map of directories to the cloudformations scopes that should be

@@ -106,7 +106,11 @@ export async function generateAll(
       const packagePath = path.join(outPath, moduleName);
       const sourcePath = path.join(packagePath, 'lib');
 
-      const outputFiles = await generate(moduleScopes, sourcePath, options);
+      const isCore = moduleName === 'core';
+      const outputFiles = await generate(moduleScopes, sourcePath, {
+        ...options,
+        coreImport: isCore ? '.' : options.coreImport,
+      });
 
       if (!fs.existsSync(path.join(packagePath, 'index.ts'))) {
         let lines = moduleScopes.map((s: string) => `// ${s} Cloudformation Resources`);
@@ -116,10 +120,9 @@ export async function generateAll(
       }
 
       // Create .jsiirc.json file if needed
-      const excludeJsii = ['core'];
       if (
         !fs.existsSync(path.join(packagePath, '.jsiirc.json'))
-        && !excludeJsii.includes(moduleName)
+        && !isCore
       ) {
         if (!module) {
           throw new Error(
