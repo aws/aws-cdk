@@ -1,8 +1,8 @@
 /// !cdk-integ pragma:disable-update-workflow
 import { App, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import * as eks from '../lib';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+import * as eks from '../lib';
 
 class EksAllHandlersInVpcStack extends Stack {
 

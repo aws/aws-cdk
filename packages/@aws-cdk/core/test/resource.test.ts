@@ -1,12 +1,12 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { toCloudFormation } from './util';
 import {
   App, App as Root, CfnCondition,
   CfnDeletionPolicy, CfnResource,
   Fn, IResource, RemovalPolicy, Resource, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
-import { toCloudFormation } from './util';
 
 describe('resource', () => {
   test('all resources derive from Resource, which derives from Entity', () => {
