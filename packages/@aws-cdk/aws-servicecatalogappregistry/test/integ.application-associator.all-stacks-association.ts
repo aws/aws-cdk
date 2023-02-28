@@ -10,7 +10,6 @@ new appreg.ApplicationAssociator(app, 'RegisterCdkApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
     applicationName: 'AppRegistryAssociatedApplication',
     stackName: 'AppRegistryApplicationAssociatorStack',
-    stackId: 'AppRegistryApplicationStack',
   })],
 });
 
