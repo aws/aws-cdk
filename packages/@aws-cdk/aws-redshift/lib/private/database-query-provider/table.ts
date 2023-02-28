@@ -6,27 +6,38 @@ import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
 import { Column } from '../../table';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
+  const id = props.id;
   const tableNamePrefix = props.tableName.prefix;
   const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.RequestId.substring(0, 8)}` : '';
   const tableColumns = props.tableColumns;
   const tableAndClusterProps = props;
 
   if (event.RequestType === 'Create') {
-    const tableName = await createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
-    return { PhysicalResourceId: tableName };
+    await createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
+    return {
+      PhysicalResourceId: id,
+      Data: {
+        TableName: tableNamePrefix + tableNameSuffix,
+      },
+    };
   } else if (event.RequestType === 'Delete') {
     await dropTable(event.PhysicalResourceId, tableAndClusterProps);
     return;
   } else if (event.RequestType === 'Update') {
-    const tableName = await updateTable(
-      event.PhysicalResourceId,
+    await updateTable(
+      event.OldResourceProperties.Data.TableName,
       tableNamePrefix,
       tableNameSuffix,
       tableColumns,
       tableAndClusterProps,
       event.OldResourceProperties as TableAndClusterProps,
     );
-    return { PhysicalResourceId: tableName };
+    return {
+      PhysicalResourceId: id,
+      Data: {
+        TableName: event.OldResourceProperties.Data.TableName,
+      },
+    };
   } else {
     /* eslint-disable-next-line dot-notation */
     throw new Error(`Unrecognized event type: ${event['RequestType']}`);
@@ -38,7 +49,7 @@ async function createTable(
   tableNameSuffix: string,
   tableColumns: Column[],
   tableAndClusterProps: TableAndClusterProps,
-): Promise<string> {
+): Promise<void> {
   const tableName = tableNamePrefix + tableNameSuffix;
   const tableColumnsString = tableColumns.map(column => `${column.name} ${column.dataType}`).join();
 
@@ -64,8 +75,6 @@ async function createTable(
   if (tableAndClusterProps.tableComment) {
     await executeStatement(`COMMENT ON TABLE ${tableName} IS '${tableAndClusterProps.tableComment}'`, tableAndClusterProps);
   }
-
-  return tableName;
 }
 
 async function dropTable(tableName: string, clusterProps: ClusterProps) {
@@ -79,7 +88,7 @@ async function updateTable(
   tableColumns: Column[],
   tableAndClusterProps: TableAndClusterProps,
   oldResourceProperties: TableAndClusterProps,
-): Promise<string> {
+): Promise<void> {
   const alterationStatements: string[] = [];
 
   const oldClusterProps = oldResourceProperties;
@@ -154,10 +163,7 @@ async function updateTable(
   const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
   if (tableNamePrefix !== oldTableNamePrefix) {
     await executeStatement(`ALTER TABLE ${tableName} RENAME TO ${tableNamePrefix + tableNameSuffix}`, tableAndClusterProps);
-    return tableNamePrefix + tableNameSuffix;
   }
-
-  return tableName;
 }
 
 function getSortKeyColumnsString(sortKeyColumns: Column[]) {

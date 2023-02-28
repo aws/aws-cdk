@@ -234,6 +234,7 @@ export class Table extends TableBase {
       ...props,
       handler: HandlerName.Table,
       properties: {
+        id: id + cdk.Names.uniqueId(this),
         tableName: {
           prefix: props.tableName ?? cdk.Names.uniqueId(this),
           generateSuffix: !props.tableName ? 'true' : 'false',
