@@ -757,12 +757,12 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
-                    "engine": "aurora-mysql",
                     "copyTagsToSnapshot": true,
                     "dbClusterParameterGroupName": "default.aurora-mysql5.7",
                     "dbSubnetGroupName": {
                       "Ref": "ClusterSubnetsDCFA5CB7"
                     },
+                    "engine": "aurora-mysql",
                     "engineVersion": "5.7.mysql_aurora.2.10.2",
                     "masterUsername": {
                       "Fn::Join": [
@@ -863,6 +863,14 @@
                     "id": "ServiceRole",
                     "path": "cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/Resource",
@@ -1061,6 +1069,14 @@
                     "id": "ServiceRole",
                     "path": "cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/Resource",
@@ -1234,6 +1250,14 @@
                         "id": "ServiceRole",
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/Resource",
@@ -1402,7 +1426,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -1454,6 +1478,14 @@
                         "id": "ServiceRole",
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/Resource",
@@ -1615,7 +1647,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -1664,6 +1696,14 @@
                         "id": "ServiceRole",
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/Resource",
@@ -1825,7 +1865,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -1874,6 +1914,14 @@
                         "id": "Role",
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Role/Resource",
@@ -1996,7 +2044,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.252"
                     }
                   }
                 },
@@ -2026,7 +2074,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.252"
             }
           },
           "FromSnapshot": {
@@ -2308,64 +2356,64 @@
                           "fqn": "@aws-cdk/aws-secretsmanager.RotationSchedule",
                           "version": "0.0.0"
                         }
-                      },
-                      "Policy": {
-                        "id": "Policy",
-                        "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/Policy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/Policy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::SecretsManager::ResourcePolicy",
-                              "aws:cdk:cloudformation:props": {
-                                "resourcePolicy": {
-                                  "Statement": [
-                                    {
-                                      "Action": "secretsmanager:DeleteSecret",
-                                      "Effect": "Deny",
-                                      "Principal": {
-                                        "AWS": {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":iam::",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":root"
-                                            ]
-                                          ]
-                                        }
-                                      },
-                                      "Resource": "*"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::ResourcePolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "resourcePolicy": {
+                              "Statement": [
+                                {
+                                  "Action": "secretsmanager:DeleteSecret",
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":iam::",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":root"
+                                        ]
+                                      ]
                                     }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "secretId": {
-                                  "Ref": "FromSnapshotSnapshotSecretAttachmentA3F619B8"
+                                  },
+                                  "Resource": "*"
                                 }
-                              }
+                              ],
+                              "Version": "2012-10-17"
                             },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
-                              "version": "0.0.0"
+                            "secretId": {
+                              "Ref": "cdkintegclustersnapshotFromSnapshotSnapshotSecretD93327943fdaad7efa858a3daf9490cf0a702aeb"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
+                          "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
                       "version": "0.0.0"
                     }
                   }
@@ -2381,12 +2429,12 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
-                    "engine": "aurora-mysql",
                     "copyTagsToSnapshot": true,
                     "dbClusterParameterGroupName": "default.aurora-mysql5.7",
                     "dbSubnetGroupName": {
                       "Ref": "FromSnapshotSubnets9ED4B8EE"
                     },
+                    "engine": "aurora-mysql",
                     "engineVersion": "5.7.mysql_aurora.2.10.2",
                     "masterUserPassword": {
                       "Fn::Join": [
@@ -2628,7 +2676,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.252"
         }
       }
     },

@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-docdb-cluster-rotation": {
         "id": "aws-cdk-docdb-cluster-rotation",
         "path": "aws-cdk-docdb-cluster-rotation",
@@ -91,8 +83,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-docdb-cluster-rotation/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +250,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-docdb-cluster-rotation/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +417,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-docdb-cluster-rotation/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +536,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-docdb-cluster-rotation/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -850,64 +842,64 @@
                           "fqn": "@aws-cdk/aws-secretsmanager.RotationSchedule",
                           "version": "0.0.0"
                         }
-                      },
-                      "Policy": {
-                        "id": "Policy",
-                        "path": "aws-cdk-docdb-cluster-rotation/Database/Secret/Attachment/Policy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-docdb-cluster-rotation/Database/Secret/Attachment/Policy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::SecretsManager::ResourcePolicy",
-                              "aws:cdk:cloudformation:props": {
-                                "resourcePolicy": {
-                                  "Statement": [
-                                    {
-                                      "Action": "secretsmanager:DeleteSecret",
-                                      "Effect": "Deny",
-                                      "Principal": {
-                                        "AWS": {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":iam::",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":root"
-                                            ]
-                                          ]
-                                        }
-                                      },
-                                      "Resource": "*"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "aws-cdk-docdb-cluster-rotation/Database/Secret/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-docdb-cluster-rotation/Database/Secret/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::ResourcePolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "resourcePolicy": {
+                              "Statement": [
+                                {
+                                  "Action": "secretsmanager:DeleteSecret",
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":iam::",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":root"
+                                        ]
+                                      ]
                                     }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "secretId": {
-                                  "Ref": "DatabaseSecretAttachmentE5D1B020"
+                                  },
+                                  "Resource": "*"
                                 }
-                              }
+                              ],
+                              "Version": "2012-10-17"
                             },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
-                              "version": "0.0.0"
+                            "secretId": {
+                              "Ref": "DatabaseSecret3B817195"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
+                          "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
                       "version": "0.0.0"
                     }
                   }
@@ -1025,8 +1017,8 @@
                     "id": "SARMapping",
                     "path": "aws-cdk-docdb-cluster-rotation/Database/RotationSingleUser/SARMapping",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -1120,17 +1112,41 @@
               "fqn": "@aws-cdk/aws-docdb.DatabaseCluster",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-docdb-cluster-rotation/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-docdb-cluster-rotation/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.252"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

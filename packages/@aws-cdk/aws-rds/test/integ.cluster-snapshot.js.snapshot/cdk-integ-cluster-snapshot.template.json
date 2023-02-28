@@ -425,12 +425,12 @@
   "ClusterEB0386A7": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
-    "Engine": "aurora-mysql",
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-mysql5.7",
     "DBSubnetGroupName": {
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
+    "Engine": "aurora-mysql",
     "EngineVersion": "5.7.mysql_aurora.2.10.2",
     "MasterUsername": {
      "Fn::Join": [
@@ -858,7 +858,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -995,7 +995,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1129,7 +1129,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1446,7 +1446,7 @@
     }
    }
   },
-  "FromSnapshotSnapshotSecretAttachmentPolicy3136FEC0": {
+  "FromSnapshotSnapshotSecretPolicyA5C332BE": {
    "Type": "AWS::SecretsManager::ResourcePolicy",
    "Properties": {
     "ResourcePolicy": {
@@ -1478,19 +1478,19 @@
      "Version": "2012-10-17"
     },
     "SecretId": {
-     "Ref": "FromSnapshotSnapshotSecretAttachmentA3F619B8"
+     "Ref": "cdkintegclustersnapshotFromSnapshotSnapshotSecretD93327943fdaad7efa858a3daf9490cf0a702aeb"
     }
    }
   },
   "FromSnapshotEE0682C5": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
-    "Engine": "aurora-mysql",
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-mysql5.7",
     "DBSubnetGroupName": {
      "Ref": "FromSnapshotSubnets9ED4B8EE"
     },
+    "Engine": "aurora-mysql",
     "EngineVersion": "5.7.mysql_aurora.2.10.2",
     "MasterUserPassword": {
      "Fn::Join": [

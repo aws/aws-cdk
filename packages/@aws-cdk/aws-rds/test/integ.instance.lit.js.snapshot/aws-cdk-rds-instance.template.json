@@ -623,7 +623,7 @@
     }
    }
   },
-  "InstanceSecretAttachmentPolicy60A8B8DE": {
+  "InstanceSecretPolicy87F03D0F": {
    "Type": "AWS::SecretsManager::ResourcePolicy",
    "Properties": {
     "ResourcePolicy": {
@@ -655,7 +655,7 @@
      "Version": "2012-10-17"
     },
     "SecretId": {
-     "Ref": "InstanceSecretAttachment83BEE581"
+     "Ref": "InstanceSecret478E0A47"
     }
    }
   },

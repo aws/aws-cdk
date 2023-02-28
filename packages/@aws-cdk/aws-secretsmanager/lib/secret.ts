@@ -835,21 +835,37 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
   protected readonly autoCreatePolicy = true;
 
+  private readonly attachedSecret: ISecret;
+
   constructor(scope: Construct, id: string, props: SecretTargetAttachmentProps) {
     super(scope, id);
+    this.attachedSecret = props.secret;
 
     const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {
-      secretId: props.secret.secretArn,
+      secretId: this.attachedSecret.secretArn,
       targetId: props.target.asSecretAttachmentTarget().targetId,
       targetType: attachmentTargetTypeToString(props.target.asSecretAttachmentTarget().targetType),
     });
 
-    this.encryptionKey = props.secret.encryptionKey;
-    this.secretName = props.secret.secretName;
+    this.encryptionKey = this.attachedSecret.encryptionKey;
+    this.secretName = this.attachedSecret.secretName;
 
     // This allows to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;
     this.secretTargetAttachmentSecretArn = attachment.ref;
+  }
+
+  /**
+   * Forward any additions to the resource policy to the original secret.
+   * This is required because a secret can only have a single resource policy.
+   * If we do not forward policy additions, a new policy resource is created using the secret attachment ARN.
+   * This ends up being rejected by CloudFormation.
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (FeatureFlags.of(this).isEnabled(cxapi.SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY)) {
+      return this.attachedSecret.addToResourcePolicy(statement);
+    }
+    return super.addToResourcePolicy(statement);
   }
 }
 
