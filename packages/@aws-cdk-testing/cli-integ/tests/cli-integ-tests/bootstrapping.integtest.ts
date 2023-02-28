@@ -216,7 +216,7 @@ integTest('a customized template vendor will not overwrite the default template'
   });
 
   const template = yaml.parse(templateStr, { schema: 'core' });
-  template.Parameters.BootstrapFlavor.Default = 'CustomizedVendor';
+  template.Parameters.BootstrapVariant.Default = 'CustomizedVendor';
   const filename = path.join(fixture.integTestDir, `${fixture.qualifier}-template.yaml`);
   fs.writeFileSync(filename, yaml.stringify(template, { schema: 'yaml-1.1' }), { encoding: 'utf-8' });
 

@@ -225,7 +225,7 @@ describe('Bootstrapping v2', () => {
     mockTheToolkitInfo({
       Parameters: [
         {
-          ParameterKey: 'BootstrapFlavor',
+          ParameterKey: 'BootstrapVariant',
           ParameterValue: 'JoeSchmoe',
         },
       ],

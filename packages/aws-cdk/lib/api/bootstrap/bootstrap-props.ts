@@ -5,12 +5,12 @@ export const REPOSITORY_NAME_OUTPUT = 'RepositoryName';
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 export const BOOTSTRAP_VERSION_OUTPUT = 'BootstrapVersion';
 export const BOOTSTRAP_VERSION_RESOURCE = 'CdkBootstrapVersion';
-export const BOOTSTRAP_FLAVOR_PARAMETER = 'BootstrapFlavor';
+export const BOOTSTRAP_VARIANT_PARAMETER = 'BootstrapVariant';
 
 /**
  * The assumed vendor of a template in case it is not set
  */
-export const DEFAULT_BOOTSTRAP_FLAVOR = 'AWS CDK: Default Resources';
+export const DEFAULT_BOOTSTRAP_VARIANT = 'AWS CDK: Default Resources';
 
 /**
  * Options for the bootstrapEnvironment operation(s)

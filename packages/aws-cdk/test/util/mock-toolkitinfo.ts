@@ -1,4 +1,4 @@
-import { ISDK, ToolkitInfo, DEFAULT_BOOTSTRAP_FLAVOR } from '../../lib/api';
+import { ISDK, ToolkitInfo, DEFAULT_BOOTSTRAP_VARIANT } from '../../lib/api';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 
 export interface MockToolkitInfoProps {
@@ -17,7 +17,7 @@ export class MockToolkitInfo extends ToolkitInfo {
   public readonly bucketUrl: string;
   public readonly bucketName: string;
   public readonly version: number;
-  public readonly flavor: string;
+  public readonly variant: string;
   public readonly prepareEcrRepository = mockLike<typeof ToolkitInfo.prototype.prepareEcrRepository>();
 
   private readonly _bootstrapStack?: CloudFormationStack;
@@ -28,7 +28,7 @@ export class MockToolkitInfo extends ToolkitInfo {
     this.bucketName = props.bucketName ?? 'MockToolkitBucketName';
     this.bucketUrl = props.bucketUrl ?? `https://${this.bucketName}.s3.amazonaws.com/`;
     this.version = props.version ?? 1;
-    this.flavor = DEFAULT_BOOTSTRAP_FLAVOR;
+    this.variant = DEFAULT_BOOTSTRAP_VARIANT;
     this._bootstrapStack = props.bootstrapStack;
   }
 

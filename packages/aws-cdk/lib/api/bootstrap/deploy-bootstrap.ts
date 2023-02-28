@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSION_RESOURCE, BOOTSTRAP_FLAVOR_PARAMETER, DEFAULT_BOOTSTRAP_FLAVOR } from './bootstrap-props';
+import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSION_RESOURCE, BOOTSTRAP_VARIANT_PARAMETER, DEFAULT_BOOTSTRAP_VARIANT } from './bootstrap-props';
 import * as logging from '../../logging';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
@@ -71,11 +71,11 @@ export class BootstrapStack {
         stackArn: this.currentToolkitInfo.bootstrapStack.stackId,
       };
 
-      // Validate that the bootstrap stack we're trying to replace is from the same flavor as the one we're trying to deploy
-      const currentFlavor = this.currentToolkitInfo.flavor;
-      const newFlavor = bootstrapFlavorFromTemplate(template);
-      if (currentFlavor !== newFlavor) {
-        logging.warning(`Bootstrap stack already exists, containing '${currentFlavor}'. Not overwriting it with a template containing '${newFlavor}' (use --force if you intend to overwrite)`);
+      // Validate that the bootstrap stack we're trying to replace is from the same variant as the one we're trying to deploy
+      const currentVariant = this.currentToolkitInfo.variant;
+      const newVariant = bootstrapVariantFromTemplate(template);
+      if (currentVariant !== newVariant) {
+        logging.warning(`Bootstrap stack already exists, containing '${currentVariant}'. Not overwriting it with a template containing '${newVariant}' (use --force if you intend to overwrite)`);
         return abortResponse;
       }
 
@@ -141,6 +141,6 @@ export function bootstrapVersionFromTemplate(template: any): number {
   return 0;
 }
 
-export function bootstrapFlavorFromTemplate(template: any): string {
-  return template.Parameters?.[BOOTSTRAP_FLAVOR_PARAMETER]?.Default ?? DEFAULT_BOOTSTRAP_FLAVOR;
+export function bootstrapVariantFromTemplate(template: any): string {
+  return template.Parameters?.[BOOTSTRAP_VARIANT_PARAMETER]?.Default ?? DEFAULT_BOOTSTRAP_VARIANT;
 }
