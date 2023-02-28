@@ -99,6 +99,41 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
+If you want to associate an Attribute Group with application created by `ApplicationAssociator`, then use as shown in the example below:
+
+```ts
+const app = new App();
+const customAttributeGroup = new CustomAppRegistryAttributeGroup(app, 'AppRegistryAttributeGroup');
+
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
+    applicationName: 'MyAssociatedApplication',
+    // 'Application containing stacks deployed via CDK.' is the default
+    applicationDescription: 'Associated Application description',
+    stackName: 'MyAssociatedApplicationStack',
+    // AWS Account and Region that are implied by the current CLI configuration is the default
+    env: { account: '123456789012', region: 'us-east-1' },
+  })],
+});
+
+// Associate application to the attribute group.
+customAttributeGroup.attributeGroup.associateApplicationWithAttributeGroup(associatedApp.appRegistryApplication());
+
+class CustomAppRegistryAttributeGroup extends cdk.Stack {
+  public readonly attributeGroup: appreg.AttributeGroup
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+    const myAttributeGroup = new appreg.AttributeGroup(this, 'MyFirstAttributeGroup', {
+      attributeGroupName: 'MyAttributeGroupName',
+      description: 'Test attribute group',
+      attributes: {},
+    });
+
+    this.attributeGroup = myAttributeGroup;
+  }
+}
+```
+
 If you are using CDK Pipelines to deploy your application, the application stacks will be inside Stages, and
 ApplicationAssociator will not be able to find them. Call `associateStage` on each Stage object before adding it to the
 Pipeline, as shown in the example below:
@@ -189,6 +224,16 @@ You can associate an attribute group with an application with the `associateAttr
 declare const application: appreg.Application;
 declare const attributeGroup: appreg.AttributeGroup;
 application.associateAttributeGroup(attributeGroup);
+```
+
+### Associating an attribute group with application
+
+You can associate an application with an attribute group with `associateApplicationWithAttributeGroup`:
+
+```ts
+declare const application: appreg.Application;
+declare const attributeGroup: appreg.AttributeGroup;
+attributeGroup.associateApplicationWithAttributeGroup(application);
 ```
 
 ### Associating application with a Stack

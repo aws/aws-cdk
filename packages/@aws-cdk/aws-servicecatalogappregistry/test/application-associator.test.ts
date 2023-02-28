@@ -35,6 +35,38 @@ describe('Scope based Associations with Application within Same Account', () => 
     });
   });
 });
+
+describe('Associate attribute group with Application', () => {
+  let app: cdk.App;
+  beforeEach(() => {
+    app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+  });
+
+  test('Associate Attribute Group with application created by ApplicationAssociator', () => {
+
+    const customAttributeGroup = new CustomAppRegistryAttributeGroup(app, 'AppRegistryAttributeGroup');
+
+    const appAssociator = new appreg.ApplicationAssociator(app, 'TestApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'TestAssociatedApplication',
+        stackName: 'TestAssociatedApplicationStack',
+      })],
+    });
+
+    customAttributeGroup.attributeGroup.associateApplicationWithAttributeGroup(appAssociator.appRegistryApplication());
+    Template.fromStack(customAttributeGroup.attributeGroup.stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 1);
+    Template.fromStack(customAttributeGroup.attributeGroup.stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
+      Application: { 'Fn::ImportValue': 'TestAssociatedApplicationStack:ExportsOutputFnGetAttDefaultCdkApplication4573D5A3IdAEBA32E0' },
+      AttributeGroup: { 'Fn::GetAtt': ['MyFirstAttributeGroupDBC21379', 'Id'] },
+    });
+
+  });
+});
+
 describe('Scope based Associations with Application with Cross Region/Account', () => {
   let app: cdk.App;
   beforeEach(() => {
@@ -209,5 +241,20 @@ class AppRegistrySampleStage extends cdk.Stage {
 class AppRegistrySampleStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+  }
+}
+
+class CustomAppRegistryAttributeGroup extends cdk.Stack {
+  public readonly attributeGroup: appreg.AttributeGroup;
+
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+    const myAttributeGroup = new appreg.AttributeGroup(this, 'MyFirstAttributeGroup', {
+      attributeGroupName: 'MyFirstAttributeGroupName',
+      description: 'Test attribute group',
+      attributes: {},
+    });
+
+    this.attributeGroup = myAttributeGroup;
   }
 }
