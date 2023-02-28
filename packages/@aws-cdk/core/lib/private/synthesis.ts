@@ -62,9 +62,35 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   return assembly;
 }
 
+class LazyHash {
+  private hash?: string;
+
+  constructor(private readonly outdir: string) {}
+
+  get value(): string {
+    if (!this.hash) {
+      this.hash = computeChecksumOfFolder(this.outdir);
+    }
+    return this.hash;
+  }
+}
+
+class LazyTree {
+  private tree?: ConstructTree;
+
+  constructor(private readonly root: IConstruct) {}
+
+  get value(): ConstructTree {
+    if (!this.tree) {
+      this.tree = new ConstructTree(this.root);
+    }
+    return this.tree;
+  }
+}
+
 function invokeValidationPlugins(root: IConstruct, outdir: string) {
-  const originalHash = computeChecksumOfFolder(outdir);
-  const tree = new ConstructTree(root);
+  const lazyTree = new LazyTree(root);
+  const lazyHash = new LazyHash(outdir);
   let failed = false;
 
   const templatePathsByPlugin: Map<IValidationPlugin, string[]> = new Map();
@@ -80,6 +106,9 @@ function invokeValidationPlugins(root: IConstruct, outdir: string) {
   });
 
   for (const [plugin, paths] of templatePathsByPlugin.entries()) {
+    const tree = lazyTree.value;
+    const originalHash = lazyHash.value;
+
     const validationContext = new ValidationContext({
       tree,
       templatePaths: paths,
