@@ -1332,6 +1332,9 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2022_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-07.rur-2022-07.r1', '19');
   /** Version "19.0.0.0.ru-2022-10.rur-2022-10.r1". */
   public static readonly VER_19_0_0_0_2022_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-10.rur-2022-10.r1', '19');
+  /** Version "19.0.0.0.ru-2023-01.rur-2023-01.r1". */
+  public static readonly VER_19_0_0_0_2023_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-01.rur-2023-01.r1', '19');
+
 
   /** Version "21" (only a major version, without a specific minor version). */
   public static readonly VER_21 = OracleEngineVersion.of('21', '21');
@@ -1343,6 +1346,8 @@ export class OracleEngineVersion {
   public static readonly VER_21_0_0_0_2022_07_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-07.rur-2022-07.r1', '21');
   /** Version "21.0.0.0.ru-2022-10.rur-2022-10.r1". */
   public static readonly VER_21_0_0_0_2022_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-10.rur-2022-10.r1', '21');
+  /** Version "21.0.0.0.ru-2023-01.rur-2023-01.r1". */
+  public static readonly VER_21_0_0_0_2023_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-01.rur-2023-01.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
