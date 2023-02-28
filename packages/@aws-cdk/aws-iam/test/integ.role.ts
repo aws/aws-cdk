@@ -1,4 +1,5 @@
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { AccountRootPrincipal, OrganizationPrincipal, Policy, PolicyStatement, Role, ServicePrincipal } from '../lib';
 
 const app = new App();
@@ -24,6 +25,10 @@ new Role(stack, 'TestRole2', {
 // Role with an org
 new Role(stack, 'TestRole3', {
   assumedBy: new OrganizationPrincipal('o-1234'),
+});
+
+new IntegTest(app, 'integ-iam-role', {
+  testCases: [stack],
 });
 
 app.synth();

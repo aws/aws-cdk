@@ -1,3 +1,5 @@
+
+
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -10,23 +12,23 @@ class SnsToLambda extends cdk.Stack {
 
     const topic = new sns.Topic(this, 'MyTopic');
 
-    const fction = new lambda.Function(this, 'Echo', {
+    const func = new lambda.Function(this, 'Echo', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
 
-    topic.addSubscription(new subs.LambdaSubscription(fction, {
+    topic.addSubscription(new subs.LambdaSubscription(func, {
       deadLetterQueue: new sqs.Queue(this, 'DeadLetterQueue'),
     }));
 
-    const fctionFiltered = new lambda.Function(this, 'Filtered', {
+    const funcFiltered = new lambda.Function(this, 'Filtered', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
 
-    topic.addSubscription(new subs.LambdaSubscription(fctionFiltered, {
+    topic.addSubscription(new subs.LambdaSubscription(funcFiltered, {
       filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({
           allowlist: ['red'],
@@ -37,6 +39,23 @@ class SnsToLambda extends cdk.Stack {
         }),
         price: sns.SubscriptionFilter.numericFilter({
           between: { start: 100, stop: 200 },
+        }),
+      },
+    }));
+
+    const funcFilteredWithMessageBody = new lambda.Function(this, 'FilteredMessageBody', {
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
+    });
+
+    topic.addSubscription(new subs.LambdaSubscription(funcFilteredWithMessageBody, {
+      filterPolicyWithMessageBody: {
+        background: sns.FilterOrPolicy.policy({
+          color: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
+            allowlist: ['red'],
+            matchPrefixes: ['bl', 'ye'],
+          })),
         }),
       },
     }));

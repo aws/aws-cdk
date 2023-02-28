@@ -1,9 +1,9 @@
 import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnListener } from '../elasticloadbalancingv2.generated';
-import { IListenerAction } from '../shared/listener-action';
 import { INetworkListener } from './network-listener';
 import { INetworkTargetGroup } from './network-target-group';
+import { CfnListener } from '../elasticloadbalancingv2.generated';
+import { IListenerAction } from '../shared/listener-action';
 
 /**
  * What to do when a client makes a request to a listener

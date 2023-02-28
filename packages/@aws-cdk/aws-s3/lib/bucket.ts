@@ -23,6 +23,7 @@ import {
 } from '@aws-cdk/core';
 import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as regionInformation from '@aws-cdk/region-info';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -408,14 +409,14 @@ export interface BucketAttributes {
   /**
    * The domain name of the bucket.
    *
-   * @default Inferred from bucket name
+   * @default - Inferred from bucket name
    */
   readonly bucketDomainName?: string;
 
   /**
    * The website URL of the bucket (if static web hosting is enabled).
    *
-   * @default Inferred from bucket name
+   * @default - Inferred from bucket name and region
    */
   readonly bucketWebsiteUrl?: string;
 
@@ -430,13 +431,22 @@ export interface BucketAttributes {
   readonly bucketDualStackDomainName?: string;
 
   /**
-   * The format of the website URL of the bucket. This should be true for
+   * Force the format of the website URL of the bucket. This should be true for
    * regions launched since 2014.
    *
-   * @default false
+   * @default - inferred from available region information, `false` otherwise
+   *
+   * @deprecated The correct website url format can be inferred automatically from the bucket `region`.
+   * Always provide the bucket region if the `bucketWebsiteUrl` will be used.
+   * Alternatively provide the full `bucketWebsiteUrl` manually.
    */
   readonly bucketWebsiteNewUrlFormat?: boolean;
 
+  /**
+   * KMS encryption key associated with this bucket.
+   *
+   * @default - no encryption key
+   */
   readonly encryptionKey?: kms.IKey;
 
   /**
@@ -455,6 +465,8 @@ export interface BucketAttributes {
 
   /**
    * The region this existing bucket is in.
+   * Features that require the region (e.g. `bucketWebsiteUrl`) won't fully work
+   * if the region cannot be correctly inferred.
    *
    * @default - it's assumed the bucket is in the same region as the scope it's being imported into
    */
@@ -1626,7 +1638,8 @@ export class Bucket extends BucketBase {
   public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
     const stack = Stack.of(scope);
     const region = attrs.region ?? stack.region;
-    const urlSuffix = stack.urlSuffix;
+    const regionInfo = regionInformation.RegionInfo.get(region);
+    const urlSuffix = regionInfo.domainSuffix ?? stack.urlSuffix;
 
     const bucketName = parseBucketName(scope, attrs);
     if (!bucketName) {
@@ -1634,13 +1647,18 @@ export class Bucket extends BucketBase {
     }
     Bucket.validateBucketName(bucketName);
 
-    const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
-      ? false
-      : attrs.bucketWebsiteNewUrlFormat;
+    const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
+    const newEndpoint = `s3-website.${region}.${urlSuffix}`;
 
-    const websiteDomain = newUrlFormat
-      ? `${bucketName}.s3-website.${region}.${urlSuffix}`
-      : `${bucketName}.s3-website-${region}.${urlSuffix}`;
+    let staticDomainEndpoint = regionInfo.s3StaticWebsiteEndpoint
+      ?? Lazy.string({ produce: () => stack.regionalFact(regionInformation.FactName.S3_STATIC_WEBSITE_ENDPOINT, newEndpoint) });
+
+    // Deprecated use of bucketWebsiteNewUrlFormat
+    if (attrs.bucketWebsiteNewUrlFormat !== undefined) {
+      staticDomainEndpoint = attrs.bucketWebsiteNewUrlFormat ? newEndpoint : oldEndpoint;
+    }
+
+    const websiteDomain = `${bucketName}.${staticDomainEndpoint}`;
 
     class Import extends BucketBase {
       public readonly bucketName = bucketName!;
@@ -1650,7 +1668,7 @@ export class Bucket extends BucketBase {
       public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
       public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
-      public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
+      public readonly bucketWebsiteNewUrlFormat = attrs.bucketWebsiteNewUrlFormat ?? false;
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly isWebsite = attrs.isWebsite ?? false;
       public policy?: BucketPolicy = undefined;
@@ -2086,12 +2104,14 @@ export class Bucket extends BucketBase {
     if (!props.serverAccessLogsBucket && !props.serverAccessLogsPrefix) {
       return undefined;
     }
+
     if (
-      // The current bucket is being used and is configured for default SSE-KMS
-      !props.serverAccessLogsBucket && (
+      // KMS can't be used for logging since the logging service can't use the key - logs don't write
+      // KMS_MANAGED can't be used for logging since the account can't access the logging service key - account can't read logs
+      (!props.serverAccessLogsBucket && (
         props.encryptionKey ||
-        props.encryption === BucketEncryption.KMS ||
-        props.encryption === BucketEncryption.KMS_MANAGED) ||
+        props.encryption === BucketEncryption.KMS_MANAGED ||
+        props.encryption === BucketEncryption.KMS )) ||
       // Another bucket is being used that is configured for default SSE-KMS
       props.serverAccessLogsBucket?.encryptionKey
     ) {

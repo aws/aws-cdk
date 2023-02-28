@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import { Pass, Wait, WaitTime } from '../lib';
 import { render } from './private/render-util';
+import { Pass, Wait, WaitTime } from '../lib';
 
 describe('Wait State', () => {
   test('wait time from ISO8601 timestamp', () => {
