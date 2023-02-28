@@ -14,6 +14,7 @@ import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { ValidationContext } from '../validation/private/plugin';
+import { IValidationPlugin } from '../validation';
 
 /**
  * Options for `synthesize()`
@@ -65,34 +66,48 @@ function invokeValidationPlugins(root: IConstruct, outdir: string) {
   const originalHash = computeChecksumOfFolder(outdir);
   const tree = new ConstructTree(root);
   let failed = false;
+
+  const templatePathsByPlugin: Map<IValidationPlugin, string[]> = new Map();
   visit(root, 'post', construct => {
     if (Stage.isStage(construct)) {
-      const stacks: Stack[] = construct.node.findAll().filter(node => Stack.isStack(node)) as Stack[];
-      stacks.forEach(stack => {
-        const validationContext = new ValidationContext({
-          tree,
-          stackTemplatePath: path.join(construct.outdir, stack.templateFile),
-        });
-        for (const plugin of construct.validationPlugins) {
-          if (!plugin.isReady()) {
-            throw new Error(`Validation plugin '${plugin.name}' is not ready`);
-          }
-          plugin.validate(validationContext);
-          if (computeChecksumOfFolder(outdir) !== originalHash) {
-            throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
-          }
+      for (const plugin of construct.validationPlugins) {
+        if (!templatePathsByPlugin.has(plugin)) {
+          templatePathsByPlugin.set(plugin, []);
         }
-        if (construct.validationPlugins.length > 0 && !validationContext.report.success) {
-          // eslint-disable-next-line no-console
-          console.log(validationContext.report.toString());
-          failed = true;
-        }
-      });
+        templatePathsByPlugin.get(plugin)!.push(...templatePaths(construct.outdir));
+      }
     }
   });
+
+  for (const [plugin, paths] of templatePathsByPlugin.entries()) {
+    const validationContext = new ValidationContext({
+      tree,
+      templatePaths: paths,
+    });
+    if (!plugin.isReady()) {
+      throw new Error(`Validation plugin '${plugin.name}' is not ready`);
+    }
+    plugin.validate(validationContext);
+    if (computeChecksumOfFolder(outdir) !== originalHash) {
+      throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+    }
+    if (!validationContext.report.success) {
+      // eslint-disable-next-line no-console
+      console.error(validationContext.report.toString());
+      failed = true;
+    }
+  }
+
   if (failed) {
     throw new Error('Validation failed. See the validation report above for details');
   }
+}
+
+function templatePaths(stagePath: string): string[] {
+  return fs
+    .readdirSync(stagePath)
+    .filter(f => f.endsWith('.template.json'))
+    .map(f => path.join(stagePath, f));
 }
 
 function computeChecksumOfFolder(folder: string, inputHash: Hash | undefined = undefined): string {

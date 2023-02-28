@@ -40,6 +40,16 @@ export class ConstructTree {
         this._constructByResourceName.set(Stack.of(child).resolve(defaultChild.logicalId), child);
       }
     });
+
+    // Another pass to include all the L1s that haven't been added yet
+    this.root.node.findAll().forEach(child => {
+      if (CfnResource.isCfnResource(child)) {
+        const logicalId = Stack.of(child).resolve(child.logicalId);
+        if (!this._constructByResourceName.has(logicalId)) {
+          this._constructByResourceName.set(logicalId, child);
+        }
+      }
+    });
   }
 
   /**

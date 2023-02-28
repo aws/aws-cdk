@@ -9,9 +9,9 @@ import { IValidationContext } from '../validation';
  */
 export interface ValidationContextProps {
   /**
-    * The path to the template being validated
-    */
-  readonly stackTemplatePath: string;
+   * The absolute path of all templates to be processed
+   */
+  readonly templatePaths: string[];
 
   /**
    * The construct tree being validated
@@ -31,12 +31,12 @@ export class ValidationContext implements IValidationContext {
   public readonly report: IValidationReport;
 
   /**
-   * The full path to the CloudFormation template in the Cloud Assembly
+   * The absolute path of all templates to be processed
    */
-  public readonly templateFullPath: string;
+  public readonly templatePaths: string[];
 
   constructor(props: ValidationContextProps) {
-    this.templateFullPath = props.stackTemplatePath;
+    this.templatePaths = props.templatePaths;
     this.report = new ValidationReport(props.tree);
   }
 }

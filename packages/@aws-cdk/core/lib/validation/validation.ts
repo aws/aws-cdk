@@ -59,7 +59,7 @@ export interface IValidationContext {
   readonly report: IValidationReport;
 
   /**
-   * The full path to the CloudFormation template in the Cloud Assembly
+   * The absolute path of all templates to be processed
    */
-  readonly templateFullPath: string;
+  readonly templatePaths: string[];
 }

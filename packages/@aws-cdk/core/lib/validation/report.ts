@@ -108,8 +108,10 @@ export interface ValidationReportSummary {
   readonly pluginName: string;
 
   /**
-   * TODO docs
-   * @default - TODO
+   * Additional metadata about the report. This property is intended
+   * to be used by plugins to add additional information.
+   *
+   * @default - no metadata
    */
   readonly metadata?: { readonly [key: string]: string };
 }

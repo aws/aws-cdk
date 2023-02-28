@@ -72,7 +72,9 @@ export interface StageProps {
   readonly permissionsBoundary?: PermissionsBoundary;
 
   /**
-   * TODO docs
+   * Validation plugins to run during synthesis. If any plugin reports any violation,
+   * synthesis will be interrupted and the report displayed to the user.
+   *
    * @default - no validation plugins are used
    */
   readonly validationPlugins?: IValidationPlugin[]
@@ -145,7 +147,10 @@ export class Stage extends Construct {
   private assembly?: cxapi.CloudAssembly;
 
   /**
-   * TODO docs
+   * Validation plugins to run during synthesis. If any plugin reports any violation,
+   * synthesis will be interrupted and the report displayed to the user.
+   *
+   * @default - no validation plugins are used
    */
   public readonly validationPlugins: IValidationPlugin[] = [];
 

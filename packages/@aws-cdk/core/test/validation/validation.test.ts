@@ -1,10 +1,11 @@
-import { appendFileSync } from 'fs';
+import * as fs from 'fs';
+import { Construct } from 'constructs';
 import * as core from '../../lib';
-import { ValidationReportStatus } from '../../lib';
+import { ValidationReportStatus, ValidationViolationResourceAware } from '../../lib';
 
 let logMock: jest.SpyInstance;
 beforeEach(() => {
-  logMock = jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  logMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
 });
 
 afterEach(() => {
@@ -15,11 +16,19 @@ describe('validations', () => {
   test('validation failure', () => {
     const app = new core.App({
       validationPlugins: [
-        new TestValidations(core.ValidationReportStatus.FAILURE),
+        new FakePlugin([{
+          recommendation: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceName: 'Fake',
+            templatePath: '/path/to/stack.template.json',
+          }],
+        }]),
       ],
     });
     const stack = new core.Stack(app);
-    new core.CfnResource(stack, 'DefaultResource', {
+    new core.CfnResource(stack, 'Fake', {
       type: 'Test::Resource::Fake',
       properties: {
         result: 'failure',
@@ -28,13 +37,27 @@ describe('validations', () => {
     expect(() => {
       app.synth();
     }).toThrow(/Validation failed/);
-    expect(logMock.mock.calls[0][0]).toEqual(validationReport(app.outdir));
+
+    expect(logMock.mock.calls[0][0]).toEqual(validationReport({
+      templatePath: '/path/to/stack.template.json',
+      constructPath: 'Default/Fake',
+      title: 'test-rule',
+      creationStack: `\t└──  Fake (Default/Fake)
+\t     │ Library: @aws-cdk/core.CfnResource
+\t     │ Library Version: 0.0.0
+\t     │ Location: undefined
+\t     └──  Default (Default)
+\t          │ Library: @aws-cdk/core.Stack
+\t          │ Library Version: 0.0.0
+\t          │ Location: undefined`,
+      resourceName: 'Fake',
+    }));
   });
 
   test('validation success', () => {
     const app = new core.App({
       validationPlugins: [
-        new TestValidations(core.ValidationReportStatus.SUCCESS),
+        new FakePlugin([]),
       ],
     });
     const stack = new core.Stack(app);
@@ -49,10 +72,75 @@ describe('validations', () => {
     }).not.toThrow(/Validation failed/);
   });
 
+  test('multiple stacks', () => {
+    const app = new core.App({
+      validationPlugins: [
+        new FakePlugin([{
+          recommendation: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceName: 'DefaultResource',
+            templatePath: '/path/to/stack1.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack1 = new core.Stack(app, 'stack1');
+    new core.CfnResource(stack1, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    const stack2 = new core.Stack(app, 'stack2');
+    new core.CfnResource(stack2, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    expect(() => {
+      app.synth();
+    }).toThrow(/Validation failed/);
+
+    const report = logMock.mock.calls[0][0];
+    // Assuming the rest of the report's content is checked by another test
+    expect(report).toContain('- Template Path: /path/to/stack1.template.json');
+    expect(report).not.toContain('- Template Path: /path/to/stack2.template.json');
+  });
+
+  test('multiple constructs', () => {
+    const app = new core.App({
+      validationPlugins: [
+        new FakePlugin([{
+          recommendation: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceName: 'SomeResource317FDD71',
+            templatePath: '/path/to/stack.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new LevelTwoConstruct(stack, 'SomeResource');
+    new LevelTwoConstruct(stack, 'AnotherResource');
+    expect(() => {
+      app.synth();
+    }).toThrow(/Validation failed/);
+
+    const report = logMock.mock.calls[0][0];
+    // Assuming the rest of the report's content is checked by another test
+    expect(report).toContain('- Construct Path: Default/SomeResource');
+    expect(report).not.toContain('- Construct Path: Default/AnotherResource');
+  });
+
   test('plugin not ready', () => {
     const app = new core.App({
       validationPlugins: [
-        new TestValidations(core.ValidationReportStatus.SUCCESS, false),
+        new FakePlugin([], false),
       ],
     });
     const stack = new core.Stack(app);
@@ -67,7 +155,7 @@ describe('validations', () => {
     }).toThrow(/Validation plugin 'test-plugin' is not ready/);
   });
 
-  test('plugin tries to modify the cloud assembly', () => {
+  test('plugin tries to modify a template', () => {
     const app = new core.App({
       validationPlugins: [
         new RoguePlugin(),
@@ -86,28 +174,23 @@ describe('validations', () => {
   });
 });
 
-class TestValidations implements core.IValidationPlugin {
+class FakePlugin implements core.IValidationPlugin {
   public readonly name = 'test-plugin';
 
-  constructor(private readonly result: ValidationReportStatus, private readonly ready: boolean = true) {}
+  constructor(
+    private readonly violations: ValidationViolationResourceAware[],
+    private readonly ready: boolean = true) {}
 
-  public validate(context: core.IValidationContext): void {
-    if (this.result === 'failure') {
-      context.report.addViolation(this.name, {
-        ruleName: 'test-rule',
-        recommendation: 'test recommendation',
-        violatingResources: [{
-          locations: [],
-          resourceName: '',
-          templatePath: context.templateFullPath,
-        }],
-      });
-    }
+  validate(context: core.IValidationContext): void {
+    this.violations.forEach(violation => {
+      context.report.addViolation(this.name, violation);
+    });
 
-    context.report.submit(this.name, this.result);
+    const result = this.violations.length > 0 ? ValidationReportStatus.FAILURE : ValidationReportStatus.SUCCESS;
+    context.report.submit(this.name, result);
   }
 
-  public isReady(): boolean {
+  isReady(): boolean {
     return this.ready;
   }
 }
@@ -116,7 +199,8 @@ class RoguePlugin implements core.IValidationPlugin {
   public readonly name = 'rogue-plugin';
 
   validate(context: core.IValidationContext): void {
-    appendFileSync(context.templateFullPath, 'malicious data');
+    const templatePath = context.templatePaths[0];
+    fs.writeFileSync(templatePath, 'malicious data');
     context.report.submit(this.name, ValidationReportStatus.SUCCESS);
   }
 
@@ -125,9 +209,16 @@ class RoguePlugin implements core.IValidationPlugin {
   }
 }
 
+interface ValidationReportData {
+  templatePath: string,
+  title: string,
+  constructPath: string,
+  creationStack?: string,
+  resourceName: string,
+}
 
-const validationReport = (dir: string) => {
-  const title = reset(red(bright('test-rule (1 occurrences)')));
+const validationReport = (data: ValidationReportData) => {
+  const title = reset(red(bright(`${data.title} (1 occurrences)`)));
   return [
     'Validation Report',
     '-----------------',
@@ -147,12 +238,13 @@ const validationReport = (dir: string) => {
     '',
     '  Occurrences:',
     '',
-    '    - Construct Path: N/A',
-    `    - Template Path: ${dir}/Default.template.json`,
+    `    - Construct Path: ${data.constructPath}`,
+    `    - Template Path: ${data.templatePath}`,
     '    - Creation Stack:',
-    '\t\tConstruct trace not available. Rerun with `--debug` to see trace information',
-    '    - Resource Name: ',
+    `${data.creationStack ?? 'Construct trace not available. Rerun with `--debug` to see trace information'}`,
+    `    - Resource Name: ${data.resourceName}`,
     '    - Locations:',
+    '      > test-location',
     '',
     '  Recommendation: test recommendation',
 
@@ -169,4 +261,16 @@ function red(s: string) {
 
 function bright(s: string) {
   return `\x1b[1m${s}`;
+}
+
+class LevelTwoConstruct extends Construct {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    new core.CfnResource(this, 'Resource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'success',
+      },
+    });
+  }
 }
