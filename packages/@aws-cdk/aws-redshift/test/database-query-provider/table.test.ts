@@ -12,7 +12,6 @@ import { TableAndClusterProps } from '../../lib/private/database-query-provider/
 
 type ResourcePropertiesType = TableAndClusterProps & { ServiceToken: string, Data: { TableName: string } };
 
-const tableId = 'tableId';
 const tableNamePrefix = 'tableNamePrefix';
 const tableColumns = [{ name: 'col1', dataType: 'varchar(1)' }];
 const clusterName = 'clusterName';
@@ -22,7 +21,6 @@ const physicalResourceId = 'PhysicalResourceId';
 const requestId = 'requestId';
 const requestIdTruncated = 'requestI';
 const resourceProperties: ResourcePropertiesType = {
-  id: tableId,
   tableName: {
     prefix: tableNamePrefix,
     generateSuffix: 'true',
@@ -64,7 +62,7 @@ describe('create', () => {
       Data: {
         TableName: `${tableNamePrefix}${requestIdTruncated}`,
       },
-      PhysicalResourceId: tableId,
+      PhysicalResourceId: `${tableNamePrefix}${requestIdTruncated}`,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`,
@@ -85,7 +83,7 @@ describe('create', () => {
       Data: {
         TableName: tableNamePrefix,
       },
-      PhysicalResourceId: tableId,
+      PhysicalResourceId: tableNamePrefix,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `CREATE TABLE ${tableNamePrefix} (col1 varchar(1))`,
@@ -214,7 +212,7 @@ describe('update', () => {
       Data: {
         TableName: `${tableNamePrefix}${requestIdTruncated}`,
       },
-      PhysicalResourceId: tableId,
+      PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).not.toHaveBeenCalled();
   });
@@ -237,16 +235,6 @@ describe('update', () => {
 
   describe('table name', () => {
     test('does not replace if table name changes', async () => {
-      const newEvent = {
-        ...event,
-        OldResourceProperties: {
-          ...event.OldResourceProperties,
-          tableName: {
-            ...event.OldResourceProperties.tableName,
-            prefix: 'oldTableName',
-          },
-        },
-      };
       const newResourceProperties = {
         ...resourceProperties,
         tableName: {
@@ -256,22 +244,15 @@ describe('update', () => {
         },
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
-        PhysicalResourceId: tableId,
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: 'ALTER TABLE oldTableName RENAME TO newTableName',
+        Sql: `ALTER TABLE ${event.OldResourceProperties.Data.TableName} RENAME TO newTableName`,
       }));
     });
 
     test('does not replace if table name added', async () => {
-      const newEvent = {
-        ...event,
-        OldResourceProperties: {
-          ...event.OldResourceProperties,
-          tableName: 'Table',
-        },
-      };
       const newResourceProperties = {
         ...resourceProperties,
         tableName: {
@@ -280,22 +261,15 @@ describe('update', () => {
         },
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
-        PhysicalResourceId: tableId,
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: 'ALTER TABLE Table RENAME TO newTable',
+        Sql: `ALTER TABLE ${event.OldResourceProperties.Data.TableName} RENAME TO newTable`,
       }));
     });
 
     test('does not replace if table name removed', async () => {
-      const newEvent = {
-        ...event,
-        OldResourceProperties: {
-          ...event.OldResourceProperties,
-          tableName: 'oldTableName',
-        },
-      };
       const newResourceProperties = {
         ...resourceProperties,
         tableName: {
@@ -304,11 +278,11 @@ describe('update', () => {
         },
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
-        PhysicalResourceId: tableId,
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE oldTableName RENAME TO Table${requestIdTruncated}`,
+        Sql: `ALTER TABLE ${event.OldResourceProperties.Data.TableName} RENAME TO Table${requestIdTruncated}`,
       }));
     });
   });
@@ -320,7 +294,7 @@ describe('update', () => {
     };
 
     await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
-      PhysicalResourceId: tableId,
+      PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: expect.stringMatching(new RegExp(`ALTER TABLE ${newResourceProperties.tableName.prefix}.+ DROP COLUMN col1`)),
@@ -337,10 +311,10 @@ describe('update', () => {
     };
 
     await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
-      PhysicalResourceId: tableId,
+      PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`ALTER TABLE ${newResourceProperties.tableName.prefix}.+ ADD ${newTableColumnName} ${newTableColumnDataType}`)),
+      Sql: `ALTER TABLE ${event.OldResourceProperties.Data.TableName} ADD ${newTableColumnName} ${newTableColumnDataType}`,
     }));
   });
 
@@ -394,10 +368,10 @@ describe('update', () => {
       };
 
       await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
-        PhysicalResourceId: tableId,
+        PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: expect.stringMatching(new RegExp(`ALTER TABLE ${newResourceProperties.tableName.prefix}.+ ALTER DISTSTYLE ${newDistStyle}`)),
+        Sql: `ALTER TABLE ${newEvent.OldResourceProperties.Data.TableName} ALTER DISTSTYLE ${newDistStyle}`,
       }));
     });
 
@@ -456,10 +430,10 @@ describe('update', () => {
       };
 
       await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
-        PhysicalResourceId: tableId,
+        PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: expect.stringMatching(new RegExp(`ALTER TABLE ${newResourceProperties.tableName.prefix}.+ ALTER DISTKEY ${newDistKey}`)),
+        Sql: `ALTER TABLE ${newEvent.OldResourceProperties.Data.TableName} ALTER DISTKEY ${newDistKey}`,
       }));
     });
   });
@@ -536,10 +510,10 @@ describe('update', () => {
       };
 
       await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
-        PhysicalResourceId: tableId,
+        PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: expect.stringMatching(new RegExp(`ALTER TABLE ${newResourceProperties.tableName.prefix}.+ ALTER COMPOUND SORTKEY(col2)`)),
+        Sql: `ALTER TABLE ${newEvent.OldResourceProperties.Data.TableName} ALTER COMPOUND SORTKEY(col2)`,
       }));
     });
 
@@ -559,10 +533,10 @@ describe('update', () => {
       };
 
       await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
-        PhysicalResourceId: tableId,
+        PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: expect.stringMatching(new RegExp(`ALTER TABLE ${newResourceProperties.tableName.prefix}.+ ALTER COMPOUND SORTKEY(col1)`)),
+        Sql: `ALTER TABLE ${newEvent.OldResourceProperties.Data.TableName} ALTER COMPOUND SORTKEY(col1)`,
       }));
     });
 
@@ -582,10 +556,10 @@ describe('update', () => {
       };
 
       await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
-        PhysicalResourceId: tableId,
+        PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: expect.stringMatching(new RegExp(`ALTER TABLE ${newResourceProperties.tableName.prefix}.+ ALTER SORTKEY AUTO`)),
+        Sql: `ALTER TABLE ${newEvent.OldResourceProperties.Data.TableName} ALTER SORTKEY AUTO`,
       }));
     });
   });
@@ -599,10 +573,10 @@ describe('update', () => {
       };
 
       await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
-        PhysicalResourceId: tableId,
+        PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: expect.stringMatching(new RegExp(`COMMENT ON TABLE ${newResourceProperties.tableName.prefix}.+ IS '${newComment}'`)),
+        Sql: `COMMENT ON TABLE ${event.OldResourceProperties.Data.TableName} IS '${newComment}'`,
       }));
     });
 
@@ -619,10 +593,10 @@ describe('update', () => {
       };
 
       await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
-        PhysicalResourceId: tableId,
+        PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: expect.stringMatching(new RegExp(`COMMENT ON TABLE ${newResourceProperties.tableName.prefix}.+ IS NULL`)),
+        Sql: `COMMENT ON TABLE ${event.OldResourceProperties.Data.TableName} IS NULL`,
       }));
     });
   });
