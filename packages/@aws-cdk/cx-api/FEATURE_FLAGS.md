@@ -866,7 +866,7 @@ However Secrets can only have a single ResourcePolicy, causing the CloudFormatio
 When enabling this feature flag for an existing Stack, ResourcePolicies created via a SecretTargetAttachment will need replacement.
 This won't be possible without intervention due to limitation outlined above.
 First remove all permissions granted to the Secret and deploy without the ResourcePolicies.
-Now you can re-add the permissions and deploy again.
+Then you can re-add the permissions and deploy again.
 
 
 | Since | Default | Recommended |

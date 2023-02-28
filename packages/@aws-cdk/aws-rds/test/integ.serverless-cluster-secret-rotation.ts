@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-rds-integ-secret-rotation');
 
 const kmsKey = new kms.Key(stack, 'DbSecurity');
 const secret = new DatabaseSecret(stack, 'test-secret', {
-  username: 'cluster-admin',
+  username: 'admin',
 });
 
 const cluster = new ServerlessCluster(stack, 'Database', {
@@ -29,3 +29,5 @@ cluster.grantDataApiAccess(new iam.ServicePrincipal('ecs-tasks.amazonaws.com'));
 new IntegTest(app, 'cdk-rds-integ-secret-rotation', {
   testCases: [stack],
 });
+
+app.synth();
