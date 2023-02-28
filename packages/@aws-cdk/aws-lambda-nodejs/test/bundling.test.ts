@@ -643,7 +643,6 @@ test('esbuild bundling with pre compilations', () => {
   });
 
   const compilerOptions = util.getTsconfigCompilerOptions(findParentTsConfigPath(__dirname));
-  // const compilerOptions = util.getTsconfigCompilerOptions(path.join(__dirname, '..', 'tsconfig.json'));
 
   // Correctly bundles with esbuild
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), {
