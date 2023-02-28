@@ -695,10 +695,16 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'SecretTargetAttachments uses the ResourcePolicy of the attached Secret.',
     detailsMd: `
-      Forward any additions to the resource policy to the original secret.
-      This is required because a secret can only have a single resource policy.
-      If we do not forward policy additions, a new policy resource is created using the secret attachment ARN.
-      This ends up being rejected by CloudFormation.
+      Enable this feature flag to make SecretTargetAttachments use the ResourcePolicy of the attached Secret.
+      SecretTargetAttachments are created to connect a Secret to a target resource. 
+      In CDK code, they behave like regular Secret and can be used as a stand-in in most situations.
+      Previously, adding to the ResourcePolicy of a SecretTargetAttachment did attempt to create a separate ResourcePolicy for the same Secret.
+      However Secrets can only have a single ResourcePolicy, causing the CloudFormation deployment to fail.
+
+      When enabling this feature flag for an existing Stack, ResourcePolicies created via a SecretTargetAttachment will need replacement.
+      This won't be possible without intervention due to limitation outlined above.
+      First remove all permissions granted to the Secret and deploy without the ResourcePolicies.
+      Now you can re-add the permissions and deploy again.
       `,
     recommendedValue: true,
     introducedIn: { v2: 'V2NEXT' },
