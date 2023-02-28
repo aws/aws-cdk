@@ -291,7 +291,6 @@ export class Settings {
       notices: argv.notices,
       assetParallelism: argv['asset-parallelism'],
       assetPrebuild: argv['asset-prebuild'],
-      quiet: argv.quiet,
     });
   }
 
