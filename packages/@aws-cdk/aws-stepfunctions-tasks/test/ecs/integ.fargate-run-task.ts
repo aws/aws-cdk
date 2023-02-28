@@ -38,7 +38,6 @@ const definition = new sfn.Pass(stack, 'Start', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
-    revisionNumber: 1,
     assignPublicIp: true,
     containerOverrides: [
       {
@@ -55,6 +54,15 @@ const definition = new sfn.Pass(stack, 'Start', {
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     }),
     taskTimeout: sfn.Timeout.at('$.Timeout'),
+  }),
+).next(
+  new tasks.EcsRunTask(stack, 'FargeateTaskSetRevisionNumber', {
+    cluster,
+    taskDefinition,
+    revisionNumber: 1,
+    launchTarget: new tasks.EcsFargateLaunchTarget({
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }),
   }),
 );
 
