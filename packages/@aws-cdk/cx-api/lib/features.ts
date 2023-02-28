@@ -81,6 +81,7 @@ export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:
 export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
 export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
 export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId';
+export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
 export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -673,6 +674,18 @@ export const FLAGS: Record<string, FlagInfo> = {
       `,
     introducedIn: { v2: '2.66.0' },
     recommendedValue: true,
+  },
+
+  [EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA]: {
+    type: FlagType.BugFix,
+    summary: 'Define user data for a launch template by default when a machine image is provided.',
+    detailsMd: `
+      The ec2.LaunchTemplate construct did not define user data when a machine image is
+      provided despite the document. If this is set, a user data is automatically defined
+      according to the OS of the machine image.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: 'V2NEXT' },
   },
 
   //////////////////////////////////////////////////////////////////////
