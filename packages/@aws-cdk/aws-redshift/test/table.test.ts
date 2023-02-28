@@ -6,8 +6,8 @@ import * as redshift from '../lib';
 describe('cluster table', () => {
   const tableName = 'tableName';
   const tableColumns: redshift.Column[] = [
-    { name: 'col1', id: 'col1', dataType: 'varchar(4)' },
-    { name: 'col2', id: 'col2', dataType: 'float' },
+    { name: 'col1', dataType: 'varchar(4)' },
+    { name: 'col2', dataType: 'float' },
   ];
 
   let stack: cdk.Stack;
@@ -157,8 +157,8 @@ describe('cluster table', () => {
     it('throws if more than one distKeys are configured', () => {
       const updatedTableColumns: redshift.Column[] = [
         ...tableColumns,
-        { id: 'col3', name: 'col3', dataType: 'varchar(4)', distKey: true },
-        { id: 'col4', name: 'col4', dataType: 'float', distKey: true },
+        { name: 'col3', dataType: 'varchar(4)', distKey: true },
+        { name: 'col4', dataType: 'float', distKey: true },
       ];
 
       expect(
@@ -172,7 +172,7 @@ describe('cluster table', () => {
     it('throws if distStyle other than KEY is configured with configured distKey column', () => {
       const updatedTableColumns: redshift.Column[] = [
         ...tableColumns,
-        { id: 'col3', name: 'col3', dataType: 'varchar(4)', distKey: true },
+        { name: 'col3', dataType: 'varchar(4)', distKey: true },
       ];
 
       expect(
@@ -245,7 +245,7 @@ describe('cluster table', () => {
       // GIVEN
       const tableColumnsWithSortKey: redshift.Column[] = [
         ...tableColumns,
-        { id: 'col3', name: 'col3', dataType: 'varchar(4)', sortKey: true },
+        { name: 'col3', dataType: 'varchar(4)', sortKey: true },
       ];
 
       // THEN

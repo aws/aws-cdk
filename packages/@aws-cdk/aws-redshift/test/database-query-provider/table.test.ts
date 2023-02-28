@@ -13,7 +13,7 @@ import { TableAndClusterProps } from '../../lib/private/database-query-provider/
 type ResourcePropertiesType = TableAndClusterProps & { ServiceToken: string };
 
 const tableNamePrefix = 'tableNamePrefix';
-const tableColumns = [{ id: 'col1', name: 'col1', dataType: 'varchar(1)' }];
+const tableColumns = [{ name: 'col1', dataType: 'varchar(1)' }];
 const clusterName = 'clusterName';
 const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
@@ -86,7 +86,7 @@ describe('create', () => {
     const event = baseEvent;
     const newResourceProperties: ResourcePropertiesType = {
       ...resourceProperties,
-      tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(1)', distKey: true }],
+      tableColumns: [{ name: 'col1', dataType: 'varchar(1)', distKey: true }],
       distStyle: TableDistStyle.KEY,
     };
 
@@ -102,9 +102,9 @@ describe('create', () => {
     const newResourceProperties: ResourcePropertiesType = {
       ...resourceProperties,
       tableColumns: [
-        { id: 'col1', name: 'col1', dataType: 'varchar(1)', sortKey: true },
-        { id: 'col2', name: 'col2', dataType: 'varchar(1)' },
-        { id: 'col3', name: 'col3', dataType: 'varchar(1)', sortKey: true },
+        { name: 'col1', dataType: 'varchar(1)', sortKey: true },
+        { name: 'col2', dataType: 'varchar(1)' },
+        { name: 'col3', dataType: 'varchar(1)', sortKey: true },
       ],
       sortStyle: TableSortStyle.COMPOUND,
     };
@@ -121,9 +121,9 @@ describe('create', () => {
     const newResourceProperties: ResourcePropertiesType = {
       ...resourceProperties,
       tableColumns: [
-        { id: 'col1', name: 'col1', dataType: 'varchar(4)', distKey: 'true' as unknown as boolean },
-        { id: 'col2', name: 'col2', dataType: 'float', sortKey: 'true' as unknown as boolean },
-        { id: 'col3', name: 'col3', dataType: 'float', sortKey: 'true' as unknown as boolean },
+        { name: 'col1', dataType: 'varchar(4)', distKey: 'true' as unknown as boolean },
+        { name: 'col2', dataType: 'float', sortKey: 'true' as unknown as boolean },
+        { name: 'col3', dataType: 'float', sortKey: 'true' as unknown as boolean },
       ],
       distStyle: TableDistStyle.KEY,
       sortStyle: TableSortStyle.COMPOUND,
@@ -430,8 +430,8 @@ describe('update', () => {
       const newResourceProperties: ResourcePropertiesType = {
         ...resourceProperties,
         tableColumns: [
-          { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
-          { id: 'col2', name: 'col2', dataType: 'varchar(1)', distKey: true },
+          { name: 'col1', dataType: 'varchar(1)' },
+          { name: 'col2', dataType: 'varchar(1)', distKey: true },
         ],
       };
 
@@ -446,12 +446,12 @@ describe('update', () => {
 
   describe('sortStyle and sortKeys', () => {
     const oldTableColumnsWithSortKeys: Column[] = [
-      { id: 'col1', name: 'col1', dataType: 'varchar(1)', sortKey: true },
-      { id: 'col2', name: 'col2', dataType: 'varchar(1)' },
+      { name: 'col1', dataType: 'varchar(1)', sortKey: true },
+      { name: 'col2', dataType: 'varchar(1)' },
     ];
     const newTableColumnsWithSortKeys: Column[] = [
-      { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
-      { id: 'col2', name: 'col2', dataType: 'varchar(1)', sortKey: true },
+      { name: 'col1', dataType: 'varchar(1)' },
+      { name: 'col2', dataType: 'varchar(1)', sortKey: true },
     ];
 
     test('replaces when same sortStyle, different sortKey columns: INTERLEAVED', async () => {

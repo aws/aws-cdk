@@ -61,9 +61,11 @@ export interface Column {
    *
    * This is not the name of the column, and renaming this identifier will cause a new column to be created and the old column to be dropped.
    *
-   * **NOTE** - This field is required, however, only by setting the `@aws-cdk/aws-redshift:columnId` feature flag will this field be used.
+   * **NOTE** - This field will be set, however, only by setting the `@aws-cdk/aws-redshift:columnId` feature flag will this field be used.
+   *
+   * @default - the column name is used as the identifier
    */
-  readonly id: string;
+  readonly id?: string;
 
   /**
    * The name of the column. This will appear on Amazon Redshift.
@@ -314,10 +316,12 @@ export class Table extends TableBase {
   private validateColumnIds(columns: Column[]): void {
     const columnIds = new Set<string>();
     for (const column of columns) {
-      if (columnIds.has(column.id)) {
-        throw new Error(`Column id '${column.id}' is not unique.`);
+      if (column.id) {
+        if (columnIds.has(column.id)) {
+          throw new Error(`Column id '${column.id}' is not unique.`);
+        }
+        columnIds.add(column.id);
       }
-      columnIds.add(column.id);
     }
   }
 }

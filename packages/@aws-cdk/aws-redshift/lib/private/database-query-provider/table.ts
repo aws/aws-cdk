@@ -1,9 +1,9 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
+import { Column } from '../../table';
 import { executeStatement } from './redshift-data';
 import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
-import { Column } from '../../table';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
@@ -99,7 +99,7 @@ async function updateTable(
   const columnDeletions = oldTableColumns.filter(oldColumn => (
     tableColumns.every(column => {
       if (useColumnIds) {
-        return oldColumn.id ? oldColumn.id !== column.id : oldColumn.name !== column.name;
+        return oldColumn.id ? oldColumn.id !== column.id ?? column.name : oldColumn.name !== column.name;
       }
       return oldColumn.name !== column.name;
     })
@@ -111,7 +111,7 @@ async function updateTable(
   const columnAdditions = tableColumns.filter(column => {
     return !oldTableColumns.some(oldColumn => {
       if (useColumnIds) {
-        return oldColumn.id ? oldColumn.id === column.id : oldColumn.name === column.name;
+        return oldColumn.id ? oldColumn.id === column.id ?? column.name : oldColumn.name === column.name;
       }
       return oldColumn.name === column.name;
     });
@@ -122,7 +122,7 @@ async function updateTable(
 
   if (useColumnIds) {
     const columnNameUpdates = tableColumns.reduce((updates, column) => {
-      const oldColumn = oldTableColumns.find(oldCol => oldCol.id && oldCol.id === column.id);
+      const oldColumn = oldTableColumns.find(oldCol => oldCol.id && oldCol.id === (column.id ?? column.name));
       if (oldColumn && oldColumn.name !== column.name) {
         updates[oldColumn.name] = column.name;
       }
