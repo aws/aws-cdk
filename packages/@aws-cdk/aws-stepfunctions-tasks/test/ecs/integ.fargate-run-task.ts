@@ -55,6 +55,15 @@ const definition = new sfn.Pass(stack, 'Start', {
     }),
     taskTimeout: sfn.Timeout.at('$.Timeout'),
   }),
+).next(
+  new tasks.EcsRunTask(stack, 'FargeateTaskSetRevisionNumber', {
+    cluster,
+    taskDefinition,
+    revisionNumber: 1,
+    launchTarget: new tasks.EcsFargateLaunchTarget({
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }),
+  }),
 );
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {

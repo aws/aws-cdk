@@ -1,15 +1,15 @@
 {
-  "version": "30.1.0",
+  "version": "22.0.0",
   "files": {
-    "f1be03db0810455e897d5600a00d7d089273d1f89b9a319be25928bf241a9490": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "source": {
-        "path": "aws-cdk-rds-cluster-rotation.template.json",
+        "path": "LoadFromTarballDefaultTestDeployAssert46673615.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f1be03db0810455e897d5600a00d7d089273d1f89b9a319be25928bf241a9490.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
