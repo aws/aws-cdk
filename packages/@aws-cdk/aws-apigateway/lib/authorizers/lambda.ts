@@ -7,6 +7,7 @@ import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { IRestApi } from '../restapi';
 
+
 /**
  * Base properties for all lambda authorizers
  */
@@ -123,7 +124,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
   protected setupPermissions() {
     if (!this.role) {
       this.addDefaultPermisionRole();
-    } else if (this.role instanceof iam.Role) {
+    } else if (iam.Role.isRole(this.role)) {
       this.addLambdaInvokePermission(this.role);
     }
   }
