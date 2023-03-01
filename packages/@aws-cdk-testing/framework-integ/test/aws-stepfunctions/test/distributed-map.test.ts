@@ -484,27 +484,18 @@ describe('Distributed Map State', () => {
     });
   }),
 
-  test('State Machine With Distributed Map State', () => {
+  test('State Machine With Distributed Map State From Path Properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     //WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
-      maxConcurrency: 1,
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
-      itemSelector: {
-        foo: 'foo',
-        bar: stepfunctions.JsonPath.stringAt('$.bar'),
-      },
       mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
       toleratedFailurePercentage: stepfunctions.ToleratedFailurePercentage.fromPath(stepfunctions.JsonPath.stringAt('$.toleratedFailurePercentage')),
-      toleratedFailureCount: stepfunctions.ToleratedFailureCount.fromNumber(100),
-      label: 'testLabel',
-      maxItemsPerBatch: stepfunctions.MaxItemsPerBatch.fromNumber(10),
+      toleratedFailureCount: stepfunctions.ToleratedFailureCount.fromPath(stepfunctions.JsonPath.stringAt('$.toleratedFailureCount')),
+      maxItemsPerBatch: stepfunctions.MaxItemsPerBatch.fromPath(stepfunctions.JsonPath.stringAt('$.maxItemsPerBatch')),
       maxInputBytesPerBatch: stepfunctions.MaxInputBytesPerBatch.fromPath(stepfunctions.JsonPath.stringAt('$.maxInputBytesPerBatch')),
-      batchInput: {
-        Test: 'test',
-      },
     });
     map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
 
@@ -515,10 +506,6 @@ describe('Distributed Map State', () => {
         'Map State': {
           Type: 'Map',
           End: true,
-          ItemSelector: {
-            'foo': 'foo',
-            'bar.$': '$.bar',
-          },
           ItemProcessor: {
             ProcessorConfig: {
               Mode: stepfunctions.MapStateMode.DISTRIBUTED,
@@ -533,16 +520,66 @@ describe('Distributed Map State', () => {
             },
           },
           ItemsPath: '$.inputForMap',
-          MaxConcurrency: 1,
           ToleratedFailurePercentagePath: '$.toleratedFailurePercentage',
-          ToleratedFailureCount: 100,
+          ToleratedFailureCountPath: '$.toleratedFailureCount',
+          ItemBatcher: {
+            MaxItemsPerBatchPath: '$.maxItemsPerBatch',
+            MaxInputBytesPerBatchPath: '$.maxInputBytesPerBatch',
+          },
+        },
+      },
+    });
+  }),
+
+  test('State Machine With Distributed Map State From Number Properties', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    //WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
+      toleratedFailurePercentage: stepfunctions.ToleratedFailurePercentage.fromNumber(100),
+      toleratedFailureCount: stepfunctions.ToleratedFailureCount.fromNumber(101),
+      label: 'testLabel',
+      maxItemsPerBatch: stepfunctions.MaxItemsPerBatch.fromNumber(10),
+      maxInputBytesPerBatch: stepfunctions.MaxInputBytesPerBatch.fromNumber(11),
+      batchInput: {
+        Test: 'test',
+      },
+    });
+    map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+    //THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.MapStateMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.EXPRESS,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          ToleratedFailurePercentage: 100,
+          ToleratedFailureCount: 101,
           Label: 'testLabel',
           ItemBatcher: {
             BatchInput: {
               Test: 'test',
             },
             MaxItemsPerBatch: 10,
-            MaxInputBytesPerBatchPath: '$.maxInputBytesPerBatch',
+            MaxInputBytesPerBatch: 11,
           },
         },
       },
