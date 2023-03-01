@@ -429,6 +429,8 @@ export class StateMachine extends StateMachineBase {
       this.addToRolePolicy(statement);
     }
 
+    graph.bind(this);
+
     this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
       service: 'states',
@@ -436,27 +438,6 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
-
-    if (graph.requiresExecutionPermissions) {
-      this.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['states:StartExecution'],
-        resources: [this.stack.formatArn({
-          service: 'states',
-          resource: 'stateMachine',
-          resourceName: '*',
-          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-        })],
-      }));
-      this.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['states:DescribeExecution', 'states:StopExecution'],
-        resources: [`${this.stack.formatArn({
-          service: 'states',
-          resource: 'execution',
-          resourceName: '*',
-          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-        })}:*`],
-      }));
-    }
   }
 
   /**
