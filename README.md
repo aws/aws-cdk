@@ -25,7 +25,7 @@ The CDK is available in the following languages:
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 * Python ([Python ≥ 3.6](https://www.python.org/downloads/))
 * Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
-* .NET ([.NET Core ≥ 3.1](https://dotnet.microsoft.com/download))
+* .NET ([.NET ≥ 6.0](https://dotnet.microsoft.com/download))
 * Go ([Go ≥ 1.16.4](https://golang.org/))
 
 Third-party Language Deprecation: language version is only supported until its EOL (End Of Life) shared by the vendor or community and is subject to change with prior notice.

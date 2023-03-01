@@ -79,13 +79,13 @@ else
     wrong_version
 fi
 
-# [.NET Core SDK 3.1.*]
+# [.NET SDK 6.0.*]
 app="dotnet"
-app_min="3.1.0"
+app_min="6.0.100"
 check_which $app $app_min
 app_v=$(${app} --list-sdks)
 echo -e "Checking $app version... \c"
-if [ $(echo $app_v | grep -c -E "3\.1\.[0-9].*|[4-9]\..*") -eq 1 ]
+if [ $(echo $app_v | grep -c -E "6\.0\.[0-9].*|[4-9]\..*") -eq 1 ]
 then
     echo "Ok"
 else
