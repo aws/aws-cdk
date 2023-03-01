@@ -10,6 +10,7 @@
      "Key": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml"
     },
     "DisableExecuteApiEndpoint": true,
+    "MinimumCompressionSize": 1024,
     "Name": "my-api"
    }
   },
@@ -516,7 +517,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "myapiDeployment92F2CB49e2ce3595b92ff44fad021c2e55149db1": {
+  "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {
@@ -548,7 +549,7 @@
     "CacheClusterEnabled": true,
     "CacheClusterSize": "0.5",
     "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB49e2ce3595b92ff44fad021c2e55149db1"
+     "Ref": "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0"
     },
     "Description": "beta stage",
     "MethodSettings": [

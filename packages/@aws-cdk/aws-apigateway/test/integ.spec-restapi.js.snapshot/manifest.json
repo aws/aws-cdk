@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "30.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "test-apigateway-spec-restapi.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4b4324bd66c0a5352124c718d0cb3990046afe7ccf1cea94d4488ed7cd67191b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a361f357c68964992ee5038aa363d75be98e145d828b8955269361c54d7722ae.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -156,7 +150,7 @@
         "/test-apigateway-spec-restapi/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiDeployment92F2CB49e2ce3595b92ff44fad021c2e55149db1"
+            "data": "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0"
           }
         ],
         "/test-apigateway-spec-restapi/my-api/DeploymentStage.beta/Resource": [
@@ -212,6 +206,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "myapiDeployment92F2CB49e2ce3595b92ff44fad021c2e55149db1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB49e2ce3595b92ff44fad021c2e55149db1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "test-apigateway-spec-restapi"
@@ -262,6 +265,12 @@
         ]
       },
       "displayName": "apigateway-spec-restapi/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
