@@ -58,6 +58,7 @@ describe('constructs version', () => {
     const sln = (await fs.readFile(slnFile, 'utf8')).split(/\r?\n/);
 
     expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(csproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
     expect(sln).toContainEqual(expect.stringMatching(/\"AwsCdkTest[a-zA-Z0-9]{6}\\AwsCdkTest[a-zA-Z0-9]{6}.csproj\"/));
   });
 
@@ -73,6 +74,7 @@ describe('constructs version', () => {
     const sln = (await fs.readFile(slnFile, 'utf8')).split(/\r?\n/);
 
     expect(fsproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(fsproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
     expect(sln).toContainEqual(expect.stringMatching(/\"AwsCdkTest[a-zA-Z0-9]{6}\\AwsCdkTest[a-zA-Z0-9]{6}.fsproj\"/));
   });
 
@@ -85,6 +87,7 @@ describe('constructs version', () => {
     const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
 
     expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(csproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
   });
 
   cliTestWithDirSpaces('fsharp app with spaces', async (workDir) => {
@@ -96,6 +99,7 @@ describe('constructs version', () => {
     const fsproj = (await fs.readFile(fsprojFile, 'utf8')).split(/\r?\n/);
 
     expect(fsproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(fsproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
   });
 
   cliTest('create a Python app project', async (workDir) => {
