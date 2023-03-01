@@ -86,7 +86,7 @@ export interface CdkCliWrapperOptions {
    *
    * @default - no additional env vars
    */
-  readonly env?: { [name: string]: string | undefined; },
+  readonly env?: { [name: string]: string },
 
   /**
    * The path to the cdk executable
