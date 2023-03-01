@@ -9,7 +9,7 @@ import {
 } from '@aws-cdk/ubergen';
 import * as fs from 'fs-extra';
 import yargs from 'yargs/yargs';
-import { findIntegFiles, rewriteIntegTestImports } from './util';
+import { addTypesReference, findIntegFiles, rewriteIntegTestImports } from './util';
 
 interface PackageJson extends UbgPkgJson {
   readonly scripts: { [key: string]: string };
@@ -225,17 +225,16 @@ async function makeAwsCdkLibInteg(dir: string) {
   console.log('Moving integ and snapshot files to @aws-cdk-testing/framework-integ');
   const copied = await Promise.all(
     integFiles.map(async (item) => {
-      const relativeDest = sourceRegex.exec(item)?.[1];
-      if (!relativeDest) throw new Error(`No destination folder parsed for ${item}`);
+      const relativeDest = sourceRegex.exec(item.path)?.[1];
+      if (!relativeDest) throw new Error(`No destination folder parsed for ${item.path}`);
 
 
       const dest = path.join(target, relativeDest);
 
-      // Copy if it is a .lit.ts file because it likely is referenced by the module README
-      if (item.endsWith('.lit.ts')) {
-        await fs.copy(item, dest);
+      if (item.copy) {
+        await fs.copy(item.path, dest);
       } else {
-        await fs.move(item, dest);
+        await fs.move(item.path, dest);
       }
       return dest;
     }),
@@ -249,6 +248,7 @@ async function makeAwsCdkLibInteg(dir: string) {
     // Leave snapshots we copied alone
     if (!stat.isFile()) return;
 
+
     const relativePath = targetRegex.exec(item)?.[1];
     if (!relativePath) throw new Error(`Cannot calculate relative path for ${item}`);
     // depth of file relative to top of module, used for telling which relative paths
@@ -257,6 +257,11 @@ async function makeAwsCdkLibInteg(dir: string) {
     const relativeDepth = relativePath.split(path.sep).length - 2;
     await rewriteIntegTestImports(item, relativeDepth);
   }));
+
+
+  // Add reference to ambient types needed in test
+  const crFileTarget = path.join(target, 'custom-resources', 'test', 'provider-framework', 'integration-test-fixtures', 's3-file-handler', 'index.ts');
+  await addTypesReference(crFileTarget);
 }
 
 async function cleanup(dir: string) {

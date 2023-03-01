@@ -84,7 +84,7 @@ async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {
 }
 
 async function genCfnIncludeMap(generated: ModuleMap) {
-  const classMap = {};
+  const classMap: { [cfnType: string]: string } = {};
   Object.entries(generated).forEach(([moduleName, { resources }]) => {
     const modulePath = `aws-cdk-lib/${moduleName}`;
     Object.entries(resources).forEach(([resourceName, resourceClassName]) => {
