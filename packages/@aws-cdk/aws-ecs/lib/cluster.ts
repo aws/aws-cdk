@@ -6,12 +6,14 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, FeatureFlags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
+
 
 /**
  * The properties used to define an ECS cluster.
@@ -464,7 +466,8 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
-    if (autoScalingGroup.connections?.securityGroups) {
+    const enableEcsAddSecurityGroup = FeatureFlags.of(this).isEnabled(cxapi.ECS_ADD_SECURITY_GROUP);
+    if (enableEcsAddSecurityGroup && autoScalingGroup.connections?.securityGroups) {
       this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
     }
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
