@@ -9,4 +9,4 @@ previous=$(${INTEG_TOOLS}/bin/query-github last-release --token $GITHUB_TOKEN --
 echo "Previous version is: $previous"
 
 # Old tests, new CLI, new framework
-exec $INTEG_TOOLS/bin/download-and-run-old-tests "$previous" --use-cli-release=$VERSION cli-integ-tests
+exec $INTEG_TOOLS/bin/download-and-run-old-tests "$previous" --regression --use-cli-release=$VERSION cli-integ-tests
