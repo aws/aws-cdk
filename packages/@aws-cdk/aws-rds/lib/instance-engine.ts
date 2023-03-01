@@ -1694,6 +1694,7 @@ interface SqlServerInstanceEngineProps {
 interface SqlServerInstanceEngineBaseProps {
   readonly engineType: string;
   readonly version?: SqlServerEngineVersion;
+  readonly engineFamily?: string
 }
 
 abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
@@ -1719,6 +1720,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
         s3Import: 'S3_INTEGRATION',
         s3Export: 'S3_INTEGRATION',
       },
+      engineFamily: props.engineFamily,
     });
   }
 
@@ -1766,6 +1768,7 @@ class SqlServerSeInstanceEngine extends SqlServerInstanceEngineBase {
     super({
       engineType: 'sqlserver-se',
       version,
+      engineFamily: 'SQLSERVER',
     });
   }
 }
@@ -1782,6 +1785,7 @@ class SqlServerExInstanceEngine extends SqlServerInstanceEngineBase {
     super({
       engineType: 'sqlserver-ex',
       version,
+      engineFamily: 'SQLSERVER',
     });
   }
 }
@@ -1798,6 +1802,7 @@ class SqlServerWebInstanceEngine extends SqlServerInstanceEngineBase {
     super({
       engineType: 'sqlserver-web',
       version,
+      engineFamily: 'SQLSERVER',
     });
   }
 }
@@ -1814,6 +1819,7 @@ class SqlServerEeInstanceEngine extends SqlServerInstanceEngineBase {
     super({
       engineType: 'sqlserver-ee',
       version,
+      engineFamily: 'SQLSERVER',
     });
   }
 }
