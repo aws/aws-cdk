@@ -134,7 +134,7 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 
 // Associate application to the attribute group.
-customAttributeGroup.attributeGroup.associateApplicationWithAttributeGroup(associatedApp.appRegistryApplication());
+customAttributeGroup.attributeGroup.associateWith(associatedApp.appRegistryApplication());
 
 ```
 
@@ -232,12 +232,12 @@ application.associateAttributeGroup(attributeGroup);
 
 ### Associating an attribute group with application
 
-You can associate an application with an attribute group with `associateApplicationWithAttributeGroup`:
+You can associate an application with an attribute group with `associateWith`:
 
 ```ts
 declare const application: appreg.Application;
 declare const attributeGroup: appreg.AttributeGroup;
-attributeGroup.associateApplicationWithAttributeGroup(application);
+attributeGroup.associateWith(application);
 ```
 
 ### Associating application with a Stack

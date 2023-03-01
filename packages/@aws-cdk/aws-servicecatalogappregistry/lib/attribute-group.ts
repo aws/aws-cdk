@@ -65,7 +65,7 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
    * Associate an application with attribute group
    * If the attribute group is already associated, it will ignore duplicate request.
    */
-  public associateApplicationWithAttributeGroup(application: IApplication): void {
+  public associateWith(application: IApplication): void {
     if (!this.associatedApplications.has(application.node.addr)) {
       const hashId = this.generateUniqueHash(application.node.addr);
       new CfnAttributeGroupAssociation(this, `ApplicationAttributeGroupAssociation${hashId}`, {

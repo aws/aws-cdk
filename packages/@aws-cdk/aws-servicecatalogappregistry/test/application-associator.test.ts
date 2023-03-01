@@ -57,7 +57,7 @@ describe('Associate attribute group with Application', () => {
       })],
     });
 
-    customAttributeGroup.attributeGroup.associateApplicationWithAttributeGroup(appAssociator.appRegistryApplication());
+    customAttributeGroup.attributeGroup.associateWith(appAssociator.appRegistryApplication());
     Template.fromStack(customAttributeGroup.attributeGroup.stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 1);
     Template.fromStack(customAttributeGroup.attributeGroup.stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
       Application: 'TestAssociatedApplication',

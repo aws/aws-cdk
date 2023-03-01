@@ -190,7 +190,7 @@ describe('Attribute Group', () => {
       const application = new appreg.Application(stack, 'MyApplication', {
         applicationName: 'MyTestApplication',
       });
-      attributeGroup.associateApplicationWithAttributeGroup(application);
+      attributeGroup.associateWith(application);
       Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
         Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
         AttributeGroup: { 'Fn::GetAtt': ['MyAttributeGroupForAssociation6B3E1329', 'Id'] },
