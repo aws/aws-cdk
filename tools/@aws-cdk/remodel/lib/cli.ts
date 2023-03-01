@@ -74,6 +74,7 @@ export async function main() {
   await makeAwsCdkLib(targetDir);
   await makeAwsCdkLibInteg(targetDir);
 
+  await runBuild(targetDir);
   await cleanup(targetDir);
 
   if (clean) {
@@ -264,6 +265,18 @@ async function makeAwsCdkLibInteg(dir: string) {
   await addTypesReference(crFileTarget);
 }
 
+async function runBuild(dir: string) {
+  const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
+
+  await e('yarn install');
+
+  // Running the full build is necessary for ./transform.sh to work correctly
+  await e('./scripts/build.sh --skip-prereqs --skip-compat --skip-tests');
+
+  // Generate the alpha packages
+  await e('./transform.sh');
+}
+
 async function cleanup(dir: string) {
   const awsCdkLibDir = path.join(dir, 'packages', 'aws-cdk-lib');
 
@@ -271,6 +284,11 @@ async function cleanup(dir: string) {
   // handled during codegen
   const cfnIncludeMapBuildPath = path.join(awsCdkLibDir, 'cloudformation-include', 'build.js');
   await fs.remove(cfnIncludeMapBuildPath);
+
+  // Remove the .gitignore file in packages/individual-packages so that the alpha modules we
+  // generated are included
+  const alphaModulesGitignorePath = path.join(dir, 'packages', 'individual-packages', '.gitignore');
+  await fs.remove(alphaModulesGitignorePath);
 }
 
 // Creates a map of directories to the cloudformations scopes that should be
