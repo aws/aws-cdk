@@ -8,6 +8,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { FakeCloudformationStack } from './fake-cloudformation-stack';
+import { DEFAULT_BOOTSTRAP_VARIANT } from '../../lib';
 import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployments';
 import { deployStack } from '../../lib/api/deploy-stack';
 import { HotswapMode } from '../../lib/api/hotswap/common';
@@ -931,6 +932,7 @@ function testStackWithAssetManifest() {
     public found: boolean = true;
     public bucketUrl: string = 's3://fake/here';
     public bucketName: string = 'fake';
+    public variant: string = DEFAULT_BOOTSTRAP_VARIANT;
     public version: number = 1234;
     public get bootstrapStack(): CloudFormationStack {
       throw new Error('This should never happen');
