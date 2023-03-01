@@ -565,7 +565,35 @@ describe('Application', () => {
     );
   });
 
-  test.todo('providing a subnetSelection');
+  test('providing a subnetSelection', () => {
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    new flink.Application(stack, 'FlinkApplication', {
+      ...requiredProps,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    });
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::KinesisAnalyticsV2::Application',
+      {
+        ApplicationConfiguration: {
+          VpcConfigurations: [
+            {
+              SubnetIds: [
+                {
+                  Ref: 'VPCPublicSubnet1SubnetB4246D30',
+                },
+                {
+                  Ref: 'VPCPublicSubnet2Subnet74179F39',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    );
+  });
+
   test.todo('using connections');
   test.todo('validating vpc prop combinations');
   // SubnetSelection with no vpc

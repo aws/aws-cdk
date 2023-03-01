@@ -850,6 +850,13 @@ export interface ApplicationProps {
   readonly vpc?: ec2.IVpc;
 
   /**
+   * Choose which VPC subnets to use.
+   *
+   * @default SubnetType.PRIVATE_WITH_EGRESS subnets
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
    * Optional security groups to override the default security group created
    * when providing a VPC.
    *
@@ -942,9 +949,12 @@ export class Application extends ApplicationBase {
           vpc: props.vpc,
         }),
       ];
+      const subnetSelection = props.vpcSubnets ?? {
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      };
       vpcConfigurations = [{
         securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
-        subnetIds: props.vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }).subnetIds,
+        subnetIds: props.vpc.selectSubnets(subnetSelection).subnetIds,
       }];
     }
 
