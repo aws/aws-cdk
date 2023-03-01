@@ -48,6 +48,7 @@ Flags come in three types:
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
 | [@aws-cdk/aws-ec2:launchTemplateDefaultUserData](#aws-cdkaws-ec2launchtemplatedefaultuserdata) | Define user data for a launch template by default when a machine image is provided. | V2NEXT | (fix) |
 | [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | V2NEXT | (fix) |
+| [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -86,6 +87,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
     "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
     "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
+    "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": true,
     "@aws-cdk/aws-redshift:columnId": true
   }
 }
@@ -868,6 +870,28 @@ than their `name`. This will prevent data loss when columns are renamed.
 **however** do not change the `names`s of the columns. If the `name`s of the columns are changed during
 initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
 of the `id`s, the `name`s of the columns can be changed without data loss.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments
+
+*SecretTargetAttachments uses the ResourcePolicy of the attached Secret.* (fix)
+
+Enable this feature flag to make SecretTargetAttachments use the ResourcePolicy of the attached Secret.
+SecretTargetAttachments are created to connect a Secret to a target resource. 
+In CDK code, they behave like regular Secret and can be used as a stand-in in most situations.
+Previously, adding to the ResourcePolicy of a SecretTargetAttachment did attempt to create a separate ResourcePolicy for the same Secret.
+However Secrets can only have a single ResourcePolicy, causing the CloudFormation deployment to fail.
+
+When enabling this feature flag for an existing Stack, ResourcePolicies created via a SecretTargetAttachment will need replacement.
+This won't be possible without intervention due to limitation outlined above.
+First remove all permissions granted to the Secret and deploy without the ResourcePolicies.
+Then you can re-add the permissions and deploy again.
 
 
 | Since | Default | Recommended |
