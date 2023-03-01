@@ -1,4 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from '@aws-cdk/aws-kinesisanalytics';
 import * as logs from '@aws-cdk/aws-logs';
@@ -840,6 +841,13 @@ export interface ApplicationProps {
    * @default CDK's default LogGroup
    */
   readonly logGroup?: logs.ILogGroup;
+
+  /**
+   * Deploy the Flink application in a VPC.
+   *
+   * @default no VPC
+   */
+  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -919,6 +927,17 @@ export class Application extends ApplicationBase {
     const code = props.code.bind(this);
     code.bucket.grantRead(this);
 
+    let vpcConfigurations;
+    if (props.vpc) {
+      const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+      });
+      vpcConfigurations = [{
+        securityGroupIds: [securityGroup.securityGroupId],
+        subnetIds: props.vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }).subnetIds,
+      }];
+    }
+
     const resource = new CfnApplicationV2(this, 'Resource', {
       applicationName: props.applicationName,
       runtimeEnvironment: props.runtime.value,
@@ -939,6 +958,7 @@ export class Application extends ApplicationBase {
         applicationSnapshotConfiguration: {
           snapshotsEnabled: props.snapshotsEnabled ?? true,
         },
+        vpcConfigurations,
       },
     });
     resource.node.addDependency(this.role);

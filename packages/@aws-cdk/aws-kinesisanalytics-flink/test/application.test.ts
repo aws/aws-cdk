@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -502,6 +503,38 @@ describe('Application', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: 'custom',
     });
+  });
+
+  test('using a VPC', () => {
+    new flink.Application(stack, 'FlinkApplication', {
+      ...requiredProps,
+      vpc: new ec2.Vpc(stack, 'VPC'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::KinesisAnalyticsV2::Application',
+      {
+        ApplicationConfiguration: {
+          VpcConfigurations: [
+            {
+              SecurityGroupIds: [
+                {
+                  'Fn::GetAtt': ['FlinkApplicationSecurityGroup1FD816EE', 'GroupId'],
+                },
+              ],
+              SubnetIds: [
+                {
+                  Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+                },
+                {
+                  Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    );
   });
 
   test('validating applicationName', () => {
