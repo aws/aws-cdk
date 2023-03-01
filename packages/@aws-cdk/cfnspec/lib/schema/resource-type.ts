@@ -34,6 +34,7 @@ export interface TaggableResource extends ResourceType {
     HostedZoneTags: TagProperty;
     Tags: TagProperty;
     UserPoolTags: TagProperty;
+    AccessPointTags: TagProperty;
     [name: string]: Property;
   }
 }

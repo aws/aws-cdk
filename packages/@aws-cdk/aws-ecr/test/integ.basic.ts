@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as ecr from '../lib';
 
 const app = new cdk.App();
@@ -11,4 +12,6 @@ new cdk.CfnOutput(stack, 'RepositoryURI', {
   value: repo.repositoryUri,
 });
 
-app.synth();
+new IntegTest(app, 'cdk-ecr-integ-test-basic', {
+  testCases: [stack],
+});

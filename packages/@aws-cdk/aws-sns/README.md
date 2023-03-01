@@ -93,6 +93,31 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
 }));
 ```
 
+#### Payload-based filtering
+
+To filter messages based on the payload or body of the message, use the `filterPolicyWithMessageBody` property. This type of filter policy supports creating filters on nested objects.
+
+Example with a Lambda subscription:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const myTopic = new sns.Topic(this, 'MyTopic');
+declare const fn: lambda.Function;
+
+// Lambda should receive only message matching the following conditions on message body:
+// color: 'red' or 'orange'
+myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
+  filterPolicyWithMessageBody: {
+    background: sns.FilterOrPolicy.policy({
+      color: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
+        allowlist: ['red', 'orange'],
+      })),
+    }),
+  },
+}));
+```
+
 ### Example of Firehose Subscription
 
 ```ts

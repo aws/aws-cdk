@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Size } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
 import * as apigateway from '../lib';
 
@@ -11,6 +12,7 @@ class Test extends cdk.Stack {
     const api = new apigateway.SpecRestApi(this, 'my-api', {
       apiDefinition: apigateway.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml')),
       disableExecuteApiEndpoint: true,
+      minCompressionSize: Size.bytes(1024),
       retainDeployments: true,
       cloudWatchRole: true,
       deployOptions: {
