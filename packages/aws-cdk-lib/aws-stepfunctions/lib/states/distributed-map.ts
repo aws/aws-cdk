@@ -7,6 +7,8 @@ import { StateMachineType } from '../state-machine';
 import { INextable } from '../types';
 
 
+const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
+
 /**
  * Base interface for Item Reader configurations
  */
@@ -681,6 +683,12 @@ export interface DistributedMapProps extends MapProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-distributed.html
  */
 export class DistributedMap extends Map implements INextable {
+  /**
+   * Return whether the given object is a DistributedMap.
+   */
+  public static isDistributedMap(x: any): x is DistributedMap {
+    return x !== null && typeof(x) === 'object' && DISTRIBUTED_MAP_SYMBOL in x;
+  }
 
   protected readonly mode: MapStateMode = MapStateMode.DISTRIBUTED;
 
@@ -796,3 +804,12 @@ export class DistributedMap extends Map implements INextable {
     };
   }
 }
+
+/**
+ * Mark all instances of 'DistributeMap'.
+ */
+Object.defineProperty(DistributedMap.prototype, DISTRIBUTED_MAP_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});

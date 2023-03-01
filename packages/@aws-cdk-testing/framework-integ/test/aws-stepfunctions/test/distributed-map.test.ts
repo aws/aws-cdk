@@ -2,10 +2,10 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { CfnBucket } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
-import { CsvHeaders } from '../lib';
+import { CsvHeaders, DistributedMap } from '../lib';
 
 describe('Distributed Map State', () => {
-  test('State Machine With Distributed Map State', () => {
+  test('DistributedMap isDistributedMap', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -18,9 +18,29 @@ describe('Distributed Map State', () => {
         bar: stepfunctions.JsonPath.stringAt('$.bar'),
       },
     });
+
+    // THEN
+    expect(() => {
+      DistributedMap.isDistributedMap(map);
+    }).toBeTruthy();
+  }),
+
+  test('State Machine With Distributed Map State', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      itemSelector: {
+        foo: 'foo',
+        bar: stepfunctions.JsonPath.stringAt('$.bar'),
+      },
+    });
     map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {

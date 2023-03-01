@@ -78,7 +78,7 @@ export class StateGraph {
   public registerState(state: State) {
     this.registerContainedState(state.stateId, this);
     this.allStates.add(state);
-    if (state instanceof DistributedMap) {
+    if (DistributedMap.isDistributedMap(state)) {
       this.requiresExecutionPermissions = true;
     }
   }
