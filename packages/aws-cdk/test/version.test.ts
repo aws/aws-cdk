@@ -7,10 +7,6 @@ import * as logging from '../lib/logging';
 import * as npm from '../lib/util/npm';
 import { latestVersionIfHigher, VersionCheckTTL, displayVersionMessage } from '../lib/version';
 
-jest.setTimeout(10_000);
-
-const setTimeout = promisify(_setTimeout);
-
 function tmpfile(): string {
   return `/tmp/version-${Math.floor(Math.random() * 10000)}`;
 }
@@ -35,6 +31,7 @@ test('cache file honours the specified TTL', async () => {
   const cache = new VersionCheckTTL(tmpfile(), 1);
   await cache.update();
   expect(await cache.hasExpired()).toBeFalsy();
+  const setTimeout = promisify(_setTimeout);
   await setTimeout(1001); // Just above 1 sec in ms
   expect(await cache.hasExpired()).toBeTruthy();
 });

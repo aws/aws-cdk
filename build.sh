@@ -79,8 +79,21 @@ if [ "$run_tests" == "true" ]; then
 fi
 
 echo "============================================================================================="
+cores=$(node -p "require('os').cpus().length")
+echo "linting..."
+# time lerna exec cdk-lint --stream --no-sort --concurrency $cores --no-bail -- --fix
+
 echo "building..."
-time lerna run $bail --stream $runtarget || fail
+time lerna run $bail --stream build || fail
+
+if [ "$run_tests" == "true" ]; then
+    echo "testing..."
+    time lerna run test $bail --stream --no-sort --concurrency $((cores / 2)) || fail
+fi
+
+if [ "$check_compat" == "true" ]; then
+  /bin/bash scripts/check-api-compatibility.sh
+fi
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh

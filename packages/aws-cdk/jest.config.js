@@ -9,5 +9,5 @@ module.exports = {
     },
 
     // We have many tests here that commonly time out
-    testTimeout: 30_000,
+    testTimeout: 60_000,
 };

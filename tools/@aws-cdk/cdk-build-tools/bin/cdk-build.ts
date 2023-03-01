@@ -19,20 +19,10 @@ async function main() {
       desc: 'Specify a different tsc executable',
       defaultDescription: 'tsc provided by node dependencies',
     })
-    .option('eslint', {
-      type: 'string',
-      desc: 'Specify a different eslint executable',
-      defaultDescription: 'eslint provided by node dependencies',
-    })
     .option('gen', {
       type: 'boolean',
       desc: 'Execute gen script',
       default: true,
-    })
-    .option('fix', {
-      type: 'boolean',
-      desc: 'Fix linter errors',
-      default: false,
     })
     .argv;
 
@@ -49,9 +39,9 @@ async function main() {
     await shell([gen], { timers, env });
   }
 
-  const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
+  const overrides: CompilerOverrides = { jsii: args.jsii, tsc: args.tsc };
   await compileCurrentPackage(options, timers, overrides);
-  await lintCurrentPackage(options, { ...overrides, fix: args.fix });
+  await lintCurrentPackage(options, { ...overrides });
 
   if (options.post) {
     const commands = options.post.join(' && ');
