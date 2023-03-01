@@ -53,6 +53,7 @@ export const SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME = '@aws-cdk/aws-secretsmana
 export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
 export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl';
 export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount';
+export const ECS_ADD_SECURITY_GROUP = '@aws-cdk/aws-ecs-patterns:addSecurityGroup';
 export const RDS_LOWERCASE_DB_IDENTIFIER = '@aws-cdk/aws-rds:lowercaseDbIdentifier';
 export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID = '@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId';
 export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptionAtRest';
@@ -234,6 +235,23 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'You can pass `desiredCount: 1` explicitly, but you should never need this.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ECS_ADD_SECURITY_GROUP]: {
+    type: FlagType.ApiDefault,
+    summary: 'Add security group through "configureAutoScalingGroup"',
+    detailsMd: `
+    ConfigureAutoScalingGroup, currently determine for the ecs security group  of
+    a CfnService if a security group is not provided. The result of this is that on every
+    deployment, the security group is reset to the fixed, even if it was autoscaled.
+    
+    If this flag is not set, the cluster.addAutoScalingGroup adds security groups from 
+    the ASG's connections into the ECS Cluster's connections, but cluster.addAsgCapacityProvider does not `,
+    introducedIn: { v1: '1.92.0' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'You can use `configureAutoScalingGroup()`, to add secuirty group.',
   },
 
   //////////////////////////////////////////////////////////////////////
