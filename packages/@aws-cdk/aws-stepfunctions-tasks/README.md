@@ -228,7 +228,7 @@ state machine role's policy. Use it in the case where the call requires more tha
 to be executed:
 
 ```ts
-const detectLabels = new tasks.CallAwsService(stack, 'DetectLabels', {
+const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
   service: 'rekognition',
   action: 'detectLabels',
   iamResources: ['*'],
