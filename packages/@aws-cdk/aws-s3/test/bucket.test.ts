@@ -1461,7 +1461,7 @@ describe('bucket', () => {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
 
-      bucket.grantWrite(user, '*', 's3:PutObject', 's3:DeleteObject*');
+      bucket.grantWrite(user, '*', ['s3:PutObject', 's3:DeleteObject*']);
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
