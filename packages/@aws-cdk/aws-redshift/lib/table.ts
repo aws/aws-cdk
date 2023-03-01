@@ -228,7 +228,7 @@ export class Table extends TableBase {
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
-    this.validateColumnIds(props.tableColumns);
+    this.addColumnIds(props.tableColumns);
     this.validateDistKeyColumns(props.tableColumns);
     if (props.distStyle) {
       this.validateDistStyle(props.distStyle, props.tableColumns);
@@ -313,7 +313,7 @@ export class Table extends TableBase {
     return (sortKeyColumns.length === 0) ? TableSortStyle.AUTO : TableSortStyle.COMPOUND;
   }
 
-  private validateColumnIds(columns: Column[]): void {
+  private addColumnIds(columns: Column[]): void {
     const columnIds = new Set<string>();
     for (const column of columns) {
       if (column.id) {
