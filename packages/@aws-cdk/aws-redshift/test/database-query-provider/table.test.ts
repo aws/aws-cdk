@@ -192,7 +192,7 @@ describe('update', () => {
       clusterName: newClusterName,
     };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
@@ -224,7 +224,7 @@ describe('update', () => {
       databaseName: newDatabaseName,
     };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
@@ -325,7 +325,7 @@ describe('update', () => {
         distStyle: TableDistStyle.EVEN,
       };
 
-      await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
@@ -345,7 +345,7 @@ describe('update', () => {
         ...resourceProperties,
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
@@ -381,7 +381,7 @@ describe('update', () => {
         tableColumns: [{ name: 'col1', dataType: 'varchar(1)', distKey: true }],
       };
 
-      await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
@@ -401,7 +401,7 @@ describe('update', () => {
         ...resourceProperties,
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
@@ -463,7 +463,7 @@ describe('update', () => {
         sortStyle: TableSortStyle.INTERLEAVED,
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
@@ -486,7 +486,7 @@ describe('update', () => {
         sortStyle: TableSortStyle.INTERLEAVED,
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
