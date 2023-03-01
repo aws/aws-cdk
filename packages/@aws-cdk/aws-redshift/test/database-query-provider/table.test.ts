@@ -175,6 +175,22 @@ describe('delete', () => {
       Sql: `DROP TABLE ${event.ResourceProperties.Data.TableName}`,
     }));
   });
+
+  test('executes statement, when ResourceProperties.Data.TableName is not set', async () => {
+    const event = {
+      ...baseEvent,
+      ResourceProperties: {
+        ...baseEvent.ResourceProperties,
+        Data: undefined,
+      },
+    };
+
+    await manageTable(resourceProperties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `DROP TABLE ${physicalResourceId}`,
+    }));
+  });
 });
 
 describe('update', () => {
@@ -316,6 +332,23 @@ describe('update', () => {
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `ALTER TABLE ${event.OldResourceProperties.Data.TableName} ADD ${newTableColumnName} ${newTableColumnDataType}`,
     }));
+  });
+
+  describe('ResourceProperties.Data', () => {
+    test('does not replace if table name does not exist', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          Data: undefined,
+        },
+      };
+
+      await expect(manageTable(resourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).not.toHaveBeenCalled();
+    });
   });
 
   describe('distStyle and distKey', () => {
