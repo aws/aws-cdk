@@ -118,3 +118,20 @@ declare const repository: ecr.Repository;
 repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
 repository.addLifecycleRule({ maxImageAge: Duration.days(30) });
 ```
+
+## Managing the Resource Policy
+
+You can add statements to the resource policy of the repository using the
+`addToResourcePolicy` method. However, be advised that you must not include
+a `resources` section in the `PolicyStatement`. See AWS internal ticket
+`#WRITEME` for details around the ECR and Cfn team working together to
+support `resources` in the future.
+
+```ts
+declare const repository: ecr.Repository;
+repository.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['ecr:GetDownloadUrlForLayer'],
+  // resources: ['*'], // not allowed!
+  principals: [new iam.AnyPrincipal()],
+}));
+```

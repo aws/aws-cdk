@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Tags, Token, TokenComparison } from '@aws-cdk/core';
+import { Annotations, ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Tags, Token, TokenComparison } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
@@ -625,6 +625,14 @@ export class Repository extends RepositoryBase {
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    // Other resource policies in AWS either require or accept a resource section.
+    // Strangely, not only does Cfn for ECR not allow
+    // us to specify a resource policy for a specific image,
+    // it will straight up fail if a resource section is present at all.
+    // When it fails, the error message is unhelpful. Hence this warning.
+    if(statement.resources) {
+      Annotations.of(this).addWarning('ECR resource policy does not allow resource statements.');
+    }
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
     }
