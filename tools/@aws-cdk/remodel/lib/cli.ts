@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as cp from 'child_process';
 import * as path from 'path';
 import {
@@ -8,6 +9,7 @@ import {
 } from '@aws-cdk/ubergen';
 import * as fs from 'fs-extra';
 import yargs from 'yargs/yargs';
+import { addTypesReference, findIntegFiles, rewriteIntegTestImports } from './util';
 
 interface PackageJson extends UbgPkgJson {
   readonly scripts: { [key: string]: string };
@@ -67,23 +69,30 @@ export async function main() {
   // be aware of all source file moves if needed via `git move`.
   await exec(`git clone ${repoRoot} ${targetDir}`);
 
-  await makeAwsCdkLib(targetDir);
-
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
   await copyTemplateFiles(templateDir, targetDir);
+  await makeAwsCdkLib(targetDir);
+  await makeAwsCdkLibInteg(targetDir);
 
+  await runBuild(targetDir);
   await cleanup(targetDir);
 
   if (clean) {
     await fs.remove(path.resolve(targetDir));
   }
+
+  console.log('Successs!');
 }
 
 async function copyTemplateFiles(src: string, target: string) {
+  console.log('Copying template files');
+  console.log(`Source: ${src}`);
+  console.log(`Destination: ${target}`);
   await fs.copy(src, target, { overwrite: true });
 }
 
 async function makeAwsCdkLib(target: string) {
+  console.log('Formatting aws-cdk-lib package');
   const awsCdkLibDir = path.join(target, 'packages', 'aws-cdk-lib');
   const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
   const pkgJson: PackageJson = await fs.readJson(pkgJsonPath);
@@ -95,6 +104,7 @@ async function makeAwsCdkLib(target: string) {
     'ubergen',
   ].map(x => `@aws-cdk/${x}`);
 
+  console.log('Calling Ubergen');
   const ubgConfig: Config = {
     monoPackageRoot: awsCdkLibDir,
     rootPath: target,
@@ -109,6 +119,7 @@ async function makeAwsCdkLib(target: string) {
   // Call ubergen to copy all package source files and rewrite import statements
   // as needed.
   const packagesToBundle = await ubergen(ubgConfig);
+  console.log('Ubergen complete');
 
   const devDependencies = pkgJson?.devDependencies ?? {};
   const allPackages = await findAllPackages(ubgConfig);
@@ -138,6 +149,7 @@ async function makeAwsCdkLib(target: string) {
   }, {});
 
   // Create scope map for codegen usage
+  console.log('Creating scope-map.json in scripts directory');
   await fs.writeJson(
     path.join(awsCdkLibDir, 'scripts', 'scope-map.json'),
     makeScopeMap(allPackages),
@@ -147,12 +159,14 @@ async function makeAwsCdkLib(target: string) {
   // Explicitly copy some missing files that ubergen doesn't bring over for various reasons
   // Ubergen ignores some of these contents because they are within nested `node_modules` directories
   // for testing purposes
+  console.log('Copying some files needed for testing');
   await fs.copy(
     path.resolve(target, 'packages', '@aws-cdk', 'aws-synthetics', 'test', 'canaries'),
     path.resolve(target, 'packages', 'aws-cdk-lib', 'aws-synthetics', 'test', 'canaries'),
     { overwrite: true },
   );
 
+  console.log('Writing new package.json');
   await fs.writeJson(pkgJsonPath, {
     ...pkgJson,
     'jsii': {
@@ -196,6 +210,73 @@ async function makeAwsCdkLib(target: string) {
   // 2. All bundled and deprecated packages
 }
 
+async function makeAwsCdkLibInteg(dir: string) {
+  const source = path.join(dir, 'packages', 'aws-cdk-lib');
+  const target = path.join(dir, 'packages', '@aws-cdk-testing', 'framework-integ', 'test');
+
+  console.log('Finding integ test files and snapshots to move');
+  const integFiles = await findIntegFiles(source);
+
+  if (!fs.existsSync(target)) {
+    await fs.mkdir(target);
+  }
+
+  const sourceRegex = new RegExp(`${source}(.+)`);
+
+  console.log('Moving integ and snapshot files to @aws-cdk-testing/framework-integ');
+  const copied = await Promise.all(
+    integFiles.map(async (item) => {
+      const relativeDest = sourceRegex.exec(item.path)?.[1];
+      if (!relativeDest) throw new Error(`No destination folder parsed for ${item.path}`);
+
+
+      const dest = path.join(target, relativeDest);
+
+      if (item.copy) {
+        await fs.copy(item.path, dest);
+      } else {
+        await fs.move(item.path, dest);
+      }
+      return dest;
+    }),
+  );
+
+  console.log('Rewriting relative imports in integration test files');
+  // Go through source files and rewrite the imports
+  const targetRegex = new RegExp(`${target}(.+)`);
+  await Promise.all(copied.map(async (item) => {
+    const stat = await fs.stat(item);
+    // Leave snapshots we copied alone
+    if (!stat.isFile()) return;
+
+
+    const relativePath = targetRegex.exec(item)?.[1];
+    if (!relativePath) throw new Error(`Cannot calculate relative path for ${item}`);
+    // depth of file relative to top of module, used for telling which relative paths
+    // need to change to reference 'aws-cdk-lib'. IE if import path is '../../another-module'
+    // and the relative depth is 2, that import used to reference `aws-cdk-lib/another-module'
+    const relativeDepth = relativePath.split(path.sep).length - 2;
+    await rewriteIntegTestImports(item, relativeDepth);
+  }));
+
+
+  // Add reference to ambient types needed in test
+  const crFileTarget = path.join(target, 'custom-resources', 'test', 'provider-framework', 'integration-test-fixtures', 's3-file-handler', 'index.ts');
+  await addTypesReference(crFileTarget);
+}
+
+async function runBuild(dir: string) {
+  const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
+
+  await e('yarn install');
+
+  // Running the full build is necessary for ./transform.sh to work correctly
+  await e('./scripts/build.sh --skip-prereqs --skip-compat --skip-tests');
+
+  // Generate the alpha packages
+  await e('./transform.sh');
+}
+
 async function cleanup(dir: string) {
   const awsCdkLibDir = path.join(dir, 'packages', 'aws-cdk-lib');
 
@@ -203,6 +284,11 @@ async function cleanup(dir: string) {
   // handled during codegen
   const cfnIncludeMapBuildPath = path.join(awsCdkLibDir, 'cloudformation-include', 'build.js');
   await fs.remove(cfnIncludeMapBuildPath);
+
+  // Remove the .gitignore file in packages/individual-packages so that the alpha modules we
+  // generated are included
+  const alphaModulesGitignorePath = path.join(dir, 'packages', 'individual-packages', '.gitignore');
+  await fs.remove(alphaModulesGitignorePath);
 }
 
 // Creates a map of directories to the cloudformations scopes that should be
