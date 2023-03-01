@@ -29,7 +29,7 @@
     "@types/jest": "^27.5.2",
     "@types/license-checker": "^25.0.3",
     "@types/madge": "^5.0.0",
-    "@types/node": "18.11.18",
+    "@types/node": "18.11.19",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
     "eslint": "^8",
@@ -40,19 +40,19 @@
     "jest-junit": "^13",
     "json-schema": "^0.4.0",
     "npm-check-updates": "^12",
-    "projen": "^0.67.50",
+    "projen": "^0.67.69",
     "standard-version": "^9",
     "ts-jest": "^27",
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "cdk-generate-synthetic-examples": "^0.1.151",
-    "esbuild": "^0.17.7",
+    "cdk-generate-synthetic-examples": "^0.1.167",
+    "esbuild": "^0.17.10",
     "fs-extra": "^10.1.0",
     "license-checker": "^25.0.1",
     "madge": "^5.0.2",
     "shlex": "^2.1.2",
-    "yargs": "^17.6.2"
+    "yargs": "^17.7.1"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",

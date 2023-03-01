@@ -5,8 +5,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { App, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import * as eks from '../lib/index';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+import * as eks from '../lib/index';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -75,6 +75,17 @@ class EksClusterStack extends Stack {
       version: 'v0.1.4',
       namespace: 'ack-system',
       createNamespace: true,
+    });
+
+    // testing the disable mechanism of the installation of CRDs
+    this.cluster.addHelmChart('test-skip-crd-installation', {
+      chart: 'lambda-chart',
+      release: 'lambda-chart-release',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/lambda-chart',
+      version: 'v0.1.4',
+      namespace: 'ack-system',
+      createNamespace: true,
+      skipCrds: true,
     });
   }
 }
