@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Tags } from '@aws-cdk/core';
 import { AccessPoint, FileSystem } from '../lib';
 
 let stack: Stack;
@@ -29,6 +29,25 @@ test('new AccessPoint correctly', () => {
   });
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::EFS::AccessPoint', 1);
+});
+
+test('support tags for AccessPoint', () => {
+  // WHEN
+  const accessPoint = new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+  });
+  Tags.of(accessPoint).add('key1', 'value1');
+  Tags.of(accessPoint).add('key2', 'value2');
+  Tags.of(accessPoint).add('Name', 'MyAccessPointName');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::AccessPoint', {
+    AccessPointTags: [
+      { Key: 'key1', Value: 'value1' },
+      { Key: 'key2', Value: 'value2' },
+      { Key: 'Name', Value: 'MyAccessPointName' },
+    ],
+  });
 });
 
 test('import an AccessPoint using fromAccessPointId', () => {

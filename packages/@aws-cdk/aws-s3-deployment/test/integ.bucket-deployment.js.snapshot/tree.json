@@ -1534,6 +1534,12 @@
                         "fileSystemId": {
                           "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
                         },
+                        "accessPointTags": [
+                          {
+                            "key": "Name",
+                            "value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint"
+                          }
+                        ],
                         "posixUser": {
                           "uid": "1001",
                           "gid": "1001"
@@ -3188,7 +3194,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.189"
+              "version": "10.1.252"
             }
           },
           "BootstrapVersion": {
@@ -3226,7 +3232,7 @@
                 "path": "integ-test-bucket-deployments/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
@@ -3246,7 +3252,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.189"
+                              "version": "10.1.252"
                             }
                           }
                         },
@@ -3318,7 +3324,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "version": "10.1.252"
                     }
                   },
                   "BootstrapVersion": {
@@ -3360,7 +3366,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.252"
         }
       }
     },

@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-lambda-1": {
         "id": "aws-cdk-lambda-1",
         "path": "aws-cdk-lambda-1",
@@ -771,6 +763,12 @@
                         "fileSystemId": {
                           "Ref": "Efs9E8BF36B"
                         },
+                        "accessPointTags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda-1/Efs/AccessPoint"
+                          }
+                        ],
                         "posixUser": {
                           "uid": "1001",
                           "gid": "1001"
@@ -810,6 +808,14 @@
                 "id": "ServiceRole",
                 "path": "aws-cdk-lambda-1/MyLambda/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-lambda-1/MyLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-lambda-1/MyLambda/ServiceRole/Resource",
@@ -1133,6 +1139,14 @@
                 "id": "ServiceRole",
                 "path": "aws-cdk-lambda-1/MyLambda2/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-lambda-1/MyLambda2/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-lambda-1/MyLambda2/ServiceRole/Resource",
@@ -1392,11 +1406,35 @@
               "fqn": "@aws-cdk/aws-lambda.Function",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-lambda-1/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-lambda-1/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.252"
         }
       }
     },
