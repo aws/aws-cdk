@@ -42,7 +42,7 @@ describe('image asset', () => {
         executable: [
           'sh',
           '-c',
-          `docker load -i asset.${asset.assetHash}.tar | sed "s/Loaded image: //g"`,
+          `docker load -i asset.${asset.assetHash}.tar | tail -n 1 | sed "s/Loaded image: //g"`,
         ],
       },
     );

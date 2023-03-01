@@ -78,6 +78,12 @@ export interface HelmChartOptions {
    * @default true
    */
   readonly createNamespace?: boolean;
+
+  /**
+   * if set, no CRDs will be installed
+   * @default - CRDs are installed if not already present
+   */
+  readonly skipCrds?: boolean;
 }
 
 /**
@@ -129,6 +135,8 @@ export class HelmChart extends Construct {
     const wait = props.wait ?? false;
     // default to create new namespace
     const createNamespace = props.createNamespace ?? true;
+    // default to not skip crd installation
+    const skipCrds = props.skipCrds ?? false;
 
     props.chartAsset?.grantRead(provider.handlerRole);
 
@@ -148,6 +156,7 @@ export class HelmChart extends Construct {
         Namespace: props.namespace ?? 'default',
         Repository: props.repository,
         CreateNamespace: createNamespace || undefined,
+        SkipCrds: skipCrds || undefined,
       },
     });
   }
