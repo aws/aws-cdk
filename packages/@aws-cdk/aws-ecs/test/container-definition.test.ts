@@ -35,6 +35,156 @@ describe('container definition', () => {
       });
     });
 
+    describe('PortMap validates', () => {
+      test('throws when PortMapping.name is empty string.', () => {
+        // GIVEN
+        const portMapping: ecs.PortMapping = {
+          containerPort: 8080,
+          name: '',
+        };
+        const networkmode = ecs.NetworkMode.AWS_VPC;
+        const portMap = new ecs.PortMap(networkmode, portMapping);
+        // THEN
+        expect(() => {
+          portMap.validate();
+        }).toThrow();
+      });
+
+      describe('ContainerPort should not eqaul Hostport', () => {
+        test('when AWS_VPC Networkmode', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            hostPort: 8081,
+          };
+          const networkmode = ecs.NetworkMode.AWS_VPC;
+          const portMap = new ecs.PortMap(networkmode, portMapping);
+          // THEN
+          expect(() => {
+            portMap.validate();
+          }).toThrow();
+        });
+
+        test('when Host Networkmode', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            hostPort: 8081,
+          };
+          const networkmode = ecs.NetworkMode.HOST;
+          const portMap = new ecs.PortMap(networkmode, portMapping);
+          // THEN
+          expect(() => {
+            portMap.validate();
+          }).toThrow();
+        });
+      });
+
+      describe('ContainerPort can equal HostPort cases', () => {
+        test('when Bridge Networkmode', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            hostPort: 8080,
+          };
+          const networkmode = ecs.NetworkMode.BRIDGE;
+          const portMap = new ecs.PortMap(networkmode, portMapping);
+          // THEN
+          expect(() => {
+            portMap.validate();
+          }).not.toThrow();
+        });
+
+      });
+
+    });
+
+    describe('ServiceConnect class', () => {
+      describe('isServiceConnect', () => {
+        test('return true if params has portname', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            name: 'test',
+          };
+          const networkmode = ecs.NetworkMode.AWS_VPC;
+          const serviceConnect = new ecs.ServiceConnect(networkmode, portMapping);
+          // THEN
+          expect(serviceConnect.isServiceConnect()).toEqual(true);
+        });
+
+        test('return true if params has appProtocol', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            appProtocol: ecs.AppProtocol.http2,
+          };
+          const networkmode = ecs.NetworkMode.AWS_VPC;
+          const serviceConnect = new ecs.ServiceConnect(networkmode, portMapping);
+          // THEN
+          expect(serviceConnect.isServiceConnect()).toEqual(true);
+        });
+
+        test('return false if params has not appProtocl and portName ', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+          };
+          const networkmode = ecs.NetworkMode.AWS_VPC;
+          const serviceConnect = new ecs.ServiceConnect(networkmode, portMapping);
+          // THEN
+          expect(serviceConnect.isServiceConnect()).toEqual(false);
+        });
+
+      });
+
+      describe('validate', () => {
+        test('throw if Host Networkmode', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            name: 'test',
+          };
+          const networkmode = ecs.NetworkMode.HOST;
+          const serviceConnect = new ecs.ServiceConnect(networkmode, portMapping);
+          // THEN
+          expect(() => {
+            serviceConnect.validate();
+          }).toThrow();
+        });
+
+        test('throw if has not portmap name', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            appProtocol: ecs.AppProtocol.http2,
+          };
+          const networkmode = ecs.NetworkMode.AWS_VPC;
+          const serviceConnect = new ecs.ServiceConnect(networkmode, portMapping);
+          // THEN
+          expect(() => {
+            serviceConnect.validate();
+          }).toThrow('Service connect-related port mapping field \'appProtocol\' cannot be set without \'name\'');
+        });
+
+        test('should not throw if AWS_VPC NetworkMode and has portname', () => {
+          // GIVEN
+          const portMapping: ecs.PortMapping = {
+            containerPort: 8080,
+            name: 'test',
+          };
+          const networkmode = ecs.NetworkMode.AWS_VPC;
+          const serviceConnect = new ecs.ServiceConnect(networkmode, portMapping);
+          // THEN
+          expect(() => {
+            serviceConnect.validate();
+          }).not.toThrow();
+        });
+
+      });
+
+    });
+
     test('port mapping throws an error when appProtocol is set without name', () => {
       // GIVEN
       const stack = new cdk.Stack();
