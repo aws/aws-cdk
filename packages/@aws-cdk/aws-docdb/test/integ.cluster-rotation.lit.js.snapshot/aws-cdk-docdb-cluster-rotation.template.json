@@ -508,7 +508,7 @@
     }
    }
   },
-  "DatabaseSecretAttachmentPolicy5ACFE6CA": {
+  "DatabaseSecretPolicyEE73D3F8": {
    "Type": "AWS::SecretsManager::ResourcePolicy",
    "Properties": {
     "ResourcePolicy": {
@@ -540,7 +540,7 @@
      "Version": "2012-10-17"
     },
     "SecretId": {
-     "Ref": "DatabaseSecretAttachmentE5D1B020"
+     "Ref": "DatabaseSecret3B817195"
     }
    }
   },

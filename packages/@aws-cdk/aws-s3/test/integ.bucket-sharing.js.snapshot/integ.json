@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "cdk-integ-bucket-sharing/DefaultTest": {
+      "stacks": [
+        "ConsumerStack"
+      ],
+      "assertionStack": "cdk-integ-bucket-sharing/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegbucketsharingDefaultTestDeployAssertD8250F42"
+    }
+  }
+}
