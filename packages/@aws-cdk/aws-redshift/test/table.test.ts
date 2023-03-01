@@ -216,7 +216,7 @@ describe('cluster table', () => {
       // GIVEN
       const tableColumnsWithSortKey: redshift.Column[] = [
         ...tableColumns,
-        { id: 'col3', name: 'col3', dataType: 'varchar(4)', sortKey: true },
+        { name: 'col3', dataType: 'varchar(4)', sortKey: true },
       ];
 
       // WHEN
