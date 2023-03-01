@@ -400,7 +400,7 @@ export interface MariaDbInstanceEngineProps {
 }
 
 class MariaDbInstanceEngine extends InstanceEngineBase {
-  public readonly supportsReadReplicaBackups = true;
+  public override readonly supportsReadReplicaBackups = true;
 
   constructor(version?: MariaDbEngineVersion) {
     super({
@@ -416,7 +416,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public override bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.domain) {
       throw new Error(`domain property cannot be configured for ${this.engineType}`);
     }
@@ -639,7 +639,7 @@ export interface MySqlInstanceEngineProps {
 }
 
 class MySqlInstanceEngine extends InstanceEngineBase {
-  public readonly supportsReadReplicaBackups = true;
+  public override readonly supportsReadReplicaBackups = true;
 
   constructor(version?: MysqlEngineVersion) {
     super({
@@ -1391,7 +1391,7 @@ abstract class OracleInstanceEngineBase extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public override bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     const config = super.bindToInstance(scope, options);
 
     let optionGroup = options.optionGroup;
@@ -1741,7 +1741,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public override bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     const config = super.bindToInstance(scope, options);
 
     let optionGroup = options.optionGroup;
@@ -1770,7 +1770,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     };
   }
 
-  protected get supportsTimezone() { return true; }
+  protected override get supportsTimezone() { return true; }
 }
 
 /**

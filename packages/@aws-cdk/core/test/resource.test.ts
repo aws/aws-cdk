@@ -670,7 +670,7 @@ describe('resource', () => {
     test('overrides are applied after render', () => {
       // GIVEN
       class MyResource extends CfnResource {
-        public renderProperties() {
+        public override renderProperties() {
           return { Fixed: 123 };
         }
       }
@@ -983,7 +983,7 @@ class Counter extends CfnResource {
     this.count += by;
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return { Count: this.count };
   }
 }
@@ -1006,7 +1006,7 @@ class CustomizableResource extends CfnResource {
     }
   }
 
-  public renderProperties(): { [key: string]: any } {
+  public override renderProperties(): { [key: string]: any } {
     const props = this.updatedProperties;
     const render: { [key: string]: any } = {};
     for (const key of Object.keys(props)) {
@@ -1015,7 +1015,7 @@ class CustomizableResource extends CfnResource {
     return render;
   }
 
-  protected get updatedProperties(): { [key: string]: any } {
+  protected override get updatedProperties(): { [key: string]: any } {
     const props: { [key: string]: any } = {
       prop1: this.prop1,
       prop2: this.prop2,

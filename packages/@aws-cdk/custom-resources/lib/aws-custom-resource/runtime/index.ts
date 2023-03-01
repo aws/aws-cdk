@@ -205,7 +205,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         } else {
           data = flatData;
         }
-      } catch (e) {
+      } catch (e: any) {
         if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(e.code)) {
           throw e;
         }
@@ -217,7 +217,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     }
 
     await respond('SUCCESS', 'OK', physicalResourceId, data);
-  } catch (e) {
+  } catch (e: any) {
     console.log(e);
     await respond('FAILED', e.message || 'Internal Error', context.logStreamName, {});
   }

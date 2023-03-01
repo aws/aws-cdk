@@ -225,8 +225,8 @@ export abstract class PrincipalBase implements IAssumeRolePrincipal, IComparable
  * Base class for Principals that wrap other principals
  */
 abstract class PrincipalAdapter extends PrincipalBase {
-  public readonly assumeRoleAction = this.wrapped.assumeRoleAction;
-  public readonly principalAccount = this.wrapped.principalAccount;
+  public override readonly assumeRoleAction = this.wrapped.assumeRoleAction;
+  public override readonly principalAccount = this.wrapped.principalAccount;
 
   constructor(protected readonly wrapped: IPrincipal) {
     super();
@@ -234,10 +234,10 @@ abstract class PrincipalAdapter extends PrincipalBase {
 
   public get policyFragment(): PrincipalPolicyFragment { return this.wrapped.policyFragment; }
 
-  addToPolicy(statement: PolicyStatement): boolean {
+  public override addToPolicy(statement: PolicyStatement): boolean {
     return this.wrapped.addToPolicy(statement);
   }
-  addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+  public override addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     return this.wrapped.addToPrincipalPolicy(statement);
   }
 
@@ -300,11 +300,11 @@ export class PrincipalWithConditions extends PrincipalAdapter {
     return this.mergeConditions(this.wrapped.policyFragment.conditions, this.additionalConditions);
   }
 
-  public get policyFragment(): PrincipalPolicyFragment {
+  public override get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment(this.wrapped.policyFragment.principalJson, this.conditions);
   }
 
-  public toString() {
+  public override toString() {
     return this.wrapped.toString();
   }
 
@@ -313,7 +313,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
    *
    * Used when JSON.stringify() is called
    */
-  public toJSON() {
+  public override toJSON() {
     // Have to implement toJSON() because the default will lead to infinite recursion.
     return this.policyFragment.principalJson;
   }
@@ -364,7 +364,7 @@ export class SessionTagsPrincipal extends PrincipalAdapter {
     super(principal);
   }
 
-  public addToAssumeRolePolicy(doc: PolicyDocument) {
+  public override addToAssumeRolePolicy(doc: PolicyDocument) {
     // Lazy import to avoid circular import dependencies during startup
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -432,7 +432,7 @@ export class ArnPrincipal extends PrincipalBase {
     return new PrincipalPolicyFragment({ AWS: [this.arn] });
   }
 
-  public toString() {
+  public override toString() {
     return `ArnPrincipal(${this.arn})`;
   }
 
@@ -457,7 +457,7 @@ export class ArnPrincipal extends PrincipalBase {
  * Specify AWS account ID as the principal entity in a policy to delegate authority to the account.
  */
 export class AccountPrincipal extends ArnPrincipal {
-  public readonly principalAccount: string | undefined;
+  public override readonly principalAccount: string | undefined;
 
   /**
    *
@@ -471,7 +471,7 @@ export class AccountPrincipal extends ArnPrincipal {
     this.principalAccount = accountId;
   }
 
-  public toString() {
+  public override toString() {
     return `AccountPrincipal(${this.accountId})`;
   }
 }
@@ -546,7 +546,7 @@ export class ServicePrincipal extends PrincipalBase {
     }, this.opts.conditions);
   }
 
-  public toString() {
+  public override toString() {
     return `ServicePrincipal(${this.service})`;
   }
 
@@ -574,7 +574,7 @@ export class OrganizationPrincipal extends PrincipalBase {
     );
   }
 
-  public toString() {
+  public override toString() {
     return `OrganizationPrincipal(${this.organizationId})`;
   }
 
@@ -611,7 +611,7 @@ export class CanonicalUserPrincipal extends PrincipalBase {
     return new PrincipalPolicyFragment({ CanonicalUser: [this.canonicalUserId] });
   }
 
-  public toString() {
+  public override toString() {
     return `CanonicalUserPrincipal(${this.canonicalUserId})`;
   }
 
@@ -629,7 +629,7 @@ export class CanonicalUserPrincipal extends PrincipalBase {
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_iam-condition-keys.html#condition-keys-wif
  */
 export class FederatedPrincipal extends PrincipalBase {
-  public readonly assumeRoleAction: string;
+  public override readonly assumeRoleAction: string;
 
   /**
    * The conditions under which the policy is in effect.
@@ -656,7 +656,7 @@ export class FederatedPrincipal extends PrincipalBase {
     return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
   }
 
-  public toString() {
+  public override toString() {
     return `FederatedPrincipal(${this.federated})`;
   }
 
@@ -682,11 +682,11 @@ export class WebIdentityPrincipal extends FederatedPrincipal {
     super(identityProvider, conditions ?? {}, 'sts:AssumeRoleWithWebIdentity');
   }
 
-  public get policyFragment(): PrincipalPolicyFragment {
+  public override get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
   }
 
-  public toString() {
+  public override toString() {
     return `WebIdentityPrincipal(${this.federated})`;
   }
 }
@@ -706,11 +706,11 @@ export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
     super(openIdConnectProvider.openIdConnectProviderArn, conditions ?? {});
   }
 
-  public get policyFragment(): PrincipalPolicyFragment {
+  public override get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
   }
 
-  public toString() {
+  public override toString() {
     return `OpenIdConnectPrincipal(${this.federated})`;
   }
 }
@@ -723,7 +723,7 @@ export class SamlPrincipal extends FederatedPrincipal {
     super(samlProvider.samlProviderArn, conditions, 'sts:AssumeRoleWithSAML');
   }
 
-  public toString() {
+  public override toString() {
     return `SamlPrincipal(${this.federated})`;
   }
 }
@@ -742,7 +742,7 @@ export class SamlConsolePrincipal extends SamlPrincipal {
     });
   }
 
-  public toString() {
+  public override toString() {
     return `SamlConsolePrincipal(${this.federated})`;
   }
 }
@@ -755,7 +755,7 @@ export class AccountRootPrincipal extends AccountPrincipal {
     super(new StackDependentToken(stack => stack.account).toString());
   }
 
-  public toString() {
+  public override toString() {
     return 'AccountRootPrincipal()';
   }
 }
@@ -775,7 +775,7 @@ export class AnyPrincipal extends ArnPrincipal {
     super('*');
   }
 
-  public toString() {
+  public override toString() {
     return 'AnyPrincipal()';
   }
 }
@@ -801,7 +801,7 @@ export class StarPrincipal extends PrincipalBase {
     conditions: {},
   };
 
-  public toString() {
+  public override toString() {
     return 'StarPrincipal()';
   }
 
@@ -815,7 +815,7 @@ export class StarPrincipal extends PrincipalBase {
  * have conditions. i.e. multiple ServicePrincipals that form a composite principal
  */
 export class CompositePrincipal extends PrincipalBase {
-  public readonly assumeRoleAction: string;
+  public override readonly assumeRoleAction: string;
   private readonly principals = new Array<IPrincipal>();
 
   constructor(...principals: IPrincipal[]) {
@@ -838,7 +838,7 @@ export class CompositePrincipal extends PrincipalBase {
     return this;
   }
 
-  public addToAssumeRolePolicy(doc: PolicyDocument) {
+  public override addToAssumeRolePolicy(doc: PolicyDocument) {
     for (const p of this.principals) {
       defaultAddPrincipalToAssumeRole(p, doc);
     }
@@ -865,7 +865,7 @@ export class CompositePrincipal extends PrincipalBase {
     return new PrincipalPolicyFragment(principalJson);
   }
 
-  public toString() {
+  public override toString() {
     return `CompositePrincipal(${this.principals})`;
   }
 

@@ -103,7 +103,7 @@ export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
     };
   }
 
-  protected warn(node: IConstruct, message: string) {
+  protected override warn(node: IConstruct, message: string) {
     if (this.suppressLaunchTemplateWarning !== true) {
       super.warn(node, message);
     }

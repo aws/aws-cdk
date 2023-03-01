@@ -1168,7 +1168,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * The principal to grant permissions to
    */
-  public readonly grantPrincipal: iam.IPrincipal;
+  public override readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * Name of the AutoScalingGroup
@@ -1451,7 +1451,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
-  public addUserData(...commands: string[]): void {
+  public override addUserData(...commands: string[]): void {
     this.userData.addCommands(...commands);
   }
 

@@ -50,7 +50,7 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
     this._id = id;
   }
 
-  protected completeBind(options: HttpRouteIntegrationBindOptions) {
+  protected override completeBind(options: HttpRouteIntegrationBindOptions) {
     const route = options.route;
     this.handler.addPermission(`${this._id}-Permission`, {
       scope: options.scope,

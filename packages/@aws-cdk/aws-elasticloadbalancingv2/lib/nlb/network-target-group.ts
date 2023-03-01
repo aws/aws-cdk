@@ -231,7 +231,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
 
-  protected validateTargetGroup(): string[] {
+  protected override validateTargetGroup(): string[] {
     const ret = super.validateTargetGroup();
 
     const healthCheck: HealthCheck = this.healthCheck || {};

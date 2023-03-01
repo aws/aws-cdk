@@ -104,7 +104,7 @@ export class AwsIntegration extends Integration {
     });
   }
 
-  public bind(method: Method): IntegrationConfig {
+  public override bind(method: Method): IntegrationConfig {
     const bindResult = super.bind(method);
     this.scope = method;
     return bindResult;

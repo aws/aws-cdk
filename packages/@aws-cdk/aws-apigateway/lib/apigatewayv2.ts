@@ -321,7 +321,7 @@ export class CfnApiV2 extends cdk.CfnResource implements cdk.IInspectable {
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       apiKeySelectionExpression: this.apiKeySelectionExpression,
       basePath: this.basePath,
@@ -341,7 +341,7 @@ export class CfnApiV2 extends cdk.CfnResource implements cdk.IInspectable {
       version: this.version,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnApiV2PropsToCloudFormation(props);
   }
 }
@@ -639,7 +639,7 @@ export class CfnApiMappingV2 extends cdk.CfnResource implements cdk.IInspectable
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       domainName: this.domainName,
@@ -647,7 +647,7 @@ export class CfnApiMappingV2 extends cdk.CfnResource implements cdk.IInspectable
       apiMappingKey: this.apiMappingKey,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnApiMappingV2PropsToCloudFormation(props);
   }
 }
@@ -870,7 +870,7 @@ export class CfnAuthorizerV2 extends cdk.CfnResource implements cdk.IInspectable
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       authorizerType: this.authorizerType,
@@ -883,7 +883,7 @@ export class CfnAuthorizerV2 extends cdk.CfnResource implements cdk.IInspectable
       jwtConfiguration: this.jwtConfiguration,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnAuthorizerV2PropsToCloudFormation(props);
   }
 }
@@ -1065,14 +1065,14 @@ export class CfnDeploymentV2 extends cdk.CfnResource implements cdk.IInspectable
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       description: this.description,
       stageName: this.stageName,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnDeploymentV2PropsToCloudFormation(props);
   }
 }
@@ -1211,14 +1211,14 @@ export class CfnDomainNameV2 extends cdk.CfnResource implements cdk.IInspectable
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       domainName: this.domainName,
       domainNameConfigurations: this.domainNameConfigurations,
       tags: this.tags.renderTags(),
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnDomainNameV2PropsToCloudFormation(props);
   }
 }
@@ -1574,7 +1574,7 @@ export class CfnIntegrationV2 extends cdk.CfnResource implements cdk.IInspectabl
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       integrationType: this.integrationType,
@@ -1592,7 +1592,7 @@ export class CfnIntegrationV2 extends cdk.CfnResource implements cdk.IInspectabl
       timeoutInMillis: this.timeoutInMillis,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnIntegrationV2PropsToCloudFormation(props);
   }
 }
@@ -1783,7 +1783,7 @@ export class CfnIntegrationResponseV2 extends cdk.CfnResource implements cdk.IIn
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       integrationId: this.integrationId,
@@ -1794,7 +1794,7 @@ export class CfnIntegrationResponseV2 extends cdk.CfnResource implements cdk.IIn
       templateSelectionExpression: this.templateSelectionExpression,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnIntegrationResponseV2PropsToCloudFormation(props);
   }
 }
@@ -1955,7 +1955,7 @@ export class CfnModelV2 extends cdk.CfnResource implements cdk.IInspectable {
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       name: this.name,
@@ -1964,7 +1964,7 @@ export class CfnModelV2 extends cdk.CfnResource implements cdk.IInspectable {
       description: this.description,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnModelV2PropsToCloudFormation(props);
   }
 }
@@ -2228,7 +2228,7 @@ export class CfnRouteV2 extends cdk.CfnResource implements cdk.IInspectable {
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       routeKey: this.routeKey,
@@ -2244,7 +2244,7 @@ export class CfnRouteV2 extends cdk.CfnResource implements cdk.IInspectable {
       target: this.target,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnRouteV2PropsToCloudFormation(props);
   }
 }
@@ -2469,7 +2469,7 @@ export class CfnRouteResponseV2 extends cdk.CfnResource implements cdk.IInspecta
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       routeId: this.routeId,
@@ -2479,7 +2479,7 @@ export class CfnRouteResponseV2 extends cdk.CfnResource implements cdk.IInspecta
       responseParameters: this.responseParameters,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnRouteResponseV2PropsToCloudFormation(props);
   }
 }
@@ -2777,7 +2777,7 @@ export class CfnStageV2 extends cdk.CfnResource implements cdk.IInspectable {
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any } {
+  protected override get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       stageName: this.stageName,
@@ -2792,7 +2792,7 @@ export class CfnStageV2 extends cdk.CfnResource implements cdk.IInspectable {
       tags: this.tags.renderTags(),
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnStageV2PropsToCloudFormation(props);
   }
 }

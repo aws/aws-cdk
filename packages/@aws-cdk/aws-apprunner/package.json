@@ -37,6 +37,9 @@
         "distName": "aws-cdk.aws-apprunner",
         "module": "aws_cdk.aws_apprunner"
       }
+    },
+    "tsc": {
+      "noImplicitOverride": true
     }
   },
   "repository": {
@@ -97,8 +100,7 @@
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "constructs": "^10.0.0",
-    "jsii": "v4.9-next"
+    "constructs": "^10.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",

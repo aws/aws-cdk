@@ -257,7 +257,7 @@ export class StackActivityMonitor {
           finished = true;
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
         return;
       }
@@ -493,7 +493,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     super(props);
   }
 
-  public addActivity(activity: StackActivity) {
+  public override addActivity(activity: StackActivity) {
     super.addActivity(activity);
     this.printable.push(activity);
     this.print();
@@ -507,7 +507,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     this.printInProgress();
   }
 
-  public stop() {
+  public override stop() {
     // Print failures at the end
     if (this.failures.length > 0) {
       this.stream.write('\nFailed resources:\n');
@@ -609,7 +609,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   /**
    * This looks very disorienting sleeping for 5 seconds. Update quicker.
    */
-  public readonly updateSleep: number = 2_000;
+  public override readonly updateSleep: number = 2_000;
 
   private oldLogLevel: LogLevel = LogLevel.DEFAULT;
   private block = new RewritableBlock(this.stream);
@@ -649,14 +649,14 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     this.block.displayLines(lines);
   }
 
-  public start() {
+  public override start() {
     // Need to prevent the waiter from printing 'stack not stable' every 5 seconds, it messes
     // with the output calculations.
     this.oldLogLevel = logLevel;
     setLogLevel(LogLevel.DEFAULT);
   }
 
-  public stop() {
+  public override stop() {
     setLogLevel(this.oldLogLevel);
 
     // Print failures at the end

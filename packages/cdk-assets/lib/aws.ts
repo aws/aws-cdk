@@ -152,7 +152,7 @@ export class DefaultAwsClient implements IAws {
 function safeUsername() {
   try {
     return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
-  } catch (e) {
+  } catch {
     return 'noname';
   }
 }

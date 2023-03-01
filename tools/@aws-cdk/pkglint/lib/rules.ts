@@ -670,6 +670,26 @@ export class JSIIProjectReferences extends ValidationRule {
   }
 }
 
+/**
+ * Requires noImplicitOverride to be set in the jsii configuration.
+ */
+export class JSIINoImplicitOverride extends ValidationRule {
+  public readonly name = 'jsii/noImplicitOverride';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) {
+      return;
+    }
+
+    expectJSON(
+      this.name,
+      pkg,
+      'jsii.tsc.noImplicitOverride',
+      true,
+    );
+  }
+}
+
 export class NoPeerDependenciesAwsCdkLib extends ValidationRule {
   public readonly name = 'aws-cdk-lib/no-peer';
   private readonly allowedPeer = ['constructs'];
@@ -860,12 +880,6 @@ export class NoJsiiDep extends ValidationRule {
   public readonly name = 'dependencies/no-jsii';
 
   public validate(pkg: PackageJson): void {
-    /// TEMPORARY: Use pre-release of jsii for experimental packages...
-    if (pkg.json.stability === 'experimental' && pkg.json.jsii != null) {
-      // v4.9-next is the dist-tag for the pre-release stream of jsii 4.9.x
-      return expectDevDependency('dependencies/jsii-next', pkg, 'jsii', 'v4.9-next');
-    }
-
     const predicate = (s: string) => s.startsWith('jsii');
 
     if (pkg.getDevDependency(predicate)) {

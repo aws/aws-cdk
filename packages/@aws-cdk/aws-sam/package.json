@@ -36,6 +36,9 @@
           "strict": true
         }
       }
+    },
+    "tsc": {
+      "noImplicitOverride": true
     }
   },
   "repository": {
@@ -87,8 +90,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
-    "ts-jest": "^27.1.5",
-    "jsii": "v4.9-next"
+    "ts-jest": "^27.1.5"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

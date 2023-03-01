@@ -37,6 +37,9 @@
         "distName": "aws-cdk.aws-servicecatalogappregistry",
         "module": "aws_cdk.aws_servicecatalogappregistry"
       }
+    },
+    "tsc": {
+      "noImplicitOverride": true
     }
   },
   "repository": {
@@ -90,8 +93,7 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
-    "@types/jest": "^27.5.2",
-    "jsii": "v4.9-next"
+    "@types/jest": "^27.5.2"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

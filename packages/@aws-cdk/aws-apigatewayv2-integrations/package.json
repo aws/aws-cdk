@@ -36,6 +36,9 @@
           "strict": true
         }
       }
+    },
+    "tsc": {
+      "noImplicitOverride": true
     }
   },
   "repository": {
@@ -83,8 +86,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.2",
-    "jsii": "v4.9-next"
+    "@types/jest": "^27.5.2"
   },
   "dependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",

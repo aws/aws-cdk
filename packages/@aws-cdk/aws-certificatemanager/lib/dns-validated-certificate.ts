@@ -77,7 +77,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
   */
 
   public readonly tags: cdk.TagManager;
-  protected readonly region?: string;
+  protected override readonly region?: string;
   private normalizedZoneName: string;
   private hostedZoneId: string;
   private domainName: string;
@@ -159,7 +159,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
   }
 
-  public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
+  public override applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
     this._removalPolicy = policy;
   }
 

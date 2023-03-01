@@ -35,6 +35,9 @@
         "distName": "aws-cdk.aws-signer",
         "module": "aws_cdk.aws_signer"
       }
+    },
+    "tsc": {
+      "noImplicitOverride": true
     }
   },
   "repository": {

@@ -150,7 +150,7 @@ export class Group extends GroupBase {
     class Import extends GroupBase {
       public groupName = groupName;
       public groupArn = groupArn;
-      public principalAccount = arnComponents.account;
+      public override principalAccount = arnComponents.account;
     }
 
     return new Import(scope, id);
@@ -210,7 +210,7 @@ export class Group extends GroupBase {
    * for quota of managed policies attached to an IAM group.
    * @param policy The managed policy to attach.
    */
-  public addManagedPolicy(policy: IManagedPolicy) {
+  public override addManagedPolicy(policy: IManagedPolicy) {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
     this.managedPoliciesExceededWarning();

@@ -208,7 +208,7 @@ export class AssetApiDefinition extends ApiDefinition {
     };
   }
 
-  public bindAfterCreate(scope: Construct, restApi: IRestApi) {
+  public override bindAfterCreate(scope: Construct, restApi: IRestApi) {
     if (!scope.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       return; // not enabled
     }

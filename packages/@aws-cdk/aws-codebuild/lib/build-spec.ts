@@ -84,7 +84,7 @@ class AssetBuildSpec extends BuildSpec {
     return this.asset.bucket.arnForObjects(this.asset.s3ObjectKey);
   }
 
-  public toString() {
+  public override toString() {
     return `<buildspec file: ${this.path}>`;
   }
 }
@@ -103,7 +103,7 @@ class FilenameBuildSpec extends BuildSpec {
     return this.filename;
   }
 
-  public toString() {
+  public override toString() {
     return `<buildspec file: ${this.filename}>`;
   }
 }

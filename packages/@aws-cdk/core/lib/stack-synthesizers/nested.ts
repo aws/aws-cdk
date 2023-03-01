@@ -15,7 +15,7 @@ export class NestedStackSynthesizer extends StackSynthesizer {
     super();
   }
 
-  public get bootstrapQualifier(): string | undefined {
+  public override get bootstrapQualifier(): string | undefined {
     return this.parentDeployment.bootstrapQualifier;
   }
 

@@ -56,7 +56,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
     }
   }
 
-  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+  public override bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (!this.originAccessIdentity) {
       // Using a bucket from another stack creates a cyclic reference with
       // the bucket taking a dependency on the generated S3CanonicalUserId for the grant principal,
@@ -83,7 +83,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
     return super.bind(scope, options);
   }
 
-  protected renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
+  protected override renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
     return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityId}` };
   }
 }

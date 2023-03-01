@@ -440,7 +440,7 @@ class RoleDouble extends iam.Role {
     super(scope, id, props);
   }
 
-  public addToPolicy(statement: iam.PolicyStatement): boolean {
+  public override addToPolicy(statement: iam.PolicyStatement): boolean {
     super.addToPolicy(statement);
     this.statements.push(statement);
     return true;
@@ -448,15 +448,15 @@ class RoleDouble extends iam.Role {
 }
 
 class BucketDouble extends s3.Bucket {
-  public grantRead(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
+  public override grantRead(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
     return iam.Grant.drop(identity, '');
   }
 
-  public grantWrite(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
+  public override grantWrite(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
     return iam.Grant.drop(identity, '');
   }
 
-  public grantReadWrite(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
+  public override grantReadWrite(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
     return iam.Grant.drop(identity, '');
   }
 }

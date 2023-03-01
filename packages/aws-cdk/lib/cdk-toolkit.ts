@@ -782,7 +782,7 @@ export class CdkToolkit {
 
     try {
       await this.deploy(deployOptions);
-    } catch (e) {
+    } catch {
       // just continue - deploy will show the error
     }
   }

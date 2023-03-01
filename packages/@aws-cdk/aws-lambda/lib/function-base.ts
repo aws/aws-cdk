@@ -552,7 +552,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * Try to recognize some specific Principal classes first, then try a generic
    * fallback.
    */
-  private parsePermissionPrincipal(principal: iam.IPrincipal) {
+  private parsePermissionPrincipal(principal: iam.IPrincipal | { readonly wrapped: iam.IPrincipal }) {
     // Try some specific common classes first.
     // use duck-typing, not instance of
     if ('wrapped' in principal) {
@@ -680,6 +680,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 }
 
 export abstract class QualifiedFunctionBase extends FunctionBase {
+  /** The underlying `IFunction` */
   public abstract readonly lambda: IFunction;
 
   public readonly permissionsNode = this.node;
@@ -691,7 +692,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
    */
   protected abstract readonly qualifier: string;
 
-  public get latestVersion() {
+  public override get latestVersion() {
     return this.lambda.latestVersion;
   }
 
@@ -699,7 +700,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     return [this.functionArn];
   }
 
-  public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+  public override configureAsyncInvoke(options: EventInvokeConfigOptions): void {
     if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
       throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`);
     }
@@ -711,7 +712,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     });
   }
 
-  public considerWarningOnInvokeFunctionPermissions(_scope: Construct, _action: string): void {
+  public override considerWarningOnInvokeFunctionPermissions(_scope: Construct, _action: string): void {
     // noOp
     return;
   }
@@ -748,7 +749,7 @@ class LatestVersion extends FunctionBase implements IVersion {
     return this.lambda.grantPrincipal;
   }
 
-  public get latestVersion() {
+  public override get latestVersion() {
     return this;
   }
 

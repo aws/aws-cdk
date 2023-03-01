@@ -43,7 +43,7 @@ export function integTest(
           output.write(`${s}\n`);
         },
       });
-    } catch (e) {
+    } catch (e: any) {
       output.write(e.message);
       output.write(e.stack);
       // Print output only if the test fails. Use 'console.log' so the output is buffered by

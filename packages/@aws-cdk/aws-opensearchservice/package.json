@@ -4,6 +4,13 @@
   "description": "The CDK Construct Library for AWS::OpenSearchService",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*"
+      ]
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "projectReferences": true,
@@ -37,6 +44,9 @@
         "distName": "aws-cdk.aws-opensearchservice",
         "module": "aws_cdk.aws_opensearchservice"
       }
+    },
+    "tsc": {
+      "noImplicitOverride": true
     }
   },
   "repository": {

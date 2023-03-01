@@ -4,6 +4,13 @@
   "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
   "types": "index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
@@ -85,7 +92,10 @@
         "packageName": "awscdk"
       }
     },
-    "projectReferences": false
+    "projectReferences": false,
+    "tsc": {
+      "noImplicitOverride": true
+    }
   },
   "author": {
     "name": "Amazon Web Services",
@@ -383,7 +393,7 @@
     "esbuild": "^0.17.8",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
-    "typescript": "~3.8.3"
+    "typescript": "~4.9.5"
   },
   "peerDependencies": {
     "constructs": "^10.0.0"

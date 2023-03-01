@@ -58,7 +58,7 @@ export class TextWidget extends ConcreteWidget {
     this.background = props.background;
   }
 
-  public position(x: number, y: number): void {
+  public override position(x: number, y: number): void {
     this.x = x;
     this.y = y;
   }

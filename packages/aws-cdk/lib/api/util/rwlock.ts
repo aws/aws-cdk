@@ -108,7 +108,7 @@ export class RWLock {
     let children;
     try {
       children = await fs.readdir(this.directory, { encoding: 'utf-8' });
-    } catch (e) {
+    } catch (e: any) {
       // Can't be locked if the directory doesn't exist
       if (e.code === 'ENOENT') { return []; }
       throw e;
@@ -150,7 +150,7 @@ export interface IWriterLock extends ILock {
 async function readFileIfExists(filename: string): Promise<string | undefined> {
   try {
     return await fs.readFile(filename, { encoding: 'utf-8' });
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') { return undefined; }
     throw e;
   }
@@ -166,7 +166,7 @@ async function writeFileAtomic(filename: string, contents: string): Promise<void
 async function deleteFile(filename: string) {
   try {
     await fs.unlink(filename);
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') {
       return;
     }

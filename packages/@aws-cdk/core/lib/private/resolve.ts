@@ -270,12 +270,12 @@ export function findTokens(scope: IConstruct, fn: () => any): IResolvable[] {
 export class RememberingTokenResolver extends DefaultTokenResolver {
   private readonly tokensSeen = new Set<IResolvable>();
 
-  public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
+  public override resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
     this.tokensSeen.add(t);
     return super.resolveToken(t, context, postProcessor);
   }
 
-  public resolveString(s: TokenizedStringFragments, context: IResolveContext) {
+  public override resolveString(s: TokenizedStringFragments, context: IResolveContext) {
     const ret = super.resolveString(s, context);
     return ret;
   }

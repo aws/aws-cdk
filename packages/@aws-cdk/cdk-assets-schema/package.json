@@ -36,6 +36,9 @@
           "strict": true
         }
       }
+    },
+    "tsc": {
+      "noImplicitOverride": true
     }
   },
   "scripts": {

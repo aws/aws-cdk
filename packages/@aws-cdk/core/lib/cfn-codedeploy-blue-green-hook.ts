@@ -464,7 +464,7 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
     this._lifecycleEventHooks = value;
   }
 
-  protected renderProperties(_props?: { [p: string]: any }): { [p: string]: any } | undefined {
+  protected override renderProperties(_props?: { [p: string]: any }): { [p: string]: any } | undefined {
     return {
       ServiceRole: this.serviceRole,
       Applications: this.applications.map((app) => ({

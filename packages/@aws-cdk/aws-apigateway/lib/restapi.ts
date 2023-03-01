@@ -731,7 +731,7 @@ export class RestApi extends RestApiBase {
   public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
     class Import extends RestApiBase {
       public readonly restApiId = attrs.restApiId;
-      public readonly restApiName = attrs.restApiName ?? id;
+      public override readonly restApiName = attrs.restApiName ?? id;
       public readonly restApiRootResourceId = attrs.rootResourceId;
       public readonly root: IResource = new RootResource(this, {}, this.restApiRootResourceId);
     }
@@ -824,7 +824,7 @@ export class RestApi extends RestApiBase {
    *
    * @internal
    */
-  public _attachMethod(method: Method) {
+  public override _attachMethod(method: Method) {
     this.methods.push(method);
 
     // add this method as a dependency to all deployments defined for this api
@@ -840,7 +840,7 @@ export class RestApi extends RestApiBase {
    *
    * @internal
    */
-  public _attachDeployment(deployment: Deployment) {
+  public override _attachDeployment(deployment: Deployment) {
     this.deployments.push(deployment);
 
     // add all methods that were already defined as dependencies of this

@@ -49,15 +49,15 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
     });
   }
 
-  public addFileAsset(_asset: FileAssetSource): FileAssetLocation {
+  public override addFileAsset(_asset: FileAssetSource): FileAssetLocation {
     throw new Error('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 
-  public addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
+  public override addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
     throw new Error('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 
-  public synthesize(session: ISynthesisSession): void {
+  public override synthesize(session: ISynthesisSession): void {
     this.synthesizeStackTemplate(this.boundStack, session);
 
     // do _not_ treat the template as an asset,
