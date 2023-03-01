@@ -537,6 +537,41 @@ describe('Application', () => {
     );
   });
 
+  test('providing securityGroups', () => {
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    new flink.Application(stack, 'FlinkApplication', {
+      ...requiredProps,
+      vpc,
+      securityGroups: [
+        new ec2.SecurityGroup(stack, 'ProvidedSecurityGroup', { vpc }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::KinesisAnalyticsV2::Application',
+      {
+        ApplicationConfiguration: {
+          VpcConfigurations: [
+            {
+              SecurityGroupIds: [
+                {
+                  'Fn::GetAtt': ['ProvidedSecurityGroup3C7655DD', 'GroupId'],
+                },
+              ],
+            },
+          ],
+        },
+      },
+    );
+  });
+
+  test.todo('providing a subnetSelection');
+  test.todo('using connections');
+  test.todo('validating vpc prop combinations');
+  // SubnetSelection with no vpc
+  // SecurityGroups with no vpc
+  test.todo('validating vpc provided when using connections');
+
   test('validating applicationName', () => {
     // Expect no error with valid name
     new flink.Application(stack, 'ValidString', {

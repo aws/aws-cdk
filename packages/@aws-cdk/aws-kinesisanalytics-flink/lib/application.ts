@@ -848,6 +848,14 @@ export interface ApplicationProps {
    * @default no VPC
    */
   readonly vpc?: ec2.IVpc;
+
+  /**
+   * Optional security groups to override the default security group created
+   * when providing a VPC.
+   *
+   * @default a new security group is created for this application.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
@@ -929,11 +937,13 @@ export class Application extends ApplicationBase {
 
     let vpcConfigurations;
     if (props.vpc) {
-      const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
-        vpc: props.vpc,
-      });
+      const securityGroups = props.securityGroups ?? [
+        new ec2.SecurityGroup(this, 'SecurityGroup', {
+          vpc: props.vpc,
+        }),
+      ];
       vpcConfigurations = [{
-        securityGroupIds: [securityGroup.securityGroupId],
+        securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
         subnetIds: props.vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }).subnetIds,
       }];
     }
