@@ -3019,11 +3019,11 @@
      "Fn::Join": [
       "",
       [
-       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"data\":{\"clusterName\":\"",
+       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"chart-config-map-c820e51c\",\"labels\":{\"aws.cdk.eks/prune-c89c99db0e333353528b2e912b1fb988b6870edc75\":\"\"}},\"data\":{\"clusterName\":\"",
        {
         "Ref": "Cluster9EE0221C"
        },
-       "\"},\"immutable\":false,\"metadata\":{\"name\":\"chart-config-map-c820e51c\",\"labels\":{\"aws.cdk.eks/prune-c89c99db0e333353528b2e912b1fb988b6870edc75\":\"\"}}}]"
+       "\"},\"immutable\":false}]"
       ]
      ]
     },
@@ -3406,7 +3406,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/8036bc5a59e7909aeeb9b09610d5b223033cd2bff3abae01c6b616800daf868f.json"
+       "/67a3aa529ec1ed1816a4cf80820b64e8664fc647e3c49f45996ed25b332e7d07.json"
       ]
      ]
     },
