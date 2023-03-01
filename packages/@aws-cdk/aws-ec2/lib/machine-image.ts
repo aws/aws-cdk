@@ -439,7 +439,7 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
   /**
    * Return the image to use in the given context
    */
-  public getImage(scope: Construct): MachineImageConfig {
+  public override getImage(scope: Construct): MachineImageConfig {
     const imageId = lookupImage(scope, this.cachedInContext, this.parameterName);
 
     const osType = OperatingSystemType.LINUX;

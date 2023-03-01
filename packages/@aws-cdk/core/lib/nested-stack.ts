@@ -103,8 +103,8 @@ export class NestedStack extends Stack {
     return x != null && typeof(x) === 'object' && NESTED_STACK_SYMBOL in x;
   }
 
-  public readonly templateFile: string;
-  public readonly nestedStackResource?: CfnResource;
+  public override readonly templateFile: string;
+  public override readonly nestedStackResource?: CfnResource;
 
   private readonly parameters: { [name: string]: string };
   private readonly resource: CfnStack;
@@ -164,7 +164,7 @@ export class NestedStack extends Stack {
    * Example value: `mystack-mynestedstack-sggfrhxhum7w`
    * @attribute
    */
-  public get stackName() {
+  public override get stackName() {
     return this._contextualStackName;
   }
 
@@ -178,7 +178,7 @@ export class NestedStack extends Stack {
    * Example value: `arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786`
    * @attribute
    */
-  public get stackId() {
+  public override get stackId() {
     return this._contextualStackId;
   }
 

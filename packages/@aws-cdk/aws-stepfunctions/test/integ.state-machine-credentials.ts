@@ -14,7 +14,7 @@ export interface FakeTaskProps extends sfn.TaskStateBaseProps {
 export class FakeTask extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
-  protected readonly parameters?: { [key: string]: string };
+  protected override readonly parameters?: { [key: string]: string };
 
   constructor(scope: constructs.Construct, id: string, props: FakeTaskProps = {}) {
     super(scope, id, props);

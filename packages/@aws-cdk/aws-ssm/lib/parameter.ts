@@ -502,7 +502,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
       public readonly parameterType = ParameterType.SECURE_STRING;
       public readonly stringValue = stringValue;
-      public readonly encryptionKey = attrs.encryptionKey;
+      public override readonly encryptionKey = attrs.encryptionKey;
     }
 
     return new Import(scope, id);

@@ -512,10 +512,10 @@ export class Secret extends SecretBase {
       public readonly secretArn = secretName;
       public readonly secretName = secretName;
       protected readonly autoCreatePolicy = false;
-      public get secretFullArn() { return undefined; }
+      public override get secretFullArn() { return undefined; }
       // Overrides the secretArn for grant* methods, where the secretArn must be in ARN format.
       // Also adds a wildcard to the resource name to support the SecretsManager-provided suffix.
-      protected get arnForPolicies() {
+      protected override get arnForPolicies() {
         return Stack.of(this).formatArn({
           service: 'secretsmanager',
           resource: 'secret',
@@ -537,7 +537,7 @@ export class Secret extends SecretBase {
       public readonly secretName = secretName;
       public readonly secretArn = this.partialArn;
       protected readonly autoCreatePolicy = false;
-      public get secretFullArn() { return undefined; }
+      public override get secretFullArn() { return undefined; }
       // Creates a "partial" ARN from the secret name. The "full" ARN would include the SecretsManager-provided suffix.
       private get partialArn(): string {
         return Stack.of(this).formatArn({
@@ -583,7 +583,7 @@ export class Secret extends SecretBase {
       public readonly secretArn = secretArn;
       public readonly secretName = parseSecretName(scope, secretArn);
       protected readonly autoCreatePolicy = false;
-      public get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
+      public override get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
     }(scope, id, { environmentFromArn: secretArn });
   }
 
@@ -861,7 +861,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
    * If we do not forward policy additions, a new policy resource is created using the secret attachment ARN.
    * This ends up being rejected by CloudFormation.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+  public override addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (FeatureFlags.of(this).isEnabled(cxapi.SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY)) {
       return this.attachedSecret.addToResourcePolicy(statement);
     }

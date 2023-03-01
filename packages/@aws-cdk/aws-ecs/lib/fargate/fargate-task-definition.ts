@@ -126,7 +126,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   /**
    * The Docker networking mode to use for the containers in the task. Fargate tasks require the awsvpc network mode.
    */
-  public readonly networkMode: NetworkMode = NetworkMode.AWS_VPC;
+  public override readonly networkMode: NetworkMode = NetworkMode.AWS_VPC;
   // NOTE: Until the fix to https://github.com/Microsoft/TypeScript/issues/26969 gets released,
   // we need to explicitly write the type here, as type deduction for enums won't lead to
   // the import being generated in the .d.ts file.
@@ -134,7 +134,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   /**
    * The amount (in GiB) of ephemeral storage to be allocated to the task.
    */
-  public readonly ephemeralStorageGiB?: number;
+  public override readonly ephemeralStorageGiB?: number;
 
   /**
    * Constructs a new instance of the FargateTaskDefinition class.

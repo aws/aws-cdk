@@ -83,7 +83,7 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
   /**
    * Overriden method to throw error as interface accelerators are not supported for external tasks
    */
-  public addInferenceAccelerator(_inferenceAccelerator: InferenceAccelerator) {
+  public override addInferenceAccelerator(_inferenceAccelerator: InferenceAccelerator) {
     throw new Error('Cannot use inference accelerators on tasks that run on External service');
   }
 }

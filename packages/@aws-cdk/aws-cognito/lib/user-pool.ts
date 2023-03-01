@@ -174,6 +174,8 @@ export interface UserPoolTriggers {
 
   /**
    * Index signature
+   *
+   * @internal
    */
   [trigger: string]: lambda.IFunction | undefined;
 }

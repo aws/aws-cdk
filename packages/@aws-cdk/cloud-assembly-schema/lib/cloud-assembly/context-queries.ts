@@ -492,6 +492,8 @@ export interface PluginContextQuery {
 
   /**
    * Arbitrary other arguments for the plugin
+   *
+   * @internal
    */
   [key: string]: any;
 }

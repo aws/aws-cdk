@@ -83,7 +83,7 @@ export class PostResolveToken extends Intrinsic implements IPostProcessor {
     super(value, { stackTrace: false });
   }
 
-  public resolve(context: IResolveContext) {
+  public override resolve(context: IResolveContext) {
     context.registerPostProcessor(this);
     return super.resolve(context);
   }

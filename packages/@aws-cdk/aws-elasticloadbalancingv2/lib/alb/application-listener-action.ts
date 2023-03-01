@@ -434,7 +434,7 @@ class TargetGroupListenerAction extends ListenerAction {
     super(actionJson);
   }
 
-  public bind(_scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
+  public override bind(_scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener, associatingConstruct);
     }

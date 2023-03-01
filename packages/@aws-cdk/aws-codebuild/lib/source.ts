@@ -144,7 +144,7 @@ abstract class GitSource extends Source {
     this.fetchSubmodules = props.fetchSubmodules;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public override bind(_scope: Construct, _project: IProject): SourceConfig {
     const superConfig = super.bind(_scope, _project);
     return {
       sourceVersion: this.branchOrRef,
@@ -514,7 +514,7 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
  * A common superclass of all third-party build sources that are backed by Git.
  */
 abstract class ThirdPartyGitSource extends GitSource {
-  public readonly badgeSupported: boolean = true;
+  public override readonly badgeSupported: boolean = true;
   protected readonly webhookFilters: FilterGroup[];
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
@@ -531,7 +531,7 @@ abstract class ThirdPartyGitSource extends GitSource {
     this.buildStatusUrl = props.buildStatusUrl;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
+  public override bind(_scope: Construct, project: IProject): SourceConfig {
     const anyFilterGroupsProvided = this.webhookFilters.length > 0;
     const webhook = this.webhook ?? (anyFilterGroupsProvided ? true : undefined);
 
@@ -575,7 +575,7 @@ export interface CodeCommitSourceProps extends GitSourceProps {
  * CodeCommit Source definition for a CodeBuild project.
  */
 class CodeCommitSource extends GitSource {
-  public readonly badgeSupported = true;
+  public override readonly badgeSupported = true;
   public readonly type = CODECOMMIT_SOURCE_TYPE;
   private readonly repo: codecommit.IRepository;
 
@@ -584,7 +584,7 @@ class CodeCommitSource extends GitSource {
     this.repo = props.repository;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
+  public override bind(_scope: Construct, project: IProject): SourceConfig {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
     project.addToRolePolicy(new iam.PolicyStatement({
       actions: ['codecommit:GitPull'],
@@ -633,7 +633,7 @@ class S3Source extends Source {
     this.version = props.version;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
+  public override bind(_scope: Construct, project: IProject): SourceConfig {
     this.bucket.grantRead(project, this.path);
 
     const superConfig = super.bind(_scope, project);
@@ -672,7 +672,7 @@ abstract class CommonGithubSource extends ThirdPartyGitSource {
     this.buildStatusContext = props.buildStatusContext;
   }
 
-  public bind(scope: Construct, project: IProject): SourceConfig {
+  public override bind(scope: Construct, project: IProject): SourceConfig {
     const superConfig = super.bind(scope, project);
     return {
       sourceProperty: {
@@ -721,7 +721,7 @@ class GitHubSource extends CommonGithubSource {
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
+  public override bind(_scope: Construct, project: IProject): SourceConfig {
     const superConfig = super.bind(_scope, project);
     return {
       sourceProperty: {
@@ -765,7 +765,7 @@ class GitHubEnterpriseSource extends CommonGithubSource {
     this.ignoreSslErrors = props.ignoreSslErrors;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public override bind(_scope: Construct, _project: IProject): SourceConfig {
     if (this.hasCommitMessageFilterAndPrEvent()) {
       throw new Error('COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events');
     }
@@ -850,7 +850,7 @@ class BitBucketSource extends ThirdPartyGitSource {
     this.buildStatusName = props.buildStatusName;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public override bind(_scope: Construct, _project: IProject): SourceConfig {
     // BitBucket sources don't support the PULL_REQUEST_REOPENED event action
     if (this.anyWebhookFilterContainsPrReopenedEventAction()) {
       throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');

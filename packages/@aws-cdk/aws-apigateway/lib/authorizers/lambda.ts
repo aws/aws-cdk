@@ -51,7 +51,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    * The id of the authorizer.
    * @attribute
    */
-  public abstract readonly authorizerId: string;
+  public abstract override readonly authorizerId: string;
 
   /**
    * The ARN of the authorizer to be used in permission policies, such as IAM and resource-based grants.

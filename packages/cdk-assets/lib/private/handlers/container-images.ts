@@ -190,7 +190,7 @@ async function imageExists(ecr: AWS.ECR, repositoryName: string, imageTag: strin
   try {
     await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] }).promise();
     return true;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'ImageNotFoundException') { throw e; }
     return false;
   }
@@ -205,7 +205,7 @@ async function repositoryUri(ecr: AWS.ECR, repositoryName: string): Promise<stri
   try {
     const response = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
     return (response.repositories || [])[0]?.repositoryUri;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'RepositoryNotFoundException') { throw e; }
     return undefined;
   }

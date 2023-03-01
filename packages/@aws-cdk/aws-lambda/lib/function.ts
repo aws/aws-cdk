@@ -514,7 +514,7 @@ export class Function extends FunctionBase {
       public readonly resourceArnsForGrantInvoke = [this.functionArn, `${this.functionArn}:*`];
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
-      protected readonly _skipPermissions = attrs.skipPermissions ?? false;
+      protected override readonly _skipPermissions = attrs.skipPermissions ?? false;
 
       constructor(s: Construct, i: string) {
         super(s, i, {
@@ -1383,7 +1383,7 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   }
 }
 
-function undefinedIfNoKeys<A>(struct: A): A | undefined {
+function undefinedIfNoKeys<A extends { [key:string]: unknown }>(struct: A): A | undefined {
   const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
 }

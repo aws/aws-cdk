@@ -169,7 +169,7 @@ function findAllReferences(root: IConstruct) {
           value: token,
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       // Note: it might be that the properties of the CFN object aren't valid.
       // This will usually be preventatively caught in a construct's validate()
       // and turned into a nicely descriptive error, but we're running prepare()

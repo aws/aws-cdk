@@ -28,7 +28,7 @@ export interface ProductStackProps {
  *
  */
 export class ProductStack extends cdk.Stack {
-  public readonly templateFile: string;
+  public override readonly templateFile: string;
   private _parentProductStackHistory?: ProductStackHistory;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
@@ -92,7 +92,7 @@ export class ProductStack extends cdk.Stack {
    *
    * @internal
    */
-  public _synthesizeTemplate(session: cdk.ISynthesisSession): void {
+  public override _synthesizeTemplate(session: cdk.ISynthesisSession): void {
     const cfn = JSON.stringify(this._toCloudFormation(), undefined, 2);
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
@@ -117,7 +117,7 @@ function findParentStack(scope: Construct): cdk.Stack {
   try {
     const parentStack = cdk.Stack.of(scope);
     return parentStack as cdk.Stack;
-  } catch (e) {
+  } catch {
     throw new Error('Product stacks must be defined within scope of another non-product stack');
   }
 }

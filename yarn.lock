@@ -1972,7 +1972,7 @@
   dependencies:
     "@types/glob" "*"
 
-"@types/aws-lambda@^8.10.111":
+"@types/aws-lambda@^8.10.110", "@types/aws-lambda@^8.10.111":
   version "8.10.111"
   resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.111.tgz#9107c405f3011a5c423b5ac93fbf279439558571"
   integrity sha512-8HR9UjIKmoemEzE2BviVtFkeenxfbizSu8raFjnT2VXxguZZ2JTlNww7INOH7IA0J/zRa3TjOftkYq6hVNkxDA==
@@ -2886,6 +2886,22 @@ aws-sdk-mock@5.6.0:
     aws-sdk "^2.928.0"
     sinon "^11.1.1"
     traverse "^0.6.6"
+
+aws-sdk@^2.1317.0:
+  version "2.1326.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1326.0.tgz#91da60f08d10e4e1db0640c97bc7d2298fde8f17"
+  integrity sha512-LSGiO4RSooupHnkvYbPOuOYqwAxmcnYinwIxBz4P1YI8ulhZZ/pypOj/HKqC629UyhY1ndSMtlM1l56U74UclA==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    util "^0.12.4"
+    uuid "8.0.0"
+    xml2js "0.4.19"
 
 aws-sdk@^2.1325.0, aws-sdk@^2.928.0:
   version "2.1325.0"
@@ -7113,9 +7129,9 @@ jsii@1.76.0, jsii@^1.76.0:
     yargs "^16.2.0"
 
 jsii@v4.9-next:
-  version "4.9.0-dev.1"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-4.9.0-dev.1.tgz#3fcc0001a425f7cf933260b9b9dd999ca71739b6"
-  integrity sha512-1neCv7G/y9Ihku5ZEz2cDMuSNXpZYxNuTS1ycVXZ0ZhOVGn0+s0ghkOLj+Xecei3M0fBfZxlLiHSpw3xrJT/Mg==
+  version "4.9.0-dev.2"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-4.9.0-dev.2.tgz#6b193a8a1ce6078741ce4f40bf1b5cf01c9a6f41"
+  integrity sha512-5VIj4HVTYuXJwv+UnEG9KIZ1Kwx4S7fws0y6XwMf6U7Qr4QbOwW59HM7mn28B0GJgj83y/CezcJTTqpuEES+5Q==
   dependencies:
     "@jsii/check-node" "1.76.0"
     "@jsii/spec" "^1.76.0"
@@ -11204,11 +11220,6 @@ typescript@next:
   version "5.1.0-dev.20230301"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.1.0-dev.20230301.tgz#3250b647dfd19942326bf904211350cdbbfdfe79"
   integrity sha512-aJ0PIgQ00zlf9npD2tri7MWDAooMoh3iIn4v0hAMSRCSKqJjTzt7fVopvdtbvWPKripipxeXnX5mhkBZcGrEKQ==
-
-typescript@~3.8.3:
-  version "3.8.3"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
-  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
 
 typescript@~4.8.2:
   version "4.8.4"

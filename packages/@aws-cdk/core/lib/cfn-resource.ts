@@ -370,7 +370,7 @@ export class CfnResource extends CfnRefElement {
   /**
    * @returns a string representation of this resource
    */
-  public toString() {
+  public override toString() {
     return `${super.toString()} [${this.cfnResourceType}]`;
   }
 
@@ -450,7 +450,7 @@ export class CfnResource extends CfnRefElement {
         },
       };
       return ret;
-    } catch (e) {
+    } catch (e: any) {
       // Change message
       e.message = `While synthesizing ${this.node.path}: ${e.message}`;
       // Adjust stack trace (make it look like node built it, too...)

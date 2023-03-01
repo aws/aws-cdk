@@ -33,14 +33,6 @@ export enum MetricsLevel {
 }
 
 /**
- * Interface for building AWS::KinesisAnalyticsV2::Application PropertyGroup
- * configuration.
- */
-export interface PropertyGroups {
-  readonly [propertyId: string]: { [mapKey: string]: string };
-}
-
-/**
  * Available Flink runtimes for Kinesis Analytics.
  */
 export class Runtime {

@@ -36,6 +36,9 @@
           "strict": false
         }
       }
+    },
+    "tsc": {
+      "noImplicitOverride": true
     }
   },
   "repository": {
@@ -88,8 +91,7 @@
     "@aws-cdk/integ-tests": "0.0.0",
     "@types/jest": "^27.5.2",
     "aws-sdk": "^2.1325.0",
-    "jest": "^27.5.1",
-    "jsii": "v4.9-next"
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",

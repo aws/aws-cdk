@@ -38,7 +38,7 @@ class CustomStep extends Step implements ICodePipelineActionFactory {
     return { runOrdersConsumed: 1 };
   }
 
-  public get consumedStackOutputs(): pipelines.StackOutputReference[] {
+  public override get consumedStackOutputs(): pipelines.StackOutputReference[] {
     return [pipelines.StackOutputReference.fromCfnOutput(this.stackOutput)];
   }
 }

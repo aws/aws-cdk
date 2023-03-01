@@ -1674,7 +1674,7 @@ export class Bucket extends BucketBase {
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
-      protected notificationsHandlerRole = attrs.notificationsHandlerRole;
+      protected override notificationsHandlerRole = attrs.notificationsHandlerRole;
 
       /**
        * Exports this bucket from the stack.

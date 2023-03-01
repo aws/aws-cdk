@@ -123,7 +123,7 @@ export class Parallel extends State implements INextable {
    * the Parallel state here so that any necessary
    * prefixes are appended first.
    */
-  public bindToGraph(graph: StateGraph) {
+  public override bindToGraph(graph: StateGraph) {
     for (const branch of this._branches) {
       const name = `Parallel '${this.stateId}' branch ${this.branches.length + 1}`;
       super.addBranch(new StateGraph(branch.startState, name));
@@ -151,7 +151,7 @@ export class Parallel extends State implements INextable {
   /**
    * Validate this state
    */
-  protected validateState(): string[] {
+  protected override validateState(): string[] {
     if (this.branches.length === 0) {
       return ['Parallel must have at least one branch'];
     }

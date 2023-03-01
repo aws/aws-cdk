@@ -534,7 +534,7 @@ export class ProxyResource extends Resource {
     }
   }
 
-  public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
+  public override addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
     // In case this proxy is mounted under the root, also add this method to
     // the root so that empty paths are proxied as well.
     if (this.parentResource && this.parentResource.path === '/') {

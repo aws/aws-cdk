@@ -73,7 +73,7 @@ function parseError(payload: string | undefined): string {
     const error = JSON.parse(payload);
     const concat = [error.errorMessage, error.trace].filter(x => x).join('\n');
     return concat.length > 0 ? concat : payload;
-  } catch (e) {
+  } catch {
     // fall back to just returning the payload
     return payload;
   }

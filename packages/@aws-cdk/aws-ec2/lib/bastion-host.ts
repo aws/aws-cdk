@@ -118,7 +118,7 @@ export interface BastionHostLinuxProps {
  * @resource AWS::EC2::Instance
  */
 export class BastionHostLinux extends Resource implements IInstance {
-  public readonly stack: Stack;
+  public override readonly stack: Stack;
 
   /**
    * Allows specify security group connections for the instance.

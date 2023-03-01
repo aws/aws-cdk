@@ -136,7 +136,7 @@ export abstract class StackInstances {
     }
 
     return new class extends StackInstances {
-      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [artifactPath.artifact];
+      public override readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [artifactPath.artifact];
       public _bind(_scope: Construct): StackInstancesBindResult {
         return {
           stackSetConfiguration: {
