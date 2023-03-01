@@ -40,13 +40,13 @@
     "jest-junit": "^13",
     "json-schema": "^0.4.0",
     "npm-check-updates": "^12",
-    "projen": "^0.67.65",
+    "projen": "^0.67.69",
     "standard-version": "^9",
     "ts-jest": "^27",
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "cdk-generate-synthetic-examples": "^0.1.162",
+    "cdk-generate-synthetic-examples": "^0.1.167",
     "esbuild": "^0.17.10",
     "fs-extra": "^10.1.0",
     "license-checker": "^25.0.1",
