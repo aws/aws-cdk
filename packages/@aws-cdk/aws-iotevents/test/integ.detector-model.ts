@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as iotevents from '../lib';
 
 class TestStack extends cdk.Stack {
@@ -68,5 +69,6 @@ class TestStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new TestStack(app, 'detector-model-test-stack');
-app.synth();
+new IntegTest(app, 'cdk-integ-detector-model-test-stack', {
+  testCases: [new TestStack(app, 'detector-model-test-stack')],
+});

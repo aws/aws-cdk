@@ -51,6 +51,18 @@
         ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+       ]
+      ]
      }
     ]
    }
@@ -125,7 +137,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "e8df8261cf82310642e2ba891e96133429f5e7dcba09fa805f4c82818d0c3bb9.zip"
+     "S3Key": "c17e6c5822dd39738b3ba669bef4bb7c8fceaea76b51477bf94d6745d0c201c8.zip"
     },
     "Role": {
      "Fn::GetAtt": [
