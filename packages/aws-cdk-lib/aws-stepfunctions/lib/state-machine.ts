@@ -433,7 +433,7 @@ export class StateMachine extends StateMachineBase {
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
       service: 'states',
       resource: 'stateMachine',
-      resourceName: this.stateMachineName,
+      resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
