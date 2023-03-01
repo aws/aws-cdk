@@ -450,6 +450,14 @@ test('custom environment variables and secrets can be added without first defini
         EgressType: 'DEFAULT',
       },
     },
+    InstanceConfiguration: {
+      InstanceRoleArn: {
+        'Fn::GetAtt': [
+          'DemoServiceInstanceRoleFCED1725',
+          'Arn',
+        ],
+      },
+    },
   });
 });
 
