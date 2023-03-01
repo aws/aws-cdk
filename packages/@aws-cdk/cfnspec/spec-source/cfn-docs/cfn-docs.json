@@ -33555,9 +33555,9 @@
     },
     "AWS::ManagedBlockchain::Member.MemberFabricConfiguration": {
       "attributes": {},
-      "description": "Configuration properties for Hyperledger Fabric for a member in a Managed Blockchain network using the Hyperledger Fabric framework.",
+      "description": "Configuration properties for Hyperledger Fabric for a member in a Managed Blockchain network that is using the Hyperledger Fabric framework.",
       "properties": {
-        "AdminPassword": "The password for the member's initial administrative user. The `AdminPassword` must be at least eight characters long and no more than 32 characters. It must contain at least one uppercase letter, one lowercase letter, and one digit. It cannot have a single quotation mark (\u2018), a double quotation marks (\u201c), a forward slash(/), a backward slash(\\), @, or a space.",
+        "AdminPassword": "The password for the member's initial administrative user. The `AdminPassword` must be at least 8 characters long and no more than 32 characters. It must contain at least one uppercase letter, one lowercase letter, and one digit. It cannot have a single quotation mark (\u2018), a double quotation marks (\u201c), a forward slash(/), a backward slash(\\), @, or a space.",
         "AdminUsername": "The user name for the member's initial administrative user."
       }
     },
@@ -33577,21 +33577,21 @@
         "FrameworkVersion": "The version of the blockchain framework that the network uses.",
         "Name": "The name of the network.",
         "NetworkFrameworkConfiguration": "Configuration properties relevant to the network for the blockchain framework that the network uses.",
-        "VotingPolicy": "The voting rules for the network to decide if a proposal is accepted."
+        "VotingPolicy": "The voting rules that the network uses to decide if a proposal is accepted."
       }
     },
     "AWS::ManagedBlockchain::Member.NetworkFabricConfiguration": {
       "attributes": {},
       "description": "Hyperledger Fabric configuration properties for the network.",
       "properties": {
-        "Edition": "The edition of Amazon Managed Blockchain that the network uses. Valid values are `standard` and `starter` . For more information, see"
+        "Edition": "The edition of Amazon Managed Blockchain that the network uses. Valid values are `standard` and `starter` . For more information, see [Amazon Managed Blockchain Pricing](https://docs.aws.amazon.com/managed-blockchain/pricing/)"
       }
     },
     "AWS::ManagedBlockchain::Member.NetworkFrameworkConfiguration": {
       "attributes": {},
       "description": "Configuration properties relevant to the network for the blockchain framework that the network uses.",
       "properties": {
-        "NetworkFabricConfiguration": "Configuration properties for Hyperledger Fabric for a member in a Managed Blockchain network using the Hyperledger Fabric framework."
+        "NetworkFabricConfiguration": "Configuration properties for Hyperledger Fabric for a member in a Managed Blockchain network that is using the Hyperledger Fabric framework."
       }
     },
     "AWS::ManagedBlockchain::Member.VotingPolicy": {
@@ -38509,7 +38509,7 @@
         "CustomDeliveryConfiguration": "The delivery configuration settings for sending the treatment through a custom channel. This object is required if the `MessageConfiguration` object for the treatment specifies a `CustomMessage` object.",
         "Description": "A custom description of the campaign.",
         "HoldoutPercent": "The allocated percentage of users (segment members) who shouldn't receive messages from the campaign.",
-        "IsPaused": "Specifies whether to pause the campaign. A paused campaign doesn't run unless you resume it by changing this value to `false` . If you restart a campaign, the campaign restarts from the beginning and not at the point you paused it.",
+        "IsPaused": "Specifies whether to pause the campaign. A paused campaign doesn't run unless you resume it by changing this value to `false` . If you restart a campaign, the campaign restarts from the beginning and not at the point you paused it. If a campaign is running it will complete and then pause. Pause only pauses or skips the next run for a recurring future scheduled campaign. A campaign scheduled for immediate can't be paused.",
         "Limits": "The messaging limits for the campaign.",
         "MessageConfiguration": "The message configuration settings for the campaign.",
         "Name": "The name of the campaign.",
@@ -39795,7 +39795,7 @@
       "attributes": {},
       "description": "The configuration settings of the Amazon Kinesis Data Streams destination for an Amazon QLDB journal stream.",
       "properties": {
-        "AggregationEnabled": "Enables QLDB to publish multiple data records in a single Kinesis Data Streams record, increasing the number of records sent per API call.\n\n*This option is enabled by default.* Record aggregation has important implications for processing records and requires de-aggregation in your stream consumer. To learn more, see [KPL Key Concepts](https://docs.aws.amazon.com/streams/latest/dev/kinesis-kpl-concepts.html) and [Consumer De-aggregation](https://docs.aws.amazon.com/streams/latest/dev/kinesis-kpl-consumer-deaggregation.html) in the *Amazon Kinesis Data Streams Developer Guide* .",
+        "AggregationEnabled": "Enables QLDB to publish multiple data records in a single Kinesis Data Streams record, increasing the number of records sent per API call.\n\nDefault: `True`\n\nRecord aggregation has important implications for processing records and requires de-aggregation in your stream consumer. To learn more, see [KPL Key Concepts](https://docs.aws.amazon.com/streams/latest/dev/kinesis-kpl-concepts.html) and [Consumer De-aggregation](https://docs.aws.amazon.com/streams/latest/dev/kinesis-kpl-consumer-deaggregation.html) in the *Amazon Kinesis Data Streams Developer Guide* .",
         "StreamArn": "The Amazon Resource Name (ARN) of the Kinesis Data Streams resource."
       }
     },
@@ -41046,7 +41046,7 @@
       },
       "description": "The `AWS::RDS::DBClusterParameterGroup` resource creates a new Amazon RDS DB cluster parameter group.\n\nFor information about configuring parameters for Amazon Aurora DB clusters, see [Working with parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> If you apply a parameter group to a DB cluster, then its DB instances might need to reboot. This can result in an outage while the DB instances are rebooting.\n> \n> If you apply a change to parameter group associated with a stopped DB cluster, then the update stack waits until the DB cluster is started.",
       "properties": {
-        "DBClusterParameterGroupName": "The name of the DB cluster parameter group.\n\nConstraints:\n\n- Must not match the name of an existing DB cluster parameter group.\n\nIf you don't specify a value for `DBClusterParameterGroupName` property, a name is automatically created for the DB cluster paramter group.\n\n> This value is stored as a lowercase string.",
+        "DBClusterParameterGroupName": "The name of the DB cluster parameter group.\n\nConstraints:\n\n- Must not match the name of an existing DB cluster parameter group.\n\nIf you don't specify a value for `DBClusterParameterGroupName` property, a name is automatically created for the DB cluster parameter group.\n\n> This value is stored as a lowercase string.",
         "Description": "A friendly description for this DB cluster parameter group.",
         "Family": "The DB cluster parameter group family name. A DB cluster parameter group can be associated with one and only one DB cluster parameter group family, and can be applied only to a DB cluster running a DB engine and engine version compatible with that DB cluster parameter group family.\n\n> The DB cluster parameter group family can't be changed when updating a DB cluster parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBClusterParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBClusterParameterGroup.html)` .",
         "Parameters": "Provides a list of parameters for the DB cluster parameter group.",
@@ -41114,7 +41114,7 @@
         "NetworkType": "The network type of the DB instance.\n\nValid values:\n\n- `IPV4`\n- `DUAL`\n\nThe network type is determined by the `DBSubnetGroup` specified for the DB instance. A `DBSubnetGroup` can support only the IPv4 protocol or the IPv4 and IPv6 protocols ( `DUAL` ).\n\nFor more information, see [Working with a DB instance in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html) in the *Amazon RDS User Guide.*",
         "OptionGroupName": "Indicates that the DB instance should be associated with the specified option group.\n\nPermanent options, such as the TDE option for Oracle Advanced Security TDE, can't be removed from an option group. Also, that option group can't be removed from a DB instance once it is associated with a DB instance.",
         "PerformanceInsightsKMSKeyId": "The AWS KMS key identifier for encryption of Performance Insights data.\n\nThe KMS key identifier is the key ARN, key ID, alias ARN, or alias name for the KMS key.\n\nIf you do not specify a value for `PerformanceInsightsKMSKeyId` , then Amazon RDS uses your default KMS key. There is a default KMS key for your AWS account. Your AWS account has a different default KMS key for each AWS Region.\n\nFor information about enabling Performance Insights, see [EnablePerformanceInsights](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-enableperformanceinsights) .",
-        "PerformanceInsightsRetentionPeriod": "The amount of time, in days, to retain Performance Insights data. Valid values are 7 or 731 (2 years).\n\nFor information about enabling Performance Insights, see [EnablePerformanceInsights](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-enableperformanceinsights) .",
+        "PerformanceInsightsRetentionPeriod": "The number of days to retain Performance Insights data. The default is 7 days. The following values are valid:\n\n- 7\n- *month* * 31, where *month* is a number of months from 1-23\n- 731\n\nFor example, the following values are valid:\n\n- 93 (3 months * 31)\n- 341 (11 months * 31)\n- 589 (19 months * 31)\n- 731\n\nIf you specify a retention period such as 94, which isn't a valid value, RDS issues an error.\n\nThis setting doesn't apply to RDS Custom.",
         "Port": "The port number on which the database accepts connections.\n\n*Amazon Aurora*\n\nNot applicable. The port number is managed by the DB cluster.",
         "PreferredBackupWindow": "The daily time range during which automated backups are created if automated backups are enabled, using the `BackupRetentionPeriod` parameter. For more information, see [Backup Window](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html#USER_WorkingWithAutomatedBackups.BackupWindow) in the *Amazon RDS User Guide.*\n\nConstraints:\n\n- Must be in the format `hh24:mi-hh24:mi` .\n- Must be in Universal Coordinated Time (UTC).\n- Must not conflict with the preferred maintenance window.\n- Must be at least 30 minutes.\n\n*Amazon Aurora*\n\nNot applicable. The daily time range for creating automated backups is managed by the DB cluster.",
         "PreferredMaintenanceWindow": "The weekly time range during which system maintenance can occur, in Universal Coordinated Time (UTC).\n\nFormat: `ddd:hh24:mi-ddd:hh24:mi`\n\nThe default is a 30-minute window selected at random from an 8-hour block of time for each AWS Region, occurring on a random day of the week. To see the time blocks available, see [Adjusting the Preferred DB Instance Maintenance Window](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow) in the *Amazon RDS User Guide.*\n\n> This property applies when AWS CloudFormation initially creates the DB instance. If you use AWS CloudFormation to update the DB instance, those updates are applied immediately. \n\nConstraints: Minimum 30-minute window.",
@@ -42381,42 +42381,42 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "The state of the certificate revocation list (CRL) after a read or write operation.",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The revocation record for a certificate, following the x509 v3 standard.",
-        "Enabled": "Indicates whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the CRL.",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
     "AWS::RolesAnywhere::Profile": {
       "attributes": {
-        "ProfileArn": "The ARN of the profile.",
+        "ProfileArn": "",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "A list of tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
       "attributes": {
         "Ref": "`Ref` returns `TrustAnchorId` .",
         "TrustAnchorArn": "The ARN of the trust anchor.",
-        "TrustAnchorId": "The unique primary identifier of the TrustAnchor"
+        "TrustAnchorId": ""
       },
-      "description": "The state of the trust anchor after a read or write operation.",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -42426,15 +42426,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the trust anchor."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
