@@ -166,7 +166,7 @@ with the supplied schema.
 
 ```ts fixture=cluster
 new Table(this, 'Table', {
-  tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(4)' }, { id: 'col2', name: 'col2', dataType: 'float' }],
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
   cluster: cluster,
   databaseName: 'databaseName',
 });
@@ -177,8 +177,8 @@ The table can be configured to have distStyle attribute and a distKey column:
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { id: 'col1', name: 'col1', dataType: 'varchar(4)', distKey: true },
-    { id: 'col2', name: 'col2', dataType: 'float' },
+    { name: 'col1', dataType: 'varchar(4)', distKey: true },
+    { name: 'col2', dataType: 'float' },
   ],
   cluster: cluster,
   databaseName: 'databaseName',
@@ -191,8 +191,8 @@ The table can also be configured to have sortStyle attribute and sortKey columns
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { id: 'col1', name: 'col1', dataType: 'varchar(4)', sortKey: true },
-    { id: 'col2', name: 'col2', dataType: 'float', sortKey: true },
+    { name: 'col1', dataType: 'varchar(4)', sortKey: true },
+    { name: 'col2', dataType: 'float', sortKey: true },
   ],
   cluster: cluster,
   databaseName: 'databaseName',
@@ -205,12 +205,27 @@ Tables can also be configured with a comment:
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
+    { name: 'col1', dataType: 'varchar(4)' }, 
+    { name: 'col2', dataType: 'float' }
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  comment: 'This is a comment',
+});
+```
+
+Table columns can also contain an `id` attribute, which can allow table columns to be renamed.
+
+**NOTE** To use the `id` attribute, you must also enable the `@aws-cdk/aws-redshift:columnId` feature flag.
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [
     { id: 'col1', name: 'col1', dataType: 'varchar(4)' }, 
     { id: 'col2', name: 'col2', dataType: 'float' }
   ],
   cluster: cluster,
   databaseName: 'databaseName',
-  comment: 'This is a comment',
 });
 ```
 
@@ -225,7 +240,7 @@ const user = new User(this, 'User', {
   databaseName: 'databaseName',
 });
 const table = new Table(this, 'Table', {
-  tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(4)' }, { id: 'col2', name: 'col2', dataType: 'float' }],
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
   cluster: cluster,
   databaseName: 'databaseName',
 });
@@ -250,7 +265,7 @@ const user = new User(this, 'User', {
   databaseName: databaseName,
 });
 const table = new Table(this, 'Table', {
-  tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(4)' }, { id: 'col2', name: 'col2', dataType: 'float' }],
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
   cluster: cluster,
   databaseName: databaseName,
 });
@@ -273,7 +288,7 @@ const user = User.fromUserAttributes(this, 'User', {
 });
 const table = Table.fromTableAttributes(this, 'Table', {
   tableName: tableName,
-  tableColumns: [{ id: 'col1', name: 'col1', dataType: 'varchar(4)' }, { id: 'col2', name: 'col2', dataType: 'float' }],
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
   cluster: cluster,
   databaseName: 'databaseName',
 });
