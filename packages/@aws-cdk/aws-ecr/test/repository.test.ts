@@ -382,7 +382,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    Annotations.fromStack(stack).hasWarnings('*', 'ECR resource policy does not allow resource statements.');
+    Annotations.fromStack(stack).hasWarning('*', 'ECR resource policy does not allow resource statements.');
   });
 
   test('default encryption configuration', () => {
