@@ -12,7 +12,7 @@ phases:
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
-      - yarn install
+      - yarn install --frozen-lockfile
 
       # Packing aws-cdk-lib can cause memory errors. Increasing this value
       # allows our build to more consistently succeed

@@ -1,5 +1,9 @@
 version: 0.2
 
+env:
+  secrets-manager:
+    TOKEN: $TOKEN_SECRET_ARN
+
 phases:
   install:
     commands:
@@ -9,12 +13,8 @@ phases:
       # Configure git and git credentials
       - git config --global user.email "${COMMIT_EMAIL}"
       - git config --global user.name "${COMMIT_USERNAME}"
-      - echo "Retrieving ssh key from secretsmanager & ssh git setup."
-      - aws secretsmanager get-secret-value --secret-id ${SSH_KEY_SECRET_ARN} --output=text --query=SecretString > ~/.ssh/id_rsa;
-      - mkdir -p ~/.ssh;
-      - chmod 0600 ~/.ssh/id_rsa ~/.ssh/config;
-      - ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts;
-      - git clone git@github.com:aws/aws-cdk.git -b feat/repo-restructure .
+      - echo "Retrieving gh token from secretsmanager"
+      - git clone https://$TOKEN@github.com/aws/aws-cdk -b feat/repo-restructure .
       - git checkout ${CODEBUILD_RESOLVED_SOURCE_VERSION}
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
@@ -29,10 +29,9 @@ phases:
       - cd ${HOME}/remodel
       - git add -A
       - git commit -m "Execute remodel"
-      - git remote add aws-cdk git@github.com:aws/aws-cdk.git
+      - git remote add aws-cdk https://$TOKEN@github.com/aws/aws-cdk
       - git fetch aws-cdk
       - git push aws-cdk +feat/repo-restructure:feat/remodel
-      - codebuild-breakpoint
 artifacts:
   files:
     - "**/*"
