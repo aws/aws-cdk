@@ -391,11 +391,10 @@ test('custom environment secrets and start commands are allowed for imageConfigu
   });
 });
 
-test('custom environment variables and secrets can be added without first defining them in props', () => {
+test('custom environment variables can be added without first defining them in props', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
-  const secret = new secretsmanager.Secret(stack, 'Secret');
   const service = new apprunner.Service(stack, 'DemoService', {
     source: apprunner.Source.fromEcrPublic({
       imageConfiguration: {
@@ -404,10 +403,9 @@ test('custom environment variables and secrets can be added without first defini
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
   });
-  
+
   // WHEN
   service.addEnvironmentVariable('TEST_ENVIRONMENT_VARIABLE', 'test environment variable value');
-  service.addSecret('LATER_SECRET', apprunner.Secret.fromSecretsManager(secret, 'field'));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
@@ -421,6 +419,43 @@ test('custom environment variables and secrets can be added without first defini
               Value: 'test environment variable value',
             },
           ],
+          StartCommand: '/root/start-command.sh',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
+  });
+});
+
+test('custom environment secrets can be added without first defining them in props', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: {
+        startCommand: '/root/start-command.sh',
+      },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  // WHEN
+  service.addSecret('LATER_SECRET', apprunner.Secret.fromSecretsManager(secret, 'field'));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
           RuntimeEnvironmentSecrets: [
             {
               Name: 'LATER_SECRET',
