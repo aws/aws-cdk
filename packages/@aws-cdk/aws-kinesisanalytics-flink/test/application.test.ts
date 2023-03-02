@@ -668,7 +668,21 @@ describe('Application', () => {
     }).not.toThrow();
   });
 
-  test.todo('validating vpc provided when using connections');
+  test('validating vpc provided when using connections for created App', () => {
+    let app = new flink.Application(stack, 'FlinkApplication', {
+      ...requiredProps,
+    });
+    expect(() => {
+      app.connections;
+    }).toThrow(/This Application isn\'t associated with a VPC/);
+  });
+
+  test('validating vpc provided when using connections for imported App', () => {
+    let app = flink.Application.fromApplicationName(stack, 'FlinkApplication', 'Name');
+    expect(() => {
+      app.connections;
+    }).toThrow(/This Application isn\'t associated with a VPC/);
+  });
 
   test('validating applicationName', () => {
     // Expect no error with valid name
