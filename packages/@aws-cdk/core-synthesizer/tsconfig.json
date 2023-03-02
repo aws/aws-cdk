@@ -41,6 +41,12 @@
       "path": "../core"
     },
     {
+      "path": "../aws-s3"
+    },
+    {
+      "path": "../aws-ecr"
+    },
+    {
       "path": "../../../tools/@aws-cdk/cdk-build-tools"
     },
     {
