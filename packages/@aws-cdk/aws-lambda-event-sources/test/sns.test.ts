@@ -2,8 +2,8 @@ import { Template } from '@aws-cdk/assertions';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
-import * as sources from '../lib';
 import { TestFunction } from './test-function';
+import * as sources from '../lib';
 
 /* eslint-disable quote-props */
 

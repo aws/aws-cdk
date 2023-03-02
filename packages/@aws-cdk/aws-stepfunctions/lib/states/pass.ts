@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
+import { StateType } from './private/state-type';
+import { renderJsonPath, State } from './state';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { IChainable, INextable } from '../types';
-import { StateType } from './private/state-type';
-import { renderJsonPath, State } from './state';
 
 /**
  * The result of a Pass operation

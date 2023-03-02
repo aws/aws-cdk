@@ -36,7 +36,15 @@ export interface SubscriptionOptions {
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicy?: { [attribute: string]: SubscriptionFilter };
+  readonly filterPolicy? : { [attribute: string]: SubscriptionFilter };
+
+  /**
+   * The filter policy that is applied on the message body.
+   * To apply a filter policy to the message attributes, use `filterPolicy`. A maximum of one of `filterPolicyWithMessageBody` and `filterPolicy` may be used.
+   *
+   * @default - all messages are delivered
+   */
+  readonly filterPolicyWithMessageBody?: { [attribute: string]: FilterOrPolicy };
 
   /**
    * The region where the topic resides, in the case of cross-region subscriptions
@@ -85,6 +93,8 @@ export class Subscription extends Resource {
 
   private readonly filterPolicy?: { [attribute: string]: any[] };
 
+  private readonly filterPolicyWithMessageBody? : {[attribute: string]: FilterOrPolicy };
+
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
 
@@ -112,23 +122,33 @@ export class Subscription extends Resource {
 
       let total = 1;
       Object.values(this.filterPolicy).forEach(filter => { total *= filter.length; });
-      if (total > 100) {
-        throw new Error(`The total combination of values (${total}) must not exceed 100.`);
+      if (total > 150) {
+        throw new Error(`The total combination of values (${total}) must not exceed 150.`);
       }
+    } else if (props.filterPolicyWithMessageBody) {
+      if (Object.keys(props.filterPolicyWithMessageBody).length > 5) {
+        throw new Error('A filter policy can have a maximum of 5 attribute names.');
+      }
+      this.filterPolicyWithMessageBody = props.filterPolicyWithMessageBody;
     }
 
     if (props.protocol === SubscriptionProtocol.FIREHOSE && !props.subscriptionRoleArn) {
       throw new Error('Subscription role arn is required field for subscriptions with a firehose protocol.');
     }
 
-    this.deadLetterQueue = this.buildDeadLetterQueue(props);
+    // Format filter policy
+    const filterPolicy = this.filterPolicyWithMessageBody
+      ? buildFilterPolicyWithMessageBody(this.filterPolicyWithMessageBody)
+      : this.filterPolicy;
 
+    this.deadLetterQueue = this.buildDeadLetterQueue(props);
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,
       protocol: props.protocol,
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
-      filterPolicy: this.filterPolicy,
+      filterPolicy,
+      filterPolicyScope: this.filterPolicyWithMessageBody ? 'MessageBody' : undefined,
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
       subscriptionRoleArn: props.subscriptionRoleArn,
@@ -214,4 +234,119 @@ export enum SubscriptionProtocol {
    * Notifications put records into a firehose delivery stream.
    */
   FIREHOSE = 'firehose'
+}
+
+function buildFilterPolicyWithMessageBody(
+  inputObject: { [key: string]: FilterOrPolicy },
+  depth = 1,
+  totalCombinationValues = [1],
+): { [key: string]: any } {
+  const result: { [key: string]: any } = {};
+
+  for (const [key, filterOrPolicy] of Object.entries(inputObject)) {
+    if (filterOrPolicy.isPolicy()) {
+      result[key] = buildFilterPolicyWithMessageBody(filterOrPolicy.policyDoc, depth + 1, totalCombinationValues);
+    } else if (filterOrPolicy.isFilter()) {
+      const filter = filterOrPolicy.filterDoc.conditions;
+      result[key] = filter;
+      totalCombinationValues[0] *= filter.length * depth;
+    }
+  }
+
+  // https://docs.aws.amazon.com/sns/latest/dg/subscription-filter-policy-constraints.html
+  if (totalCombinationValues[0] > 150) {
+    throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 150.`);
+  }
+
+  return result;
+};
+
+/**
+ * The type of the MessageBody at a given key value pair
+ */
+export enum FilterOrPolicyType {
+  /**
+   * The filter of the MessageBody
+   */
+  FILTER,
+  /**
+   * A nested key of the MessageBody
+   */
+  POLICY,
+}
+
+/**
+ * Class for building the FilterPolicy by avoiding union types
+ */
+export abstract class FilterOrPolicy {
+  /**
+   * Filter of MessageBody
+   * @param filter
+   * @returns
+   */
+  public static filter(filter: SubscriptionFilter) {
+    return new Filter(filter);
+  }
+
+  /**
+   * Policy of MessageBody
+   * @param policy
+   * @returns
+   */
+  public static policy(policy: { [attribute: string]: FilterOrPolicy }) {
+    return new Policy(policy);
+  }
+
+  /**
+   * Type switch for disambiguating between subclasses
+   */
+  abstract readonly type: FilterOrPolicyType;
+
+  /**
+   * Check if instance is `Policy` type
+   */
+  public isPolicy(): this is Policy {
+    return this.type === FilterOrPolicyType.POLICY;
+  }
+
+  /**
+   * Check if instance is `Filter` type
+   */
+  public isFilter(): this is Filter {
+    return this.type === FilterOrPolicyType.FILTER;
+  }
+}
+
+/**
+ * Filter implementation of FilterOrPolicy
+ */
+export class Filter extends FilterOrPolicy {
+  /**
+   * Type used in DFS buildFilterPolicyWithMessageBody to determine json value type
+   */
+  public readonly type = FilterOrPolicyType.FILTER;
+  /**
+   * Policy constructor
+   * @param filterDoc filter argument to construct
+   */
+  public constructor(public readonly filterDoc: SubscriptionFilter) {
+    super();
+  }
+}
+
+/**
+ * Policy Implementation of FilterOrPolicy
+ */
+export class Policy extends FilterOrPolicy {
+  /**
+   * Type used in DFS buildFilterPolicyWithMessageBody to determine json value type
+   */
+  public readonly type = FilterOrPolicyType.POLICY;
+  /**
+   * Policy constructor
+   * @param policyDoc policy argument to construct
+   */
+  public constructor(public readonly policyDoc: { [attribute: string]: FilterOrPolicy }) {
+    super();
+  }
 }

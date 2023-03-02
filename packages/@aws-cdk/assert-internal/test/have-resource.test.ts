@@ -1,3 +1,4 @@
+import { mkResource, mkStack } from './cloud-artifact';
 import {
   ABSENT,
   arrayWith,
@@ -9,7 +10,6 @@ import {
   anything,
   stringLike,
 } from '../lib/index';
-import { mkResource, mkStack } from './cloud-artifact';
 
 test('support resource with no properties', () => {
   const synthStack = mkStack({

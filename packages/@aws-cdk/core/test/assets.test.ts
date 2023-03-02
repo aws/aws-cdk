@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { App, FileAssetPackaging, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { App, FileAssetPackaging, Stack } from '../lib';
 
 describe('assets', () => {
   let app: App;

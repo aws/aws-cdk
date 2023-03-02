@@ -1,12 +1,12 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
+import { SSM_EXPORT_PATH_PREFIX, ExportReaderCRProps, CrossRegionExports } from './types';
 import { CfnResource } from '../../cfn-resource';
 import { CustomResource } from '../../custom-resource';
 import { Lazy } from '../../lazy';
 import { Intrinsic } from '../../private/intrinsic';
 import { Stack } from '../../stack';
 import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
-import { SSM_EXPORT_PATH_PREFIX, ExportReaderCRProps, CrossRegionExports } from './types';
 
 
 /**

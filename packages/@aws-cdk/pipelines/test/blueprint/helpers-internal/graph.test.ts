@@ -1,6 +1,6 @@
+import { mkGraph } from './util';
 import { GraphNode } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
-import { mkGraph } from './util';
 
 
 test('"uniqueId" renders a graph-wide unique id for each node', () => {

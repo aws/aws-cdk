@@ -22,5 +22,3 @@ bus.addToResourcePolicy(new iam.PolicyStatement({
 new IntegTest(app, 'IntegTest-BatchDefaultEnvVarsStack', {
   testCases: [stack],
 });
-
-app.synth();

@@ -34,5 +34,3 @@ new s3.Bucket(sourceBucketStack, 'SourceBucket', {
 new integ.IntegTest(app, 'ServerAccessLogsImportTest', {
   testCases: [sourceBucketStack],
 });
-
-app.synth();

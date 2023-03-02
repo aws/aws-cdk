@@ -8,9 +8,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
 import { Fn, SecretValue, Token } from '@aws-cdk/core';
 import { Node } from 'constructs';
-import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 import { makeCodePipelineOutput } from './private/outputs';
+import { FileSet, Step } from '../blueprint';
 
 /**
  * Factory for CodePipeline source steps

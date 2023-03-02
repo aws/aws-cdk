@@ -38,7 +38,6 @@ for (const runtime of runtimes) {
 
 new integ.IntegTest(app, 'lambda-layer-awscli-integ-test', {
   testCases: [stack],
-  diffAssets: true,
   cdkCommandOptions: {
     deploy: {
       args: {

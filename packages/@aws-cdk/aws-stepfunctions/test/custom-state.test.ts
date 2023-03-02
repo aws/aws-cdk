@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import * as sfn from '../lib';
 import { render } from './private/render-util';
+import * as sfn from '../lib';
 
 describe('Custom State', () => {
   let stack: cdk.Stack;

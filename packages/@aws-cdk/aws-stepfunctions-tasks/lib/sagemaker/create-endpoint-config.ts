@@ -3,8 +3,8 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { ProductionVariant } from './base-types';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for creating an Amazon SageMaker endpoint configuration

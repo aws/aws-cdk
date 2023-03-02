@@ -1,5 +1,5 @@
-import { MatchStyle } from '../lib';
 import { mkStack } from './cloud-artifact';
+import { MatchStyle } from '../lib';
 import '../jest';
 
 describe('matchTemplate', () => {

@@ -1013,6 +1013,12 @@
     "FileSystemId": {
      "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
     },
+    "AccessPointTags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint"
+     }
+    ],
     "PosixUser": {
      "Gid": "1001",
      "Uid": "1001"

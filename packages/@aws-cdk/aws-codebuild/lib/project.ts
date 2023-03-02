@@ -1090,7 +1090,7 @@ export class Project extends ProjectBase {
       description: props.description,
       source: {
         ...sourceConfig.sourceProperty,
-        buildSpec: buildSpec && buildSpec.toBuildSpec(),
+        buildSpec: buildSpec && buildSpec.toBuildSpec(this),
       },
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,

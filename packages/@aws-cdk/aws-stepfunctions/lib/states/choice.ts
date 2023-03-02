@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
+import { StateType } from './private/state-type';
+import { State } from './state';
 import { Chain } from '../chain';
 import { Condition } from '../condition';
 import { IChainable, INextable } from '../types';
-import { StateType } from './private/state-type';
-import { State } from './state';
 
 /**
  * Properties for defining a Choice state

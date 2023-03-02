@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
+import { defaultOrigin, defaultOriginGroup } from './test-origin';
 import {
   CfnDistribution,
   Distribution,
@@ -18,7 +19,6 @@ import {
   SecurityPolicyProtocol,
   SSLMethod,
 } from '../lib';
-import { defaultOrigin, defaultOriginGroup } from './test-origin';
 
 let app: App;
 let stack: Stack;

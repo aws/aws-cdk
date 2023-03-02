@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.alarm-and-dashboard": {
+    "cdk-cloudwatch-alarms-integ-test/DefaultTest": {
       "stacks": [
         "aws-cdk-cloudwatch-alarms"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-cloudwatch-alarms-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkcloudwatchalarmsintegtestDefaultTestDeployAssertD2D0B407"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

@@ -1,9 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Lazy, Names, Token } from '@aws-cdk/core';
+import { AwsIntegration } from './aws';
 import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
-import { AwsIntegration } from './aws';
 
 export interface LambdaIntegrationOptions extends IntegrationOptions {
   /**

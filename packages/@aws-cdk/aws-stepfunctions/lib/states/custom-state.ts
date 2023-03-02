@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
+import { State } from './state';
 import { Chain } from '..';
 import { IChainable, INextable } from '../types';
-import { State } from './state';
 
 /**
  * Properties for defining a custom state definition

@@ -3,7 +3,7 @@ import { AccountRootPrincipal, PolicyDocument, PolicyStatement } from '@aws-cdk/
 import * as cdk from '@aws-cdk/core';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as integ from '@aws-cdk/integ-tests';
-import { FileSystem } from '../lib';
+import { AccessPoint, FileSystem } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'test-efs-integ');
@@ -26,10 +26,15 @@ const myFileSystemPolicy = new PolicyDocument({
   })],
 });
 
-new FileSystem(stack, 'FileSystem', {
+const fileSystem = new FileSystem(stack, 'FileSystem', {
   vpc,
   fileSystemPolicy: myFileSystemPolicy,
 });
+
+const accessPoint = new AccessPoint(stack, 'AccessPoint', {
+  fileSystem,
+});
+cdk.Tags.of(accessPoint).add('Name', 'MyAccessPoint');
 
 new integ.IntegTest(app, 'FileSystemPolicyTest', {
   testCases: [stack],

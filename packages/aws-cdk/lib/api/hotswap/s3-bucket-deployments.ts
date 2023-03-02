@@ -1,6 +1,6 @@
+import { ChangeHotswapResult, HotswappableChangeCandidate, reportNonHotswappableResource } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, HotswappableChangeCandidate, reportNonHotswappableResource } from './common';
 
 /**
  * This means that the value is required to exist by CloudFormation's Custom Resource API (or our S3 Bucket Deployment Lambda's API)

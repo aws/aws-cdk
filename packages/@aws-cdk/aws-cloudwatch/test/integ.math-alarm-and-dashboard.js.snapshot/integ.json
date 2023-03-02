@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.math-alarm-and-dashboard": {
+    "cdk-integ-math-alarm-and-dashboard/DefaultTest": {
       "stacks": [
         "aws-cdk-cloudwatch"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-integ-math-alarm-and-dashboard/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmathalarmanddashboardDefaultTestDeployAssertE31ECF03"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

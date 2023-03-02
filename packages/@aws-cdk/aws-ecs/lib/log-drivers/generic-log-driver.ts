@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { ContainerDefinition, Secret } from '../container-definition';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty, renderLogDriverSecretOptions } from './utils';
+import { ContainerDefinition, Secret } from '../container-definition';
 
 /**
  * The configuration to use when creating a log driver.

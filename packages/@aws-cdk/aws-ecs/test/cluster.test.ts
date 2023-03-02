@@ -2228,6 +2228,191 @@ describe('cluster', () => {
 
   });
 
+  test('should throw an error if capacity provider with default strategy is not present in capacity providers', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: true,
+      }).addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
+      ]);
+    }).toThrow('Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.');
+  });
+
+  test('should throw an error when capacity providers is length 0 and default capacity provider startegy specified', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: false,
+      }).addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
+      ]);
+    }).toThrow('Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.');
+  });
+
+  test('should throw an error when more than 1 default capacity provider have base specified', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: true,
+      }).addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT', base: 10, weight: 50 },
+      ]);
+    }).toThrow(/Only 1 capacity provider in a capacity provider strategy can have a nonzero base./);
+  });
+
+  test('should throw an error when a capacity provider strategy contains a mix of Auto Scaling groups and Fargate providers', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+      enableFargateCapacityProviders: true,
+    });
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // THEN
+    expect(() => {
+      cluster.addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT' },
+        { capacityProvider: capacityProvider.capacityProviderName },
+      ]);
+    }).toThrow(/A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again./);
+  });
+
+  test('should throw an error if addDefaultCapacityProviderStrategy is called more than once', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: true,
+      });
+      cluster.addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT' },
+      ]);
+      cluster.addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT' },
+      ]);
+    }).toThrow(/Cluster default capacity provider strategy is already set./);
+  });
+
+  test('can add ASG capacity via Capacity Provider with default capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+      enableFargateCapacityProviders: true,
+    });
+
+    cluster.addDefaultCapacityProviderStrategy([
+      { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+      { capacityProvider: 'FARGATE_SPOT' },
+    ]);
+
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
+      Cluster: {
+        Ref: 'EcsCluster97242B84',
+      },
+      CapacityProviders: [
+        'FARGATE',
+        'FARGATE_SPOT',
+        {
+          Ref: 'providerD3FF4D3A',
+        },
+      ],
+      DefaultCapacityProviderStrategy: [
+        { CapacityProvider: 'FARGATE', Base: 10, Weight: 50 },
+        { CapacityProvider: 'FARGATE_SPOT' },
+      ],
+    });
+  });
+
+  test('can add ASG default capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    cluster.addDefaultCapacityProviderStrategy([
+      { capacityProvider: capacityProvider.capacityProviderName },
+    ]);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
+      Cluster: {
+        Ref: 'EcsCluster97242B84',
+      },
+      CapacityProviders: [
+        {
+          Ref: 'providerD3FF4D3A',
+        },
+      ],
+      DefaultCapacityProviderStrategy: [
+        {
+          CapacityProvider: {
+            Ref: 'providerD3FF4D3A',
+          },
+        },
+      ],
+    });
+  });
+
   test('correctly sets log configuration for execute command', () => {
     // GIVEN
     const app = new cdk.App();

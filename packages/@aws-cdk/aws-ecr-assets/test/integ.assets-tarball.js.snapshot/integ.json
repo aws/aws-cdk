@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "LoadFromTarball/DefaultTest": {
+      "stacks": [
+        "integ-assets-tarball"
+      ],
+      "assertionStack": "LoadFromTarball/DefaultTest/DeployAssert",
+      "assertionStackName": "LoadFromTarballDefaultTestDeployAssert46673615"
+    }
+  }
+}

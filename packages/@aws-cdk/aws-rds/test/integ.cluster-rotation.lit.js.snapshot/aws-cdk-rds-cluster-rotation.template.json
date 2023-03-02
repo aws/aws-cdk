@@ -606,7 +606,7 @@
     }
    }
   },
-  "DatabaseSecretAttachmentPolicy5ACFE6CA": {
+  "DatabaseSecretPolicyEE73D3F8": {
    "Type": "AWS::SecretsManager::ResourcePolicy",
    "Properties": {
     "ResourcePolicy": {
@@ -638,18 +638,18 @@
      "Version": "2012-10-17"
     },
     "SecretId": {
-     "Ref": "DatabaseSecretAttachmentE5D1B020"
+     "Ref": "DatabaseSecret3B817195"
     }
    }
   },
   "DatabaseB269D8BB": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
-    "Engine": "aurora",
     "CopyTagsToSnapshot": true,
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
+    "Engine": "aurora",
     "MasterUsername": {
      "Fn::Join": [
       "",
@@ -924,7 +924,7 @@
     }
    }
   },
-  "CustomRotationOptionsSecretAttachmentPolicyAB818C64": {
+  "CustomRotationOptionsSecretPolicyA73E17A8": {
    "Type": "AWS::SecretsManager::ResourcePolicy",
    "Properties": {
     "ResourcePolicy": {
@@ -956,18 +956,18 @@
      "Version": "2012-10-17"
     },
     "SecretId": {
-     "Ref": "CustomRotationOptionsSecretAttachment697A23BF"
+     "Ref": "CustomRotationOptionsSecret7DCFFFDB"
     }
    }
   },
   "CustomRotationOptions7CA9E132": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
-    "Engine": "aurora",
     "CopyTagsToSnapshot": true,
     "DBSubnetGroupName": {
      "Ref": "CustomRotationOptionsSubnets52AEBCED"
     },
+    "Engine": "aurora",
     "MasterUsername": {
      "Fn::Join": [
       "",

@@ -1,14 +1,14 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
+import { MetadataResource } from './metadata-resource';
+import { prepareApp } from './prepare-app';
+import { TreeMetadata } from './tree-metadata';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { Aspects, IAspect } from '../aspect';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
-import { MetadataResource } from './metadata-resource';
-import { prepareApp } from './prepare-app';
-import { TreeMetadata } from './tree-metadata';
 
 /**
  * Options for `synthesize()`

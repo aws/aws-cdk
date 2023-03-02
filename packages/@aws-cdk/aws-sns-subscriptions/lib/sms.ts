@@ -20,6 +20,7 @@ export class SmsSubscription implements sns.ITopicSubscription {
       endpoint: this.phoneNumber,
       protocol: sns.SubscriptionProtocol.SMS,
       filterPolicy: this.props.filterPolicy,
+      filterPolicyWithMessageBody: this.props.filterPolicyWithMessageBody,
     };
   }
 }

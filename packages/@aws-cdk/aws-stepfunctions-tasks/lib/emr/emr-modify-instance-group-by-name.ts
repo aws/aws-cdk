@@ -2,9 +2,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { integrationResourceArn } from '../private/task-utils';
 import { EmrCreateCluster } from './emr-create-cluster';
 import { InstanceGroupModifyConfigPropertyToJson } from './private/cluster-utils';
+import { integrationResourceArn } from '../private/task-utils';
 
 /**
  * Properties for EmrModifyInstanceGroupByName

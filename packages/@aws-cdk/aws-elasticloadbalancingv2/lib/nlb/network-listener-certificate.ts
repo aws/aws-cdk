@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
+import { INetworkListener } from './network-listener';
 import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
 import { IListenerCertificate } from '../shared/listener-certificate';
-import { INetworkListener } from './network-listener';
 
 /**
  * Properties for adding a set of certificates to a listener

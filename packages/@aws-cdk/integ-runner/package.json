@@ -75,7 +75,7 @@
     "aws-cdk": "0.0.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "workerpool": "^6.3.1",
+    "workerpool": "^6.4.0",
     "yargs": "^16.2.0"
   },
   "repository": {

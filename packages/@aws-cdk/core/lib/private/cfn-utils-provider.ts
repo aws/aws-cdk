@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
+import { CfnUtilsResourceType } from './cfn-utils-provider/consts';
 import { CustomResource } from '../custom-resource';
 import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
-import { CfnUtilsResourceType } from './cfn-utils-provider/consts';
 
 /**
  * A custom resource provider for CFN utilities such as `CfnJson`.

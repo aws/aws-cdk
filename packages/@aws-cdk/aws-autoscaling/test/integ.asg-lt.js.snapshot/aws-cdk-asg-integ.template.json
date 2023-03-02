@@ -27,7 +27,10 @@
         }
        ]
       }
-     ]
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
     },
     "TagSpecifications": [
      {
@@ -69,7 +72,10 @@
         }
        ]
       }
-     ]
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
     },
     "TagSpecifications": [
      {

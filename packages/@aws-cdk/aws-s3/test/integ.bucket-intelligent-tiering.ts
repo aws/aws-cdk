@@ -1,4 +1,5 @@
 import { App, Duration, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as s3 from '../lib/index';
 
 const app = new App();
@@ -16,4 +17,6 @@ new s3.Bucket(stack, 'MyBucket', {
 });
 
 
-app.synth();
+new IntegTest(app, 'cdk-integ-intelligent-tiering', {
+  testCases: [stack],
+});

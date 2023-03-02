@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { INextable } from '../types';
 import { StateType } from './private/state-type';
 import { State } from './state';
+import { INextable } from '../types';
 
 /**
  * Properties for defining a Fail state

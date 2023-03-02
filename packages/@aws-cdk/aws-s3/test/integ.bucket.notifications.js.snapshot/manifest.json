@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "aws-cdk-s3-notifications.assets": {
       "type": "cdk:asset-manifest",

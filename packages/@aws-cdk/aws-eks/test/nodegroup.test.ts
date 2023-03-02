@@ -2,9 +2,9 @@ import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { testFixture } from './util';
 import * as eks from '../lib';
 import { NodegroupAmiType } from '../lib';
-import { testFixture } from './util';
 
 /* eslint-disable max-len */
 

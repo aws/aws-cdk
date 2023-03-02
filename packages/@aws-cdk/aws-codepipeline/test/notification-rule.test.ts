@@ -1,8 +1,8 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
+import * as codepipeline from '../lib';
 
 describe('pipeline with codestar notification integration', () => {
   let stack: cdk.Stack;

@@ -1,5 +1,5 @@
-import { GraphNode } from '../../../lib/helpers-internal';
 import { mkGraph, nodeNames } from './util';
+import { GraphNode } from '../../../lib/helpers-internal';
 
 describe('with nested graphs', () => {
   const graph = mkGraph('G', G => {

@@ -973,6 +973,38 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "ClustercharttestskipcrdinstallationB8323954": {
+   "Type": "Custom::AWSCDK-EKS-HelmChart",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "Release": "lambda-chart-release",
+    "Chart": "lambda-chart",
+    "Version": "v0.1.4",
+    "Namespace": "ack-system",
+    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/lambda-chart",
+    "CreateNamespace": true,
+    "SkipCrds": true
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
@@ -992,7 +1024,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d0ed18f830c9e49d64521037c4c2d872500fd7df2bc7d2d32ff2f59446d69f54.json"
+       "/013c608e5aa3f9b7c08666064fdbc7d257f19866887e2ea155c5b189fdfd6f0f.json"
       ]
      ]
     },
@@ -1027,7 +1059,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/dcb6b679999203518cf8e747008ba448af7bc6502f87c2b869ca87565786b67d.json"
+       "/228d4002689856d23e839fb690137b828253b51ab0ba4bd84b6ff0d65e1c23ca.json"
       ]
      ]
     },

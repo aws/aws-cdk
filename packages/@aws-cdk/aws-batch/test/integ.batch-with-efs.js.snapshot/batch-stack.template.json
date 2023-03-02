@@ -577,6 +577,12 @@
     "FileSystemId": {
      "Ref": "EFSF3301CFD"
     },
+    "AccessPointTags": [
+     {
+      "Key": "Name",
+      "Value": "batch-stack/EFSAccessPoint"
+     }
+    ],
     "PosixUser": {
      "Gid": "1000",
      "Uid": "1000"

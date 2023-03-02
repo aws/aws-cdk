@@ -32,7 +32,6 @@ new cdk.CustomResource(stack, 'CustomResourceNode14', {
 
 new integ.IntegTest(app, 'lambda-layer-node-proxy-agent-integ-test', {
   testCases: [stack],
-  diffAssets: true,
   cdkCommandOptions: {
     deploy: {
       args: {

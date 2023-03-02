@@ -3,9 +3,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack, App, Stage as CdkStage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
+import * as codepipeline from '../lib';
 
 describe.each([
   ['legacy', false],

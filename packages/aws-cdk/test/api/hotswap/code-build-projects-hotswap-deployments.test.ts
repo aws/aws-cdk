@@ -1,6 +1,6 @@
 import { CodeBuild } from 'aws-sdk';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
 import * as setup from './hotswap-test-setup';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockUpdateProject: (params: CodeBuild.UpdateProjectInput) => CodeBuild.UpdateProjectOutput;

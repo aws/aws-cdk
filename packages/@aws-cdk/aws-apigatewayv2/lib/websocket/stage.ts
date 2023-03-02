@@ -1,10 +1,10 @@
 import { Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IWebSocketApi } from './api';
 import { CfnStage } from '../apigatewayv2.generated';
 import { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
-import { IWebSocketApi } from './api';
 
 /**
  * Represents the WebSocketStage

@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as core from '../lib';
 import { Names } from '../lib';
 import { addDependency, obtainDependencies, removeDependency } from '../lib/deps';
-import { Construct } from 'constructs';
 
 describe('deps', () => {
   describe('dependency methods', () => {

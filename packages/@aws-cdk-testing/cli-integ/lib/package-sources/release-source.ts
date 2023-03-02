@@ -1,9 +1,9 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import { IPackageSourceSetup, IPackageSource } from './source';
 import { copyDirectoryContents } from '../files';
 import { shell, rimraf, addToShellPath } from '../shell';
-import { IPackageSourceSetup, IPackageSource } from './source';
 
 export class ReleasePackageSourceSetup implements IPackageSourceSetup {
   readonly name = 'release';
