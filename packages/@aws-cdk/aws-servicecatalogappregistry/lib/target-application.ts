@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IApplication, Application } from './application';
+import { hashValues } from './common';
 
 /**
   * Properties used to define targetapplication.
@@ -92,7 +93,7 @@ class CreateTargetApplication extends TargetApplication {
   }
   public bind(scope: Construct): BindTargetApplicationResult {
     (this.applicationOptions.stackName as string) =
-            this.applicationOptions.stackName || `Application-${this.applicationOptions.applicationName}-Stack`;
+            this.applicationOptions.stackName || `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
     const stackId = this.applicationOptions.stackName;
     (this.applicationOptions.description as string) =
             this.applicationOptions.description || 'Stack to create AppRegistry application';
@@ -120,10 +121,8 @@ class ExistingTargetApplication extends TargetApplication {
     super();
   }
   public bind(scope: Construct): BindTargetApplicationResult {
-    const arnComponents = cdk.Arn.split(this.applicationOptions.applicationArnValue, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
-    const applicationId = arnComponents.resourceName;
     (this.applicationOptions.stackName as string) =
-            this.applicationOptions.stackName || `Application-${applicationId}-Stack`;
+            this.applicationOptions.stackName || `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
     const stackId = this.applicationOptions.stackName;
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = Application.fromApplicationArn(applicationStack, 'ExistingApplication', this.applicationOptions.applicationArnValue);
