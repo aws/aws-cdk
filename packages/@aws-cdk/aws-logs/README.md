@@ -344,6 +344,8 @@ For more information, see [Protect sensitive log data with masking](https://docs
 
 For a list of types of identifiers that can be audited and masked, see [Types of data that you can protect](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/protect-sensitive-log-data-types.html)
 
+If a new identifier is supported but not yet in the `DataIdentifiers` enum, the full ARN of the identifier can be supplied in `identifierArnStrings` instead. 
+
 Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stream audit destination.  
 
 Example:
@@ -364,10 +366,11 @@ const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
   destinations: [s3Destination],
 });
 
-const dataProtectionPolicy = new DataProtectionPolicy({
+const dataProtectionPolicy = new DataProtectionPolicy(this, {
   name: 'data protection policy',
   description: 'policy description',
-  identifiers: ['EmailAddress', 'DriversLicense-US'],
+  identifiers: [DataIdentifier.DRIVERSLICENSE_US],
+  identifierArnStrings: ['arn:aws:dataprotection::aws:data-identifier/EmailAddress'],
   logGroupNameAuditDestination: logGroupDestination.logGroupName,
   s3BucketNameAuditDestination: s3Destination.bucketName,
   deliveryStreamAuditDestination: deliveryStream.deliveryStreamName,

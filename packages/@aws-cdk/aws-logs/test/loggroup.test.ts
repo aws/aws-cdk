@@ -2,7 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { CfnParameter, Fn, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { LogGroup, RetentionDays, DataProtectionPolicy } from '../lib';
+import { LogGroup, RetentionDays, DataProtectionPolicy, DataIdentifier } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -459,10 +459,80 @@ describe('log group', () => {
     // GIVEN
     const stack = new Stack();
 
-    const dataProtectionPolicy = new DataProtectionPolicy({
+    const dataProtectionPolicy = new DataProtectionPolicy(stack, {
       name: 'test-policy-name',
       description: 'test description',
-      identifiers: ['EmailAddress'],
+      identifiers: [DataIdentifier.EMAILADDRESS],
+    });
+
+    // WHEN
+    const logGroupName = 'test-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        name: 'test-policy-name',
+        description: 'test description',
+        version: '2021-06-01',
+        statement: [
+          {
+            sid: 'audit-statement-cdk',
+            dataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              audit: {
+                findingsDestination: {},
+              },
+            },
+          },
+          {
+            sid: 'redact-statement-cdk',
+            dataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              deidentify: {
+                maskConfig: {},
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('set data protection policy string-based data identifier', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const dataProtectionPolicy = new DataProtectionPolicy(stack, {
+      name: 'test-policy-name',
+      description: 'test description',
+      identifierArnStrings: ['arn:aws:dataprotection::aws:data-identifier/EmailAddress'],
     });
 
     // WHEN
@@ -515,8 +585,8 @@ describe('log group', () => {
     const auditS3BucketName = 'audit-bucket';
     const auditDeliveryStreamName = 'delivery-stream-name';
 
-    const dataProtectionPolicy = new DataProtectionPolicy({
-      identifiers: ['EmailAddress'],
+    const dataProtectionPolicy = new DataProtectionPolicy(stack, {
+      identifiers: [DataIdentifier.EMAILADDRESS],
       logGroupNameAuditDestination: auditLogGroupName,
       s3BucketNameAuditDestination: auditS3BucketName,
       deliveryStreamNameAuditDestination: auditDeliveryStreamName,
@@ -540,7 +610,16 @@ describe('log group', () => {
           {
             sid: 'audit-statement-cdk',
             dataIdentifier: [
-              'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
             ],
             operation: {
               audit: {
@@ -561,7 +640,16 @@ describe('log group', () => {
           {
             sid: 'redact-statement-cdk',
             dataIdentifier: [
-              'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
             ],
             operation: {
               deidentify: {

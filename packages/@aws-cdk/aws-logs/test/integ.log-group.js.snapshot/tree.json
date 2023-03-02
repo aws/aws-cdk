@@ -72,8 +72,19 @@
                         {
                           "sid": "audit-statement-cdk",
                           "dataIdentifier": [
-                            "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
-                            "arn:aws:dataprotection::aws:data-identifier/DriversLicense-US"
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":dataprotection::aws:data-identifier/DriversLicense-US"
+                                ]
+                              ]
+                            },
+                            "arn:aws:dataprotection::aws:data-identifier/EmailAddress"
                           ],
                           "operation": {
                             "audit": {
@@ -95,8 +106,19 @@
                         {
                           "sid": "redact-statement-cdk",
                           "dataIdentifier": [
-                            "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
-                            "arn:aws:dataprotection::aws:data-identifier/DriversLicense-US"
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":dataprotection::aws:data-identifier/DriversLicense-US"
+                                ]
+                              ]
+                            },
+                            "arn:aws:dataprotection::aws:data-identifier/EmailAddress"
                           ],
                           "operation": {
                             "deidentify": {
