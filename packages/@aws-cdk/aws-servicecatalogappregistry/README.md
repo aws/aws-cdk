@@ -139,6 +139,21 @@ const cdkPipeline = new ApplicationPipelineStack(app, 'CDKApplicationPipelineSta
 });
 ```
 
+By default, ApplicationAssociator will share the Application with the accounts of any cross-account stacks defined in the
+CDK app scope. If you want to turn off this behavior, set the `enableApplicationSharing` field to `false`, as shown in
+the example below:
+
+```ts
+const app = new App();
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
+    enableApplicationSharing: false,
+    applicationName: 'MyAssociatedApplication',
+    env: { account: '123456789012', region: 'us-east-1' },
+  })],
+});
+```
+
 ## Attribute Group
 
 An AppRegistry attribute group acts as a container for user-defined attributes for an application.
