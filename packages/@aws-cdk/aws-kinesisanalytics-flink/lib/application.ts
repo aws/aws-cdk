@@ -352,6 +352,11 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
   // Implement iam.IGrantable interface
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * The underlying connections object for the connections getter.
+   *
+   * @internal
+   */
   protected _connections?: ec2.Connections;
 
   /** Implement the convenience `IApplication.addToPrincipalPolicy` method. */
@@ -730,7 +735,10 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
   }
 }
 
-interface ApplicationAttributes {
+/**
+ * Attributes used for importing an Application with Application.fromApplicationAttributes.
+ */
+export interface ApplicationAttributes {
   /**
    * The ARN of the Flink application.
    *
@@ -740,6 +748,8 @@ interface ApplicationAttributes {
 
   /**
    * The security groups for this Flink application if deployed in a VPC.
+   *
+   * @default no security groups
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 }
@@ -880,8 +890,7 @@ export interface ApplicationProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * Optional security groups to override the default security group created
-   * when providing a VPC.
+   * Security groups to use with a provided VPC.
    *
    * @default a new security group is created for this application.
    */
@@ -940,15 +949,13 @@ export class Application extends ApplicationBase {
    * applicationArn.
    */
   public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
-    const applicationName = core.Stack.of(scope).splitArn(applicationArn, core.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
-    if (!applicationName) {
-      throw new Error(`applicationArn for fromApplicationArn (${applicationArn}) must include resource name`);
-    }
-
     return new Import(scope, id, { applicationArn });
   }
 
-  public static fromApplicationAttributes(scope: Construct, id: string, attrs: ApplicationAttributes) {
+  /**
+   * Import an existing application defined outside of CDK code.
+   */
+  public static fromApplicationAttributes(scope: Construct, id: string, attrs: ApplicationAttributes): IApplication {
     return new Import(scope, id, {
       applicationArn: attrs.applicationArn,
       securityGroups: attrs.securityGroups,

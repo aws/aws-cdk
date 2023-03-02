@@ -7,7 +7,7 @@ interface ValidatedProps {
   parallelismPerKpu?: number;
   vpc?: ec2.IVpc;
   vpcSubnets?: ec2.SubnetSelection;
-  securityGroups?: ec2.ISecurityGroup[]
+  securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**

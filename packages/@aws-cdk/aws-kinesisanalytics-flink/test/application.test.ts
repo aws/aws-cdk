@@ -505,7 +505,7 @@ describe('Application', () => {
     });
   });
 
-  test('using a VPC', () => {
+  test('using a VPC with default vpcSubnets and securityGroups', () => {
     new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       vpc: new ec2.Vpc(stack, 'VPC'),
@@ -566,10 +566,9 @@ describe('Application', () => {
   });
 
   test('providing a subnetSelection', () => {
-    const vpc = new ec2.Vpc(stack, 'VPC');
     new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
-      vpc,
+      vpc: new ec2.Vpc(stack, 'VPC'),
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
 
