@@ -1257,7 +1257,7 @@ export class Vpc extends VpcBase {
     // We give special treatment to some tags
     if (options.vpcId) { filter['vpc-id'] = options.vpcId; }
     if (options.vpcName) { filter['tag:Name'] = options.vpcName; }
-    if (options.ownerId) { filter['owner-id'] = options.ownerId; }
+    if (options.ownerAccountId) { filter['owner-id'] = options.ownerAccountId; }
     if (options.isDefault !== undefined) {
       filter.isDefault = options.isDefault ? 'true' : 'false';
     }
@@ -2162,7 +2162,7 @@ class LookedUpVpc extends VpcBase {
   constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {
     super(scope, id, {
       region: props.region,
-      account: props.ownerId,
+      account: props.ownerAccountId,
     });
 
     this.vpcId = props.vpcId;

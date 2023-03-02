@@ -174,5 +174,5 @@ export interface VpcContextResponse {
    *
    * @default the account id of the parent stack
    */
-  readonly ownerId?: string;
+  readonly ownerAccountId?: string;
 }

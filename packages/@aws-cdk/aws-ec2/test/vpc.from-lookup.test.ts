@@ -293,7 +293,7 @@ describe('vpc from lookup', () => {
         vpcId: 'vpc-1234',
         subnetGroups: [],
         region: 'region-1234',
-        ownerId: '123456789012',
+        ownerAccountId: '123456789012',
       });
 
       const stack = new Stack();
@@ -309,7 +309,7 @@ describe('vpc from lookup', () => {
         vpcId: 'vpc-1234',
         subnetGroups: [],
         region: 'region-1234',
-        ownerId: '123456789012',
+        ownerAccountId: '123456789012',
       }, options => {
         expect(options.filter['owner-id']).toEqual('123456789012');
       });
@@ -317,7 +317,7 @@ describe('vpc from lookup', () => {
       const stack = new Stack();
       const vpc = Vpc.fromLookup(stack, 'Vpc', {
         vpcId: 'vpc-1234',
-        ownerId: '123456789012',
+        ownerAccountId: '123456789012',
       });
       expect(vpc.env.account).toEqual('123456789012');
       restoreContextProvider(previous);
@@ -328,7 +328,7 @@ describe('vpc from lookup', () => {
         vpcId: 'vpc-1234',
         subnetGroups: [],
         region: 'region-1234',
-        ownerId: '123456789012',
+        ownerAccountId: '123456789012',
       });
       const stack = new Stack();
       const vpc = Vpc.fromLookup(stack, 'Vpc', {
@@ -386,7 +386,7 @@ describe('vpc from lookup', () => {
 interface MockVpcContextResponse {
   readonly vpcId: string;
   readonly subnetGroups: cxapi.VpcSubnetGroup[];
-  readonly ownerId?: string;
+  readonly ownerAccountId?: string;
   readonly region?: string;
 }
 
