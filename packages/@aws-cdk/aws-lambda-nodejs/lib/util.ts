@@ -197,8 +197,8 @@ function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { extends: extendedConfig, compilerOptions } = require(tsconfigPath);
   const updatedCompilerOptions = {
-    ...(previousCompilerOptions ?? {}),
     ...compilerOptions,
+    ...(previousCompilerOptions ?? {}),
   };
   if (extendedConfig) {
     return extractTsConfig(
