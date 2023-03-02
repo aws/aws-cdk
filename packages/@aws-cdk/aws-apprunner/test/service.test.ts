@@ -391,7 +391,7 @@ test('custom environment secrets and start commands are allowed for imageConfigu
   });
 });
 
-test('custom environment variables can be added without first defining them in props', () => {
+test('custom environment variables can be added with .addEnvironmentVariable() without first defining them in props', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
@@ -433,7 +433,7 @@ test('custom environment variables can be added without first defining them in p
   });
 });
 
-test('custom environment secrets can be added without first defining them in props', () => {
+test('custom environment secrets can be added with .addSecret() without first defining them in props', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
