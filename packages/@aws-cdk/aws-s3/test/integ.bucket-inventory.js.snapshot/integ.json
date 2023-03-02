@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.1.0",
   "testCases": {
-    "integ.bucket-inventory": {
+    "cdk-integ-bucket-inventory/DefaultTest": {
       "stacks": [
         "aws-cdk-s3"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-integ-bucket-inventory/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegbucketinventoryDefaultTestDeployAssertDAAFB0C3"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

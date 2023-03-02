@@ -3,6 +3,8 @@ import * as sinon from 'sinon';
 import { AssetStaging, DockerImage } from '../../lib';
 import { AssetBundlingBindMount, AssetBundlingVolumeCopy } from '../../lib/private/asset-staging';
 
+const DOCKER_CMD = process.env.CDK_DOCKER ?? 'docker';
+
 describe('bundling', () => {
   afterEach(() => {
     sinon.restore();
@@ -29,25 +31,25 @@ describe('bundling', () => {
     helper.run();
 
     // volume Creation
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'volume', 'create', sinon.match(/assetInput.*/g),
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'volume', 'create', sinon.match(/assetOutput.*/g),
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
     // volume removal
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'volume', 'rm', sinon.match(/assetInput.*/g),
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'volume', 'rm', sinon.match(/assetOutput.*/g),
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
     // prepare copy container
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'run',
       '--name', sinon.match(/copyContainer.*/g),
       '-v', sinon.match(/assetInput.*/g),
@@ -59,22 +61,22 @@ describe('bundling', () => {
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
     // delete copy container
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'rm', sinon.match(/copyContainer.*/g),
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
     // copy files to copy container
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'cp', `${options.sourcePath}/.`, `${helper.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
     // copy files from copy container to host
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'cp', `${helper.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, options.bundleDir,
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
     // actual docker run
-    expect(spawnSyncStub.calledWith('docker', sinon.match.array.contains([
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
       'run', '--rm',
       '--volumes-from', helper.copyContainerName,
       'alpine',
@@ -103,7 +105,7 @@ describe('bundling', () => {
     helper.run();
 
     // actual docker run with bind mount is called
-    expect(spawnSyncStub.calledWith('docker', sinon.match.array.contains([
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
       'run', '--rm',
       '-v',
       'alpine',

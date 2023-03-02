@@ -1,10 +1,10 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Action } from '../action';
-import { validatePercentage } from '../common';
 import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
 import { CommonCloudFormationStackSetOptions, StackInstances, StackSetDeploymentModel, StackSetParameters, StackSetTemplate } from './stackset-types';
+import { Action } from '../action';
+import { validatePercentage } from '../common';
 
 /**
  * Properties for the CloudFormationDeployStackSetAction
