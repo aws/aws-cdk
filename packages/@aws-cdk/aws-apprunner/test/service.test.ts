@@ -974,6 +974,22 @@ test('environment variable with a prefix of AWSAPPRUNNER should throw an error',
   }).toThrow('Environment variable key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
 });
 
+test('environment variable with a prefix of AWSAPPRUNNER added later should throw an error', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  // we should have the service
+  expect(() => {
+    const service = new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+    });
+    service.addEnvironmentVariable('AWSAPPRUNNER_FOO', 'BAR');
+  }).toThrow('Environment variable key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
+});
+
 test('environment secrets with a prefix of AWSAPPRUNNER should throw an error', () => {
   // GIVEN
   const app = new cdk.App();
@@ -993,6 +1009,24 @@ test('environment secrets with a prefix of AWSAPPRUNNER should throw an error', 
         imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
       }),
     });
+  }).toThrow('Environment secret key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
+});
+
+test('environment secrets with a prefix of AWSAPPRUNNER added later should throw an error', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+
+  // WHEN
+  // we should have the service
+  expect(() => {
+    const service = new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+    });
+    service.addSecret('AWSAPPRUNNER_FOO', apprunner.Secret.fromSecretsManager(secret));
   }).toThrow('Environment secret key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
 });
 
