@@ -398,7 +398,7 @@ export async function transformPackage(
 ) {
   await fs.mkdirp(destination);
 
-  if (uberPackageJson.ubergen?.excludeExperimentalModules && library.packageJson.stability === 'experimental' && !config.skipCodeGen) {
+  if (uberPackageJson.ubergen?.excludeExperimentalModules && library.packageJson.stability === 'experimental') {
     // when stripExperimental is enabled, we only want to add the L1s of experimental modules.
     let cfnScopes = library.packageJson['cdk-build']?.cloudformation;
 
@@ -409,7 +409,7 @@ export async function transformPackage(
 
     const destinationLib = path.join(destination, 'lib');
     await fs.mkdirp(destinationLib);
-    await cfn2ts(cfnScopes, destinationLib);
+    if (!config.skipCodeGen) await cfn2ts(cfnScopes, destinationLib);
 
     // We know what this is going to be, so predict it
     const alphaPackageName = hasL2s(library) ? `${library.packageJson.name}-alpha` : undefined;

@@ -95,7 +95,13 @@ export function rewritePath(importPath: string, currentModule: string, relativeD
     const suffix = `${importPath === selfImportPath ? '' : '/lib'}${subModulePath ? `/${subModulePath}` : ''}`;
     newModuleSpecifier = `${base}/${currentModule}${suffix}`;
   } else if (importPath.startsWith(otherImportPath)) {
-    newModuleSpecifier = importPath.replace(otherImportPath, 'aws-cdk-lib');
+    if (importPath.includes('integ-tests')) {
+      newModuleSpecifier = '@aws-cdk/integ-tests-alpha';
+    } else if (importPath.includes('core')) {
+      newModuleSpecifier = 'aws-cdk-lib';
+    } else {
+      newModuleSpecifier = importPath.replace(otherImportPath, 'aws-cdk-lib');
+    }
   }
 
   return newModuleSpecifier;

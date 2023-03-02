@@ -226,16 +226,18 @@ async function makeAwsCdkLibInteg(dir: string) {
   console.log('Moving integ and snapshot files to @aws-cdk-testing/framework-integ');
   const copied = await Promise.all(
     integFiles.map(async (item) => {
-      const relativeDest = sourceRegex.exec(item.path)?.[1];
-      if (!relativeDest) throw new Error(`No destination folder parsed for ${item.path}`);
-
+      const fullPath = item.path.startsWith(source)
+        ? item.path
+        : path.join(source, item.path);
+      const relativeDest = sourceRegex.exec(fullPath)?.[1];
+      if (!relativeDest) throw new Error(`No destination folder parsed for ${fullPath}`);
 
       const dest = path.join(target, relativeDest);
 
       if (item.copy) {
-        await fs.copy(item.path, dest);
+        await fs.copy(fullPath, dest);
       } else {
-        await fs.move(item.path, dest);
+        await fs.move(fullPath, dest);
       }
       return dest;
     }),
@@ -271,10 +273,10 @@ async function runBuild(dir: string) {
   await e('yarn install');
 
   // Running the full build is necessary for ./transform.sh to work correctly
-  await e('./scripts/build.sh --skip-prereqs --skip-compat --skip-tests');
+  await e('./build.sh --skip-prereqs --skip-compat --skip-tests');
 
   // Generate the alpha packages
-  await e('./transform.sh');
+  await e('./scripts/transform.sh');
 }
 
 async function cleanup(dir: string) {
