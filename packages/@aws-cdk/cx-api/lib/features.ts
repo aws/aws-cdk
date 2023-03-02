@@ -688,7 +688,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       according to the OS of the machine image.
       `,
     recommendedValue: true,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.67.0' },
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -708,7 +708,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Then you can re-add the permissions and deploy again.
       `,
     recommendedValue: true,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.67.0' },
   },
 
   //////////////////////////////////////////////////////////////////////
