@@ -3,9 +3,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Size, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
 import { renderEnvironment, renderTags } from './private/utils';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for creating an Amazon SageMaker transform job task

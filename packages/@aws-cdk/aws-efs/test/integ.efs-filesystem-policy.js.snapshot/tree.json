@@ -763,6 +763,39 @@
               "version": "0.0.0"
             }
           },
+          "AccessPoint": {
+            "id": "AccessPoint",
+            "path": "test-efs-integ/AccessPoint",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-efs-integ/AccessPoint/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::AccessPoint",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "FileSystem8A8E25C0"
+                    },
+                    "accessPointTags": [
+                      {
+                        "key": "Name",
+                        "value": "MyAccessPoint"
+                      }
+                    ],
+                    "rootDirectory": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-efs.CfnAccessPoint",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-efs.AccessPoint",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "test-efs-integ/BootstrapVersion",
@@ -798,7 +831,7 @@
                 "path": "FileSystemPolicyTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.249"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
@@ -844,7 +877,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.249"
+          "version": "10.1.252"
         }
       }
     },

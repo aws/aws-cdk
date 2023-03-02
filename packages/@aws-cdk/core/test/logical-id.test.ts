@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { App, CfnElement, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { App, CfnElement, CfnResource, Stack } from '../lib';
 
 /**
  * These tests are executed once (for specific ID schemes)

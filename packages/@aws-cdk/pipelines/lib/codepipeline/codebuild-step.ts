@@ -2,9 +2,9 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
-import { ShellStep, ShellStepProps } from '../blueprint';
 import { mergeBuildSpecs } from './private/buildspecs';
 import { makeCodePipelineOutput } from './private/outputs';
+import { ShellStep, ShellStepProps } from '../blueprint';
 
 /**
  * Construction props for a CodeBuildStep

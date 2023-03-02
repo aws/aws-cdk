@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.66.1](https://github.com/aws/aws-cdk/compare/v2.66.0...v2.66.1) (2023-02-23)
+
+
+### Bug Fixes
+
+* Correct SamlConsolePrincipal for non-China ([#24277](https://github.com/aws/aws-cdk/issues/24277)) ([d562871](https://github.com/aws/aws-cdk/commit/d562871824350483e80bf6a28868280381e9e83e)), closes [#24243](https://github.com/aws/aws-cdk/issues/24243)
+
+## [2.66.0](https://github.com/aws/aws-cdk/compare/v2.65.0...v2.66.0) (2023-02-21)
+
+
+### Features
+
+* **cloudwatch:** parse all metrics statistics and support long format ([#23095](https://github.com/aws/aws-cdk/issues/23095)) ([853e3d6](https://github.com/aws/aws-cdk/commit/853e3d631ef0490b0e2d14fdcf50df9f745de3eb)), closes [#23074](https://github.com/aws/aws-cdk/issues/23074) [40aws-cdk/aws-cloudwatch/lib/metric.ts#L295-L296](https://github.com/40aws-cdk/aws-cloudwatch/lib/metric.ts/issues/L295-L296)
+* **core:** Size.bytes() ([#24136](https://github.com/aws/aws-cdk/issues/24136)) ([9b2a45a](https://github.com/aws/aws-cdk/commit/9b2a45a6757c91011f47a6b3893cdfa0f4891002)), closes [#24106](https://github.com/aws/aws-cdk/issues/24106)
+* **efs:** support file system policy ([#24196](https://github.com/aws/aws-cdk/issues/24196)) ([5e0f44b](https://github.com/aws/aws-cdk/commit/5e0f44b05232c70f35f79d27f1294f943fbeb568)), closes [#24042](https://github.com/aws/aws-cdk/issues/24042)
+* **logs:** Add support for multiple parse and filter statements in QueryString ([#24022](https://github.com/aws/aws-cdk/issues/24022)) ([75eb933](https://github.com/aws/aws-cdk/commit/75eb9330194824cdf435ae64095813191fcd6e13))
+* **stepfunctions:** removal policy for state machines ([#24105](https://github.com/aws/aws-cdk/issues/24105)) ([5f33a26](https://github.com/aws/aws-cdk/commit/5f33a26937a78a7d28f913e86c3a2d0b00746e6a))
+
+
+### Bug Fixes
+
+* **apigateway:** rest api deployment does not depend on authorizers ([#23215](https://github.com/aws/aws-cdk/issues/23215)) ([12e13c1](https://github.com/aws/aws-cdk/commit/12e13c130cac347d5d042d414086e9e5aac5e31c))
+* **cognito:** changing `installLatestAwsSdk` breaks Client Secret reference ([#23798](https://github.com/aws/aws-cdk/issues/23798)) ([844d407](https://github.com/aws/aws-cdk/commit/844d4076c142fd88095f36dbc667d85c12e20bd5)), closes [#23796](https://github.com/aws/aws-cdk/issues/23796)
+* **ecs:** validate ecs healthcheck ([#24197](https://github.com/aws/aws-cdk/issues/24197)) ([89802a9](https://github.com/aws/aws-cdk/commit/89802a95360d698921c81a152d11ab6e46b00de3))
+* **eks:** nested OCI repository names for private ECR helmchart deployments are not properly handled ([#23378](https://github.com/aws/aws-cdk/issues/23378)) ([72f2a95](https://github.com/aws/aws-cdk/commit/72f2a95e994ef1b129a48bd548303ea39a3d3c9f))
+* **lambda:** RuntimeManagementMode.FUNCTION_UPDATE has wrong value ([#24252](https://github.com/aws/aws-cdk/issues/24252)) ([fdb0cf1](https://github.com/aws/aws-cdk/commit/fdb0cf13c0b18a436c02a272626ce9f9dde9c343))
+
 ## [2.65.0](https://github.com/aws/aws-cdk/compare/v2.64.0...v2.65.0) (2023-02-15)
 
 
