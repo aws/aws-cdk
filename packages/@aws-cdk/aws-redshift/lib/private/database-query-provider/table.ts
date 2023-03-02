@@ -7,7 +7,7 @@ import { Column } from '../../table';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
-  const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.RequestId.substring(0, 8)}` : '';
+  const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.ServiceToken.substring(event.StackId.length - 11)}` : '';
   const tableColumns = props.tableColumns;
   const tableAndClusterProps = props;
 
@@ -18,7 +18,7 @@ export async function handler(props: TableAndClusterProps, event: AWSLambda.Clou
       Data: { TableName: tableName },
     };
   } else if (event.RequestType === 'Delete') {
-    await dropTable(event.ResourceProperties?.Data?.TableName ?? event.PhysicalResourceId, tableAndClusterProps);
+    await dropTable(tableNamePrefix + tableNameSuffix, tableAndClusterProps);
     return;
   } else if (event.RequestType === 'Update') {
     const tableName = await updateTable(
