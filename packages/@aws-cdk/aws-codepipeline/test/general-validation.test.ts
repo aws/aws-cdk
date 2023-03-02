@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
+import { FakeSourceAction } from './fake-source-action';
 import { IStage } from '../lib/action';
 import { Artifact } from '../lib/artifact';
 import { Pipeline } from '../lib/pipeline';
 import { validateName } from '../lib/private/validation';
-import { FakeSourceAction } from './fake-source-action';
 
 interface NameValidationTestCase {
   name: string;

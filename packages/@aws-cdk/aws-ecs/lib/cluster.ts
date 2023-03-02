@@ -6,7 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, ArnFormat } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
@@ -162,6 +162,11 @@ export class Cluster extends Resource implements ICluster {
   private _capacityProviderNames: string[] = [];
 
   /**
+   * The cluster default capacity provider strategy. This takes the form of a list of CapacityProviderStrategy objects.
+   */
+  private _defaultCapacityProviderStrategy: CapacityProviderStrategy[] = [];
+
+  /**
    * The AWS Cloud Map namespace to associate with the cluster.
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
@@ -245,7 +250,7 @@ export class Cluster extends Resource implements ICluster {
     // since it's harmless, but we'd prefer not to add unexpected new
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
-    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._capacityProviderNames));
+    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id));
   }
 
   /**
@@ -257,6 +262,42 @@ export class Cluster extends Resource implements ICluster {
         this._capacityProviderNames.push(provider);
       }
     }
+  }
+
+  /**
+   * Add default capacity provider strategy for this cluster.
+   *
+   * @param defaultCapacityProviderStrategy cluster default capacity provider strategy. This takes the form of a list of CapacityProviderStrategy objects.
+   *
+   * For example
+   * [
+   *   {
+   *     capacityProvider: 'FARGATE',
+   *     base: 10,
+   *     weight: 50
+   *   }
+   * ]
+   */
+  public addDefaultCapacityProviderStrategy(defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
+    if (this._defaultCapacityProviderStrategy.length > 0) {
+      throw new Error('Cluster default capacity provider strategy is already set.');
+    }
+
+    if (defaultCapacityProviderStrategy.some(dcp => dcp.capacityProvider.includes('FARGATE')) && defaultCapacityProviderStrategy.some(dcp => !dcp.capacityProvider.includes('FARGATE'))) {
+      throw new Error('A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again.');
+    }
+
+    defaultCapacityProviderStrategy.forEach(dcp => {
+      if (!this._capacityProviderNames.includes(dcp.capacityProvider)) {
+        throw new Error(`Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.`);
+      }
+    });
+
+    const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
+    if (defaultCapacityProvidersWithBase.length > 1) {
+      throw new Error('Only 1 capacity provider in a capacity provider strategy can have a nonzero base.');
+    }
+    this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
 
   private renderExecuteCommandConfiguration(): CfnCluster.ClusterConfigurationProperty {
@@ -330,6 +371,20 @@ export class Cluster extends Resource implements ICluster {
     }
 
     return sdNamespace;
+  }
+
+  /**
+   * Getter for _defaultCapacityProviderStrategy. This is necessary to correctly create Capacity Provider Associations.
+   */
+  public get defaultCapacityProviderStrategy() {
+    return this._defaultCapacityProviderStrategy;
+  }
+
+  /**
+   * Getter for _capacityProviderNames added to cluster
+   */
+  public get capacityProviderNames() {
+    return this._capacityProviderNames;
   }
 
   /**
@@ -937,8 +992,6 @@ enum ContainerInsights {
 
 /**
  * A Capacity Provider strategy to use for the service.
- *
- * NOTE: defaultCapacityProviderStrategy on cluster not currently supported.
  */
 export interface CapacityProviderStrategy {
   /**
@@ -1196,26 +1249,23 @@ export class AsgCapacityProvider extends Construct {
  * the caller created any EC2 Capacity Providers.
  */
 class MaybeCreateCapacityProviderAssociations implements IAspect {
-  private scope: Construct;
+  private scope: Cluster;
   private id: string;
-  private capacityProviders: string[]
-  private resource?: CfnClusterCapacityProviderAssociations
+  private resource?: CfnClusterCapacityProviderAssociations;
 
-  constructor(scope: Construct, id: string, capacityProviders: string[]) {
+  constructor(scope: Cluster, id: string) {
     this.scope = scope;
     this.id = id;
-    this.capacityProviders = capacityProviders;
   }
 
   public visit(node: IConstruct): void {
     if (node instanceof Cluster) {
-      if (this.capacityProviders.length > 0 && !this.resource) {
-        const resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
+      if ((this.scope.defaultCapacityProviderStrategy.length > 0 || this.scope.capacityProviderNames.length > 0 && !this.resource)) {
+        this.resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
           cluster: node.clusterName,
-          defaultCapacityProviderStrategy: [],
-          capacityProviders: Lazy.list({ produce: () => this.capacityProviders }),
+          defaultCapacityProviderStrategy: this.scope.defaultCapacityProviderStrategy,
+          capacityProviders: this.scope.capacityProviderNames,
         });
-        this.resource = resource;
       }
     }
   }
