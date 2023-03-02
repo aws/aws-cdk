@@ -638,9 +638,36 @@ describe('Application', () => {
     );
   });
 
-  test.todo('validating vpc prop combinations');
-  // SubnetSelection with no vpc
-  // SecurityGroups with no vpc
+  test('validating vpnSubnets prop requires vpc prop', () => {
+    expect(() => {
+      new flink.Application(stack, 'FlinkApplication', {
+        ...requiredProps,
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      });
+    }).toThrow(/vpc prop required when passing vpcSubnets/);
+  });
+
+  test('validating securityGroups prop requires vpc prop', () => {
+    expect(() => {
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+      });
+      new flink.Application(stack, 'Error', {
+        ...requiredProps,
+        securityGroups: [securityGroup],
+      });
+    }).toThrow(/vpc prop required when passing securityGroups/);
+
+    // empty array for securityGroups is treated the same as undefined
+    expect(() => {
+      new flink.Application(stack, 'OK', {
+        ...requiredProps,
+        securityGroups: [],
+      });
+    }).not.toThrow();
+  });
+
   test.todo('validating vpc provided when using connections');
 
   test('validating applicationName', () => {
