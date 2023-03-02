@@ -156,3 +156,19 @@ This is a feature flag as the old behavior was technically incorrect, but users 
   }
 }
 ```
+
+* `@aws-cdk/aws-redshift:columnId`
+
+Enable this feature flag to allow the CDK to track changes in Redshift columns through their `id` attribute. This is a breaking change, as the `name` attribute was currently being used to track changes to Redshift columns.
+
+Enabling this feature flag comes at a risk for existing Redshift columns, as the `name` attribute of a redshift column was currently being used. Therefore, to change a Redshift columns' `name` will essentially create a new column and delete the old one. This will cause data loss. If you choose to enable this flag, ensure that upon intial deployment (the first deployment after setting this feature flag), the `name` attribute of every column is not changed. After the intial deployment, you can freely change the `name` attribute of a column.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-redshift:columnId": true
+  }
+}
+```
