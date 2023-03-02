@@ -19,6 +19,7 @@ const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
 const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties: ResourcePropertiesType = {
+  useColumnIds: true,
   tableName: {
     prefix: tableNamePrefix,
     generateSuffix: 'true',
@@ -268,6 +269,59 @@ describe('update', () => {
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `ALTER TABLE ${physicalResourceId} ADD ${newTableColumnName} ${newTableColumnDataType}`,
     }));
+  });
+
+  describe('column name', () => {
+    test('does not replace if column name changed', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [
+            { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+          ],
+        },
+      };
+      const newTableColumnName = 'col2';
+      const newResourceProperties: ResourcePropertiesType = {
+        ...resourceProperties,
+        tableColumns: [
+          { id: 'col1', name: newTableColumnName, dataType: 'varchar(1)' },
+        ],
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO ${newTableColumnName}`,
+      }));
+    });
+
+    test('does not replace if column id assigned, from undefined', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [
+            { name: 'col1', dataType: 'varchar(1)' },
+          ],
+        },
+      };
+      const newResourceProperties: ResourcePropertiesType = {
+        ...resourceProperties,
+        tableColumns: [
+          { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+        ],
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO col1`,
+      }));
+    });
   });
 
   describe('distStyle and distKey', () => {
