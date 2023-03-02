@@ -391,12 +391,10 @@ test('custom environment secrets and start commands are allowed for imageConfigu
   });
 });
 
-
 test('custom environment variables and secrets can be added without first defining them in props', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
-  // WHEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
   const service = new apprunner.Service(stack, 'DemoService', {
     source: apprunner.Source.fromEcrPublic({
@@ -406,12 +404,12 @@ test('custom environment variables and secrets can be added without first defini
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
   });
-
+  
+  // WHEN
   service.addEnvironmentVariable('TEST_ENVIRONMENT_VARIABLE', 'test environment variable value');
   service.addSecret('LATER_SECRET', apprunner.Secret.fromSecretsManager(secret, 'field'));
 
   // THEN
-  // we should have the service
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
       AuthenticationConfiguration: {},
