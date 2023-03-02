@@ -50,6 +50,12 @@ Parameters:
     Default: 'false'
     AllowedValues: [ 'true', 'false' ]
     Type: String
+  BootstrapVariant:
+    Type: String
+    Default: 'AWS CDK: Default Resources'
+    Description: Describe the provenance of the resources in this bootstrap
+      stack. Change this when you customize the template. To prevent accidents,
+      the CDK CLI will not overwrite bootstrap stacks with a different variant.
 Conditions:
   HasTrustedAccounts:
     Fn::Not:
