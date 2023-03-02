@@ -1,5 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import { AmazonLinuxGeneration, Connections, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Peer, Port, SecurityGroup, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
+import { AmazonLinuxGeneration, Connections, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Peer, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack } from '@aws-cdk/core';
 import { ILoadBalancerTarget, InstanceTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
@@ -89,36 +89,10 @@ describe('tests', () => {
     });
   });
 
-  test('add an Instance as load balancing target', () => {
+  test('add an Instance as a load balancing target', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VCP');
-    const securityGroup = new SecurityGroup(stack, 'simple-instance-1-sg',
-      {
-        vpc,
-        allowAllOutbound: true, // will let your instance send outboud traffic
-        securityGroupName: 'simple-instance-1-sg',
-      },
-    );
-
-    // lets use the security group to allow inbound traffic on specific ports
-    securityGroup.addIngressRule(
-      Peer.anyIpv4(),
-      Port.tcp(22),
-      'Allows SSH access from Internet',
-    );
-
-    securityGroup.addIngressRule(
-      Peer.anyIpv4(),
-      Port.tcp(80),
-      'Allows HTTP access from Internet',
-    );
-
-    securityGroup.addIngressRule(
-      Peer.anyIpv4(),
-      Port.tcp(443),
-      'Allows HTTPS access from Internet',
-    );
     const instance = new Instance(stack, 'targetInstance', {
       vpc: vpc,
       instanceType: InstanceType.of( // t2.micro has free tier usage in aws
@@ -128,34 +102,20 @@ describe('tests', () => {
       machineImage: MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
-      securityGroup,
-    });
-    const connections = new Connections({
-      peer: Peer.ipv4('666.666.666.666/666'),
     });
     const elb = new LoadBalancer(stack, 'LB', {
       vpc,
-      healthCheck: {
-        interval: Duration.minutes(1),
-        path: '/ping',
-        protocol: LoadBalancingProtocol.HTTPS,
-        port: 443,
-      },
     });
 
     // WHEN
-    elb.addListener({ externalPort: 80, internalPort: 8080 });
-    elb.addTarget(new InstanceTarget(instance, connections));
+    elb.addTarget(new InstanceTarget(instance, 80));
 
     // THEN: at the very least it added a security group rule for the backend
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
-      SecurityGroupEgress: [
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
+      CrossZone: true,
+      Instances: [
         {
-          Description: 'Port 8080 LB to fleet',
-          CidrIp: '666.666.666.666/666',
-          FromPort: 8080,
-          IpProtocol: 'tcp',
-          ToPort: 8080,
+          Ref: 'targetInstance603C5817',
         },
       ],
     });

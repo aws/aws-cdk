@@ -142,9 +142,19 @@ export interface HealthCheck {
 }
 
 /**
+ * An object that has instance object.
+ */
+interface IInstance {
+  /**
+   * Ec2 instance
+   */
+  readonly ec2Instance?: Instance
+}
+
+/**
  * Interface that is going to be implemented by constructs that you can load balance to
  */
-export interface ILoadBalancerTarget extends IConnectable {
+export interface ILoadBalancerTarget extends IConnectable, IInstance {
   /**
    * Attach load-balanced target to a classic ELB
    * @param loadBalancer [disable-awslint:ref-via-interface] The load balancer to attach the target to
@@ -251,13 +261,13 @@ export class LoadBalancer extends Resource implements IConnectable {
 
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
+  private readonly instanceIds: string[] = [];
 
   constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
 
     this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
-
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
     const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 
@@ -265,6 +275,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
       listeners: Lazy.any({ produce: () => this.listeners }),
+      instances: this.instanceIds,
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
       crossZone: props.crossZone ?? true,
@@ -323,7 +334,10 @@ export class LoadBalancer extends Resource implements IConnectable {
 
   public addTarget(target: ILoadBalancerTarget) {
     target.attachToClassicLB(this);
-
+    if (target.ec2Instance) {
+      this.instanceIds.push(target.ec2Instance.instanceId);
+      target.ec2Instance.addSecurityGroup(this.securityGroup);
+    }
     this.newTarget(target);
   }
 
@@ -403,21 +417,25 @@ export class LoadBalancer extends Resource implements IConnectable {
 /**
  * An EC2 instance that is the target for load balancing
  *
- * If you register a target of this type, you are responsible for making
- * sure the load balancer's security group can connect to the instance.
  */
 export class InstanceTarget implements ILoadBalancerTarget {
+  readonly connections: Connections;
+  readonly ec2Instance?: Instance
   /**
    * Create a new Instance target.
    *
    * @param instance Instance to register to.
-   * @param connections The network connections associated with this resource.
+   * @param port Override the default port for the target.
    */
-  constructor(public readonly instance: Instance, public readonly connections: Connections) {
+  constructor(public readonly instance: Instance, public readonly port: number) {
+    this.connections = instance.connections;
+    this.ec2Instance = instance;
   }
   public attachToClassicLB(_loadBalancer: LoadBalancer): void {
+    _loadBalancer.addListener({ externalPort: this.port });
   }
 }
+
 /**
  * Reference to a listener's port just created.
  *
