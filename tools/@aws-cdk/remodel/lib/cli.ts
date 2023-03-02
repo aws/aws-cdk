@@ -9,7 +9,7 @@ import {
 } from '@aws-cdk/ubergen';
 import * as fs from 'fs-extra';
 import yargs from 'yargs/yargs';
-import { addTypesReference, findIntegFiles, rewriteIntegTestImports } from './util';
+import { addTypesReference, findIntegFiles, rewriteIntegTestImports, rewriteCdkLibTestImports } from './util';
 
 interface PackageJson extends UbgPkgJson {
   readonly scripts: { [key: string]: string };
@@ -189,7 +189,6 @@ async function makeAwsCdkLib(target: string) {
     'cdk-build': {
       ...pkgJson['cdk-build'],
       pre: [
-        'esbuild --bundle integ-tests/lib/assertions/providers/lambda-handler/index.ts --target=node14 --platform=node --external:aws-sdk --outfile=integ-tests/lib/assertions/providers/lambda-handler.bundle/index.js',
         '(cp -f $(node -p \'require.resolve(\"aws-sdk/apis/metadata.json\")\') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)',
         '(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)',
         '(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)',
@@ -202,8 +201,13 @@ async function makeAwsCdkLib(target: string) {
     'devDependencies': {
       ...filteredDevDeps,
       '@aws-cdk/cfn2ts': '0.0.0',
+      '@aws-cdk/aws-batch': '0.0.0',
+      '@aws-cdk/aws-apigatewayv2': '0.0.0',
+      '@aws-cdk/integ-tests': '0.0.0',
     },
   }, { spaces: 2 });
+
+  await fs.remove(path.join(awsCdkLibDir, 'integ-tests'));
 
   // TODO: Cleanup
   // 1. lib/aws-events-targets/build-tools, moved to gen.ts step
@@ -226,10 +230,17 @@ async function makeAwsCdkLibInteg(dir: string) {
   console.log('Moving integ and snapshot files to @aws-cdk-testing/framework-integ');
   const copied = await Promise.all(
     integFiles.map(async (item) => {
-      const fullPath = item.path.startsWith(source)
-        ? item.path
-        : path.join(source, item.path);
-      const relativeDest = sourceRegex.exec(fullPath)?.[1];
+      let fullPath = item.path;
+      let relativeDest = sourceRegex.exec(fullPath)?.[1];
+      if (!item.path.startsWith(source)) {
+        if (fs.existsSync(path.join(source, item.path))) {
+          fullPath = path.join(source, item.path);
+          relativeDest = sourceRegex.exec(fullPath)?.[1];
+        } else {
+          fullPath = path.join(dir, 'packages/@aws-cdk', item.path);
+          relativeDest = sourceRegex.exec(path.join(source, item.path))?.[1];
+        }
+      }
       if (!relativeDest) throw new Error(`No destination folder parsed for ${fullPath}`);
 
       const dest = path.join(target, relativeDest);
@@ -242,6 +253,8 @@ async function makeAwsCdkLibInteg(dir: string) {
       return dest;
     }),
   );
+
+  await rewriteCdkLibTestImports(source);
 
   console.log('Rewriting relative imports in integration test files');
   // Go through source files and rewrite the imports
