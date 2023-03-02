@@ -594,7 +594,50 @@ describe('Application', () => {
     );
   });
 
-  test.todo('using connections');
+  test('using connections on a created Application', () => {
+    const app = new flink.Application(stack, 'FlinkApplication', {
+      ...requiredProps,
+      vpc: new ec2.Vpc(stack, 'VPC'),
+    });
+
+    app.connections.allowFromAnyIpv4(ec2.Port.tcp(443));
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::EC2::SecurityGroup',
+      {
+        SecurityGroupEgress: [{
+          Description: 'Allow all outbound traffic by default',
+          IpProtocol: '-1',
+        }],
+        SecurityGroupIngress: [{
+          Description: 'from 0.0.0.0/0:443',
+          FromPort: 443,
+          IpProtocol: 'tcp',
+          ToPort: 443,
+        }],
+      },
+    );
+  });
+
+  test('using connections on an imported Application', () => {
+    const app = flink.Application.fromApplicationAttributes(stack, 'FlinkApplication', {
+      applicationArn: 'arn:aws:kinesisanalytics:us-west-2:012345678901:application/my-app',
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'ImportedSG', 'sg-123456789')],
+    });
+
+    app.connections.allowFromAnyIpv4(ec2.Port.tcp(443));
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::EC2::SecurityGroupIngress',
+      {
+        FromPort: 443,
+        GroupId: 'sg-123456789',
+        IpProtocol: 'tcp',
+        ToPort: 443,
+      },
+    );
+  });
+
   test.todo('validating vpc prop combinations');
   // SubnetSelection with no vpc
   // SecurityGroups with no vpc
@@ -702,6 +745,17 @@ describe('Application', () => {
   test('fromFlinkApplicationArn', () => {
     const arn = 'arn:aws:kinesisanalytics:us-west-2:012345678901:application/my-app';
     const flinkApp = flink.Application.fromApplicationArn(stack, 'Imported', arn);
+
+    expect(flinkApp.applicationName).toEqual('my-app');
+    expect(flinkApp.applicationArn).toEqual(arn);
+    expect(flinkApp.addToRolePolicy(new iam.PolicyStatement())).toBe(false);
+  });
+
+  test('fromFlinkApplicationAttributes', () => {
+    const arn = 'arn:aws:kinesisanalytics:us-west-2:012345678901:application/my-app';
+    const flinkApp = flink.Application.fromApplicationAttributes(stack, 'Imported', {
+      applicationArn: arn,
+    });
 
     expect(flinkApp.applicationName).toEqual('my-app');
     expect(flinkApp.applicationArn).toEqual(arn);

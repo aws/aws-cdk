@@ -15,7 +15,7 @@ import { LogLevel, MetricsLevel, PropertyGroups, Runtime } from './types';
  * An interface expressing the public properties on both an imported and
  * CDK-created Flink application.
  */
-export interface IApplication extends core.IResource, iam.IGrantable {
+export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * The application ARN.
    *
@@ -352,6 +352,8 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
   // Implement iam.IGrantable interface
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
+  protected _connections?: ec2.Connections;
+
   /** Implement the convenience `IApplication.addToPrincipalPolicy` method. */
   public addToRolePolicy(policyStatement: iam.PolicyStatement): boolean {
     if (this.role) {
@@ -360,6 +362,13 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
     }
 
     return false;
+  }
+
+  public get connections() {
+    if (!this._connections) {
+      throw new Error('This Application isn\'t associated with a VPC. Provide a "vpc" prop when creating the Application or "securityGroups" when importing it.');
+    }
+    return this._connections;
   }
 
   /**
@@ -721,6 +730,20 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
   }
 }
 
+interface ApplicationAttributes {
+  /**
+   * The ARN of the Flink application.
+   *
+   * Format: arn:<partition>:kinesisanalytics:<region>:<account-id>:application/<application-name>
+   */
+  readonly applicationArn: string;
+
+  /**
+   * The security groups for this Flink application if deployed in a VPC.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+}
+
 /**
  * Props for creating an Application construct.
  */
@@ -874,7 +897,7 @@ class Import extends ApplicationBase {
   public readonly applicationName: string;
   public readonly applicationArn: string;
 
-  constructor(scope: Construct, id: string, attrs: { applicationArn: string, applicationName: string }) {
+  constructor(scope: Construct, id: string, attrs: { applicationArn: string, securityGroups?: ec2.ISecurityGroup[] }) {
     super(scope, id);
 
     // Imported applications have no associated role or grantPrincipal
@@ -882,7 +905,16 @@ class Import extends ApplicationBase {
     this.role = undefined;
 
     this.applicationArn = attrs.applicationArn;
-    this.applicationName = attrs.applicationName;
+    const applicationName = core.Stack.of(scope).splitArn(attrs.applicationArn, core.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    if (!applicationName) {
+      throw new Error(`applicationArn for fromApplicationArn (${attrs.applicationArn}) must include resource name`);
+    }
+    this.applicationName = applicationName;
+
+    const securityGroups = attrs.securityGroups ?? [];
+    if (securityGroups.length > 0) {
+      this._connections = new ec2.Connections({ securityGroups });
+    }
   }
 }
 
@@ -900,7 +932,7 @@ export class Application extends ApplicationBase {
   public static fromApplicationName(scope: Construct, id: string, applicationName: string): IApplication {
     const applicationArn = core.Stack.of(scope).formatArn(applicationArnComponents(applicationName));
 
-    return new Import(scope, id, { applicationArn, applicationName });
+    return new Import(scope, id, { applicationArn });
   }
 
   /**
@@ -913,7 +945,14 @@ export class Application extends ApplicationBase {
       throw new Error(`applicationArn for fromApplicationArn (${applicationArn}) must include resource name`);
     }
 
-    return new Import(scope, id, { applicationArn, applicationName });
+    return new Import(scope, id, { applicationArn });
+  }
+
+  public static fromApplicationAttributes(scope: Construct, id: string, attrs: ApplicationAttributes) {
+    return new Import(scope, id, {
+      applicationArn: attrs.applicationArn,
+      securityGroups: attrs.securityGroups,
+    });
   }
 
   public readonly applicationArn: string;
@@ -949,6 +988,7 @@ export class Application extends ApplicationBase {
           vpc: props.vpc,
         }),
       ];
+      this._connections = new ec2.Connections({ securityGroups });
       const subnetSelection = props.vpcSubnets ?? {
         subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       };
