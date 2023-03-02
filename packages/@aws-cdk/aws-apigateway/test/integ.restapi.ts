@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Size } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
 import * as apigateway from '../lib';
 
@@ -10,6 +11,7 @@ class Test extends cdk.Stack {
     const api = new apigateway.RestApi(this, 'my-api', {
       retainDeployments: true,
       cloudWatchRole: true,
+      minCompressionSize: Size.bytes(1024),
       deployOptions: {
         cacheClusterEnabled: true,
         stageName: 'beta',
