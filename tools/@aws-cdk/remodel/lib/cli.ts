@@ -52,29 +52,50 @@ export async function main() {
         .option('tmp-dir', {
           type: 'string',
           desc: 'temporary intermediate directory, removed unless --no-clean is specified',
+        })
+        .option('full-build', {
+          type: 'boolean',
+          default: true,
+          desc: 'do a full build (remove existing directory and start over)',
         }),
     ).argv;
 
-  const { 'tmp-dir': tmpDir, REPO_ROOT: repoRoot, clean } = args;
+  const { 'tmp-dir': tmpDir, REPO_ROOT: repoRoot, clean, 'full-build': fullBuild } = args;
 
   const targetDir = path.resolve(tmpDir ?? await fs.mkdtemp('remodel-'));
+  console.log(repoRoot);
 
-  if (fs.existsSync(targetDir)) {
-    await fs.remove(targetDir);
+  if (fullBuild) {
+    if (fs.existsSync(targetDir)) {
+      await fs.remove(targetDir);
+    }
+    await fs.mkdir(targetDir);
+  } else {
+    const srcCdkLibDir = path.join(__dirname, '../../../../packages/aws-cdk-lib');
+    const cdkLibDir = path.join(targetDir, 'packages', 'aws-cdk-lib');
+    const integFrameworkDir = path.join(targetDir, 'packages', '@aws-cdk-testing', 'framework-integ');
+    if (fs.existsSync(cdkLibDir)) {
+      await fs.remove(cdkLibDir);
+      await fs.copy(srcCdkLibDir, cdkLibDir, { overwrite: true });
+    }
+
+    if (fs.existsSync(integFrameworkDir)) {
+      await fs.remove(integFrameworkDir);
+      await fs.mkdir(integFrameworkDir);
+    }
   }
-  await fs.mkdir(targetDir);
 
   // Clone all source files from the current repo to our new working
   // directory. The entire copy including the .git directory ensures git can
   // be aware of all source file moves if needed via `git move`.
-  await exec(`git clone ${repoRoot} ${targetDir}`);
+  // await exec(`git clone ${repoRoot} ${targetDir}`);
 
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
   await copyTemplateFiles(templateDir, targetDir);
   await makeAwsCdkLib(targetDir);
   await makeAwsCdkLibInteg(targetDir);
 
-  await runBuild(targetDir);
+  if (fullBuild) await runBuild(targetDir);
   await cleanup(targetDir);
 
   if (clean) {
@@ -259,6 +280,7 @@ async function makeAwsCdkLibInteg(dir: string) {
   console.log('Rewriting relative imports in integration test files');
   // Go through source files and rewrite the imports
   const targetRegex = new RegExp(`${target}(.+)`);
+  copied.push(path.join(target, 'aws-lambda-nodejs/test/integ-handlers/ts-handler.ts'));
   await Promise.all(copied.map(async (item) => {
     const stat = await fs.stat(item);
     // Leave snapshots we copied alone
