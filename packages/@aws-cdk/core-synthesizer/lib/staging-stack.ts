@@ -1,22 +1,49 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, DockerImageAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { DockerImageAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 
-export interface IStagingStack {
+/**
+ * Information on how a Staging Stack should look.
+ */
+export interface IStagingStack extends IConstruct {
+  /**
+   * // TODO
+   */
   readonly stagingBucket: s3.Bucket;
+
+  /**
+   * // TODO
+   */
   readonly stagingRepos: Record<string, ecr.Repository>;
 
+  /**
+   * // TODO
+   */
   locateRepo(asset: DockerImageAssetSource): ecr.Repository;
 }
 
+/**
+ * Staging Stack Properties
+ */
 export interface StagingStackProps extends StackProps {
 }
 
+/**
+ * A default Staging Stack
+ */
 export class StagingStack extends Stack implements IStagingStack {
+  /**
+   * // TODO
+   */
   public readonly stagingBucket: s3.Bucket;
+
+  /**
+   * // TODO
+   */
   public readonly stagingRepos: Record<string, ecr.Repository>;
 
-  constructor(scope: App, id: string, props: StagingStackProps) {
+  constructor(scope: Construct, id: string, props: StagingStackProps = {}) {
     super(scope, id, props);
 
     this.stagingBucket = new s3.Bucket(this, 'StagingBucket', {

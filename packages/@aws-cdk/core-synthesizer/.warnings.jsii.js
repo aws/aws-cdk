@@ -1,3 +1,23 @@
+function _aws_cdk_core_synthesizer_IStagingStack(p) {
+}
+function _aws_cdk_core_synthesizer_StagingStackProps(p) {
+}
+function _aws_cdk_core_synthesizer_StagingStack(p) {
+}
+function _aws_cdk_core_synthesizer_NewStackSynthesizerProps(p) {
+    if (p == null)
+        return;
+    visitedObjects.add(p);
+    try {
+        if (!visitedObjects.has(p.stagingStack))
+            _aws_cdk_core_synthesizer_IStagingStack(p.stagingStack);
+    }
+    finally {
+        visitedObjects.delete(p);
+    }
+}
+function _aws_cdk_core_synthesizer_NewStackSynthesizer(p) {
+}
 function print(name, deprecationMessage) {
     const deprecated = process.env.JSII_DEPRECATED;
     const deprecationMode = ["warn", "fail", "quiet"].includes(deprecated) ? deprecated : "warn";
@@ -34,4 +54,4 @@ class DeprecationError extends Error {
         });
     }
 }
-module.exports = { print, getPropertyDescriptor, DeprecationError };
+module.exports = { print, getPropertyDescriptor, DeprecationError, _aws_cdk_core_synthesizer_IStagingStack, _aws_cdk_core_synthesizer_StagingStackProps, _aws_cdk_core_synthesizer_StagingStack, _aws_cdk_core_synthesizer_NewStackSynthesizerProps, _aws_cdk_core_synthesizer_NewStackSynthesizer };

@@ -94,7 +94,8 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/pkglint": "0.0.0"
+    "@aws-cdk/pkglint": "0.0.0",
+    "jsii": "v4.9-next"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",

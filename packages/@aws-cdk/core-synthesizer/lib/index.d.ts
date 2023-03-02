@@ -1,1 +1,2 @@
-export declare function main(): void;
+export * from './staging-stack';
+export * from './synthesizer';

@@ -2,10 +2,21 @@ import { App, AssetManifestBuilder, DockerImageAssetLocation, DockerImageAssetSo
 import { assertBound } from '@aws-cdk/core/lib/stack-synthesizers/_shared';
 import { IStagingStack, StagingStack } from './staging-stack';
 
+/**
+ * New stack synthesizer properties
+ */
 export interface NewStackSynthesizerProps {
-  stagingStack?: IStagingStack;
+  /**
+   * Bring a custom staging stack into the app.
+   *
+   * @default - default staging stack
+   */
+  readonly stagingStack?: IStagingStack;
 }
 
+/**
+ * New Stack Synthesizer
+ */
 export class NewStackSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer, IBoundStackSynthesizer {
   private qualifier?: string;
   private stagingStack: IStagingStack;
@@ -20,6 +31,9 @@ export class NewStackSynthesizer extends StackSynthesizer implements IReusableSt
     this.stagingStack = props.stagingStack ?? new StagingStack(new App(), 'StagingStack', {});
   }
 
+  /**
+   * // TODO
+   */
   public reusableBind(stack: Stack): IBoundStackSynthesizer {
     // Create a copy of the current object and bind that
     const copy = Object.create(this);
@@ -27,12 +41,18 @@ export class NewStackSynthesizer extends StackSynthesizer implements IReusableSt
     return copy;
   }
 
+  /**
+   * // TODO
+   */
   public synthesize(_session: ISynthesisSession): void {
     assertBound(this.qualifier);
 
     // TODO: finish implementing
   }
 
+  /**
+   * // TODO
+   */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stagingStack.stagingBucket.bucketName);
 
@@ -43,6 +63,9 @@ export class NewStackSynthesizer extends StackSynthesizer implements IReusableSt
     return this.cloudFormationLocationFromFileAsset(location);
   }
 
+  /**
+   * // TODO
+   */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     const repo = this.stagingStack.locateRepo(asset);
     assertBound(repo.repositoryName);

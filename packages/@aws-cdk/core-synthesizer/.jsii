@@ -288,7 +288,7 @@
     "stability": "experimental"
   },
   "homepage": "https://github.com/aws/aws-cdk",
-  "jsiiVersion": "1.74.0 (build 6d08790)",
+  "jsiiVersion": "1.76.0 (build a2651be)",
   "keywords": [
     "aws",
     "cdk"
@@ -339,7 +339,397 @@
       "module": "aws_cdk.core_synthesizer"
     }
   },
-  "types": {},
+  "types": {
+    "@aws-cdk/core-synthesizer.IStagingStack": {
+      "assembly": "@aws-cdk/core-synthesizer",
+      "docs": {
+        "stability": "experimental",
+        "summary": "Information on how a Staging Stack should look."
+      },
+      "fqn": "@aws-cdk/core-synthesizer.IStagingStack",
+      "interfaces": [
+        "constructs.IConstruct"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/staging-stack.ts",
+        "line": 9
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "// TODO."
+          },
+          "locationInModule": {
+            "filename": "lib/staging-stack.ts",
+            "line": 23
+          },
+          "name": "locateRepo",
+          "parameters": [
+            {
+              "name": "asset",
+              "type": {
+                "fqn": "@aws-cdk/core.DockerImageAssetSource"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.Repository"
+            }
+          }
+        }
+      ],
+      "name": "IStagingStack",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "// TODO."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/staging-stack.ts",
+            "line": 13
+          },
+          "name": "stagingBucket",
+          "type": {
+            "fqn": "@aws-cdk/aws-s3.Bucket"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "// TODO."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/staging-stack.ts",
+            "line": 18
+          },
+          "name": "stagingRepos",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-ecr.Repository"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/staging-stack:IStagingStack"
+    },
+    "@aws-cdk/core-synthesizer.NewStackSynthesizer": {
+      "assembly": "@aws-cdk/core-synthesizer",
+      "base": "@aws-cdk/core.StackSynthesizer",
+      "docs": {
+        "stability": "experimental",
+        "summary": "New Stack Synthesizer."
+      },
+      "fqn": "@aws-cdk/core-synthesizer.NewStackSynthesizer",
+      "initializer": {
+        "docs": {
+          "stability": "experimental"
+        },
+        "locationInModule": {
+          "filename": "lib/synthesizer.ts",
+          "line": 25
+        },
+        "parameters": [
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/core-synthesizer.NewStackSynthesizerProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IReusableStackSynthesizer",
+        "@aws-cdk/core.IBoundStackSynthesizer"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/synthesizer.ts",
+        "line": 20
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "// TODO."
+          },
+          "locationInModule": {
+            "filename": "lib/synthesizer.ts",
+            "line": 69
+          },
+          "name": "addDockerImageAsset",
+          "overrides": "@aws-cdk/core.StackSynthesizer",
+          "parameters": [
+            {
+              "name": "asset",
+              "type": {
+                "fqn": "@aws-cdk/core.DockerImageAssetSource"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/core.DockerImageAssetLocation"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "// TODO."
+          },
+          "locationInModule": {
+            "filename": "lib/synthesizer.ts",
+            "line": 56
+          },
+          "name": "addFileAsset",
+          "overrides": "@aws-cdk/core.StackSynthesizer",
+          "parameters": [
+            {
+              "name": "asset",
+              "type": {
+                "fqn": "@aws-cdk/core.FileAssetSource"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/core.FileAssetLocation"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "// TODO."
+          },
+          "locationInModule": {
+            "filename": "lib/synthesizer.ts",
+            "line": 37
+          },
+          "name": "reusableBind",
+          "overrides": "@aws-cdk/core.IReusableStackSynthesizer",
+          "parameters": [
+            {
+              "name": "stack",
+              "type": {
+                "fqn": "@aws-cdk/core.Stack"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/core.IBoundStackSynthesizer"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "// TODO."
+          },
+          "locationInModule": {
+            "filename": "lib/synthesizer.ts",
+            "line": 47
+          },
+          "name": "synthesize",
+          "overrides": "@aws-cdk/core.StackSynthesizer",
+          "parameters": [
+            {
+              "name": "_session",
+              "type": {
+                "fqn": "@aws-cdk/core.ISynthesisSession"
+              }
+            }
+          ]
+        }
+      ],
+      "name": "NewStackSynthesizer",
+      "symbolId": "lib/synthesizer:NewStackSynthesizer"
+    },
+    "@aws-cdk/core-synthesizer.NewStackSynthesizerProps": {
+      "assembly": "@aws-cdk/core-synthesizer",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "New stack synthesizer properties."
+      },
+      "fqn": "@aws-cdk/core-synthesizer.NewStackSynthesizerProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/synthesizer.ts",
+        "line": 8
+      },
+      "name": "NewStackSynthesizerProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- default staging stack",
+            "stability": "experimental",
+            "summary": "Bring a custom staging stack into the app."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/synthesizer.ts",
+            "line": 14
+          },
+          "name": "stagingStack",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core-synthesizer.IStagingStack"
+          }
+        }
+      ],
+      "symbolId": "lib/synthesizer:NewStackSynthesizerProps"
+    },
+    "@aws-cdk/core-synthesizer.StagingStack": {
+      "assembly": "@aws-cdk/core-synthesizer",
+      "base": "@aws-cdk/core.Stack",
+      "docs": {
+        "stability": "experimental",
+        "summary": "A default Staging Stack."
+      },
+      "fqn": "@aws-cdk/core-synthesizer.StagingStack",
+      "initializer": {
+        "docs": {
+          "stability": "experimental"
+        },
+        "locationInModule": {
+          "filename": "lib/staging-stack.ts",
+          "line": 46
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/core-synthesizer.StagingStackProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core-synthesizer.IStagingStack"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/staging-stack.ts",
+        "line": 35
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "// TODO."
+          },
+          "locationInModule": {
+            "filename": "lib/staging-stack.ts",
+            "line": 57
+          },
+          "name": "locateRepo",
+          "overrides": "@aws-cdk/core-synthesizer.IStagingStack",
+          "parameters": [
+            {
+              "name": "asset",
+              "type": {
+                "fqn": "@aws-cdk/core.DockerImageAssetSource"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.Repository"
+            }
+          }
+        }
+      ],
+      "name": "StagingStack",
+      "properties": [
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "// TODO."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/staging-stack.ts",
+            "line": 39
+          },
+          "name": "stagingBucket",
+          "overrides": "@aws-cdk/core-synthesizer.IStagingStack",
+          "type": {
+            "fqn": "@aws-cdk/aws-s3.Bucket"
+          }
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "// TODO."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/staging-stack.ts",
+            "line": 44
+          },
+          "name": "stagingRepos",
+          "overrides": "@aws-cdk/core-synthesizer.IStagingStack",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-ecr.Repository"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/staging-stack:StagingStack"
+    },
+    "@aws-cdk/core-synthesizer.StagingStackProps": {
+      "assembly": "@aws-cdk/core-synthesizer",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "Staging Stack Properties."
+      },
+      "fqn": "@aws-cdk/core-synthesizer.StagingStackProps",
+      "interfaces": [
+        "@aws-cdk/core.StackProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/staging-stack.ts",
+        "line": 29
+      },
+      "name": "StagingStackProps",
+      "symbolId": "lib/staging-stack:StagingStackProps"
+    }
+  },
   "version": "0.0.0",
-  "fingerprint": "a0Z5vBS/P+7FmRo3kYrn9919CBBimwoFrAbS7yZ6+Pw="
+  "fingerprint": "nuiVlxDyaL7rerGX5Nz/mvwg03eZ85f9ecMCIhK/d2U="
 }
