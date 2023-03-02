@@ -34,6 +34,12 @@ async function main() {
       type: 'boolean',
       requiresArg: false,
     })
+    .option('regression', {
+      description: 'Enable access to previous versions of the staged packages (this is expensive for CodeArtifact so we only do it when necessary)',
+      type: 'boolean',
+      requiresArg: false,
+      default: false,
+    })
     .command('publish <DIRECTORY>', 'Publish a given directory', cmd => cmd
       .positional('DIRECTORY', {
         descripton: 'Directory distribution',
@@ -190,6 +196,7 @@ async function publish(repo: TestRepository, usageDir: UsageDir, args: {
   python?: boolean;
   java?: boolean;
   dotnet?: boolean;
+  regression?: boolean;
 }) {
   const directory = `${args.DIRECTORY}`;
   const login = await repo.loginInformation();
@@ -221,8 +228,10 @@ async function publish(repo: TestRepository, usageDir: UsageDir, args: {
     await uploadDotnetPackages(glob.sync(path.join(directory, 'dotnet', '**', '*.nupkg')), usageDir);
   });
 
-  console.log('🛍 Configuring packages for upstream versions');
-  await repo.markAllUpstreamAllow();
+  if (args.regression) {
+    console.log('🛍 Configuring packages for upstream versions');
+    await repo.markAllUpstreamAllow();
+  }
 }
 
 function whichRepos(args: {

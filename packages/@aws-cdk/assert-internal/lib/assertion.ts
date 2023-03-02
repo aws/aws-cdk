@@ -1,3 +1,5 @@
+/* eslint-disable import/order */
+// @TODO: These tests fail if all imports are at the top
 import { Inspector } from './inspector';
 
 export abstract class Assertion<InspectorClass extends Inspector> {
