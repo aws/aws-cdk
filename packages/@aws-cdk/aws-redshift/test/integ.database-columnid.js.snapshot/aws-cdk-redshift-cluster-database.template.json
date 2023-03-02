@@ -725,25 +725,20 @@
      {
       "id": "col1",
       "name": "col1",
-      "dataType": "varchar(4)",
-      "distKey": true
+      "dataType": "varchar(4)"
      },
      {
       "id": "col2",
       "name": "col2",
-      "dataType": "float",
-      "sortKey": true
+      "dataType": "float"
      },
      {
       "id": "col3",
       "name": "col3",
-      "dataType": "float",
-      "sortKey": true
+      "dataType": "float"
      }
     ],
-    "distStyle": "KEY",
-    "sortStyle": "INTERLEAVED",
-    "tableComment": "A test table",
+    "sortStyle": "AUTO",
     "useColumnIds": true
    },
    "UpdateReplacePolicy": "Delete",

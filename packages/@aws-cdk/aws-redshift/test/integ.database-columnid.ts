@@ -8,7 +8,7 @@ import * as integ from '@aws-cdk/integ-tests';
 import * as constructs from 'constructs';
 import * as redshift from '../lib';
 
-const useColumnIds = { [REDSHIFT_COLUMN_ID]: 'true' };
+const useColumnIds = { [REDSHIFT_COLUMN_ID]: true };
 
 const app = new cdk.App({
   context: useColumnIds,
@@ -46,13 +46,10 @@ const databaseOptions = {
 new redshift.Table(stack, 'Table', {
   ...databaseOptions,
   tableColumns: [
-    { id: 'col1', name: 'col1', dataType: 'varchar(4)', distKey: true },
-    { id: 'col2', name: 'col2', dataType: 'float', sortKey: true },
-    { id: 'col3', name: 'col3', dataType: 'float', sortKey: true },
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+    { id: 'col2', name: 'col2', dataType: 'float' },
+    { id: 'col3', name: 'col3', dataType: 'float' },
   ],
-  distStyle: redshift.TableDistStyle.KEY,
-  sortStyle: redshift.TableSortStyle.INTERLEAVED,
-  tableComment: 'A test table',
 });
 
 new integ.IntegTest(app, 'redshift-cluster-database-integ', {
