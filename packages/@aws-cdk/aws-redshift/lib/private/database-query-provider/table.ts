@@ -7,7 +7,7 @@ import { Column } from '../../table';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
-  const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.ServiceToken.substring(event.StackId.length - 11)}` : '';
+  const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.StackId.substring(event.StackId.length - 12)}` : '';
   const tableColumns = props.tableColumns;
   const tableAndClusterProps = props;
 
