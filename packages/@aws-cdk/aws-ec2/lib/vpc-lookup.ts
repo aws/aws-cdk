@@ -74,5 +74,5 @@ export interface VpcLookupOptions {
    *
    * @default the account id of the parent stack
    */
-  readonly ownerId?: string;
+  readonly ownerAccountId?: string;
 }
