@@ -131,6 +131,11 @@ export interface TableProps extends DatabaseOptions {
  */
 export interface ITable extends IConstruct {
   /**
+   * Idenfifier of the table construct.
+   */
+  readonly id: string;
+
+  /**
    * Name of the table.
    */
   readonly tableName: string;
@@ -186,6 +191,7 @@ abstract class TableBase extends Construct implements ITable {
   abstract readonly tableColumns: Column[];
   abstract readonly cluster: ICluster;
   abstract readonly databaseName: string;
+  abstract readonly id: string;
   grant(user: IUser, ...actions: TableAction[]) {
     user.addTablePrivileges(this, ...actions);
   }
@@ -204,6 +210,7 @@ export class Table extends TableBase {
       readonly tableColumns = attrs.tableColumns;
       readonly cluster = attrs.cluster;
       readonly databaseName = attrs.databaseName;
+      readonly id = id;
     }(scope, id);
   }
 
@@ -211,6 +218,7 @@ export class Table extends TableBase {
   readonly tableColumns: Column[];
   readonly cluster: ICluster;
   readonly databaseName: string;
+  readonly id: string;
 
   private resource: DatabaseQuery<TableHandlerProps>;
 
@@ -228,6 +236,7 @@ export class Table extends TableBase {
     this.tableColumns = props.tableColumns;
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
+    this.id = id;
 
     this.resource = new DatabaseQuery<TableHandlerProps>(this, 'Resource', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,

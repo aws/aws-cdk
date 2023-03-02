@@ -63,7 +63,9 @@ async function updatePrivileges(
 
   const oldTablePrivileges = oldResourceProperties.tablePrivileges;
   if (oldTablePrivileges !== tablePrivileges) {
-    await revokePrivileges(username, oldTablePrivileges, clusterProps);
+    const tableNames = new Set(tablePrivileges.map(({ tableId }) => tableId));
+    const tablesToRevoke = oldTablePrivileges.filter(({ tableId }) => tableNames.has(tableId));
+    await revokePrivileges(username, tablesToRevoke, clusterProps);
     await grantPrivileges(username, tablePrivileges, clusterProps);
     return { replace: false };
   }
