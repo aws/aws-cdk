@@ -4,7 +4,7 @@ import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultS
 import { Construct } from 'constructs';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
 
-describe('isRole', () => {
+describe('isRole() returns', () => {
   test('true if given Role instance', () => {
     // GIVEN
     const app = new App();
@@ -18,7 +18,7 @@ describe('isRole', () => {
     expect(Role.isRole(pureRole)).toBe(true);
   });
 
-  test('false if given IRole instance', () => {
+  test('false if given imported role instance', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'MyStack');
