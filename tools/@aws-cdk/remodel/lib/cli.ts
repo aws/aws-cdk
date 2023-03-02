@@ -70,6 +70,7 @@ export async function main() {
       await fs.remove(targetDir);
     }
     await fs.mkdir(targetDir);
+    await exec(`git clone ${repoRoot} ${targetDir}`);
   } else {
     const srcCdkLibDir = path.join(__dirname, '../../../../packages/aws-cdk-lib');
     const cdkLibDir = path.join(targetDir, 'packages', 'aws-cdk-lib');
@@ -88,7 +89,6 @@ export async function main() {
   // Clone all source files from the current repo to our new working
   // directory. The entire copy including the .git directory ensures git can
   // be aware of all source file moves if needed via `git move`.
-  // await exec(`git clone ${repoRoot} ${targetDir}`);
 
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
   await copyTemplateFiles(templateDir, targetDir);
@@ -280,7 +280,7 @@ async function makeAwsCdkLibInteg(dir: string) {
   console.log('Rewriting relative imports in integration test files');
   // Go through source files and rewrite the imports
   const targetRegex = new RegExp(`${target}(.+)`);
-  copied.push(path.join(target, 'aws-lambda-nodejs/test/integ-handlers/ts-handler.ts'));
+  // copied.push(path.join(target, 'aws-lambda-nodejs/test/integ-handlers/ts-handler.ts'));
   await Promise.all(copied.map(async (item) => {
     const stat = await fs.stat(item);
     // Leave snapshots we copied alone
