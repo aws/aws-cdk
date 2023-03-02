@@ -29,6 +29,28 @@ class TestStack extends Stack {
       runtime: Runtime.NODEJS_14_X,
       vpc: new Vpc(this, 'Vpc'),
     });
+
+    new lambda.NodejsFunction(this, 'ts-handler-custom-handler-no-dots', {
+      entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
+      runtime: Runtime.NODEJS_14_X,
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        sourceMapMode: lambda.SourceMapMode.BOTH,
+      },
+      handler: 'someHandler',
+    });
+
+    new lambda.NodejsFunction(this, 'ts-handler-custom-handler-dots', {
+      entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
+      runtime: Runtime.NODEJS_14_X,
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        sourceMapMode: lambda.SourceMapMode.BOTH,
+      },
+      handler: 'run.sh',
+    });
   }
 }
 
