@@ -153,6 +153,7 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
   })],
 });
 ```
+
 This will also share the Application with the accounts of any cross-account stacks defined in the
 CDK app scope so that the association becomes possible.
 
