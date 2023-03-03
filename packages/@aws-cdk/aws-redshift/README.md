@@ -384,6 +384,8 @@ cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 In most cases, existing clusters [must be manually rebooted](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html) to apply parameter changes. You can automate parameter related reboots by setting the cluster's `rebootForParameterChanges` property to `true` , or by using `Cluster.enableRebootForParameterChanges()`.
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 declare const vpc: ec2.Vpc;
 
 const cluster = new Cluster(this, 'Cluster', {
