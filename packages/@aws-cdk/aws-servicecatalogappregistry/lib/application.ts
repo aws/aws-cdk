@@ -170,14 +170,16 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   }
 
   /**
-   * Associate all stacks present in construct's aspect with application.
+   * Associate all stacks present in construct's aspect with application, including cross-account stacks.
    *
    * NOTE: This method won't automatically register stacks under pipeline stages,
    * and requires association of each pipeline stage by calling this method with stage Construct.
    *
    */
   public associateAllStacksInScope(scope: Construct): void {
-    cdk.Aspects.of(scope).add(new StageStackAssociator(this));
+    cdk.Aspects.of(scope).add(new StageStackAssociator(this, {
+      enableCrossAccount: true,
+    }));
   }
 
   /**

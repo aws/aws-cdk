@@ -97,7 +97,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     });
   }),
 
-  test('ApplicationAssociator with cross account stacks inside cdkApp does not give warning if enableApplicationSharing is not provided', () => {
+  test('ApplicationAssociator with cross account stacks inside cdkApp gives warning if enableCrossAccountStacks is not provided', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
       applications: [appreg.TargetApplication.createApplicationStack({
         applicationName: 'MyAssociatedApplication',
@@ -109,15 +109,15 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const crossAccountStack = new cdk.Stack(app, 'crossRegionStack', {
       env: { account: 'account', region: 'region' },
     });
-    Annotations.fromStack(crossAccountStack).hasNoWarning('*', 'Cross-account stack detected but application sharing and association will be skipped because cross-account sharing option is not enabled.');
+    Annotations.fromStack(crossAccountStack).hasWarning('*', 'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled.');
   });
 
-  test('ApplicationAssociator with cross account stacks inside cdkApp gives warning if enableApplicationSharing is set to false', () => {
+  test('ApplicationAssociator with cross account stacks inside cdkApp gives warning if enableCrossAccountStacks is set to true', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
       applications: [appreg.TargetApplication.createApplicationStack({
         applicationName: 'MyAssociatedApplication',
         stackName: 'MyAssociatedApplicationStack',
-        enableApplicationSharing: false,
+        enableCrossAccountStacks: true,
         env: { account: 'account', region: 'region' },
       })],
     });
@@ -125,7 +125,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const crossAccountStack = new cdk.Stack(app, 'crossRegionStack', {
       env: { account: 'account2', region: 'region' },
     });
-    Annotations.fromStack(crossAccountStack).hasWarning('*', 'Cross-account stack detected but application sharing and association will be skipped because cross-account sharing option is not enabled.');
+    Annotations.fromStack(crossAccountStack).hasNoWarning('*', 'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled.');
   });
 
   test('ApplicationAssociator with cross region stacks inside cdkApp gives warning', () => {
