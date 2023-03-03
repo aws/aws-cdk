@@ -75,7 +75,7 @@ export class CacheBehavior {
     if (!edgeLambdas || edgeLambdas.length === 0) { return; }
     edgeLambdas.forEach((edgeLambda) => {
       const role = edgeLambda.functionVersion.role;
-      if (role && role instanceof iam.Role && role.assumeRolePolicy) {
+      if (role && iam.Role.isRole(role) && role.assumeRolePolicy) {
         role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
           actions: ['sts:AssumeRole'],
           principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
