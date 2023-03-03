@@ -967,34 +967,11 @@ describe('key specs and key usages', () => {
     });
   });
 
-  test.each([
-    [kms.KeySpec.SM2, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
-    [kms.KeySpec.SYMMETRIC_DEFAULT, kms.KeyUsage.SIGN_VERIFY, 'SIGN_VERIFY'],
-    [kms.KeySpec.SYMMETRIC_DEFAULT, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
-    [kms.KeySpec.ECC_NIST_P256, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
-    [kms.KeySpec.ECC_NIST_P521, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
-    [kms.KeySpec.ECC_NIST_P384, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
-    [kms.KeySpec.ECC_SECG_P256K1, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
-    [kms.KeySpec.ECC_NIST_P256, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
-    [kms.KeySpec.ECC_NIST_P521, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
-    [kms.KeySpec.ECC_NIST_P384, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
-    [kms.KeySpec.ECC_SECG_P256K1, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
-    [kms.KeySpec.RSA_2048, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
-    [kms.KeySpec.RSA_3072, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
-    [kms.KeySpec.RSA_4096, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
-    [kms.KeySpec.HMAC_224, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
-    [kms.KeySpec.HMAC_224, kms.KeyUsage.SIGN_VERIFY, 'SIGN_VERIFY'],
-    [kms.KeySpec.HMAC_256, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
-    [kms.KeySpec.HMAC_256, kms.KeyUsage.SIGN_VERIFY, 'SIGN_VERIFY'],
-    [kms.KeySpec.HMAC_384, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
-    [kms.KeySpec.HMAC_384, kms.KeyUsage.SIGN_VERIFY, 'SIGN_VERIFY'],
-    [kms.KeySpec.HMAC_512, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
-    [kms.KeySpec.HMAC_512, kms.KeyUsage.SIGN_VERIFY, 'SIGN_VERIFY'],
-  ])('invalid combinations of key specs and key usages', (keySpec, keyUsage, expected) => {
+  test.each(generateInvalidKeySpecKeyUsageCombinations())('invalid combinations of key specs and key usages (%s)', ({ keySpec, keyUsage }) => {
     const stack = new cdk.Stack();
 
     expect(() => new kms.Key(stack, 'Key1', { keySpec, keyUsage }))
-      .toThrow(`key spec \'${keySpec}\' is not valid with usage \'${expected}\'`);
+      .toThrow(`key spec \'${keySpec}\' is not valid with usage \'${keyUsage.toString()}\'`);
   });
 
   test('invalid combinations of default key spec and key usage SIGN_VERIFY', () => {
@@ -1181,3 +1158,53 @@ describe('SM2', () => {
     });
   });
 });
+
+
+function generateInvalidKeySpecKeyUsageCombinations() {
+  // Copied from Key class
+  const denyLists = {
+    [KeyUsage.ENCRYPT_DECRYPT]: [
+      KeySpec.ECC_NIST_P256,
+      KeySpec.ECC_NIST_P384,
+      KeySpec.ECC_NIST_P521,
+      KeySpec.ECC_SECG_P256K1,
+      KeySpec.HMAC_224,
+      KeySpec.HMAC_256,
+      KeySpec.HMAC_384,
+      KeySpec.HMAC_512,
+    ],
+    [KeyUsage.SIGN_VERIFY]: [
+      KeySpec.SYMMETRIC_DEFAULT,
+      KeySpec.HMAC_224,
+      KeySpec.HMAC_256,
+      KeySpec.HMAC_384,
+      KeySpec.HMAC_512,
+    ],
+    [KeyUsage.GENERATE_VERIFY_MAC]: [
+      KeySpec.RSA_2048,
+      KeySpec.RSA_3072,
+      KeySpec.RSA_4096,
+      KeySpec.ECC_NIST_P256,
+      KeySpec.ECC_NIST_P384,
+      KeySpec.ECC_NIST_P521,
+      KeySpec.ECC_SECG_P256K1,
+      KeySpec.SYMMETRIC_DEFAULT,
+      KeySpec.SM2,
+    ],
+  };
+  const testCases: { keySpec: KeySpec, keyUsage: KeyUsage, toString: () => string }[] = [];
+  for (const keySpec in KeySpec) {
+    for (const keyUsage in KeyUsage) {
+      if (denyLists[keyUsage as KeyUsage].includes(keySpec as KeySpec)) {
+        testCases.push({
+          keySpec: keySpec as KeySpec,
+          keyUsage: keyUsage as KeyUsage,
+          toString: () => `${keySpec} can not be used for ${keyUsage}`,
+        });
+      }
+    }
+  }
+  // Sorting for debugging purposes to see if test cases match deny list
+  testCases.sort((a, b) => a.keyUsage.localeCompare(b.keyUsage));
+  return testCases;
+}
