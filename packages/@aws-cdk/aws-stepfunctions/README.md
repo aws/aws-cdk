@@ -29,8 +29,8 @@ declare const getStatusLambda: lambda.Function;
 
 const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
   lambdaFunction: submitLambda,
-  // Lambda's result is in the attribute `Payload`
-  outputPath: '$.Payload',
+  // Lambda's result is in the attribute `guid`
+  outputPath: '$.guid',
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
@@ -42,7 +42,7 @@ const getStatus = new tasks.LambdaInvoke(this, 'Get Job Status', {
   // Pass just the field named "guid" into the Lambda, put the
   // Lambda's result in a field called "status" in the response
   inputPath: '$.guid',
-  outputPath: '$.Payload',
+  outputPath: '$.status',
 });
 
 const jobFailed = new sfn.Fail(this, 'Job Failed', {
@@ -101,6 +101,9 @@ permissions added that are required to make all state machine tasks execute
 properly (for example, permissions to invoke any Lambda functions you add to
 your workflow). A role will be created by default, but you can supply an
 existing one as well.
+
+Set the `removalPolicy` prop to `RemovalPolicy.RETAIN` if you want to retain the execution
+history when CloudFormation deletes your state machine.
 
 ## State Machine Data
 
@@ -460,7 +463,7 @@ It's possible that the high-level constructs for the states or `stepfunctions-ta
 the states or service integrations you are looking for. The primary reasons for this lack of
 functionality are:
 
-* A [service integration](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) is available through Amazon States Langauge, but not available as construct
+* A [service integration](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) is available through Amazon States Language, but not available as construct
   classes in the CDK.
 * The state or state properties are available through Step Functions, but are not configurable
   through constructs

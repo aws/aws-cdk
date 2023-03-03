@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "aws-cdk-eks-helm-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a8c67f42394f335140f501d7bd25e9fbe2ef1ab01aa0e76925db88b1f5da303e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/efe0e6bc3feeea333864740608c04489da76bd20395f877733932bad8ccc7a66.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -168,10 +168,7 @@
         "/aws-cdk-eks-helm-test/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "KubectlLayer600207B5"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/Role/Resource": [
@@ -250,6 +247,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Clustercharttestocichart9C188967"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/chart-test-oci-chart-different-release-name/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Clustercharttestocichartdifferentreleasename6D3FD1A1"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/chart-test-skip-crd-installation/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClustercharttestskipcrdinstallationB8323954"
           }
         ],
         "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [

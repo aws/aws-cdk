@@ -70,7 +70,6 @@ env:
           [
             {"area":"package/tools","keywords":["cli","command line","init","synth","diff","bootstrap"],"labels":["package/tools"],"enableGlobalAffixes":false},
             {"area":"@aws-cdk/alexa-ask","keywords":["alexa-ask","alexa"],"labels":["@aws-cdk/alexa-ask"]},
-            {"area":"@aws-cdk/app-delivery","keywords":["app-delivery"],"labels":["@aws-cdk/app-delivery"]},
             {"area":"@aws-cdk/assert","keywords":["assert"],"labels":["@aws-cdk/assert"]},
             {"area":"@aws-cdk/assertions","keywords":["assertions"],"labels":["@aws-cdk/assertions"]},
             {"area":"@aws-cdk/assets","keywords":["assets","staging"],"labels":["@aws-cdk/assets"]},
@@ -138,7 +137,6 @@ env:
             {"area":"@aws-cdk/aws-dms","keywords":["aws-dms","dms"],"labels":["@aws-cdk/aws-dms"]},
             {"area":"@aws-cdk/aws-docdb","keywords":["aws-docdb","docdb"],"labels":["@aws-cdk/aws-docdb"]},
             {"area":"@aws-cdk/aws-dynamodb","keywords":["aws-dynamodb","dynamo-db"],"labels":["@aws-cdk/aws-dynamodb"]},
-            {"area":"@aws-cdk/aws-dynamodb-global","keywords":["aws-dynamodb-global","dynamodb-global"],"labels":["@aws-cdk/aws-dynamodb-global"]},
             {"area":"@aws-cdk/aws-ec2","keywords":["aws-ec2","ec2","vpc","privatesubnet","publicsubnet","vpngateway","vpnconnection","networkacl"],"labels":["@aws-cdk/aws-ec2"]},
             {"area":"@aws-cdk/aws-ecr","keywords":["aws-ecr","ecr"],"labels":["@aws-cdk/aws-ecr"]},
             {"area":"@aws-cdk/aws-ecr-assets","keywords":["aws-ecr-assets","ecrassets"],"labels":["@aws-cdk/aws-ecr-assets"]},

@@ -4,11 +4,12 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, Lazy, Names, Resource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
+import { ListenerAction } from './application-listener-action';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType, ApplicationProtocol, DesyncMitigationMode } from '../shared/enums';
-import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
-import { ListenerAction } from './application-listener-action';
+import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
  * Properties for defining an Application Load Balancer
@@ -97,6 +98,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public readonly connections: ec2.Connections;
   public readonly ipAddressType?: IpAddressType;
   public readonly listeners: ApplicationListener[];
+  public readonly metrics: IApplicationLoadBalancerMetrics;
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
@@ -113,6 +115,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     })];
     this.connections = new ec2.Connections({ securityGroups });
     this.listeners = [];
+    this.metrics = new ApplicationLoadBalancerMetrics(this, this.loadBalancerFullName);
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
@@ -161,14 +164,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * Return the given named metric for this Application Load Balancer
    *
    * @default Average over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.custom`` instead
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/ApplicationELB',
-      metricName,
-      dimensionsMap: { LoadBalancer: this.loadBalancerFullName },
-      ...props,
-    });
+    return this.metrics.custom(metricName, props);
   }
 
   /**
@@ -176,9 +175,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * load balancer and from the load balancer to targets.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.activeConnectionCount`` instead
    */
   public metricActiveConnectionCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.activeConnectionCountSum, props);
+    return this.metrics.activeConnectionCount(props);
   }
 
   /**
@@ -187,39 +187,40 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * mismatch of ciphers or protocols.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.clientTlsNegotiationErrorCount`` instead
    */
   public metricClientTlsNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.clientTlsNegotiationErrorCountSum, props);
+    return this.metrics.clientTlsNegotiationErrorCount(props);
   }
 
   /**
    * The number of load balancer capacity units (LCU) used by your load balancer.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.consumedLCUs`` instead
    */
   public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.consumedLcUsAverage, {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.metrics.consumedLCUs(props);
   }
 
   /**
    * The number of fixed-response actions that were successful.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.httpFixedResponseCount`` instead
    */
   public metricHttpFixedResponseCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.httpFixedResponseCountSum, props);
+    return this.metrics.httpFixedResponseCount(props);
   }
 
   /**
    * The number of redirect actions that were successful.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.httpRedirectCount`` instead
    */
   public metricHttpRedirectCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.httpRedirectCountSum, props);
+    return this.metrics.httpRedirectCount(props);
   }
 
   /**
@@ -227,9 +228,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * in the response location header is larger than 8K.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.httpRedirectUrlLimitExceededCount`` instead
    */
   public metricHttpRedirectUrlLimitExceededCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.httpRedirectUrlLimitExceededCountSum, props);
+    return this.metrics.httpRedirectUrlLimitExceededCount(props);
   }
 
   /**
@@ -238,12 +240,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * This does not include any response codes generated by the targets.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.httpCodeElb`` instead
    */
   public metricHttpCodeElb(code: HttpCodeElb, props?: cloudwatch.MetricOptions) {
-    return this.metric(code, {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.metrics.httpCodeElb(code, props);
   }
 
   /**
@@ -253,30 +253,30 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * This does not include any response codes generated by the load balancer.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.httpCodeTarget`` instead
    */
   public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricOptions) {
-    return this.metric(code, {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.metrics.httpCodeTarget(code, props);
   }
 
   /**
    * The total number of bytes processed by the load balancer over IPv6.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.ipv6ProcessedBytes`` instead
    */
   public metricIpv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.iPv6ProcessedBytesSum, props);
+    return this.metrics.ipv6ProcessedBytes(props);
   }
 
   /**
    * The number of IPv6 requests received by the load balancer.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.ipv6RequestCount`` instead
    */
   public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.iPv6RequestCountSum, props);
+    return this.metrics.ipv6RequestCount(props);
   }
 
   /**
@@ -284,18 +284,20 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * load balancer and from the load balancer to targets.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.newConnectionCount`` instead
    */
   public metricNewConnectionCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.newConnectionCountSum, props);
+    return this.metrics.newConnectionCount(props);
   }
 
   /**
    * The total number of bytes processed by the load balancer over IPv4 and IPv6.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.processedBytes`` instead
    */
   public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.processedBytesSum, props);
+    return this.metrics.processedBytes(props);
   }
 
   /**
@@ -303,9 +305,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * reached its maximum number of connections.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.rejectedConnectionCount`` instead
    */
   public metricRejectedConnectionCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.rejectedConnectionCountSum, props);
+    return this.metrics.rejectedConnectionCount(props);
   }
 
   /**
@@ -314,42 +317,40 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * This count includes only the requests with a response generated by a target of the load balancer.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.requestCount`` instead
    */
   public metricRequestCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.requestCountSum, props);
+    return this.metrics.requestCount(props);
   }
 
   /**
    * The number of rules processed by the load balancer given a request rate averaged over an hour.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.ruleEvaluations`` instead
    */
   public metricRuleEvaluations(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(ApplicationELBMetrics.ruleEvaluationsSum, props);
+    return this.metrics.ruleEvaluations(props);
   }
 
   /**
    * The number of connections that were not successfully established between the load balancer and target.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.targetConnectionErrorCount`` instead
    */
   public metricTargetConnectionErrorCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('TargetConnectionErrorCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.metrics.targetConnectionErrorCount(props);
   }
 
   /**
    * The time elapsed, in seconds, after the request leaves the load balancer until a response from the target is received.
    *
    * @default Average over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.targetResponseTime`` instead
    */
   public metricTargetResponseTime(props?: cloudwatch.MetricOptions) {
-    return this.metric('TargetResponseTime', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metrics.targetResponseTime(props);
   }
 
   /**
@@ -358,12 +359,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * Possible causes include a mismatch of ciphers or protocols.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.targetTLSNegotiationErrorCount`` instead
    */
   public metricTargetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('TargetTLSNegotiationErrorCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.metrics.targetTLSNegotiationErrorCount(props);
   }
 
   /**
@@ -374,12 +373,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * couldn't complete the authentication flow due to an internal error.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.elbAuthError`` instead
    */
   public metricElbAuthError(props?: cloudwatch.MetricOptions) {
-    return this.metric('ELBAuthError', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.metrics.elbAuthError(props);
   }
 
   /**
@@ -388,12 +385,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * once.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.elbAuthFailure`` instead
    */
   public metricElbAuthFailure(props?: cloudwatch.MetricOptions) {
-    return this.metric('ELBAuthFailure', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.metrics.elbAuthFailure(props);
   }
 
   /**
@@ -402,12 +397,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * If one or more of these operations fail, this is the time to failure.
    *
    * @default Average over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.elbAuthLatency`` instead
    */
   public metricElbAuthLatency(props?: cloudwatch.MetricOptions) {
-    return this.metric('ELBAuthLatency', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metrics.elbAuthLatency(props);
   }
 
   /**
@@ -417,9 +410,150 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * after the load balancer has retrieved the user claims from the IdP.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``ApplicationLoadBalancer.metrics.elbAuthSuccess`` instead
+   *
    */
   public metricElbAuthSuccess(props?: cloudwatch.MetricOptions) {
-    return this.metric('ELBAuthSuccess', {
+    return this.metrics.elbAuthSuccess(props);
+  }
+}
+
+class ApplicationLoadBalancerMetrics implements IApplicationLoadBalancerMetrics {
+  private readonly scope: Construct;
+  private readonly loadBalancerFullName: string;
+
+  constructor(scope: Construct, loadBalancerFullName: string) {
+    this.scope = scope;
+    this.loadBalancerFullName = loadBalancerFullName;
+  }
+
+  /**
+   * Return the given named metric for this Application Load Balancer
+   *
+   * @default Average over 5 minutes
+   */
+  public custom(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ApplicationELB',
+      metricName,
+      dimensionsMap: { LoadBalancer: this.loadBalancerFullName },
+      ...props,
+    });
+  }
+
+  public activeConnectionCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.activeConnectionCountSum, props);
+  }
+
+  public clientTlsNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.clientTlsNegotiationErrorCountSum, props);
+  }
+
+  public consumedLCUs(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.consumedLcUsAverage, {
+      statistic: 'sum',
+      ...props,
+    });
+  }
+
+  public httpFixedResponseCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.httpFixedResponseCountSum, props);
+  }
+
+  public httpRedirectCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.httpRedirectCountSum, props);
+  }
+
+  public httpRedirectUrlLimitExceededCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.httpRedirectUrlLimitExceededCountSum, props);
+  }
+
+  public httpCodeElb(code: HttpCodeElb, props?: cloudwatch.MetricOptions) {
+    return this.custom(code, {
+      statistic: 'Sum',
+      ...props,
+    });
+  }
+
+  public httpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricOptions) {
+    return this.custom(code, {
+      statistic: 'Sum',
+      ...props,
+    });
+  }
+
+  public ipv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.iPv6ProcessedBytesSum, props);
+  }
+
+  public ipv6RequestCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.iPv6RequestCountSum, props);
+  }
+
+  public newConnectionCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.newConnectionCountSum, props);
+  }
+
+  public processedBytes(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.processedBytesSum, props);
+  }
+
+  public rejectedConnectionCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.rejectedConnectionCountSum, props);
+  }
+
+  public requestCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.requestCountSum, props);
+  }
+
+  public ruleEvaluations(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(ApplicationELBMetrics.ruleEvaluationsSum, props);
+  }
+
+  public targetConnectionErrorCount(props?: cloudwatch.MetricOptions) {
+    return this.custom('TargetConnectionErrorCount', {
+      statistic: 'Sum',
+      ...props,
+    });
+  }
+
+  public targetResponseTime(props?: cloudwatch.MetricOptions) {
+    return this.custom('TargetResponseTime', {
+      statistic: 'Average',
+      ...props,
+    });
+  }
+
+  public targetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
+    return this.custom('TargetTLSNegotiationErrorCount', {
+      statistic: 'Sum',
+      ...props,
+    });
+  }
+
+  public elbAuthError(props?: cloudwatch.MetricOptions) {
+    return this.custom('ELBAuthError', {
+      statistic: 'Sum',
+      ...props,
+    });
+  }
+
+  public elbAuthFailure(props?: cloudwatch.MetricOptions) {
+    return this.custom('ELBAuthFailure', {
+      statistic: 'Sum',
+      ...props,
+    });
+  }
+
+  public elbAuthLatency(props?: cloudwatch.MetricOptions) {
+    return this.custom('ELBAuthLatency', {
+      statistic: 'Average',
+      ...props,
+    });
+  }
+
+  public elbAuthSuccess(props?: cloudwatch.MetricOptions) {
+    return this.custom('ELBAuthSuccess', {
       statistic: 'Sum',
       ...props,
     });
@@ -427,11 +561,12 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   private cannedMetric(
     fn: (dims: { LoadBalancer: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    props?: cloudwatch.MetricOptions,
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({ LoadBalancer: this.loadBalancerFullName }),
       ...props,
-    }).attachTo(this);
+    }).attachTo(this.scope);
   }
 }
 
@@ -487,6 +622,199 @@ export enum HttpCodeTarget {
 }
 
 /**
+ * Contains all metrics for an Application Load Balancer.
+ */
+export interface IApplicationLoadBalancerMetrics {
+
+  /**
+   * Return the given named metric for this Application Load Balancer
+   *
+   * @default Average over 5 minutes
+   */
+  custom(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of concurrent TCP connections active from clients to the
+   * load balancer and from the load balancer to targets.
+   *
+   * @default Sum over 5 minutes
+   */
+  activeConnectionCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of TLS connections initiated by the client that did not
+   * establish a session with the load balancer. Possible causes include a
+   * mismatch of ciphers or protocols.
+   *
+   * @default Sum over 5 minutes
+   */
+  clientTlsNegotiationErrorCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of load balancer capacity units (LCU) used by your load balancer.
+   *
+   * @default Sum over 5 minutes
+   */
+  consumedLCUs(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of fixed-response actions that were successful.
+   *
+   * @default Sum over 5 minutes
+   */
+  httpFixedResponseCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of redirect actions that were successful.
+   *
+   * @default Sum over 5 minutes
+   */
+  httpRedirectCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of redirect actions that couldn't be completed because the URL
+   * in the response location header is larger than 8K.
+   *
+   * @default Sum over 5 minutes
+   */
+  httpRedirectUrlLimitExceededCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of HTTP 3xx/4xx/5xx codes that originate from the load balancer.
+   *
+   * This does not include any response codes generated by the targets.
+   *
+   * @default Sum over 5 minutes
+   */
+  httpCodeElb(code: HttpCodeElb, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of HTTP 2xx/3xx/4xx/5xx response codes generated by all targets
+   * in the load balancer.
+   *
+   * This does not include any response codes generated by the load balancer.
+   *
+   * @default Sum over 5 minutes
+   */
+  httpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of bytes processed by the load balancer over IPv6.
+   *
+   * @default Sum over 5 minutes
+   */
+  ipv6ProcessedBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of IPv6 requests received by the load balancer.
+   *
+   * @default Sum over 5 minutes
+   */
+  ipv6RequestCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of new TCP connections established from clients to the
+   * load balancer and from the load balancer to targets.
+   *
+   * @default Sum over 5 minutes
+   */
+  newConnectionCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of bytes processed by the load balancer over IPv4 and IPv6.
+   *
+   * @default Sum over 5 minutes
+   */
+  processedBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of connections that were rejected because the load balancer had
+   * reached its maximum number of connections.
+   *
+   * @default Sum over 5 minutes
+   */
+  rejectedConnectionCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of requests processed over IPv4 and IPv6.
+   *
+   * This count includes only the requests with a response generated by a target of the load balancer.
+   *
+   * @default Sum over 5 minutes
+   */
+  requestCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of rules processed by the load balancer given a request rate averaged over an hour.
+   *
+   * @default Sum over 5 minutes
+   */
+  ruleEvaluations(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of connections that were not successfully established between the load balancer and target.
+   *
+   * @default Sum over 5 minutes
+   */
+  targetConnectionErrorCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The time elapsed, in seconds, after the request leaves the load balancer until a response from the target is received.
+   *
+   * @default Average over 5 minutes
+   */
+  targetResponseTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of TLS connections initiated by the load balancer that did not establish a session with the target.
+   *
+   * Possible causes include a mismatch of ciphers or protocols.
+   *
+   * @default Sum over 5 minutes
+   */
+  targetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of user authentications that could not be completed
+   *
+   * Because an authenticate action was misconfigured, the load balancer
+   * couldn't establish a connection with the IdP, or the load balancer
+   * couldn't complete the authentication flow due to an internal error.
+   *
+   * @default Sum over 5 minutes
+   */
+  elbAuthError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of user authentications that could not be completed because the
+   * IdP denied access to the user or an authorization code was used more than
+   * once.
+   *
+   * @default Sum over 5 minutes
+   */
+  elbAuthFailure(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The time elapsed, in milliseconds, to query the IdP for the ID token and user info.
+   *
+   * If one or more of these operations fail, this is the time to failure.
+   *
+   * @default Average over 5 minutes
+   */
+  elbAuthLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of authenticate actions that were successful.
+   *
+   * This metric is incremented at the end of the authentication workflow,
+   * after the load balancer has retrieved the user claims from the IdP.
+   *
+   * @default Sum over 5 minutes
+   */
+  elbAuthSuccess(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+}
+
+/**
  * An application load balancer
  */
 export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnectable {
@@ -514,6 +842,11 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
    * This list is only valid for owned constructs.
    */
   readonly listeners: ApplicationListener[];
+
+  /**
+   * All metrics available for this load balancer
+   */
+  readonly metrics: IApplicationLoadBalancerMetrics;
 
   /**
    * Add a new listener to this load balancer
@@ -592,6 +925,7 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
    * Undefined if optional vpc is not specified.
    */
   public readonly vpc?: ec2.IVpc;
+  public readonly metrics: IApplicationLoadBalancerMetrics;
 
   constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
     super(scope, id, {
@@ -605,6 +939,7 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
         allowAllOutbound: props.securityGroupAllowsAllOutbound,
       })],
     });
+    this.metrics = new ApplicationLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));
   }
 
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
@@ -634,6 +969,7 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
   public readonly vpc?: ec2.IVpc;
+  public readonly metrics: IApplicationLoadBalancerMetrics;
 
   public get listeners(): ApplicationListener[] {
     throw Error('.listeners can only be accessed if the class was constructed as an owned, not looked up, load balancer');
@@ -663,6 +999,7 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
       const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
       this.connections.addSecurityGroup(securityGroup);
     }
+    this.metrics = new ApplicationLoadBalancerMetrics(this, parseLoadBalancerFullName(this.loadBalancerArn));
   }
 
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {

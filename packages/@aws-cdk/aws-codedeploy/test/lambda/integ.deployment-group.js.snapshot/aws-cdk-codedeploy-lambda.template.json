@@ -328,12 +328,6 @@
     "Threshold": 1
    }
   },
-  "BlueGreenDeploymentApplication36C892C0": {
-   "Type": "AWS::CodeDeploy::Application",
-   "Properties": {
-    "ComputePlatform": "Lambda"
-   }
-  },
   "BlueGreenDeploymentServiceRole225851FB": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -427,6 +421,12 @@
     ]
    }
   },
+  "BlueGreenDeploymentApplication36C892C0": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ComputePlatform": "Lambda"
+   }
+  },
   "BlueGreenDeployment5C188134": {
    "Type": "AWS::CodeDeploy::DeploymentGroup",
    "Properties": {
@@ -457,6 +457,96 @@
      ]
     },
     "DeploymentConfigName": "CodeDeployDefault.LambdaLinear10PercentEvery1Minute",
+    "DeploymentStyle": {
+     "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+     "DeploymentType": "BLUE_GREEN"
+    }
+   }
+  },
+  "SecondAlias33D63566": {
+   "Type": "AWS::Lambda::Alias",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "Handler886CB40B"
+    },
+    "FunctionVersion": {
+     "Fn::GetAtt": [
+      "HandlerCurrentVersion93FB80BF4a6a6623436a0664df4549c4c809c243",
+      "Version"
+     ]
+    },
+    "Name": "secondAlias"
+   },
+   "UpdatePolicy": {
+    "CodeDeployLambdaAliasUpdate": {
+     "ApplicationName": {
+      "Ref": "SecondDeploymentApplication1F8C51FE"
+     },
+     "DeploymentGroupName": {
+      "Ref": "SecondDeploymentC270A23D"
+     }
+    }
+   }
+  },
+  "SecondDeploymentServiceRoleAFF1ECD5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codedeploy.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "SecondDeploymentApplication1F8C51FE": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ComputePlatform": "Lambda"
+   }
+  },
+  "SecondDeploymentC270A23D": {
+   "Type": "AWS::CodeDeploy::DeploymentGroup",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "SecondDeploymentApplication1F8C51FE"
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "SecondDeploymentServiceRoleAFF1ECD5",
+      "Arn"
+     ]
+    },
+    "AlarmConfiguration": {
+     "Enabled": false
+    },
+    "AutoRollbackConfiguration": {
+     "Enabled": true,
+     "Events": [
+      "DEPLOYMENT_FAILURE"
+     ]
+    },
+    "DeploymentConfigName": "CodeDeployDefault.LambdaCanary10Percent5Minutes",
     "DeploymentStyle": {
      "DeploymentOption": "WITH_TRAFFIC_CONTROL",
      "DeploymentType": "BLUE_GREEN"

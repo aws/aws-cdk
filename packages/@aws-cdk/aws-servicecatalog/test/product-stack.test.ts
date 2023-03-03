@@ -54,6 +54,32 @@ describe('ProductStack', () => {
     });
   });
 
+  test('Use correct assetPath when outdir is absolute', () => {
+    // GIVEN
+    const app = new cdk.App(
+      { outdir: '/tmp/foobar' },
+    );
+    const mainStack = new cdk.Stack(app, 'MyStackAbsolutePath');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStackAbsolutePath', {
+      assetBucket: testAssetBucket,
+    });
+
+    new lambda.Function(productStack, 'HelloHandler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    expect(assembly.directory).toBe('/tmp/foobar');
+  });
+
   test('Used defined Asset bucket in product stack with nested assets', () => {
     // GIVEN
     const app = new cdk.App(

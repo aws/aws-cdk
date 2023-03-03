@@ -1,8 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Resource, IResource, ArnFormat, Arn, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnDeploymentGroup } from '../codedeploy.generated';
+import { isPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { validateName } from './utils';
+import { IBaseDeploymentConfig } from '../base-deployment-config';
+import { CfnDeploymentGroup } from '../codedeploy.generated';
 
 /**
  * Structural typing, not jsii compatible but doesn't need to be
@@ -51,6 +53,15 @@ export class ImportedDeploymentGroupBase extends Resource {
     super(scope, id, { environmentFromArn: deploymentGroupArn });
     this.deploymentGroupName = deploymentGroupName;
     this.deploymentGroupArn = deploymentGroupArn;
+  }
+
+  /**
+   * Bind DeploymentGroupConfig to the current group, if supported
+   *
+   * @internal
+   */
+  protected _bindDeploymentConfig(config: IBaseDeploymentConfig) {
+    return isPredefinedDeploymentConfig(config) ? config.bindEnvironment(this) : config;
   }
 }
 
@@ -112,6 +123,15 @@ export class DeploymentGroupBase extends Resource {
     });
 
     this.node.addValidation({ validate: () => validateName('Deployment group', this.physicalName) });
+  }
+
+  /**
+   * Bind DeploymentGroupConfig to the current group, if supported
+   *
+   * @internal
+   */
+  protected _bindDeploymentConfig(config: IBaseDeploymentConfig) {
+    return isPredefinedDeploymentConfig(config) ? config.bindEnvironment(this) : config;
   }
 
   /**

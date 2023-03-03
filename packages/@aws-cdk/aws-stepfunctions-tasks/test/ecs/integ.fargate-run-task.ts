@@ -32,7 +32,7 @@ const containerDefinition = taskDefinition.addContainer('TheContainer', {
 
 // Build state machine
 const definition = new sfn.Pass(stack, 'Start', {
-  result: sfn.Result.fromObject({ SomeKey: 'SomeValue' }),
+  result: sfn.Result.fromObject({ SomeKey: 'SomeValue', Timeout: 900 }),
 }).next(
   new tasks.EcsRunTask(stack, 'FargateTask', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
@@ -50,6 +50,16 @@ const definition = new sfn.Pass(stack, 'Start', {
         ],
       },
     ],
+    launchTarget: new tasks.EcsFargateLaunchTarget({
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }),
+    taskTimeout: sfn.Timeout.at('$.Timeout'),
+  }),
+).next(
+  new tasks.EcsRunTask(stack, 'FargeateTaskSetRevisionNumber', {
+    cluster,
+    taskDefinition,
+    revisionNumber: 1,
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     }),

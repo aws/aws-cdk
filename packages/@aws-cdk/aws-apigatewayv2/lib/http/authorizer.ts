@@ -1,10 +1,10 @@
 import { Duration, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IHttpApi } from './api';
+import { IHttpRoute } from './route';
 import { CfnAuthorizer } from '../apigatewayv2.generated';
 
 import { IAuthorizer } from '../common';
-import { IHttpApi } from './api';
-import { IHttpRoute } from './route';
 
 /**
  * Supported Authorizer types

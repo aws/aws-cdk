@@ -4,9 +4,10 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Resource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
-import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
+import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
  * Properties for a network load balancer
@@ -59,6 +60,67 @@ export interface NetworkLoadBalancerLookupOptions extends BaseLoadBalancerLookup
 }
 
 /**
+ * The metrics for a network load balancer.
+ */
+class NetworkLoadBalancerMetrics implements INetworkLoadBalancerMetrics {
+  private readonly loadBalancerFullName: string;
+  private readonly scope: Construct;
+
+  constructor(scope: Construct, loadBalancerFullName: string) {
+    this.scope = scope;
+    this.loadBalancerFullName = loadBalancerFullName;
+  }
+
+  public custom(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/NetworkELB',
+      metricName,
+      dimensionsMap: { LoadBalancer: this.loadBalancerFullName },
+      ...props,
+    }).attachTo(this.scope);
+  }
+
+  public activeFlowCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(NetworkELBMetrics.activeFlowCountAverage, props);
+  }
+
+  public consumedLCUs(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(NetworkELBMetrics.consumedLcUsAverage, {
+      statistic: 'Sum',
+      ...props,
+    });
+  }
+
+  public newFlowCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(NetworkELBMetrics.newFlowCountSum, props);
+  }
+
+  public processedBytes(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(NetworkELBMetrics.processedBytesSum, props);
+  }
+
+  public tcpClientResetCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(NetworkELBMetrics.tcpClientResetCountSum, props);
+  }
+  public tcpElbResetCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(NetworkELBMetrics.tcpElbResetCountSum, props);
+  }
+  public tcpTargetResetCount(props?: cloudwatch.MetricOptions) {
+    return this.cannedMetric(NetworkELBMetrics.tcpTargetResetCountSum, props);
+  }
+
+  private cannedMetric(
+    fn: (dims: { LoadBalancer: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions,
+  ): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ LoadBalancer: this.loadBalancerFullName }),
+      ...props,
+    }).attachTo(this.scope);
+  }
+}
+
+/**
  * Define a new network load balancer
  *
  * @resource AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -80,6 +142,8 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     class Import extends Resource implements INetworkLoadBalancer {
       public readonly loadBalancerArn = attrs.loadBalancerArn;
       public readonly vpc?: ec2.IVpc = attrs.vpc;
+      public readonly metrics: INetworkLoadBalancerMetrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(attrs.loadBalancerArn));
+
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
           loadBalancer: this,
@@ -103,11 +167,14 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     return new Import(scope, id, { environmentFromArn: attrs.loadBalancerArn });
   }
 
+  public readonly metrics: INetworkLoadBalancerMetrics;
+
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
       type: 'network',
     });
 
+    this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
   }
 
@@ -127,6 +194,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * Return the given named metric for this Network Load Balancer
    *
    * @default Average over 5 minutes
+   * @deprecated Use ``NetworkLoadBalancer.metrics.custom`` instead
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
@@ -145,21 +213,20 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * opening a TCP connection to a target counts as a single flow.
    *
    * @default Average over 5 minutes
+   * @deprecated Use ``NetworkLoadBalancer.metrics.activeFlowCount`` instead
    */
   public metricActiveFlowCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(NetworkELBMetrics.activeFlowCountAverage, props);
+    return this.metrics.activeFlowCount(props);
   }
 
   /**
    * The number of load balancer capacity units (LCU) used by your load balancer.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``NetworkLoadBalancer.metrics.activeFlowCount`` instead
    */
   public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(NetworkELBMetrics.consumedLcUsAverage, {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.metrics.consumedLCUs(props);
   }
 
   /**
@@ -192,18 +259,20 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * The total number of new TCP flows (or connections) established from clients to targets in the time period.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``NetworkLoadBalancer.metrics.newFlowCount`` instead
    */
   public metricNewFlowCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(NetworkELBMetrics.newFlowCountSum, props);
+    return this.metrics.newFlowCount(props);
   }
 
   /**
    * The total number of bytes processed by the load balancer, including TCP/IP headers.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``NetworkLoadBalancer.metrics.processedBytes`` instead
    */
   public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(NetworkELBMetrics.processedBytesSum, props);
+    return this.metrics.processedBytes(props);
   }
 
   /**
@@ -212,18 +281,20 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * These resets are generated by the client and forwarded by the load balancer.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``NetworkLoadBalancer.metrics.tcpClientResetCount`` instead
    */
   public metricTcpClientResetCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(NetworkELBMetrics.tcpClientResetCountSum, props);
+    return this.metrics.tcpClientResetCount(props);
   }
 
   /**
    * The total number of reset (RST) packets generated by the load balancer.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``NetworkLoadBalancer.metrics.tcpElbResetCount`` instead
    */
   public metricTcpElbResetCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(NetworkELBMetrics.tcpElbResetCountSum, props);
+    return this.metrics.tcpElbResetCount(props);
   }
 
   /**
@@ -232,19 +303,81 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * These resets are generated by the target and forwarded by the load balancer.
    *
    * @default Sum over 5 minutes
+   * @deprecated Use ``NetworkLoadBalancer.metrics.tcpTargetResetCount`` instead
    */
   public metricTcpTargetResetCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(NetworkELBMetrics.tcpTargetResetCountSum, props);
+    return this.metrics.tcpTargetResetCount(props);
   }
+}
 
-  private cannedMetric(
-    fn: (dims: { LoadBalancer: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      ...fn({ LoadBalancer: this.loadBalancerFullName }),
-      ...props,
-    }).attachTo(this);
-  }
+/**
+ * Contains all metrics for a Network Load Balancer.
+ */
+export interface INetworkLoadBalancerMetrics {
+
+  /**
+   * Return the given named metric for this Network Load Balancer
+   *
+   * @default Average over 5 minutes
+   */
+  custom(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of concurrent TCP flows (or connections) from clients to targets.
+   *
+   * This metric includes connections in the SYN_SENT and ESTABLISHED states.
+   * TCP connections are not terminated at the load balancer, so a client
+   * opening a TCP connection to a target counts as a single flow.
+   *
+   * @default Average over 5 minutes
+   */
+  activeFlowCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of load balancer capacity units (LCU) used by your load balancer.
+   *
+   * @default Sum over 5 minutes
+   */
+  consumedLCUs(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of new TCP flows (or connections) established from clients to targets in the time period.
+   *
+   * @default Sum over 5 minutes
+   */
+  newFlowCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of bytes processed by the load balancer, including TCP/IP headers.
+   *
+   * @default Sum over 5 minutes
+   */
+  processedBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of reset (RST) packets sent from a client to a target.
+   *
+   * These resets are generated by the client and forwarded by the load balancer.
+   *
+   * @default Sum over 5 minutes
+   */
+  tcpClientResetCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of reset (RST) packets generated by the load balancer.
+   *
+   * @default Sum over 5 minutes
+   */
+  tcpElbResetCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of reset (RST) packets sent from a target to a client.
+   *
+   * These resets are generated by the target and forwarded by the load balancer.
+   *
+   * @default Sum over 5 minutes
+   */
+  tcpTargetResetCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -256,6 +389,11 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
    * The VPC this load balancer has been created in (if available)
    */
   readonly vpc?: ec2.IVpc;
+
+  /**
+   * All metrics available for this load balancer
+   */
+  readonly metrics: INetworkLoadBalancerMetrics;
 
   /**
    * Add a listener to this load balancer
@@ -270,6 +408,7 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
   public readonly loadBalancerDnsName: string;
   public readonly loadBalancerArn: string;
   public readonly vpc?: ec2.IVpc;
+  public readonly metrics: INetworkLoadBalancerMetrics;
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
     super(scope, id, { environmentFromArn: props.loadBalancerArn });
@@ -277,6 +416,7 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
     this.loadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
     this.loadBalancerDnsName = props.loadBalancerDnsName;
+    this.metrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));
 
     this.vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
       vpcId: props.vpcId,

@@ -681,6 +681,14 @@
                 "id": "TaskRole",
                 "path": "aws-sfn-tasks-ecs-fargate-integ/TaskDef/TaskRole",
                 "children": {
+                  "ImportTaskRole": {
+                    "id": "ImportTaskRole",
+                    "path": "aws-sfn-tasks-ecs-fargate-integ/TaskDef/TaskRole/ImportTaskRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-sfn-tasks-ecs-fargate-integ/TaskDef/TaskRole/Resource",
@@ -828,6 +836,14 @@
                 "id": "ExecutionRole",
                 "path": "aws-sfn-tasks-ecs-fargate-integ/TaskDef/ExecutionRole",
                 "children": {
+                  "ImportExecutionRole": {
+                    "id": "ImportExecutionRole",
+                    "path": "aws-sfn-tasks-ecs-fargate-integ/TaskDef/ExecutionRole/ImportExecutionRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-sfn-tasks-ecs-fargate-integ/TaskDef/ExecutionRole/Resource",
@@ -1000,6 +1016,50 @@
               "version": "0.0.0"
             }
           },
+          "FargeateTaskSetRevisionNumber": {
+            "id": "FargeateTaskSetRevisionNumber",
+            "path": "aws-sfn-tasks-ecs-fargate-integ/FargeateTaskSetRevisionNumber",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-sfn-tasks-ecs-fargate-integ/FargeateTaskSetRevisionNumber/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-sfn-tasks-ecs-fargate-integ/FargeateTaskSetRevisionNumber/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "aws-sfn-tasks-ecs-fargate-integ/FargeateTaskSetRevisionNumber/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "FargateClusterVpc377E8024"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions-tasks.EcsRunTask",
+              "version": "0.0.0"
+            }
+          },
           "StateMachine": {
             "id": "StateMachine",
             "path": "aws-sfn-tasks-ecs-fargate-integ/StateMachine",
@@ -1008,6 +1068,14 @@
                 "id": "Role",
                 "path": "aws-sfn-tasks-ecs-fargate-integ/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-sfn-tasks-ecs-fargate-integ/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-sfn-tasks-ecs-fargate-integ/StateMachine/Role/Resource",
@@ -1258,7 +1326,7 @@
                       "Fn::Join": [
                         "",
                         [
-                          "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"FargateTask\"},\"FargateTask\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\",\"Timeout\":900},\"Next\":\"FargateTask\"},\"FargateTask\":{\"Next\":\"FargeateTaskSetRevisionNumber\",\"Type\":\"Task\",\"TimeoutSecondsPath\":\"$.Timeout\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
@@ -1284,7 +1352,33 @@
                               "GroupId"
                             ]
                           },
-                          "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}}}}"
+                          "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargeateTaskSetRevisionNumber\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::ecs:runTask\",\"Parameters\":{\"Cluster\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "FargateCluster7CCD5F93",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10:1\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
+                          {
+                            "Ref": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
+                          },
+                          "\",\"",
+                          {
+                            "Ref": "FargateClusterVpcPrivateSubnet2Subnet307CEE57"
+                          },
+                          "\"],\"SecurityGroups\":[\"",
+                          {
+                            "Fn::GetAtt": [
+                              "FargeateTaskSetRevisionNumberSecurityGroup916C9B0B",
+                              "GroupId"
+                            ]
+                          },
+                          "\"]}},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}}}}"
                         ]
                       ]
                     }
@@ -1336,7 +1430,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

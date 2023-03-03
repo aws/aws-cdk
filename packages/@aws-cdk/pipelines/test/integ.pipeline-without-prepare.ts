@@ -4,8 +4,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack, StackProps, RemovalPolicy, Stage, StageProps, DefaultStackSynthesizer } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
-import * as pipelines from '../lib';
 import { PlainStackApp } from './testhelpers';
+import * as pipelines from '../lib';
 
 class MyStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {

@@ -1,9 +1,10 @@
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as sfn from '../lib';
 import { FakeTask } from './private/fake-task';
 import { renderGraph } from './private/render-util';
+import * as sfn from '../lib';
 
 describe('Task base', () => {
   let stack: cdk.Stack;
@@ -23,8 +24,8 @@ describe('Task base', () => {
     // WHEN
     task = new FakeTask(stack, 'my-exciting-task', {
       comment: 'my exciting task',
-      heartbeat: cdk.Duration.seconds(10),
-      timeout: cdk.Duration.minutes(10),
+      heartbeatTimeout: sfn.Timeout.duration(cdk.Duration.seconds(10)),
+      taskTimeout: sfn.Timeout.duration(cdk.Duration.minutes(10)),
     });
 
     // THEN
@@ -49,8 +50,8 @@ describe('Task base', () => {
     const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/example-role');
     task = new FakeTask(stack, 'my-exciting-task', {
       comment: 'my exciting task',
-      heartbeat: cdk.Duration.seconds(10),
-      timeout: cdk.Duration.minutes(10),
+      heartbeatTimeout: sfn.Timeout.duration(cdk.Duration.seconds(10)),
+      taskTimeout: sfn.Timeout.duration(cdk.Duration.minutes(10)),
       credentials: {
         role: sfn.TaskRole.fromRole(role),
       },
@@ -78,8 +79,8 @@ describe('Task base', () => {
     // WHEN
     task = new FakeTask(stack, 'my-exciting-task', {
       comment: 'my exciting task',
-      heartbeat: cdk.Duration.seconds(10),
-      timeout: cdk.Duration.minutes(10),
+      heartbeatTimeout: sfn.Timeout.duration(cdk.Duration.seconds(10)),
+      taskTimeout: sfn.Timeout.duration(cdk.Duration.minutes(10)),
       credentials: {
         role: sfn.TaskRole.fromRoleArnJsonPath('$.Input.RoleArn'),
       },
@@ -309,6 +310,42 @@ describe('Task base', () => {
         'passState': { Type: 'Pass', End: true },
       },
     });
+  });
+
+  test('taskTimeout and heartbeatTimeout specified with a path', () => {
+    // WHEN
+    task = new FakeTask(stack, 'my-exciting-task', {
+      heartbeatTimeout: sfn.Timeout.at('$.heartbeat'),
+      taskTimeout: sfn.Timeout.at('$.timeout'),
+    });
+
+    // THEN
+    expect(renderGraph(task)).toEqual(expect.objectContaining({
+      States: {
+        'my-exciting-task': expect.objectContaining({
+          HeartbeatSecondsPath: '$.heartbeat',
+          TimeoutSecondsPath: '$.timeout',
+        }),
+      },
+    }));
+  });
+
+  testDeprecated('deprecated props timeout and heartbeat still work', () => {
+    // WHEN
+    task = new FakeTask(stack, 'my-exciting-task', {
+      heartbeat: cdk.Duration.seconds(10),
+      timeout: cdk.Duration.minutes(10),
+    });
+
+    // THEN
+    expect(renderGraph(task)).toEqual(expect.objectContaining({
+      States: {
+        'my-exciting-task': expect.objectContaining({
+          HeartbeatSeconds: 10,
+          TimeoutSeconds: 600,
+        }),
+      },
+    }));
   });
 
   test('get named metric for this task', () => {

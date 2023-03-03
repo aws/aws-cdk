@@ -86,7 +86,7 @@
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.109",
+    "@types/aws-lambda": "^8.10.111",
     "@types/jest": "^27.5.2",
     "@types/sinon": "^9.0.11",
     "jest": "^27.5.1",
