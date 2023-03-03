@@ -1,5 +1,6 @@
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
@@ -18,131 +19,133 @@ beforeEach(() => {
   });
 });
 
-test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Node.js code)', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            ZipFile: 'exports.handler = () => {return true}',
-          },
-          Runtime: 'nodejs14.x',
-          FunctionName: 'my-function',
-        },
-      },
-    },
-  });
-  const newCode = 'exports.handler = () => {return false}';
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
+describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('these tests do not depend on the hotswap type', (hotswapMode) => {
+  test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Node.js code)', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
       Resources: {
         Func: {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
-              ZipFile: newCode,
+              ZipFile: 'exports.handler = () => {return true}',
             },
             Runtime: 'nodejs14.x',
             FunctionName: 'my-function',
           },
         },
       },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-    ZipFile: expect.any(Buffer),
-  });
-});
-
-test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Python code)', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            ZipFile: 'def handler(event, context):\n  return True',
+    });
+    const newCode = 'exports.handler = () => {return false}';
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          Func: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                ZipFile: newCode,
+              },
+              Runtime: 'nodejs14.x',
+              FunctionName: 'my-function',
+            },
           },
-          Runtime: 'python3.9',
-          FunctionName: 'my-function',
         },
       },
-    },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+      FunctionName: 'my-function',
+      ZipFile: expect.any(Buffer),
+    });
   });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
+
+  test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Python code)', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
       Resources: {
         Func: {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
-              ZipFile: 'def handler(event, context):\n  return False',
+              ZipFile: 'def handler(event, context):\n  return True',
             },
             Runtime: 'python3.9',
             FunctionName: 'my-function',
           },
         },
       },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-    ZipFile: expect.any(Buffer),
-  });
-});
-
-test('throw a CfnEvaluationException when it receives an unsupported function runtime', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            ZipFile: 'def handler(event:, context:) true end',
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          Func: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                ZipFile: 'def handler(event, context):\n  return False',
+              },
+              Runtime: 'python3.9',
+              FunctionName: 'my-function',
+            },
           },
-          Runtime: 'ruby2.7',
-          FunctionName: 'my-function',
         },
       },
-    },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+      FunctionName: 'my-function',
+      ZipFile: expect.any(Buffer),
+    });
   });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
+
+  test('throw a CfnEvaluationException when it receives an unsupported function runtime', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
       Resources: {
         Func: {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
-              ZipFile: 'def handler(event:, context:) false end',
+              ZipFile: 'def handler(event:, context:) true end',
             },
             Runtime: 'ruby2.7',
             FunctionName: 'my-function',
           },
         },
       },
-    },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          Func: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                ZipFile: 'def handler(event:, context:) false end',
+              },
+              Runtime: 'ruby2.7',
+              FunctionName: 'my-function',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const tryHotswap = hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    await expect(tryHotswap).rejects.toThrow('runtime ruby2.7 is unsupported, only node.js and python runtimes are currently supported.');
   });
-
-  // WHEN
-  const tryHotswap = hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  await expect(tryHotswap).rejects.toThrow('runtime ruby2.7 is unsupported, only node.js and python runtimes are currently supported.');
 });

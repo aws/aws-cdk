@@ -1,4 +1,4 @@
-import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
@@ -217,6 +217,8 @@ export class AccessPoint extends AccessPointBase {
         secondaryGids: props.posixUser.secondaryGids,
       } : undefined,
     });
+
+    Tags.of(this).add('Name', this.node.path);
 
     this.accessPointId = resource.ref;
     this.accessPointArn = Stack.of(scope).formatArn({

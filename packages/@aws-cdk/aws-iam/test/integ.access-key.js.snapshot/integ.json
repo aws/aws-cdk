@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.access-key": {
+    "iam-access-key-1/DefaultTest": {
       "stacks": [
         "integ-iam-access-key-1"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "iam-access-key-1/DefaultTest/DeployAssert",
+      "assertionStackName": "iamaccesskey1DefaultTestDeployAssert00360C89"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

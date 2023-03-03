@@ -1,9 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
-import { debug, warning } from '../logging';
 import { ISDK } from './aws-auth';
-import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap/bootstrap-props';
+import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT, BOOTSTRAP_VARIANT_PARAMETER, DEFAULT_BOOTSTRAP_VARIANT } from './bootstrap/bootstrap-props';
 import { stabilizeStack, CloudFormationStack } from './util/cloudformation';
+import { debug, warning } from '../logging';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -102,6 +102,7 @@ export abstract class ToolkitInfo {
   public abstract readonly bucketUrl: string;
   public abstract readonly bucketName: string;
   public abstract readonly version: number;
+  public abstract readonly variant: string;
   public abstract readonly bootstrapStack: CloudFormationStack;
 
   constructor(protected readonly sdk: ISDK) {
@@ -130,6 +131,10 @@ class ExistingToolkitInfo extends ToolkitInfo {
 
   public get version() {
     return parseInt(this.bootstrapStack.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
+  }
+
+  public get variant() {
+    return this.bootstrapStack.parameters[BOOTSTRAP_VARIANT_PARAMETER] ?? DEFAULT_BOOTSTRAP_VARIANT;
   }
 
   public get parameters(): Record<string, string> {
@@ -255,6 +260,10 @@ class BootstrapStackNotFoundInfo extends ToolkitInfo {
   }
 
   public get version(): number {
+    throw new Error(this.errorMessage);
+  }
+
+  public get variant(): string {
     throw new Error(this.errorMessage);
   }
 

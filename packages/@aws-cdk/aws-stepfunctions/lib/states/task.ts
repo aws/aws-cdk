@@ -1,14 +1,14 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { StateType } from './private/state-type';
+import { renderJsonPath, State } from './state';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { IStepFunctionsTask, StepFunctionsTaskConfig } from '../step-functions-task';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { noEmptyObject } from '../util';
-import { StateType } from './private/state-type';
-import { renderJsonPath, State } from './state';
 
 /**
  * Props that are common to all tasks

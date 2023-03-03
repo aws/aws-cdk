@@ -70,3 +70,4 @@ export * from './validation';
 // class description for more information.
 export * from './private/intrinsic';
 export * from './names';
+export * from './time-zone';

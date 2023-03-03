@@ -19,6 +19,7 @@ const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
 const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties: ResourcePropertiesType = {
+  useColumnIds: true,
   tableName: {
     prefix: tableNamePrefix,
     generateSuffix: 'true',
@@ -132,6 +133,20 @@ describe('create', () => {
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(4),col2 float,col3 float) DISTSTYLE KEY DISTKEY(col1) COMPOUND SORTKEY(col2,col3)`,
+    }));
+  });
+
+  test('serializes table comment in statement', async () => {
+    const event = baseEvent;
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableComment: 'table comment',
+    };
+
+    await manageTable(newResourceProperties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `COMMENT ON TABLE ${tableNamePrefix}${requestIdTruncated} IS 'table comment'`,
     }));
   });
 });
@@ -254,6 +269,59 @@ describe('update', () => {
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `ALTER TABLE ${physicalResourceId} ADD ${newTableColumnName} ${newTableColumnDataType}`,
     }));
+  });
+
+  describe('column name', () => {
+    test('does not replace if column name changed', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [
+            { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+          ],
+        },
+      };
+      const newTableColumnName = 'col2';
+      const newResourceProperties: ResourcePropertiesType = {
+        ...resourceProperties,
+        tableColumns: [
+          { id: 'col1', name: newTableColumnName, dataType: 'varchar(1)' },
+        ],
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO ${newTableColumnName}`,
+      }));
+    });
+
+    test('does not replace if column id assigned, from undefined', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [
+            { name: 'col1', dataType: 'varchar(1)' },
+          ],
+        },
+      };
+      const newResourceProperties: ResourcePropertiesType = {
+        ...resourceProperties,
+        tableColumns: [
+          { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+        ],
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO col1`,
+      }));
+    });
   });
 
   describe('distStyle and distKey', () => {
@@ -502,4 +570,40 @@ describe('update', () => {
     });
   });
 
+  describe('table comment', () => {
+    test('does not replace if comment added on table', async () => {
+      const newComment = 'newComment';
+      const newResourceProperties = {
+        ...resourceProperties,
+        tableComment: newComment,
+      };
+
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `COMMENT ON TABLE ${physicalResourceId} IS '${newComment}'`,
+      }));
+    });
+
+    test('does not replace if comment removed on table', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableComment: 'oldComment',
+        },
+      };
+      const newResourceProperties = {
+        ...resourceProperties,
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `COMMENT ON TABLE ${physicalResourceId} IS NULL`,
+      }));
+    });
+  });
 });

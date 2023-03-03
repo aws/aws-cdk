@@ -2,8 +2,8 @@ import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { Duration } from '@aws-cdk/core';
-import * as eks from '../lib';
 import { testFixtureCluster } from './util';
+import * as eks from '../lib';
 
 /* eslint-disable max-len */
 
@@ -225,6 +225,28 @@ describe('helm chart', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Timeout: '600s' });
+    });
+
+    test('should disable skip crds by default', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
+
+      // THEN
+      const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { SkipCrds: false });
+      expect(Object.keys(charts).length).toEqual(0);
+    });
+    test('should enable atomic operations when specified', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyAtomicChart', { cluster, chart: 'chart', skipCrds: true });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { SkipCrds: true });
     });
   });
 });

@@ -1,8 +1,8 @@
 import { ConstructOrder, Dependable, IConstruct } from 'constructs';
+import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
-import { resolveReferences } from './refs';
 
 /**
  * Prepares the app for synthesis. This function is called by the root `prepare`

@@ -19,6 +19,18 @@
      }
     ]
    }
+  },
+  "QueryDefinitionWithMultipleStatements58A3EF74": {
+   "Type": "AWS::Logs::QueryDefinition",
+   "Properties": {
+    "Name": "QueryDefinitionWithMultipleStatements",
+    "QueryString": "fields @timestamp, @message\n| parse @message \"[*] *\" as loggingType, loggingMessage\n| parse @message \"<*>: *\" as differentLoggingType, differentLoggingMessage\n| filter loggingType = \"ERROR\"\n| filter loggingMessage = \"A very strange error occurred!\"\n| sort @timestamp desc\n| limit 20\n| display loggingMessage",
+    "LogGroupNames": [
+     {
+      "Ref": "LogGroupF5B46931"
+     }
+    ]
+   }
   }
  },
  "Parameters": {

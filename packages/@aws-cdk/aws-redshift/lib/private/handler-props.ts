@@ -20,6 +20,8 @@ export interface TableHandlerProps {
   readonly tableColumns: Column[];
   readonly distStyle?: TableDistStyle;
   readonly sortStyle: TableSortStyle;
+  readonly tableComment?: string;
+  readonly useColumnIds: boolean;
 }
 
 export interface TablePrivilege {

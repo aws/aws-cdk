@@ -3,8 +3,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as sfn from '../lib';
 import { FakeTask } from './private/fake-task';
+import * as sfn from '../lib';
 
 describe('State Machine', () => {
   test('Instantiate Default State Machine', () => {
@@ -501,6 +501,22 @@ describe('State Machine', () => {
       test("the state machine's account is taken from the current stack", () => {
         expect(mach.stateMachineArn.endsWith(':states:stack-region:111111111111:stateMachine:machine-name')).toBeTruthy();
       });
+    });
+  });
+
+  test('with removal policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: new sfn.Pass(stack, 'Pass'),
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::StepFunctions::StateMachine', {
+      DeletionPolicy: 'Retain',
     });
   });
 });

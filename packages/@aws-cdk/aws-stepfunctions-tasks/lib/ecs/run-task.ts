@@ -22,8 +22,17 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    *
    * Note: this must be TaskDefinition, and not ITaskDefinition,
    * as it requires properties that are not known for imported task definitions
+   * If you want to run a RunTask with an imported task definition,
+   * consider using CustomState
    */
   readonly taskDefinition: ecs.TaskDefinition;
+
+  /**
+   * The revision number of ECS task definiton family
+   *
+   * @default - '$latest'
+   */
+  readonly revisionNumber?: number;
 
   /**
    * Container setting overrides
@@ -280,7 +289,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         Cluster: this.props.cluster.clusterArn,
-        TaskDefinition: this.props.taskDefinition.family,
+        TaskDefinition: this.props.revisionNumber === undefined ? this.props.taskDefinition.family : `${this.props.taskDefinition.family}:${this.props.revisionNumber.toString()}`,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
