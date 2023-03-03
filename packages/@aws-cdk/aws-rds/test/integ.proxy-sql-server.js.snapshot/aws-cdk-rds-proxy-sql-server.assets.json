@@ -1,0 +1,19 @@
+{
+  "version": "29.0.0",
+  "files": {
+    "e3138f2844247df5773fdecd63ea82bf35a9a9ec1916f8b6cd87947b114cccf5": {
+      "source": {
+        "path": "aws-cdk-rds-proxy-sql-server.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e3138f2844247df5773fdecd63ea82bf35a9a9ec1916f8b6cd87947b114cccf5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
