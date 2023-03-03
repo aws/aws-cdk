@@ -93,9 +93,9 @@ export async function main() {
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
   await copyTemplateFiles(templateDir, targetDir);
   await makeAwsCdkLib(targetDir);
-  await makeAwsCdkLibInteg(targetDir);
 
   if (fullBuild) await runBuild(targetDir);
+  await makeAwsCdkLibInteg(targetDir);
   await cleanup(targetDir);
 
   if (clean) {
@@ -300,10 +300,33 @@ async function makeAwsCdkLibInteg(dir: string) {
     await rewriteIntegTestImports(item, relativeDepth);
   }));
 
+  // TODO: add these back, or move them to alpha modules
+  const alphaTests: string[] = [
+    'aws-events-targets/test/batch',
+    'aws-stepfunctions-tasks/test/apigateway/integ.call-http-api.ts',
+    'aws-stepfunctions-tasks/test/apigateway/integ.call-http-api.d.ts',
+    'aws-stepfunctions-tasks/test/apigateway/integ.call-http-api.js',
+    'aws-stepfunctions-tasks/test/batch',
+  ];
+
+  alphaTests.forEach(test => {
+    fs.removeSync(path.join(target, test));
+  });
+
+  const searchString = 'import * as AWSCDKAsyncCustomResource';
+  const replaceValue = '/// <reference path="../../../../../../../node_modules/aws-cdk-lib/custom-resources/lib/provider-framework/types.d.ts" />';
+  const rdsFilePath = path.join(target, 'aws-rds', 'test', 'snapshot-handler', 'index.ts');
+
 
   // Add reference to ambient types needed in test
   const crFileTarget = path.join(target, 'custom-resources', 'test', 'provider-framework', 'integration-test-fixtures', 's3-file-handler', 'index.ts');
   await addTypesReference(crFileTarget);
+  await addTypesReference(rdsFilePath, searchString, replaceValue);
+
+  fs.copySync(
+    path.join(source, '..', '@aws-cdk', 'aws-lambda-nodejs', 'tsconfig.json'),
+    path.join(target, 'aws-lambda-nodejs', 'tsconfig.json'),
+  );
 }
 
 async function runBuild(dir: string) {

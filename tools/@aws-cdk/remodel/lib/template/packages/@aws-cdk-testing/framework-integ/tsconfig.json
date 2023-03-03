@@ -12,6 +12,7 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
+        "experimentalDecorators": true,
         "resolveJsonModule": true,
         "composite": true,
         "incremental": true

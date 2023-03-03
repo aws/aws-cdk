@@ -58,14 +58,11 @@ export async function findIntegFiles(dir: string): Promise<IntegPath[]> {
     'custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts',
     'custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts',
     'pipelines/test/testhelpers/assets',
-    'pipelines/test/testhelpers/compliance.ts',
-    'pipelines/test/testhelpers/index.ts',
-    'pipelines/test/testhelpers/legacy-pipeline.ts',
-    'pipelines/test/testhelpers/modern-pipeline.ts',
-    'pipelines/test/testhelpers/matchers.ts',
-    'pipelines/test/testhelpers/test-app.ts',
+    // these are written this way because I don't want the full path
+    // to be updated
     { path: 'aws-apigateway/test/sample-definition.yaml', copy: true },
-    // { path: 'aws-apigateway/test/integ.token-authorizer.handler', copy: true },
+    { path: 'aws-apigateway/test/authorizers/integ.token-authorizer.handler', copy: true },
+    { path: 'aws-apigateway/test/authorizers/integ.request-authorizer.handler', copy: true },
     { path: 'aws-apigateway/test/integ.cors.handler', copy: true },
     { path: 'aws-appsync/test/appsync.none.graphql', copy: true },
     { path: 'aws-appsync/test/appsync.test.graphql', copy: true },
@@ -75,6 +72,8 @@ export async function findIntegFiles(dir: string): Promise<IntegPath[]> {
     { path: 'aws-appsync/test/appsync.js-resolver.graphql', copy: true },
     { path: 'aws-appsync/test/integ.graphql.graphql', copy: true },
     { path: 'aws-appsync/test/verify/lambda-tutorial', copy: true },
+    { path: 'aws-appsync/test/verify/iam-query', copy: true },
+    { path: 'aws-appsync/test/integ-assets', copy: true },
     { path: 'aws-cloudformation/test/core-custom-resource-provider-fixture/index.ts', copy: true },
     { path: 'aws-cloudformation/test/asset-directory-fixture', copy: true },
     { path: 'aws-codebuild/test/build-spec-asset.yml', copy: true },
@@ -82,10 +81,13 @@ export async function findIntegFiles(dir: string): Promise<IntegPath[]> {
     { path: 'aws-codecommit/test/asset-test.zip', copy: true },
     { path: 'aws-codecommit/test/asset-test', copy: true },
     { path: 'aws-codedeploy/test/lambda/handler', copy: true },
+    { path: 'aws-codedeploy/test/lambda/preHook', copy: true },
+    { path: 'aws-codedeploy/test/lambda/postHook', copy: true },
     { path: 'aws-codepipeline-actions/test/cloudformation/test-artifact', copy: true },
     { path: 'aws-codepipeline-actions/test/assets/nodejs.zip', copy: true },
     { path: 'aws-ec2/test/import-certificates-handler/index.ts', copy: true },
     { path: 'aws-ecr-assets/test/demo-image', copy: true },
+    { path: 'aws-ecr-assets/test/demo-image-secret', copy: true },
     { path: 'aws-ecr-assets/test/demo-tarball-hello-world/hello-world.tar', copy: true },
     { path: 'aws-ecs/test/ec2/firelens.conf', copy: true },
     { path: 'aws-ecs/test/demo-envfiles', copy: true },
@@ -102,24 +104,27 @@ export async function findIntegFiles(dir: string): Promise<IntegPath[]> {
     { path: 'aws-lambda/test/docker-arm64-handler', copy: true },
     { path: 'aws-lambda/test/layer-code', copy: true },
     { path: 'aws-lambda-nodejs/test/integ-handlers', copy: true },
-    // { path: 'aws-lambda-nodejs/test/integ-handlers/dependencies.ts', copy: true },
-    // { path: 'aws-lambda-nodejs/test/integ-handlers/pnpm/dependencies-pnpm.ts', copy: true },
-    // { path: 'aws-lambda-nodejs/test/integ-handlers/esm.ts', copy: true },
-    // { path: 'aws-lambda-nodejs/test/integ-handlers/ts-handler.ts', copy: true },
     { path: 'aws-rds/test/snapshot-handler', copy: true },
     { path: 'aws-s3/test/put-objects-handler/index.ts', copy: true },
     { path: 'aws-s3-assets/test/alpine-markdown', copy: true },
     { path: 'aws-s3-assets/test/file-asset.txt', copy: true },
+    { path: 'aws-s3-assets/test/markdown-asset', copy: true },
     { path: 'aws-s3-assets/test/sample-asset-directory', copy: true },
     { path: 'aws-s3-deployment/test/my-website-second', copy: true },
     { path: 'aws-secretsmanager/test/integ.secret-name-parsed.handler/index.js', copy: true },
-    // { path: 'aws-secretsmanager/test/my-website', copy: true },
+    { path: 'aws-s3-deployment/test/my-website', copy: true },
     { path: 'aws-servicecatalog/test/assets', copy: true },
+    { path: 'aws-servicecatalog/test/assetsv2', copy: true },
+    { path: 'aws-servicecatalog/test/product1.template.json', copy: true },
+    { path: 'aws-servicecatalog/test/product2.template.json', copy: true },
     { path: 'aws-stepfunctions-tasks/test/batch/batchjob-image', copy: true },
     { path: 'aws-stepfunctions-tasks/test/ecs/eventhandler-image', copy: true },
     { path: 'aws-stepfunctions-tasks/test/glue/my-glue-script/job.py', copy: true },
     { path: 'aws-stepfunctions-tasks/test/lambda/my-lambda-handler', copy: true },
     { path: 'lambda-layer-kubectl/test/lambda-handler', copy: true },
+    { path: 'lambda-layer-awscli/test/lambda-handler', copy: true },
+    { path: 'lambda-layer-node-proxy-agent/test/lambda-handler', copy: true },
+    { path: 'cloudformation-include/test/test-templates', copy: true },
   ].map((p) => {
     if (typeof p === 'string') {
       return {
@@ -161,6 +166,8 @@ export function rewritePath(importPath: string, currentModule: string, relativeD
     } else {
       newModuleSpecifier = importPath.replace(otherImportPath, 'aws-cdk-lib');
     }
+  } else if (importPath === '@aws-cdk/integ-tests') {
+    newModuleSpecifier = '@aws-cdk/integ-tests-alpha';
   }
 
   return newModuleSpecifier;
@@ -207,6 +214,7 @@ const integRegx = new RegExp('@aws-cdk-testing/framework-integ/test/(.+?)/test')
 // Capture the path that the import refers to
 const importRegex = new RegExp('from [\'"](.*)[\'"]');
 export async function rewriteIntegTestImports(filePath: string, relativeDepth: number) {
+  const libRegx = new RegExp('(?<=.*from ["\'].*)(\/lib.*)(?=["\'])');
   const matches = integRegx.exec(filePath);
   const currentModule = matches?.[1];
   if (!currentModule) throw new Error(`Can't parse module from path ${filePath}`);
@@ -219,25 +227,33 @@ export async function rewriteIntegTestImports(filePath: string, relativeDepth: n
 
       if (importPath) {
         const newPath = rewritePath(importPath, currentModule, relativeDepth);
-        return line.replace(/(?<=.*from ["'])(.*)(?=["'])/, `${newPath}`);
+        return line.replace(/(?<=.*from ["'])(.*)(?=["'])/, `${newPath}`).replace(libRegx, '');
       }
 
-      return line;
+      return line.replace(libRegx, '');
     });
 
   await fs.writeFile(filePath, lines.join('\n'));
 }
 
-export async function addTypesReference(filePath: string) {
+export async function addTypesReference(filePath: string, searchString?: string, replaceValue?: string) {
   const lines = (await fs.readFile(filePath, 'utf8'))
     .split('\n');
 
-  const newContents = [
-    '/// <reference path="../../../../../../../../../node_modules/aws-cdk-lib/custom-resources/lib/provider-framework/types.d.ts" />',
-    ...lines,
-  ].join('\n');
+  let newContents: string[];
+  if (searchString && replaceValue) {
+    newContents = lines.map(line => {
+      if (line.includes(searchString)) return replaceValue;
+      return line;
+    });
+  } else {
+    newContents = [
+      '/// <reference path="../../../../../../../../../node_modules/aws-cdk-lib/custom-resources/lib/provider-framework/types.d.ts" />',
+      ...lines,
+    ];
+  }
 
-  await fs.writeFile(filePath, newContents);
+  await fs.writeFile(filePath, newContents.join('\n'));
 }
 
 // Make some changes to some tests that fail because they are location specific test-origin
@@ -382,6 +398,19 @@ export async function fixUnitTests(dir: string) {
 
   // Copy a bunch of missing files needed for aws-certificatemanager/lambda-packages tests to pass
   const dnsValidatedCertRelativeDir = path.join('lambda-packages', 'dns_validated_certificate_handler');
+  const srcCdkDir = path.join(__dirname, '../../../../packages/@aws-cdk');
+
+  // TODO: these should be updated upstream
+  const copyFiles = [
+    'aws-lambda/test/function.test.ts',
+  ];
+
+  copyFiles.forEach(async file => {
+    await fs.copy(
+      path.join(srcCdkDir, file),
+      path.join(dir, '..', '@aws-cdk', file),
+    );
+  });
   await fs.copy(
     path.join(dir, '..', '@aws-cdk/aws-certificatemanager', dnsValidatedCertRelativeDir),
     path.join(dir, 'aws-certificatemanager', dnsValidatedCertRelativeDir),
