@@ -391,6 +391,109 @@ test('custom environment secrets and start commands are allowed for imageConfigu
   });
 });
 
+test('custom environment variables can be added with .addEnvironmentVariable() without first defining them in props', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: {
+        startCommand: '/root/start-command.sh',
+      },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  // WHEN
+  service.addEnvironmentVariable('TEST_ENVIRONMENT_VARIABLE', 'test environment variable value');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
+          RuntimeEnvironmentVariables: [
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE',
+              Value: 'test environment variable value',
+            },
+          ],
+          StartCommand: '/root/start-command.sh',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
+  });
+});
+
+test('custom environment secrets can be added with .addSecret() without first defining them in props', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: {
+        startCommand: '/root/start-command.sh',
+      },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  // WHEN
+  service.addSecret('LATER_SECRET', apprunner.Secret.fromSecretsManager(secret, 'field'));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
+          RuntimeEnvironmentSecrets: [
+            {
+              Name: 'LATER_SECRET',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':field::',
+                  ],
+                ],
+              },
+            },
+          ],
+          StartCommand: '/root/start-command.sh',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
+    InstanceConfiguration: {
+      InstanceRoleArn: {
+        'Fn::GetAtt': [
+          'DemoServiceInstanceRoleFCED1725',
+          'Arn',
+        ],
+      },
+    },
+  });
+});
+
 test('create a service from existing ECR repository(image repository type: ECR)', () => {
   // GIVEN
   const app = new cdk.App();
@@ -871,6 +974,22 @@ test('environment variable with a prefix of AWSAPPRUNNER should throw an error',
   }).toThrow('Environment variable key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
 });
 
+test('environment variable with a prefix of AWSAPPRUNNER added later should throw an error', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  // we should have the service
+  expect(() => {
+    const service = new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+    });
+    service.addEnvironmentVariable('AWSAPPRUNNER_FOO', 'BAR');
+  }).toThrow('Environment variable key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
+});
+
 test('environment secrets with a prefix of AWSAPPRUNNER should throw an error', () => {
   // GIVEN
   const app = new cdk.App();
@@ -890,6 +1009,24 @@ test('environment secrets with a prefix of AWSAPPRUNNER should throw an error', 
         imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
       }),
     });
+  }).toThrow('Environment secret key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
+});
+
+test('environment secrets with a prefix of AWSAPPRUNNER added later should throw an error', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+
+  // WHEN
+  // we should have the service
+  expect(() => {
+    const service = new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+    });
+    service.addSecret('AWSAPPRUNNER_FOO', apprunner.Secret.fromSecretsManager(secret));
   }).toThrow('Environment secret key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
 });
 

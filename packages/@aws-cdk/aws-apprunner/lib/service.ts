@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
+import { Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnService } from './apprunner.generated';
 import { IVpcConnector } from './vpc-connector';
@@ -925,16 +926,6 @@ export class Service extends cdk.Resource {
   readonly environment: { [key: string]: string } = {};
 
   /**
-   * Environment variables for this service.
-   */
-  private environmentVariables: { [key: string]: string } = {};
-
-  /**
-   * Environment secrets for this service.
-   */
-  private environmentSecrets: { [key: string]: Secret; } = {};
-
-  /**
    * Environment secrets for this service.
    */
   private readonly secrets: EnvironmentSecret[] = []
@@ -981,16 +972,21 @@ export class Service extends cdk.Resource {
     this.source = source;
     this.props = props;
 
-    this.environmentVariables = this.getEnvironmentVariables();
-    this.environmentSecrets = this.getEnvironmentSecrets();
+    this.instanceRole = this.props.instanceRole;
+
+    const environmentVariables = this.getEnvironmentVariables();
+    const environmentSecrets = this.getEnvironmentSecrets();
+
+    for (const [key, value] of Object.entries(environmentVariables)) {
+      this.addEnvironmentVariable(key, value);
+    }
+    for (const [key, value] of Object.entries(environmentSecrets)) {
+      this.addSecret(key, value);
+    }
 
     // generate an IAM role only when ImageRepositoryType is ECR and props.accessRole is undefined
     this.accessRole = (this.source.imageRepository?.imageRepositoryType == ImageRepositoryType.ECR) ?
       this.props.accessRole ?? this.generateDefaultRole() : undefined;
-
-    // generalte an IAM role only when environmentSecrets has values and props.instanceRole is undefined
-    this.instanceRole = (Object.keys(this.environmentSecrets).length > 0 && !this.props.instanceRole) ?
-      this.createInstanceRole() : this.props.instanceRole;
 
     if (this.source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY &&
       this.source.codeRepository?.codeConfiguration.configurationValues) {
@@ -1001,7 +997,7 @@ export class Service extends cdk.Resource {
       instanceConfiguration: {
         cpu: this.props.cpu?.unit,
         memory: this.props.memory?.unit,
-        instanceRoleArn: this.instanceRole?.roleArn,
+        instanceRoleArn: Lazy.string({ produce: () => this.instanceRole?.roleArn }),
       },
       sourceConfiguration: {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
@@ -1036,6 +1032,9 @@ export class Service extends cdk.Resource {
    * This method adds an environment variable to the App Runner service.
    */
   public addEnvironmentVariable(name: string, value: string) {
+    if (name.startsWith('AWSAPPRUNNER')) {
+      throw new Error(`Environment variable key ${name} with a prefix of AWSAPPRUNNER is not allowed`);
+    }
     this.variables.push({ name: name, value: value });
   }
 
@@ -1043,6 +1042,9 @@ export class Service extends cdk.Resource {
    * This method adds a secret as environment variable to the App Runner service.
    */
   public addSecret(name: string, secret: Secret) {
+    if (name.startsWith('AWSAPPRUNNER')) {
+      throw new Error(`Environment secret key ${name} with a prefix of AWSAPPRUNNER is not allowed`);
+    }
     if (!this.instanceRole) {
       this.instanceRole = this.createInstanceRole();
     }
@@ -1130,20 +1132,14 @@ export class Service extends cdk.Resource {
       port: props.port,
       buildCommand: props.buildCommand,
       runtime: props.runtime.name,
-      runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
-      runtimeEnvironmentSecrets: this.renderEnvironmentSecrets(),
+      runtimeEnvironmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
+      runtimeEnvironmentSecrets: Lazy.any({ produce: () => this.renderEnvironmentSecrets() }),
       startCommand: props.startCommand,
     };
   }
 
   private renderEnvironmentVariables(): EnvironmentVariable[] | undefined {
-    if (Object.keys(this.environmentVariables).length > 0) {
-      for (const [key, value] of Object.entries(this.environmentVariables)) {
-        if (key.startsWith('AWSAPPRUNNER')) {
-          throw new Error(`Environment variable key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
-        }
-        this.variables.push({ name: key, value: value });
-      }
+    if (this.variables.length > 0) {
       return this.variables;
     } else {
       return undefined;
@@ -1151,15 +1147,7 @@ export class Service extends cdk.Resource {
   }
 
   private renderEnvironmentSecrets(): EnvironmentSecret[] | undefined {
-    if (Object.keys(this.environmentSecrets).length > 0 && this.instanceRole) {
-      for (const [key, value] of Object.entries(this.environmentSecrets)) {
-        if (key.startsWith('AWSAPPRUNNER')) {
-          throw new Error(`Environment secret key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
-        }
-
-        value.grantRead(this.instanceRole);
-        this.secrets.push({ name: key, value: value.arn });
-      }
+    if (this.secrets.length > 0 && this.instanceRole) {
       return this.secrets;
     } else {
       return undefined;
@@ -1171,8 +1159,8 @@ export class Service extends cdk.Resource {
       imageConfiguration: {
         port: repo.imageConfiguration?.port?.toString(),
         startCommand: repo.imageConfiguration?.startCommand,
-        runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
-        runtimeEnvironmentSecrets: this.renderEnvironmentSecrets(),
+        runtimeEnvironmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
+        runtimeEnvironmentSecrets: Lazy.any({ produce: () => this.renderEnvironmentSecrets() }),
       },
     });
   }

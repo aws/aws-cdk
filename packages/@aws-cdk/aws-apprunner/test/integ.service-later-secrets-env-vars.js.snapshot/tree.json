@@ -1,0 +1,288 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-apprunner-later-secrets-env-vars": {
+        "id": "integ-apprunner-later-secrets-env-vars",
+        "path": "integ-apprunner-later-secrets-env-vars",
+        "children": {
+          "LaterSecret": {
+            "id": "LaterSecret",
+            "path": "integ-apprunner-later-secrets-env-vars/LaterSecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner-later-secrets-env-vars/LaterSecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "secretString": "{\"password\":\"mySecretPassword\",\"apikey\":\"mySecretApiKey\"}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "Service9": {
+            "id": "Service9",
+            "path": "integ-apprunner-later-secrets-env-vars/Service9",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner-later-secrets-env-vars/Service9/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppRunner::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "sourceConfiguration": {
+                      "authenticationConfiguration": {},
+                      "imageRepository": {
+                        "imageConfiguration": {
+                          "port": "8000",
+                          "runtimeEnvironmentVariables": [
+                            {
+                              "name": "LATER_ENVVAR",
+                              "value": "testNewEnvVar"
+                            }
+                          ],
+                          "runtimeEnvironmentSecrets": [
+                            {
+                              "name": "LATER_SECRET",
+                              "value": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Ref": "LaterSecretF6C54C5B"
+                                    },
+                                    ":apikey::"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "imageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+                        "imageRepositoryType": "ECR_PUBLIC"
+                      }
+                    },
+                    "instanceConfiguration": {
+                      "instanceRoleArn": {
+                        "Fn::GetAtt": [
+                          "Service9InstanceRole8BD2CEE0",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apprunner.CfnService",
+                  "version": "0.0.0"
+                }
+              },
+              "InstanceRole": {
+                "id": "InstanceRole",
+                "path": "integ-apprunner-later-secrets-env-vars/Service9/InstanceRole",
+                "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "integ-apprunner-later-secrets-env-vars/Service9/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apprunner-later-secrets-env-vars/Service9/InstanceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "tasks.apprunner.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "integ-apprunner-later-secrets-env-vars/Service9/InstanceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-apprunner-later-secrets-env-vars/Service9/InstanceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "secretsmanager:DescribeSecret",
+                                    "secretsmanager:GetSecretValue"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "LaterSecretF6C54C5B"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "Service9InstanceRoleDefaultPolicy85BF9E64",
+                            "roles": [
+                              {
+                                "Ref": "Service9InstanceRole8BD2CEE0"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apprunner.Service",
+              "version": "0.0.0"
+            }
+          },
+          "URL9": {
+            "id": "URL9",
+            "path": "integ-apprunner-later-secrets-env-vars/URL9",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-apprunner-later-secrets-env-vars/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-apprunner-later-secrets-env-vars/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "AppRunnerLaterSecretsEnvVars": {
+        "id": "AppRunnerLaterSecretsEnvVars",
+        "path": "AppRunnerLaterSecretsEnvVars",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "AppRunnerLaterSecretsEnvVars/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "AppRunnerLaterSecretsEnvVars/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.252"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "AppRunnerLaterSecretsEnvVars/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "AppRunnerLaterSecretsEnvVars/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "AppRunnerLaterSecretsEnvVars/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.252"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
