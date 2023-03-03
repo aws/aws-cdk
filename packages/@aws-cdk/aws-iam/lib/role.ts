@@ -18,6 +18,7 @@ import { AttachedPolicies, UniqueStringSet } from './private/util';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
+const IAM_ROLE_SYMBOL = Symbol.for('@aws-cdk/packages/aws-iam/lib/role.Role');
 
 /**
  * Properties for defining an IAM Role
@@ -296,6 +297,14 @@ export class Role extends Resource implements IRole {
       ? importedRole
       : new ImmutableRole(scope, id, importedRole, options.addGrantsToResources ?? false);
   }
+
+  /**
+    * Return whether the given object is a Role
+   */
+  public static isRole(x: any) : x is Role {
+    return x !== null && typeof(x) === 'object' && IAM_ROLE_SYMBOL in x;
+  }
+
 
   /**
    * Import an external role by name.
@@ -776,3 +785,9 @@ export interface WithoutPolicyUpdatesOptions {
    */
   readonly addGrantsToResources?: boolean;
 }
+
+Object.defineProperty(Role.prototype, IAM_ROLE_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
