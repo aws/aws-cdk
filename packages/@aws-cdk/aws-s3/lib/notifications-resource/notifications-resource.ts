@@ -1,9 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { NotificationsResourceHandler } from './notifications-resource-handler';
 import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
-import { NotificationsResourceHandler } from './notifications-resource-handler';
 
 interface NotificationsProps {
   /**

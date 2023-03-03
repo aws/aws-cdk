@@ -1,11 +1,11 @@
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IHttpApi } from './api';
 import { CfnStage } from '../apigatewayv2.generated';
 import { StageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
 import { StageBase } from '../common/base';
-import { IHttpApi } from './api';
 
 const DEFAULT_STAGE_NAME = '$default';
 

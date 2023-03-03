@@ -3,8 +3,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as sfn from '../lib';
 import { FakeTask } from './private/fake-task';
+import * as sfn from '../lib';
 
 describe('State Machine', () => {
   test('Instantiate Default State Machine', () => {
