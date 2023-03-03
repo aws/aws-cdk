@@ -6,8 +6,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Aws } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import { EmrContainersStartJobRun } from '../../lib';
-import { ReleaseLabel, VirtualClusterInput } from '../../lib/emrcontainers/start-job-run';
+import { EmrContainersStartJobRun, ReleaseLabel, VirtualClusterInput } from '../../lib';
 
 /**
  * Stack verification steps:

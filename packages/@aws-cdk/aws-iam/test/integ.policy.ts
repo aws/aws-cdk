@@ -1,7 +1,6 @@
 import { App, Stack } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
-import { AccountRootPrincipal, Grant, Policy, PolicyStatement, Role } from '../lib';
-import { User } from '../lib/user';
+import { AccountRootPrincipal, Grant, Policy, PolicyStatement, Role, User } from '../lib';
 
 const app = new App();
 
