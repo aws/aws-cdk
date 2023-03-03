@@ -17,7 +17,7 @@ describe('validations', () => {
   test('validation failure', () => {
     const app = new core.App({
       validationPlugins: [
-        new FakePlugin([{
+        new FakePlugin('test-plugin', [{
           recommendation: 'test recommendation',
           ruleName: 'test-rule',
           violatingResources: [{
@@ -58,7 +58,7 @@ describe('validations', () => {
   test('validation success', () => {
     const app = new core.App({
       validationPlugins: [
-        new FakePlugin([]),
+        new FakePlugin('test-plugin', []),
       ],
     });
     const stack = new core.Stack(app);
@@ -76,7 +76,7 @@ describe('validations', () => {
   test('multiple stacks', () => {
     const app = new core.App({
       validationPlugins: [
-        new FakePlugin([{
+        new FakePlugin('test-plugin', [{
           recommendation: 'test recommendation',
           ruleName: 'test-rule',
           violatingResources: [{
@@ -114,7 +114,7 @@ describe('validations', () => {
   test('multiple constructs', () => {
     const app = new core.App({
       validationPlugins: [
-        new FakePlugin([{
+        new FakePlugin('test-plugin', [{
           recommendation: 'test recommendation',
           ruleName: 'test-rule',
           violatingResources: [{
@@ -138,10 +138,113 @@ describe('validations', () => {
     expect(report).not.toContain('- Construct Path: Default/AnotherResource');
   });
 
+  test('multiple plugins', () => {
+    const app = new core.App({
+      validationPlugins: [
+        new FakePlugin('plugin1', [{
+          recommendation: 'do something',
+          ruleName: 'rule-1',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceName: 'Fake',
+            templatePath: '/path/to/stack.template.json',
+          }],
+        }]),
+        new FakePlugin('plugin2', [{
+          recommendation: 'do another thing',
+          ruleName: 'rule-2',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceName: 'Fake',
+            templatePath: '/path/to/stack.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    expect(() => {
+      app.synth();
+    }).toThrow(/Validation failed/);
+
+    const report = logMock.mock.calls[0][0];
+    expect(report).toEqual(`Validation Report
+-----------------
+
+(Summary)
+
+╔════════╤═════════╗
+║ Status │ failure ║
+╟────────┼─────────╢
+║ Plugin │ plugin1 ║
+╚════════╧═════════╝
+
+
+(Violations)
+
+${reset(red(bright('rule-1 (1 occurrences)')))}
+
+  Occurrences:
+
+    - Construct Path: Default/Fake
+    - Template Path: /path/to/stack.template.json
+    - Creation Stack:
+\t└──  Fake (Default/Fake)
+\t     │ Library: @aws-cdk/core.CfnResource
+\t     │ Library Version: 0.0.0
+\t     │ Location: undefined
+\t     └──  Default (Default)
+\t          │ Library: @aws-cdk/core.Stack
+\t          │ Library Version: 0.0.0
+\t          │ Location: undefined
+    - Resource Name: Fake
+    - Locations:
+      > test-location
+
+  Recommendation: do something
+
+(Summary)
+
+╔════════╤═════════╗
+║ Status │ failure ║
+╟────────┼─────────╢
+║ Plugin │ plugin2 ║
+╚════════╧═════════╝
+
+
+(Violations)
+
+${reset(red(bright('rule-2 (1 occurrences)')))}
+
+  Occurrences:
+
+    - Construct Path: Default/Fake
+    - Template Path: /path/to/stack.template.json
+    - Creation Stack:
+\t└──  Fake (Default/Fake)
+\t     │ Library: @aws-cdk/core.CfnResource
+\t     │ Library Version: 0.0.0
+\t     │ Location: undefined
+\t     └──  Default (Default)
+\t          │ Library: @aws-cdk/core.Stack
+\t          │ Library Version: 0.0.0
+\t          │ Location: undefined
+    - Resource Name: Fake
+    - Locations:
+      > test-location
+
+  Recommendation: do another thing`);
+  });
+
   test('plugin not ready', () => {
     const app = new core.App({
       validationPlugins: [
-        new FakePlugin([], false),
+        new FakePlugin('test-plugin', [], false),
       ],
     });
     const stack = new core.Stack(app);
@@ -176,9 +279,10 @@ describe('validations', () => {
 });
 
 class FakePlugin implements core.IValidationPlugin {
-  public readonly name = 'test-plugin';
+  // public readonly name = 'test-plugin';
 
   constructor(
+    public readonly name: string,
     private readonly violations: ValidationViolationResourceAware[],
     private readonly ready: boolean = true) {}
 
