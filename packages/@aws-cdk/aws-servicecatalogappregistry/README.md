@@ -147,7 +147,7 @@ the example below:
 const app = new App();
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
-    enableCrossAccountStacks: false,
+    enableCrossAccountStacks: true,
     applicationName: 'MyAssociatedApplication',
     env: { account: '123456789012', region: 'us-east-1' },
   })],
