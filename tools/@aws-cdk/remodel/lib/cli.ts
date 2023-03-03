@@ -9,7 +9,7 @@ import {
 } from '@aws-cdk/ubergen';
 import * as fs from 'fs-extra';
 import yargs from 'yargs/yargs';
-import { addTypesReference, findIntegFiles, rewriteIntegTestImports, rewriteCdkLibTestImports } from './util';
+import { addTypesReference, findIntegFiles, rewriteIntegTestImports, fixUnitTests } from './util';
 
 interface PackageJson extends UbgPkgJson {
   readonly scripts: { [key: string]: string };
@@ -123,6 +123,7 @@ async function makeAwsCdkLib(target: string) {
     'cdk-build-tools',
     'pkglint',
     'ubergen',
+    'integ-tests',
   ].map(x => `@aws-cdk/${x}`);
 
   console.log('Calling Ubergen');
@@ -187,13 +188,19 @@ async function makeAwsCdkLib(target: string) {
     { overwrite: true },
   );
 
+  // Fix some problems with unit tests that ubergen wasn't built to handle
+  console.log('Fixing unit tests');
+  await fixUnitTests(awsCdkLibDir);
+
   console.log('Writing new package.json');
   await fs.writeJson(pkgJsonPath, {
     ...pkgJson,
     'jsii': {
       ...pkgJson.jsii,
       excludeTypescript: [
-        ...pkgJson.jsii.excludeTypescript,
+        // Don't include pkgJson.jsii.excludeTypescript because it contains `build-tools` which we do want included
+        // because of nested build-tools dirs used by tests =(
+        'node_modules',
         'scripts',
       ],
     },
@@ -222,9 +229,6 @@ async function makeAwsCdkLib(target: string) {
     'devDependencies': {
       ...filteredDevDeps,
       '@aws-cdk/cfn2ts': '0.0.0',
-      '@aws-cdk/aws-batch': '0.0.0',
-      '@aws-cdk/aws-apigatewayv2': '0.0.0',
-      '@aws-cdk/integ-tests': '0.0.0',
     },
   }, { spaces: 2 });
 
@@ -275,7 +279,7 @@ async function makeAwsCdkLibInteg(dir: string) {
     }),
   );
 
-  await rewriteCdkLibTestImports(source);
+  // await rewriteCdkLibTestImports(source);
 
   console.log('Rewriting relative imports in integration test files');
   // Go through source files and rewrite the imports
