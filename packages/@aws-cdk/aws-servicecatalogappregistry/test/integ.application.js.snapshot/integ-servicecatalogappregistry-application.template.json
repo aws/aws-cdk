@@ -132,7 +132,7 @@
       {
        "Ref": "AWS::Region"
       },
-      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-MyTestApplication"
+      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-TestApplication"
      ]
     ]
    }
