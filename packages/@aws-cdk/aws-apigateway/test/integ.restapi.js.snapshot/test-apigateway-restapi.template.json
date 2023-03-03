@@ -3,6 +3,7 @@
   "myapi4C7BF186": {
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
+    "MinimumCompressionSize": 1024,
     "Name": "my-api"
    }
   },
@@ -55,7 +56,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "myapiDeployment92F2CB4996088bac04ec19d9db88f146f3d88bca": {
+  "myapiDeployment92F2CB496a6dee9579dae89ab3a0b094b4d193eb": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {
@@ -87,7 +88,7 @@
     "CacheClusterEnabled": true,
     "CacheClusterSize": "0.5",
     "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB4996088bac04ec19d9db88f146f3d88bca"
+     "Ref": "myapiDeployment92F2CB496a6dee9579dae89ab3a0b094b4d193eb"
     },
     "Description": "beta stage",
     "MethodSettings": [
@@ -672,7 +673,7 @@
     "MyHandlerServiceRoleFFA06653"
    ]
   },
-  "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d": {
+  "TestDeploymentD77B56860a9c34c1bc306bfbc7d318827eacd1e1": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {
@@ -695,7 +696,7 @@
      "Ref": "myapi4C7BF186"
     },
     "DeploymentId": {
-     "Ref": "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d"
+     "Ref": "TestDeploymentD77B56860a9c34c1bc306bfbc7d318827eacd1e1"
     },
     "StageName": "prod"
    },
