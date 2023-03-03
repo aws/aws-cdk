@@ -9,18 +9,18 @@ import { ResourceIdentifierProperties, ResourcesToImport } from './api/util/clou
 import { error, print, success, warning } from './logging';
 
 /**
- * Parameters that uniquely identify a physical resource of a given type
+ * Set of parameters that uniquely identify a physical resource of a given type
  * for the import operation, example:
  *
  * ```
  * {
- *   "AWS::S3::Bucket": ["BucketName"],
- *   "AWS::IAM::Role": ["RoleName"],
- *   "AWS::EC2::VPC": ["VpcId"]
+ *   "AWS::S3::Bucket": [["BucketName"]],
+ *   "AWS::DynamoDB::GlobalTable": [["TableName"], ["TableArn"], ["TableStreamArn"]],
+ *   "AWS::Route53::KeySigningKey": [["HostedZoneId", "Name"]],
  * }
  * ```
  */
-export type ResourceIdentifiers = { [resourceType: string]: string[] };
+export type ResourceIdentifiers = { [resourceType: string]: string[][] };
 
 /**
  * Mapping of CDK resources (L1 constructs) to physical resources to be imported
@@ -225,7 +225,7 @@ export class ResourceImporter {
     const resourceIdentifierSummaries = await this.cfn.resourceIdentifierSummaries(this.stack, this.options.toolkitStackName);
     for (const summary of resourceIdentifierSummaries) {
       if ('ResourceType' in summary && summary.ResourceType && 'ResourceIdentifiers' in summary && summary.ResourceIdentifiers) {
-        ret[summary.ResourceType] = summary.ResourceIdentifiers;
+        ret[summary.ResourceType] = (summary.ResourceIdentifiers ?? [])?.map(x => x.split(','));
       }
     }
     return ret;
@@ -253,26 +253,30 @@ export class ResourceImporter {
       return undefined;
     }
 
-    const idProps = resourceIdentifiers[resourceType];
-    const resourceProps = chg.resourceDefinition.Properties ?? {};
+    const idPropSets = resourceIdentifiers[resourceType];
 
-    // Find a property that's in the template already
-    const templateIdProp = idProps.find(p => resourceProps[p]);
+    // Retain only literal strings: strip potential CFN intrinsics
+    const resourceProps = Object.fromEntries(Object.entries(chg.resourceDefinition.Properties ?? {})
+      .filter(([_, v]) => typeof v === 'string')) as Record<string, string>;
 
-    if (templateIdProp !== undefined) {
-      // We can auto-import this, but ask the user to confirm. Pick any property we can use, let's do the first one.
-      const candidateProps = { [templateIdProp]: resourceProps[templateIdProp] };
+    // Find property sets that are fully satisfied in the template, ask the user to confirm them
+    const satisfiedPropSets = idPropSets.filter(ps => ps.every(p => resourceProps[p]));
+    for (const satisfiedPropSet of satisfiedPropSets) {
+      const candidateProps = Object.fromEntries(satisfiedPropSet.map(p => [p, resourceProps[p]]));
       const displayCandidateProps = fmtdict(candidateProps);
 
-      if (!await promptly.confirm(
+      if (await promptly.confirm(
         `${chalk.blue(resourceName)} (${resourceType}): import with ${chalk.yellow(displayCandidateProps)} (yes/no) [default: yes]? `,
         { default: 'yes' },
       )) {
-        print(chalk.grey(`Skipping import of ${resourceName}`));
-        return undefined;
+        return candidateProps;
       }
+    }
 
-      return candidateProps;
+    // If we got here and the user rejected all possible things that could work, then apparently they don't want the resource at all
+    if (satisfiedPropSets.length === idPropSets.length) {
+      print(chalk.grey(`Skipping import of ${resourceName}`));
+      return undefined;
     }
 
     // We cannot auto-import this, ask the user for one of the props
@@ -280,25 +284,44 @@ export class ResourceImporter {
     const prefix = `${chalk.blue(resourceName)} (${resourceType})`;
     let preamble;
     let promptPattern;
-    if (idProps.length > 1) {
-      preamble = `${prefix}: enter one of ${idProps.map(x => chalk.blue(x)).join(', ')} to import (all empty to skip)`;
-      promptPattern = `${prefix}: enter %:`;
+    if (idPropSets.length > 1) {
+      preamble = `${prefix}: enter one of ${idPropSets.map(x => chalk.blue(x.join('+'))).join(', ')} to import (all empty to skip)`;
+      promptPattern = `${prefix}: enter %`;
     } else {
-      promptPattern = `${prefix}: enter % to import (empty to skip):`;
+      promptPattern = `${prefix}: enter %`;
     }
 
     // Do the input loop here
     if (preamble) {
       print(preamble);
     }
-    for (const idProp of idProps) {
-      const prompt = promptPattern.replace(/%/, chalk.blue(idProp));
-      const response = (await promptly.prompt(prompt,
-        { default: '', trim: true },
-      ));
+    for (const idProps of idPropSets) {
+      const input: Record<string, string> = {};
+      for (const idProp of idProps) {
+        // If we have a value from the template, use it as default. This will only be a partial
+        // identifier if present, otherwise we would have done the import already above.
+        const defaultValue = typeof resourceProps[idProp] ?? '';
 
-      if (response) {
-        return { [idProp]: response };
+        const prompt = [
+          promptPattern.replace(/%/, chalk.blue(idProp)),
+          defaultValue
+            ? `[${defaultValue}]`
+            : '(empty to skip)',
+        ].join(' ') + ':';
+        const response = await promptly.prompt(prompt,
+          { default: defaultValue, trim: true },
+        );
+
+        if (!response) {
+          break;
+        }
+
+        input[idProp] = response;
+      }
+
+      // If the user gave inputs for all values, we are complete
+      if (Object.keys(input).length === idProps.length) {
+        return input;
       }
     }
 
