@@ -4,25 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
-      "aws-cdk-s3-urls": {
-        "id": "aws-cdk-s3-urls",
-        "path": "aws-cdk-s3-urls",
+      "aws-cdk-domain-name": {
+        "id": "aws-cdk-domain-name",
+        "path": "aws-cdk-domain-name",
         "children": {
           "MyBucket": {
             "id": "MyBucket",
-            "path": "aws-cdk-s3-urls/MyBucket",
+            "path": "aws-cdk-domain-name/MyBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-s3-urls/MyBucket/Resource",
+                "path": "aws-cdk-domain-name/MyBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {}
@@ -40,7 +32,7 @@
           },
           "MyBucket2": {
             "id": "MyBucket2",
-            "path": "aws-cdk-s3-urls/MyBucket2",
+            "path": "aws-cdk-domain-name/MyBucket2",
             "constructInfo": {
               "fqn": "@aws-cdk/aws-s3.BucketBase",
               "version": "0.0.0"
@@ -48,30 +40,108 @@
           },
           "RealBucketDomain": {
             "id": "RealBucketDomain",
-            "path": "aws-cdk-s3-urls/RealBucketDomain",
+            "path": "aws-cdk-domain-name/RealBucketDomain",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "ImportedBucketDomain": {
             "id": "ImportedBucketDomain",
-            "path": "aws-cdk-s3-urls/ImportedBucketDomain",
+            "path": "aws-cdk-domain-name/ImportedBucketDomain",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-domain-name/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-domain-name/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-integ-bucket-domain-name": {
+        "id": "cdk-integ-bucket-domain-name",
+        "path": "cdk-integ-bucket-domain-name",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-bucket-domain-name/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-bucket-domain-name/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.252"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-bucket-domain-name/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-integ-bucket-domain-name/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-integ-bucket-domain-name/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.252"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }
