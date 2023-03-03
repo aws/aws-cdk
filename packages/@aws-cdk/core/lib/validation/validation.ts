@@ -1,4 +1,4 @@
-import { IValidationReport } from './report';
+import { ValidationReport } from './report';
 
 /**
  * Represents a validation plugin that will be executed during synthesis
@@ -12,17 +12,20 @@ import { IValidationReport } from './report';
  *      return true;
  *    }
  *
- *    public validate(context: ValidationContext): void {
- *      const templatePath = context.stack.templateFullPath;
+ *    public validate(context: ValidationContext): ValidationReport {
+ *      const templatePaths = context.templatePaths;
  *      // perform validation on the template
  *      // if there are any failures report them
- *      context.report.addViolation({
- *        ruleName: 'rule-name',
- *        recommendation: 'description of the rule',
- *        violatingResources: [{
- *          resourceName: 'FailingResource',
- *          templatePath,
- *        }],
+ *      return {
+ *        pluginName: this.name,
+ *        success: false,
+ *        violations: [{
+ *          ruleName: 'rule-name',
+ *          recommendation: 'description of the rule',
+ *          violatingResources: [{
+ *            resourceName: 'FailingResource',
+ *            templatePath: '/path/to/stack.template.json',
+ *          }],
  *      });
  *    }
  * }
@@ -39,7 +42,7 @@ export interface IValidationPlugin {
    * validations. This is where the plugin will evaluate the CloudFormation
    * templates for compliance and report and violations
    */
-  validate(context: IValidationContext): void;
+  validate(context: ValidationContext): ValidationReport;
 
   /**
    * This method returns whether or not the plugin is ready to execute
@@ -50,14 +53,7 @@ export interface IValidationPlugin {
 /**
  * Context available to the validation plugin
  */
-export interface IValidationContext {
-  /**
-   * Report emitted by the validation.
-   *
-   * Plugins should interact with this object to generate the report.
-   */
-  readonly report: IValidationReport;
-
+export interface ValidationContext {
   /**
    * The absolute path of all templates to be processed
    */

@@ -1355,10 +1355,10 @@ work. To signal to the framework that it can go ahead and use the plugin, you
 can check whether the CLI is installed by checking the version:
 
 ```ts
-declare function invokeSomeCliVersionCommand(): number;
+declare function invokeCliVersionCommand(): number;
 
 isReady(): boolean {
-  const status = invokeSomeCliVersionCommand();
+  const status = invokeCliVersionCommand();
 
   // exit status of the CLI command
   return status === 0;
@@ -1366,35 +1366,32 @@ isReady(): boolean {
 ```
 
 If the plugin is ready, the framework will call `validate()`, passing a
-`ValidationContext` object. The location of the plugin to be validated is given
-by `templateFullPath`. The context also provides the plugin with a
-`ValidationReport` object. This object represents the report that the user will
-receive at the end of the synthesis. Every violation found by the plugin should
-be added to the report using the `addViolation()` method:
+`ValidationContext` object. The location of the templates to be validated is given
+by `templatePaths`. The plugin should return an instance of `ValidationReport`.
+This object represents the report that the user wil receive at the end of the
+synthesis.
 
 ```ts
-declare context: ValidationContext;
+validate(context: ValidationContext): ValidationReport {
+  // First read the templates using context.templatePaths...
 
-// Using hard-coded values for better clarity:
-context.report.addViolation('MyCheckovPlugin', {
-  ruleName: 'CKV_AWS_117',
-  recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
-  fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
-  violatingResources: [{
-    resourceName: 'MyFunction3BAA72D1',
-    templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
-    locations: 'Properties/VpcConfig',
-  }],
-});
-```
-
-When all violations have been added, the report must be concluded by calling the `submit()` method,
-to indicate whether it represents a failure or success:
-
-```ts
-declare context: ValidationContext;
-
-context.report.submit('MyCheckovPlugin', ValidationReportStatus.FAILURE);
+  // ...then perform the validation, and then compose and return the report.
+  // Using hard-coded values here for better clarity:
+  return {
+    pluginName: 'MyCheckovPlugin',
+    success: false,
+    violations: [{
+      ruleName: 'CKV_AWS_117',
+      recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
+      fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
+      violatingResources: [{
+        resourceName: 'MyFunction3BAA72D1',
+        templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
+        locations: 'Properties/VpcConfig',
+      }],
+    }],
+  };
+}
 ```
 
 > **Note**

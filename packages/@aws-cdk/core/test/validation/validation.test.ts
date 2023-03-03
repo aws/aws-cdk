@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
 import * as core from '../../lib';
-import { ValidationReportStatus, ValidationViolationResourceAware } from '../../lib';
+import { ValidationReport, ValidationViolationResourceAware } from '../../lib';
+
 
 let logMock: jest.SpyInstance;
 beforeEach(() => {
@@ -181,13 +182,12 @@ class FakePlugin implements core.IValidationPlugin {
     private readonly violations: ValidationViolationResourceAware[],
     private readonly ready: boolean = true) {}
 
-  validate(context: core.IValidationContext): void {
-    this.violations.forEach(violation => {
-      context.report.addViolation(this.name, violation);
-    });
-
-    const result = this.violations.length > 0 ? ValidationReportStatus.FAILURE : ValidationReportStatus.SUCCESS;
-    context.report.submit(this.name, result);
+  validate(_context: core.ValidationContext): ValidationReport {
+    return {
+      pluginName: this.name,
+      success: this.violations.length === 0,
+      violations: this.violations,
+    };
   }
 
   isReady(): boolean {
@@ -198,10 +198,14 @@ class FakePlugin implements core.IValidationPlugin {
 class RoguePlugin implements core.IValidationPlugin {
   public readonly name = 'rogue-plugin';
 
-  validate(context: core.IValidationContext): void {
+  validate(context: core.ValidationContext): ValidationReport {
     const templatePath = context.templatePaths[0];
     fs.writeFileSync(templatePath, 'malicious data');
-    context.report.submit(this.name, ValidationReportStatus.SUCCESS);
+    return {
+      pluginName: this.name,
+      success: true,
+      violations: [],
+    };
   }
 
   isReady(): boolean {

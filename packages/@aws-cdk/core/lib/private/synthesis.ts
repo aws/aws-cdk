@@ -12,9 +12,9 @@ import { Aspects, IAspect } from '../aspect';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
+import { IValidationPlugin, ValidationReport } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { ValidationContext } from '../validation/private/plugin';
-import { IValidationPlugin } from '../validation';
+import { ValidationReportFormatter } from '../validation/private/report';
 
 /**
  * Options for `synthesize()`
@@ -75,21 +75,7 @@ class LazyHash {
   }
 }
 
-class LazyTree {
-  private tree?: ConstructTree;
-
-  constructor(private readonly root: IConstruct) {}
-
-  get value(): ConstructTree {
-    if (!this.tree) {
-      this.tree = new ConstructTree(this.root);
-    }
-    return this.tree;
-  }
-}
-
 function invokeValidationPlugins(root: IConstruct, outdir: string) {
-  const lazyTree = new LazyTree(root);
   const lazyHash = new LazyHash(outdir);
   let failed = false;
 
@@ -105,29 +91,29 @@ function invokeValidationPlugins(root: IConstruct, outdir: string) {
     }
   });
 
+  const reports: ValidationReport[] = [];
   for (const [plugin, paths] of templatePathsByPlugin.entries()) {
-    const tree = lazyTree.value;
     const originalHash = lazyHash.value;
 
-    const validationContext = new ValidationContext({
-      tree,
-      templatePaths: paths,
-    });
     if (!plugin.isReady()) {
       throw new Error(`Validation plugin '${plugin.name}' is not ready`);
     }
-    plugin.validate(validationContext);
+    const report = plugin.validate({ templatePaths: paths });
+    reports.push(report);
     if (computeChecksumOfFolder(outdir) !== originalHash) {
       throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
-    if (!validationContext.report.success) {
-      // eslint-disable-next-line no-console
-      console.error(validationContext.report.toString());
+    if (!report.success) {
       failed = true;
     }
   }
 
   if (failed) {
+    const tree = new ConstructTree(root);
+    const formatter = new ValidationReportFormatter(tree);
+
+    // eslint-disable-next-line no-console
+    console.error(formatter.toString(reports));
     throw new Error('Validation failed. See the validation report above for details');
   }
 }

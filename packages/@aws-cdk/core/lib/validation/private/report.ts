@@ -6,106 +6,8 @@ import * as report from '../report';
 /**
  * The report emitted by the plugin after evaluation.
  */
-export class ValidationReport implements report.IValidationReport {
-  private readonly violations = new Map<string, report.ValidationViolationConstructAware[]>();
-  private readonly _summary = new Map<string, report.ValidationReportSummary>();
-
+export class ValidationReportFormatter {
   constructor(private readonly tree: ConstructTree) {}
-
-  public addViolation(pluginName: string, violation: report.ValidationViolationResourceAware) {
-    if (this._summary.has(pluginName)) {
-      throw new Error('Violations cannot be added to report after its submitted');
-    }
-
-    const constructs: report.ValidationViolatingConstruct[] = violation.violatingResources.map(resource => {
-      const constructPath = this.tree.getConstructByResourceName(resource.resourceName)?.node.path;
-      return {
-        constructStack: this.trace(constructPath),
-        constructPath: constructPath ?? 'N/A',
-        locations: resource.locations,
-        resourceName: resource.resourceName,
-        templatePath: resource.templatePath,
-      };
-    });
-
-    const violations = {
-      ruleName: violation.ruleName,
-      recommendation: violation.recommendation,
-      violatingConstructs: constructs,
-      fix: violation.fix,
-    };
-    if (this.violations.has(pluginName)) {
-      const res = this.violations.get(pluginName)!;
-      res.push(violations);
-      this.violations.set(pluginName, res);
-    } else {
-      this.violations.set(pluginName, [violations]);
-    }
-  }
-
-  public submit(pluginName: string, status: report.ValidationReportStatus, metadata?: { readonly [key: string]: string }) {
-    this._summary.set(pluginName, { status, pluginName, metadata });
-  }
-
-  public get success(): boolean {
-    if (this._summary.size === 0) {
-      throw new Error('Unable to determine report status: Report is incomplete. Call \'report.submit\'');
-    }
-    return Array.from(this._summary.values()).every(item => item.status === report.ValidationReportStatus.SUCCESS);
-  }
-
-  public toString(): string {
-    const json = this.toJson();
-    const output = [json.title];
-
-    output.push('-'.repeat(json.title.length));
-    json.pluginReports.forEach(plugin => {
-      output.push('');
-      output.push('(Summary)');
-      output.push('');
-      output.push(table([
-        ['Status', plugin.summary.status],
-        ['Plugin', plugin.summary.pluginName],
-        ...Object.entries(plugin.summary.metadata ?? {}),
-      ]));
-
-      if (plugin.violations) {
-        output.push('');
-        output.push('(Violations)');
-      }
-
-      plugin.violations.forEach((violation) => {
-        const constructs = violation.violatingConstructs;
-        const occurrences = constructs.length;
-        const title = reset(red(bright(`${violation.ruleName} (${occurrences} occurrences)`)));
-        output.push('');
-        output.push(title);
-        output.push('');
-        output.push('  Occurrences:');
-        for (const construct of constructs) {
-          output.push('');
-          output.push(`    - Construct Path: ${construct.constructPath}`);
-          output.push(`    - Template Path: ${construct.templatePath}`);
-          output.push(`    - Creation Stack:\n\t${construct.constructStack}`);
-          output.push(`    - Resource Name: ${construct.resourceName}`);
-          if (construct.locations) {
-            output.push('    - Locations:');
-            for (const location of construct.locations) {
-              output.push(`      > ${location}`);
-            }
-          }
-        }
-        output.push('');
-        output.push(`  Recommendation: ${plugin.violations[0].recommendation}`);
-        if (plugin.violations[0].fix) {
-          output.push(`  How to fix: ${plugin.violations[0].fix}`);
-        }
-      });
-
-    });
-
-    return output.join(os.EOL);
-  }
 
   /**
    * Get the stack trace from the construct node metadata.
@@ -190,24 +92,90 @@ export class ValidationReport implements report.IValidationReport {
     return notAvailableMessage;
   }
 
-  public toJson(): report.ValidationReportJson {
-    if (!this._summary) {
-      throw new Error('Unable to determine report result: Report is incomplete. Call \'report.submit\'');
-    }
-    return {
-      title: 'Validation Report',
-      pluginReports: Array.from(this._summary.values()).map(summary => {
-        const violations = this.violations.get(summary.pluginName);
-        if (!violations) throw new Error('No violations!');
-        return {
-          summary: summary,
-          violations,
-        };
-      }),
-    };
+  public toString(reps: report.ValidationReport[]): string {
+    const json = this.toJson(reps);
+    const output = [json.title];
+
+    output.push('-'.repeat(json.title.length));
+    json.pluginReports.forEach(plugin => {
+      output.push('');
+      output.push('(Summary)');
+      output.push('');
+      output.push(table([
+        ['Status', plugin.summary.status],
+        ['Plugin', plugin.summary.pluginName],
+        ...Object.entries(plugin.summary.metadata ?? {}),
+      ]));
+
+      if (plugin.violations) {
+        output.push('');
+        output.push('(Violations)');
+      }
+
+      plugin.violations.forEach((violation) => {
+        const constructs = violation.violatingConstructs;
+        const occurrences = constructs.length;
+        const title = reset(red(bright(`${violation.ruleName} (${occurrences} occurrences)`)));
+        output.push('');
+        output.push(title);
+        output.push('');
+        output.push('  Occurrences:');
+        for (const construct of constructs) {
+          output.push('');
+          output.push(`    - Construct Path: ${construct.constructPath}`);
+          output.push(`    - Template Path: ${construct.templatePath}`);
+          output.push(`    - Creation Stack:\n\t${construct.constructStack}`);
+          output.push(`    - Resource Name: ${construct.resourceName}`);
+          if (construct.locations) {
+            output.push('    - Locations:');
+            for (const location of construct.locations) {
+              output.push(`      > ${location}`);
+            }
+          }
+        }
+        output.push('');
+        output.push(`  Recommendation: ${plugin.violations[0].recommendation}`);
+        if (plugin.violations[0].fix) {
+          output.push(`  How to fix: ${plugin.violations[0].fix}`);
+        }
+      });
+
+    });
+
+    return output.join(os.EOL);
   }
 
+  public toJson(reps: report.ValidationReport[]): report.ValidationReportJson {
+    return {
+      title: 'Validation Report',
+      pluginReports: reps
+        .filter(rep => rep.violations.length > 0)
+        .map(rep => ({
+          summary: {
+            pluginName: rep.pluginName,
+            status: rep.success ? report.ValidationReportStatus.SUCCESS : report.ValidationReportStatus.FAILURE,
+            metadata: rep.metadata,
+          },
+          violations: rep.violations.map(violation => ({
+            ruleName: violation.ruleName,
+            recommendation: violation.recommendation,
+            fix: violation.fix,
+            violatingConstructs: violation.violatingResources.map(resource => {
+              const constructPath = this.tree.getConstructByResourceName(resource.resourceName)?.node.path;
+              return {
+                constructStack: this.trace(constructPath),
+                constructPath: constructPath ?? 'N/A',
+                locations: resource.locations,
+                resourceName: resource.resourceName,
+                templatePath: resource.templatePath,
+              };
+            }),
+          })),
+        })),
+    };
+  }
 }
+
 
 function reset(s: string) {
   return `${s}\x1b[0m`;

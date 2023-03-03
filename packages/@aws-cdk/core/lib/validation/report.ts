@@ -150,29 +150,28 @@ export interface PluginReportJson {
 /**
  * The report emitted by the plugin after evaluation.
  */
-export interface IValidationReport {
+export interface ValidationReport {
+  /**
+   * List of violations in the report.
+   */
+  readonly violations: ValidationViolationResourceAware[];
+
   /**
    * Whether or not the report was successful.
    */
   readonly success: boolean;
 
   /**
-   * Add a violation to the report.
+   * The name of the plugin that created the report
    */
-  addViolation(pluginName: string, violation: ValidationViolationResourceAware): void;
+  readonly pluginName: string;
 
   /**
-   * Submit the report with a status and additional metadata.
+   * Arbitrary information about the report.
+   *
+   * @default - no metadata
    */
-  submit(pluginName: string, status: ValidationReportStatus, metadata?: { readonly [key: string]: string }): void;
-
-  /**
-   * Transform the report to a well formatted table string.
-   */
-  toString(): string;
-
-  /**
-   * Transform the report into a JSON object.
-   */
-  toJson(): ValidationReportJson;
+  readonly metadata?: { readonly [key: string]: string }
 }
+
+
