@@ -351,6 +351,10 @@ export interface AwsCustomResourceProps {
  *
  */
 export class AwsCustomResource extends Construct implements iam.IGrantable {
+  /**
+   * The uuid of the custom resource provider singleton lambda function.
+   */
+  public static readonly PROVIDER_FUNCTION_UUID = '679f53fa-c002-430c-b0da-5b7982bd2287';
 
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
 
@@ -404,7 +408,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       }),
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
-      uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
+      uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,

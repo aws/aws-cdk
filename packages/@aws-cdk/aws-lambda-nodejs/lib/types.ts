@@ -1,4 +1,4 @@
-import { DockerImage, DockerRunOptions } from '@aws-cdk/core';
+import { BundlingFileAccess, DockerImage, DockerRunOptions } from '@aws-cdk/core';
 
 /**
  * Bundling options
@@ -50,9 +50,9 @@ export interface BundlingOptions extends DockerRunOptions {
    * Configuring a loader for a given file type lets you load that file type with
    * an `import` statement or a `require` call.
    *
-   * @see https://esbuild.github.io/api/#loader
-   *
    * For example, `{ '.png': 'dataurl' }`.
+   *
+   * @see https://esbuild.github.io/api/#loader
    *
    * @default - use esbuild default loaders
    */
@@ -301,6 +301,12 @@ export interface BundlingOptions extends DockerRunOptions {
    * @default - no code is injected
    */
   readonly inject?: string[]
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: BundlingFileAccess;
 }
 
 /**

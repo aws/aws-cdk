@@ -113,7 +113,7 @@ function errorCausedByGoPkg(error: string) {
  * SAM Integration test fixture for CDK - SAM integration test cases
  */
 export function withSamIntegrationFixture(block: (context: SamIntegrationTestFixture) => Promise<void>) {
-  return withAws<TestContext>(withSamIntegrationCdkApp(block));
+  return withAws(withSamIntegrationCdkApp(block));
 }
 
 export class SamIntegrationTestFixture extends TestFixture {

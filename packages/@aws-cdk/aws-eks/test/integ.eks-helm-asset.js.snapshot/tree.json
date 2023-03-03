@@ -755,7 +755,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
-              "version": "2.0.27"
+              "version": "2.0.100"
             }
           },
           "Cluster": {
@@ -1019,7 +1019,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.161"
+                  "version": "10.1.252"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1278,6 +1278,62 @@
                   "fqn": "@aws-cdk/aws-eks.HelmChart",
                   "version": "0.0.0"
                 }
+              },
+              "chart-test-oci-chart-different-release-name": {
+                "id": "chart-test-oci-chart-different-release-name",
+                "path": "aws-cdk-eks-helm-test/Cluster/chart-test-oci-chart-different-release-name",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-helm-test/Cluster/chart-test-oci-chart-different-release-name/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-eks-helm-test/Cluster/chart-test-oci-chart-different-release-name/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-eks.HelmChart",
+                  "version": "0.0.0"
+                }
+              },
+              "chart-test-skip-crd-installation": {
+                "id": "chart-test-skip-crd-installation",
+                "path": "aws-cdk-eks-helm-test/Cluster/chart-test-skip-crd-installation",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-helm-test/Cluster/chart-test-skip-crd-installation/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-eks-helm-test/Cluster/chart-test-skip-crd-installation/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-eks.HelmChart",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -1483,7 +1539,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "73edfa4462023915a2f13bf570acae05c5111817c606f9837f832152920ba517.zip"
+                          "s3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1656,7 +1712,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "73edfa4462023915a2f13bf570acae05c5111817c606f9837f832152920ba517.zip"
+                          "s3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1879,7 +1935,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2100,7 +2156,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2318,7 +2374,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2497,7 +2553,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.161"
+                      "version": "10.1.252"
                     }
                   }
                 },
@@ -2554,7 +2610,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/d6d1ba3a5e916f8041c02da68c6ffa4a86b870b02df526dfde317afefb03ceeb.json"
+                          "/013c608e5aa3f9b7c08666064fdbc7d257f19866887e2ea155c5b189fdfd6f0f.json"
                         ]
                       ]
                     },
@@ -2576,7 +2632,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.161"
+              "version": "10.1.252"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2651,6 +2707,18 @@
                                       "Ref": "AWS::Partition"
                                     },
                                     ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
                                   ]
                                 ]
                               }
@@ -2793,7 +2861,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33.zip"
+                          "s3Key": "92ea03f8b2e779503519f7781d06c03f95b46863db85f5c50a4e7debfd04be02.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -3071,7 +3139,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -3215,7 +3283,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/b2adfcee80934483ec1e58da698bde1057977ee0cb562ff05fedd5ea11901a25.json"
+                          "/228d4002689856d23e839fb690137b828253b51ab0ba4bd84b6ff0d65e1c23ca.json"
                         ]
                       ]
                     },
@@ -3258,7 +3326,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.161"
+              "version": "10.1.252"
             }
           },
           "ChartAsset": {
@@ -3322,7 +3390,7 @@
                 "path": "aws-cdk-eks-helm/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.161"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
@@ -3368,7 +3436,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.161"
+          "version": "10.1.252"
         }
       }
     },

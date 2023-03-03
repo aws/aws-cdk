@@ -1,0 +1,70 @@
+{
+ "Description": "Stack to create AppRegistry application",
+ "Resources": {
+  "DefaultCdkApplication4573D5A3": {
+   "Type": "AWS::ServiceCatalogAppRegistry::Application",
+   "Properties": {
+    "Name": "AppRegistryAssociatedApplication",
+    "Description": "Application containing stacks deployed via CDK.",
+    "Tags": {
+     "managedBy": "CDK_Application_Associator"
+    }
+   }
+  },
+  "AppRegistryAssociation": {
+   "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+   "Properties": {
+    "Application": {
+     "Fn::GetAtt": [
+      "DefaultCdkApplication4573D5A3",
+      "Id"
+     ]
+    },
+    "Resource": {
+     "Ref": "AWS::StackId"
+    },
+    "ResourceType": "CFN_STACK"
+   }
+  }
+ },
+ "Outputs": {
+  "DefaultCdkApplicationApplicationManagerUrl27C138EF": {
+   "Description": "Application manager url for the application created.",
+   "Value": "https://us-east-1.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-AppRegistryAssociatedApplication"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
