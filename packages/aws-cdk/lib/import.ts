@@ -273,8 +273,8 @@ export class ResourceImporter {
       }
     }
 
-    // If we got here and the user rejected all possible things that could work, then apparently they don't want the resource at all
-    if (satisfiedPropSets.length === idPropSets.length) {
+    // If we got here and the user rejected any available identifiers, then apparently they don't want the resource at all
+    if (satisfiedPropSets.length > 0) {
       print(chalk.grey(`Skipping import of ${resourceName}`));
       return undefined;
     }
@@ -317,6 +317,9 @@ export class ResourceImporter {
         }
 
         input[idProp] = response;
+        // Also stick this property into 'resourceProps', so that it may be reused by a subsequent question
+        // (for a different compound identifier that involves the same property). Just a small UX enhancement.
+        resourceProps[idProp] = response;
       }
 
       // If the user gave inputs for all values, we are complete
