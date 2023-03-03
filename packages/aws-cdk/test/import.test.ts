@@ -43,6 +43,35 @@ const STACK_WITH_NAMED_QUEUE = testStack({
   },
 });
 
+const STACK_WITH_GLOBALTABLE_AND_MULTIPROP = testStack({
+  stackName: 'StackWithTable',
+  template: {
+    Resources: {
+      MyTable: {
+        Type: 'AWS::DynamoDB::GlobalTable',
+        Properties: {
+          TableName: 'TheTableName',
+          TableArn: 'ThisFieldDoesntExistInReality',
+          TableStreamArn: 'NorDoesThisOne',
+        },
+      },
+    },
+  },
+});
+
+const STACK_WITH_GLOBALTABLE = testStack({
+  stackName: 'StackWithTable',
+  template: {
+    Resources: {
+      MyTable: {
+        Type: 'AWS::DynamoDB::GlobalTable',
+        Properties: {
+        },
+      },
+    },
+  },
+});
+
 let sdkProvider: MockSdkProvider;
 let deployments: CloudFormationDeployments;
 beforeEach(() => {
@@ -154,6 +183,47 @@ test('asks human to confirm automic import if identifier is in template', async 
   ]);
 });
 
+test('only use one identifier if multiple are in template', async () => {
+  // GIVEN
+  givenCurrentStack(STACK_WITH_GLOBALTABLE_AND_MULTIPROP.stackName, { Resources: {} });
+  const importer = new ResourceImporter(STACK_WITH_GLOBALTABLE_AND_MULTIPROP, deployments);
+  const { additions } = await importer.discoverImportableResources();
+
+  // WHEN
+  promptlyConfirm.mockResolvedValue(true);
+  const importable = await importer.askForResourceIdentifiers(additions);
+
+  // WHEN
+  await importer.importResources(importable, {
+    stack: STACK_WITH_GLOBALTABLE_AND_MULTIPROP,
+  });
+
+  expect(createChangeSetInput?.ResourcesToImport).toEqual([
+    {
+      LogicalResourceId: 'MyTable',
+      ResourceIdentifier: { TableName: 'TheTableName' },
+      ResourceType: 'AWS::DynamoDB::GlobalTable',
+    },
+  ]);
+});
+
+test('only ask user for one identifier if multiple are possible', async () => {
+  // GIVEN
+  givenCurrentStack(STACK_WITH_GLOBALTABLE.stackName, { Resources: {} });
+  const importer = new ResourceImporter(STACK_WITH_GLOBALTABLE, deployments);
+  const { additions } = await importer.discoverImportableResources();
+
+  // WHEN
+  promptlyPrompt.mockResolvedValue('Banana');
+  const importable = await importer.askForResourceIdentifiers(additions);
+
+  // THEN
+  expect(promptlyPrompt).toHaveBeenCalledTimes(1);
+  expect(importable.resourceMap).toEqual({
+    MyTable: { TableName: 'Banana' },
+  });
+});
+
 function givenCurrentStack(stackName: string, template: any) {
   sdkProvider.stubCloudFormation({
     describeStacks() {
@@ -180,6 +250,10 @@ function givenCurrentStack(stackName: string, template: any) {
           {
             ResourceType: 'AWS::SQS::Queue',
             ResourceIdentifiers: ['QueueName'],
+          },
+          {
+            ResourceType: 'AWS::DynamoDB::GlobalTable',
+            ResourceIdentifiers: ['TableName', 'TableArn', 'TableStreamArn'],
           },
         ],
       };

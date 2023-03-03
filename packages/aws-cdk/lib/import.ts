@@ -281,7 +281,7 @@ export class ResourceImporter {
     let preamble;
     let promptPattern;
     if (idProps.length > 1) {
-      preamble = `${prefix}: enter one of ${idProps.map(chalk.blue).join(', ')} to import (all empty to skip)`;
+      preamble = `${prefix}: enter one of ${idProps.map(x => chalk.blue(x)).join(', ')} to import (all empty to skip)`;
       promptPattern = `${prefix}: enter %:`;
     } else {
       promptPattern = `${prefix}: enter % to import (empty to skip):`;
