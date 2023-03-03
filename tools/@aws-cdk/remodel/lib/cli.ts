@@ -200,7 +200,6 @@ async function makeAwsCdkLib(target: string) {
       excludeTypescript: [
         // Don't include pkgJson.jsii.excludeTypescript because it contains `build-tools` which we do want included
         // because of nested build-tools dirs used by tests =(
-        'node_modules',
         'scripts',
       ],
     },
@@ -217,6 +216,7 @@ async function makeAwsCdkLib(target: string) {
     'cdk-build': {
       ...pkgJson['cdk-build'],
       pre: [
+        'npx ts-node region-info/build-tools/generate-static-data.ts',
         '(cp -f $(node -p \'require.resolve(\"aws-sdk/apis/metadata.json\")\') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)',
         '(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)',
         '(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)',
@@ -315,7 +315,7 @@ async function runBuild(dir: string) {
   await e('./build.sh --skip-prereqs --skip-compat --skip-tests');
 
   // Generate the alpha packages
-  await e('./scripts/transform.sh');
+  // await e('./scripts/transform.sh');
 }
 
 async function cleanup(dir: string) {
