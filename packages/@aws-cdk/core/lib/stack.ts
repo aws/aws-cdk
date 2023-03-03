@@ -1417,7 +1417,7 @@ export class Stack extends Construct implements ITaggable {
   private generateStackName() {
     const assembly = Stage.of(this);
     const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
-    return `${prefix}${this.generateStackId(assembly)}`;
+    return `${this.generateStackId(assembly, prefix)}`;
   }
 
   /**
@@ -1432,7 +1432,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Generate an ID with respect to the given container construct.
    */
-  private generateStackId(container: IConstruct | undefined) {
+  private generateStackId(container: IConstruct | undefined, prefix: string='') {
     const rootPath = rootPathTo(this, container);
     const ids = rootPath.map(c => Node.of(c).id);
 
@@ -1440,6 +1440,10 @@ export class Stack extends Construct implements ITaggable {
     // id, so in that case just pretend it's "Stack".
     if (ids.length === 1 && !ids[0]) {
       throw new Error('unexpected: stack id must always be defined');
+    }
+
+    if (prefix != '') {
+      ids[0] = `${prefix}${ids[0]}`;
     }
 
     return makeStackName(ids);
@@ -1629,7 +1633,7 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  * behavior.
  */
 function makeStackName(components: string[]) {
-  if (components.length === 1) { return components[0]; }
+  if (components.length === 1 && components[0].length <= 128) { return components[0]; }
   return makeUniqueResourceName(components, { maxLength: 128 });
 }
 
