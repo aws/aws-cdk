@@ -231,6 +231,15 @@ export class ResourceImporter {
     return ret;
   }
 
+  /**
+   * Ask for the importable identifier for the given resource
+   *
+   * There may be more than one identifier under which a resource can be imported. The `import`
+   * operation needs exactly one of them.
+   *
+   * - If we can get one from the template, we will use one.
+   * - Otherwise, we will ask the user for one of them.
+   */
   private async askForResourceIdentifier(
     resourceIdentifiers: ResourceIdentifiers,
     chg: ImportableResource,
@@ -247,42 +256,54 @@ export class ResourceImporter {
     const idProps = resourceIdentifiers[resourceType];
     const resourceProps = chg.resourceDefinition.Properties ?? {};
 
-    const fixedIdProps = idProps.filter(p => resourceProps[p]);
-    const fixedIdInput: ResourceIdentifierProperties = Object.fromEntries(fixedIdProps.map(p => [p, resourceProps[p]]));
+    // Find a property that's in the template already
+    const templateIdProp = idProps.find(p => resourceProps[p]);
 
-    const missingIdProps = idProps.filter(p => !resourceProps[p]);
-
-    if (missingIdProps.length === 0) {
-      // We can auto-import this, but ask the user to confirm
-      const props = fmtdict(fixedIdInput);
+    if (templateIdProp !== undefined) {
+      // We can auto-import this, but ask the user to confirm. Pick any property we can use, let's do the first one.
+      const candidateProps = { [templateIdProp]: resourceProps[templateIdProp] };
+      const displayCandidateProps = fmtdict(candidateProps);
 
       if (!await promptly.confirm(
-        `${chalk.blue(resourceName)} (${resourceType}): import with ${chalk.yellow(props)} (yes/no) [default: yes]? `,
+        `${chalk.blue(resourceName)} (${resourceType}): import with ${chalk.yellow(displayCandidateProps)} (yes/no) [default: yes]? `,
         { default: 'yes' },
       )) {
         print(chalk.grey(`Skipping import of ${resourceName}`));
         return undefined;
       }
+
+      return candidateProps;
     }
 
-    // Ask the user to provide missing props
-    const userInput: ResourceIdentifierProperties = {};
-    for (const missingIdProp of missingIdProps) {
-      const response = (await promptly.prompt(
-        `${chalk.blue(resourceName)} (${resourceType}): enter ${chalk.blue(missingIdProp)} to import (empty to skip):`,
+    // We cannot auto-import this, ask the user for one of the props
+    // The only difference between these cases is what we print: for multiple properties, we print a preamble
+    const prefix = `${chalk.blue(resourceName)} (${resourceType})`;
+    let preamble;
+    let promptPattern;
+    if (idProps.length > 1) {
+      preamble = `${prefix}: enter one of ${idProps.map(chalk.blue).join(', ')} to import (all empty to skip)`;
+      promptPattern = `${prefix}: enter %:`;
+    } else {
+      promptPattern = `${prefix}: enter % to import (empty to skip):`;
+    }
+
+    // Do the input loop here
+    if (preamble) {
+      print(preamble);
+    }
+    for (const idProp of idProps) {
+      const prompt = promptPattern.replace(/%/, chalk.blue(idProp));
+      const response = (await promptly.prompt(prompt,
         { default: '', trim: true },
       ));
-      if (!response) {
-        print(chalk.grey(`Skipping import of ${resourceName}`));
-        return undefined;
+
+      if (response) {
+        return { [idProp]: response };
       }
-      userInput[missingIdProp] = response;
     }
 
-    return {
-      ...fixedIdInput,
-      ...userInput,
-    };
+    print(chalk.grey(`Skipping import of ${resourceName}`));
+    return undefined;
   }
 
   /**
