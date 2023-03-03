@@ -15,10 +15,14 @@ new ec2.LaunchTemplate(stack, 'LT', {
   instanceMetadataTags: true,
 });
 
+new ec2.LaunchTemplate(stack, 'LTWithMachineImage', {
+  machineImage: ec2.MachineImage.latestAmazonLinux({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  }),
+});
 
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
 });
 
 app.synth();
-

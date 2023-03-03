@@ -1,7 +1,7 @@
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssembly } from '@aws-cdk/cx-api';
-import { App, Aws, CfnMapping, CfnResource, CfnOutput, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { App, Aws, CfnMapping, CfnResource, CfnOutput, Fn, Stack } from '../lib';
 
 describe('mappings', () => {
   test('mappings can be added as another type of entity, and mapping.findInMap can be used to get a token', () => {

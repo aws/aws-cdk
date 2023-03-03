@@ -1,4 +1,5 @@
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Group, Policy, PolicyStatement, User } from '../lib';
 
 const app = new App();
@@ -20,5 +21,9 @@ policy.addStatements(new PolicyStatement({
   resources: [g2.groupArn],
   actions: ['iam:*'],
 }));
+
+new IntegTest(app, 'iam-role-test', {
+  testCases: [stack],
+});
 
 app.synth();

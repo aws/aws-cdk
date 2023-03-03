@@ -11,13 +11,16 @@
     },
     "service": "CloudFormation",
     "api": "describeStacks",
-    "expected": "{\"$StringLike\":\"ProfilingGroupTestStackProfilingGroupWithImplicitlySetName98463923\"}",
-    "actualPath": "Stacks.0.Outputs.1.OutputValue",
+    "expected": "{\"$StringLike\":\"arn:aws:codeguru-profiler:a-region-1:1234567890:profilingGroup/MyAwesomeProfilingGroup\"}",
+    "actualPath": "Stacks.0.Outputs.3.OutputValue",
     "parameters": {
      "StackName": "ProfilingGroupTestStack"
     },
     "flattenResponse": "true",
-    "salt": "1666215338046"
+    "outputPaths": [
+     "Stacks.0.Outputs.3.OutputValue"
+    ],
+    "salt": "1677109923936"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -71,7 +74,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b54b99043c35bd080b9d9d1afce31e3541cf15b679799ba980ed40c837dcb03b.zip"
+     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

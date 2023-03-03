@@ -1,17 +1,18 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
-import { Tag } from '../cdk-toolkit';
-import { debug, warning } from '../logging';
-import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions } from '../util/asset-publishing';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { SdkProvider } from './aws-auth/sdk-provider';
 import { deployStack, DeployStackResult, destroyStack, makeBodyParameterAndUpload, DeploymentMethod } from './deploy-stack';
+import { HotswapMode } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate } from './nested-stack-helpers';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { replaceEnvPlaceholders } from './util/placeholders';
+import { Tag } from '../cdk-toolkit';
+import { debug, warning } from '../logging';
+import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions } from '../util/asset-publishing';
 
 /**
  * SDK obtained by assuming the lookup role
@@ -224,9 +225,9 @@ export interface DeployStackOptions {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - false for regular deployments, true for 'watch' deployments
+   * @default - `HotswapMode.FULL_DEPLOYMENT` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
    */
-  readonly hotswap?: boolean;
+  readonly hotswap?: HotswapMode;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.

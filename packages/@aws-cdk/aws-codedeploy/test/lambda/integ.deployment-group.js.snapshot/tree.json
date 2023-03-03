@@ -16,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "aws-cdk-codedeploy-lambda/Handler/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-codedeploy-lambda/Handler/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-codedeploy-lambda/Handler/ServiceRole/Resource",
@@ -195,6 +203,14 @@
                 "id": "ServiceRole",
                 "path": "aws-cdk-codedeploy-lambda/PreHook/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-codedeploy-lambda/PreHook/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-codedeploy-lambda/PreHook/ServiceRole/Resource",
@@ -372,6 +388,14 @@
                 "id": "ServiceRole",
                 "path": "aws-cdk-codedeploy-lambda/PostHook/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-codedeploy-lambda/PostHook/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-codedeploy-lambda/PostHook/ServiceRole/Resource",
@@ -597,34 +621,18 @@
             "id": "BlueGreenDeployment",
             "path": "aws-cdk-codedeploy-lambda/BlueGreenDeployment",
             "children": {
-              "Application": {
-                "id": "Application",
-                "path": "aws-cdk-codedeploy-lambda/BlueGreenDeployment/Application",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-codedeploy-lambda/BlueGreenDeployment/Application/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CodeDeploy::Application",
-                      "aws:cdk:cloudformation:props": {
-                        "computePlatform": "Lambda"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-codedeploy.CfnApplication",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-codedeploy.LambdaApplication",
-                  "version": "0.0.0"
-                }
-              },
               "ServiceRole": {
                 "id": "ServiceRole",
                 "path": "aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole/Resource",
@@ -750,6 +758,30 @@
                   "version": "0.0.0"
                 }
               },
+              "Application": {
+                "id": "Application",
+                "path": "aws-cdk-codedeploy-lambda/BlueGreenDeployment/Application",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-lambda/BlueGreenDeployment/Application/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::CodeDeploy::Application",
+                      "aws:cdk:cloudformation:props": {
+                        "computePlatform": "Lambda"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-codedeploy.CfnApplication",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codedeploy.LambdaApplication",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-codedeploy-lambda/BlueGreenDeployment/Resource",
@@ -800,6 +832,174 @@
               "version": "0.0.0"
             }
           },
+          "SecondAlias": {
+            "id": "SecondAlias",
+            "path": "aws-cdk-codedeploy-lambda/SecondAlias",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-lambda/SecondAlias/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Alias",
+                  "aws:cdk:cloudformation:props": {
+                    "functionName": {
+                      "Ref": "Handler886CB40B"
+                    },
+                    "functionVersion": {
+                      "Fn::GetAtt": [
+                        "HandlerCurrentVersion93FB80BF4a6a6623436a0664df4549c4c809c243",
+                        "Version"
+                      ]
+                    },
+                    "name": "secondAlias"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnAlias",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-codedeploy-lambda/SecondAlias/ScalingRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Alias",
+              "version": "0.0.0"
+            }
+          },
+          "SecondDeployment": {
+            "id": "SecondDeployment",
+            "path": "aws-cdk-codedeploy-lambda/SecondDeployment",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-codedeploy-lambda/SecondDeployment/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-codedeploy-lambda/SecondDeployment/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-lambda/SecondDeployment/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "codedeploy.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Application": {
+                "id": "Application",
+                "path": "aws-cdk-codedeploy-lambda/SecondDeployment/Application",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-lambda/SecondDeployment/Application/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::CodeDeploy::Application",
+                      "aws:cdk:cloudformation:props": {
+                        "computePlatform": "Lambda"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-codedeploy.CfnApplication",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codedeploy.LambdaApplication",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-lambda/SecondDeployment/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeDeploy::DeploymentGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationName": {
+                      "Ref": "SecondDeploymentApplication1F8C51FE"
+                    },
+                    "serviceRoleArn": {
+                      "Fn::GetAtt": [
+                        "SecondDeploymentServiceRoleAFF1ECD5",
+                        "Arn"
+                      ]
+                    },
+                    "alarmConfiguration": {
+                      "enabled": false
+                    },
+                    "autoRollbackConfiguration": {
+                      "enabled": true,
+                      "events": [
+                        "DEPLOYMENT_FAILURE"
+                      ]
+                    },
+                    "deploymentConfigName": "CodeDeployDefault.LambdaCanary10Percent5Minutes",
+                    "deploymentStyle": {
+                      "deploymentType": "BLUE_GREEN",
+                      "deploymentOption": "WITH_TRAFFIC_CONTROL"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codedeploy.CfnDeploymentGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-codedeploy.LambdaDeploymentGroup",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-codedeploy-lambda/BootstrapVersion",
@@ -827,7 +1027,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.189"
         }
       }
     },

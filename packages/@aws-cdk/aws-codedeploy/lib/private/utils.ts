@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Token, Stack, ArnFormat, Arn, Fn, Aws } from '@aws-cdk/core';
+import { Token, Stack, ArnFormat, Arn, Fn, Aws, IResource } from '@aws-cdk/core';
+import { IPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
@@ -18,11 +19,11 @@ export function nameFromDeploymentGroupArn(deploymentGroupArn: string): string {
   return Fn.select(1, Fn.split('/', components.resourceName ?? ''));
 }
 
-export function arnForDeploymentConfig(name: string): string {
+export function arnForDeploymentConfig(name: string, resource?: IResource): string {
   return Arn.format({
     partition: Aws.PARTITION,
-    account: Aws.ACCOUNT_ID,
-    region: Aws.REGION,
+    account: resource?.env.account ?? Aws.ACCOUNT_ID,
+    region: resource?.env.region ?? Aws.REGION,
     service: 'codedeploy',
     resource: 'deploymentconfig',
     resourceName: name,
@@ -30,8 +31,16 @@ export function arnForDeploymentConfig(name: string): string {
   });
 }
 
-export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure?: boolean):
+export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure: boolean | undefined, removeAlarms = true):
 CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
+  if (removeAlarms) {
+    return {
+      alarms: alarms.length > 0 ? alarms.map(a => ({ name: a.alarmName })) : undefined,
+      enabled: alarms.length > 0,
+      ignorePollAlarmFailure,
+    };
+  }
+
   return alarms.length === 0
     ? undefined
     : {
@@ -41,10 +50,14 @@ CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
     };
 }
 
-export function deploymentConfig(name: string): IBaseDeploymentConfig {
+export function deploymentConfig(name: string): IBaseDeploymentConfig & IPredefinedDeploymentConfig {
   return {
     deploymentConfigName: name,
     deploymentConfigArn: arnForDeploymentConfig(name),
+    bindEnvironment: (resource) => ({
+      deploymentConfigName: name,
+      deploymentConfigArn: arnForDeploymentConfig(name, resource),
+    }),
   };
 }
 

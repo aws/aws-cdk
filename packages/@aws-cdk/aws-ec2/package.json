@@ -88,7 +88,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.109",
+    "@types/aws-lambda": "^8.10.111",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },

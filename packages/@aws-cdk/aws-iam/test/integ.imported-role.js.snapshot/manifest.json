@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "30.0.0",
   "artifacts": {
     "integ-iam-imported-role-role-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -185,7 +185,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c95040b749f0a6e445ac1d86a50fe23443fed7e9a575f80f81c4cc2cea7e1d9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b02399aa2549e4c2298f2f5dff33c108576e084bad5ea80f2e95e8693ff7394b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

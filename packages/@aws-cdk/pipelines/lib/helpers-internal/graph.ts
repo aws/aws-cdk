@@ -1,8 +1,8 @@
 /**
  * A library for nested graphs
  */
-import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 import { topoSort } from './toposort';
+import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 
 export interface GraphNodeProps<A> {
   readonly data?: A;
@@ -251,7 +251,7 @@ export class Graph<A> extends GraphNode<A> {
   /**
    * Return topologically sorted tranches of nodes at this graph level
    */
-  public sortedChildren(): GraphNode<A>[][] {
+  public sortedChildren(fail=true): GraphNode<A>[][] {
     // Project dependencies to current children
     const nodes = this.nodes;
     const projectedDependencies = projectDependencies(this.deepDependencies(), (node) => {
@@ -261,7 +261,7 @@ export class Graph<A> extends GraphNode<A> {
       return nodes.has(node) ? [node] : [];
     });
 
-    return topoSort(nodes, projectedDependencies);
+    return topoSort(nodes, projectedDependencies, fail);
   }
 
   /**
@@ -291,13 +291,21 @@ export class Graph<A> extends GraphNode<A> {
     return topoSort(new Set(projectedDependencies.keys()), projectedDependencies);
   }
 
-  public consoleLog(indent: number = 0) {
-    process.stdout.write(' '.repeat(indent) + this + depString(this) + '\n');
-    for (const node of this.nodes) {
-      if (node instanceof Graph) {
-        node.consoleLog(indent + 2);
-      } else {
-        process.stdout.write(' '.repeat(indent + 2) + node + depString(node) + '\n');
+  public render() {
+    const lines = new Array<string>();
+    recurse(this, '', true);
+    return lines.join('\n');
+
+    function recurse(x: GraphNode<A>, indent: string, last: boolean) {
+      const bullet = last ? '└─' : '├─';
+      const follow = last ? '  ' : '│ ';
+      lines.push(`${indent} ${bullet} ${x}${depString(x)}`);
+      if (x instanceof Graph) {
+        let i = 0;
+        const sortedNodes = Array.prototype.concat.call([], ...x.sortedChildren(false));
+        for (const child of sortedNodes) {
+          recurse(child, `${indent} ${follow} `, i++ == x.nodes.size - 1);
+        }
       }
     }
 
@@ -307,6 +315,79 @@ export class Graph<A> extends GraphNode<A> {
       }
       return '';
     }
+  }
+
+  public renderDot() {
+    const lines = new Array<string>();
+
+    lines.push('digraph G {');
+    lines.push('  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen');
+    lines.push('  # because the layout looks more natural that way.');
+    lines.push('  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.');
+    lines.push('  # To render: `dot -Tsvg input.dot > graph.svg`, open in a browser.');
+    lines.push('  node [shape="box"];');
+    for (const child of this.nodes) {
+      recurse(child);
+    }
+    lines.push('}');
+
+    return lines.join('\n');
+
+    function recurse(node: GraphNode<A>) {
+      let dependencySource;
+
+      if (node instanceof Graph) {
+        lines.push(`${graphBegin(node)} [shape="cds", style="filled", fillcolor="#b7deff"];`);
+        lines.push(`${graphEnd(node)} [shape="cds", style="filled", fillcolor="#b7deff"];`);
+        dependencySource = graphBegin(node);
+      } else {
+        dependencySource = nodeLabel(node);
+        lines.push(`${nodeLabel(node)};`);
+      }
+
+      for (const dep of node.dependencies) {
+        const dst = dep instanceof Graph ? graphEnd(dep) : nodeLabel(dep);
+        lines.push(`${dst} -> ${dependencySource};`);
+      }
+
+      if (node instanceof Graph && node.nodes.size > 0) {
+        for (const child of node.nodes) {
+          recurse(child);
+        }
+
+        // Add dependency arrows between the "subgraph begin" and the first rank of
+        // the children, and the last rank of the children and "subgraph end" nodes.
+        const sortedChildren = node.sortedChildren(false);
+        for (const first of sortedChildren[0]) {
+          const src = first instanceof Graph ? graphBegin(first) : nodeLabel(first);
+          lines.push(`${graphBegin(node)} -> ${src};`);
+        }
+        for (const last of sortedChildren[sortedChildren.length - 1]) {
+          const dst = last instanceof Graph ? graphEnd(last) : nodeLabel(last);
+          lines.push(`${dst} -> ${graphEnd(node)};`);
+        }
+      }
+    }
+
+    function id(node: GraphNode<A>) {
+      return node.rootPath().slice(1).map(n => n.id).join('.');
+    }
+
+    function nodeLabel(node: GraphNode<A>) {
+      return `"${id(node)}"`;
+    }
+
+    function graphBegin(node: Graph<A>) {
+      return `"BEGIN ${id(node)}"`;
+    }
+
+    function graphEnd(node: Graph<A>) {
+      return `"END ${id(node)}"`;
+    }
+  }
+
+  public consoleLog(_indent: number = 0) {
+    process.stdout.write(this.render() + '\n');
   }
 
   /**

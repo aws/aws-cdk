@@ -228,7 +228,7 @@ state machine role's policy. Use it in the case where the call requires more tha
 to be executed:
 
 ```ts
-const detectLabels = new tasks.CallAwsService(stack, 'DetectLabels', {
+const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
   service: 'rekognition',
   action: 'detectLabels',
   iamResources: ['*'],
@@ -907,7 +907,7 @@ new tasks.GlueStartJobRun(this, 'Task', {
   arguments: sfn.TaskInput.fromObject({
     key: 'value',
   }),
-  timeout: Duration.minutes(30),
+  taskTimeout: sfn.Timeout.duration(Duration.minutes(30)),
   notifyDelayAfter: Duration.minutes(5),
 });
 ```

@@ -1,4 +1,4 @@
-import { AssetHashType, DockerImage, DockerRunOptions } from '@aws-cdk/core';
+import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions } from '@aws-cdk/core';
 
 
 /**
@@ -14,6 +14,13 @@ export interface BundlingOptions extends DockerRunOptions {
    * @default Hashes are NOT included in the exported `requirements.txt` file
    */
   readonly poetryIncludeHashes?: boolean;
+
+  /**
+ * List of file patterns to exclude when copying assets from source for bundling.
+ *
+ * @default - Empty list
+ */
+  readonly assetExcludes?: string[];
 
   /**
    * Output path suffix: the suffix for the directory into which the bundled output is written.
@@ -86,6 +93,12 @@ export interface BundlingOptions extends DockerRunOptions {
    * @default - do not run additional commands
    */
   readonly commandHooks?: ICommandHooks;
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: BundlingFileAccess;
 }
 
 /**

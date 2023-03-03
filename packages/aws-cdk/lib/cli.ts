@@ -1,9 +1,14 @@
-import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as chalk from 'chalk';
+import { install as enableSourceMapSupport } from 'source-map-support';
 
 import type { Argv } from 'yargs';
+import { DeploymentMethod } from './api';
+import { HotswapMode } from './api/hotswap/common';
+import { ILock } from './api/util/rwlock';
+import { checkForPlatformWarnings } from './platform-warnings';
+import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
@@ -23,10 +28,6 @@ import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
-import { DeploymentMethod } from './api';
-import { ILock } from './api/util/rwlock';
-import { checkForPlatformWarnings } from './platform-warnings';
-import { enableTracing } from './util/tracing';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -79,7 +80,7 @@ async function parseCommandLineArguments(args: string[]) {
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
-    .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
+    .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable the copy of assets which allows local debugging via the SAM CLI to reference the original source files)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('notices', { type: 'boolean', desc: 'Show relevant notices' })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
@@ -141,6 +142,13 @@ async function parseCommandLineArguments(args: string[]) {
       // Hack to get '-R' as an alias for '--no-rollback', suggested by: https://github.com/yargs/yargs/issues/1729
       .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
       .option('hotswap', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
+          'Do not use this in production environments',
+      })
+      .option('hotswap-fallback', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
           'which skips CloudFormation and updates the resources directly, ' +
@@ -222,9 +230,15 @@ async function parseCommandLineArguments(args: string[]) {
       .option('hotswap', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
-          'which skips CloudFormation and updates the resources directly, ' +
-          'and falls back to a full deployment if that is not possible. ' +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
           "'true' by default, use --no-hotswap to turn off",
+      })
+      .option('hotswap-fallback', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'which skips CloudFormation and updates the resources directly, ' +
+          'and falls back to a full deployment if that is not possible.',
       })
       .options('logs', {
         type: 'boolean',
@@ -285,6 +299,11 @@ if (!process.stdout.isTTY) {
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
   const argv = await parseCommandLineArguments(args);
+
+  if (argv.debug) {
+    enableSourceMapSupport();
+  }
+
   if (argv.verbose) {
     setLogLevel(argv.verbose);
 
@@ -543,7 +562,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
@@ -581,7 +600,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback, true),
           traceLogs: args.logs,
           concurrency: args.concurrency,
         });
@@ -698,6 +717,27 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
     }
     return argv;
   };
+}
+
+function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {
+  if (hotswap && hotswapFallback) {
+    throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
+  } else if (!hotswap && !hotswapFallback) {
+    if (hotswap === undefined && hotswapFallback === undefined) {
+      return watch ? HotswapMode.HOTSWAP_ONLY : HotswapMode.FULL_DEPLOYMENT;
+    } else if (hotswap === false || hotswapFallback === false) {
+      return HotswapMode.FULL_DEPLOYMENT;
+    }
+  }
+
+  let hotswapMode: HotswapMode;
+  if (hotswap) {
+    hotswapMode = HotswapMode.HOTSWAP_ONLY;
+  } else /*if (hotswapFallback)*/ {
+    hotswapMode = HotswapMode.FALL_BACK;
+  }
+
+  return hotswapMode;
 }
 
 export function cli(args: string[] = process.argv.slice(2)) {
