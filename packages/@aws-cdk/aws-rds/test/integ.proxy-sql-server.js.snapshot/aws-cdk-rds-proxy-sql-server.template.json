@@ -602,7 +602,7 @@
     "Auth": [
      {
       "AuthScheme": "SECRETS",
-      "IAMAuth": "DISABLED",
+      "IAMAuth": "REQUIRED",
       "SecretArn": {
        "Ref": "SqlServerDbInstanceSecretAttachment87AE8779"
       }

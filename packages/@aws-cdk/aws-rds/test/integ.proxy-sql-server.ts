@@ -30,6 +30,7 @@ const proxy = new rds.DatabaseProxy(stack, 'DbProxy', {
   secrets: [dbInstance.secret!],
   proxyTarget: rds.ProxyTarget.fromInstance(dbInstance),
   vpc,
+  iamAuth: true,
 });
 
 const role = new iam.Role(stack, 'SqlProxyRole', {

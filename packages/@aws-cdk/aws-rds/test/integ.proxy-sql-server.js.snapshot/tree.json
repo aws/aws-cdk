@@ -1025,7 +1025,7 @@
                     "auth": [
                       {
                         "authScheme": "SECRETS",
-                        "iamAuth": "DISABLED",
+                        "iamAuth": "REQUIRED",
                         "secretArn": {
                           "Ref": "SqlServerDbInstanceSecretAttachment87AE8779"
                         }
