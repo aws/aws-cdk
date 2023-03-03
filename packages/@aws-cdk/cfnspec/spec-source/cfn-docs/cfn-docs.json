@@ -1277,7 +1277,7 @@
         "ApiKeyRequired": "A boolean flag specifying whether a valid ApiKey is required to invoke this method.",
         "AuthorizationScopes": "A list of authorization scopes configured on the method. The scopes are used with a `COGNITO_USER_POOLS` authorizer to authorize the method invocation. The authorization works by matching the method scopes against the scopes parsed from the access token in the incoming request. The method invocation is authorized if any method scopes matches a claimed scope in the access token. Otherwise, the invocation is not authorized. When the method scope is configured, the client must provide an access token instead of an identity token for authorization purposes.",
         "AuthorizationType": "The method's authorization type. This parameter is required. For valid values, see [Method](https://docs.aws.amazon.com/apigateway/latest/api/API_Method.html) in the *API Gateway API Reference* .\n\n> If you specify the `AuthorizerId` property, specify `CUSTOM` or `COGNITO_USER_POOLS` for this property.",
-        "AuthorizerId": "The identifier of an Authorizer to use on this method. The `authorizationType` must be `CUSTOM` .",
+        "AuthorizerId": "The identifier of an authorizer to use on this method. The method's authorization type must be `CUSTOM` or `COGNITO_USER_POOLS` .",
         "HttpMethod": "The method's HTTP verb.",
         "Integration": "Represents an `HTTP` , `HTTP_PROXY` , `AWS` , `AWS_PROXY` , or Mock integration.",
         "MethodResponses": "Gets a method response associated with a given HTTP status code.",
@@ -7655,16 +7655,16 @@
       "attributes": {},
       "description": "The AWS OrganizationalUnitIds or Accounts for which to create stack instances in the specified Regions.",
       "properties": {
-        "AccountFilterType": "",
+        "AccountFilterType": "Limit deployment targets to individual accounts or include additional accounts with provided OUs.\n\nThe following is a list of possible values for the `AccountFilterType` operation.\n\n- `INTERSECTION` : StackSets deploys to the accounts specified in `Accounts` parameter.\n- `DIFFERENCE` : StackSets excludes the accounts specified in `Accounts` parameter. This enables user to avoid certain accounts within an OU such as suspended accounts.\n- `UNION` : StackSets includes additional accounts deployment targets.\n\nThis is the default value if `AccountFilterType` is not provided. This enables user to update an entire OU and individual accounts from a different OU in one request, which used to be two separate requests.\n- `NONE` : Deploys to all the accounts in specified organizational units (OU).",
         "Accounts": "The names of one or more AWS accounts for which you want to deploy stack set updates.\n\n*Pattern* : `^[0-9]{12}$`",
         "OrganizationalUnitIds": "The organization root ID or organizational unit (OU) IDs to which StackSets deploys.\n\n*Pattern* : `^(ou-[a-z0-9]{4,32}-[a-z0-9]{8,32}|r-[a-z0-9]{4,32})$`"
       }
     },
     "AWS::CloudFormation::StackSet.ManagedExecution": {
       "attributes": {},
-      "description": "",
+      "description": "Describes whether StackSets performs non-conflicting operations concurrently and queues conflicting operations.",
       "properties": {
-        "Active": ""
+        "Active": "When `true` , StackSets performs non-conflicting operations concurrently and queues conflicting operations. After conflicting operations finish, StackSets starts queued operations in request order.\n\n> If there are already running or queued operations, StackSets queues all incoming operations even if they are non-conflicting.\n> \n> You can't modify your stack set's execution configuration while there are running or queued operations for that stack set. \n\nWhen `false` (default), StackSets performs one operation at a time in request order."
       }
     },
     "AWS::CloudFormation::StackSet.OperationPreferences": {
@@ -9065,7 +9065,7 @@
       "properties": {
         "Name": "The name or key of the environment variable.",
         "Type": "The type of environment variable. Valid values include:\n\n- `PARAMETER_STORE` : An environment variable stored in Systems Manager Parameter Store. To learn how to specify a parameter store environment variable, see [env/parameter-store](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.parameter-store) in the *AWS CodeBuild User Guide* .\n- `PLAINTEXT` : An environment variable in plain text format. This is the default value.\n- `SECRETS_MANAGER` : An environment variable stored in AWS Secrets Manager . To learn how to specify a secrets manager environment variable, see [env/secrets-manager](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager) in the *AWS CodeBuild User Guide* .",
-        "Value": "The value of the environment variable.\n\n> We strongly discourage the use of `PLAINTEXT` environment variables to store sensitive values, especially AWS secret key IDs and secret access keys. `PLAINTEXT` environment variables can be displayed in plain text using the AWS CodeBuild console and the AWS CLI . For sensitive values, we recommend you use an environment variable of type `PARAMETER_STORE` or `SECRETS_MANAGER` ."
+        "Value": "The value of the environment variable.\n\n> We strongly discourage the use of `PLAINTEXT` environment variables to store sensitive values, especially AWS secret key IDs. `PLAINTEXT` environment variables can be displayed in plain text using the AWS CodeBuild console and the AWS CLI . For sensitive values, we recommend you use an environment variable of type `PARAMETER_STORE` or `SECRETS_MANAGER` ."
       }
     },
     "AWS::CodeBuild::Project.FilterGroup": {
@@ -10190,7 +10190,7 @@
         "EnableTokenRevocation": "Activates or deactivates token revocation. For more information about revoking tokens, see [RevokeToken](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_RevokeToken.html) .\n\nIf you don't include this parameter, token revocation is automatically activated for the new user pool client.",
         "ExplicitAuthFlows": "The authentication flows that you want your user pool client to support. For each app client in your user pool, you can sign in your users with any combination of one or more flows, including with a user name and Secure Remote Password (SRP), a user name and password, or a custom authentication process that you define with Lambda functions.\n\n> If you don't specify a value for `ExplicitAuthFlows` , your user client supports `ALLOW_REFRESH_TOKEN_AUTH` , `ALLOW_USER_SRP_AUTH` , and `ALLOW_CUSTOM_AUTH` . \n\nValid values include:\n\n- `ALLOW_ADMIN_USER_PASSWORD_AUTH` : Enable admin based user password authentication flow `ADMIN_USER_PASSWORD_AUTH` . This setting replaces the `ADMIN_NO_SRP_AUTH` setting. With this authentication flow, your app passes a user name and password to Amazon Cognito in the request, instead of using the Secure Remote Password (SRP) protocol to securely transmit the password.\n- `ALLOW_CUSTOM_AUTH` : Enable Lambda trigger based authentication.\n- `ALLOW_USER_PASSWORD_AUTH` : Enable user password-based authentication. In this flow, Amazon Cognito receives the password in the request instead of using the SRP protocol to verify passwords.\n- `ALLOW_USER_SRP_AUTH` : Enable SRP-based authentication.\n- `ALLOW_REFRESH_TOKEN_AUTH` : Enable authflow to refresh tokens.\n\nIn some environments, you will see the values `ADMIN_NO_SRP_AUTH` , `CUSTOM_AUTH_FLOW_ONLY` , or `USER_PASSWORD_AUTH` . You can't assign these legacy `ExplicitAuthFlows` values to user pool clients at the same time as values that begin with `ALLOW_` ,\nlike `ALLOW_USER_SRP_AUTH` .",
         "GenerateSecret": "Boolean to specify whether you want to generate a secret for the user pool client being created.",
-        "IdTokenValidity": "The ID token time limit. After this limit expires, your user can't use their ID token. To specify the time unit for `IdTokenValidity` as `seconds` , `minutes` , `hours` , or `days` , set a `TokenValidityUnits` value in your API request.\n\nFor example, when you set `IdTokenValidity` as `10` and `TokenValidityUnits` as `hours` , your user can authenticate their session with their ID token for 10 hours.\n\nThe default time unit for `AccessTokenValidity` in an API request is hours.",
+        "IdTokenValidity": "The ID token time limit. After this limit expires, your user can't use their ID token. To specify the time unit for `IdTokenValidity` as `seconds` , `minutes` , `hours` , or `days` , set a `TokenValidityUnits` value in your API request.\n\nFor example, when you set `IdTokenValidity` as `10` and `TokenValidityUnits` as `hours` , your user can authenticate their session with their ID token for 10 hours.\n\nThe default time unit for `IdTokenValidity` in an API request is hours.",
         "LogoutURLs": "A list of allowed logout URLs for the IdPs.",
         "PreventUserExistenceErrors": "Use this setting to choose which errors and responses are returned by Cognito APIs during authentication, account confirmation, and password recovery when the user does not exist in the user pool. When set to `ENABLED` and the user does not exist, authentication returns an error indicating either the username or password was incorrect, and account confirmation and password recovery return a response indicating a code was sent to a simulated destination. When set to `LEGACY` , those APIs will return a `UserNotFoundException` exception if the user does not exist in the user pool.",
         "ReadAttributes": "The read attributes.",
@@ -10214,11 +10214,11 @@
     },
     "AWS::Cognito::UserPoolClient.TokenValidityUnits": {
       "attributes": {},
-      "description": "The units in which the validity times are represented. The default unit for RefreshToken is days, and the default for ID and access tokens is hours.",
+      "description": "The time units you use when you set the duration of ID, access, and refresh tokens. The default unit for RefreshToken is days, and the default for ID and access tokens is hours.",
       "properties": {
-        "AccessToken": "A time unit of `seconds` , `minutes` , `hours` , or `days` for the value that you set in the `AccessTokenValidity` parameter. The default `AccessTokenValidity` time unit is hours.",
-        "IdToken": "A time unit of `seconds` , `minutes` , `hours` , or `days` for the value that you set in the `IdTokenValidity` parameter. The default `IdTokenValidity` time unit is hours.",
-        "RefreshToken": "A time unit of `seconds` , `minutes` , `hours` , or `days` for the value that you set in the `RefreshTokenValidity` parameter. The default `RefreshTokenValidity` time unit is days."
+        "AccessToken": "A time unit of `seconds` , `minutes` , `hours` , or `days` for the value that you set in the `AccessTokenValidity` parameter. The default `AccessTokenValidity` time unit is hours. `AccessTokenValidity` duration can range from five minutes to one day.",
+        "IdToken": "A time unit of `seconds` , `minutes` , `hours` , or `days` for the value that you set in the `IdTokenValidity` parameter. The default `IdTokenValidity` time unit is hours. `IdTokenValidity` duration can range from five minutes to one day.",
+        "RefreshToken": "A time unit of `seconds` , `minutes` , `hours` , or `days` for the value that you set in the `RefreshTokenValidity` parameter. The default `RefreshTokenValidity` time unit is days. `RefreshTokenValidity` duration can range from 60 minutes to 10 years."
       }
     },
     "AWS::Cognito::UserPoolDomain": {
@@ -20104,7 +20104,7 @@
         "RoleArn": "The Amazon Resource Name (ARN) of the role that is used for target invocation.\n\nIf you're setting an event bus in another account as the target and that account granted permission to your account through an organization instead of directly by the account ID, you must specify a `RoleArn` with proper permissions in the `Target` structure, instead of here in this parameter.",
         "ScheduleExpression": "The scheduling expression. For example, \"cron(0 20 * * ? *)\", \"rate(5 minutes)\". For more information, see [Creating an Amazon EventBridge rule that runs on a schedule](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html) .",
         "State": "The state of the rule.",
-        "Targets": "Adds the specified targets to the specified rule, or updates the targets if they are already associated with the rule.\n\nTargets are the resources that are invoked when a rule is triggered.\n\nThe maximum number of entries per request is 10.\n\n> Each rule can have up to five (5) targets associated with it at one time. \n\nFor a list of services you can configure as targets for events, see [EventBridge targets](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html) in the *Amazon EventBridge User Guide* .\n\nCreating rules with built-in targets is supported only in the AWS Management Console . The built-in targets are:\n\n- `Amazon EBS CreateSnapshot API call`\n- `Amazon EC2 RebootInstances API call`\n- `Amazon EC2 StopInstances API call`\n- `Amazon EC2 TerminateInstances API call`\n\nFor some target types, `PutTargets` provides target-specific parameters. If the target is a Kinesis data stream, you can optionally specify which shard the event goes to by using the `KinesisParameters` argument. To invoke a command on multiple EC2 instances with one rule, you can use the `RunCommandParameters` field.\n\nTo be able to make API calls against the resources that you own, Amazon EventBridge needs the appropriate permissions:\n\n- For AWS Lambda and Amazon SNS resources, EventBridge relies on resource-based policies.\n- For EC2 instances, Kinesis Data Streams, AWS Step Functions state machines and API Gateway APIs, EventBridge relies on IAM roles that you specify in the `RoleARN` argument in `PutTargets` .\n\nFor more information, see [Authentication and Access Control](https://docs.aws.amazon.com/eventbridge/latest/userguide/auth-and-access-control-eventbridge.html) in the *Amazon EventBridge User Guide* .\n\nIf another AWS account is in the same region and has granted you permission (using `PutPermission` ), you can send events to that account. Set that account's event bus as a target of the rules in your account. To send the matched events to the other account, specify that account's event bus as the `Arn` value when you run `PutTargets` . If your account sends events to another account, your account is charged for each sent event. Each event sent to another account is charged as a custom event. The account receiving the event is not charged. For more information, see [Amazon EventBridge Pricing](https://docs.aws.amazon.com/eventbridge/pricing/) .\n\n> `Input` , `InputPath` , and `InputTransformer` are not available with `PutTarget` if the target is an event bus of a different AWS account. \n\nIf you are setting the event bus of another account as the target, and that account granted permission to your account through an organization instead of directly by the account ID, then you must specify a `RoleArn` with proper permissions in the `Target` structure. For more information, see [Sending and Receiving Events Between AWS Accounts](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html) in the *Amazon EventBridge User Guide* .\n\nFor more information about enabling cross-account events, see [PutPermission](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutPermission.html) .\n\n*Input* , *InputPath* , and *InputTransformer* are mutually exclusive and optional parameters of a target. When a rule is triggered due to a matched event:\n\n- If none of the following arguments are specified for a target, then the entire event is passed to the target in JSON format (unless the target is Amazon EC2 Run Command or Amazon ECS task, in which case nothing from the event is passed to the target).\n- If *Input* is specified in the form of valid JSON, then the matched event is overridden with this constant.\n- If *InputPath* is specified in the form of JSONPath (for example, `$.detail` ), then only the part of the event specified in the path is passed to the target (for example, only the detail part of the event is passed).\n- If *InputTransformer* is specified, then one or more specified JSONPaths are extracted from the event and used as values in a template that you specify as the input to the target.\n\nWhen you specify `InputPath` or `InputTransformer` , you must use JSON dot notation, not bracket notation.\n\nWhen you add targets to a rule and the associated rule triggers soon after, new or updated targets might not be immediately invoked. Allow a short period of time for changes to take effect.\n\nThis action can partially fail if too many requests are made at the same time. If that happens, `FailedEntryCount` is non-zero in the response and each entry in `FailedEntries` provides the ID of the failed target and the error code."
+        "Targets": "Adds the specified targets to the specified rule, or updates the targets if they are already associated with the rule.\n\nTargets are the resources that are invoked when a rule is triggered.\n\nThe maximum number of entries per request is 10.\n\n> Each rule can have up to five (5) targets associated with it at one time. \n\nFor a list of services you can configure as targets for events, see [EventBridge targets](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html) in the *Amazon EventBridge User Guide* .\n\nCreating rules with built-in targets is supported only in the AWS Management Console . The built-in targets are:\n\n- `Amazon EBS CreateSnapshot API call`\n- `Amazon EC2 RebootInstances API call`\n- `Amazon EC2 StopInstances API call`\n- `Amazon EC2 TerminateInstances API call`\n\nFor some target types, `PutTargets` provides target-specific parameters. If the target is a Kinesis data stream, you can optionally specify which shard the event goes to by using the `KinesisParameters` argument. To invoke a command on multiple EC2 instances with one rule, you can use the `RunCommandParameters` field.\n\nTo be able to make API calls against the resources that you own, Amazon EventBridge needs the appropriate permissions:\n\n- For AWS Lambda and Amazon SNS resources, EventBridge relies on resource-based policies.\n- For EC2 instances, Kinesis Data Streams, AWS Step Functions state machines and API Gateway APIs, EventBridge relies on IAM roles that you specify in the `RoleARN` argument in `PutTargets` .\n\nFor more information, see [Authentication and Access Control](https://docs.aws.amazon.com/eventbridge/latest/userguide/auth-and-access-control-eventbridge.html) in the *Amazon EventBridge User Guide* .\n\nIf another AWS account is in the same region and has granted you permission (using `PutPermission` ), you can send events to that account. Set that account's event bus as a target of the rules in your account. To send the matched events to the other account, specify that account's event bus as the `Arn` value when you run `PutTargets` . If your account sends events to another account, your account is charged for each sent event. Each event sent to another account is charged as a custom event. The account receiving the event is not charged. For more information, see [Amazon EventBridge Pricing](https://docs.aws.amazon.com/eventbridge/pricing/) .\n\n> `Input` , `InputPath` , and `InputTransformer` are not available with `PutTarget` if the target is an event bus of a different AWS account. \n\nIf you are setting the event bus of another account as the target, and that account granted permission to your account through an organization instead of directly by the account ID, then you must specify a `RoleArn` with proper permissions in the `Target` structure. For more information, see [Sending and Receiving Events Between AWS Accounts](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html) in the *Amazon EventBridge User Guide* .\n\n> If you have an IAM role on a cross-account event bus target, a `PutTargets` call without a role on the same target (same `Id` and `Arn` ) will not remove the role. \n\nFor more information about enabling cross-account events, see [PutPermission](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutPermission.html) .\n\n*Input* , *InputPath* , and *InputTransformer* are mutually exclusive and optional parameters of a target. When a rule is triggered due to a matched event:\n\n- If none of the following arguments are specified for a target, then the entire event is passed to the target in JSON format (unless the target is Amazon EC2 Run Command or Amazon ECS task, in which case nothing from the event is passed to the target).\n- If *Input* is specified in the form of valid JSON, then the matched event is overridden with this constant.\n- If *InputPath* is specified in the form of JSONPath (for example, `$.detail` ), then only the part of the event specified in the path is passed to the target (for example, only the detail part of the event is passed).\n- If *InputTransformer* is specified, then one or more specified JSONPaths are extracted from the event and used as values in a template that you specify as the input to the target.\n\nWhen you specify `InputPath` or `InputTransformer` , you must use JSON dot notation, not bracket notation.\n\nWhen you add targets to a rule and the associated rule triggers soon after, new or updated targets might not be immediately invoked. Allow a short period of time for changes to take effect.\n\nThis action can partially fail if too many requests are made at the same time. If that happens, `FailedEntryCount` is non-zero in the response and each entry in `FailedEntries` provides the ID of the failed target and the error code."
       }
     },
     "AWS::Events::Rule.AwsVpcConfiguration": {
@@ -24282,6 +24282,74 @@
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
+    "AWS::IVSChat::LoggingConfiguration": {
+      "attributes": {
+        "Arn": "The logging-configuration ARN. For example: `arn:aws:ivschat:us-west-2:123456789012:logging-configuration/abcdABCDefgh`",
+        "Id": "The logging-configuration ID. For example: `abcdABCDefgh`",
+        "Ref": "`Ref` returns the logging-configuration ARN. For example:\n\n`{ \"Ref\": \"myLoggingConfiguration\" }`\n\nFor the  logging configuration `myLoggingConfiguration` , `Ref` returns the logging-configuration ARN.",
+        "State": "Indicates the current state of the logging configuration. When the state is `ACTIVE` , the configuration is ready to log a chat session. Valid values: `CREATING` | `CREATE_FAILED` | `DELETING` | `DELETE_FAILED` | `UPDATING` | `UPDATE_FAILED` | `ACTIVE` ."
+      },
+      "description": "The `AWS::IVSChat::LoggingConfiguration` resource specifies an  logging configuration that allows clients to store and record sent messages. For more information, see [CreateLoggingConfiguration](https://docs.aws.amazon.com/ivs/latest/ChatAPIReference/API_CreateLoggingConfiguration.html) in the *Amazon Interactive Video Service Chat API Reference* .",
+      "properties": {
+        "DestinationConfiguration": "The DestinationConfiguration is a complex type that contains information about where chat content will be logged.",
+        "Name": "Logging-configuration name. The value does not need to be unique.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
+      }
+    },
+    "AWS::IVSChat::LoggingConfiguration.CloudWatchLogsDestinationConfiguration": {
+      "attributes": {},
+      "description": "The CloudWatchLogsDestinationConfiguration property type specifies a CloudWatch Logs location where chat logs will be stored.",
+      "properties": {
+        "LogGroupName": "Name of the Amazon Cloudwatch Logs destination where chat activity will be logged."
+      }
+    },
+    "AWS::IVSChat::LoggingConfiguration.DestinationConfiguration": {
+      "attributes": {},
+      "description": "The DestinationConfiguration property type describes a location where chat logs will be stored. Each member represents the configuration of one log destination. For logging, you define only one type of destination.",
+      "properties": {
+        "CloudWatchLogs": "An Amazon CloudWatch Logs destination configuration where chat activity will be logged.",
+        "Firehose": "An Amazon Kinesis Data Firehose destination configuration where chat activity will be logged.",
+        "S3": "An Amazon S3 destination configuration where chat activity will be logged."
+      }
+    },
+    "AWS::IVSChat::LoggingConfiguration.FirehoseDestinationConfiguration": {
+      "attributes": {},
+      "description": "The FirehoseDestinationConfiguration property type specifies a Kinesis Firehose location where chat logs will be stored.",
+      "properties": {
+        "DeliveryStreamName": "Name of the Amazon Kinesis Firehose delivery stream where chat activity will be logged."
+      }
+    },
+    "AWS::IVSChat::LoggingConfiguration.S3DestinationConfiguration": {
+      "attributes": {},
+      "description": "The S3DestinationConfiguration property type specifies an S3 location where chat logs will be stored.",
+      "properties": {
+        "BucketName": "Name of the Amazon S3 bucket where chat activity will be logged."
+      }
+    },
+    "AWS::IVSChat::Room": {
+      "attributes": {
+        "Arn": "The room ARN. For example: `arn:aws:ivschat:us-west-2:123456789012:room/abcdABCDefgh`",
+        "Id": "The room ID. For example: `abcdABCDefgh`",
+        "Ref": "`Ref` returns the room ARN. For example:\n\n`{ \"Ref\": \"myRoom\" }`\n\nFor the  room `myRoom` , `Ref` returns the room ARN."
+      },
+      "description": "The `AWS::IVSChat::Room` resource specifies an  room that allows clients to connect and pass messages. For more information, see [CreateRoom](https://docs.aws.amazon.com/ivs/latest/ChatAPIReference/API_CreateRoom.html) in the *Amazon Interactive Video Service Chat API Reference* .",
+      "properties": {
+        "LoggingConfigurationIdentifiers": "List of logging-configuration identifiers attached to the room.",
+        "MaximumMessageLength": "Maximum number of characters in a single message. Messages are expected to be UTF-8 encoded and this limit applies specifically to rune/code-point count, not number of bytes.",
+        "MaximumMessageRatePerSecond": "Maximum number of messages per second that can be sent to the room (by all clients).",
+        "MessageReviewHandler": "Configuration information for optional review of messages.",
+        "Name": "Room name. The value does not need to be unique.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
+      }
+    },
+    "AWS::IVSChat::Room.MessageReviewHandler": {
+      "attributes": {},
+      "description": "The MessageReviewHandler property type specifies configuration information for optional message review.",
+      "properties": {
+        "FallbackResult": "Specifies the fallback behavior (whether the message is allowed or denied) if the handler does not return a valid response, encounters an error, or times out. (For the timeout period, see [Service Quotas](https://docs.aws.amazon.com/ivs/latest/userguide/service-quotas.html) .) If allowed, the message is delivered with returned content to all users connected to the room. If denied, the message is not delivered to any user.\n\n*Default* : `ALLOW`",
+        "Uri": "Identifier of the message review handler. Currently this must be an ARN of a lambda function."
+      }
+    },
     "AWS::IdentityStore::Group": {
       "attributes": {
         "GroupId": "The identifier of the newly created group in the identity store.",
@@ -24871,6 +24939,26 @@
       "properties": {
         "Comparison": "The operator to use when comparing values in the filter.",
         "Value": "The value to filter on."
+      }
+    },
+    "AWS::InternetMonitor::Monitor": {
+      "attributes": {
+        "CreatedAt": "The time when the monitor was created.",
+        "ModifiedAt": "The last time that the monitor was modified.",
+        "MonitorArn": "The Amazon Resource Name (ARN) of the monitor.",
+        "ProcessingStatus": "The health of data processing for the monitor. For more information, see `ProcessingStatus` under [MonitorListMember](https://docs.aws.amazon.com/internet-monitor/latest/api/API_MonitorListMember.html) in the *Amazon CloudWatch Internet Monitor API Reference* .",
+        "ProcessingStatusInfo": "Additional information about the health of the data processing for the monitor.",
+        "Ref": "`Ref` returns the ARN of the monitor, such as `arn:aws:internetmonitor:us-east-1:111122223333:monitor/TestMonitor` ."
+      },
+      "description": "The `AWS::InternetMonitor::Monitor` resource is an Internet Monitor resource type that contains information about how you create a monitor in Amazon CloudWatch Internet Monitor. A monitor in Internet Monitor provides visibility into performance and availability between your applications hosted on AWS and your end users, using a traffic profile that it creates based on the application resources that you add: Virtual Private Clouds (VPCs), Amazon CloudFront distributions, or WorkSpaces directories.\n\nInternet Monitor also alerts you to internet issues that impact your application in the city-networks (geographies and networks) where your end users use it. With Internet Monitor, you can quickly pinpoint the locations and providers that are affected, so that you can address the issue.\n\nFor more information, see [Using Amazon CloudWatch Internet Monitor](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-InternetMonitor.html) in the *Amazon CloudWatch User Guide* .",
+      "properties": {
+        "MaxCityNetworksToMonitor": "The maximum number of city-networks to monitor for your resources. A city-network is the location (city) where clients access your application resources from and the network, such as an internet service provider, that clients access the resources through.\n\nFor more information, see [Choosing a city-network maximum value](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/IMCityNetworksMaximum.html) in *Using Amazon CloudWatch Internet Monitor* .",
+        "MonitorName": "The name of the monitor. A monitor name can contain only alphanumeric characters, dashes (-), periods (.), and underscores (_).",
+        "Resources": "The resources that have been added for the monitor, listed by their Amazon Resource Names (ARNs).",
+        "ResourcesToAdd": "The resources to add to a monitor, which you provide as a set of Amazon Resource Names (ARNs).\n\nYou can add a combination of Virtual Private Clouds (VPCs) and Amazon CloudFront distributions, or you can add WorkSpaces directories. You can't add all three types of resources.\n\n> If you add only VPC resources, at least one VPC must have an Internet Gateway attached to it, to make sure that it has internet connectivity.",
+        "ResourcesToRemove": "The resources to remove from a monitor, which you provide as a set of Amazon Resource Names (ARNs).",
+        "Status": "The status of a monitor. The accepted values that you can specify for `Status` are `ACTIVE` and `INACTIVE` .",
+        "Tags": "The tags for a monitor, listed as a set of *key:value* pairs."
       }
     },
     "AWS::IoT1Click::Device": {
@@ -30700,6 +30788,7 @@
         "BatchSize": "The maximum number of records in each batch that Lambda pulls from your stream or queue and sends to your function. Lambda passes all of the records in the batch to the function in a single call, up to the payload limit for synchronous invocation (6 MB).\n\n- *Amazon Kinesis* \u2013 Default 100. Max 10,000.\n- *Amazon DynamoDB Streams* \u2013 Default 100. Max 10,000.\n- *Amazon Simple Queue Service* \u2013 Default 10. For standard queues the max is 10,000. For FIFO queues the max is 10.\n- *Amazon Managed Streaming for Apache Kafka* \u2013 Default 100. Max 10,000.\n- *Self-managed Apache Kafka* \u2013 Default 100. Max 10,000.\n- *Amazon MQ (ActiveMQ and RabbitMQ)* \u2013 Default 100. Max 10,000.\n- *DocumentDB* \u2013 Default 100. Max 10,000.",
         "BisectBatchOnFunctionError": "(Streams only) If the function returns an error, split the batch in two and retry. The default value is false.",
         "DestinationConfig": "(Streams only) An Amazon SQS queue or Amazon SNS topic destination for discarded records.",
+        "DocumentDBEventSourceConfig": "Specific configuration settings for a DocumentDB event source.",
         "Enabled": "When true, the event source mapping is active. When false, Lambda pauses polling and invocation.\n\nDefault: True",
         "EventSourceArn": "The Amazon Resource Name (ARN) of the event source.\n\n- *Amazon Kinesis* \u2013 The ARN of the data stream or a stream consumer.\n- *Amazon DynamoDB Streams* \u2013 The ARN of the stream.\n- *Amazon Simple Queue Service* \u2013 The ARN of the queue.\n- *Amazon Managed Streaming for Apache Kafka* \u2013 The ARN of the cluster.\n- *Amazon MQ* \u2013 The ARN of the broker.\n- *Amazon DocumentDB* \u2013 The ARN of the DocumentDB change stream.",
         "FilterCriteria": "An object that defines the filter criteria that determine whether Lambda should process an event. For more information, see [Lambda event filtering](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html) .",
@@ -30732,6 +30821,15 @@
       "description": "A configuration object that specifies the destination of an event after Lambda processes it.",
       "properties": {
         "OnFailure": "The destination configuration for failed invocations."
+      }
+    },
+    "AWS::Lambda::EventSourceMapping.DocumentDBEventSourceConfig": {
+      "attributes": {},
+      "description": "Specific configuration settings for a DocumentDB event source.",
+      "properties": {
+        "CollectionName": "The name of the collection to consume within the database. If you do not specify a collection, Lambda consumes all collections.",
+        "DatabaseName": "The name of the database to consume within the DocumentDB cluster.",
+        "FullDocument": "Determines what DocumentDB sends to your event stream during document update operations. If set to UpdateLookup, DocumentDB sends a delta describing the changes, along with a copy of the entire document. Otherwise, DocumentDB sends only a partial document that contains the changes."
       }
     },
     "AWS::Lambda::EventSourceMapping.Endpoints": {
@@ -33519,6 +33617,21 @@
       "properties": {
         "FindingPublishingFrequency": "Specifies how often Amazon Macie publishes updates to policy findings for the account. This includes publishing updates to AWS Security Hub and Amazon EventBridge (formerly Amazon CloudWatch Events ). Valid values are:\n\n- FIFTEEN_MINUTES\n- ONE_HOUR\n- SIX_HOURS",
         "Status": "The status of Amazon Macie for the account. Valid values are: `ENABLED` , start or resume all Macie activities for the account; and, `PAUSED` , suspend all Macie activities for the account."
+      }
+    },
+    "AWS::ManagedBlockchain::Accessor": {
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) of the accessor. For more information about ARNs and their format, see [Amazon Resource Names (ARNs)](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) in the *AWS General Reference* .",
+        "BillingToken": "The billing token is a property of the accessor. Use this token to make Ethereum API calls to your Ethereum node. The billing token is used to track your accessor object for billing Ethereum API requests made to your Ethereum nodes.",
+        "CreationDate": "The creation date and time of the accessor.",
+        "Id": "The unique identifier of the accessor.",
+        "Ref": "`Ref` returns the Accessor ID.",
+        "Status": "The current status of the accessor."
+      },
+      "description": "Creates a new accessor for use with Managed Blockchain Ethereum nodes. An accessor contains information required for token based access to your Ethereum nodes.",
+      "properties": {
+        "AccessorType": "The type of the accessor.\n\n> Currently, accessor type is restricted to `BILLING_TOKEN` .",
+        "Tags": "The tags assigned to the Accessor.\n\nFor more information about tags, see [Tagging Resources](https://docs.aws.amazon.com/managed-blockchain/latest/ethereum-dev/tagging-resources.html) in the *Amazon Managed Blockchain Ethereum Developer Guide* , or [Tagging Resources](https://docs.aws.amazon.com/managed-blockchain/latest/hyperledger-fabric-dev/tagging-resources.html) in the *Amazon Managed Blockchain Hyperledger Fabric Developer Guide* ."
       }
     },
     "AWS::ManagedBlockchain::Member": {
@@ -36954,7 +37067,7 @@
         "PeeringId": "The ID of the transit gateway peering.",
         "ProposedSegmentChange": "This property is read-only. Values can't be assigned to it.",
         "Tags": "The list of key-value pairs associated with the transit gateway route table attachment.",
-        "TransitGatewayRouteTableArn": "The ARN of the transit gateway attachment route table."
+        "TransitGatewayRouteTableArn": "The ARN of the transit gateway attachment route table, using the format: `\"TransitGatewayRouteTableArn\": \"arn:aws:ec2:us-west-2: *AccountId* :transit-gateway-route-table/ *tgw-rtb-xxxxxxxxxxx* \"` . For example, `\"TransitGatewayRouteTableArn\": \"arn:aws:ec2:us-west-2:123456789012:transit-gateway-route-table/tgw-rtb-9876543210123456\"` ."
       }
     },
     "AWS::NetworkManager::TransitGatewayRouteTableAttachment.ProposedSegmentChange": {
@@ -39806,7 +39919,7 @@
         "DataSetArns": "The ARNs of the datasets of the analysis.",
         "LastUpdatedTime": "The time that the analysis was last updated."
       },
-      "description": "Creates an analysis in Amazon QuickSight. Analyses can be created either from a template or from an `AnalysisDefinition` .",
+      "description": "Creates an analysis in Amazon QuickSight.",
       "properties": {
         "AnalysisId": "The ID for the analysis that you're creating. This ID displays in the URL of the analysis.",
         "AwsAccountId": "The ID of the AWS account where you are creating an analysis.",
@@ -40299,7 +40412,7 @@
       "attributes": {},
       "description": "Permission for the resource.",
       "properties": {
-        "Actions": "The IAM action to grand or revoke permisions on",
+        "Actions": "The IAM action to grant or revoke permisions on",
         "Principal": "The Amazon Resource Name (ARN) of the principal. This can be one of the following:\n\n- The ARN of an Amazon QuickSight user or group associated with a data source or dataset. (This is common.)\n- The ARN of an Amazon QuickSight user, group, or namespace associated with an analysis, dashboard, template, or theme. (This is common.)\n- The ARN of an AWS account root: This is an IAM ARN rather than a Amazon QuickSight ARN. Use this option only to share resources (templates) across AWS accounts . (This is less common.)"
       }
     },
@@ -40430,7 +40543,7 @@
       "properties": {
         "CopySourceArn": "The Amazon Resource Name (ARN) of a data source that has the credential pair that you want to use. When `CopySourceArn` is not null, the credential pair from the data source in the ARN is used as the credentials for the `DataSourceCredentials` structure.",
         "CredentialPair": "Credential pair. For more information, see `[CredentialPair](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_CredentialPair.html)` .",
-        "SecretArn": "The Amazon Resource Name (ARN) of the secret associated with the data source in Amazon Secrets Manager."
+        "SecretArn": ""
       }
     },
     "AWS::QuickSight::DataSource.DataSourceErrorInfo": {
@@ -40450,7 +40563,7 @@
         "AthenaParameters": "The parameters for Amazon Athena.",
         "AuroraParameters": "The parameters for Amazon Aurora MySQL.",
         "AuroraPostgreSqlParameters": "The parameters for Amazon Aurora.",
-        "DatabricksParameters": "The required parameters that are needed to connect to a Databricks data source.",
+        "DatabricksParameters": "",
         "MariaDbParameters": "The parameters for MariaDB.",
         "MySqlParameters": "The parameters for MySQL.",
         "OracleParameters": "Oracle parameters.",
@@ -40467,11 +40580,11 @@
     },
     "AWS::QuickSight::DataSource.DatabricksParameters": {
       "attributes": {},
-      "description": "The required parameters that are needed to connect to a Databricks data source.",
+      "description": "",
       "properties": {
-        "Host": "The host name of the Databricks data source.",
-        "Port": "The port for the Databricks data source.",
-        "SqlEndpointPath": "The HTTP path of the Databricks data source."
+        "Host": "",
+        "Port": "",
+        "SqlEndpointPath": ""
       }
     },
     "AWS::QuickSight::DataSource.ManifestFileLocation": {
@@ -40625,7 +40738,7 @@
         "Version.ThemeArn": "",
         "Version.VersionNumber": ""
       },
-      "description": "Creates a template either from a `TemplateDefinition` or from an existing Amazon QuickSight analysis or template. You can use the resulting template to create additional dashboards, templates, or analyses.\n\nA *template* is an entity in Amazon QuickSight that encapsulates the metadata required to create an analysis and that you can use to create s dashboard. A template adds a layer of abstraction by using placeholders to replace the dataset associated with the analysis. You can use templates to create dashboards by replacing dataset placeholders with datasets that follow the same schema that was used to create the source analysis and template.",
+      "description": "Creates a template from an existing Amazon QuickSight analysis or template. You can use the resulting template to create a dashboard.\n\nA *template* is an entity in Amazon QuickSight that encapsulates the metadata required to create an analysis and that you can use to create s dashboard. A template adds a layer of abstraction by using placeholders to replace the dataset associated with the analysis. You can use templates to create dashboards by replacing dataset placeholders with datasets that follow the same schema that was used to create the source analysis and template.",
       "properties": {
         "AwsAccountId": "The ID for the AWS account that the group is in. You use the ID for the AWS account that contains your Amazon QuickSight account.",
         "Name": "A display name for the template.",
@@ -41502,7 +41615,7 @@
         "ResourceAction": "",
         "RevisionTarget": "",
         "RotateEncryptionKey": "",
-        "SnapshotClusterIdentifier": "The name of the cluster the source snapshot was created from. This parameter is required if your IAM user or role has a policy containing a snapshot resource element that specifies anything other than * for the cluster name.",
+        "SnapshotClusterIdentifier": "The name of the cluster the source snapshot was created from. This parameter is required if your user or role has a policy containing a snapshot resource element that specifies anything other than * for the cluster name.",
         "SnapshotCopyGrantName": "The name of the snapshot copy grant.",
         "SnapshotCopyManual": "Indicates whether to apply the snapshot retention period to newly copied manual snapshots instead of automated snapshots.",
         "SnapshotCopyRetentionPeriod": "The number of days to retain automated snapshots in the destination AWS Region after they are copied from the source AWS Region .\n\nBy default, this only changes the retention period of copied automated snapshots.\n\nIf you decrease the retention period for automated snapshots that are copied to a destination AWS Region , Amazon Redshift deletes any existing automated snapshots that were copied to the destination AWS Region and that fall outside of the new retention period.\n\nConstraints: Must be at least 1 and no more than 35 for automated snapshots.\n\nIf you specify the `manual` option, only newly copied manual snapshots will have the new retention period.\n\nIf you specify the value of -1 newly copied manual snapshots are retained indefinitely.\n\nConstraints: The number of days must be either -1 or an integer between 1 and 3,653 for manual snapshots.",
@@ -41570,7 +41683,7 @@
     },
     "AWS::Redshift::ClusterSubnetGroup": {
       "attributes": {
-        "ClusterSubnetGroupName": "",
+        "ClusterSubnetGroupName": "The name of the cluster subnet group.",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myClusterSubnetGroup\" }`\n\nFor the Amazon Redshift subnet group `myClusterSubnetGroup` , Ref returns the name of the cluster subnet group."
       },
       "description": "Specifies an Amazon Redshift subnet group. You must provide a list of one or more subnets in your existing Amazon Virtual Private Cloud ( Amazon VPC ) when creating Amazon Redshift subnet group.\n\nFor information about subnet groups, go to [Amazon Redshift Cluster Subnet Groups](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-cluster-subnet-groups.html) in the *Amazon Redshift Cluster Management Guide* .",
@@ -41587,10 +41700,11 @@
         "EndpointStatus": "The status of the endpoint.",
         "Port": "The port number on which the cluster accepts incoming connections.",
         "Ref": "`Ref` returns the resource name.",
-        "VpcEndpoint": "",
+        "VpcEndpoint": "The connection endpoint for connecting to an Amazon Redshift cluster through the proxy.",
         "VpcEndpoint.NetworkInterfaces": "",
-        "VpcEndpoint.VpcEndpointId": "",
-        "VpcEndpoint.VpcId": ""
+        "VpcEndpoint.VpcEndpointId": "The connection endpoint ID for connecting an Amazon Redshift cluster through the proxy.",
+        "VpcEndpoint.VpcId": "The VPC identifier that the endpoint is associated.",
+        "VpcSecurityGroups": "The security groups associated with the endpoint."
       },
       "description": "Creates a Redshift-managed VPC endpoint.",
       "properties": {
@@ -42381,42 +42495,42 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "The state of the certificate revocation list (CRL) after a read or write operation.",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The revocation record for a certificate, following the x509 v3 standard.",
+        "Enabled": "Indicates whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the CRL.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
     "AWS::RolesAnywhere::Profile": {
       "attributes": {
-        "ProfileArn": "",
+        "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "A list of tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
       "attributes": {
         "Ref": "`Ref` returns `TrustAnchorId` .",
         "TrustAnchorArn": "The ARN of the trust anchor.",
-        "TrustAnchorId": ""
+        "TrustAnchorId": "The unique primary identifier of the TrustAnchor"
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "The state of the trust anchor after a read or write operation.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -42426,15 +42540,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the trust anchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -48616,6 +48730,31 @@
         "Tags": "The list of key-value pairs that are associated with the group."
       }
     },
+    "AWS::SystemsManagerSAP::Application": {
+      "attributes": {
+        "Arn": "The Amazon Resource Name of the SAP application.",
+        "Ref": ""
+      },
+      "description": "An SAP application registered with AWS Systems Manager for SAP.",
+      "properties": {
+        "ApplicationId": "The ID of the application.",
+        "ApplicationType": "The type of the application.",
+        "Credentials": "The credentials of the SAP application.",
+        "Instances": "The Amazon EC2 instances on which your SAP application is running.",
+        "SapInstanceNumber": "The SAP instance number of the application.",
+        "Sid": "The System ID of the application.",
+        "Tags": "The tags on the application."
+      }
+    },
+    "AWS::SystemsManagerSAP::Application.Credential": {
+      "attributes": {},
+      "description": "The credentials of your SAP application.",
+      "properties": {
+        "CredentialType": "The type of the application credentials.",
+        "DatabaseName": "The name of the SAP HANA database.",
+        "SecretId": "The secret ID created in AWS Secrets Manager to store the credentials of the SAP application."
+      }
+    },
     "AWS::Timestream::Database": {
       "attributes": {
         "Arn": "The `arn` of the database.",
@@ -50088,6 +50227,15 @@
         "VisibilityConfig": "Defines and enables Amazon CloudWatch metrics and web request sample collection."
       }
     },
+    "AWS::WAFv2::WebACL.AWSManagedRulesATPRuleSet": {
+      "attributes": {},
+      "description": "Details for your use of the account takeover prevention managed rule group, `AWSManagedRulesATPRuleSet` . This configuration is used in `ManagedRuleGroupConfig` .",
+      "properties": {
+        "LoginPath": "The path of the login endpoint for your application. For example, for the URL `https://example.com/web/login` , you would provide the path `/web/login` .\n\nThe rule group inspects only HTTP `POST` requests to your specified login endpoint.",
+        "RequestInspection": "The criteria for inspecting login requests, used by the ATP rule group to validate credentials usage.",
+        "ResponseInspection": "The criteria for inspecting responses to login requests, used by the ATP rule group to track login failure rates.\n\nThe ATP rule group evaluates the responses that your protected resources send back to client login attempts, keeping count of successful and failed attempts from each IP address and client session. Using this information, the rule group labels and mitigates requests from client sessions and IP addresses that submit too many failed login attempts in a short amount of time.\n\n> Response inspection is available only in web ACLs that protect Amazon CloudFront distributions."
+      }
+    },
     "AWS::WAFv2::WebACL.AWSManagedRulesBotControlRuleSet": {
       "attributes": {},
       "description": "Details for your use of the Bot Control managed rule group, used in `ManagedRuleGroupConfig` .",
@@ -50352,6 +50500,7 @@
       "attributes": {},
       "description": "Additional information that's used by a managed rule group. Many managed rule groups don't require this.\n\nUse the `AWSManagedRulesBotControlRuleSet` configuration object to configure the protection level that you want the Bot Control rule group to use.",
       "properties": {
+        "AWSManagedRulesATPRuleSet": "Additional configuration for using the account takeover prevention (ATP) managed rule group, `AWSManagedRulesATPRuleSet` . Use this to provide login request information to the rule group. For web ACLs that protect CloudFront distributions, use this to also provide the information about how your distribution responds to login requests.\n\nThis configuration replaces the individual configuration fields in `ManagedRuleGroupConfig` and provides additional feature configuration.\n\nFor information about using the ATP managed rule group, see [AWS WAF Fraud Control account takeover prevention (ATP) rule group](https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-atp.html) and [AWS WAF Fraud Control account takeover prevention (ATP)](https://docs.aws.amazon.com/waf/latest/developerguide/waf-atp.html) in the *AWS WAF Developer Guide* .",
         "AWSManagedRulesBotControlRuleSet": "Additional configuration for using the Bot Control managed rule group. Use this to specify the inspection level that you want to use. For information about using the Bot Control managed rule group, see [AWS WAF Bot Control rule group](https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-bot.html) and [AWS WAF Bot Control](https://docs.aws.amazon.com/waf/latest/developerguide/waf-bot-control.html) in the *AWS WAF Developer Guide* .",
         "LoginPath": "> Instead of this setting, provide your configuration under `AWSManagedRulesATPRuleSet` .",
         "PasswordField": "> Instead of this setting, provide your configuration under `AWSManagedRulesATPRuleSet` `RequestInspection` .",
@@ -50420,6 +50569,59 @@
         "Arn": "The Amazon Resource Name (ARN) of the `RegexPatternSet` that this statement references.",
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
+      }
+    },
+    "AWS::WAFv2::WebACL.RequestInspection": {
+      "attributes": {},
+      "description": "The criteria for inspecting login requests, used by the ATP rule group to validate credentials usage.\n\nThis is part of the `AWSManagedRulesATPRuleSet` configuration in `ManagedRuleGroupConfig` .\n\nIn these settings, you specify how your application accepts login attempts by providing the request payload type and the names of the fields within the request body where the username and password are provided.",
+      "properties": {
+        "PasswordField": "Details about your login page password field.\n\nHow you specify this depends on the payload type.\n\n- For JSON payloads, specify the field name in JSON pointer syntax. For information about the JSON Pointer syntax, see the Internet Engineering Task Force (IETF) documentation [JavaScript Object Notation (JSON) Pointer](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6901) .\n\nFor example, for the JSON payload `{ \"login\": { \"username\": \"THE_USERNAME\", \"password\": \"THE_PASSWORD\" } }` , the username field specification is `/login/username` and the password field specification is `/login/password` .\n- For form encoded payload types, use the HTML form names.\n\nFor example, for an HTML form with input elements named `username1` and `password1` , the username field specification is `username1` and the password field specification is `password1` .",
+        "PayloadType": "The payload type for your login endpoint, either JSON or form encoded.",
+        "UsernameField": "Details about your login page username field.\n\nHow you specify this depends on the payload type.\n\n- For JSON payloads, specify the field name in JSON pointer syntax. For information about the JSON Pointer syntax, see the Internet Engineering Task Force (IETF) documentation [JavaScript Object Notation (JSON) Pointer](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6901) .\n\nFor example, for the JSON payload `{ \"login\": { \"username\": \"THE_USERNAME\", \"password\": \"THE_PASSWORD\" } }` , the username field specification is `/login/username` and the password field specification is `/login/password` .\n- For form encoded payload types, use the HTML form names.\n\nFor example, for an HTML form with input elements named `username1` and `password1` , the username field specification is `username1` and the password field specification is `password1` ."
+      }
+    },
+    "AWS::WAFv2::WebACL.ResponseInspection": {
+      "attributes": {},
+      "description": "The criteria for inspecting responses to login requests, used by the ATP rule group to track login failure rates.\n\nThe ATP rule group evaluates the responses that your protected resources send back to client login attempts, keeping count of successful and failed attempts from each IP address and client session. Using this information, the rule group labels and mitigates requests from client sessions and IP addresses that submit too many failed login attempts in a short amount of time.\n\n> Response inspection is available only in web ACLs that protect Amazon CloudFront distributions. \n\nThis is part of the `AWSManagedRulesATPRuleSet` configuration in `ManagedRuleGroupConfig` .\n\nEnable login response inspection by configuring exactly one component of the response to inspect. You can't configure more than one. If you don't configure any of the response inspection options, response inspection is disabled.",
+      "properties": {
+        "BodyContains": "Configures inspection of the response body. AWS WAF can inspect the first 65,536 bytes (64 KB) of the response body.",
+        "Header": "Configures inspection of the response header.",
+        "Json": "Configures inspection of the response JSON. AWS WAF can inspect the first 65,536 bytes (64 KB) of the response JSON.",
+        "StatusCode": "Configures inspection of the response status code."
+      }
+    },
+    "AWS::WAFv2::WebACL.ResponseInspectionBodyContains": {
+      "attributes": {},
+      "description": "Configures inspection of the response body. AWS WAF can inspect the first 65,536 bytes (64 KB) of the response body. This is part of the `ResponseInspection` configuration for `AWSManagedRulesATPRuleSet` .\n\n> Response inspection is available only in web ACLs that protect Amazon CloudFront distributions.",
+      "properties": {
+        "FailureStrings": "Strings in the body of the response that indicate a failed login attempt. To be counted as a failed login, the string can be anywhere in the body and must be an exact match, including case. Each string must be unique among the success and failure strings.\n\nJSON example: `\"FailureStrings\": [ \"Login failed\" ]`",
+        "SuccessStrings": "Strings in the body of the response that indicate a successful login attempt. To be counted as a successful login, the string can be anywhere in the body and must be an exact match, including case. Each string must be unique among the success and failure strings.\n\nJSON example: `\"SuccessStrings\": [ \"Login successful\", \"Welcome to our site!\" ]`"
+      }
+    },
+    "AWS::WAFv2::WebACL.ResponseInspectionHeader": {
+      "attributes": {},
+      "description": "Configures inspection of the response header. This is part of the `ResponseInspection` configuration for `AWSManagedRulesATPRuleSet` .\n\n> Response inspection is available only in web ACLs that protect Amazon CloudFront distributions.",
+      "properties": {
+        "FailureValues": "Values in the response header with the specified name that indicate a failed login attempt. To be counted as a failed login, the value must be an exact match, including case. Each value must be unique among the success and failure values.\n\nJSON example: `\"FailureValues\": [ \"LoginFailed\", \"Failed login\" ]`",
+        "Name": "The name of the header to match against. The name must be an exact match, including case.\n\nJSON example: `\"Name\": [ \"LoginResult\" ]`",
+        "SuccessValues": "Values in the response header with the specified name that indicate a successful login attempt. To be counted as a successful login, the value must be an exact match, including case. Each value must be unique among the success and failure values.\n\nJSON example: `\"SuccessValues\": [ \"LoginPassed\", \"Successful login\" ]`"
+      }
+    },
+    "AWS::WAFv2::WebACL.ResponseInspectionJson": {
+      "attributes": {},
+      "description": "Configures inspection of the response JSON. AWS WAF can inspect the first 65,536 bytes (64 KB) of the response JSON. This is part of the `ResponseInspection` configuration for `AWSManagedRulesATPRuleSet` .\n\n> Response inspection is available only in web ACLs that protect Amazon CloudFront distributions.",
+      "properties": {
+        "FailureValues": "Values for the specified identifier in the response JSON that indicate a failed login attempt. To be counted as a failed login, the value must be an exact match, including case. Each value must be unique among the success and failure values.\n\nJSON example: `\"FailureValues\": [ \"False\", \"Failed\" ]`",
+        "Identifier": "The identifier for the value to match against in the JSON. The identifier must be an exact match, including case.\n\nJSON example: `\"Identifier\": [ \"/login/success\" ]`",
+        "SuccessValues": "Values for the specified identifier in the response JSON that indicate a successful login attempt. To be counted as a successful login, the value must be an exact match, including case. Each value must be unique among the success and failure values.\n\nJSON example: `\"SuccessValues\": [ \"True\", \"Succeeded\" ]`"
+      }
+    },
+    "AWS::WAFv2::WebACL.ResponseInspectionStatusCode": {
+      "attributes": {},
+      "description": "Configures inspection of the response status code. This is part of the `ResponseInspection` configuration for `AWSManagedRulesATPRuleSet` .\n\n> Response inspection is available only in web ACLs that protect Amazon CloudFront distributions.",
+      "properties": {
+        "FailureCodes": "Status codes in the response that indicate a failed login attempt. To be counted as a failed login, the response status code must match one of these. Each code must be unique among the success and failure status codes.\n\nJSON example: `\"FailureCodes\": [ 400, 404 ]`",
+        "SuccessCodes": "Status codes in the response that indicate a successful login attempt. To be counted as a successful login, the response status code must match one of these. Each code must be unique among the success and failure status codes.\n\nJSON example: `\"SuccessCodes\": [ 200, 201 ]`"
       }
     },
     "AWS::WAFv2::WebACL.Rule": {
