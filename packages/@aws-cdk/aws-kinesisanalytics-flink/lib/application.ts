@@ -1065,6 +1065,24 @@ export class Application extends ApplicationBase {
       },
     });
 
+    // Permissions required for VPC usage per:
+    // https://docs.aws.amazon.com/kinesisanalytics/latest/java/vpc-permissions.html
+    if (props.vpc) {
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: [
+          'ec2:DescribeVpcs',
+          'ec2:DescribeSubnets',
+          'ec2:DescribeSecurityGroups',
+          'ec2:DescribeDhcpOptions',
+          'ec2:CreateNetworkInterface',
+          'ec2:CreateNetworkInterfacePermission',
+          'ec2:DescribeNetworkInterfaces',
+          'ec2:DeleteNetworkInterface',
+        ],
+        resources: ['*'],
+      }));
+    }
+
     this.applicationName = this.getResourceNameAttribute(resource.ref);
     this.applicationArn = this.getResourceArnAttribute(
       core.Stack.of(this).formatArn(applicationArnComponents(resource.ref)),

@@ -77,8 +77,14 @@ describe('Application', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: Match.arrayWith([
+        Statement: Match.arrayEquals([
           { Action: 'cloudwatch:PutMetricData', Effect: 'Allow', Resource: '*' },
+          // Access to read from the code bucket
+          {
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+            Effect: 'Allow',
+            Resource: Match.anyValue(),
+          },
           {
             Action: 'logs:DescribeLogGroups',
             Effect: 'Allow',
@@ -511,7 +517,8 @@ describe('Application', () => {
       vpc: new ec2.Vpc(stack, 'VPC'),
     });
 
-    Template.fromStack(stack).hasResourceProperties(
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties(
       'AWS::KinesisAnalyticsV2::Application',
       {
         ApplicationConfiguration: {
@@ -535,6 +542,27 @@ describe('Application', () => {
         },
       },
     );
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              'ec2:DescribeVpcs',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeDhcpOptions',
+              'ec2:CreateNetworkInterface',
+              'ec2:CreateNetworkInterfacePermission',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ]),
+      },
+    });
   });
 
   test('providing securityGroups', () => {
