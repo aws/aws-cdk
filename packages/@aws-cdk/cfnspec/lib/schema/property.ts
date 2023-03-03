@@ -96,7 +96,7 @@ export interface MapOfListsOfPrimitives extends MapPropertyBase {
 }
 
 export interface TagPropertyStandard extends PropertyBase {
-  ItemType: 'Tag' | 'TagsEntry' | 'TagRef' | 'ElasticFileSystemTag' | 'HostedZoneTag';
+  ItemType: 'Tag' | 'TagsEntry' | 'TagRef' | 'ElasticFileSystemTag' | 'HostedZoneTag' | 'AccessPointTag';
   Type: 'Tags';
 }
 
@@ -256,6 +256,7 @@ const tagPropertyNames = {
   HostedZoneTags: '',
   Tags: '',
   UserPoolTags: '',
+  AccessPointTags: '',
 };
 
 export type TagPropertyName = keyof typeof tagPropertyNames;
@@ -288,7 +289,8 @@ export function isTagPropertyStandard(prop: Property): prop is TagPropertyStanda
     (prop as TagPropertyStandard).Type === 'Tags' ||
     (prop as TagPropertyStandard).ItemType === 'TagRef' ||
     (prop as TagPropertyStandard).ItemType === 'ElasticFileSystemTag' ||
-    (prop as TagPropertyStandard).ItemType === 'HostedZoneTag'
+    (prop as TagPropertyStandard).ItemType === 'HostedZoneTag' ||
+    (prop as TagPropertyStandard).ItemType === 'AccessPointTag'
   );
 
 }

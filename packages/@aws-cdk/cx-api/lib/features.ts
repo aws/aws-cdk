@@ -81,6 +81,9 @@ export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:
 export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
 export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
 export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId';
+export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
+export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
+export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -661,6 +664,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
+  //////////////////////////////////////////////////////////////////////
   [APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID]: {
     type: FlagType.BugFix,
     summary: 'Include authorizer configuration in the calculation of the API deployment logical ID.',
@@ -671,6 +675,60 @@ export const FLAGS: Record<string, FlagInfo> = {
       calculation, so any changes made to an authorizer will create a new deployment.
       `,
     introducedIn: { v2: '2.66.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA]: {
+    type: FlagType.BugFix,
+    summary: 'Define user data for a launch template by default when a machine image is provided.',
+    detailsMd: `
+      The ec2.LaunchTemplate construct did not define user data when a machine image is
+      provided despite the document. If this is set, a user data is automatically defined
+      according to the OS of the machine image.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.67.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'SecretTargetAttachments uses the ResourcePolicy of the attached Secret.',
+    detailsMd: `
+      Enable this feature flag to make SecretTargetAttachments use the ResourcePolicy of the attached Secret.
+      SecretTargetAttachments are created to connect a Secret to a target resource. 
+      In CDK code, they behave like regular Secret and can be used as a stand-in in most situations.
+      Previously, adding to the ResourcePolicy of a SecretTargetAttachment did attempt to create a separate ResourcePolicy for the same Secret.
+      However Secrets can only have a single ResourcePolicy, causing the CloudFormation deployment to fail.
+
+      When enabling this feature flag for an existing Stack, ResourcePolicies created via a SecretTargetAttachment will need replacement.
+      This won't be possible without intervention due to limitation outlined above.
+      First remove all permissions granted to the Secret and deploy without the ResourcePolicies.
+      Then you can re-add the permissions and deploy again.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.67.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [REDSHIFT_COLUMN_ID]: {
+    type: FlagType.BugFix,
+    summary: 'Whether to use an ID to track Redshift column changes',
+    detailsMd: `
+      Redshift columns are identified by their \`name\`. If a column is renamed, the old column
+      will be dropped and a new column will be created. This can cause data loss.
+
+      This flag enables the use of an \`id\` attribute for Redshift columns. If this flag is enabled, the
+      internal CDK architecture will track changes of Redshift columns through their \`id\`, rather
+      than their \`name\`. This will prevent data loss when columns are renamed.
+
+      **NOTE** - Enabling this flag comes at a **risk**. When enabled, update the \`id\`s of all columns,
+      **however** do not change the \`names\`s of the columns. If the \`name\`s of the columns are changed during
+      initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
+      of the \`id\`s, the \`name\`s of the columns can be changed without data loss.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };

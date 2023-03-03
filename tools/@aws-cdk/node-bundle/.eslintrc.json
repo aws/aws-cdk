@@ -155,7 +155,7 @@
       "error"
     ],
     "import/order": [
-      "warn",
+      "error",
       {
         "groups": [
           "builtin",

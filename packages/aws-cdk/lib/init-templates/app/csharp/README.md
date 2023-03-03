@@ -4,7 +4,7 @@ This is a blank project for CDK development with C#.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-It uses the [.NET Core CLI](https://docs.microsoft.com/dotnet/articles/core/) to compile and execute your project.
+It uses the [.NET CLI](https://docs.microsoft.com/dotnet/articles/core/) to compile and execute your project.
 
 ## Useful commands
 
