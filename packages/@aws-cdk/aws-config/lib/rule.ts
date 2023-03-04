@@ -2168,6 +2168,10 @@ export class ResourceType {
   public static readonly EFS_ACCESS_POINT = new ResourceType('AWS::EFS::AccessPoint');
   /** Amazon Elastic Kubernetes Service cluster */
   public static readonly EKS_CLUSTER = new ResourceType('AWS::EKS::Cluster');
+  /** Amazon Elastic Kubernetes Service identity provider config */
+  public static readonly EKS_IDENTITY_PROVIDER_CONFIG = new ResourceType('AWS::EKS::IdentityProviderConfig');
+  /** Amazon Elastic Kubernetes Service addon */
+  public static readonly EKS_ADDON = new ResourceType('AWS::EKS::Addon');
   /** Amazon EMR security configuration */
   public static readonly EMR_SECURITY_CONFIGURATION = new ResourceType('AWS::EMR::SecurityConfiguration');
   /** Amazon EventBridge EventBus */
@@ -2202,6 +2206,12 @@ export class ResourceType {
   public static readonly GUARDDUTY_FILTER = new ResourceType('AWS::GuardDuty::Filter');
   /** Amazon ElasticSearch domain */
   public static readonly ELASTICSEARCH_DOMAIN = new ResourceType('AWS::Elasticsearch::Domain');
+  /** Amazon Interactive Video Service (IVS) channel */
+  public static readonly IVS_CHANNEL = new ResourceType('AWS::IVS::Channel');
+  /** Amazon Interactive Video Service (IVS) recording configuration */
+  public static readonly IVS_RECORDING_CONFIGURATION = new ResourceType('AWS::IVS::RecordingConfiguration');
+  /** Amazon Interactive Video Service (IVS) playback key pair */
+  public static readonly IVS_PLAYBACK_KEYPAIR = new ResourceType('AWS::IVS::PlaybackKeyPair');
   /** Amazon OpenSearch domain */
   public static readonly OPENSEARCH_DOMAIN = new ResourceType('AWS::OpenSearch::Domain');
   /** Amazon QLDB ledger */
@@ -2210,6 +2220,8 @@ export class ResourceType {
   public static readonly KINESIS_STREAM = new ResourceType('AWS::Kinesis::Stream');
   /** Amazon Kinesis stream consumer */
   public static readonly KINESIS_STREAM_CONSUMER = new ResourceType('AWS::Kinesis::StreamConsumer');
+  /** Amazon Kinesis Analytics V2 application */
+  public static readonly KINESIS_ANALYTICS_V2_APPLICATION = new ResourceType('AWS::KinesisAnalyticsV2::Application');
   /** Amazon Lightsail Certificate */
   public static readonly LIGHTSAIL_CERTIFICATE = new ResourceType('AWS::Lightsail::Certificate');
   /** Amazon Lightsail Disk */
@@ -2248,6 +2260,8 @@ export class ResourceType {
   public static readonly RDS_DB_CLUSTER = new ResourceType('AWS::RDS::DBCluster');
   /** Amazon RDS database cluster snapshot */
   public static readonly RDS_DB_CLUSTER_SNAPSHOT = new ResourceType('AWS::RDS::DBClusterSnapshot');
+  /** Amazon RDS global cluster */
+  public static readonly RDS_GLOBAL_CLUSTER = new ResourceType('AWS::RDS::GlobalCluster');
   /** Amazon Route53 Hosted Zone */
   public static readonly ROUTE53_HOSTED_ZONE= new ResourceType('AWS::Route53::HostedZone');
   /** Amazon Route53 Health Check */
@@ -2270,6 +2284,8 @@ export class ResourceType {
   public static readonly SNS_TOPIC = new ResourceType('AWS::SNS::Topic');
   /** Amazon S3 bucket */
   public static readonly S3_BUCKET = new ResourceType('AWS::S3::Bucket');
+  /** Amazon S3 Multi-Region Access Point */
+  public static readonly S3_MULTIREGION_ACCESS_POINT = new ResourceType('AWS::S3::MultiRegionAccessPoint');
   /** Amazon SageMaker code repository */
   public static readonly SAGEMAKER_CODE_REPOSITORY = new ResourceType('AWS::SageMaker::CodeRepository');
   /** Amazon SageMaker model */
@@ -2408,6 +2424,8 @@ export class ResourceType {
   public static readonly GLUE_JOB = new ResourceType('AWS::Glue::Job');
   /** AWS Glue Classifier */
   public static readonly GLUE_CLASSIFIER = new ResourceType('AWS::Glue::Classifier');
+  /** AWS Glue machine learning transform */
+  public static readonly GLUE_ML_TRANSFORM = new ResourceType('AWS::Glue::MLTransform');
   /** AWS IAM user */
   public static readonly IAM_USER = new ResourceType('AWS::IAM::User');
   /** AWS IAM group */
@@ -2426,14 +2444,36 @@ export class ResourceType {
   public static readonly IOT_ROLE_ALIAS = new ResourceType('AWS::IoT::RoleAlias');
   /** AWS IoT dimension */
   public static readonly IOT_DIMENSION = new ResourceType('AWS::IoT::Dimension');
+  /** AWS IoT policy */
+  public static readonly IOT_POLICY = new ResourceType('AWS::IoT::Policy');
+  /** AWS IoT mitigation action */
+  public static readonly IOT_MITIGATION_ACTION = new ResourceType('AWS::IoT::MitigationAction');
+  /** AWS IoT TwinMaker workspace */
+  public static readonly IOT_TWINMAKER_WORKSPACE = new ResourceType('AWS::IoTwinMaker::Workspace');
+  /** AWS IoT TwinMaker entity */
+  public static readonly IOT_TWINMAKER_ENTITY = new ResourceType('AWS::IoTTwinMaker::Entity');
   /** AWS IoT Analytics datastore */
   public static readonly IOT_ANALYTICS_DATASTORE = new ResourceType('AWS::IoTAnalytics::Datastore');
+  /** AWS IoT Analytics dataset */
+  public static readonly IOT_ANALYTICS_DATASET = new ResourceType('AWS::IoTAnalytics::Dataset');
+  /** AWS IoT Analytics pipeline */
+  public static readonly IOT_ANALYTICS_PIPELINE = new ResourceType('AWS::IoTAnalytics::Pipeline');
+  /** AWS IoT Analytics channel */
+  public static readonly IOT_ANALYTICS_CHANNEL = new ResourceType('AWS::IoTAnalytics::Channel');
   /** AWS IoT Events Input */
   public static readonly IOT_EVENTS_INPUT = new ResourceType('AWS::IoTEvents::Input');
   /** AWS IoT Events Detector Model */
   public static readonly IOT_EVENTS_DETECTOR_MODEL = new ResourceType('AWS::IoTEvents::DetectorModel');
   /** AWS IoT Events Alarm Model */
   public static readonly IOT_EVENTS_ALARM_MODEL = new ResourceType('AWS::IoTEvents::AlarmModel');
+  /** AWS IoT SiteWise dashboard */
+  public static readonly IOT_SITEWISE_DASHBOARD = new ResourceType('AWS::IoTSiteWise::Dashboard');
+  /** AWS IoT SiteWise project */
+  public static readonly IOT_SITEWISE_PROJECT = new ResourceType('AWS::IoTSiteWise::Project');
+  /** AWS IoT SiteWise portal */
+  public static readonly IOT_SITEWISE_PORTAL = new ResourceType('AWS::IoTSiteWise::Portal');
+  /** AWS IoT SiteWise asset model */
+  public static readonly IOT_SITEWISE_ASSETMODEL = new ResourceType('AWS::IoTSiteWise::AssetModel');
   /** AWS KMS Key */
   public static readonly KMS_KEY = new ResourceType('AWS::KMS::Key');
   /** AWS Lambda function */

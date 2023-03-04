@@ -12,7 +12,9 @@ import {
   TagType,
   Tags,
   Token,
+  FeatureFlags,
 } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
 import { CfnLaunchTemplate } from './ec2.generated';
@@ -591,8 +593,19 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       },
     });
 
-    if (props.userData) {
-      this.userData = props.userData;
+    const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
+    if (imageConfig) {
+      this.osType = imageConfig.osType;
+      this.imageId = imageConfig.imageId;
+    }
+
+    if (FeatureFlags.of(this).isEnabled(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA)) {
+      // priority: prop.userData -> userData from machineImage -> undefined
+      this.userData = props.userData ?? imageConfig?.userData;
+    } else {
+      if (props.userData) {
+        this.userData = props.userData;
+      }
     }
     const userDataToken = Lazy.string({
       produce: () => {
@@ -602,12 +615,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         return undefined;
       },
     });
-
-    const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
-    if (imageConfig) {
-      this.osType = imageConfig.osType;
-      this.imageId = imageConfig.imageId;
-    }
 
     this.instanceType = props.instanceType;
 
