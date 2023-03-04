@@ -499,9 +499,7 @@ test('can add statements to file system policy', () => {
           Principal: {
             AWS: 'arn:aws:iam::111122223333:role/Testing_Role1',
           },
-          Action: [
-            'elasticfilesystem:ClientMount',
-          ],
+          Action: 'elasticfilesystem:ClientMount',
           Resource: 'arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd',
           Condition: {
             Bool: {
@@ -515,8 +513,8 @@ test('can add statements to file system policy', () => {
             AWS: 'arn:aws:iam::111122223333:role/Testing_Role2',
           },
           Action: [
-            'elasticfilesystem:ClientWrite',
             'elasticfilesystem:ClientMount',
+            'elasticfilesystem:ClientWrite',
           ],
           Resource: 'arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd',
           Condition: {
