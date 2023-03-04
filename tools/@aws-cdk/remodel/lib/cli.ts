@@ -315,7 +315,7 @@ async function runBuild(dir: string) {
   await e('./build.sh --skip-prereqs --skip-compat --skip-tests');
 
   // Generate the alpha packages
-  // await e('./scripts/transform.sh');
+  await e('./scripts/transform.sh');
 }
 
 async function cleanup(dir: string) {
