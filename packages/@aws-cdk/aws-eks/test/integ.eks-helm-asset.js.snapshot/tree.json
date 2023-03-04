@@ -1306,6 +1306,34 @@
                   "fqn": "@aws-cdk/aws-eks.HelmChart",
                   "version": "0.0.0"
                 }
+              },
+              "chart-test-skip-crd-installation": {
+                "id": "chart-test-skip-crd-installation",
+                "path": "aws-cdk-eks-helm-test/Cluster/chart-test-skip-crd-installation",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-helm-test/Cluster/chart-test-skip-crd-installation/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-eks-helm-test/Cluster/chart-test-skip-crd-installation/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-eks.HelmChart",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -2833,7 +2861,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c17e6c5822dd39738b3ba669bef4bb7c8fceaea76b51477bf94d6745d0c201c8.zip"
+                          "s3Key": "92ea03f8b2e779503519f7781d06c03f95b46863db85f5c50a4e7debfd04be02.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -3255,7 +3283,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/75cb3907a84a56903beb94d07a13f98c8f205e4c2592eca626920d0e31119d45.json"
+                          "/228d4002689856d23e839fb690137b828253b51ab0ba4bd84b6ff0d65e1c23ca.json"
                         ]
                       ]
                     },

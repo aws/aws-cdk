@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e71883c77175b9e4f962aeee1871370951127963b553becd547f38f679e2723f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/63af48a6fd2fde22404093835085e512bfc7f0f8d0485dac6699b96b1675f619.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -181,6 +181,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FileSystemEfsMountTarget24B8EBB43"
+          }
+        ],
+        "/test-efs-integ/AccessPoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AccessPointE936DE82"
           }
         ],
         "/test-efs-integ/BootstrapVersion": [
