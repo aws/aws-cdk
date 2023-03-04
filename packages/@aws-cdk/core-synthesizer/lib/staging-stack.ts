@@ -20,7 +20,7 @@ export interface IStagingStack extends IConstruct {
   /**
    * // TODO
    */
-  locateRepo(asset: DockerImageAssetSource): ecr.Repository;
+  getCreateRepository(asset: DockerImageAssetSource): ecr.Repository;
 }
 
 /**
@@ -54,8 +54,14 @@ export class StagingStack extends Stack implements IStagingStack {
     this.stagingRepos = {};
   }
 
-  public locateRepo(asset: DockerImageAssetSource): ecr.Repository {
+  public getCreateRepository(asset: DockerImageAssetSource): ecr.Repository {
     // TODO: not the source hash! construct path
+    if (this.stagingRepos[asset.sourceHash] === undefined) {
+      this.stagingRepos[asset.sourceHash] = new ecr.Repository(this, `${asset.sourceHash}-repo`, {
+        // TODO: lifecycle rules
+      });
+    }
+
     return this.stagingRepos[asset.sourceHash];
   }
 }
