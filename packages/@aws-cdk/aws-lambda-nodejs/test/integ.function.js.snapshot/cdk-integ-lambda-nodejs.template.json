@@ -678,7 +678,7 @@
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
-    "Handler": "index.someHandler",
+    "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
    "DependsOn": [
@@ -723,7 +723,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5017e4b2e278e32bc634202d075b7ed8961b0d784f75450f7918a6a4f6f7df4a.zip"
+     "S3Key": "a33898f49e24c41ff9be236439c418d30e576c5f57763097162d9ec4245216ce.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -736,7 +736,21 @@
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
-    "Handler": "run.sh",
+    "Handler": "ts-web.run.sh",
+    "Layers": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:lambda:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":753240598075:layer:LambdaAdapterLayerX86:13"
+       ]
+      ]
+     }
+    ],
     "Runtime": "nodejs14.x"
    },
    "DependsOn": [
