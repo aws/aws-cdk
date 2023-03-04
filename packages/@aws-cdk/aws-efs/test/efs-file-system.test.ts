@@ -458,3 +458,74 @@ test('can specify file system policy', () => {
     },
   });
 });
+
+test('can add statements to file system policy', () => {
+  // WHEN
+  const statement1 = new iam.PolicyStatement({
+    actions: [
+      'elasticfilesystem:ClientMount',
+    ],
+    principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:role/Testing_Role1')],
+    resources: ['arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd'],
+    conditions: {
+      Bool: {
+        'elasticfilesystem:AccessedViaMountTarget': 'true',
+      },
+    },
+  });
+  const statement2 = new iam.PolicyStatement({
+    actions: [
+      'elasticfilesystem:ClientMount',
+      'elasticfilesystem:ClientWrite',
+    ],
+    principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:role/Testing_Role2')],
+    resources: ['arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd'],
+    conditions: {
+      Bool: {
+        'elasticfilesystem:AccessedViaMountTarget': 'true',
+      },
+    },
+  });
+  const fileSystem = new FileSystem(stack, 'EfsFileSystem', { vpc });
+  fileSystem.addToResourcePolicy(statement1);
+  fileSystem.addToResourcePolicy(statement2);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemPolicy: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: 'arn:aws:iam::111122223333:role/Testing_Role1',
+          },
+          Action: [
+            'elasticfilesystem:ClientMount',
+          ],
+          Resource: 'arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd',
+          Condition: {
+            Bool: {
+              'elasticfilesystem:AccessedViaMountTarget': 'true',
+            },
+          },
+        },
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: 'arn:aws:iam::111122223333:role/Testing_Role2',
+          },
+          Action: [
+            'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientMount',
+          ],
+          Resource: 'arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd',
+          Condition: {
+            Bool: {
+              'elasticfilesystem:AccessedViaMountTarget': 'true',
+            },
+          },
+        },
+      ],
+    },
+  });
+});

@@ -310,7 +310,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
  *
  * @resource AWS::EFS::FileSystem
  */
-export class FileSystem extends FileSystemBase {
+export class FileSystem extends FileSystemBase implements iam.IResourceWithPolicy {
   /**
    * The default port File System listens on.
    */
@@ -341,6 +341,8 @@ export class FileSystem extends FileSystemBase {
 
   private readonly _mountTargetsAvailable = new DependencyGroup();
 
+  private readonly resource: CfnFileSystem;
+
   /**
    * Constructor for creating a new EFS FileSystem.
    */
@@ -370,7 +372,7 @@ export class FileSystem extends FileSystemBase {
       lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
     }
 
-    const filesystem = new CfnFileSystem(this, 'Resource', {
+    this.resource = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
       lifecyclePolicies: lifecyclePolicies.length > 0 ? lifecyclePolicies : undefined,
@@ -380,10 +382,10 @@ export class FileSystem extends FileSystemBase {
       backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
       fileSystemPolicy: props.fileSystemPolicy,
     });
-    filesystem.applyRemovalPolicy(props.removalPolicy);
+    this.resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.fileSystemId = filesystem.ref;
-    this.fileSystemArn = filesystem.attrArn;
+    this.fileSystemId = this.resource.ref;
+    this.fileSystemArn = this.resource.attrArn;
 
     Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
@@ -412,6 +414,22 @@ export class FileSystem extends FileSystemBase {
       this._mountTargetsAvailable.add(mountTarget);
     });
     this.mountTargetsAvailable = this._mountTargetsAvailable;
+  }
+
+  public addToResourcePolicy(
+    statement: iam.PolicyStatement,
+  ): iam.AddToResourcePolicyResult {
+    const fileSystemPolicy =
+      (this.resource.fileSystemPolicy as iam.PolicyDocument) ??
+      new iam.PolicyDocument({
+        statements: [],
+      });
+    fileSystemPolicy.addStatements(statement);
+    this.resource.fileSystemPolicy = fileSystemPolicy;
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
   }
 
   /**
