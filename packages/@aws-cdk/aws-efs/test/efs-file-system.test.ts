@@ -527,3 +527,36 @@ test('can add statements to file system policy', () => {
     },
   });
 });
+
+test('imported file system can not add statements to file system policy', () => {
+  // WHEN
+  const statement = new iam.PolicyStatement({
+    actions: [
+      'elasticfilesystem:ClientMount',
+    ],
+    principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:role/Testing_Role')],
+    resources: ['arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd'],
+    conditions: {
+      Bool: {
+        'elasticfilesystem:AccessedViaMountTarget': 'true',
+      },
+    },
+  });
+
+  const fileSystem = new FileSystem(stack, 'FileSystem', { vpc });
+  const importedFileSystem = FileSystem.fromFileSystemAttributes(stack, 'ImportedFileSystem', {
+    securityGroup: fileSystem.connections.securityGroups[0],
+    fileSystemArn: fileSystem.fileSystemArn,
+  });
+  const fileSystemResult = fileSystem.addToResourcePolicy(statement);
+  const importedFileSystemResult = importedFileSystem.addToResourcePolicy(statement);
+
+  // THEN
+  expect(fileSystemResult).toStrictEqual({
+    statementAdded: true,
+    policyDependable: fileSystem,
+  });
+  expect(importedFileSystemResult).toStrictEqual({
+    statementAdded: false,
+  });
+});

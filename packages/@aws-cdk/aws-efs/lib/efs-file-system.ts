@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, FeatureFlags, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
@@ -106,7 +106,7 @@ export enum ThroughputMode {
 /**
  * Represents an Amazon EFS file system
  */
-export interface IFileSystem extends ec2.IConnectable, IResource {
+export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy {
   /**
    * The ID of the file system, assigned by Amazon EFS.
    *
@@ -285,6 +285,11 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   public abstract readonly mountTargetsAvailable: IDependable;
 
   /**
+   * @internal
+   */
+  protected _resource?: CfnFileSystem;
+
+  /**
    * Grant the actions defined in actions to the given grantee
    * on this File System resource.
    *
@@ -298,6 +303,35 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
       resourceArns: [this.fileSystemArn],
     });
   }
+
+  /**
+   * Adds a statement to the resource policy associated with this file system.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported file systems.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(
+    statement: iam.PolicyStatement,
+  ): iam.AddToResourcePolicyResult {
+    if (!this._resource) {
+      return {
+        statementAdded: false,
+      };
+    }
+    const fileSystemPolicy =
+      (this._resource.fileSystemPolicy as iam.PolicyDocument) ??
+      new iam.PolicyDocument({
+        statements: [],
+      });
+    fileSystemPolicy.addStatements(statement);
+    this._resource.fileSystemPolicy = fileSystemPolicy;
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
+  }
 }
 
 /**
@@ -310,7 +344,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
  *
  * @resource AWS::EFS::FileSystem
  */
-export class FileSystem extends FileSystemBase implements iam.IResourceWithPolicy {
+export class FileSystem extends FileSystemBase {
   /**
    * The default port File System listens on.
    */
@@ -341,8 +375,6 @@ export class FileSystem extends FileSystemBase implements iam.IResourceWithPolic
 
   private readonly _mountTargetsAvailable = new DependencyGroup();
 
-  private readonly resource: CfnFileSystem;
-
   /**
    * Constructor for creating a new EFS FileSystem.
    */
@@ -372,7 +404,7 @@ export class FileSystem extends FileSystemBase implements iam.IResourceWithPolic
       lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
     }
 
-    this.resource = new CfnFileSystem(this, 'Resource', {
+    this._resource = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
       lifecyclePolicies: lifecyclePolicies.length > 0 ? lifecyclePolicies : undefined,
@@ -382,10 +414,10 @@ export class FileSystem extends FileSystemBase implements iam.IResourceWithPolic
       backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
       fileSystemPolicy: props.fileSystemPolicy,
     });
-    this.resource.applyRemovalPolicy(props.removalPolicy);
+    this._resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.fileSystemId = this.resource.ref;
-    this.fileSystemArn = this.resource.attrArn;
+    this.fileSystemId = this._resource.ref;
+    this.fileSystemArn = this._resource.attrArn;
 
     Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
@@ -414,22 +446,6 @@ export class FileSystem extends FileSystemBase implements iam.IResourceWithPolic
       this._mountTargetsAvailable.add(mountTarget);
     });
     this.mountTargetsAvailable = this._mountTargetsAvailable;
-  }
-
-  public addToResourcePolicy(
-    statement: iam.PolicyStatement,
-  ): iam.AddToResourcePolicyResult {
-    const fileSystemPolicy =
-      (this.resource.fileSystemPolicy as iam.PolicyDocument) ??
-      new iam.PolicyDocument({
-        statements: [],
-      });
-    fileSystemPolicy.addStatements(statement);
-    this.resource.fileSystemPolicy = fileSystemPolicy;
-    return {
-      statementAdded: true,
-      policyDependable: this,
-    };
   }
 
   /**
