@@ -734,6 +734,12 @@
                         "fileSystemId": {
                           "Ref": "FileSystem8A8E25C0"
                         },
+                        "accessPointTags": [
+                          {
+                            "key": "Name",
+                            "value": "test-efs-integ/FileSystem/AccessPoint"
+                          }
+                        ],
                         "posixUser": {
                           "uid": "1000",
                           "gid": "1000"
