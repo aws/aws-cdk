@@ -47,6 +47,9 @@
       "path": "../aws-ecr"
     },
     {
+      "path": "../cx-api"
+    },
+    {
       "path": "../../../tools/@aws-cdk/cdk-build-tools"
     },
     {
