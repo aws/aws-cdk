@@ -2170,6 +2170,7 @@ class LookedUpVpc extends VpcBase {
 
     this.vpcId = props.vpcId;
     this.vpcArn = Arn.format({
+      region: props.region,
       service: 'ec2',
       resource: 'vpc',
       resourceName: this.vpcId,
