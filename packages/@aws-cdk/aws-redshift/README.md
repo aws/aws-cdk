@@ -214,6 +214,21 @@ new Table(this, 'Table', {
 });
 ```
 
+Table columns can also contain an `id` attribute, which can allow table columns to be renamed.
+
+**NOTE** To use the `id` attribute, you must also enable the `@aws-cdk/aws-redshift:columnId` feature flag.
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)' }, 
+    { id: 'col2', name: 'col2', dataType: 'float' }
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
 ### Granting Privileges
 
 You can give a user privileges to perform certain actions on a table by using the
@@ -347,6 +362,25 @@ const cluster = new Cluster(this, 'Cluster', {
 });
 
 cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+```
+
+## Rebooting for Parameter Updates
+
+In most cases, existing clusters [must be manually rebooted](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html) to apply parameter changes. You can automate parameter related reboots by setting the cluster's `rebootForParameterChanges` property to `true` , or by using `Cluster.enableRebootForParameterChanges()`.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new Cluster(this, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+    masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+  },
+  vpc,
+});
+
+cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+cluster.enableRebootForParameterChanges()
 ```
 
 ## Elastic IP

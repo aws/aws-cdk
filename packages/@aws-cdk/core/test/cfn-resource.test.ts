@@ -1,8 +1,8 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import * as core from '../lib';
 import { getWarnings } from './util';
+import * as core from '../lib';
 import { Names } from '../lib';
 
 describe('cfn resource', () => {

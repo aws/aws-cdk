@@ -1,10 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Arn, ArnFormat, Duration, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Arn, ArnFormat, Duration, FeatureFlags, Lazy, Names, Stack } from '@aws-cdk/core';
+import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { CfnAuthorizer } from '../apigateway.generated';
+import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { IRestApi } from '../restapi';
+
 
 /**
  * Base properties for all lambda authorizers
@@ -69,6 +71,8 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
 
   protected restApiId?: string;
 
+  protected abstract readonly authorizerProps: CfnAuthorizerProps;
+
   protected constructor(scope: Construct, id: string, props: LambdaAuthorizerProps) {
     super(scope, id);
 
@@ -90,6 +94,28 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     }
 
     this.restApiId = restApi.restApiId;
+
+    const deployment = restApi.latestDeployment;
+    const addToLogicalId = FeatureFlags.of(this).isEnabled(APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID);
+
+    if (deployment && addToLogicalId) {
+      let functionName;
+
+      if (this.handler instanceof lambda.Function) {
+        // if not imported, attempt to get the function name, which
+        // may be a token
+        functionName = (this.handler.node.defaultChild as lambda.CfnFunction).functionName;
+      } else {
+        // if imported, the function name will be a token
+        functionName = this.handler.functionName;
+      }
+
+      deployment.node.addDependency(this);
+      deployment.addToLogicalId({
+        authorizer: this.authorizerProps,
+        authorizerToken: functionName,
+      });
+    }
   }
 
   /**
@@ -97,20 +123,34 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   protected setupPermissions() {
     if (!this.role) {
-      this.handler.addPermission(`${Names.uniqueId(this)}:Permissions`, {
-        principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-        sourceArn: this.authorizerArn,
-      });
-    } else if (this.role instanceof iam.Role) { // i.e. not imported
-      this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
-        statements: [
-          new iam.PolicyStatement({
-            resources: this.handler.resourceArnsForGrantInvoke,
-            actions: ['lambda:InvokeFunction'],
-          }),
-        ],
-      }));
+      this.addDefaultPermisionRole();
+    } else if (iam.Role.isRole(this.role)) {
+      this.addLambdaInvokePermission(this.role);
     }
+  }
+
+  /**
+   * Add Default Permission Role for handler
+   */
+  private addDefaultPermisionRole() :void {
+    this.handler.addPermission(`${Names.uniqueId(this)}:Permissions`, {
+      principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+      sourceArn: this.authorizerArn,
+    });
+  }
+
+  /**
+   * Add Lambda Invoke Permission for LambdaAurhorizer's role
+   */
+  private addLambdaInvokePermission(role: iam.Role) :void {
+    role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
+      statements: [
+        new iam.PolicyStatement({
+          resources: this.handler.resourceArnsForGrantInvoke,
+          actions: ['lambda:InvokeFunction'],
+        }),
+      ],
+    }));
   }
 
   /**
@@ -163,11 +203,14 @@ export class TokenAuthorizer extends LambdaAuthorizer {
 
   public readonly authorizerArn: string;
 
+  protected readonly authorizerProps: CfnAuthorizerProps;
+
   constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
     super(scope, id, props);
 
     const restApiId = this.lazyRestApiId();
-    const resource = new CfnAuthorizer(this, 'Resource', {
+
+    const authorizerProps: CfnAuthorizerProps = {
       name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'TOKEN',
@@ -176,7 +219,11 @@ export class TokenAuthorizer extends LambdaAuthorizer {
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySource || 'method.request.header.Authorization',
       identityValidationExpression: props.validationRegex,
-    });
+    };
+
+    this.authorizerProps = authorizerProps;
+
+    const resource = new CfnAuthorizer(this, 'Resource', authorizerProps);
 
     this.authorizerId = resource.ref;
     this.authorizerArn = Stack.of(this).formatArn({
@@ -221,6 +268,8 @@ export class RequestAuthorizer extends LambdaAuthorizer {
 
   public readonly authorizerArn: string;
 
+  protected readonly authorizerProps: CfnAuthorizerProps;
+
   constructor(scope: Construct, id: string, props: RequestAuthorizerProps) {
     super(scope, id, props);
 
@@ -229,7 +278,8 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     }
 
     const restApiId = this.lazyRestApiId();
-    const resource = new CfnAuthorizer(this, 'Resource', {
+
+    const authorizerProps: CfnAuthorizerProps = {
       name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'REQUEST',
@@ -237,7 +287,11 @@ export class RequestAuthorizer extends LambdaAuthorizer {
       authorizerCredentials: props.assumeRole?.roleArn,
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySources.map(is => is.toString()).join(','),
-    });
+    };
+
+    this.authorizerProps = authorizerProps;
+
+    const resource = new CfnAuthorizer(this, 'Resource', authorizerProps);
 
     this.authorizerId = resource.ref;
     this.authorizerArn = Stack.of(this).formatArn({

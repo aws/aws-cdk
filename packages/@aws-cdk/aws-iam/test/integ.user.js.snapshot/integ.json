@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.user": {
+    "iam-user-test/DefaultTest": {
       "stacks": [
         "aws-cdk-iam-user"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "iam-user-test/DefaultTest/DeployAssert",
+      "assertionStackName": "iamusertestDefaultTestDeployAssertBD838880"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

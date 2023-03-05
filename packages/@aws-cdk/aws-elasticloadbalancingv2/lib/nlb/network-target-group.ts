@@ -1,14 +1,14 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { INetworkListener } from './network-listener';
 import {
   BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
 } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
-import { validateNetworkProtocol } from '../shared/util';
-import { INetworkListener } from './network-listener';
+import { parseLoadBalancerFullName, parseTargetGroupFullName, validateNetworkProtocol } from '../shared/util';
 
 /**
  * Properties for a new Network Target Group
@@ -63,6 +63,70 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
 }
 
 /**
+ * Contains all metrics for a Target Group of a Network Load Balancer.
+ */
+export interface INetworkTargetGroupMetrics {
+  /**
+   * Return the given named metric for this Network Target Group
+   *
+   * @default Average over 5 minutes
+   */
+  custom(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of targets that are considered healthy.
+   *
+   * @default Average over 5 minutes
+   */
+  healthyHostCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of targets that are considered unhealthy.
+   *
+   * @default Average over 5 minutes
+   */
+  unHealthyHostCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+}
+
+/**
+ * The metrics for a network load balancer.
+ */
+class NetworkTargetGroupMetrics implements INetworkTargetGroupMetrics {
+  private readonly scope: Construct;
+  private readonly loadBalancerFullName: string;
+  private readonly targetGroupFullName: string;
+
+  public constructor(scope: Construct, targetGroupFullName: string, loadBalancerFullName: string) {
+    this.scope = scope;
+    this.targetGroupFullName = targetGroupFullName;
+    this.loadBalancerFullName = loadBalancerFullName;
+  }
+
+  public custom(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/NetworkELB',
+      metricName,
+      dimensionsMap: { LoadBalancer: this.loadBalancerFullName, TargetGroup: this.targetGroupFullName },
+      ...props,
+    }).attachTo(this.scope);
+  }
+
+  public healthyHostCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.custom('HealthyHostCount', {
+      statistic: 'Average',
+      ...props,
+    });
+  }
+
+  public unHealthyHostCount(props?: cloudwatch.MetricOptions) {
+    return this.custom('UnHealthyHostCount', {
+      statistic: 'Average',
+      ...props,
+    });
+  }
+}
+
+/**
  * Define a Network Target Group
  */
 export class NetworkTargetGroup extends TargetGroupBase implements INetworkTargetGroup {
@@ -83,6 +147,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
   }
 
   private readonly listeners: INetworkListener[];
+  private _metrics?: INetworkTargetGroupMetrics;
 
   constructor(scope: Construct, id: string, props: NetworkTargetGroupProps) {
     const proto = props.protocol || Protocol.TCP;
@@ -106,6 +171,14 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       this.setAttribute('deregistration_delay.connection_termination.enabled', props.connectionTermination ? 'true' : 'false');
     }
     this.addTarget(...(props.targets || []));
+
+  }
+
+  public get metrics(): INetworkTargetGroupMetrics {
+    if (!this._metrics) {
+      this._metrics = new NetworkTargetGroupMetrics(this, this.targetGroupFullName, this.firstLoadBalancerFullName);
+    }
+    return this._metrics;
   }
 
   /**
@@ -132,24 +205,20 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
    * The number of targets that are considered healthy.
    *
    * @default Average over 5 minutes
+   * @deprecated Use ``NetworkTargetGroup.metrics.healthyHostCount`` instead
    */
   public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('HealthyHostCount', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metrics.healthyHostCount(props);
   }
 
   /**
    * The number of targets that are considered unhealthy.
    *
    * @default Average over 5 minutes
+   * @deprecated Use ``NetworkTargetGroup.metrics.healthyHostCount`` instead
    */
   public metricUnHealthyHostCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('UnHealthyHostCount', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metrics.unHealthyHostCount(props);
   }
 
   /**
@@ -167,11 +236,12 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
     const healthCheck: HealthCheck = this.healthCheck || {};
 
-    const allowedIntervals = [10, 30];
+    const lowHealthCheckInterval = 5;
+    const highHealthCheckInterval = 300;
     if (healthCheck.interval) {
       const seconds = healthCheck.interval.toSeconds();
-      if (!cdk.Token.isUnresolved(seconds) && !allowedIntervals.includes(seconds)) {
-        ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`);
+      if (!cdk.Token.isUnresolved(seconds) && (seconds < lowHealthCheckInterval || seconds > highHealthCheckInterval)) {
+        ret.push(`Health check interval '${seconds}' not supported. Must be between ${lowHealthCheckInterval} and ${highHealthCheckInterval}.`);
       }
     }
 
@@ -219,21 +289,17 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
     return ret;
   }
-
-  private metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/NetworkELB',
-      metricName,
-      dimensionsMap: { LoadBalancer: this.firstLoadBalancerFullName, TargetGroup: this.targetGroupFullName },
-      ...props,
-    }).attachTo(this);
-  }
 }
 
 /**
  * A network target group
  */
 export interface INetworkTargetGroup extends ITargetGroup {
+  /**
+   * All metrics available for this target group.
+   */
+  readonly metrics: INetworkTargetGroupMetrics;
+
   /**
    * Register a listener that is load balancing to this target group.
    *
@@ -251,6 +317,26 @@ export interface INetworkTargetGroup extends ITargetGroup {
  * An imported network target group
  */
 class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INetworkTargetGroup {
+  private readonly _metrics?: INetworkTargetGroupMetrics;
+
+  public constructor(scope: Construct, id: string, props: TargetGroupImportProps) {
+    super(scope, id, props);
+    if (this.loadBalancerArns != cdk.Aws.NO_VALUE) {
+      const targetGroupFullName = parseTargetGroupFullName(this.targetGroupArn);
+      const firstLoadBalancerFullName = parseLoadBalancerFullName(this.loadBalancerArns);
+      this._metrics = new NetworkTargetGroupMetrics(this, targetGroupFullName, firstLoadBalancerFullName);
+    }
+  }
+
+  public get metrics(): INetworkTargetGroupMetrics {
+    if (!this._metrics) {
+      throw new Error(
+        'The imported NetworkTargetGroup needs the associated NetworkLoadBalancer to be able to provide metrics. ' +
+        'Please specify the ARN value when importing it.');
+    }
+    return this._metrics;
+  }
+
   public registerListener(_listener: INetworkListener) {
     // Nothing to do, we know nothing of our members
   }
