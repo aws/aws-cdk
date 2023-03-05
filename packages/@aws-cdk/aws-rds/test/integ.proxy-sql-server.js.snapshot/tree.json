@@ -1031,7 +1031,7 @@
                         }
                       }
                     ],
-                    "dbProxyName": "DbProxy",
+                    "dbProxyName": "awscdkrdsproxysqlserverDbProxy3F5C6270",
                     "engineFamily": "SQLSERVER",
                     "roleArn": {
                       "Fn::GetAtt": [
@@ -1263,7 +1263,7 @@
                 "path": "proxy-sql-server-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.216"
+                  "version": "10.1.264"
                 }
               },
               "DeployAssert": {
@@ -1309,7 +1309,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.216"
+          "version": "10.1.264"
         }
       }
     },

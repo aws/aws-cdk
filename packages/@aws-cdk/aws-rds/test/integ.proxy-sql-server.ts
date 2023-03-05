@@ -7,7 +7,9 @@ import * as rds from '../lib';
 import { LicenseModel, SqlServerEngineVersion } from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-proxy-sql-server');
+const stack = new cdk.Stack(app, 'aws-cdk-rds-proxy-sql-server', {
+  terminationProtection: false,
+});
 
 const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2 });
 
@@ -40,4 +42,11 @@ proxy.grantConnect(role, 'master');
 
 new IntegTest(app, 'proxy-sql-server-integ-test', {
   testCases: [stack],
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: true,
+      },
+    },
+  },
 });

@@ -608,7 +608,7 @@
       }
      }
     ],
-    "DBProxyName": "DbProxy",
+    "DBProxyName": "awscdkrdsproxysqlserverDbProxy3F5C6270",
     "EngineFamily": "SQLSERVER",
     "RoleArn": {
      "Fn::GetAtt": [

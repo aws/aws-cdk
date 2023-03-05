@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "aws-cdk-rds-proxy-sql-server.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-rds-proxy-sql-server.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a8a65786708f0efbfee98cb903c75a4b43de5dd600f3808ecd673a48da235d6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b4a5559af4ad6c38f2ee9f74b53b1b86efd673d82a598a085654e2c921d8edda.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -228,7 +229,10 @@
         "/aws-cdk-rds-proxy-sql-server/DbProxy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DbProxy471ABCB4"
+            "data": "DbProxy471ABCB4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-rds-proxy-sql-server/DbProxy/ProxyTargetGroup": [
