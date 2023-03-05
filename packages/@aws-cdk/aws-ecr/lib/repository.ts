@@ -630,7 +630,7 @@ export class Repository extends RepositoryBase {
     // us to specify a resource policy for a specific image,
     // it will straight up fail if a resource section is present at all.
     // When it fails, the error message is unhelpful. Hence this warning.
-    if(statement.resources) {
+    if (statement.resources) {
       Annotations.of(this).addWarning('ECR resource policy does not allow resource statements.');
     }
     if (this.policyDocument === undefined) {
