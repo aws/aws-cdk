@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import type { IsCompleteRequest, IsCompleteResponse, OnEventRequest, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
+import * as AWSCDKAsyncCustomResource from '@aws-cdk/custom-resources/lib/provider-framework/types';
 import { RDS } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 
-export async function onEventHandler(event: OnEventRequest): Promise<OnEventResponse> {
+export async function onEventHandler(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> {
   console.log('Event: %j', event);
 
   const rds = new RDS();
@@ -33,7 +33,7 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
   };
 }
 
-export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
+export async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> {
   console.log('Event: %j', event);
 
   const snapshotStatus = await tryGetClusterSnapshotStatus(event.ResourceProperties.DBClusterSnapshotIdentifier);
