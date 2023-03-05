@@ -1,10 +1,13 @@
 {
-  "version": "21.0.0",
+  "enableLookups": true,
+  "version": "30.1.0",
   "testCases": {
     "ArchiveTest/DefaultTest": {
       "stacks": [
         "StackUnderTest"
       ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": false,
       "assertionStack": "ArchiveTest/DefaultTest/DeployAssert",
       "assertionStackName": "ArchiveTestDefaultTestDeployAssert3405726A"
     }
