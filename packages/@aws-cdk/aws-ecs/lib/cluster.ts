@@ -438,6 +438,7 @@ export class Cluster extends Resource implements ICluster {
       return;
     }
     this._hasEc2Capacity = true;
+    this.connections.connections.addSecurityGroup(...provider.autoScalingGroup.connections.securityGroups);
     this.configureAutoScalingGroup(provider.autoScalingGroup, {
       ...options,
       machineImageType: provider.machineImageType,
