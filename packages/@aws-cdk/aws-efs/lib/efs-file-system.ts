@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, FeatureFlags, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
@@ -288,6 +288,10 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * @internal
    */
   protected _resource?: CfnFileSystem;
+  /**
+   * @internal
+   */
+  protected _fileSystemPolicy?: iam.PolicyDocument;
 
   /**
    * Grant the actions defined in actions to the given grantee
@@ -316,17 +320,10 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
     statement: iam.PolicyStatement,
   ): iam.AddToResourcePolicyResult {
     if (!this._resource) {
-      return {
-        statementAdded: false,
-      };
+      return { statementAdded: false };
     }
-    const fileSystemPolicy =
-      (this._resource.fileSystemPolicy as iam.PolicyDocument) ??
-      new iam.PolicyDocument({
-        statements: [],
-      });
-    fileSystemPolicy.addStatements(statement);
-    this._resource.fileSystemPolicy = fileSystemPolicy;
+    this._fileSystemPolicy = this._fileSystemPolicy ?? new iam.PolicyDocument({ statements: [] });
+    this._fileSystemPolicy.addStatements(statement);
     return {
       statementAdded: true,
       policyDependable: this,
@@ -412,12 +409,13 @@ export class FileSystem extends FileSystemBase {
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
       backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
-      fileSystemPolicy: props.fileSystemPolicy,
+      fileSystemPolicy: Lazy.any({ produce: () => this._fileSystemPolicy }),
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = this._resource.ref;
     this.fileSystemArn = this._resource.attrArn;
+    this._fileSystemPolicy = props.fileSystemPolicy;
 
     Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
