@@ -2,8 +2,8 @@ import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { INetworkListener } from './network-listener';
 import { INetworkTargetGroup } from './network-target-group';
-import { CfnListener } from '../elasticloadbalancingv2.generated';
-import { IListenerAction } from '../shared/listener-action';
+import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import { IListenerAction, ListenerActionProps } from '../shared/listener-action';
 
 /**
  * What to do when a client makes a request to a listener
@@ -27,13 +27,17 @@ export class NetworkListenerAction implements IListenerAction {
     }
     if (targetGroups.length === 1 && options.stickinessDuration === undefined) {
       // Render a "simple" action for backwards compatibility with old templates
-      return new TargetGroupListenerAction(targetGroups, {
+      const actionProps = {
         type: 'forward',
         targetGroupArn: targetGroups[0].targetGroupArn,
+      };
+      return new TargetGroupListenerAction(targetGroups, {
+        action: actionProps,
+        defaultAction: actionProps,
       });
     }
 
-    return new TargetGroupListenerAction(targetGroups, {
+    const actionProps = {
       type: 'forward',
       forwardConfig: {
         targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroupArn })),
@@ -42,6 +46,10 @@ export class NetworkListenerAction implements IListenerAction {
           enabled: true,
         } : undefined,
       },
+    };
+    return new TargetGroupListenerAction(targetGroups, {
+      action: actionProps,
+      defaultAction: actionProps,
     });
   }
 
@@ -53,7 +61,7 @@ export class NetworkListenerAction implements IListenerAction {
       throw new Error('Need at least one targetGroup in a NetworkListenerAction.weightedForward()');
     }
 
-    return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {
+    const actionProps ={
       type: 'forward',
       forwardConfig: {
         targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroup.targetGroupArn, weight: g.weight })),
@@ -62,6 +70,10 @@ export class NetworkListenerAction implements IListenerAction {
           enabled: true,
         } : undefined,
       },
+    };
+    return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {
+      action: actionProps,
+      defaultAction: actionProps,
     });
   }
 
@@ -72,14 +84,21 @@ export class NetworkListenerAction implements IListenerAction {
    * should be created by using one of the static factory functions,
    * but allow overriding to make sure we allow flexibility for the future.
    */
-  protected constructor(private readonly actionJson: CfnListener.ActionProperty, protected readonly next?: NetworkListenerAction) {
+  protected constructor(private readonly props: ListenerActionProps, protected readonly next?: NetworkListenerAction) {
+  }
+
+  /**
+   * Render the default actions in this chain
+   */
+  public renderDefaultActions(): CfnListener.ActionProperty[] {
+    return this.renumber([this.props.defaultAction, ...this.next?.renderDefaultActions() ?? []]);
   }
 
   /**
    * Render the actions in this chain
    */
-  public renderActions(): CfnListener.ActionProperty[] {
-    return this.renumber([this.actionJson, ...this.next?.renderActions() ?? []]);
+  public renderActions(): CfnListenerRule.ActionProperty[] {
+    return this.renumber([this.props.action, ...this.next?.renderActions() ?? []]);
   }
 
   /**
@@ -100,7 +119,8 @@ export class NetworkListenerAction implements IListenerAction {
    * Do this in `NetworkListenerAction` instead of in `Listener` so that we give
    * users the opportunity to override by subclassing and overriding `renderActions`.
    */
-  protected renumber(actions: CfnListener.ActionProperty[]): CfnListener.ActionProperty[] {
+  private renumber<ActionProperty extends CfnListener.ActionProperty | CfnListenerRule.ActionProperty = CfnListener.ActionProperty>
+  (actions: ActionProperty[]): ActionProperty[] {
     if (actions.length < 2) { return actions; }
 
     return actions.map((action, i) => ({ ...action, order: i + 1 }));
@@ -144,8 +164,8 @@ export interface NetworkWeightedTargetGroup {
  * Listener Action that calls "registerListener" on TargetGroups
  */
 class TargetGroupListenerAction extends NetworkListenerAction {
-  constructor(private readonly targetGroups: INetworkTargetGroup[], actionJson: CfnListener.ActionProperty) {
-    super(actionJson);
+  constructor(private readonly targetGroups: INetworkTargetGroup[], props: ListenerActionProps) {
+    super(props);
   }
 
   public bind(_scope: Construct, listener: INetworkListener) {

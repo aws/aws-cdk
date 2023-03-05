@@ -2,8 +2,8 @@ import { Duration, SecretValue, Tokenization } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
-import { CfnListener } from '../elasticloadbalancingv2.generated';
-import { IListenerAction } from '../shared/listener-action';
+import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import { IListenerAction, ListenerActionProps } from '../shared/listener-action';
 
 /**
  * What to do when a client makes a request to a listener
@@ -28,20 +28,32 @@ export class ListenerAction implements IListenerAction {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html#oidc-requirements
    */
   public static authenticateOidc(options: AuthenticateOidcOptions): ListenerAction {
+    const config: CfnListener.AuthenticateOidcConfigProperty = {
+      authorizationEndpoint: options.authorizationEndpoint,
+      clientId: options.clientId,
+      clientSecret: options.clientSecret.unsafeUnwrap(), // Safe usage
+      issuer: options.issuer,
+      tokenEndpoint: options.tokenEndpoint,
+      userInfoEndpoint: options.userInfoEndpoint,
+      authenticationRequestExtraParams: options.authenticationRequestExtraParams,
+      onUnauthenticatedRequest: options.onUnauthenticatedRequest,
+      scope: options.scope,
+      sessionCookieName: options.sessionCookieName,
+    };
     return new ListenerAction({
-      type: 'authenticate-oidc',
-      authenticateOidcConfig: {
-        authorizationEndpoint: options.authorizationEndpoint,
-        clientId: options.clientId,
-        clientSecret: options.clientSecret.unsafeUnwrap(), // Safe usage
-        issuer: options.issuer,
-        tokenEndpoint: options.tokenEndpoint,
-        userInfoEndpoint: options.userInfoEndpoint,
-        authenticationRequestExtraParams: options.authenticationRequestExtraParams,
-        onUnauthenticatedRequest: options.onUnauthenticatedRequest,
-        scope: options.scope,
-        sessionCookieName: options.sessionCookieName,
-        sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
+      action: {
+        type: 'authenticate-oidc',
+        authenticateOidcConfig: {
+          ...config,
+          sessionTimeout: options.sessionTimeout?.toSeconds(),
+        },
+      },
+      defaultAction: {
+        type: 'authenticate-oidc',
+        authenticateOidcConfig: {
+          ...config,
+          sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
+        },
       },
     }, options.next);
   }
@@ -57,13 +69,17 @@ export class ListenerAction implements IListenerAction {
     }
     if (targetGroups.length === 1 && options.stickinessDuration === undefined) {
       // Render a "simple" action for backwards compatibility with old templates
-      return new TargetGroupListenerAction(targetGroups, {
+      const actionProps = {
         type: 'forward',
         targetGroupArn: targetGroups[0].targetGroupArn,
+      };
+      return new TargetGroupListenerAction(targetGroups, {
+        action: actionProps,
+        defaultAction: actionProps,
       });
     }
 
-    return new TargetGroupListenerAction(targetGroups, {
+    const actionProps = {
       type: 'forward',
       forwardConfig: {
         targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroupArn })),
@@ -72,6 +88,10 @@ export class ListenerAction implements IListenerAction {
           enabled: true,
         } : undefined,
       },
+    };
+    return new TargetGroupListenerAction(targetGroups, {
+      action: actionProps,
+      defaultAction: actionProps,
     });
   }
 
@@ -85,7 +105,7 @@ export class ListenerAction implements IListenerAction {
       throw new Error('Need at least one targetGroup in a ListenerAction.weightedForward()');
     }
 
-    return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {
+    const actionProps ={
       type: 'forward',
       forwardConfig: {
         targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroup.targetGroupArn, weight: g.weight })),
@@ -94,6 +114,10 @@ export class ListenerAction implements IListenerAction {
           enabled: true,
         } : undefined,
       },
+    };
+    return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {
+      action: actionProps,
+      defaultAction: actionProps,
     });
   }
 
@@ -103,13 +127,17 @@ export class ListenerAction implements IListenerAction {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#fixed-response-actions
    */
   public static fixedResponse(statusCode: number, options: FixedResponseOptions = {}): ListenerAction {
-    return new ListenerAction({
+    const actionProps ={
       type: 'fixed-response',
       fixedResponseConfig: {
         statusCode: Tokenization.stringifyNumber(statusCode),
         contentType: options.contentType,
         messageBody: options.messageBody,
       },
+    };
+    return new ListenerAction({
+      action: actionProps,
+      defaultAction: actionProps,
     });
   }
 
@@ -138,8 +166,7 @@ export class ListenerAction implements IListenerAction {
     if ([options.host, options.path, options.port, options.protocol, options.query].findIndex(x => x !== undefined) === -1) {
       throw new Error('To prevent redirect loops, set at least one of \'protocol\', \'host\', \'port\', \'path\', or \'query\'.');
     }
-
-    return new ListenerAction({
+    const actionProps ={
       type: 'redirect',
       redirectConfig: {
         statusCode: options.permanent ? 'HTTP_301' : 'HTTP_302',
@@ -149,6 +176,10 @@ export class ListenerAction implements IListenerAction {
         protocol: options.protocol,
         query: options.query,
       },
+    };
+    return new ListenerAction({
+      action: actionProps,
+      defaultAction: actionProps,
     });
   }
 
@@ -159,14 +190,21 @@ export class ListenerAction implements IListenerAction {
    * should be created by using one of the static factory functions,
    * but allow overriding to make sure we allow flexibility for the future.
    */
-  protected constructor(private readonly actionJson: CfnListener.ActionProperty, protected readonly next?: ListenerAction) {
+  protected constructor(private readonly props: ListenerActionProps, protected readonly next?: ListenerAction) {
+  }
+
+  /**
+   * Render the default actions in this chain
+   */
+  public renderDefaultActions(): CfnListener.ActionProperty[] {
+    return this.renumber([this.props.defaultAction, ...this.next?.renderDefaultActions() ?? []]);
   }
 
   /**
    * Render the actions in this chain
    */
-  public renderActions(): CfnListener.ActionProperty[] {
-    return this.renumber([this.actionJson, ...this.next?.renderActions() ?? []]);
+  public renderActions(): CfnListenerRule.ActionProperty[] {
+    return this.renumber([this.props.action, ...this.next?.renderActions() ?? []]);
   }
 
   /**
@@ -185,7 +223,8 @@ export class ListenerAction implements IListenerAction {
    * Do this in `ListenerAction` instead of in `Listener` so that we give
    * users the opportunity to override by subclassing and overriding `renderActions`.
    */
-  protected renumber(actions: CfnListener.ActionProperty[]): CfnListener.ActionProperty[] {
+  private renumber<ActionProperty extends CfnListener.ActionProperty | CfnListenerRule.ActionProperty = CfnListener.ActionProperty>
+  (actions: ActionProperty[]): ActionProperty[] {
     if (actions.length < 2) { return actions; }
 
     return actions.map((action, i) => ({ ...action, order: i + 1 }));
@@ -430,8 +469,8 @@ export enum UnauthenticatedAction {
  * Listener Action that calls "registerListener" on TargetGroups
  */
 class TargetGroupListenerAction extends ListenerAction {
-  constructor(private readonly targetGroups: IApplicationTargetGroup[], actionJson: CfnListener.ActionProperty) {
-    super(actionJson);
+  constructor(private readonly targetGroups: IApplicationTargetGroup[], props: ListenerActionProps) {
+    super(props);
   }
 
   public bind(_scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {

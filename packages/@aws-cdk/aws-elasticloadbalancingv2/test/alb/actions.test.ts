@@ -1,7 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
+import { ListenerCondition } from '../../lib';
 
 let stack: cdk.Stack;
 let group1: elbv2.ApplicationTargetGroup;
@@ -108,7 +110,7 @@ describe('tests', () => {
 
   test('Chaining OIDC authentication action', () => {
     // WHEN
-    lb.addListener('Listener', {
+    const listener = lb.addListener('Listener', {
       port: 80,
       defaultAction: elbv2.ListenerAction.authenticateOidc({
         authorizationEndpoint: 'A',
@@ -117,6 +119,21 @@ describe('tests', () => {
         issuer: 'D',
         tokenEndpoint: 'E',
         userInfoEndpoint: 'F',
+        sessionTimeout: Duration.days(1),
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+    listener.addAction('AdditionalOidcAuthenticationAction', {
+      priority: 1,
+      conditions: [ListenerCondition.pathPatterns(['/page*'])],
+      action: elbv2.ListenerAction.authenticateOidc({
+        authorizationEndpoint: 'A',
+        clientId: 'B',
+        clientSecret: cdk.SecretValue.unsafePlainText('C'),
+        issuer: 'D',
+        tokenEndpoint: 'E',
+        userInfoEndpoint: 'F',
+        sessionTimeout: Duration.days(1),
         next: elbv2.ListenerAction.forward([group1]),
       }),
     });
@@ -132,6 +149,31 @@ describe('tests', () => {
             Issuer: 'D',
             TokenEndpoint: 'E',
             UserInfoEndpoint: 'F',
+            // SessionTimeout in DefaultActions is string
+            SessionTimeout: '86400',
+          },
+          Order: 1,
+          Type: 'authenticate-oidc',
+        },
+        {
+          Order: 2,
+          TargetGroupArn: { Ref: 'TargetGroup1E5480F51' },
+          Type: 'forward',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Actions: [
+        {
+          AuthenticateOidcConfig: {
+            AuthorizationEndpoint: 'A',
+            ClientId: 'B',
+            ClientSecret: 'C',
+            Issuer: 'D',
+            TokenEndpoint: 'E',
+            UserInfoEndpoint: 'F',
+            // SessionTimeout in DefaultActions is number
+            SessionTimeout: 86400,
           },
           Order: 1,
           Type: 'authenticate-oidc',
