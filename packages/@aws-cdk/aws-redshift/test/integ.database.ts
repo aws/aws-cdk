@@ -2,11 +2,16 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { REDSHIFT_COLUMN_ID } from '@aws-cdk/cx-api';
 import * as integ from '@aws-cdk/integ-tests';
 import * as constructs from 'constructs';
 import * as redshift from '../lib';
 
-const app = new cdk.App();
+const useColumnIds = { [REDSHIFT_COLUMN_ID]: false };
+const app = new cdk.App({
+  context: useColumnIds,
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database');
 cdk.Aspects.of(stack).add({

@@ -1,6 +1,8 @@
 import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { REDSHIFT_COLUMN_ID } from '@aws-cdk/cx-api';
 import * as redshift from '../lib';
 
 describe('cluster table', () => {
@@ -84,7 +86,7 @@ describe('cluster table', () => {
     });
 
     expect(table.tableName).toBe(tableName);
-    expect(table.tableColumns).toBe(tableColumns);
+    expect(table.tableColumns).toStrictEqual(tableColumns);
     expect(table.cluster).toBe(cluster);
     expect(table.databaseName).toBe('databaseName');
   });
@@ -136,6 +138,62 @@ describe('cluster table', () => {
         handler: 'table',
       },
       DeletionPolicy: 'Delete',
+    });
+  });
+
+  it('throws if column ids are similar', async () => {
+    const updatedTableColumns: redshift.Column[] = [
+      { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+      { id: 'col1', name: 'col2', dataType: 'float' },
+    ];
+
+    expect(
+      () => new redshift.Table(stack, 'Table', {
+        ...databaseOptions,
+        tableColumns: updatedTableColumns,
+      }),
+    ).toThrow("Column id 'col1' is not unique.");
+  });
+
+  describe('@aws-cdk/aws-redshift:columnId', () => {
+    it('uses column ids if feature flag provided', () => {
+      const app = new cdk.App({ context: { [REDSHIFT_COLUMN_ID]: true } });
+      const newStack = new cdk.Stack(app, 'NewStack');
+      vpc = new ec2.Vpc(newStack, 'VPC');
+      cluster = new redshift.Cluster(newStack, 'Cluster', {
+        vpc: vpc,
+        vpcSubnets: {
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        publiclyAccessible: true,
+      });
+      databaseOptions = {
+        cluster: cluster,
+        databaseName: 'databaseName',
+      };
+
+      new redshift.Table(newStack, 'Table', {
+        ...databaseOptions,
+        tableColumns,
+      });
+
+      Template.fromStack(newStack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        useColumnIds: true,
+      });
+    });
+
+    it('does not use column ids if feature flag not provided', () => {
+      new redshift.Table(stack, 'Table', {
+        ...databaseOptions,
+        tableColumns,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        useColumnIds: false,
+      });
     });
   });
 

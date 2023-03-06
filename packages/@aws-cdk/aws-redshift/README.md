@@ -214,6 +214,21 @@ new Table(this, 'Table', {
 });
 ```
 
+Table columns can also contain an `id` attribute, which can allow table columns to be renamed.
+
+**NOTE** To use the `id` attribute, you must also enable the `@aws-cdk/aws-redshift:columnId` feature flag.
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)' }, 
+    { id: 'col2', name: 'col2', dataType: 'float' }
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
 ### Granting Privileges
 
 You can give a user privileges to perform certain actions on a table by using the
