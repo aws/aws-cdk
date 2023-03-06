@@ -386,11 +386,11 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     }
 
     if (props.onCreate && !props.onCreate.physicalResourceId) {
-      throw new Error('`physicalResourceId` must be specified for onCreate call.');
+      throw new Error("'physicalResourceId' must be specified for 'onCreate' call.");
     }
 
     if (!props.onCreate && props.onUpdate && !props.onUpdate.physicalResourceId) {
-      throw new Error('`physicalResourceId` must be specified for onUpdate call when onCreate is omitted.');
+      throw new Error("'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted.");
     }
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {

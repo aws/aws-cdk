@@ -319,7 +319,7 @@ describe('physicalResourceId patterns', () => {
         },
         policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
       });
-    }).toThrow(/`physicalResourceId` must be specified for onCreate call./);
+    }).toThrow(/'physicalResourceId' must be specified for 'onCreate' call./);
   });
 
   // physicalResourceId pattern #4
@@ -349,7 +349,7 @@ describe('physicalResourceId patterns', () => {
         },
         policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
       });
-    }).toThrow(/`physicalResourceId` must be specified for onCreate call./);
+    }).toThrow(/'physicalResourceId' must be specified for 'onCreate' call./);
   });
 
   // physicalResourceId pattern #5
@@ -407,7 +407,7 @@ describe('physicalResourceId patterns', () => {
         },
         policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
       });
-    }).toThrow(/`physicalResourceId` must be specified for onCreate call./);
+    }).toThrow(/'physicalResourceId' must be specified for 'onCreate' call./);
   });
 
   // physicalResourceId pattern #7
