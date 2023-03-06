@@ -93,14 +93,16 @@ export async function main() {
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
   await copyTemplateFiles(templateDir, targetDir);
   await makeAwsCdkLib(targetDir);
+  await makeAwsCdkLibInteg(targetDir);
 
   if (fullBuild) await runBuild(targetDir);
-  await makeAwsCdkLibInteg(targetDir);
   await cleanup(targetDir);
 
   if (clean) {
     await fs.remove(path.resolve(targetDir));
   }
+
+  postRun(targetDir);
 
   console.log('Successs!');
 }
@@ -323,14 +325,15 @@ async function makeAwsCdkLibInteg(dir: string) {
   await addTypesReference(crFileTarget);
   await addTypesReference(rdsFilePath, searchString, replaceValue);
 
-  fs.copySync(
-    path.join(source, '..', '@aws-cdk', 'aws-lambda-nodejs', 'tsconfig.json'),
-    path.join(target, 'aws-lambda-nodejs', 'tsconfig.json'),
-  );
 }
 
 async function runBuild(dir: string) {
   const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
+  // need to take our changes to the build script
+  await fs.copyFile(
+    path.join(__dirname, '../../../../build.sh'),
+    path.join(dir, 'build.sh'),
+  );
 
   await e('yarn install');
 
@@ -339,6 +342,23 @@ async function runBuild(dir: string) {
 
   // Generate the alpha packages
   await e('./scripts/transform.sh');
+}
+
+function postRun(dir: string): void {
+  const source = path.join(dir, 'packages', 'aws-cdk-lib');
+  const target = path.join(dir, 'packages', '@aws-cdk-testing', 'framework-integ', 'test');
+  fs.copySync(
+    path.join(source, '..', '@aws-cdk', 'aws-lambda-nodejs', 'tsconfig.json'),
+    path.join(target, 'aws-lambda-nodejs', 'tsconfig.json'),
+  );
+
+  const p = fs.readFileSync(path.join(target, '..', 'package.json')).toString('utf-8').trim();
+  const packageJson = JSON.parse(p);
+  packageJson.dependencies = {
+    ...packageJson.dependencies,
+    '@aws-cdk/integ-tests-alpha': '0.0.0',
+  };
+  fs.writeFileSync(path.join(target, '..', 'package.json'), JSON.stringify(packageJson, undefined, 2));
 }
 
 async function cleanup(dir: string) {

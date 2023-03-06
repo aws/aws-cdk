@@ -350,17 +350,17 @@ export async function fixUnitTests(dir: string) {
 
 
   // Fix assertion based on cwd
-  const lambdaGoUtilTestPath = path.join(dir, 'aws-lambda-go', 'test', 'util.test.ts');
-  await replaceLinesInFile(lambdaGoUtilTestPath, [
-    [
-      'expect(findUp(\'README.md\')).toMatch(/aws-lambda-go\\/README.md$/);',
-      'expect(findUp(\'README.md\')).toMatch(/aws-cdk-lib\\/README.md$/);',
-    ],
-    [
-      'expect(findUp(\'util.test.ts\', \'test/integ-handlers\')).toMatch(/aws-lambda-go\\/test\\/util.test.ts$/);',
-      'expect(findUp(\'util.test.ts\', \'aws-lambda-go/test/integ-handlers\')).toMatch(/aws-lambda-go\\/test\\/util.test.ts$/);',
-    ],
-  ]);
+  // const lambdaGoUtilTestPath = path.join(dir, 'aws-lambda-go', 'test', 'util.test.ts');
+  // await replaceLinesInFile(lambdaGoUtilTestPath, [
+  //   [
+  //     'expect(findUp(\'README.md\')).toMatch(/aws-lambda-go\\/README.md$/);',
+  //     'expect(findUp(\'README.md\')).toMatch(/aws-cdk-lib\\/README.md$/);',
+  //   ],
+  //   [
+  //     'expect(findUp(\'util.test.ts\', \'test/integ-handlers\')).toMatch(/aws-lambda-go\\/test\\/util.test.ts$/);',
+  //     'expect(findUp(\'util.test.ts\', \'aws-lambda-go/test/integ-handlers\')).toMatch(/aws-lambda-go\\/test\\/util.test.ts$/);',
+  //   ],
+  // ]);
 
   //Fix assertions in piplines installing v1 clis
   const pipelinesTestsPath = path.join(dir, 'pipelines', 'test');

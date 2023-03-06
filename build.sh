@@ -80,7 +80,7 @@ fi
 
 echo "============================================================================================="
 echo "building..."
-time lerna run $bail --stream $runtarget || fail
+time lerna run $bail --ignore "@aws-cdk-testing/framework-integ" --stream $runtarget || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh

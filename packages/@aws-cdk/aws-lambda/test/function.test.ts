@@ -21,7 +21,7 @@ import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
 import { calculateFunctionHash } from '../lib/function-hash';
 
 describe('function', () => {
-  const dockerLambdaHandlerPath = path.join(__dirname, 'docker-lambda-handler')
+  const dockerLambdaHandlerPath = path.join(__dirname, 'docker-lambda-handler');
   test('default function', () => {
     const stack = new cdk.Stack();
 
