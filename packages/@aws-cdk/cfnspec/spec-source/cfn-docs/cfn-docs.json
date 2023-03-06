@@ -30782,7 +30782,7 @@
         "Id": "The event source mapping's ID.",
         "Ref": "`Ref` returns the mapping's ID."
       },
-      "description": "The `AWS::Lambda::EventSourceMapping` resource creates a mapping between an event source and an AWS Lambda function. Lambda reads items from the event source and triggers the function.\n\nFor details about each event source type, see the following topics. In particular, each of the topics describes the required and optional parameters for the specific event source.\n\n- [Configuring a Dynamo DB stream as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-dynamodb-eventsourcemapping)\n- [Configuring a Kinesis stream as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html#services-kinesis-eventsourcemapping)\n- [Configuring an SQS queue as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-eventsource)\n- [Configuring an MQ broker as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-mq.html#services-mq-eventsourcemapping)\n- [Configuring MSK as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html)\n- [Configuring Self-Managed Apache Kafka as an event source](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html)",
+      "description": "The `AWS::Lambda::EventSourceMapping` resource creates a mapping between an event source and an AWS Lambda function. Lambda reads items from the event source and triggers the function.\n\nFor details about each event source type, see the following topics. In particular, each of the topics describes the required and optional parameters for the specific event source.\n\n- [Configuring a Dynamo DB stream as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-dynamodb-eventsourcemapping)\n- [Configuring a Kinesis stream as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html#services-kinesis-eventsourcemapping)\n- [Configuring an SQS queue as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-eventsource)\n- [Configuring an MQ broker as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-mq.html#services-mq-eventsourcemapping)\n- [Configuring MSK as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html)\n- [Configuring Self-Managed Apache Kafka as an event source](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html)\n- [Configuring Amazon DocumentDB as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-documentdb.html)",
       "properties": {
         "AmazonManagedKafkaEventSourceConfig": "Specific configuration settings for an Amazon Managed Streaming for Apache Kafka (Amazon MSK) event source.",
         "BatchSize": "The maximum number of records in each batch that Lambda pulls from your stream or queue and sends to your function. Lambda passes all of the records in the batch to the function in a single call, up to the payload limit for synchronous invocation (6 MB).\n\n- *Amazon Kinesis* \u2013 Default 100. Max 10,000.\n- *Amazon DynamoDB Streams* \u2013 Default 100. Max 10,000.\n- *Amazon Simple Queue Service* \u2013 Default 10. For standard queues the max is 10,000. For FIFO queues the max is 10.\n- *Amazon Managed Streaming for Apache Kafka* \u2013 Default 100. Max 10,000.\n- *Self-managed Apache Kafka* \u2013 Default 100. Max 10,000.\n- *Amazon MQ (ActiveMQ and RabbitMQ)* \u2013 Default 100. Max 10,000.\n- *DocumentDB* \u2013 Default 100. Max 10,000.",
@@ -30794,7 +30794,7 @@
         "FilterCriteria": "An object that defines the filter criteria that determine whether Lambda should process an event. For more information, see [Lambda event filtering](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html) .",
         "FunctionName": "The name of the Lambda function.\n\n**Name formats** - *Function name* \u2013 `MyFunction` .\n- *Function ARN* \u2013 `arn:aws:lambda:us-west-2:123456789012:function:MyFunction` .\n- *Version or Alias ARN* \u2013 `arn:aws:lambda:us-west-2:123456789012:function:MyFunction:PROD` .\n- *Partial ARN* \u2013 `123456789012:function:MyFunction` .\n\nThe length constraint applies only to the full ARN. If you specify only the function name, it's limited to 64 characters in length.",
         "FunctionResponseTypes": "(Streams and SQS) A list of current response type enums applied to the event source mapping.\n\nValid Values: `ReportBatchItemFailures`",
-        "MaximumBatchingWindowInSeconds": "The maximum amount of time, in seconds, that Lambda spends gathering records before invoking the function.\n\n*Default ( Kinesis , DynamoDB , Amazon SQS event sources)* : 0\n\n*Default ( Amazon MSK , Kafka, Amazon MQ event sources)* : 500 ms\n\n*Related setting:* When you set `BatchSize` to a value greater than 10, you must set `MaximumBatchingWindowInSeconds` to at least 1.",
+        "MaximumBatchingWindowInSeconds": "The maximum amount of time, in seconds, that Lambda spends gathering records before invoking the function.\n\n*Default ( Kinesis , DynamoDB , Amazon SQS event sources)* : 0\n\n*Default ( Amazon MSK , Kafka, Amazon MQ , Amazon DocumentDB event sources)* : 500 ms\n\n*Related setting:* When you set `BatchSize` to a value greater than 10, you must set `MaximumBatchingWindowInSeconds` to at least 1.",
         "MaximumRecordAgeInSeconds": "(Streams only) Discard records older than the specified age. The default value is -1,\nwhich sets the maximum age to infinite. When the value is set to infinite, Lambda never discards old records.",
         "MaximumRetryAttempts": "(Streams only) Discard records after the specified number of retries. The default value is -1,\nwhich sets the maximum number of retries to infinite. When MaximumRetryAttempts is infinite, Lambda retries failed records until the record expires in the event source.",
         "ParallelizationFactor": "(Streams only) The number of batches to process concurrently from each shard. The default value is 1.",
@@ -37067,7 +37067,7 @@
         "PeeringId": "The ID of the transit gateway peering.",
         "ProposedSegmentChange": "This property is read-only. Values can't be assigned to it.",
         "Tags": "The list of key-value pairs associated with the transit gateway route table attachment.",
-        "TransitGatewayRouteTableArn": "The ARN of the transit gateway attachment route table, using the format: `\"TransitGatewayRouteTableArn\": \"arn:aws:ec2:us-west-2: *AccountId* :transit-gateway-route-table/ *tgw-rtb-xxxxxxxxxxx* \"` . For example, `\"TransitGatewayRouteTableArn\": \"arn:aws:ec2:us-west-2:123456789012:transit-gateway-route-table/tgw-rtb-9876543210123456\"` ."
+        "TransitGatewayRouteTableArn": "The ARN of the transit gateway attachment route table. For example, `\"TransitGatewayRouteTableArn\": \"arn:aws:ec2:us-west-2:123456789012:transit-gateway-route-table/tgw-rtb-9876543210123456\"` ."
       }
     },
     "AWS::NetworkManager::TransitGatewayRouteTableAttachment.ProposedSegmentChange": {
@@ -42495,42 +42495,42 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "The state of the certificate revocation list (CRL) after a read or write operation.",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The revocation record for a certificate, following the x509 v3 standard.",
-        "Enabled": "Indicates whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the CRL.",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
     "AWS::RolesAnywhere::Profile": {
       "attributes": {
-        "ProfileArn": "The ARN of the profile.",
+        "ProfileArn": "",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "A list of tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
       "attributes": {
         "Ref": "`Ref` returns `TrustAnchorId` .",
         "TrustAnchorArn": "The ARN of the trust anchor.",
-        "TrustAnchorId": "The unique primary identifier of the TrustAnchor"
+        "TrustAnchorId": ""
       },
-      "description": "The state of the trust anchor after a read or write operation.",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -42540,15 +42540,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the trust anchor."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
