@@ -7,7 +7,7 @@ const stack = new cdk.Stack(app, 'integ-servicecatalogappregistry-application');
 
 const application = new appreg.Application(stack, 'TestApplication', {
   applicationName: 'TestApplication',
-  description: 'Test application description',
+  description: 'My application description',
 });
 
 const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
