@@ -11,6 +11,38 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
 
 describe('cluster', () => {
+  describe('isCluster() returns', () => {
+    test('true if given cluster instance', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      // WHEN
+      const createdCluster = new ecs.Cluster(stack, 'EcsCluster');
+      // THEN
+      expect(ecs.Cluster.isCluster(createdCluster)).toBe(true);
+    });
+
+    test('false if given imported cluster instance', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const importedSg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG1', 'sg-1', { allowAllOutbound: false });
+      // WHEN
+      const importedCluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+        clusterName: 'cluster-name',
+        securityGroups: [importedSg],
+        vpc,
+      });
+      // THEN
+      expect(ecs.Cluster.isCluster(importedCluster)).toBe(false);
+    });
+
+    test('false if given undefined', () => {
+      // THEN
+      expect(ecs.Cluster.isCluster(undefined)).toBe(false);
+    });
+  });
+
   describe('When creating an ECS Cluster', () => {
     testDeprecated('with no properties set, it correctly sets default properties', () => {
       // GIVEN
