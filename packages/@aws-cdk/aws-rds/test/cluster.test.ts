@@ -97,6 +97,7 @@ describe('cluster', () => {
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
     });
 
+    expect(stack.resolve(cluster.clusterResourceIdentifier)).toEqual({ 'Fn::GetAtt': ['DatabaseB269D8BB', 'DBClusterResourceId'] });
     expect(cluster.instanceIdentifiers).toHaveLength(1);
     expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
       Ref: 'DatabaseInstance1844F58FD',
@@ -738,6 +739,7 @@ describe('cluster', () => {
       clusterIdentifier: 'identifier',
     });
 
+    expect(() => cluster.clusterResourceIdentifier).toThrow(/Cannot access `clusterResourceIdentifier` of an imported cluster/);
     expect(() => cluster.clusterEndpoint).toThrow(/Cannot access `clusterEndpoint` of an imported cluster/);
     expect(() => cluster.clusterReadEndpoint).toThrow(/Cannot access `clusterReadEndpoint` of an imported cluster/);
     expect(() => cluster.instanceIdentifiers).toThrow(/Cannot access `instanceIdentifiers` of an imported cluster/);
@@ -750,6 +752,7 @@ describe('cluster', () => {
     const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
       clusterEndpointAddress: 'addr',
       clusterIdentifier: 'identifier',
+      clusterResourceIdentifier: 'identifier',
       instanceEndpointAddresses: ['instance-addr'],
       instanceIdentifiers: ['identifier'],
       port: 3306,
@@ -759,6 +762,7 @@ describe('cluster', () => {
       })],
     });
 
+    expect(cluster.clusterResourceIdentifier).toEqual('identifier');
     expect(cluster.clusterEndpoint.socketAddress).toEqual('addr:3306');
     expect(cluster.clusterReadEndpoint.socketAddress).toEqual('reader-address:3306');
     expect(cluster.instanceIdentifiers).toEqual(['identifier']);
@@ -2091,6 +2095,7 @@ describe('cluster', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBInstance', 2);
 
+    expect(stack.resolve(cluster.clusterResourceIdentifier)).toEqual({ 'Fn::GetAtt': ['DatabaseB269D8BB', 'DBClusterResourceId'] });
     expect(cluster.instanceIdentifiers).toHaveLength(2);
     expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
       Ref: 'DatabaseInstance1844F58FD',
