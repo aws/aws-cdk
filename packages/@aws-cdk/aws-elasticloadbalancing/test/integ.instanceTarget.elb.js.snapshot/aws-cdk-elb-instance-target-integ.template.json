@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elb-integ/VPC"
+      "Value": "aws-cdk-elb-instance-target-integ/VPC"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-elb-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elb-instance-target-integ/VPC/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elb-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elb-instance-target-integ/VPC/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elb-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elb-instance-target-integ/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elb-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elb-instance-target-integ/VPC/PublicSubnet1"
      }
     ]
    },
@@ -150,7 +150,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-elb-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-elb-instance-target-integ/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -164,7 +164,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elb-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-elb-instance-target-integ/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -198,7 +198,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elb-integ/VPC"
+      "Value": "aws-cdk-elb-instance-target-integ/VPC"
      }
     ]
    }
@@ -214,19 +214,129 @@
     }
    }
   },
+  "targetInstanceInstanceSecurityGroupF268BD07": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-elb-instance-target-integ/targetInstance/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-elb-instance-target-integ/targetInstance"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "targetInstanceInstanceSecurityGroupfromawscdkelbinstancetargetintegLBSecurityGroup395870CC80E053AA6C": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "from awscdkelbinstancetargetintegLBSecurityGroup395870CC:80",
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "targetInstanceInstanceSecurityGroupF268BD07",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "LBSecurityGroup8A41EA2B",
+      "GroupId"
+     ]
+    },
+    "ToPort": 80
+   }
+  },
+  "targetInstanceInstanceRole3F8EC526": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-elb-instance-target-integ/targetInstance"
+     }
+    ]
+   }
+  },
+  "targetInstanceInstanceProfile0A012423": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "targetInstanceInstanceRole3F8EC526"
+     }
+    ]
+   }
+  },
+  "targetInstance603C5817": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "IamInstanceProfile": {
+     "Ref": "targetInstanceInstanceProfile0A012423"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t2.micro",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "targetInstanceInstanceSecurityGroupF268BD07",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-elb-instance-target-integ/targetInstance"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
+   },
+   "DependsOn": [
+    "targetInstanceInstanceRole3F8EC526"
+   ]
+  },
   "LBSecurityGroup8A41EA2B": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-elb-integ/LB/SecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
-     }
-    ],
+    "GroupDescription": "aws-cdk-elb-instance-target-integ/LB/SecurityGroup",
     "SecurityGroupIngress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -241,6 +351,27 @@
     }
    }
   },
+  "LBSecurityGrouptoawscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E80A95A3BE8": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "GroupId": {
+     "Fn::GetAtt": [
+      "LBSecurityGroup8A41EA2B",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "Description": "to awscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E:80",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "targetInstanceInstanceSecurityGroupF268BD07",
+      "GroupId"
+     ]
+    },
+    "FromPort": 80,
+    "ToPort": 80
+   }
+  },
   "LB8A12904C": {
    "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
    "Properties": {
@@ -253,15 +384,12 @@
      }
     ],
     "CrossZone": true,
-    "HealthCheck": {
-     "HealthyThreshold": "2",
-     "Interval": "30",
-     "Target": "HTTP:80/",
-     "Timeout": "5",
-     "UnhealthyThreshold": "5"
-    },
-    "Instances": [],
-    "Scheme": "internet-facing",
+    "Instances": [
+     {
+      "Ref": "targetInstance603C5817"
+     }
+    ],
+    "Scheme": "internal",
     "SecurityGroups": [
      {
       "Fn::GetAtt": [
@@ -272,17 +400,17 @@
     ],
     "Subnets": [
      {
-      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
      }
     ]
-   },
-   "DependsOn": [
-    "VPCPublicSubnet1DefaultRoute91CEF279",
-    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
-   ]
+   }
   }
  },
  "Parameters": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+  },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",

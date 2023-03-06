@@ -365,222 +365,6 @@
               "version": "0.0.0"
             }
           },
-          "targetInstance": {
-            "id": "targetInstance",
-            "path": "aws-cdk-elb-integ/targetInstance",
-            "children": {
-              "InstanceSecurityGroup": {
-                "id": "InstanceSecurityGroup",
-                "path": "aws-cdk-elb-integ/targetInstance/InstanceSecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-elb-integ/targetInstance/InstanceSecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-cdk-elb-integ/targetInstance/InstanceSecurityGroup",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "aws-cdk-elb-integ/targetInstance"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "from awscdkelbintegLBSecurityGroup6DB419F5:80": {
-                    "id": "from awscdkelbintegLBSecurityGroup6DB419F5:80",
-                    "path": "aws-cdk-elb-integ/targetInstance/InstanceSecurityGroup/from awscdkelbintegLBSecurityGroup6DB419F5:80",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
-                      "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
-                        "description": "Port 80 LB to fleet",
-                        "fromPort": 80,
-                        "groupId": {
-                          "Fn::GetAtt": [
-                            "targetInstanceInstanceSecurityGroupF268BD07",
-                            "GroupId"
-                          ]
-                        },
-                        "sourceSecurityGroupId": {
-                          "Fn::GetAtt": [
-                            "LBSecurityGroup8A41EA2B",
-                            "GroupId"
-                          ]
-                        },
-                        "toPort": 80
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "InstanceRole": {
-                "id": "InstanceRole",
-                "path": "aws-cdk-elb-integ/targetInstance/InstanceRole",
-                "children": {
-                  "ImportInstanceRole": {
-                    "id": "ImportInstanceRole",
-                    "path": "aws-cdk-elb-integ/targetInstance/InstanceRole/ImportInstanceRole",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-elb-integ/targetInstance/InstanceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "ec2.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "aws-cdk-elb-integ/targetInstance"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "InstanceProfile": {
-                "id": "InstanceProfile",
-                "path": "aws-cdk-elb-integ/targetInstance/InstanceProfile",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                  "aws:cdk:cloudformation:props": {
-                    "roles": [
-                      {
-                        "Ref": "targetInstanceInstanceRole3F8EC526"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnInstanceProfile",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-elb-integ/targetInstance/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
-                  "aws:cdk:cloudformation:props": {
-                    "availabilityZone": {
-                      "Fn::Select": [
-                        0,
-                        {
-                          "Fn::GetAZs": ""
-                        }
-                      ]
-                    },
-                    "iamInstanceProfile": {
-                      "Ref": "targetInstanceInstanceProfile0A012423"
-                    },
-                    "imageId": {
-                      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-                    },
-                    "instanceType": "t2.micro",
-                    "securityGroupIds": [
-                      {
-                        "Fn::GetAtt": [
-                          "targetInstanceInstanceSecurityGroupF268BD07",
-                          "GroupId"
-                        ]
-                      },
-                      {
-                        "Fn::GetAtt": [
-                          "LBSecurityGroup8A41EA2B",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "subnetId": {
-                      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-                    },
-                    "tags": [
-                      {
-                        "key": "Name",
-                        "value": "aws-cdk-elb-integ/targetInstance"
-                      }
-                    ],
-                    "userData": {
-                      "Fn::Base64": "#!/bin/bash"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnInstance",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.Instance",
-              "version": "0.0.0"
-            }
-          },
-          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
-            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "aws-cdk-elb-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
-            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "aws-cdk-elb-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
-            }
-          },
           "LB": {
             "id": "LB",
             "path": "aws-cdk-elb-integ/LB",
@@ -596,6 +380,15 @@
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
                         "groupDescription": "aws-cdk-elb-integ/LB/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "255.255.255.255/32",
+                            "description": "Disallow all traffic",
+                            "ipProtocol": "icmp",
+                            "fromPort": 252,
+                            "toPort": 86
+                          }
+                        ],
                         "securityGroupIngress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -612,35 +405,6 @@
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "to awscdkelbintegtargetInstanceInstanceSecurityGroup5ADFB89B:80": {
-                    "id": "to awscdkelbintegtargetInstanceInstanceSecurityGroup5ADFB89B:80",
-                    "path": "aws-cdk-elb-integ/LB/SecurityGroup/to awscdkelbintegtargetInstanceInstanceSecurityGroup5ADFB89B:80",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupEgress",
-                      "aws:cdk:cloudformation:props": {
-                        "groupId": {
-                          "Fn::GetAtt": [
-                            "LBSecurityGroup8A41EA2B",
-                            "GroupId"
-                          ]
-                        },
-                        "ipProtocol": "tcp",
-                        "description": "Port 80 LB to fleet",
-                        "destinationSecurityGroupId": {
-                          "Fn::GetAtt": [
-                            "targetInstanceInstanceSecurityGroupF268BD07",
-                            "GroupId"
-                          ]
-                        },
-                        "fromPort": 80,
-                        "toPort": 80
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupEgress",
                       "version": "0.0.0"
                     }
                   }
@@ -662,12 +426,6 @@
                         "protocol": "http",
                         "instancePort": "80",
                         "instanceProtocol": "http"
-                      },
-                      {
-                        "loadBalancerPort": "80",
-                        "protocol": "http",
-                        "instancePort": "80",
-                        "instanceProtocol": "http"
                       }
                     ],
                     "crossZone": true,
@@ -678,11 +436,7 @@
                       "timeout": "5",
                       "unhealthyThreshold": "5"
                     },
-                    "instances": [
-                      {
-                        "Ref": "targetInstance603C5817"
-                      }
-                    ],
+                    "instances": [],
                     "scheme": "internet-facing",
                     "securityGroups": [
                       {
@@ -737,7 +491,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.256"
+          "version": "10.1.237"
         }
       }
     },

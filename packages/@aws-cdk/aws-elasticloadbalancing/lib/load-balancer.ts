@@ -142,19 +142,9 @@ export interface HealthCheck {
 }
 
 /**
- * An object that has instance object.
- */
-interface IInstance {
-  /**
-   * Ec2 instance
-   */
-  readonly ec2Instance?: Instance
-}
-
-/**
  * Interface that is going to be implemented by constructs that you can load balance to
  */
-export interface ILoadBalancerTarget extends IConnectable, IInstance {
+export interface ILoadBalancerTarget extends IConnectable {
   /**
    * Attach load-balanced target to a classic ELB
    * @param loadBalancer [disable-awslint:ref-via-interface] The load balancer to attach the target to
@@ -275,7 +265,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
       listeners: Lazy.any({ produce: () => this.listeners }),
-      instances: this.instanceIds,
+      instances: Lazy.list({ produce: () => this.instanceIds }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
       crossZone: props.crossZone ?? true,
@@ -334,10 +324,7 @@ export class LoadBalancer extends Resource implements IConnectable {
 
   public addTarget(target: ILoadBalancerTarget) {
     target.attachToClassicLB(this);
-    if (target.ec2Instance) {
-      this.instanceIds.push(target.ec2Instance.instanceId);
-      target.ec2Instance.addSecurityGroup(this.securityGroup);
-    }
+
     this.newTarget(target);
   }
 
@@ -412,6 +399,12 @@ export class LoadBalancer extends Resource implements IConnectable {
       Port.tcp(instancePort),
       `Port ${instancePort} LB to fleet`);
   }
+
+  /**
+   * @internal
+   * @param instanceId
+   */
+  public _addInstanceId(instanceId: string) { this.instanceIds.push(instanceId); }
 }
 
 /**
@@ -420,7 +413,6 @@ export class LoadBalancer extends Resource implements IConnectable {
  */
 export class InstanceTarget implements ILoadBalancerTarget {
   readonly connections: Connections;
-  readonly ec2Instance?: Instance
   /**
    * Create a new Instance target.
    *
@@ -429,10 +421,10 @@ export class InstanceTarget implements ILoadBalancerTarget {
    */
   constructor(public readonly instance: Instance, public readonly port: number) {
     this.connections = instance.connections;
-    this.ec2Instance = instance;
   }
-  public attachToClassicLB(_loadBalancer: LoadBalancer): void {
-    _loadBalancer.addListener({ externalPort: this.port });
+  public attachToClassicLB(loadBalancer: LoadBalancer): void {
+    loadBalancer._addInstanceId(this.instance.instanceId);
+    this.connections.allowFrom(loadBalancer.connections, Port.tcp(this.port));
   }
 }
 
