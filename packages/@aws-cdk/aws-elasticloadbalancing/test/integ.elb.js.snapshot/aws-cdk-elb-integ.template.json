@@ -260,7 +260,6 @@
      "Timeout": "5",
      "UnhealthyThreshold": "5"
     },
-    "Instances": [],
     "Scheme": "internet-facing",
     "SecurityGroups": [
      {

@@ -1,6 +1,12 @@
 {
-  "version": "29.0.0",
+  "version": "20.0.0",
   "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
     "aws-cdk-elb-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -17,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c836d484e8ef2a55154de921bcc2a2f22b3935562ad64a0dabf24b88b4e9132.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2ae8c93277b436927a734841d17a6b4599f904c7ea22cec117ce29fb6441ae4c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -137,12 +143,6 @@
         ]
       },
       "displayName": "aws-cdk-elb-integ"
-    },
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
     }
   }
 }

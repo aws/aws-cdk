@@ -4,6 +4,14 @@
     "id": "App",
     "path": "",
     "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
       "aws-cdk-elb-integ": {
         "id": "aws-cdk-elb-integ",
         "path": "aws-cdk-elb-integ",
@@ -83,8 +91,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-elb-integ/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -250,8 +258,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-elb-integ/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -436,7 +444,6 @@
                       "timeout": "5",
                       "unhealthyThreshold": "5"
                     },
-                    "instances": [],
                     "scheme": "internet-facing",
                     "securityGroups": [
                       {
@@ -463,41 +470,17 @@
               "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancer",
               "version": "0.0.0"
             }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "aws-cdk-elb-integ/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-elb-integ/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
-              "version": "0.0.0"
-            }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
-        }
-      },
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

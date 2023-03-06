@@ -265,7 +265,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
       listeners: Lazy.any({ produce: () => this.listeners }),
-      instances: Lazy.list({ produce: () => this.instanceIds }),
+      instances: Lazy.list({ produce: () => this.instanceIds.length == 0 ? undefined : this.instanceIds }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
       crossZone: props.crossZone ?? true,
@@ -401,6 +401,7 @@ export class LoadBalancer extends Resource implements IConnectable {
   }
 
   /**
+   * add instance to the load balancer.
    * @internal
    * @param instanceId
    */
