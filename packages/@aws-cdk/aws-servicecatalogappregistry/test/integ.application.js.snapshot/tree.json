@@ -18,8 +18,8 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
                   "aws:cdk:cloudformation:props": {
-                    "name": "MyTestApplication",
-                    "description": "Test application description"
+                    "name": "TestApplication",
+                    "description": "My application description"
                   }
                 },
                 "constructInfo": {

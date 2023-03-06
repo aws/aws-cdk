@@ -100,6 +100,8 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Associate an attribute group with application
    * If the attribute group is already associated, it will ignore duplicate request.
+   *
+   * @deprecated Use `AttributeGroup.associateWith` instead.
    */
   public associateAttributeGroup(attributeGroup: IAttributeGroup): void {
     if (!this.associatedAttributeGroups.has(attributeGroup.node.addr)) {
