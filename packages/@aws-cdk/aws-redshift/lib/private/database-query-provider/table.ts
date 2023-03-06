@@ -1,7 +1,7 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
 import { executeStatement } from './redshift-data';
-import { ClusterProps, ColumnEncoding, TableAndClusterProps, TableSortStyle } from './types';
+import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
 import { Column } from '../../table';
 
@@ -127,7 +127,7 @@ async function updateTable(
 
   const columnEncoding = tableColumns.filter(column => {
     return oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.encoding !== oldColumn.encoding);
-  }).map(column => `ALTER COLUMN ${column.name} ENCODE ${column.encoding || ColumnEncoding.AUTO}`);
+  }).map(column => `ALTER COLUMN ${column.name} ENCODE ${column.encoding || 'AUTO'}`);
   if (columnEncoding.length > 0) {
     alterationStatements.push(`ALTER TABLE ${tableName} ${columnEncoding.join(', ')}`);
   }
