@@ -46,8 +46,9 @@ Flags come in three types:
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
-| [@aws-cdk/aws-ec2:launchTemplateDefaultUserData](#aws-cdkaws-ec2launchtemplatedefaultuserdata) | Define user data for a launch template by default when a machine image is provided. | V2NEXT | (fix) |
-| [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | V2NEXT | (fix) |
+| [@aws-cdk/aws-ec2:launchTemplateDefaultUserData](#aws-cdkaws-ec2launchtemplatedefaultuserdata) | Define user data for a launch template by default when a machine image is provided. | 2.67.0 | (fix) |
+| [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
+| [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -86,7 +87,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
     "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
     "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
-    "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": true
+    "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": true,
+    "@aws-cdk/aws-redshift:columnId": true
   }
 }
 ```
@@ -850,7 +852,7 @@ according to the OS of the machine image.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.67.0 | `false` | `true` |
 
 
 ### @aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments
@@ -867,6 +869,29 @@ When enabling this feature flag for an existing Stack, ResourcePolicies created 
 This won't be possible without intervention due to limitation outlined above.
 First remove all permissions granted to the Secret and deploy without the ResourcePolicies.
 Then you can re-add the permissions and deploy again.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.67.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-redshift:columnId
+
+*Whether to use an ID to track Redshift column changes* (fix)
+
+Redshift columns are identified by their `name`. If a column is renamed, the old column
+will be dropped and a new column will be created. This can cause data loss.
+
+This flag enables the use of an `id` attribute for Redshift columns. If this flag is enabled, the
+internal CDK architecture will track changes of Redshift columns through their `id`, rather
+than their `name`. This will prevent data loss when columns are renamed.
+
+**NOTE** - Enabling this flag comes at a **risk**. When enabled, update the `id`s of all columns,
+**however** do not change the `names`s of the columns. If the `name`s of the columns are changed during
+initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
+of the `id`s, the `name`s of the columns can be changed without data loss.
 
 
 | Since | Default | Recommended |

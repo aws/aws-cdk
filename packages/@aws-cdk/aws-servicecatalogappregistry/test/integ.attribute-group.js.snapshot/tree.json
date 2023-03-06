@@ -30,8 +30,8 @@
                         "beta": "time2"
                       }
                     },
-                    "name": "myAttributeGroupTest",
-                    "description": "my attribute group description"
+                    "name": "myFirstAttributeGroup",
+                    "description": "test attribute group description"
                   }
                 },
                 "constructInfo": {
@@ -228,7 +228,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.252"
         }
       }
     },
