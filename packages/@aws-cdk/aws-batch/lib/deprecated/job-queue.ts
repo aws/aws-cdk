@@ -1,6 +1,6 @@
 import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnJobQueue } from './batch.generated';
+import { CfnJobQueue } from '../batch.generated';
 import { IComputeEnvironment } from './compute-environment';
 
 /**

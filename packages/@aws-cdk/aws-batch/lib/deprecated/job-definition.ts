@@ -3,7 +3,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import { ArnFormat, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
+import { CfnJobDefinition } from '../batch.generated';
 import { ExposedSecret } from './exposed-secret';
 import { JobDefinitionImageConfig } from './job-definition-image-config';
 
