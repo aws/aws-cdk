@@ -350,7 +350,7 @@ async function runPartialBuild(dir: string) {
   const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
   await e('yarn install');
   await e('npx lerna run build --scope aws-cdk-lib --include-dependencies');
-  await e('./scripts/transform.sh');
+  await e('./scripts/transform.sh --skip-tests --skip-build');
 }
 
 async function runBuild(dir: string) {
@@ -368,7 +368,7 @@ async function runBuild(dir: string) {
   await e('./build.sh --skip-prereqs --skip-compat --skip-tests');
 
   // Generate the alpha packages
-  await e('./scripts/transform.sh');
+  await e('./scripts/transform.sh --skip-tests --skip-build');
 }
 
 async function postRun(dir: string) {
