@@ -57,7 +57,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricKpus(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -68,7 +68,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricDowntime(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -79,7 +79,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default sample count over 5 minutes
+   * @default - sample count over 5 minutes
    */
   metricUptime(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -91,7 +91,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   metricFullRestarts(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -102,7 +102,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   metricNumberOfFailedCheckpoints(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -113,7 +113,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default maximum over 5 minutes
+   * @default - maximum over 5 minutes
    */
   metricLastCheckpointDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -124,7 +124,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default maximum over 5 minutes
+   * @default - maximum over 5 minutes
    */
   metricLastCheckpointSize(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -137,7 +137,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -150,7 +150,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricHeapMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -161,7 +161,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   metricOldGenerationGCTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -173,7 +173,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   metricOldGenerationGCCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -184,7 +184,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricThreadsCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -196,7 +196,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricNumRecordsIn(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -208,7 +208,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricNumRecordsInPerSecond(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -219,7 +219,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricNumRecordsOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -231,7 +231,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricNumRecordsOutPerSecond(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -242,7 +242,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   metricNumLateRecordsDropped(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -253,7 +253,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default maximum over 5 minutes
+   * @default - maximum over 5 minutes
    */
   metricCurrentInputWatermark(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -264,7 +264,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default maximum over 5 minutes
+   * @default - maximum over 5 minutes
    */
   metricCurrentOutputWatermark(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -275,7 +275,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricManagedMemoryUsed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -286,7 +286,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricManagedMemoryTotal(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -297,7 +297,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricManagedMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -310,7 +310,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricIdleTimeMsPerSecond(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -322,7 +322,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricBackPressuredTimeMsPerSecond(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -335,7 +335,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
    *
    * Reporting Level: Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricBusyTimePerMsPerSecond(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
@@ -400,7 +400,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricKpus(props?: cloudwatch.MetricOptions) {
     return this.metric('KPUs', { statistic: 'Average', ...props });
@@ -414,7 +414,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricDowntime(props?: cloudwatch.MetricOptions) {
     return this.metric('downtime', { statistic: 'Average', ...props });
@@ -427,7 +427,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricUptime(props?: cloudwatch.MetricOptions) {
     return this.metric('uptime', { statistic: 'Average', ...props });
@@ -441,7 +441,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   metricFullRestarts(props?: cloudwatch.MetricOptions) {
     return this.metric('fullRestarts', { statistic: 'Sum', ...props });
@@ -454,7 +454,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   metricNumberOfFailedCheckpoints(props?: cloudwatch.MetricOptions) {
     return this.metric('numberOfFailedCheckpoints', { statistic: 'Sum', ...props });
@@ -467,7 +467,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default maximum over 5 minutes
+   * @default - maximum over 5 minutes
    */
   metricLastCheckpointDuration(props?: cloudwatch.MetricOptions) {
     return this.metric('lastCheckpointDuration', { statistic: 'Maximum', ...props });
@@ -480,7 +480,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default maximum over 5 minutes
+   * @default - maximum over 5 minutes
    */
   metricLastCheckpointSize(props?: cloudwatch.MetricOptions) {
     return this.metric('lastCheckpointSize', { statistic: 'Maximum', ...props });
@@ -495,7 +495,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricCpuUtilization(props?: cloudwatch.MetricOptions) {
     return this.metric('cpuUtilization', { statistic: 'Average', ...props });
@@ -510,7 +510,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricHeapMemoryUtilization(props?: cloudwatch.MetricOptions) {
     return this.metric('heapMemoryUtilization', { statistic: 'Average', ...props });
@@ -523,7 +523,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   metricOldGenerationGCTime(props?: cloudwatch.MetricOptions) {
     return this.metric('oldGenerationGCTime', { statistic: 'Sum', ...props });
@@ -537,7 +537,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   metricOldGenerationGCCount(props?: cloudwatch.MetricOptions) {
     return this.metric('oldGenerationGCCount', { statistic: 'Sum', ...props });
@@ -550,7 +550,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricThreadsCount(props?: cloudwatch.MetricOptions) {
     return this.metric('threadsCount', { statistic: 'Average', ...props });
@@ -564,7 +564,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricNumRecordsIn(props?: cloudwatch.MetricOptions) {
     return this.metric('numRecordsIn', { statistic: 'Average', ...props });
@@ -578,7 +578,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricNumRecordsInPerSecond(props?: cloudwatch.MetricOptions) {
     return this.metric('numRecordsInPerSecond', { statistic: 'Average', ...props });
@@ -591,7 +591,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricNumRecordsOut(props?: cloudwatch.MetricOptions) {
     return this.metric('numRecordsOut', { statistic: 'Average', ...props });
@@ -605,7 +605,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricNumRecordsOutPerSecond(props?: cloudwatch.MetricOptions) {
     return this.metric('numRecordsOutPerSecond', { statistic: 'Average', ...props });
@@ -619,7 +619,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   metricNumLateRecordsDropped(props?: cloudwatch.MetricOptions) {
     return this.metric('numLateRecordsDropped', { statistic: 'Sum', ...props });
@@ -632,7 +632,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default maximum over 5 minutes
+   * @default - maximum over 5 minutes
    */
   metricCurrentInputWatermark(props?: cloudwatch.MetricOptions) {
     return this.metric('currentInputWatermark', { statistic: 'Maximum', ...props });
@@ -645,7 +645,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default maximum over 5 minutes
+   * @default - maximum over 5 minutes
    */
   metricCurrentOutputWatermark(props?: cloudwatch.MetricOptions) {
     return this.metric('currentOutputWatermark', { statistic: 'Maximum', ...props });
@@ -658,7 +658,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricManagedMemoryUsed(props?: cloudwatch.MetricOptions) {
     return this.metric('managedMemoryUsed', { statistic: 'Average', ...props });
@@ -671,7 +671,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricManagedMemoryTotal(props?: cloudwatch.MetricOptions) {
     return this.metric('managedMemoryTotal', { statistic: 'Average', ...props });
@@ -684,7 +684,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Application, Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricManagedMemoryUtilization(props?: cloudwatch.MetricOptions) {
     return this.metric('managedMemoryUtilization', { statistic: 'Average', ...props });
@@ -699,7 +699,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricIdleTimeMsPerSecond(props?: cloudwatch.MetricOptions) {
     return this.metric('idleTimeMsPerSecond', { statistic: 'Average', ...props });
@@ -713,7 +713,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricBackPressuredTimeMsPerSecond(props?: cloudwatch.MetricOptions) {
     return this.metric('backPressuredTimeMsPerSecond', { statistic: 'Average', ...props });
@@ -728,7 +728,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
    *
    * Reporting Level: Operator, Task, Parallelism
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   metricBusyTimePerMsPerSecond(props?: cloudwatch.MetricOptions) {
     return this.metric('busyTimePerMsPerSecond', { statistic: 'Average', ...props });
@@ -749,7 +749,7 @@ export interface ApplicationAttributes {
   /**
    * The security groups for this Flink application if deployed in a VPC.
    *
-   * @default no security groups
+   * @default - no security groups
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 }
@@ -785,7 +785,7 @@ export interface ApplicationProps {
   /**
    * The interval between checkpoints.
    *
-   * @default 1 minute
+   * @default - 1 minute
    */
   readonly checkpointInterval?: core.Duration;
 
@@ -793,7 +793,7 @@ export interface ApplicationProps {
    * The minimum amount of time in to wait after a checkpoint finishes to start
    * a new checkpoint.
    *
-   * @default 5 seconds
+   * @default - 5 seconds
    */
   readonly minPauseBetweenCheckpoints?: core.Duration;
 
@@ -849,7 +849,7 @@ export interface ApplicationProps {
    * Configuration PropertyGroups. You can use these property groups to pass
    * arbitrary runtime configuration values to your Flink app.
    *
-   * @default No property group configuration provided to the Flink app
+   * @default - No property group configuration provided to the Flink app
    */
   readonly propertyGroups?: PropertyGroups;
 
@@ -871,28 +871,28 @@ export interface ApplicationProps {
   /**
    * The log group to send log entries to.
    *
-   * @default CDK's default LogGroup
+   * @default - CDK's default LogGroup
    */
   readonly logGroup?: logs.ILogGroup;
 
   /**
    * Deploy the Flink application in a VPC.
    *
-   * @default no VPC
+   * @default - no VPC
    */
   readonly vpc?: ec2.IVpc;
 
   /**
    * Choose which VPC subnets to use.
    *
-   * @default SubnetType.PRIVATE_WITH_EGRESS subnets
+   * @default - SubnetType.PRIVATE_WITH_EGRESS subnets
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Security groups to use with a provided VPC.
    *
-   * @default a new security group is created for this application.
+   * @default - a new security group is created for this application.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 }
