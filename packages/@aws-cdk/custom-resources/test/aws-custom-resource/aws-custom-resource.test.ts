@@ -414,7 +414,7 @@ describe('physicalResourceId patterns', () => {
   });
 
   // physicalResourceId pattern #7
-  test('physicalResourceId is specified in onUpdate with empty onCreate then success', () => {
+  test('onCreate and onUpdate both have physicalResourceId when physicalResourceId is specified in onUpdate, even when onCreate is unspecified', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -460,7 +460,7 @@ describe('physicalResourceId patterns', () => {
   });
 
   // physicalResourceId pattern #8
-  test('physicalResourceId is not specified onCreate with empty onUpdate then fail', () => {
+  test('Omitting physicalResourceId in onCreate when onUpdate is undefined throws an error', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -478,7 +478,7 @@ describe('physicalResourceId patterns', () => {
         },
         policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
       });
-    }).toThrow(/`physicalResourceId` must be specified for onUpdate call when onCreate is omitted./);
+    }).toThrow(/'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted./);
   });
 });
 
