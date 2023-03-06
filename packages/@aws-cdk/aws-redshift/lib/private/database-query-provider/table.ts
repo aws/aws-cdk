@@ -19,7 +19,11 @@ export async function handler(props: TableAndClusterProps, event: AWSLambda.Clou
       Data: { TableName: tableName },
     };
   } else if (event.RequestType === 'Delete') {
-    await dropTable(tableNamePrefix + tableNameSuffix, tableAndClusterProps);
+    try {
+      await dropTable(event.PhysicalResourceId, tableAndClusterProps);
+    } catch {
+      await dropTable(tableNamePrefix + tableNameSuffix, tableAndClusterProps);
+    }
     return;
   } else if (event.RequestType === 'Update') {
     const tableName = await updateTable(

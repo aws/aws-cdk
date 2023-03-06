@@ -1155,8 +1155,8 @@
     },
     "databaseName": "my_db",
     "tableName": {
-     "prefix": "TestTable",
-     "generateSuffix": "false"
+     "prefix": "awscdkredshiftclusterdatabaseTable24923533",
+     "generateSuffix": "true"
     },
     "tableColumns": [
      {

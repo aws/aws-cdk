@@ -170,7 +170,7 @@ describe('delete', () => {
     await manageTable(resourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `DROP TABLE ${tableNamePrefix}${stackIdTruncated}`,
+      Sql: `DROP TABLE ${physicalResourceId}`,
     }));
   });
 });
@@ -364,7 +364,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO ${newTableColumnName}`,
+        Sql: `ALTER TABLE ${event.OldResourceProperties.Data.TableName} RENAME COLUMN col1 TO ${newTableColumnName}`,
       }));
     });
 
@@ -389,7 +389,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO col1`,
+        Sql: `ALTER TABLE ${event.OldResourceProperties.Data.TableName} RENAME COLUMN col1 TO col1`,
       }));
     });
   });
