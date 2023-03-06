@@ -28,6 +28,34 @@ describe('Scope based Associations with Application within Same Account', () => 
       Name: 'MyAssociatedApplication',
       Tags: { managedBy: 'CDK_Application_Associator' },
     });
+    Template.fromStack(appAssociator.appRegistryApplication().stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
+    Template.fromStack(anotherStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+    Template.fromStack(anotherStack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
+      Application: 'MyAssociatedApplication',
+      Resource: { Ref: 'AWS::StackId' },
+    });
+  });
+
+  test('ApplicationAssociator with url disabled will not create cfn output', () => {
+    const appAssociator = new appreg.ApplicationAssociator(app, 'MyApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
+        stackName: 'MyAssociatedApplicationStack',
+        emitApplicationManagerUrlAsOutput: false,
+      })],
+    });
+
+    const anotherStack = new AppRegistrySampleStack(app, 'SampleStack');
+    Template.fromStack(appAssociator.appRegistryApplication().stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::Application', 1);
+    Template.fromStack(appAssociator.appRegistryApplication().stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
+      Name: 'MyAssociatedApplication',
+      Tags: { managedBy: 'CDK_Application_Associator' },
+    });
+
+    expect(
+      Template.fromStack(appAssociator.appRegistryApplication().stack)
+        .findOutputs('*', {}),
+    ).toEqual({});
     Template.fromStack(anotherStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(anotherStack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
       Application: 'MyAssociatedApplication',
@@ -57,6 +85,28 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const nestedStack = new cdk.Stack(firstStack, 'MyFirstStack', {
       env: { account: 'account2', region: 'region' },
     });
+    Template.fromStack(firstStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+    Template.fromStack(nestedStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+  });
+
+  test('ApplicationAssociator disables cfn output', () => {
+    const appAssociator = new appreg.ApplicationAssociator(app, 'MyApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
+        stackName: 'MyAssociatedApplicationStack',
+        emitApplicationManagerUrlAsOutput: false,
+      })],
+    });
+    const firstStack = new cdk.Stack(app, 'testStack', {
+      env: { account: 'account2', region: 'region' },
+    });
+    const nestedStack = new cdk.Stack(firstStack, 'MyFirstStack', {
+      env: { account: 'account2', region: 'region' },
+    });
+
+    expect(
+      Template.fromStack(appAssociator.appRegistryApplication().stack).findOutputs('*', {}),
+    ).toEqual({});
     Template.fromStack(firstStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(nestedStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
   });
@@ -155,6 +205,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       associateStage: true,
     });
     app.synth();
+    Template.fromStack(application.appRegistryApplication().stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
     Template.fromStack(pipelineStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
   });
 });
