@@ -73,11 +73,18 @@ export async function main() {
     await exec(`git clone ${repoRoot} ${targetDir}`);
   } else {
     const srcCdkLibDir = path.join(__dirname, '../../../../packages/aws-cdk-lib');
+    const packagesSrcDir = path.join(__dirname, '../../../../packages/@aws-cdk');
     const cdkLibDir = path.join(targetDir, 'packages', 'aws-cdk-lib');
+    const packagesDir = path.join(targetDir, 'packages', '@aws-cdk');
     const integFrameworkDir = path.join(targetDir, 'packages', '@aws-cdk-testing', 'framework-integ');
     if (fs.existsSync(cdkLibDir)) {
       await fs.remove(cdkLibDir);
       await fs.copy(srcCdkLibDir, cdkLibDir, { overwrite: true });
+    }
+
+    if (fs.existsSync(packagesDir)) {
+      await fs.remove(packagesDir);
+      await fs.copy(packagesSrcDir, packagesDir, { overwrite : true });
     }
 
     if (fs.existsSync(integFrameworkDir)) {
@@ -92,17 +99,21 @@ export async function main() {
 
   const templateDir = path.join(__dirname, '..', 'lib', 'template');
   await copyTemplateFiles(templateDir, targetDir);
-  await makeAwsCdkLib(targetDir);
+  const bundlingResult = await makeAwsCdkLib(targetDir);
   await makeAwsCdkLibInteg(targetDir);
 
-  if (fullBuild) await runBuild(targetDir);
-  await cleanup(targetDir);
+  if (fullBuild) {
+    await runBuild(targetDir);
+  } else {
+    await runPartialBuild(targetDir);
+  }
 
   if (clean) {
     await fs.remove(path.resolve(targetDir));
   }
 
   await postRun(targetDir);
+  await cleanup(targetDir, bundlingResult);
 
   console.log('Successs!');
 }
@@ -236,9 +247,17 @@ async function makeAwsCdkLib(target: string) {
 
   await fs.remove(path.join(awsCdkLibDir, 'integ-tests'));
 
-  // TODO: Cleanup
-  // 1. lib/aws-events-targets/build-tools, moved to gen.ts step
-  // 2. All bundled and deprecated packages
+  return {
+    bundled: packagesToBundle,
+    deprecated: deprecatedPackages,
+    experimental: experimentalPackages,
+  };
+}
+
+interface BundlingResult {
+  readonly bundled: readonly LibraryReference[];
+  readonly deprecated: readonly LibraryReference[];
+  readonly experimental: readonly LibraryReference[];
 }
 
 async function makeAwsCdkLibInteg(dir: string) {
@@ -327,6 +346,13 @@ async function makeAwsCdkLibInteg(dir: string) {
 
 }
 
+async function runPartialBuild(dir: string) {
+  const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
+  await e('yarn install');
+  await e('npx lerna run build --scope aws-cdk-lib --include-dependencies');
+  await e('./scripts/transform.sh');
+}
+
 async function runBuild(dir: string) {
   const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
 
@@ -378,8 +404,15 @@ async function postRun(dir: string) {
   await e(`yarn integ-runner --update-on-failed --dry-run ${dryRunInteg.join(' ')}`);
 }
 
-async function cleanup(dir: string) {
+async function cleanup(dir: string, packages: BundlingResult) {
   const awsCdkLibDir = path.join(dir, 'packages', 'aws-cdk-lib');
+
+  await Promise.all([
+    cleanupPackages(packages.bundled),
+    cleanupPackages(packages.deprecated),
+  ]);
+
+  await cleanupExperimentalPackages(dir, packages.experimental);
 
   // Remove the `build.js` file within aws-cloudformation-include because this functionality is now
   // handled during codegen
@@ -390,6 +423,44 @@ async function cleanup(dir: string) {
   // generated are included
   const alphaModulesGitignorePath = path.join(dir, 'packages', 'individual-packages', '.gitignore');
   await fs.remove(alphaModulesGitignorePath);
+}
+
+async function cleanupPackages(packages: readonly LibraryReference[]) {
+  await Promise.all(packages.map(async (pkg) => {
+    await fs.remove(pkg.root);
+  }));
+}
+
+async function cleanupExperimentalPackages(dir: string, packages: readonly LibraryReference[]) {
+  const individualPkgsDir = path.join(dir, 'packages', 'individual-packages');
+  const generated = await fs.readdir(individualPkgsDir);
+
+  const matched: LibraryReference[] = [];
+  for await (const pkgDir of generated) {
+    const stat = await fs.stat(path.join(individualPkgsDir, pkgDir));
+    // Only run for package directories
+    const pkgJsonPath = path.join(individualPkgsDir, pkgDir, 'package.json');
+    if (!stat.isDirectory() || !fs.existsSync(pkgJsonPath)) continue;
+
+    const packageName = (await fs.readJson(pkgJsonPath)).name;
+    const oldPackageName = packageName.replace('-alpha', '');
+
+    const original = packages.find((pkg) => pkg.packageJson.name === oldPackageName);
+    if (original) {
+      matched.push(original);
+      await fs.remove(original.root);
+    }
+
+    await fs.move(
+      path.join(individualPkgsDir, pkgDir),
+      path.join(dir, 'packages', '@aws-cdk', pkgDir),
+    );
+  }
+
+  const noMatch = packages.filter((pkg) => (!matched.includes(pkg) && pkg.packageJson.maturity !== 'cfn-only'));
+  noMatch.forEach((pkg) => {
+    console.log(`No alpha package generated for package ${pkg.packageJson.name}`);
+  });
 }
 
 // Creates a map of directories to the cloudformations scopes that should be
