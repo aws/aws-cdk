@@ -1,18 +1,15 @@
 import { App, Stack, CfnResource } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+import { UnboundStagingStackSynthesizer } from '../lib';
 
-describe('new style synthesis', () => {
+describe('bootstrap v3', () => {
   let app: App;
   let stack: Stack;
 
   beforeEach(() => {
     app = new App({
-      context: {
-        [cxapi.V3_STACK_SYNTHESIS_CONTEXT]: 'true',
-      },
+      defaultStackSynthesizer: new UnboundStagingStackSynthesizer(),
     });
     stack = new Stack(app, 'Stack');
-
   });
 
   test('stack template is in asset manifest', () => {

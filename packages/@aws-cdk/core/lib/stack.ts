@@ -426,14 +426,8 @@ export class Stack extends Construct implements ITaggable {
     const featureFlags = FeatureFlags.of(this);
     const stackNameDupeContext = featureFlags.isEnabled(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT);
     const newStyleSynthesisContext = featureFlags.isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
-    const v3StackSynthesis = featureFlags.isEnabled(cxapi.V3_STACK_SYNTHESIS_CONTEXT);
 
-    // can only have one synthesis style set
-    if (newStyleSynthesisContext && v3StackSynthesis) {
-      throw new Error('can only set on kind of stack synthesis');
-    }
-
-    this.artifactId = (stackNameDupeContext || newStyleSynthesisContext || v3StackSynthesis)
+    this.artifactId = (stackNameDupeContext || newStyleSynthesisContext)
       ? this.generateStackArtifactId()
       : this.stackName;
 
@@ -443,7 +437,6 @@ export class Stack extends Construct implements ITaggable {
     this._versionReportingEnabled = (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT))
       && !this.nestedStackParent;
 
-    // TODO: want to add my new synthesizer here but can't, because that's a dependency cycle, right?
     const synthesizer = (props.synthesizer
       ?? this.node.tryGetContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER)
       ?? (newStyleSynthesisContext ? new DefaultStackSynthesizer() : new LegacyStackSynthesizer()));
