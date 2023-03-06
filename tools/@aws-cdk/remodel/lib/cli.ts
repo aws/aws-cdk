@@ -102,7 +102,7 @@ export async function main() {
     await fs.remove(path.resolve(targetDir));
   }
 
-  postRun(targetDir);
+  await postRun(targetDir);
 
   console.log('Successs!');
 }
@@ -329,13 +329,14 @@ async function makeAwsCdkLibInteg(dir: string) {
 
 async function runBuild(dir: string) {
   const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
+
+  await e('yarn install');
+
   // need to take our changes to the build script
   await fs.copyFile(
     path.join(__dirname, '../../../../build.sh'),
     path.join(dir, 'build.sh'),
   );
-
-  await e('yarn install');
 
   // Running the full build is necessary for ./transform.sh to work correctly
   await e('./build.sh --skip-prereqs --skip-compat --skip-tests');
@@ -344,14 +345,14 @@ async function runBuild(dir: string) {
   await e('./scripts/transform.sh');
 }
 
-function postRun(dir: string): void {
+async function postRun(dir: string) {
   const source = path.join(dir, 'packages', 'aws-cdk-lib');
   const target = path.join(dir, 'packages', '@aws-cdk-testing', 'framework-integ', 'test');
   fs.copySync(
     path.join(source, '..', '@aws-cdk', 'aws-lambda-nodejs', 'tsconfig.json'),
     path.join(target, 'aws-lambda-nodejs', 'tsconfig.json'),
   );
-
+  // can't add integ-tests-alpha until after `yarn install` has been run
   const p = fs.readFileSync(path.join(target, '..', 'package.json')).toString('utf-8').trim();
   const packageJson = JSON.parse(p);
   packageJson.dependencies = {
@@ -359,6 +360,22 @@ function postRun(dir: string): void {
     '@aws-cdk/integ-tests-alpha': '0.0.0',
   };
   fs.writeFileSync(path.join(target, '..', 'package.json'), JSON.stringify(packageJson, undefined, 2));
+
+  const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: path.join(target, '..'), ...opts });
+  const dryRunInteg: string[] = [
+    'test/pipelines/test/integ.newpipeline.js',
+    'test/pipelines/test/integ.pipeline.js',
+    'test/pipelines/test/integ.pipeline-with-assets-single-upload.js',
+    'test/pipelines/test/integ.pipeline-with-assets-single-upload.js',
+    'test/pipelines/test/integ.pipeline-with-assets.js',
+    'test/pipelines/test/integ.newpipeline.js',
+    'test/pipelines/test/integ.newpipeline-with-vpc.js',
+    'test/pipelines/test/integ.newpipeline-with-cross-account-keys.js',
+    'test/aws-ecr-assets/test/integ.assets-tarball.js',
+  ];
+  // need to build framework-integ since we skip it during ./build.sh
+  await e('yarn build');
+  await e(`yarn integ-runner --update-on-failed --dry-run ${dryRunInteg.join(' ')}`);
 }
 
 async function cleanup(dir: string) {
