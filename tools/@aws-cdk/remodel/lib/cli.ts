@@ -84,7 +84,7 @@ export async function main() {
 
     if (fs.existsSync(packagesDir)) {
       await fs.remove(packagesDir);
-      await fs.copy(packagesSrcDir, packagesDir, { overwrite : true });
+      await fs.copy(packagesSrcDir, packagesDir, { overwrite: true });
     }
 
     if (fs.existsSync(integFrameworkDir)) {
