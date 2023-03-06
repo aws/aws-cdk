@@ -1,4 +1,4 @@
-import { AssetManifestBuilder, DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource, IBoundStackSynthesizer, IReusableStackSynthesizer, ISynthesisSession, Stack, StackSynthesizer } from '@aws-cdk/core';
+import { App, AssetManifestBuilder, DockerImageAssetLocation, DockerImageAssetSource, Environment, FileAssetLocation, FileAssetSource, IBoundStackSynthesizer, IReusableStackSynthesizer, ISynthesisSession, Stack, StackSynthesizer, Stage } from '@aws-cdk/core';
 import { IStagingStack, StagingStack } from './staging-stack';
 
 /**
@@ -72,11 +72,21 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
     this.lookupRoleArn = props.lookupRoleArn ?? 'INSERT_DEFAULT';
 
     // TODO: logic should be get or synthesize staging stack here, not create each time
-    this.stagingStack = props.stagingStack ?? new StagingStack(stack, 'StagingStack', {
-      env: {
-        account: stack.account,
-        region: stack.region,
-      },
+    const app = App.of(stack);
+    if (!app) {
+      throw new Error(`stack ${stack.stackName} must be part of an App`);
+    }
+    this.stagingStack = props.stagingStack ?? this.getCreateStagingStack(app, {
+      account: stack.account,
+      region: stack.region,
+    });
+  }
+
+  private getCreateStagingStack(app: Stage, env: Environment) {
+    // TODO: env could be tokens
+    const stackName = `StagingStack-${env.account}-${env.region}`;
+    return app.node.tryFindChild(stackName) as IStagingStack ?? new StagingStack(app, stackName, {
+      env,
     });
   }
 
