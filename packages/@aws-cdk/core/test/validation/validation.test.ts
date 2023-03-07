@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 import * as fs from 'fs';
 import { Construct } from 'constructs';
 import * as core from '../../lib';
@@ -279,6 +280,63 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     expect(() => {
       app.synth();
     }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
+  });
+
+  test('JSON format', () => {
+    const app = new core.App({
+      validationPlugins: [
+        new FakePlugin('test-plugin', [{
+          recommendation: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceName: 'Fake',
+            templatePath: '/path/to/stack.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    expect(() => {
+      app.synth({
+        validationReportFormat: core.ValidationReportFormat.JSON,
+      });
+    }).toThrow(/Validation failed/);
+
+    const report = logMock.mock.calls[0][0];
+    expect(report).toEqual({
+      title: 'Validation Report',
+      pluginReports: [
+        {
+          summary: {
+            pluginName: 'test-plugin',
+            status: 'failure',
+          },
+          violations: [
+            {
+              ruleName: 'test-rule',
+              recommendation: 'test recommendation',
+              violatingConstructs: [
+                {
+                  constructStack:
+                    '└──  Fake (Default/Fake)\n\t     │ Library: @aws-cdk/core.CfnResource\n\t     │ Library Version: 0.0.0\n\t     │ Location: undefined\n\t     └──  Default (Default)\n\t          │ Library: @aws-cdk/core.Stack\n\t          │ Library Version: 0.0.0\n\t          │ Location: undefined',
+                  constructPath: 'Default/Fake',
+                  locations: ['test-location'],
+                  resourceName: 'Fake',
+                  templatePath: '/path/to/stack.template.json',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
   });
 });
 

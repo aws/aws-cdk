@@ -12,7 +12,7 @@ import { Aspects, IAspect } from '../aspect';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
-import { IValidationPlugin, ValidationReport } from '../validation';
+import { IValidationPlugin, ValidationReport, ValidationReportFormat } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { ValidationReportFormatter } from '../validation/private/report';
 
@@ -57,7 +57,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 
   const assembly = builder.buildAssembly();
 
-  invokeValidationPlugins(root, builder.outdir);
+  invokeValidationPlugins(root, builder.outdir, options.validationReportFormat);
 
   return assembly;
 }
@@ -75,7 +75,7 @@ class LazyHash {
   }
 }
 
-function invokeValidationPlugins(root: IConstruct, outdir: string) {
+function invokeValidationPlugins(root: IConstruct, outdir: string, validationReportFormat?: ValidationReportFormat) {
   const lazyHash = new LazyHash(outdir);
 
   const templatePathsByPlugin: Map<IValidationPlugin, string[]> = new Map();
@@ -117,9 +117,12 @@ function invokeValidationPlugins(root: IConstruct, outdir: string) {
   if (failed) {
     const tree = new ConstructTree(root);
     const formatter = new ValidationReportFormatter(tree);
+    const output = validationReportFormat === ValidationReportFormat.JSON
+      ? formatter.toJson(reports)
+      : formatter.toString(reports);
 
     // eslint-disable-next-line no-console
-    console.error(formatter.toString(reports));
+    console.error(output);
     throw new Error('Validation failed. See the validation report above for details');
   }
 }

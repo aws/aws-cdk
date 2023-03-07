@@ -1340,6 +1340,15 @@ validate all the templates generated in the scope you defined. In particular, if
 you register the templates in the `App` object, all templates will be subject to
 validation.
 
+By default, the report will be printed in a human readable format. If you want a
+report in JSON format, use the `synth()` method:
+
+```ts
+app.synth({
+  validationReportFormat: ValidationFormat.JSON
+});
+```
+
 ### For plugin authors
 
 The communication protocol between the CDK core module and your policy tool is
