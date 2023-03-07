@@ -4,7 +4,8 @@ import type * as AWSLambda from 'aws-lambda';
 const username = 'username';
 const tableName = 'tableName';
 const tableId = 'tableId';
-const tablePrivileges = [{ tableId, tableName, actions: ['INSERT', 'SELECT'] }];
+const actions = ['INSERT', 'SELECT'];
+const tablePrivileges = [{ tableId, tableName, actions }];
 const clusterName = 'clusterName';
 const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
@@ -145,7 +146,7 @@ describe('update', () => {
 
   test('does not replace when table name is changed', async () => {
     const newTableName = 'newTableName';
-    const newTablePrivileges = [{ tableId, tableName: newTableName, actions: ['INSERT', 'SELECT'] }];
+    const newTablePrivileges = [{ tableId, tableName: newTableName, actions }];
     const newResourceProperties = {
       ...resourceProperties,
       tablePrivileges: newTablePrivileges,
@@ -182,7 +183,7 @@ describe('update', () => {
 
   test('does not replace when table id is changed', async () => {
     const newTableId = 'newTableId';
-    const newTablePrivileges = [{ tableId: newTableId, tableName, actions: ['INSERT', 'SELECT'] }];
+    const newTablePrivileges = [{ tableId: newTableId, tableName, actions }];
     const newResourceProperties = {
       ...resourceProperties,
       tablePrivileges: newTablePrivileges,
