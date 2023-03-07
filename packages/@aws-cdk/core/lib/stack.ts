@@ -426,7 +426,6 @@ export class Stack extends Construct implements ITaggable {
     const featureFlags = FeatureFlags.of(this);
     const stackNameDupeContext = featureFlags.isEnabled(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT);
     const newStyleSynthesisContext = featureFlags.isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
-
     this.artifactId = (stackNameDupeContext || newStyleSynthesisContext)
       ? this.generateStackArtifactId()
       : this.stackName;

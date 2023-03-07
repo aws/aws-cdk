@@ -199,7 +199,6 @@ function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, v
     };
 
     if (Stack.isStack(construct)) {
-      // TODO: I think I need to do something here to keep track of envs -> staging stacks, but not sure
       construct.synthesizer.synthesize(session);
     } else if (construct instanceof TreeMetadata) {
       construct._synthesizeTree(session);
