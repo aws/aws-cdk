@@ -121,8 +121,9 @@ export interface AppProps {
   readonly defaultStackSynthesizer?: IReusableStackSynthesizer;
 
   /**
-   * TODO
-   * @default - TODO
+   * Validation plugins to run after synthesis
+   *
+   * @default - no validation plugins
    */
   readonly validationPlugins?: IValidationPlugin[];
 }
