@@ -7701,9 +7701,9 @@
         "Arn": "The Amazon Resource Number (ARN) of the activated extension, in this account and Region.",
         "Ref": "`Ref` returns the Amazon Resource Number (ARN) of the activated extension, in this account and Region.\n\n`{ \"Ref\": \"arn:aws:cloudformation:us-east-1:123456789013:type/resource/My-Example\" }`"
       },
-      "description": "Activates a public third-party extension, making it available for use in stack templates. For more information, see [Using public extensions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry-public.html) in the *AWS CloudFormation User Guide* .\n\nOnce you have activated a public third-party extension in your account and region, use [SetTypeConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_SetTypeConfiguration.html) to specify configuration properties for the extension. For more information, see [Configuring extensions at the account level](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry-register.html#registry-set-configuration) in the *CloudFormation User Guide* .",
+      "description": "Activates a public third-party extension, making it available for use in stack templates. For more information, see [Using public extensions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry-public.html) in the *AWS CloudFormation User Guide* .\n\nOnce you have activated a public third-party extension in your account and Region, use [SetTypeConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_SetTypeConfiguration.html) to specify configuration properties for the extension. For more information, see [Configuring extensions at the account level](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry-register.html#registry-set-configuration) in the *CloudFormation User Guide* .",
       "properties": {
-        "AutoUpdate": "Whether to automatically update the extension in this account and region when a new *minor* version is published by the extension publisher. Major versions released by the publisher must be manually updated.\n\nThe default is `true` .",
+        "AutoUpdate": "Whether to automatically update the extension in this account and Region when a new *minor* version is published by the extension publisher. Major versions released by the publisher must be manually updated.\n\nThe default is `true` .",
         "ExecutionRoleArn": "The name of the IAM execution role to use to activate the extension.",
         "LoggingConfig": "Specifies logging configuration information for an extension.",
         "MajorVersion": "The major version of this extension you want to activate, if multiple major versions are available. The default is the latest major version. CloudFormation uses the latest available *minor* version of the major version selected.\n\nYou can specify `MajorVersion` or `VersionBump` , but not both.",
@@ -7711,7 +7711,7 @@
         "PublisherId": "The ID of the extension publisher.\n\nConditional: You must specify `PublicTypeArn` , or `TypeName` , `Type` , and `PublisherId` .",
         "Type": "The extension type.\n\nConditional: You must specify `PublicTypeArn` , or `TypeName` , `Type` , and `PublisherId` .",
         "TypeName": "The name of the extension.\n\nConditional: You must specify `PublicTypeArn` , or `TypeName` , `Type` , and `PublisherId` .",
-        "TypeNameAlias": "An alias to assign to the public extension, in this account and region. If you specify an alias for the extension, CloudFormation treats the alias as the extension type name within this account and region. You must use the alias to refer to the extension in your templates, API calls, and CloudFormation console.\n\nAn extension alias must be unique within a given account and region. You can activate the same public resource multiple times in the same account and region, using different type name aliases.",
+        "TypeNameAlias": "An alias to assign to the public extension, in this account and Region. If you specify an alias for the extension, CloudFormation treats the alias as the extension type name within this account and Region. You must use the alias to refer to the extension in your templates, API calls, and CloudFormation console.\n\nAn extension alias must be unique within a given account and Region. You can activate the same public resource multiple times in the same account and Region, using different type name aliases.",
         "VersionBump": "Manually updates a previously-activated type to a new major or minor version, if available. You can also use this parameter to update the value of `AutoUpdate` .\n\n- `MAJOR` : CloudFormation updates the extension to the newest major version, if one is available.\n- `MINOR` : CloudFormation updates the extension to the newest minor version, if one is available."
       }
     },
@@ -14647,7 +14647,7 @@
         "SourceDestCheck": "Enable or disable source/destination checks, which ensure that the instance is either the source or the destination of any traffic that it receives. If the value is `true` , source/destination checks are enabled; otherwise, they are disabled. The default value is `true` . You must disable source/destination checks if the instance runs services such as network address translation, routing, or firewalls.",
         "SsmAssociations": "The SSM [document](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-document.html) and parameter values in AWS Systems Manager to associate with this instance. To use this property, you must specify an IAM instance profile role for the instance. For more information, see [Create an IAM instance profile for Systems Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-configuring-access-role.html) in the *AWS Systems Manager User Guide* .\n\n> You can currently associate only one document with an instance.",
         "SubnetId": "[EC2-VPC] The ID of the subnet to launch the instance into.\n\nIf you specify a network interface, you must specify any subnets as part of the network interface.",
-        "Tags": "The tags to add to the instance. These tags are not applied to the EBS volumes, such as the root volume.",
+        "Tags": "The tags to add to the instance. These tags are not applied to the EBS volumes, such as the root volume, unless [PropagateTagsToVolumeOnCreation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2-instance-propagatetagstovolumeoncreation) is `true` .",
         "Tenancy": "The tenancy of the instance (if the instance is running in a VPC). An instance with a tenancy of `dedicated` runs on single-tenant hardware.",
         "UserData": "The user data script to make available to the instance. User data is limited to 16 KB. You must provide base64-encoded text. For more information, see [Fn::Base64](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-base64.html) .\n\nUser data runs only at instance launch. For more information, see [Run commands on your Linux instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) and [Run commands on your Windows instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html) .",
         "Volumes": "The volumes to attach to the instance."
@@ -15812,7 +15812,7 @@
       },
       "description": "Specifies a security group. To create a security group, use the [VpcId](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html#cfn-ec2-securitygroup-vpcid) property to specify the VPC for which to create the security group.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\n> To cross-reference two security groups in the ingress and egress rules of those security groups, use the [AWS::EC2::SecurityGroupEgress](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-security-group-egress.html) and [AWS::EC2::SecurityGroupIngress](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-security-group-ingress.html) resources to define your rules. Do not use the embedded ingress and egress rules in the `AWS::EC2::SecurityGroup` . Doing so creates a circular dependency, which AWS CloudFormation doesn't allow.",
       "properties": {
-        "GroupDescription": "A description for the security group. This is informational only.\n\nConstraints: Up to 255 characters in length\n\nConstraints for EC2-Classic: ASCII characters\n\nConstraints for EC2-VPC: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
+        "GroupDescription": "A description for the security group.\n\nConstraints: Up to 255 characters in length\n\nConstraints for EC2-Classic: ASCII characters\n\nConstraints for EC2-VPC: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
         "GroupName": "The name of the security group.\n\nConstraints: Up to 255 characters in length. Cannot start with `sg-` .\n\nConstraints for EC2-Classic: ASCII characters\n\nConstraints for EC2-VPC: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
         "SecurityGroupEgress": "[VPC only] The outbound rules associated with the security group. There is a short interruption during which you cannot connect to the security group.",
         "SecurityGroupIngress": "The inbound rules associated with the security group. There is a short interruption during which you cannot connect to the security group.",
@@ -16674,7 +16674,7 @@
     "AWS::EC2::VPCEndpointService": {
       "attributes": {
         "Ref": "`Ref` returns the ID of the VPC endpoint service configuration.",
-        "ServiceId": ""
+        "ServiceId": "The ID of the endpoint service."
       },
       "description": "Creates a VPC endpoint service configuration to which service consumers ( AWS accounts, users, and IAM roles) can connect.\n\nTo create an endpoint service configuration, you must first create one of the following for your service:\n\n- A [Network Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html) . Service consumers connect to your service using an interface endpoint.\n- A [Gateway Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html) . Service consumers connect to your service using a Gateway Load Balancer endpoint.\n\nFor more information, see the [AWS PrivateLink User Guide](https://docs.aws.amazon.com/vpc/latest/privatelink/) .",
       "properties": {
@@ -39561,7 +39561,7 @@
     },
     "AWS::Pipes::Pipe.FilterCriteria": {
       "attributes": {},
-      "description": "The collection of event patterns used to filter events. For more information, see [Events and Event Patterns](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html) in the *Amazon EventBridge User Guide* .",
+      "description": "The collection of event patterns used to filter events.\n\nTo remove a filter, specify a `FilterCriteria` object with an empty array of `Filter` objects.\n\nFor more information, see [Events and Event Patterns](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html) in the *Amazon EventBridge User Guide* .",
       "properties": {
         "Filters": "The event patterns."
       }
@@ -39602,7 +39602,7 @@
       "description": "The parameters required to set up enrichment on your pipe.",
       "properties": {
         "HttpParameters": "Contains the HTTP parameters to use when the target is a API Gateway REST endpoint or EventBridge ApiDestination.\n\nIf you specify an API Gateway REST API or EventBridge ApiDestination as a target, you can use this parameter to specify headers, path parameters, and query string keys/values as part of your target invoking request. If you're using ApiDestinations, the corresponding Connection can also have these values configured. In case of any conflicting keys, values from the Connection take precedence.",
-        "InputTemplate": "Valid JSON text passed to the enrichment. In this case, nothing from the event itself is passed to the enrichment. For more information, see [The JavaScript Object Notation (JSON) Data Interchange Format](https://docs.aws.amazon.com/http://www.rfc-editor.org/rfc/rfc7159.txt) ."
+        "InputTemplate": "Valid JSON text passed to the enrichment. In this case, nothing from the event itself is passed to the enrichment. For more information, see [The JavaScript Object Notation (JSON) Data Interchange Format](https://docs.aws.amazon.com/http://www.rfc-editor.org/rfc/rfc7159.txt) .\n\nTo remove an input template, specify an empty string."
       }
     },
     "AWS::Pipes::Pipe.PipeSourceActiveMQBrokerParameters": {
@@ -39662,7 +39662,7 @@
       "properties": {
         "ActiveMQBrokerParameters": "The parameters for using an Active MQ broker as a source.",
         "DynamoDBStreamParameters": "The parameters for using a DynamoDB stream as a source.",
-        "FilterCriteria": "The collection of event patterns used to filter events. For more information, see [Events and Event Patterns](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html) in the *Amazon EventBridge User Guide* .",
+        "FilterCriteria": "The collection of event patterns used to filter events.\n\nTo remove a filter, specify a `FilterCriteria` object with an empty array of `Filter` objects.\n\nFor more information, see [Events and Event Patterns](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html) in the *Amazon EventBridge User Guide* .",
         "KinesisStreamParameters": "The parameters for using a Kinesis stream as a source.",
         "ManagedStreamingKafkaParameters": "The parameters for using an MSK stream as a source.",
         "RabbitMQBrokerParameters": "The parameters for using a Rabbit MQ broker as a source.",
@@ -39789,7 +39789,7 @@
         "EcsTaskParameters": "The parameters for using an Amazon ECS task as a target.",
         "EventBridgeEventBusParameters": "The parameters for using an EventBridge event bus as a target.",
         "HttpParameters": "These are custom parameter to be used when the target is an API Gateway REST APIs or EventBridge ApiDestinations.",
-        "InputTemplate": "Valid JSON text passed to the target. In this case, nothing from the event itself is passed to the target. For more information, see [The JavaScript Object Notation (JSON) Data Interchange Format](https://docs.aws.amazon.com/http://www.rfc-editor.org/rfc/rfc7159.txt) .",
+        "InputTemplate": "Valid JSON text passed to the target. In this case, nothing from the event itself is passed to the target. For more information, see [The JavaScript Object Notation (JSON) Data Interchange Format](https://docs.aws.amazon.com/http://www.rfc-editor.org/rfc/rfc7159.txt) .\n\nTo remove an input template, specify an empty string.",
         "KinesisStreamParameters": "The parameters for using a Kinesis stream as a source.",
         "LambdaFunctionParameters": "The parameters for using a Lambda function as a target.",
         "RedshiftDataParameters": "These are custom parameters to be used when the target is a Amazon Redshift cluster to invoke the Amazon Redshift Data API BatchExecuteStatement.",
@@ -41837,18 +41837,18 @@
     },
     "AWS::RedshiftServerless::Namespace": {
       "attributes": {
-        "Namespace": "Returns the `Namespace` value.",
-        "Namespace.AdminUsername": "",
-        "Namespace.CreationDate": "",
-        "Namespace.DbName": "",
-        "Namespace.DefaultIamRoleArn": "",
-        "Namespace.IamRoles": "",
-        "Namespace.KmsKeyId": "",
-        "Namespace.LogExports": "",
-        "Namespace.NamespaceArn": "",
-        "Namespace.NamespaceId": "",
-        "Namespace.NamespaceName": "",
-        "Namespace.Status": "",
+        "Namespace": "The collection of computing resources from which an endpoint is created.",
+        "Namespace.AdminUsername": "The username of the administrator for the first database created in the namespace.",
+        "Namespace.CreationDate": "The date of when the namespace was created.",
+        "Namespace.DbName": "The name of the first database created in the namespace.",
+        "Namespace.DefaultIamRoleArn": "The Amazon Resource Name (ARN) of the IAM role to set as a default in the namespace.",
+        "Namespace.IamRoles": "A list of IAM roles to associate with the namespace.",
+        "Namespace.KmsKeyId": "The ID of the AWS Key Management Service key used to encrypt your data.",
+        "Namespace.LogExports": "The types of logs the namespace can export. Available export types are `User log` , `Connection log` , and `User activity log` .",
+        "Namespace.NamespaceArn": "The Amazon Resource Name (ARN) associated with a namespace.",
+        "Namespace.NamespaceId": "The unique identifier of a namespace.",
+        "Namespace.NamespaceName": "The name of the namespace. Must be between 3-64 alphanumeric characters in lowercase, and it cannot be a reserved word. A list of reserved words can be found in [Reserved Words](https://docs.aws.amazon.com//redshift/latest/dg/r_pg_keywords.html) in the Amazon Redshift Database Developer Guide.",
+        "Namespace.Status": "The status of the namespace.",
         "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, Ref returns the NamespaceName, such as `sample-namespace.` For more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
       "description": "A collection of database objects and users.",
@@ -41862,7 +41862,7 @@
         "IamRoles": "A list of IAM roles to associate with the namespace.",
         "KmsKeyId": "The ID of the AWS Key Management Service key used to encrypt your data.",
         "LogExports": "The types of logs the namespace can export. Available export types are `userlog` , `connectionlog` , and `useractivitylog` .",
-        "NamespaceName": "The name of the namespace.",
+        "NamespaceName": "The name of the namespace. Must be between 3-64 alphanumeric characters in lowercase, and it cannot be a reserved word. A list of reserved words can be found in [Reserved Words](https://docs.aws.amazon.com//redshift/latest/dg/r_pg_keywords.html) in the Amazon Redshift Database Developer Guide.",
         "Tags": "The map of the key-value pairs used to tag the namespace."
       }
     },
@@ -41887,22 +41887,22 @@
       "attributes": {
         "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, Ref returns the WorkgroupName, such as `sample-workgroup.` For more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) .",
         "Workgroup": "Returns the `Workgroup` value.",
-        "Workgroup.BaseCapacity": "",
+        "Workgroup.BaseCapacity": "The base data warehouse capacity of the workgroup in Redshift Processing Units (RPUs).",
         "Workgroup.ConfigParameters": "",
-        "Workgroup.CreationDate": "",
+        "Workgroup.CreationDate": "The creation date of the workgroup.",
         "Workgroup.Endpoint": "",
-        "Workgroup.Endpoint.Address": "",
-        "Workgroup.Endpoint.Port": "",
+        "Workgroup.Endpoint.Address": "The DNS address of the VPC endpoint.",
+        "Workgroup.Endpoint.Port": "The custom port to use when connecting to a workgroup. Valid port ranges are 5431-5455 and 8191-8215. The default is 5439.",
         "Workgroup.Endpoint.VpcEndpoints": "",
-        "Workgroup.EnhancedVpcRouting": "",
-        "Workgroup.NamespaceName": "",
-        "Workgroup.PubliclyAccessible": "",
-        "Workgroup.SecurityGroupIds": "",
-        "Workgroup.Status": "",
-        "Workgroup.SubnetIds": "",
-        "Workgroup.WorkgroupArn": "",
-        "Workgroup.WorkgroupId": "",
-        "Workgroup.WorkgroupName": ""
+        "Workgroup.EnhancedVpcRouting": "The value that specifies whether to enable enhanced virtual private cloud (VPC) routing, which forces Amazon Redshift Serverless to route traffic through your VPC.",
+        "Workgroup.NamespaceName": "The namespace the workgroup is associated with.",
+        "Workgroup.PubliclyAccessible": "A value that specifies whether the workgroup can be accessible from a public network.",
+        "Workgroup.SecurityGroupIds": "An array of security group IDs to associate with the workgroup.",
+        "Workgroup.Status": "The status of the workgroup.",
+        "Workgroup.SubnetIds": "An array of subnet IDs the workgroup is associated with.",
+        "Workgroup.WorkgroupArn": "The Amazon Resource Name (ARN) that links to the workgroup.",
+        "Workgroup.WorkgroupId": "The unique identifier of the workgroup.",
+        "Workgroup.WorkgroupName": "The name of the workgroup."
       },
       "description": "The collection of compute resources in Amazon Redshift Serverless.",
       "properties": {
@@ -41985,7 +41985,7 @@
         "StageName": "The name of the API Gateway stage. The name defaults to `prod` .",
         "VpcLinkId": "The `VpcLink` ID of the API Gateway proxy."
       },
-      "description": "Creates an AWS Migration Hub Refactor Spaces application. The account that owns the environment also owns the applications created inside the environment, regardless of the account that creates the application. Refactor Spaces provisions an Amazon API Gateway , API Gateway VPC link, and Network Load Balancer for the application proxy inside your account.",
+      "description": "Creates an AWS Migration Hub Refactor Spaces application. The account that owns the environment also owns the applications created inside the environment, regardless of the account that creates the application. Refactor Spaces provisions an Amazon API Gateway , API Gateway VPC link, and Network Load Balancer for the application proxy inside your account.\n\nIn environments created with a `CreateEnvironmentRequest$NetworkFabricType` of `NONE` you need to configure [VPC to VPC connectivity](https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/amazon-vpc-to-amazon-vpc-connectivity-options.html) between your service VPC and the application proxy VPC to route traffic through the application proxy to a service with a private URL endpoint. For more information, see [Create an application](https://docs.aws.amazon.com/migrationhub-refactor-spaces/latest/userguide/getting-started-create-application.html) in the *Refactor Spaces User Guide* .",
       "properties": {
         "ApiGatewayProxy": "The endpoint URL of the Amazon API Gateway proxy.",
         "EnvironmentIdentifier": "The unique identifier of the environment.",
@@ -42010,7 +42010,7 @@
         "Ref": "`Ref` returns the ID of the environment, for example, `env-1234654123` .",
         "TransitGatewayId": "The ID of the AWS Transit Gateway set up by the environment."
       },
-      "description": "Creates an AWS Migration Hub Refactor Spaces environment. The caller owns the environment resource, and all Refactor Spaces applications, services, and routes created within the environment. They are referred to as the *environment owner* . The environment owner has cross-account visibility and control of Refactor Spaces resources that are added to the environment by other accounts that the environment is shared with. When creating an environment, Refactor Spaces provisions a transit gateway in your account.",
+      "description": "Creates an AWS Migration Hub Refactor Spaces environment. The caller owns the environment resource, and all Refactor Spaces applications, services, and routes created within the environment. They are referred to as the *environment owner* . The environment owner has cross-account visibility and control of Refactor Spaces resources that are added to the environment by other accounts that the environment is shared with.\n\nWhen creating an environment with a `CreateEnvironmentRequest$NetworkFabricType` of `TRANSIT_GATEWAY` , Refactor Spaces provisions a transit gateway to enable services in VPCs to communicate directly across accounts. If `CreateEnvironmentRequest$NetworkFabricType` is `NONE` , Refactor Spaces does not create a transit gateway and you must use your network infrastructure to route traffic to services with private URL endpoints.",
       "properties": {
         "Description": "A description of the environment.",
         "Name": "The name of the environment.",
@@ -42495,32 +42495,32 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
     "AWS::RolesAnywhere::Profile": {
       "attributes": {
-        "ProfileArn": "",
+        "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
         "Tags": "A list of Tags."
       }
     },
@@ -42528,29 +42528,29 @@
       "attributes": {
         "Ref": "`Ref` returns `TrustAnchorId` .",
         "TrustAnchorArn": "The ARN of the trust anchor.",
-        "TrustAnchorId": ""
+        "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
         "Source": "The trust anchor type and its related certificate data.",
-        "Tags": "A list of tags to attach to the trust anchor."
+        "Tags": ""
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
-        "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .",
+        "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
       }
     },
