@@ -18,6 +18,15 @@ export interface ValidationViolation {
    * @default - no fix is provided
    */
   readonly fix?: string;
+
+  /**
+   * The severity of the violation, only used for reporting purposes.
+   * This is useful for helping the user discriminate between warnings,
+   * errors, information, etc.
+   *
+   * @default - no severity
+   */
+  readonly severity?: string;
 }
 
 /**
