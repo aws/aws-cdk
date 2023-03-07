@@ -242,12 +242,25 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
   Description: do another thing`);
   });
 
-  test('plugin not ready', () => {
+  test('plugin throws an error', () => {
     const app = new core.App({
       validationPlugins: [
-        new FakePlugin('test-plugin', [], false),
+        // This plugin will throw an error
+        new BrokenPlugin(),
+
+        // But this one should still run
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/stack.template.json',
+          }],
+        }]),
       ],
     });
+
     const stack = new core.Stack(app);
     new core.CfnResource(stack, 'DefaultResource', {
       type: 'Test::Resource::Fake',
@@ -261,7 +274,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     }).toThrow(/Validation failed/);
 
     const report = logMock.mock.calls[0][0];
-    expect(report).toContain("Validation plugin 'test-plugin' is not ready");
+    expect(report).toContain('test-plugin');
   });
 
   test('plugin tries to modify a template', () => {
@@ -345,8 +358,7 @@ class FakePlugin implements core.IValidationPlugin {
 
   constructor(
     public readonly name: string,
-    private readonly violations: ValidationViolationResourceAware[],
-    private readonly ready: boolean = true) {}
+    private readonly violations: ValidationViolationResourceAware[]) {}
 
   validate(_context: core.IValidationContext): ValidationPluginReport {
     return {
@@ -354,10 +366,6 @@ class FakePlugin implements core.IValidationPlugin {
       success: this.violations.length === 0,
       violations: this.violations,
     };
-  }
-
-  isReady(): boolean {
-    return this.ready;
   }
 }
 
@@ -373,9 +381,13 @@ class RoguePlugin implements core.IValidationPlugin {
       violations: [],
     };
   }
+}
 
-  isReady(): boolean {
-    return true;
+class BrokenPlugin implements core.IValidationPlugin {
+  public readonly name = 'broken-plugin';
+
+  validate(_context: core.IValidationContext): ValidationPluginReport {
+    throw new Error('broken');
   }
 }
 

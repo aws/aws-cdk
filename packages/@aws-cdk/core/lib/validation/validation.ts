@@ -43,11 +43,6 @@ export interface IValidationPlugin {
    * templates for compliance and report and violations
    */
   validate(context: IValidationContext): ValidationPluginReport;
-
-  /**
-   * This method returns whether or not the plugin is ready to execute
-   */
-  isReady(): boolean;
 }
 
 /**

@@ -94,19 +94,12 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, validationRep
   for (const [plugin, paths] of templatePathsByPlugin.entries()) {
     const originalHash = lazyHash.value;
 
-    if (!plugin.isReady()) {
-      const report: ValidationPluginReport = {
-        pluginName: plugin.name,
-        success: false,
-        violations: [],
-        metadata: {
-          error: `Validation plugin '${plugin.name}' is not ready`,
-        },
-      };
-      reports.push(report);
-    } else {
+    try {
       const report = plugin.validate({ templatePaths: paths });
       reports.push(report);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn(`Validation plugin '${plugin.name}' failed: ${e.message}`);
     }
     if (computeChecksumOfFolder(outdir) !== originalHash) {
       throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
