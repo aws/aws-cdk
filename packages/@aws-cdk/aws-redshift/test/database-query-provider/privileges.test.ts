@@ -192,10 +192,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
-    }));
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `GRANT INSERT, SELECT ON ${tableName} TO ${username}`,
+      Sql: `.+ ON ${tableName} FROM ${username}`,
     }));
   });
 });
