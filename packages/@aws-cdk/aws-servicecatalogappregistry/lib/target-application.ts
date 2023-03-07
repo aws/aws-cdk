@@ -20,7 +20,7 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
     * Determines whether any cross-account stacks defined in the CDK app definition should be associated with the
     * target application. If set to `true`, the application will be shared with the accounts that own the stacks.
     *
-    * @default - false
+    * @default true
     */
   readonly enableCrossAccountStacks?: boolean;
 }
