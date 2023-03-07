@@ -133,7 +133,6 @@ export class CheckedStageStackAssociator extends StackAssociatorBase {
     this.applicationAssociator = app;
     this.enableCrossAccount = props?.enableCrossAccount ?? false;
   }
-
 }
 
 export class StageStackAssociator extends StackAssociatorBase {
