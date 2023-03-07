@@ -11,6 +11,12 @@ export interface StagingStackSynthesizerProps {
    * @default - default staging stack
    */
   readonly stagingStack?: IStagingStack;
+
+  /**
+   * Custom lookup role arn
+   *
+   * @default - default role
+   */
   readonly lookupRoleArn?: string;
 }
 
@@ -61,17 +67,21 @@ export class UnboundStagingStackSynthesizer extends StackSynthesizer implements 
 }
 
 class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundStackSynthesizer {
+  /**
+   * Default lookup role ARN for missing values.
+   */
+  public static readonly DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
+
   private stagingStack: IStagingStack;
   private assetManifest = new AssetManifestBuilder();
   private lookupRoleArn: string;
 
-  constructor(stack: Stack, props: StagingStackSynthesizerProps) {
+  constructor(stack: Stack, props: StagingStackSynthesizerProps = {}) {
     super();
     super.bind(stack);
 
-    this.lookupRoleArn = props.lookupRoleArn ?? 'INSERT_DEFAULT';
+    this.lookupRoleArn = props.lookupRoleArn ?? BoundStagingStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN;
 
-    // TODO: logic should be get or synthesize staging stack here, not create each time
     const app = App.of(stack);
     if (!app) {
       throw new Error(`stack ${stack.stackName} must be part of an App`);
@@ -82,9 +92,9 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
     });
   }
 
-  private getCreateStagingStack(app: Stage, env: Environment) {
+  private getCreateStagingStack(app: Stage, env: Environment): IStagingStack {
     // TODO: env could be tokens
-    const stackName = `StagingStack-${env.account}-${env.region}`;
+    const stackName = `StagingStack${app.stageName}`;
     return app.node.tryFindChild(stackName) as IStagingStack ?? new StagingStack(app, stackName, {
       env,
     });
@@ -101,22 +111,9 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
     // eslint-disable-next-line no-console
     console.log(templateAsset, assetManifestId);
 
-    // TODO: finish implementing
-    // this.emitArtifact(session, {
-    //   assumeRoleExternalId: this.props.deployRoleExternalId,
-    //   assumeRoleArn: this._deployRoleArn,
-    //   cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
-    //   stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
-    //   requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
-    //   bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
-    //   additionalDependencies: [assetManifestId],
-    //   lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
-    //     arn: this.lookupRoleArn,
-    //     assumeRoleExternalId: this.props.lookupRoleExternalId,
-    //     requiresBootstrapStackVersion: MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION,
-    //     bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
-    //   } : undefined,
-    // });
+    this.emitArtifact(session, {
+      additionalDependencies: [assetManifestId],
+    });
   }
 
   /**
@@ -124,7 +121,7 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
-      bucketName: this.stagingStack.stagingBucket.bucketName,
+      bucketName: this.stagingStack.stagingBucketName,
       // TODO: more props
     });
     return this.cloudFormationLocationFromFileAsset(location);

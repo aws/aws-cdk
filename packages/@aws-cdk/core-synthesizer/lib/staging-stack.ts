@@ -15,6 +15,11 @@ export interface IStagingStack extends IConstruct {
   /**
    * // TODO
    */
+  readonly stagingBucketName: string;
+
+  /**
+   * // TODO
+   */
   readonly stagingRepos: Record<string, ecr.Repository>;
 
   /**
@@ -27,6 +32,12 @@ export interface IStagingStack extends IConstruct {
  * Staging Stack Properties
  */
 export interface StagingStackProps extends StackProps {
+  /**
+   * Explicit name for the staging bucket
+   *
+   * @default - DEFAULT
+   */
+  readonly stagingBucketName?: string;
 }
 
 /**
@@ -43,10 +54,17 @@ export class StagingStack extends Stack implements IStagingStack {
    */
   public readonly stagingRepos: Record<string, ecr.Repository>;
 
+  /**
+   * // TODO
+   */
+  public readonly stagingBucketName: string;
+
   constructor(scope: Construct, id: string, props: StagingStackProps = {}) {
     super(scope, id, props);
 
+    this.stagingBucketName = props.stagingBucketName ?? 'default-bucket';
     this.stagingBucket = new s3.Bucket(this, 'StagingBucket', {
+      bucketName: this.stagingBucketName,
       autoDeleteObjects: true,
       removalPolicy: RemovalPolicy.DESTROY,
     });
