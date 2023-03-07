@@ -77,7 +77,6 @@ class LazyHash {
 
 function invokeValidationPlugins(root: IConstruct, outdir: string) {
   const lazyHash = new LazyHash(outdir);
-  let failed = false;
 
   const templatePathsByPlugin: Map<IValidationPlugin, string[]> = new Map();
   visit(root, 'post', construct => {
@@ -96,18 +95,25 @@ function invokeValidationPlugins(root: IConstruct, outdir: string) {
     const originalHash = lazyHash.value;
 
     if (!plugin.isReady()) {
-      throw new Error(`Validation plugin '${plugin.name}' is not ready`);
+      const report: ValidationReport = {
+        pluginName: plugin.name,
+        success: false,
+        violations: [],
+        metadata: {
+          error: `Validation plugin '${plugin.name}' is not ready`,
+        },
+      };
+      reports.push(report);
+    } else {
+      const report = plugin.validate({ templatePaths: paths });
+      reports.push(report);
     }
-    const report = plugin.validate({ templatePaths: paths });
-    reports.push(report);
     if (computeChecksumOfFolder(outdir) !== originalHash) {
       throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
-    if (!report.success) {
-      failed = true;
-    }
   }
 
+  const failed = reports.some(r => !r.success);
   if (failed) {
     const tree = new ConstructTree(root);
     const formatter = new ValidationReportFormatter(tree);

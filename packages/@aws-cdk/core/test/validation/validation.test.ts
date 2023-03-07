@@ -254,9 +254,13 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
         result: 'success',
       },
     });
+
     expect(() => {
       app.synth();
-    }).toThrow(/Validation plugin 'test-plugin' is not ready/);
+    }).toThrow(/Validation failed/);
+
+    const report = logMock.mock.calls[0][0];
+    expect(report).toContain("Validation plugin 'test-plugin' is not ready");
   });
 
   test('plugin tries to modify a template', () => {

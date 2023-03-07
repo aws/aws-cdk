@@ -107,7 +107,7 @@ export class ValidationReportFormatter {
         ...Object.entries(plugin.summary.metadata ?? {}),
       ]));
 
-      if (plugin.violations) {
+      if (plugin.violations.length > 0) {
         output.push('');
         output.push('(Violations)');
       }
@@ -149,7 +149,7 @@ export class ValidationReportFormatter {
     return {
       title: 'Validation Report',
       pluginReports: reps
-        .filter(rep => rep.violations.length > 0)
+        .filter(rep => !rep.success)
         .map(rep => ({
           summary: {
             pluginName: rep.pluginName,
