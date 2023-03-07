@@ -1,8 +1,10 @@
 #!/usr/bin/env node
+/* eslint-disable import/no-extraneous-dependencies */
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as glue from '../lib';
 
 const app = new cdk.App();
@@ -108,5 +110,9 @@ const anotherUser = new iam.User(stack, 'AnotherUser');
 avroTable.grantReadWrite(anotherUser);
 jsonTable.grantReadWrite(anotherUser);
 parquetTable.grantReadWrite(anotherUser);
+
+new integ.IntegTest(app, 'aws-cdk-glue-table-integ', {
+  testCases: [stack],
+});
 
 app.synth();
