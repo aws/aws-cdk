@@ -379,6 +379,7 @@ describe('repository', () => {
     repo.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['ecr:*'],
+      principals: [new iam.AnyPrincipal()],
     }));
 
     // THEN
