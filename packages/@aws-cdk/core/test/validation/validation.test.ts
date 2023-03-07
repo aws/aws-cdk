@@ -19,7 +19,7 @@ describe('validations', () => {
     const app = new core.App({
       validationPlugins: [
         new FakePlugin('test-plugin', [{
-          recommendation: 'test recommendation',
+          description: 'test recommendation',
           ruleName: 'test-rule',
           violatingResources: [{
             locations: ['test-location'],
@@ -78,7 +78,7 @@ describe('validations', () => {
     const app = new core.App({
       validationPlugins: [
         new FakePlugin('test-plugin', [{
-          recommendation: 'test recommendation',
+          description: 'test recommendation',
           ruleName: 'test-rule',
           violatingResources: [{
             locations: ['test-location'],
@@ -116,7 +116,7 @@ describe('validations', () => {
     const app = new core.App({
       validationPlugins: [
         new FakePlugin('test-plugin', [{
-          recommendation: 'test recommendation',
+          description: 'test recommendation',
           ruleName: 'test-rule',
           violatingResources: [{
             locations: ['test-location'],
@@ -143,7 +143,7 @@ describe('validations', () => {
     const app = new core.App({
       validationPlugins: [
         new FakePlugin('plugin1', [{
-          recommendation: 'do something',
+          description: 'do something',
           ruleName: 'rule-1',
           violatingResources: [{
             locations: ['test-location'],
@@ -152,7 +152,7 @@ describe('validations', () => {
           }],
         }]),
         new FakePlugin('plugin2', [{
-          recommendation: 'do another thing',
+          description: 'do another thing',
           ruleName: 'rule-2',
           violatingResources: [{
             locations: ['test-location'],
@@ -207,7 +207,7 @@ ${reset(red(bright('rule-1 (1 occurrences)')))}
     - Locations:
       > test-location
 
-  Recommendation: do something
+  Description: do something
 
 (Summary)
 
@@ -239,7 +239,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     - Locations:
       > test-location
 
-  Recommendation: do another thing`);
+  Description: do another thing`);
   });
 
   test('plugin not ready', () => {
@@ -286,7 +286,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     const app = new core.App({
       validationPlugins: [
         new FakePlugin('test-plugin', [{
-          recommendation: 'test recommendation',
+          description: 'test recommendation',
           ruleName: 'test-rule',
           violatingResources: [{
             locations: ['test-location'],
@@ -321,7 +321,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
           violations: [
             {
               ruleName: 'test-rule',
-              recommendation: 'test recommendation',
+              description: 'test recommendation',
               violatingConstructs: [
                 {
                   constructStack:
@@ -416,7 +416,7 @@ const validationReport = (data: ValidationReportData) => {
     '    - Locations:',
     '      > test-location',
     '',
-    '  Recommendation: test recommendation',
+    '  Description: test recommendation',
 
   ].join('\n');
 };

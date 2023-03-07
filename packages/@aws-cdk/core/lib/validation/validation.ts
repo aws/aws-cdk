@@ -21,7 +21,7 @@ import { ValidationReport } from './report';
  *        success: false,
  *        violations: [{
  *          ruleName: 'rule-name',
- *          recommendation: 'description of the rule',
+ *          description: 'description of the rule',
  *          violatingResources: [{
  *            resourceName: 'FailingResource',
  *            templatePath: '/path/to/stack.template.json',

@@ -8,12 +8,12 @@ export interface ValidationViolation {
   readonly ruleName: string;
 
   /**
-   * The recommendation to resolve the violation.
+   * The description of the violation.
    */
-  readonly recommendation: string;
+  readonly description: string;
 
   /**
-   * How to fix the recommendation.
+   * How to fix the violation.
    *
    * @default - no fix is provided
    */

@@ -134,7 +134,7 @@ export class ValidationReportFormatter {
           }
         }
         output.push('');
-        output.push(`  Recommendation: ${plugin.violations[0].recommendation}`);
+        output.push(`  Description: ${plugin.violations[0].description }`);
         if (plugin.violations[0].fix) {
           output.push(`  How to fix: ${plugin.violations[0].fix}`);
         }
@@ -158,7 +158,7 @@ export class ValidationReportFormatter {
           },
           violations: rep.violations.map(violation => ({
             ruleName: violation.ruleName,
-            recommendation: violation.recommendation,
+            description: violation.description,
             fix: violation.fix,
             violatingConstructs: violation.violatingResources.map(resource => {
               const constructPath = this.tree.getConstructByResourceName(resource.resourceName)?.node.path;
