@@ -275,6 +275,25 @@ describe('vpc endpoint', () => {
       });
     });
 
+    describe('interface endpoint using S3 without privateDnsEnabled props', () => {
+      test('interface endpoint using S3', () => {
+        // GIVEN
+        const stack = new Stack(undefined, undefined, { env: { account: '1234', region: 'us-east-1' } });
+        const vpc = new Vpc(stack, 'VpcNetwork');
+
+        // WHEN
+        new InterfaceVpcEndpoint(stack, 'S3InterfaceEndpoint', {
+          service: InterfaceVpcEndpointAwsService.S3,
+          vpc: vpc,
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+          PrivateDnsEnabled: false,
+        });
+      });
+    });
+
     describe('add interface endpoint to looked-up VPC', () => {
       test('initial run', () => {
         // GIVEN

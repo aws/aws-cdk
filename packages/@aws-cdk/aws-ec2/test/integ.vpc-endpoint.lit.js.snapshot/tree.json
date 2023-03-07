@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-ec2-vpc-endpoint": {
         "id": "aws-cdk-ec2-vpc-endpoint",
         "path": "aws-cdk-ec2-vpc-endpoint",
@@ -91,8 +83,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +250,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +417,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +536,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -898,23 +890,171 @@
                   "fqn": "@aws-cdk/aws-ec2.InterfaceVpcEndpoint",
                   "version": "0.0.0"
                 }
+              },
+              "S3InterfaceEndpoint": {
+                "id": "S3InterfaceEndpoint",
+                "path": "aws-cdk-ec2-vpc-endpoint/MyVpc/S3InterfaceEndpoint",
+                "children": {
+                  "SecurityGroup": {
+                    "id": "SecurityGroup",
+                    "path": "aws-cdk-ec2-vpc-endpoint/MyVpc/S3InterfaceEndpoint/SecurityGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-ec2-vpc-endpoint/MyVpc/S3InterfaceEndpoint/SecurityGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "groupDescription": "aws-cdk-ec2-vpc-endpoint/MyVpc/S3InterfaceEndpoint/SecurityGroup",
+                            "securityGroupEgress": [
+                              {
+                                "cidrIp": "0.0.0.0/0",
+                                "description": "Allow all outbound traffic by default",
+                                "ipProtocol": "-1"
+                              }
+                            ],
+                            "securityGroupIngress": [
+                              {
+                                "cidrIp": {
+                                  "Fn::GetAtt": [
+                                    "MyVpcF9F0CA6F",
+                                    "CidrBlock"
+                                  ]
+                                },
+                                "ipProtocol": "tcp",
+                                "fromPort": 443,
+                                "toPort": 443,
+                                "description": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "from ",
+                                      {
+                                        "Fn::GetAtt": [
+                                          "MyVpcF9F0CA6F",
+                                          "CidrBlock"
+                                        ]
+                                      },
+                                      ":443"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ],
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "MyVpcF9F0CA6F"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-ec2-vpc-endpoint/MyVpc/S3InterfaceEndpoint/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
+                      "aws:cdk:cloudformation:props": {
+                        "serviceName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "com.amazonaws.",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ".s3"
+                            ]
+                          ]
+                        },
+                        "vpcId": {
+                          "Ref": "MyVpcF9F0CA6F"
+                        },
+                        "privateDnsEnabled": false,
+                        "securityGroupIds": [
+                          {
+                            "Fn::GetAtt": [
+                              "MyVpcS3InterfaceEndpointSecurityGroup971C8253",
+                              "GroupId"
+                            ]
+                          }
+                        ],
+                        "subnetIds": [
+                          {
+                            "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
+                          },
+                          {
+                            "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
+                          }
+                        ],
+                        "vpcEndpointType": "Interface"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnVPCEndpoint",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.InterfaceVpcEndpoint",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-ec2.Vpc",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-ec2-vpc-endpoint/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-ec2-vpc-endpoint/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.264"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

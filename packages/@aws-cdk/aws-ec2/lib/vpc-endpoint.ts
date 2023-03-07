@@ -463,7 +463,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   /**
    * Whether Private DNS is supported by default.
    */
-  public readonly privateDnsDefault?: boolean = true;
+  public readonly privateDnsDefault?: boolean;
 
   constructor(name: string, prefix?: string, port?: number) {
     const region = Lazy.uncachedString({
@@ -481,7 +481,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         return this.getDefaultEndpointSuffix(name, regionName);
       },
     });
-
+    this.privateDnsDefault = this.getPrivateDnsDefault(name);
     this.name = `${prefix || defaultEndpointPrefix}.${region}.${name}${defaultEndpointSuffix}`;
     this.shortName = name;
     this.port = port || 443;
@@ -533,6 +533,12 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
       'cn-northwest-1': ['transcribe'],
     };
     return VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name) ? '.cn' : '';
+  }
+
+  // Since s3 does not support interface endpoints, privateDnsDefault must be set to false for s3 interface endpoints.
+  private getPrivateDnsDefault(name:string) {
+    const PRIVATE_DNS_NOT_SUPPORTED_SERVICES = ['s3'];
+    return !PRIVATE_DNS_NOT_SUPPORTED_SERVICES.includes(name);
   }
 }
 

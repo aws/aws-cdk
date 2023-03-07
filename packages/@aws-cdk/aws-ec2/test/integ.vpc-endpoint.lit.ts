@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as ec2 from '../lib';
-
 const app = new cdk.App();
 
 class VpcEndpointStack extends cdk.Stack {
@@ -39,9 +39,26 @@ class VpcEndpointStack extends cdk.Stack {
       // who can access the endpoint via the '.connections' object.
       // open: false
     });
+
+    // Add an interface endpoint
+    // This should be created with privateDnsEnabled: false
+    vpc.addInterfaceEndpoint('S3InterfaceEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.S3,
+    });
     /// !hide
   }
 }
 
-new VpcEndpointStack(app, 'aws-cdk-ec2-vpc-endpoint');
-app.synth();
+const stack = new VpcEndpointStack(app, 'aws-cdk-ec2-vpc-endpoint');
+
+new integ.IntegTest(app, 'exec-command-integ-test', {
+  testCases: [stack],
+  diffAssets: true,
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: true,
+      },
+    },
+  },
+});

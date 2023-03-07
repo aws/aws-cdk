@@ -564,6 +564,94 @@
     ],
     "VpcEndpointType": "Interface"
    }
+  },
+  "MyVpcS3InterfaceEndpointSecurityGroup971C8253": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-ec2-vpc-endpoint/MyVpc/S3InterfaceEndpoint/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "MyVpcF9F0CA6F",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "MyVpcF9F0CA6F",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
+   }
+  },
+  "MyVpcS3InterfaceEndpoint5D2CEEA8": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".s3"
+      ]
+     ]
+    },
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    },
+    "PrivateDnsEnabled": false,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "MyVpcS3InterfaceEndpointSecurityGroup971C8253",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetIds": [
+     {
+      "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
+     },
+     {
+      "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
+     }
+    ],
+    "VpcEndpointType": "Interface"
+   }
   }
  },
  "Parameters": {
