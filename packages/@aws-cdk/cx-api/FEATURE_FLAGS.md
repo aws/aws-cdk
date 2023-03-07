@@ -46,6 +46,7 @@ Flags come in three types:
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
+| [@aws-cdk/aws-ecs:addSecurityGroupToAsgCapacityProviders](#aws-cdkaws-ecsaddsecuritygrouptoasgcapacityproviders) | Add security group through "configureAutoScalingGroup" | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -125,6 +126,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId](#aws-cdkaws-apigatewayusageplankeyorderinsensitiveid) | Allow adding/removing multiple UsagePlanKeys independently | (fix) | 1.98.0 | `false` | `true` |
 | [@aws-cdk/aws-lambda:recognizeVersionProps](#aws-cdkaws-lambdarecognizeversionprops) | Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`. | (fix) | 1.106.0 | `false` | `true` |
 | [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2021](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2021) | Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default. | (fix) | 1.117.0 | `false` | `true` |
+| [@aws-cdk/aws-ecs:addSecurityGroupToAsgCapacityProviders](#aws-cdkaws-ecsaddsecuritygrouptoasgcapacityproviders) | Add security group through "configureAutoScalingGroup" | (default) |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -139,7 +141,8 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
     "@aws-cdk/aws-rds:lowercaseDbIdentifier": false,
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
     "@aws-cdk/aws-lambda:recognizeVersionProps": false,
-    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false,
+    "@aws-cdk/aws-ecs:addSecurityGroupToAsgCapacityProviders": false
   }
 }
 ```
@@ -816,6 +819,42 @@ This is a feature flag as the old behavior was technically incorrect, but users 
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.65.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId
+
+*Include authorizer configuration in the calculation of the API deployment logical ID.* (fix)
+
+The logical ID of the AWS::ApiGateway::Deployment resource is calculated by hashing
+the API configuration, including methods, and resources, etc. Enable this feature flag
+to also include the configuration of any authorizer attached to the API in the
+calculation, so any changes made to an authorizer will create a new deployment.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.66.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ecs:addSecurityGroupToAsgCapacityProviders
+
+*Add security group through "configureAutoScalingGroup"* (default)
+
+ConfigureAutoScalingGroup currently does not connect the ASG security group to the cluster's security group.
+The result of this is that on new deployments, EC2 instances which have been autoscaled can have their security groups
+reconfigured and lose connectivity to the ECS cluster. This feature flag enables the correct behavior. 
+
+If this flag is not set, cluster.addAsgCapacityProvider() does not correctly configure the autoscaling group's
+Security Groups to work with the ECS cluster. If the flag is set, the ASG is correctly configured.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `true` | `true` |
+
+**Compatibility with old behavior:** You can use `configureAutoScalingGroup()`, to add secuirty group.
 
 
 <!-- END details -->
