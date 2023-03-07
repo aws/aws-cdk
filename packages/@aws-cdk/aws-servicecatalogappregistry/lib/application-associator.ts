@@ -24,9 +24,9 @@ export interface ApplicationAssociatorProps {
  * in case of a `Pipeline` stack, stage underneath the pipeline will not automatically be associated and
  * needs to be associated separately.
  *
- * If cross account stack is detected, then this construct will skip those associations by default. To edit
- * this behavior, set the `enableCrossAccountStacks` value in TargetApplicationOptions. If set to `true`,
- * the application will also be automatically shared with the consumer accounts.
+ * If cross account stack is detected, then this construct will share the application with the consumer accounts.
+ * To edit this behavior, set the `associateCrossAccountStacks` value in TargetApplicationOptions.
+ * If set to `false`, the application will not be automatically shared or associated within the consumer accounts.
  * Cross account feature will only work for non environment agnostic stacks.
  */
 export class ApplicationAssociator extends Construct {
@@ -35,7 +35,7 @@ export class ApplicationAssociator extends Construct {
    */
   private readonly application: IApplication;
   private readonly associatedStages: Set<cdk.Stage> = new Set();
-  private readonly enableCrossAccountStacks?: boolean;
+  private readonly associateCrossAccountStacks?: boolean;
 
   constructor(scope: cdk.App, id: string, props: ApplicationAssociatorProps) {
     super(scope, id);
@@ -47,9 +47,9 @@ export class ApplicationAssociator extends Construct {
     const targetApplication = props.applications[0];
     const targetBindResult = targetApplication.bind(scope);
     this.application = targetBindResult.application;
-    this.enableCrossAccountStacks = targetBindResult.enableCrossAccountStacks;
+    this.associateCrossAccountStacks = targetBindResult.associateCrossAccountStacks;
     cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this, {
-      enableCrossAccount: this.enableCrossAccountStacks,
+      associateCrossAccountStacks: this.associateCrossAccountStacks,
     }));
   }
 
@@ -60,7 +60,7 @@ export class ApplicationAssociator extends Construct {
   public associateStage(stage: cdk.Stage): cdk.Stage {
     this.associatedStages.add(stage);
     cdk.Aspects.of(stage).add(new CheckedStageStackAssociator(this, {
-      enableCrossAccount: this.enableCrossAccountStacks,
+      associateCrossAccountStacks: this.associateCrossAccountStacks,
     }));
     return stage;
   }

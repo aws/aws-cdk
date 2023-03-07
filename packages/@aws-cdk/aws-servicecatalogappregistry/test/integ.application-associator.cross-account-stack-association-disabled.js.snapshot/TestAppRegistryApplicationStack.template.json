@@ -10,42 +10,6 @@
      "managedBy": "CDK_Application_Associator"
     }
    }
-  },
-  "DefaultCdkApplicationRAMShare60b7c88c45feCE472D79": {
-   "Type": "AWS::RAM::ResourceShare",
-   "Properties": {
-    "Name": "RAMShare60b7c88c45fe",
-    "AllowExternalPrincipals": false,
-    "PermissionArns": [
-     "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation"
-    ],
-    "Principals": [
-     "123456"
-    ],
-    "ResourceArns": [
-     {
-      "Fn::GetAtt": [
-       "DefaultCdkApplication4573D5A3",
-       "Arn"
-      ]
-     }
-    ]
-   }
-  },
-  "AppRegistryAssociation": {
-   "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
-   "Properties": {
-    "Application": {
-     "Fn::GetAtt": [
-      "DefaultCdkApplication4573D5A3",
-      "Id"
-     ]
-    },
-    "Resource": {
-     "Ref": "AWS::StackId"
-    },
-    "ResourceType": "CFN_STACK"
-   }
   }
  },
  "Outputs": {

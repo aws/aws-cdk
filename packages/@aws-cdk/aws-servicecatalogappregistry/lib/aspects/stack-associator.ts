@@ -12,7 +12,7 @@ export interface StackAssociatorBaseProps {
   *
   * @default - true
   */
-  readonly enableCrossAccount?: boolean;
+  readonly associateCrossAccountStacks?: boolean;
 }
 
 /**
@@ -24,9 +24,13 @@ export interface StackAssociatorBaseProps {
 abstract class StackAssociatorBase implements IAspect {
   protected abstract readonly application: IApplication;
   protected abstract readonly applicationAssociator?: ApplicationAssociator;
-  protected abstract readonly enableCrossAccount: boolean;
+  protected readonly associateCrossAccountStacks?: boolean;
 
   protected readonly sharedAccounts: Set<string> = new Set();
+
+  constructor(props?: StackAssociatorBaseProps) {
+    this.associateCrossAccountStacks = props?.associateCrossAccountStacks ?? true;
+  }
 
   public visit(node: IConstruct): void {
     // verify if a stage in a particular stack is associated to Application.
@@ -53,7 +57,7 @@ abstract class StackAssociatorBase implements IAspect {
    * @param node A Stage stack.
    */
   private associate(node: Stack): void {
-    if (!this.enableCrossAccount) {
+    if (!this.associateCrossAccountStacks) {
       // Skip association when cross-account sharing/association is not enabled.
       // A warning will have been displayed as part of `handleCrossAccountStack()`.
       return;
@@ -105,7 +109,7 @@ abstract class StackAssociatorBase implements IAspect {
     }
 
     if (node.account != this.application.env.account && !this.sharedAccounts.has(node.account)) {
-      if (this.enableCrossAccount) {
+      if (this.associateCrossAccountStacks) {
         this.application.shareApplication({
           accounts: [node.account],
           sharePermission: SharePermission.ALLOW_ACCESS,
@@ -123,24 +127,20 @@ abstract class StackAssociatorBase implements IAspect {
 export class CheckedStageStackAssociator extends StackAssociatorBase {
   protected readonly application: IApplication;
   protected readonly applicationAssociator?: ApplicationAssociator;
-  protected readonly enableCrossAccount: boolean;
 
   constructor(app: ApplicationAssociator, props?: StackAssociatorBaseProps) {
-    super();
+    super(props);
     this.application = app.appRegistryApplication();
     this.applicationAssociator = app;
-    this.enableCrossAccount = props?.enableCrossAccount ?? false;
   }
 }
 
 export class StageStackAssociator extends StackAssociatorBase {
   protected readonly application: IApplication;
   protected readonly applicationAssociator?: ApplicationAssociator;
-  protected readonly enableCrossAccount: boolean;
 
   constructor(app: IApplication, props?: StackAssociatorBaseProps) {
-    super();
+    super(props);
     this.application = app;
-    this.enableCrossAccount = props?.enableCrossAccount ?? false;
   }
 }
