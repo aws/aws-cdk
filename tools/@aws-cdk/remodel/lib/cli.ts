@@ -74,8 +74,10 @@ export async function main() {
   } else {
     const srcCdkLibDir = path.join(__dirname, '../../../../packages/aws-cdk-lib');
     const packagesSrcDir = path.join(__dirname, '../../../../packages/@aws-cdk');
+    const idvlPackagesSrcDir = path.join(__dirname, '../../../../packages/individual-packages');
     const cdkLibDir = path.join(targetDir, 'packages', 'aws-cdk-lib');
     const packagesDir = path.join(targetDir, 'packages', '@aws-cdk');
+    const idvlPackagesDir = path.join(targetDir, 'packages', 'individual-packages');
     const integFrameworkDir = path.join(targetDir, 'packages', '@aws-cdk-testing', 'framework-integ');
     if (fs.existsSync(cdkLibDir)) {
       await fs.remove(cdkLibDir);
@@ -86,6 +88,12 @@ export async function main() {
       await fs.remove(packagesDir);
       await fs.copy(packagesSrcDir, packagesDir, { overwrite: true });
     }
+
+    if (fs.existsSync(idvlPackagesDir)) {
+      await fs.remove(idvlPackagesDir);
+    }
+    // always copy this because it's removed when remodel runs successfully
+    await fs.copy(idvlPackagesSrcDir, idvlPackagesDir, { overwrite: true });
 
     if (fs.existsSync(integFrameworkDir)) {
       await fs.remove(integFrameworkDir);
@@ -372,12 +380,7 @@ async function runBuild(dir: string) {
 }
 
 async function postRun(dir: string) {
-  const source = path.join(dir, 'packages', 'aws-cdk-lib');
   const target = path.join(dir, 'packages', '@aws-cdk-testing', 'framework-integ', 'test');
-  fs.copySync(
-    path.join(source, '..', '@aws-cdk', 'aws-lambda-nodejs', 'tsconfig.json'),
-    path.join(target, 'aws-lambda-nodejs', 'tsconfig.json'),
-  );
   // can't add integ-tests-alpha until after `yarn install` has been run
   const p = fs.readFileSync(path.join(target, '..', 'package.json')).toString('utf-8').trim();
   const packageJson = JSON.parse(p);
@@ -412,7 +415,8 @@ async function cleanup(dir: string, packages: BundlingResult) {
     cleanupPackages(packages.deprecated),
   ]);
 
-  await cleanupExperimentalPackages(dir, packages.experimental);
+  const newPackageNames = await cleanupExperimentalPackages(dir, packages.experimental);
+  await reformatScopedPackages(dir, newPackageNames);
 
   // Remove the `build.js` file within aws-cloudformation-include because this functionality is now
   // handled during codegen
@@ -436,24 +440,35 @@ async function cleanupExperimentalPackages(dir: string, packages: readonly Libra
   const generated = await fs.readdir(individualPkgsDir);
 
   const matched: LibraryReference[] = [];
+  const alphaMap: { [oldName: string]: string; } = {};
   for await (const pkgDir of generated) {
     const stat = await fs.stat(path.join(individualPkgsDir, pkgDir));
     // Only run for package directories
     const pkgJsonPath = path.join(individualPkgsDir, pkgDir, 'package.json');
     if (!stat.isDirectory() || !fs.existsSync(pkgJsonPath)) continue;
 
+    const pkgJson = await fs.readJson(pkgJsonPath);
     const packageName = (await fs.readJson(pkgJsonPath)).name;
     const oldPackageName = packageName.replace('-alpha', '');
 
     const original = packages.find((pkg) => pkg.packageJson.name === oldPackageName);
     if (original) {
       matched.push(original);
+      alphaMap[oldPackageName] = packageName;
       await fs.remove(original.root);
     }
 
+    const newPackagePath = path.join(dir, 'packages', '@aws-cdk', pkgDir);
     await fs.move(
       path.join(individualPkgsDir, pkgDir),
-      path.join(dir, 'packages', '@aws-cdk', pkgDir),
+      newPackagePath,
+    );
+
+    // Change version to "0.0.0" since these packages aren't built yet
+    await fs.writeJson(
+      path.join(newPackagePath, 'package.json'),
+      { ...pkgJson, version: '0.0.0' },
+      { spaces: 2 },
     );
   }
 
@@ -461,6 +476,59 @@ async function cleanupExperimentalPackages(dir: string, packages: readonly Libra
   noMatch.forEach((pkg) => {
     console.log(`No alpha package generated for package ${pkg.packageJson.name}`);
   });
+
+  // Remove old directory that housed alpha packages
+  await fs.remove(individualPkgsDir);
+  return alphaMap;
+}
+
+interface PackageNameMap {
+  [oldName: string]: string;
+}
+
+async function reformatScopedPackages(dir: string, nameMap: PackageNameMap) {
+  // Update any dependencies to old package names amonst remaining
+  // packages in @aws-cdk directory
+  const scopedPackagesDir = path.join(dir, 'packages', '@aws-cdk');
+  const scopedPackages = await fs.readdir(scopedPackagesDir);
+  for await (const pkgDir of scopedPackages) {
+    const scopedPackageDir = path.join(scopedPackagesDir, pkgDir);
+    const stat = await fs.stat(scopedPackageDir);
+    // Only run for package directories
+    const pkgJsonPath = path.join(scopedPackageDir, 'package.json');
+    if (!stat.isDirectory() || !fs.existsSync(pkgJsonPath)) continue;
+
+    await formatNewPkgJson(pkgJsonPath, {
+      ...nameMap,
+      '@aws-cdk/core': 'aws-cdk-lib',
+    });
+
+    // Rewrite any old import statements
+    await exec('npx rewrite-imports-v2 ./**/*.ts', { cwd: scopedPackageDir });
+  }
+}
+
+async function formatNewPkgJson(pkgJsonPath: string, alphaMap: { [oldName: string]: string }) {
+  const pkgJson = await fs.readJson(pkgJsonPath);
+  const dependencies = rewriteDependencies(pkgJson.dependencies, alphaMap);
+  const devDependencies = rewriteDependencies(pkgJson.devDependencies, alphaMap);
+
+  await fs.writeJson(pkgJsonPath, {
+    ...pkgJson,
+    dependencies,
+    devDependencies,
+  }, { spaces: 2 });
+}
+
+function rewriteDependencies(deps: { [name: string]: string }, nameMap: { [oldName: string]: string }): { [name: string] : string } {
+  return Object.entries(deps)
+    .reduce((accum, [key, val]) => {
+      const newKey = nameMap[key] ?? key;
+      return {
+        ...accum,
+        [newKey]: val,
+      };
+    }, {});
 }
 
 // Creates a map of directories to the cloudformations scopes that should be
