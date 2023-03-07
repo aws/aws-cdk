@@ -1592,6 +1592,142 @@
      }
     ]
    }
+  },
+  "ClusterV332SecurityGroupDDA33760": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "ClusterV332929A761F": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+      },
+      {
+       "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterV332SecurityGroupDDA33760",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "integ-test-v3-3-2",
+    "KafkaVersion": "3.3.2",
+    "NumberOfBrokerNodes": 2,
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Bucket": {
+        "Ref": "LoggingBucket1E5A6F3B"
+       },
+       "Enabled": true
+      }
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"Kafka\",\"action\":\"getBootstrapBrokers\",\"parameters\":{\"ClusterArn\":\"",
+       {
+        "Ref": "ClusterV332929A761F"
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"BootstrapBrokers\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"Kafka\",\"action\":\"getBootstrapBrokers\",\"parameters\":{\"ClusterArn\":\"",
+       {
+        "Ref": "ClusterV332929A761F"
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"BootstrapBrokers\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": false
+   },
+   "DependsOn": [
+    "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "kafka:GetBootstrapBrokers",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ClusterV332929A761F"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   }
   }
  },
  "Outputs": {
@@ -1674,6 +1810,14 @@
    "Value": {
     "Fn::GetAtt": [
      "ClusterV331BootstrapBrokersBootstrapBrokerStringTls2574EE93",
+     "BootstrapBrokerStringTls"
+    ]
+   }
+  },
+  "BootstrapBrokers9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A",
      "BootstrapBrokerStringTls"
     ]
    }

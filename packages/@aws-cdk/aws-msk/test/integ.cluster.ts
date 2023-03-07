@@ -182,6 +182,20 @@ class FeatureFlagStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers8', { value: cluster6.bootstrapBrokersTls });
+
+    const cluster7 = new msk.Cluster(this, 'Cluster_V3_3_2', {
+      clusterName: 'integ-test-v3-3-2',
+      kafkaVersion: msk.KafkaVersion.V3_3_2,
+      vpc,
+      logging: {
+        s3: {
+          bucket: this.bucket,
+        },
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    new cdk.CfnOutput(this, 'BootstrapBrokers9', { value: cluster7.bootstrapBrokersTls });
+
   }
 }
 
