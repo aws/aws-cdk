@@ -250,6 +250,10 @@ async function makeAwsCdkLib(target: string) {
     'devDependencies': {
       ...filteredDevDeps,
       '@aws-cdk/cfn2ts': '0.0.0',
+      // Dev dependencies from packages being bundled
+      '@types/aws-lambda': '^8.10.111',
+      '@types/jest': '^27.5.2',
+      '@types/lodash': '^4.14.191',
     },
   }, { spaces: 2 });
 
@@ -416,17 +420,13 @@ async function cleanup(dir: string, packages: BundlingResult) {
   ]);
 
   const newPackageNames = await cleanupExperimentalPackages(dir, packages.experimental);
-  await reformatScopedPackages(dir, newPackageNames);
+  await reformatPackages(path.join(dir, 'packages', '@aws-cdk'), newPackageNames);
+  await reformatPackages(path.join(dir, 'packages'), newPackageNames);
 
   // Remove the `build.js` file within aws-cloudformation-include because this functionality is now
   // handled during codegen
   const cfnIncludeMapBuildPath = path.join(awsCdkLibDir, 'cloudformation-include', 'build.js');
   await fs.remove(cfnIncludeMapBuildPath);
-
-  // Remove the .gitignore file in packages/individual-packages so that the alpha modules we
-  // generated are included
-  const alphaModulesGitignorePath = path.join(dir, 'packages', 'individual-packages', '.gitignore');
-  await fs.remove(alphaModulesGitignorePath);
 }
 
 async function cleanupPackages(packages: readonly LibraryReference[]) {
@@ -486,37 +486,55 @@ interface PackageNameMap {
   [oldName: string]: string;
 }
 
-async function reformatScopedPackages(dir: string, nameMap: PackageNameMap) {
+async function reformatPackages(dir: string, nameMap: PackageNameMap) {
   // Update any dependencies to old package names amonst remaining
-  // packages in @aws-cdk directory
-  const scopedPackagesDir = path.join(dir, 'packages', '@aws-cdk');
-  const scopedPackages = await fs.readdir(scopedPackagesDir);
-  for await (const pkgDir of scopedPackages) {
-    const scopedPackageDir = path.join(scopedPackagesDir, pkgDir);
-    const stat = await fs.stat(scopedPackageDir);
+  // packages in passed directory
+  const packages = await fs.readdir(dir);
+  for await (const pkgDir of packages) {
+    const packageDir = path.join(dir, pkgDir);
+    const stat = await fs.stat(packageDir);
     // Only run for package directories
-    const pkgJsonPath = path.join(scopedPackageDir, 'package.json');
+    const pkgJsonPath = path.join(packageDir, 'package.json');
     if (!stat.isDirectory() || !fs.existsSync(pkgJsonPath)) continue;
 
-    await formatNewPkgJson(pkgJsonPath, {
-      ...nameMap,
-      '@aws-cdk/core': 'aws-cdk-lib',
-    });
-
-    // Rewrite any old import statements
-    await exec('npx rewrite-imports-v2 ./**/*.ts', { cwd: scopedPackageDir });
+    await reformatPackage(packageDir, nameMap);
   }
+}
+
+async function reformatPackage(dir: string, nameMap: PackageNameMap) {
+  // Only run for package directories
+  const pkgJsonPath = path.join(dir, 'package.json');
+
+  await formatNewPkgJson(pkgJsonPath, {
+    ...nameMap,
+    '@aws-cdk/core': 'aws-cdk-lib',
+    // example-construct-library has all these and they need to be removed
+    '@aws-cdk/assertions': 'aws-cdk-lib',
+    '@aws-cdk/aws-cloudwatch': 'aws-cdk-lib',
+    '@aws-cdk/aws-ec2': 'aws-cdk-lib',
+    '@aws-cdk/aws-events': 'aws-cdk-lib',
+    '@aws-cdk/aws-iam': 'aws-cdk-lib',
+    '@aws-cdk/aws-s3': 'aws-cdk-lib',
+    '@aws-cdk/cx-api': 'aws-cdk-lib',
+    '@aws-cdk/region-info': 'aws-cdk-lib',
+    '@aws-cdk/cloud-assembly-schema': 'aws-cdk-lib',
+  });
+
+  // Rewrite any old import statements
+  await exec('npx rewrite-imports-v2 ./**/*.ts', { cwd: dir });
 }
 
 async function formatNewPkgJson(pkgJsonPath: string, alphaMap: { [oldName: string]: string }) {
   const pkgJson = await fs.readJson(pkgJsonPath);
-  const dependencies = rewriteDependencies(pkgJson.dependencies, alphaMap);
-  const devDependencies = rewriteDependencies(pkgJson.devDependencies, alphaMap);
+  const dependencies = pkgJson.dependencies ? rewriteDependencies(pkgJson.dependencies, alphaMap) : undefined;
+  const devDependencies = pkgJson.devDependencies ? rewriteDependencies(pkgJson.devDependencies, alphaMap) : undefined;
+  const peerDependencies = pkgJson.peerDependencies ? rewriteDependencies(pkgJson.peerDependencies, alphaMap) : undefined;
 
   await fs.writeJson(pkgJsonPath, {
     ...pkgJson,
-    dependencies,
-    devDependencies,
+    ...(dependencies ? { dependencies } : {}),
+    ...(devDependencies ? { devDependencies } : {}),
+    ...(peerDependencies ? { peerDependencies } : {}),
   }, { spaces: 2 });
 }
 
