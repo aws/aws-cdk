@@ -12,7 +12,7 @@ import { Aspects, IAspect } from '../aspect';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
-import { IValidationPlugin, ValidationReport, ValidationReportFormat } from '../validation';
+import { IValidationPlugin, ValidationPluginReport, ValidationReportFormat } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { ValidationReportFormatter } from '../validation/private/report';
 
@@ -90,12 +90,12 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, validationRep
     }
   });
 
-  const reports: ValidationReport[] = [];
+  const reports: ValidationPluginReport[] = [];
   for (const [plugin, paths] of templatePathsByPlugin.entries()) {
     const originalHash = lazyHash.value;
 
     if (!plugin.isReady()) {
-      const report: ValidationReport = {
+      const report: ValidationPluginReport = {
         pluginName: plugin.name,
         success: false,
         violations: [],

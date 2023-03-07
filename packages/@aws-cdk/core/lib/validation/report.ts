@@ -174,7 +174,7 @@ export enum ValidationReportFormat {
 /**
  * The report emitted by the plugin after evaluation.
  */
-export interface ValidationReport {
+export interface ValidationPluginReport {
   /**
    * List of violations in the report.
    */

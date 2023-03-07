@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
 import * as core from '../../lib';
-import { ValidationReport, ValidationViolationResourceAware } from '../../lib';
+import { ValidationPluginReport, ValidationViolationResourceAware } from '../../lib';
 
 
 let logMock: jest.SpyInstance;
@@ -348,7 +348,7 @@ class FakePlugin implements core.IValidationPlugin {
     private readonly violations: ValidationViolationResourceAware[],
     private readonly ready: boolean = true) {}
 
-  validate(_context: core.IValidationContext): ValidationReport {
+  validate(_context: core.IValidationContext): ValidationPluginReport {
     return {
       pluginName: this.name,
       success: this.violations.length === 0,
@@ -364,7 +364,7 @@ class FakePlugin implements core.IValidationPlugin {
 class RoguePlugin implements core.IValidationPlugin {
   public readonly name = 'rogue-plugin';
 
-  validate(context: core.IValidationContext): ValidationReport {
+  validate(context: core.IValidationContext): ValidationPluginReport {
     const templatePath = context.templatePaths[0];
     fs.writeFileSync(templatePath, 'malicious data');
     return {
