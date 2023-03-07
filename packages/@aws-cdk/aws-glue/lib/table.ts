@@ -183,6 +183,13 @@ export interface TableProps {
    * @default - The parameter is not defined
    */
   readonly enablePartitionFiltering?: boolean;
+
+  /**
+   * Description of the physical storage of this table.
+   *
+   * @default - The parameter is not defined
+   */
+  readonly storageParameters?: { [key: string]: any };
 }
 
 /**
@@ -330,6 +337,7 @@ export class Table extends Resource implements ITable {
           serdeInfo: {
             serializationLibrary: props.dataFormat.serializationLibrary.className,
           },
+          parameters: props.storageParameters,
         },
 
         tableType: 'EXTERNAL_TABLE',

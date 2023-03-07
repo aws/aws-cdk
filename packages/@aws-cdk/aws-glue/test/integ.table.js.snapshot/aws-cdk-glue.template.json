@@ -2,8 +2,8 @@
  "Resources": {
   "DataBucketE3889A50": {
    "Type": "AWS::S3::Bucket",
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "MyDatabase1E2517DB": {
    "Type": "AWS::Glue::Database",
@@ -328,8 +328,8 @@
      "Version": "2012-10-17"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "MyEncryptedTableBucket7B28486D": {
    "Type": "AWS::S3::Bucket",
@@ -423,11 +423,6 @@
     }
    }
   },
-  "MyPartitionFilteredTableBucket6ACAA137": {
-   "Type": "AWS::S3::Bucket",
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
   "MyPartitionFilteredTable324BA27A": {
    "Type": "AWS::Glue::Table",
    "Properties": {
@@ -477,13 +472,17 @@
         [
          "s3://",
          {
-          "Ref": "MyPartitionFilteredTableBucket6ACAA137"
+          "Ref": "DataBucketE3889A50"
          },
          "/"
         ]
        ]
       },
       "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+      "Parameters": {
+       "separatorChar": ",",
+       "skip.header.line.count": 2
+      },
       "SerdeInfo": {
        "SerializationLibrary": "org.openx.data.jsonserde.JsonSerDe"
       },

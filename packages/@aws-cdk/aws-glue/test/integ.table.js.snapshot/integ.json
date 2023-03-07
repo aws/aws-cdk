@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.1.0",
   "testCases": {
-    "integ.table": {
+    "aws-cdk-glue-table-integ/DefaultTest": {
       "stacks": [
         "aws-cdk-glue"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-cdk-glue-table-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

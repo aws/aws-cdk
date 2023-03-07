@@ -100,6 +100,10 @@ new glue.Table(stack, 'MyPartitionFilteredTable', {
   columns,
   dataFormat: glue.DataFormat.JSON,
   enablePartitionFiltering: true,
+  storageParameters: {
+    'separatorChar': ',',
+    'skip.header.line.count': 2,
+  },
 });
 
 const user = new iam.User(stack, 'MyUser');
