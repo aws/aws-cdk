@@ -53,11 +53,9 @@ abstract class StackAssociatorBase implements IAspect {
    * @param node A Stage stack.
    */
   private associate(node: Stack): void {
-    if (!isAccountUnresolved(this.application.env.account!, node.account)
-      && node.account != this.application.env.account
-      && !this.enableCrossAccount) {
-      // Skip association when cross-account stack is detected but cross-account sharing/association is not enabled.
-      // A warning would have been displayed as part of `handleCrossAccountStack()`.
+    if (!this.enableCrossAccount) {
+      // Skip association when cross-account sharing/association is not enabled.
+      // A warning will have been displayed as part of `handleCrossAccountStack()`.
       return;
     }
     this.application.associateApplicationWithStack(node);
