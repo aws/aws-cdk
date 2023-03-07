@@ -571,12 +571,7 @@ export class Cluster extends Resource implements ICluster {
       const formatted = additionalRoutes.map(route => `"${route}"`).join(',');
       commandArguments.push(`-AwsvpcAdditionalLocalRoutes '[${formatted}]'`);
     }
-
-    if (commandArguments.length === 0) {
-      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
-    } else {
-      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' ${commandArguments.join(' ')}`);
-    }
+    autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' ${commandArguments.join(' ')}`);
   }
 
   /**
