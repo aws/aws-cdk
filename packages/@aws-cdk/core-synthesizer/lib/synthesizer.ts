@@ -113,6 +113,7 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
 
     this.emitArtifact(session, {
       additionalDependencies: [assetManifestId],
+      stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
     });
   }
 
@@ -122,7 +123,7 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
       bucketName: this.stagingStack.stagingBucketName,
-      // TODO: more props
+      role: { assumeRoleArn: this.stagingStack.fileAssetPublishingRoleArn },
     });
     return this.cloudFormationLocationFromFileAsset(location);
   }
@@ -131,10 +132,10 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
    * // TODO
    */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    const repo = this.stagingStack.getCreateRepository(asset);
+    const repoName = this.stagingStack.getRepoName(asset);
 
     const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
-      repositoryName: repo.repositoryName,
+      repositoryName: repoName,
       // TODO: more props
     });
     return this.cloudFormationLocationFromDockerImageAsset(location);
