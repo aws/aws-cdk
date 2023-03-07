@@ -466,7 +466,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
-    const enableEcsAddSecurityGroup = FeatureFlags.of(this).isEnabled(cxapi.ECS_ADD_SECURITY_GROUP);
+    const enableEcsAddSecurityGroup = FeatureFlags.of(this).isEnabled(cxapi.ECS_ADD_SECURITY_GROUP_TO_ASG_CAPACITY_PROVIDERS);
     if (enableEcsAddSecurityGroup && autoScalingGroup.connections?.securityGroups) {
       this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
     }

@@ -1094,7 +1094,7 @@ it in the constructor. Then add the Capacity Provider to the cluster. Finally,
 you can refer to the Provider by its name in your service's or task's Capacity
 Provider strategy.
 
-The security groups will be added to cluster connections if the feature flag ECS_ADD_SECURITY_GROUP is true.
+The security groups will be added to cluster connections if the feature flag ECS_ADD_SECURITY_GROUP_TO_ASG_CAPACITY_PROVIDERS is true.
 
 By default, Auto Scaling Group Capacity Providers will manage the scale-in and
 scale-out behavior of the auto scaling group based on the load your tasks put on
