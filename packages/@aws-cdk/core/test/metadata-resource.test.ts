@@ -1,6 +1,6 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
-import { App, Stack, IValidationPlugin, ValidationContext, Stage, ValidationReport } from '../lib';
+import { App, Stack, IValidationPlugin, IValidationContext, Stage, ValidationReport } from '../lib';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
@@ -191,7 +191,7 @@ class TestThirdPartyConstruct extends Construct {
 class ValidationPlugin implements IValidationPlugin {
   constructor(public readonly name: string) {}
 
-  validate(_context: ValidationContext): ValidationReport {
+  validate(_context: IValidationContext): ValidationReport {
     return {
       pluginName: this.name,
       success: true,

@@ -12,7 +12,7 @@ import { ValidationReport } from './report';
  *      return true;
  *    }
  *
- *    public validate(context: ValidationContext): ValidationReport {
+ *    public validate(context: IValidationContext): ValidationReport {
  *      const templatePaths = context.templatePaths;
  *      // perform validation on the template
  *      // if there are any failures report them
@@ -42,7 +42,7 @@ export interface IValidationPlugin {
    * validations. This is where the plugin will evaluate the CloudFormation
    * templates for compliance and report and violations
    */
-  validate(context: ValidationContext): ValidationReport;
+  validate(context: IValidationContext): ValidationReport;
 
   /**
    * This method returns whether or not the plugin is ready to execute
@@ -53,7 +53,7 @@ export interface IValidationPlugin {
 /**
  * Context available to the validation plugin
  */
-export interface ValidationContext {
+export interface IValidationContext {
   /**
    * The absolute path of all templates to be processed
    */
