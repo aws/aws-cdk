@@ -44,9 +44,12 @@ export class ResourcePool<A extends string=string> {
     while (true) {
       // Start a wait on the unlock now -- if the unlock signal comes after
       // we try to acquire but before we start the wait, we might miss it.
-      const wait = this.pool.awaitUnlock(5000);
+      //
+      // (The timeout is in case the unlock signal doesn't come for whatever reason).
+      const wait = this.pool.awaitUnlock(10_000);
 
-      for (const res of this.unlockedResources()) {
+      // Try all mutexes, we might need to reacquire an expired lock
+      for (const res of this.resources) {
         const lease = await this.tryObtainLease(res);
         if (lease) {
           // Ignore the wait (count as handled)
@@ -106,13 +109,6 @@ export class ResourcePool<A extends string=string> {
     const lock = this.locks[value];
     delete this.locks[value];
     await lock?.release();
-  }
-
-  /**
-   * Return all resources that we definitely don't own the locks for
-   */
-  private unlockedResources(): A[] {
-    return this.resources.filter(res => !this.locks[res]);
   }
 }
 
