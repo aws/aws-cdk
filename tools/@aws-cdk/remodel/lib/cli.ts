@@ -247,6 +247,10 @@ async function makeAwsCdkLib(target: string) {
         'ts-node ./scripts/verify-imports-shielded.ts',
       ],
     },
+    'dependencies': {
+      ...pkgJson.dependencies,
+      punycode: '^2.3.0',
+    },
     'devDependencies': {
       ...filteredDevDeps,
       '@aws-cdk/cfn2ts': '0.0.0',
@@ -254,6 +258,8 @@ async function makeAwsCdkLib(target: string) {
       '@types/aws-lambda': '^8.10.111',
       '@types/jest': '^27.5.2',
       '@types/lodash': '^4.14.191',
+      '@types/punycode': '^2.1.0',
+      'typescript-json-schema': '^0.55.0',
     },
   }, { spaces: 2 });
 
