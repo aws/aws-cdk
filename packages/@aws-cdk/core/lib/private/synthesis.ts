@@ -118,8 +118,8 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, validationRep
     const tree = new ConstructTree(root);
     const formatter = new ValidationReportFormatter(tree);
     const output = validationReportFormat === ValidationReportFormat.JSON
-      ? formatter.toJson(reports)
-      : formatter.toString(reports);
+      ? formatter.formatJson(reports)
+      : formatter.formatPrettyPrinted(reports);
 
     // eslint-disable-next-line no-console
     console.error(output);

@@ -92,8 +92,8 @@ export class ValidationReportFormatter {
     return notAvailableMessage;
   }
 
-  public toString(reps: report.ValidationReport[]): string {
-    const json = this.toJson(reps);
+  public formatPrettyPrinted(reps: report.ValidationReport[]): string {
+    const json = this.formatJson(reps);
     const output = [json.title];
 
     output.push('-'.repeat(json.title.length));
@@ -145,7 +145,7 @@ export class ValidationReportFormatter {
     return output.join(os.EOL);
   }
 
-  public toJson(reps: report.ValidationReport[]): report.ValidationReportJson {
+  public formatJson(reps: report.ValidationReport[]): report.ValidationReportJson {
     return {
       title: 'Validation Report',
       pluginReports: reps
