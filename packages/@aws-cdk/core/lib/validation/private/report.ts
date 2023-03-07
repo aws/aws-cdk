@@ -3,6 +3,89 @@ import { table } from 'table';
 import { ConstructTrace, ConstructTree } from './construct-tree';
 import { Node } from '../../private/tree-metadata';
 import * as report from '../report';
+
+/**
+ * Validation produced by the validation plugin, in construct terms.
+ */
+export interface ValidationViolationConstructAware extends report.ValidationViolation {
+  /**
+   * The constructs violating this rule.
+   */
+  readonly violatingConstructs: ValidationViolatingConstruct[];
+}
+
+/**
+ * Construct violating a specific rule.
+ */
+export interface ValidationViolatingConstruct extends report.ValidationViolatingResource {
+  /**
+   * The construct path as defined in the application.
+   */
+  readonly constructPath: string;
+
+  /**
+   * A stack of constructs that lead to the violation.
+   *
+   * @default - stack will be empty if the cli is not run with `--debug`
+   */
+  readonly constructStack?: string;
+}
+
+/**
+ * JSON representation of the report.
+ */
+export interface ValidationReportJson {
+  /**
+   * Report title.
+   */
+  readonly title: string;
+
+  /**
+   * Reports for all of the validation plugins registered
+   * in the app
+   */
+  readonly pluginReports: PluginReportJson[];
+}
+
+/**
+ * A report from a single plugin
+ */
+export interface PluginReportJson {
+  /**
+   * List of violations in the report.
+   */
+  readonly violations: ValidationViolationConstructAware[];
+
+  /**
+   * Report summary.
+   */
+  readonly summary: ValidationReportSummary;
+}
+
+/**
+ * Summary of the report.
+ */
+export interface ValidationReportSummary {
+  /**
+   * The final status of the validation (pass/fail)
+   */
+  readonly status: report.ValidationReportStatus;
+
+  /**
+   * The name of the plugin that created the report
+   */
+  readonly pluginName: string;
+
+  /**
+   * Additional metadata about the report. This property is intended
+   * to be used by plugins to add additional information.
+   *
+   * @default - no metadata
+   */
+  readonly metadata?: { readonly [key: string]: string };
+}
+
+
 /**
  * The report emitted by the plugin after evaluation.
  */
@@ -145,7 +228,7 @@ export class ValidationReportFormatter {
     return output.join(os.EOL);
   }
 
-  public formatJson(reps: report.ValidationPluginReport[]): report.ValidationReportJson {
+  public formatJson(reps: report.ValidationPluginReport[]): ValidationReportJson {
     return {
       title: 'Validation Report',
       pluginReports: reps
