@@ -225,6 +225,25 @@ new glue.Table(this, 'MyTable', {
 });
 ```
 
+Glue tables can be configured to contain user-defined properties, to describe the physical storage of table data, through the `storageParameters` property:
+
+```ts
+declare const myBucket: s3.Bucket;
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  storageParameters: {
+    'skip.header.line.count': 1,
+    'separatorChar': ',',
+  }
+});
+```
+
 ### Partition Keys
 
 To improve query performance, a table can specify `partitionKeys` on which data is stored and queried separately. For example, you might partition a table by `year` and `month` to optimize queries based on a time window:
