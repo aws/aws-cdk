@@ -10,7 +10,7 @@ export interface StackAssociatorBaseProps {
   * Indicates if the target Application should be shared with the cross-account stack owners and then
   * associated with the cross-account stacks.
   *
-  * @default - false
+  * @default - true
   */
   readonly enableCrossAccount?: boolean;
 }
