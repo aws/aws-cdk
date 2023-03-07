@@ -191,7 +191,7 @@
     "@types/jest": "^27.5.2",
     "@types/lodash": "^4.14.191",
     "@types/minimatch": "^3.0.5",
-    "aws-sdk": "^2.1325.0",
+    "aws-sdk": "^2.1329.0",
     "@types/sinon": "^9.0.11",
     "fast-check": "^2.25.0",
     "jest": "^27.5.1",
