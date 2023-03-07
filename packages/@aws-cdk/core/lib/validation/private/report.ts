@@ -125,7 +125,7 @@ export class ValidationReportFormatter {
           output.push(`    - Construct Path: ${construct.constructPath}`);
           output.push(`    - Template Path: ${construct.templatePath}`);
           output.push(`    - Creation Stack:\n\t${construct.constructStack}`);
-          output.push(`    - Resource Name: ${construct.resourceName}`);
+          output.push(`    - Resource ID: ${construct.resourceLogicalId}`);
           if (construct.locations) {
             output.push('    - Locations:');
             for (const location of construct.locations) {
@@ -161,12 +161,12 @@ export class ValidationReportFormatter {
             description: violation.description,
             fix: violation.fix,
             violatingConstructs: violation.violatingResources.map(resource => {
-              const constructPath = this.tree.getConstructByResourceName(resource.resourceName)?.node.path;
+              const constructPath = this.tree.getConstructByLogicalId(resource.resourceLogicalId)?.node.path;
               return {
                 constructStack: this.trace(constructPath),
                 constructPath: constructPath ?? 'N/A',
                 locations: resource.locations,
-                resourceName: resource.resourceName,
+                resourceLogicalId: resource.resourceLogicalId,
                 templatePath: resource.templatePath,
               };
             }),

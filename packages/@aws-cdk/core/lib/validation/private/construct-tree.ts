@@ -23,7 +23,7 @@ export class ConstructTree {
    */
   private readonly _traceCache = new Map<string, ConstructTrace>();
   private readonly _constructByPath = new Map<string, Construct>();
-  private readonly _constructByResourceName = new Map<string, Construct>();
+  private readonly _constructByLogicalId = new Map<string, Construct>();
   private readonly treeMetadata: TreeMetadata;
 
   constructor(
@@ -37,7 +37,7 @@ export class ConstructTree {
       this._constructByPath.set(child.node.path, child);
       const defaultChild = child.node.defaultChild;
       if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
-        this._constructByResourceName.set(Stack.of(child).resolve(defaultChild.logicalId), child);
+        this._constructByLogicalId.set(Stack.of(child).resolve(defaultChild.logicalId), child);
       }
     });
 
@@ -45,8 +45,8 @@ export class ConstructTree {
     this.root.node.findAll().forEach(child => {
       if (CfnResource.isCfnResource(child)) {
         const logicalId = Stack.of(child).resolve(child.logicalId);
-        if (!this._constructByResourceName.has(logicalId)) {
-          this._constructByResourceName.set(logicalId, child);
+        if (!this._constructByLogicalId.has(logicalId)) {
+          this._constructByLogicalId.set(logicalId, child);
         }
       }
     });
@@ -93,13 +93,13 @@ export class ConstructTree {
   }
 
   /**
-   * Get a specific Construct by the CfnResource name. This will
-   * be the construct.node.defaultChild with the given name
+   * Get a specific Construct by the CfnResource logical ID. This will
+   * be the construct.node.defaultChild with the given ID
    *
-   * @param resourceName the name of the CfnResource
+   * @param logicalId the ID of the CfnResource
    * @returns the Construct
    */
-  public getConstructByResourceName(resourceName: string): Construct | undefined {
-    return this._constructByResourceName.get(resourceName);
+  public getConstructByLogicalId(logicalId: string): Construct | undefined {
+    return this._constructByLogicalId.get(logicalId);
   }
 }

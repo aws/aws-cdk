@@ -23,7 +23,7 @@ describe('validations', () => {
           ruleName: 'test-rule',
           violatingResources: [{
             locations: ['test-location'],
-            resourceName: 'Fake',
+            resourceLogicalId: 'Fake',
             templatePath: '/path/to/stack.template.json',
           }],
         }]),
@@ -52,7 +52,7 @@ describe('validations', () => {
 \t          │ Library: @aws-cdk/core.Stack
 \t          │ Library Version: 0.0.0
 \t          │ Location: undefined`,
-      resourceName: 'Fake',
+      resourceLogicalId: 'Fake',
     }));
   });
 
@@ -82,7 +82,7 @@ describe('validations', () => {
           ruleName: 'test-rule',
           violatingResources: [{
             locations: ['test-location'],
-            resourceName: 'DefaultResource',
+            resourceLogicalId: 'DefaultResource',
             templatePath: '/path/to/stack1.template.json',
           }],
         }]),
@@ -120,7 +120,7 @@ describe('validations', () => {
           ruleName: 'test-rule',
           violatingResources: [{
             locations: ['test-location'],
-            resourceName: 'SomeResource317FDD71',
+            resourceLogicalId: 'SomeResource317FDD71',
             templatePath: '/path/to/stack.template.json',
           }],
         }]),
@@ -147,7 +147,7 @@ describe('validations', () => {
           ruleName: 'rule-1',
           violatingResources: [{
             locations: ['test-location'],
-            resourceName: 'Fake',
+            resourceLogicalId: 'Fake',
             templatePath: '/path/to/stack.template.json',
           }],
         }]),
@@ -156,7 +156,7 @@ describe('validations', () => {
           ruleName: 'rule-2',
           violatingResources: [{
             locations: ['test-location'],
-            resourceName: 'Fake',
+            resourceLogicalId: 'Fake',
             templatePath: '/path/to/stack.template.json',
           }],
         }]),
@@ -203,7 +203,7 @@ ${reset(red(bright('rule-1 (1 occurrences)')))}
 \t          │ Library: @aws-cdk/core.Stack
 \t          │ Library Version: 0.0.0
 \t          │ Location: undefined
-    - Resource Name: Fake
+    - Resource ID: Fake
     - Locations:
       > test-location
 
@@ -235,7 +235,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
 \t          │ Library: @aws-cdk/core.Stack
 \t          │ Library Version: 0.0.0
 \t          │ Location: undefined
-    - Resource Name: Fake
+    - Resource ID: Fake
     - Locations:
       > test-location
 
@@ -290,7 +290,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
           ruleName: 'test-rule',
           violatingResources: [{
             locations: ['test-location'],
-            resourceName: 'Fake',
+            resourceLogicalId: 'Fake',
             templatePath: '/path/to/stack.template.json',
           }],
         }]),
@@ -328,7 +328,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
                     '└──  Fake (Default/Fake)\n\t     │ Library: @aws-cdk/core.CfnResource\n\t     │ Library Version: 0.0.0\n\t     │ Location: undefined\n\t     └──  Default (Default)\n\t          │ Library: @aws-cdk/core.Stack\n\t          │ Library Version: 0.0.0\n\t          │ Location: undefined',
                   constructPath: 'Default/Fake',
                   locations: ['test-location'],
-                  resourceName: 'Fake',
+                  resourceLogicalId: 'Fake',
                   templatePath: '/path/to/stack.template.json',
                 },
               ],
@@ -384,7 +384,7 @@ interface ValidationReportData {
   title: string,
   constructPath: string,
   creationStack?: string,
-  resourceName: string,
+  resourceLogicalId: string,
 }
 
 const validationReport = (data: ValidationReportData) => {
@@ -412,7 +412,7 @@ const validationReport = (data: ValidationReportData) => {
     `    - Template Path: ${data.templatePath}`,
     '    - Creation Stack:',
     `${data.creationStack ?? 'Construct trace not available. Rerun with `--debug` to see trace information'}`,
-    `    - Resource Name: ${data.resourceName}`,
+    `    - Resource ID: ${data.resourceLogicalId}`,
     '    - Locations:',
     '      > test-location',
     '',

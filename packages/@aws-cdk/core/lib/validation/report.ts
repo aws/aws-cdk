@@ -34,9 +34,9 @@ export interface ValidationViolation {
  */
 export interface ValidationViolatingResource {
   /**
-   * The resource name.
+   * The logical ID of the resource in the CloudFormation template.
    */
-  readonly resourceName: string;
+  readonly resourceLogicalId: string;
 
   /**
    * The locations in the CloudFormation template that pose the violations.
