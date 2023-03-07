@@ -185,7 +185,7 @@ export interface TableProps {
   readonly enablePartitionFiltering?: boolean;
 
   /**
-   * Description of the physical storage of this table.
+   * The user-supplied properties for the description of the physical storage of this table.
    *
    * @default - The parameter is not defined
    */
