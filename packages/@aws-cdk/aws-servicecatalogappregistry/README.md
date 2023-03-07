@@ -84,7 +84,27 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
-This will create an application `MyAssociatedApplication` with the `TagKey` as `managedBy` and `TagValue` as `CDK_Application_Associator`.
+This will create a stack `MyAssociatedApplicationStack` containing an application `MyAssociatedApplication` 
+with the `TagKey` as `managedBy` and `TagValue` as `CDK_Application_Associator`.
+
+By default, the stack will have System Managed Application Manager console URL as its output for the application created. 
+If you want to remove the output, then use as shown in the example below:
+
+```ts
+const app = new App();
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
+    applicationName: 'MyAssociatedApplication',
+    // 'Application containing stacks deployed via CDK.' is the default
+    applicationDescription: 'Associated Application description',
+    stackName: 'MyAssociatedApplicationStack',
+    // Disables emitting Application Manager url as output
+    emitApplicationManagerUrlAsOutput: false,
+    // AWS Account and Region that are implied by the current CLI configuration is the default
+    env: { account: '123456789012', region: 'us-east-1' },
+  })],
+});
+```
 
 If you want to re-use an existing Application with ARN: `arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId`
 and want to associate all stacks in the `App` scope to your imported application, then use as shown in the example below:

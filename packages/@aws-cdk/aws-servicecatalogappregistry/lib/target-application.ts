@@ -33,6 +33,13 @@ export interface CreateTargetApplicationOptions extends TargetApplicationCommonO
     * @default - Application containing stacks deployed via CDK.
     */
   readonly applicationDescription?: string;
+
+  /**
+   * Whether create cloudFormation Output for application manager URL.
+   *
+   * @default - Application containing stacks deployed via CDK.
+   */
+  readonly emitApplicationManagerUrlAsOutput?: boolean;
 }
 
 /**
@@ -99,12 +106,21 @@ class CreateTargetApplication extends TargetApplication {
             this.applicationOptions.description || 'Stack to create AppRegistry application';
     (this.applicationOptions.env as cdk.Environment) =
             this.applicationOptions.env || { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+    (this.applicationOptions.emitApplicationManagerUrlAsOutput as boolean) = this.applicationOptions.emitApplicationManagerUrlAsOutput ?? true;
+
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = new Application(applicationStack, 'DefaultCdkApplication', {
       applicationName: this.applicationOptions.applicationName,
       description: this.applicationOptions.applicationDescription || 'Application containing stacks deployed via CDK.',
     });
     cdk.Tags.of(appRegApplication).add('managedBy', 'CDK_Application_Associator');
+
+    if (this.applicationOptions.emitApplicationManagerUrlAsOutput) {
+      new cdk.CfnOutput(appRegApplication, 'ApplicationManagerUrl', {
+        value: `https://${appRegApplication.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${appRegApplication.applicationName}`,
+        description: 'System Manager Application Manager URL for the application created.',
+      });
+    }
 
     return {
       application: appRegApplication,
