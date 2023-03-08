@@ -1302,4 +1302,118 @@ permissions boundary attached.
 
 For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam-readme.html#permissions-boundaries) section in the IAM guide.
 
+## Policy Validation
+
+If you or your organization use any policy validation tool, such as
+[CloudFormation
+Guard](https://docs.aws.amazon.com/cfn-guard/latest/ug/what-is-guard.html) or
+[OPA](https://www.openpolicyagent.org/), to define constraints on your
+CloudFormation template, you can integrate them with the CDK at synthesis time.
+By using the appropriate plugin, you can make the CDK application check the
+generated CloudFormation template against your policies immediately after
+synthesis. If there are any violations, the synthesis will fail and a report
+will be printed to the console.
+
+### For application developers
+
+To use one or more validation plugins in your application, use the
+`validationPlugins` property of `Stage`:
+
+```ts
+// globally for the entire app (an app is a stage)
+const app = new App({
+  validationPlugins: [
+    // These hypothetical classes implement IValidationPlugin:
+    new ThirdPartyPluginX(), 
+    new ThirdPartyPluginY(),
+  ],
+});
+
+// only apply to a particular stage
+const prodStage = new Stage(app, 'ProdStage', {
+  validationPlugins: [...],
+});
+```
+
+Immediately after synthesis, all plugins registered this way will be invoked to
+validate all the templates generated in the scope you defined. In particular, if
+you register the templates in the `App` object, all templates will be subject to
+validation.
+
+By default, the report will be printed in a human readable format. If you want a
+report in JSON format, use the `synth()` method:
+
+```ts
+app.synth({
+  validationReportFormat: ValidationFormat.JSON
+});
+```
+
+### For plugin authors
+
+The communication protocol between the CDK core module and your policy tool is
+defined by the `IValidationPlugin` interface. To create a new plugin you must
+write a class that implements this interface. There are three things you need to
+implement: the plugin name (by overriding the `name` property), and the two
+methods `isReady()` and `validate()`.
+
+The method `isReady()` is called first in the workflow, to make sure that the
+plugin is in a valid state and can be used. For example, most plugins will have
+an external dependency, such as a CLI, which must be installed for the plugin to
+work. To signal to the framework that it can go ahead and use the plugin, you
+can check whether the CLI is installed by checking the version:
+
+```ts
+declare function invokeCliVersionCommand(): number;
+
+isReady(): boolean {
+  const status = invokeCliVersionCommand();
+
+  // exit status of the CLI command
+  return status === 0;
+}
+```
+
+If the plugin is ready, the framework will call `validate()`, passing a
+`ValidationContext` object. The location of the templates to be validated is given
+by `templatePaths`. The plugin should return an instance of `ValidationReport`.
+This object represents the report that the user wil receive at the end of the
+synthesis.
+
+```ts
+validate(context: ValidationContext): ValidationReport {
+  // First read the templates using context.templatePaths...
+
+  // ...then perform the validation, and then compose and return the report.
+  // Using hard-coded values here for better clarity:
+  return {
+    pluginName: 'MyCheckovPlugin',
+    success: false,
+    violations: [{
+      ruleName: 'CKV_AWS_117',
+      recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
+      fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
+      violatingResources: [{
+        resourceName: 'MyFunction3BAA72D1',
+        templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
+        locations: 'Properties/VpcConfig',
+      }],
+    }],
+  };
+}
+```
+
+> **Note**
+> Plugins are not allowed to modify anything in the cloud assembly. Any attempt
+> to do so will result in synthesis failure.
+
+If your plugin depends on an external tool, keep in mind that some developers may
+not have that tool installed in their workstations yet. To minimize friction, we
+highly recommend that you provide some installation script along with your
+plugin package, to automate the whole process. Better yet, run that script as
+part of the installation of your package. With `npm`, for example, you can run
+add it to the `postinstall`
+[script](https://docs.npmjs.com/cli/v9/using-npm/scripts) in the `package.json`
+file.
+
 <!--END CORE DOCUMENTATION-->
