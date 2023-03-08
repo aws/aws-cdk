@@ -1,5 +1,5 @@
 import { Writable } from 'stream';
-import { NodeStringDecoder, StringDecoder } from 'string_decoder';
+import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
@@ -261,7 +261,7 @@ Resources
 
 class StringWritable extends Writable {
   public data: string;
-  private readonly _decoder: NodeStringDecoder;
+  private readonly _decoder: StringDecoder;
 
   constructor(options: any = {}) {
     super(options);

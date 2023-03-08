@@ -14,10 +14,11 @@
     "build+extract": "npm run build"
   },
   "devDependencies": {
+    "@types/babel__traverse": "7.18.2",
     "@types/eslint": "^7.29.0",
-    "@types/fs-extra": "^8.1.2",
+    "@types/fs-extra": "9.0.13",
     "@types/jest": "^27.5.2",
-    "@types/node": "^10.17.60",
+    "@types/node": "18.11.19",
     "@types/estree": "*",
     "jest": "^27.5.1",
     "typescript": "~3.9.10"

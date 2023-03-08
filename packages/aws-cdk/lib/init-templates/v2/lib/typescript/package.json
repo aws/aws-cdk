@@ -11,7 +11,7 @@
   "devDependencies": {
     "@types/babel__traverse": "7.18.2",
     "@types/jest": "^27.5.0",
-    "@types/node": "10.17.27",
+    "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
     "aws-cdk-lib": "%cdk-version%",
     "constructs": "%constructs-version%",

@@ -918,24 +918,6 @@ export class NoJsiiDep extends ValidationRule {
   }
 }
 
-/**
- * Verifies that the expected versions of node will be supported.
- */
-export class NodeCompatibility extends ValidationRule {
-  public readonly name = 'dependencies/node-version';
-
-  public validate(pkg: PackageJson): void {
-    const atTypesNode = pkg.getDevDependency('@types/node');
-    if (atTypesNode && !atTypesNode.startsWith('^10.')) {
-      pkg.report({
-        ruleName: this.name,
-        message: `packages must support node version 10 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^10.17.5'),
-      });
-    }
-  }
-}
-
 function isCdkModuleName(name: string) {
   return !!name.match(/^@aws-cdk\//);
 }

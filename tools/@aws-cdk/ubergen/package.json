@@ -31,7 +31,7 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/fs-extra": "^8.1.2"
+    "@types/fs-extra": "9.0.13"
   },
   "dependencies": {
     "@aws-cdk/cfn2ts": "0.0.0",

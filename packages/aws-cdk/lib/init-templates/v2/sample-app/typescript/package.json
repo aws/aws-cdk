@@ -14,7 +14,7 @@
     "@types/babel__traverse": "7.18.2",
     "aws-cdk": "%cdk-version%",
     "@types/jest": "^27.5.0",
-    "@types/node": "10.17.27",
+    "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",

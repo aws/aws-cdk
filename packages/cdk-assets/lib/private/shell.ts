@@ -25,22 +25,22 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
   return new Promise<string>((resolve, reject) => {
     if (options.input) {
-      child.stdin.write(options.input);
-      child.stdin.end();
+      child.stdin!.write(options.input);
+      child.stdin!.end();
     }
 
     const stdout = new Array<any>();
     const stderr = new Array<any>();
 
     // Both write to stdout and collect
-    child.stdout.on('data', chunk => {
+    child.stdout!.on('data', chunk => {
       if (!options.quiet) {
         process.stdout.write(chunk);
       }
       stdout.push(chunk);
     });
 
-    child.stderr.on('data', chunk => {
+    child.stderr!.on('data', chunk => {
       if (!options.quiet) {
         process.stderr.write(chunk);
       }
@@ -50,7 +50,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
     child.once('error', reject);
 
-    child.once('close', code => {
+    child.once('close', (code: number) => {
       if (code === 0) {
         resolve(Buffer.concat(stdout).toString('utf-8'));
       } else {
