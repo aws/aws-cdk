@@ -140,7 +140,7 @@ export class SamIntegrationTestFixture extends TestFixture {
     args.push('--port');
     args.push(port.toString());
 
-    return this.samShell(['sam', 'local', 'start-api', ...args], '(Press CTRL+C to quit)', ()=>{
+    return this.samShell(['sam', 'local', 'start-api', ...args], 'Press CTRL+C to quit', ()=>{
       return new Promise<ActionOutput>((resolve, reject) => {
         axios.get(`http://127.0.0.1:${port}${apiPath}`).then( resp => {
           resolve(resp.data);
@@ -173,7 +173,12 @@ export function randomInteger(min: number, max: number) {
  * Is platform-aware, handles errors nicely.
  */
 export async function shellWithAction(
-  command: string[], filter?: string, action?: () => Promise<any>, options: ShellOptions = {}): Promise<ActionOutput> {
+  command: string[],
+  filter?: string,
+  action?: () => Promise<any>,
+  options: ShellOptions = {},
+  actionTimeoutSeconds: number = 600,
+): Promise<ActionOutput> {
   if (options.modEnv && options.env) {
     throw new Error('Use either env or modEnv but not both');
   }
@@ -199,8 +204,8 @@ export async function shellWithAction(
     let actionExecuted = false;
 
     function executeAction(chunk: any) {
-      out.push(chunk);
-      if (!actionExecuted && typeof filter === 'string' && out.toString().includes(filter) && typeof action === 'function') {
+      out.push(Buffer.from(chunk));
+      if (!actionExecuted && typeof filter === 'string' && Buffer.concat(out).toString('utf-8').includes(filter) && typeof action === 'function') {
         actionExecuted = true;
         options.output?.write('before executing action');
         action().then((output) => {
@@ -216,6 +221,18 @@ export async function shellWithAction(
           killSubProcess(child, command.join(' '));
         });
       }
+    }
+
+    if (typeof filter === 'string' && typeof action === 'function') {
+      // Reject with an error if an action is configured, but the filter failed
+      // to show up in the output before the timeout occurred.
+      setTimeout(
+        () => {
+          if (!actionExecuted) {
+            reject(new Error(`Timed out waiting for filter ${JSON.stringify(filter)} to appear in command output after ${actionTimeoutSeconds} seconds\nOutput so far:\n${Buffer.concat(out).toString('utf-8')}`));
+          }
+        }, actionTimeoutSeconds * 1_000,
+      ).unref();
     }
 
     child.stdout!.on('data', chunk => {
