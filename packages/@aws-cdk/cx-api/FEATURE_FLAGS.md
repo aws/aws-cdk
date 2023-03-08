@@ -49,6 +49,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:launchTemplateDefaultUserData](#aws-cdkaws-ec2launchtemplatedefaultuserdata) | Define user data for a launch template by default when a machine image is provided. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | V2NEXT | (fix) |
+| [@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2](#aws-cdkaws-stepfunctions-tasksenableemrservicepolicyv2) | Enable AmazonEMRServicePolicy_v2 managed policies | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -88,7 +89,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
     "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
     "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": true,
-    "@aws-cdk/aws-redshift:columnId": true
+    "@aws-cdk/aws-redshift:columnId": true,
+    "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true
   }
 }
 ```
@@ -892,6 +894,26 @@ than their `name`. This will prevent data loss when columns are renamed.
 **however** do not change the `names`s of the columns. If the `name`s of the columns are changed during
 initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
 of the `id`s, the `name`s of the columns can be changed without data loss.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2
+
+*Enable AmazonEMRServicePolicy_v2 managed policies* (fix)
+
+If this flag is not set, the default behavior for `EmrCreateCluster` is
+to use `AmazonElasticMapReduceRole` managed policies.
+
+If this flag is set, the default behavior is to use the new `AmazonEMRServicePolicy_v2`
+managed policies.
+
+This is a feature flag as the old behavior will be deprecated, but some resources may require manual
+intervention since they don't automatically have the appropriate tags propagated.
 
 
 | Since | Default | Recommended |

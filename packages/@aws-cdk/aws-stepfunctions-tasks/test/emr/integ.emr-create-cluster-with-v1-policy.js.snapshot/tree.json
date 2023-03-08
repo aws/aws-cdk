@@ -239,7 +239,7 @@
                 "path": "EmrCreateClusterTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.237"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -285,7 +285,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.1.270"
         }
       }
     },
