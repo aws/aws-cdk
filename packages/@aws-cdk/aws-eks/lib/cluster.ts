@@ -799,7 +799,7 @@ export interface ClusterProps extends ClusterOptions {
 
 /**
  * Kubernetes cluster version
- * @see: https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-release-calendar
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-release-calendar
  */
 export class KubernetesVersion {
   /**
