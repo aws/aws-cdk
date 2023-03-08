@@ -187,6 +187,16 @@ export interface TableProps {
   /**
    * The user-supplied properties for the description of the physical storage of this table.
    *
+   * There are reserved keys that are used by AWS Glue. They CAN be mutated, but they are best left alone.
+   *
+   * The key/value pairs that are allowed to be submitted are not limited, however their functionality is not guaranteed.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_EXTERNAL_TABLE.html#r_CREATE_EXTERNAL_TABLE-parameters - under "TABLE PROPERTIES" contains a non-exhaustive list of the keys that have functionality.
+   *
+   * @example
+   * { foo: 'bar' } // will have no effect
+   * { 'skip.header.line.count': 1 } // will set the number of header lines to skip to 1.
+   *
    * @default - The parameter is not defined
    */
   readonly storageParameters?: { [key: string]: any };
