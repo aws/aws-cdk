@@ -239,7 +239,7 @@ new glue.Table(this, 'MyTable', {
   dataFormat: glue.DataFormat.JSON,
   storageParameters: {
     'skip.header.line.count': 1,
-    'separatorChar': ',',
+    separatorChar: ',',
   }
 });
 ```
