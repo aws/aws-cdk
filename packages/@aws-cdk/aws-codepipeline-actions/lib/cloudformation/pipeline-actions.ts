@@ -3,8 +3,8 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Action } from '../action';
 import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
+import { Action } from '../action';
 
 /**
  * Properties common to all CloudFormation actions
@@ -40,7 +40,7 @@ interface CloudFormationActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The AWS region the given Action resides in.
    * Note that a cross-region Pipeline requires replication buckets to function correctly.
-   * You can provide their names with the {@link PipelineProps#crossRegionReplicationBuckets} property.
+   * You can provide their names with the `PipelineProps#crossRegionReplicationBuckets` property.
    * If you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,
    * that you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack.
    *
@@ -166,7 +166,7 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    * @default None, unless `adminPermissions` is true
-   * @deprecated use {@link cfnCapabilities} instead
+   * @deprecated use `cfnCapabilities` instead
    */
   readonly capabilities?: cloudformation.CloudFormationCapabilities[];
 

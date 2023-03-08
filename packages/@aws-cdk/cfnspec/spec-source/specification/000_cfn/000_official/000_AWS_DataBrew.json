@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::DataBrew::Dataset.CsvOptions": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-dataset-csvoptions.html",
@@ -145,6 +145,7 @@
         },
         "SheetIndexes": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-dataset-exceloptions.html#cfn-databrew-dataset-exceloptions-sheetindexes",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "Integer",
           "Required": false,
           "Type": "List",
@@ -152,6 +153,7 @@
         },
         "SheetNames": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-dataset-exceloptions.html#cfn-databrew-dataset-exceloptions-sheetnames",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -193,6 +195,7 @@
         },
         "ValuesMap": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-dataset-filterexpression.html#cfn-databrew-dataset-filterexpression-valuesmap",
+          "DuplicatesAllowed": true,
           "ItemType": "FilterValue",
           "Required": true,
           "Type": "List",
@@ -308,6 +311,7 @@
         },
         "Parameters": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-dataset-pathoptions.html#cfn-databrew-dataset-pathoptions-parameters",
+          "DuplicatesAllowed": true,
           "ItemType": "PathParameter",
           "Required": false,
           "Type": "List",
@@ -354,6 +358,7 @@
       "Properties": {
         "Statistics": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-job-allowedstatistics.html#cfn-databrew-job-allowedstatistics-statistics",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -383,6 +388,7 @@
       "Properties": {
         "Selectors": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-job-columnstatisticsconfiguration.html#cfn-databrew-job-columnstatisticsconfiguration-selectors",
+          "DuplicatesAllowed": true,
           "ItemType": "ColumnSelector",
           "Required": false,
           "Type": "List",
@@ -499,6 +505,7 @@
         },
         "EntityTypes": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-job-entitydetectorconfiguration.html#cfn-databrew-job-entitydetectorconfiguration-entitytypes",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": true,
           "Type": "List",
@@ -606,17 +613,12 @@
         }
       }
     },
-    "AWS::DataBrew::Job.ParameterMap": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-job-parametermap.html",
-      "PrimitiveType": "Json",
-      "Required": false,
-      "UpdateType": "Mutable"
-    },
     "AWS::DataBrew::Job.ProfileConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-job-profileconfiguration.html",
       "Properties": {
         "ColumnStatisticsConfigurations": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-job-profileconfiguration.html#cfn-databrew-job-profileconfiguration-columnstatisticsconfigurations",
+          "DuplicatesAllowed": true,
           "ItemType": "ColumnStatisticsConfiguration",
           "Required": false,
           "Type": "List",
@@ -636,6 +638,7 @@
         },
         "ProfileColumns": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-job-profileconfiguration.html#cfn-databrew-job-profileconfiguration-profilecolumns",
+          "DuplicatesAllowed": true,
           "ItemType": "ColumnSelector",
           "Required": false,
           "Type": "List",
@@ -699,8 +702,9 @@
       "Properties": {
         "Parameters": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-job-statisticoverride.html#cfn-databrew-job-statisticoverride-parameters",
+          "PrimitiveItemType": "String",
           "Required": true,
-          "Type": "ParameterMap",
+          "Type": "Map",
           "UpdateType": "Mutable"
         },
         "Statistic": {
@@ -716,6 +720,7 @@
       "Properties": {
         "IncludedStatistics": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-job-statisticsconfiguration.html#cfn-databrew-job-statisticsconfiguration-includedstatistics",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -723,6 +728,7 @@
         },
         "Overrides": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-job-statisticsconfiguration.html#cfn-databrew-job-statisticsconfiguration-overrides",
+          "DuplicatesAllowed": true,
           "ItemType": "StatisticOverride",
           "Required": false,
           "Type": "List",
@@ -776,7 +782,7 @@
         "Parameters": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-recipe-action.html#cfn-databrew-recipe-action-parameters",
           "Required": false,
-          "Type": "ParameterMap",
+          "Type": "RecipeParameters",
           "UpdateType": "Mutable"
         }
       }
@@ -833,11 +839,22 @@
         }
       }
     },
-    "AWS::DataBrew::Recipe.ParameterMap": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-recipe-parametermap.html",
-      "PrimitiveType": "Json",
-      "Required": false,
-      "UpdateType": "Mutable"
+    "AWS::DataBrew::Recipe.Input": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-recipe-input.html",
+      "Properties": {
+        "DataCatalogInputDefinition": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-recipe-input.html#cfn-databrew-recipe-input-datacataloginputdefinition",
+          "Required": false,
+          "Type": "DataCatalogInputDefinition",
+          "UpdateType": "Mutable"
+        },
+        "S3InputDefinition": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-recipe-input.html#cfn-databrew-recipe-input-s3inputdefinition",
+          "Required": false,
+          "Type": "S3Location",
+          "UpdateType": "Mutable"
+        }
+      }
     },
     "AWS::DataBrew::Recipe.RecipeParameters": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-recipe-recipeparameters.html",
@@ -1018,8 +1035,8 @@
         },
         "Input": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-recipe-recipeparameters.html#cfn-databrew-recipe-recipeparameters-input",
-          "PrimitiveType": "Json",
           "Required": false,
+          "Type": "Input",
           "UpdateType": "Mutable"
         },
         "Interval": {
@@ -1260,6 +1277,7 @@
         },
         "SheetIndexes": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-recipe-recipeparameters.html#cfn-databrew-recipe-recipeparameters-sheetindexes",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "Integer",
           "Required": false,
           "Type": "List",
@@ -1267,6 +1285,7 @@
         },
         "SheetNames": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-recipe-recipeparameters.html#cfn-databrew-recipe-recipeparameters-sheetnames",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
@@ -1465,6 +1484,7 @@
         },
         "ConditionExpressions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-recipe-recipestep.html#cfn-databrew-recipe-recipestep-conditionexpressions",
+          "DuplicatesAllowed": true,
           "ItemType": "ConditionExpression",
           "Required": false,
           "Type": "List",
@@ -1534,6 +1554,7 @@
         },
         "ColumnSelectors": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-ruleset-rule.html#cfn-databrew-ruleset-rule-columnselectors",
+          "DuplicatesAllowed": true,
           "ItemType": "ColumnSelector",
           "Required": false,
           "Type": "List",
@@ -1553,6 +1574,7 @@
         },
         "SubstitutionMap": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-databrew-ruleset-rule.html#cfn-databrew-ruleset-rule-substitutionmap",
+          "DuplicatesAllowed": true,
           "ItemType": "SubstitutionValue",
           "Required": false,
           "Type": "List",
@@ -1656,6 +1678,7 @@
       "Properties": {
         "DataCatalogOutputs": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-databrew-job.html#cfn-databrew-job-datacatalogoutputs",
+          "DuplicatesAllowed": true,
           "ItemType": "DataCatalogOutput",
           "Required": false,
           "Type": "List",
@@ -1663,6 +1686,7 @@
         },
         "DatabaseOutputs": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-databrew-job.html#cfn-databrew-job-databaseoutputs",
+          "DuplicatesAllowed": true,
           "ItemType": "DatabaseOutput",
           "Required": false,
           "Type": "List",
@@ -1724,6 +1748,7 @@
         },
         "Outputs": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-databrew-job.html#cfn-databrew-job-outputs",
+          "DuplicatesAllowed": true,
           "ItemType": "Output",
           "Required": false,
           "Type": "List",
@@ -1775,6 +1800,7 @@
         },
         "ValidationConfigurations": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-databrew-job.html#cfn-databrew-job-validationconfigurations",
+          "DuplicatesAllowed": true,
           "ItemType": "ValidationConfiguration",
           "Required": false,
           "Type": "List",
@@ -1842,6 +1868,7 @@
         },
         "Steps": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-databrew-recipe.html#cfn-databrew-recipe-steps",
+          "DuplicatesAllowed": true,
           "ItemType": "RecipeStep",
           "Required": true,
           "Type": "List",
@@ -1874,6 +1901,7 @@
         },
         "Rules": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-databrew-ruleset.html#cfn-databrew-ruleset-rules",
+          "DuplicatesAllowed": true,
           "ItemType": "Rule",
           "Required": true,
           "Type": "List",

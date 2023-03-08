@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "aws-stepfunctions-tasks-emr-containers-all-services-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9dd3a2f92f5c17ecb678d097f7081b02abf51093ab8e963d02ca2627d53620f1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8662d9a0c24ddd076682929e683932742480ec48e502a42fa69b66a32863c925.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -471,10 +471,10 @@
             "data": "JobExecutionRoleF19B4342"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/Job-Execution-Role/Policy/Resource": [
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/Job-Execution-Role/PolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B924/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "JobExecutionRolePolicy6968CCB9"
+            "data": "JobExecutionRolePolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B9247FE1E8DE"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/Start a Job Run/Monitoring Log Group/Resource": [

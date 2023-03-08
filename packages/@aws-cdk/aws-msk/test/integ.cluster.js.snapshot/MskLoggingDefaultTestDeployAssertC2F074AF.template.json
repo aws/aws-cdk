@@ -11,6 +11,7 @@
     },
     "service": "S3",
     "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
     "parameters": {
      "Bucket": {
       "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputRefLoggingBucket1E5A6F3B2AAAD6ED"
@@ -30,28 +31,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1663236373089"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallS3listObjectsV2AssertEqualsS3listObjectsV26A93E391": {
-   "Type": "Custom::DeployAssert@AssertEquals",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "actual": {
-     "Fn::GetAtt": [
-      "AwsApiCallS3listObjectsV2",
-      "apiCallResponse"
-     ]
-    },
-    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
-    "salt": "1663236373089"
+    "salt": "1677835197710"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -120,6 +100,15 @@
            ]
           }
          ]
+        },
+        {
+         "Action": [
+          "kafka:GetBootstrapBrokers"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -135,7 +124,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2a53dc40a7dae81c8850e125ab49e5f55d80b7b8ceac86976f2a4119393cab72.zip"
+     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -149,11 +138,11 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAssertEqualsS3listObjectsV2773d42ff5e69123d2a937459089e2352": {
+  "AssertionResultsAwsApiCallS3listObjectsV2": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsV2AssertEqualsS3listObjectsV26A93E391",
-     "data"
+     "AwsApiCallS3listObjectsV2",
+     "assertion"
     ]
    }
   }

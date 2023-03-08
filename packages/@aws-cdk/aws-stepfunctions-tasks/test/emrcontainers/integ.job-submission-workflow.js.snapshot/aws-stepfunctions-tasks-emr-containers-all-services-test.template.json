@@ -921,7 +921,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d1b34e66c6be119ae9005daae34410d1d8ea5e74fd250fef738efb0f2a2ac2c7.json"
+       "/37b9bc4f34c2af7d98cff20053a09be46c63d26f7c9951e19230de787314a5f8.json"
       ]
      ]
     },
@@ -956,7 +956,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/17137801c7ebddafbce232d699e0d7a1361587047dadb9a49b557e6fc8b42d2d.json"
+       "/1c293083c7ca2a85b9971a56b827528655c982c7cd525788c11f25281c50ff62.json"
       ]
      ]
     },
@@ -1016,7 +1016,7 @@
     }
    }
   },
-  "JobExecutionRolePolicy6968CCB9": {
+  "JobExecutionRolePolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B9247FE1E8DE": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1099,7 +1099,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "JobExecutionRolePolicy6968CCB9",
+    "PolicyName": "PolicyawsstepfunctionstasksemrcontainersallservicestestJobExecutionRoleA488B924",
     "Roles": [
      {
       "Fn::Select": [
@@ -1320,7 +1320,9 @@
    "DependsOn": [
     "StateMachineRoleDefaultPolicyDF1E6607",
     "StateMachineRoleB840431D"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

@@ -1,14 +1,12 @@
 {
-  "version": "21.0.0",
+  "version": "22.0.0",
   "testCases": {
-    "integ.lambda.docker": {
+    "integ/DefaultTest": {
       "stacks": [
         "lambda-ecr-docker"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ/DefaultTest/DeployAssert",
+      "assertionStackName": "integDefaultTestDeployAssert946684A0"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

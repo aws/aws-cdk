@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as s3 from '../lib';
 
 const app = new cdk.App();
@@ -11,4 +12,6 @@ new s3.Bucket(stack, 'MyEventBridgeBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-app.synth();
+new integ.IntegTest(app, 'NotificationTest', {
+  testCases: [stack],
+});

@@ -60,7 +60,7 @@ The following tools need to be installed on your system prior to installing the 
 - [Node.js >= 14.15.0](https://nodejs.org/download/release/latest-v14.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
-- [.NET Core SDK >= 3.1.x](https://www.microsoft.com/net/download)
+- [.NET SDK >= 6.0.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
@@ -360,7 +360,7 @@ $ yarn watch & # runs in the background
 
 * Shout out to collaborators.
 
-* Call out any new [unconventional dependencies](#adding-new-unconventional-dependencies) that are created as part of your PR.
+* Call out any new [runtime dependencies](#adding-construct-runtime-dependencies) that are created as part of your PR.
 
 * If not obvious (i.e. from unit tests), describe how you verified that your change works.
 
@@ -389,26 +389,47 @@ $ yarn watch & # runs in the background
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
 
+#### Adding construct runtime dependencies
+
+Any tool that is not part of the CDK, and needs to be used by a construct during
+deployment or runtime, can be included in the CDK Framework Library in one of two
+ways.
+
+1. Add a direct dependency on an npm package containing the tool. For example,
+   `@aws-cdk/asset-awscli-v1`.
+2. Expose a property on the construct you are creating that allows users to
+   supply their own version of the tool. For example, the `eks.Cluster`
+   construct has a construct prop called `kubectlLayer` where you must provide a
+   version of `kubectl` from one of the `@aws-cdk/asset-kubectl-vXY` packages.
+   The version of `kubectl` must be compatible with the Kubernetes version of
+   the cluster.
+
+Both options involve creating separate repositories (like this
+[one](https://github.com/cdklabs/awscdk-asset-kubectl) for kubectl). If you
+would like to introduce additional runtime dependencies, it likely involves
+discussing with a CDK maintainer and opening a new repository in cdklabs that
+vends the dependency as a lambda layer. Generally, each branch on the repository
+will focus on a specific version of the dependency. For example, in
+`awscdk-asset-kubectl`, branch `kubectl-v20/main` vends kubectl v1.20, branch
+`kubectl-v21/main` vends kubectl v1.21, and so on.
+
+**If your PR introduces runtime dependencies in lambda layers, make sure to call
+it out in the description so that we can discuss the best way to manage that
+dependency.**
+
 #### Adding new unconventional dependencies
+
+> :warning: Do not add these. If there is a tool that you want to use in your
+CDK constructs, see [Adding construct runtime
+dependencies](#Adding-construct-runtime-dependencies).
 
 **For the aws-cdk an unconventional dependency is defined as any dependency that is not managed via the module's
 `package.json` file.**
 
-Sometimes constructs introduce new unconventional dependencies.  Any new unconventional dependency that is introduced needs to have
-an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates).
+Sometimes, constructs introduce new unconventional dependencies. Any new unconventional dependency that is introduced needs to have
+an auto upgrade process in place. The recommended way to update dependencies is through
+[dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates).
 You can find the dependabot config file [here](./.github/dependabot.yml).
-
-An example of this is the [@aws-cdk/lambda-layer-awscli](packages/@aws-cdk/lambda-layer-awscli) module.
-This module creates a lambda layer that bundles the AWS CLI. This is considered an unconventional
-dependency because the AWS CLI is bundled into the CDK as part of the build, and the version
-of the AWS CLI that is bundled is not managed by the `package.json` file.
-
-In order to automatically update the version of the AWS CLI, a custom build process was
-created that takes upgrades into consideration. You can take a look at the files in
-[packages/@aws-cdk/lambda-layer-awscli/layer](packages/@aws-cdk/lambda-layer-awscli/layer)
-to see how the build works, but at a high level a [requirements.txt](packages/@aws-cdk/lambda-layer-awscli/layer/requirements.txt)
-file was created to manage the version. This file was then added to [dependabot.yml](https://github.com/aws/aws-cdk/blob/ab57eb6d1ed69b40ed6ec774853c275785acace8/.github/dependabot.yml#L14-L20)
-so that dependabot will automatically upgrade the version as new versions are released.
 
 **If you think your PR introduces a new unconventional dependency, make sure to call it
 out in the description so that we can discuss the best way to manage that dependency.**

@@ -1,5 +1,5 @@
-import { App, CfnOutput, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { App, CfnOutput, CfnResource, Stack } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -102,6 +102,13 @@ describe('output', () => {
     expect(() => {
       toCloudFormation(stack2);
     }).toThrow(/Add an exportName to the CfnOutput/);
+  });
+
+  test('throw if Output is passed a string list', () => {
+    // WHEN
+    expect(() => {
+      new CfnOutput(stack, 'SomeOutput', { value: ['listValue'] as any });
+    }).toThrow(/CloudFormation output was given a string list instead of a string/);
   });
 
   test('Verify maximum length of export name', () => {

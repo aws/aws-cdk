@@ -4,14 +4,14 @@ import { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 
 /**
- * Options for {@link IParameterGroup.bindToCluster}.
+ * Options for `IParameterGroup.bindToCluster`.
  * Empty for now, but can be extended later.
  */
 export interface ParameterGroupClusterBindOptions {
 }
 
 /**
- * The type returned from {@link IParameterGroup.bindToCluster}.
+ * The type returned from `IParameterGroup.bindToCluster`.
  */
 export interface ParameterGroupClusterConfig {
   /** The name of this parameter group. */
@@ -19,14 +19,14 @@ export interface ParameterGroupClusterConfig {
 }
 
 /**
- * Options for {@link IParameterGroup.bindToInstance}.
+ * Options for `IParameterGroup.bindToInstance`.
  * Empty for now, but can be extended later.
  */
 export interface ParameterGroupInstanceBindOptions {
 }
 
 /**
- * The type returned from {@link IParameterGroup.bindToInstance}.
+ * The type returned from `IParameterGroup.bindToInstance`.
  */
 export interface ParameterGroupInstanceConfig {
   /** The name of this parameter group. */

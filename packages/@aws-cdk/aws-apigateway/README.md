@@ -314,7 +314,7 @@ A usage plan specifies who can access one or more deployed API stages and method
 accessed. The plan uses API keys to identify API clients and meters access to the associated API stages for each key.
 Usage plans also allow configuring throttling limits and quota limits that are enforced on individual client API keys.
 
-The following example shows how to create and asscociate a usage plan and an API key:
+The following example shows how to create and associate a usage plan and an API key:
 
 ```ts
 declare const integration: apigateway.LambdaIntegration;
@@ -945,6 +945,18 @@ to allow users revert the stage to an old deployment manually.
 
 [Deployment]: https://docs.aws.amazon.com/apigateway/api-reference/resource/deployment/
 [Stage]: https://docs.aws.amazon.com/apigateway/api-reference/resource/stage/
+
+In order to also create a new deployment when changes are made to any authorizer attached to the API,
+the `@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId` [feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) can be enabled. This can be set
+in the `cdk.json` file.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true
+  }
+}
+```
 
 ## Custom Domains
 

@@ -219,7 +219,7 @@ export interface VpcContextQuery {
   readonly filter: {[key: string]: string};
 
   /**
-   * Whether to populate the subnetGroups field of the {@link VpcContextResponse},
+   * Whether to populate the subnetGroups field of the `VpcContextResponse`,
    * which contains potentially asymmetric subnet groups.
    *
    * @default false
@@ -235,6 +235,16 @@ export interface VpcContextQuery {
    * @default 'aws-cdk:subnet-name'
    */
   readonly subnetGroupNameTag?: string;
+
+  /**
+   * Whether to populate the `vpnGatewayId` field of the `VpcContextResponse`,
+   * which contains the VPN Gateway ID, if one exists. You can explicitly
+   * disable this in order to avoid the lookup if you know the VPC does not have
+   * a VPN Gatway attached.
+   *
+   * @default true
+   */
+  readonly returnVpnGateways?: boolean;
 }
 
 /**

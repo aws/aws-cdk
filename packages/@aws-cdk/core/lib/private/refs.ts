@@ -4,6 +4,10 @@
 
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
+import { CfnReference } from './cfn-reference';
+import { Intrinsic } from './intrinsic';
+import { findTokens } from './resolve';
+import { makeUniqueId } from './uniqueid';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
@@ -13,10 +17,7 @@ import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
-import { CfnReference } from './cfn-reference';
-import { Intrinsic } from './intrinsic';
-import { findTokens } from './resolve';
-import { makeUniqueId } from './uniqueid';
+import { ResolutionTypeHint } from '../type-hints';
 
 /**
  * This is called from the App level to resolve all references defined. Each
@@ -60,7 +61,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // unsupported: stacks are not in the same account
   if (producerAccount !== consumerAccount) {
     throw new Error(
-      `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
+      `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
       'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack');
   }
 
@@ -68,7 +69,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // Stacks are in the same account, but different regions
   if (producerRegion !== consumerRegion && !consumer._crossRegionReferences) {
     throw new Error(
-      `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
+      `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
       'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack. ' +
       'Set crossRegionReferences=true to enable cross region references');
   }
@@ -112,7 +113,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   if (producerRegion !== consumerRegion && consumer._crossRegionReferences) {
     if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
       throw new Error(
-        `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
         'Cross stack/region references are only supported for stacks with an explicit region defined. ');
     }
     consumer.addDependency(producer,
@@ -130,6 +131,13 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
   return createImportValue(reference);
+}
+
+/**
+ * Return a human readable version of this reference
+ */
+function renderReference(ref: CfnReference) {
+  return `{${ref.target.node.path}[${ref.displayName}]}`;
 }
 
 /**
@@ -192,9 +200,15 @@ function findAllReferences(root: IConstruct) {
  */
 function createImportValue(reference: Reference): Intrinsic {
   const exportingStack = Stack.of(reference.target);
+  let importExpr;
 
-  const importExpr = exportingStack.exportValue(reference);
+  if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+    importExpr = exportingStack.exportStringListValue(reference);
+    // I happen to know this returns a Fn.split() which implements Intrinsic.
+    return Tokenization.reverseList(importExpr) as Intrinsic;
+  }
 
+  importExpr = exportingStack.exportValue(reference);
   // I happen to know this returns a Fn.importValue() which implements Intrinsic.
   return Tokenization.reverseCompleteString(importExpr) as Intrinsic;
 }

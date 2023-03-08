@@ -1,7 +1,7 @@
 {
-  "version": "21.0.0",
+  "version": "30.0.0",
   "files": {
-    "0c0b9242417cee673214b88c4554bfaa55fadb35f1235c9abbb116ea0ca39c5a": {
+    "acffc211330bf8a10bcc2c578affb0f11ca6e8268405e7baffc164d91724e62e": {
       "source": {
         "path": "aws-stepfunctions-tasks-databrew-start-job-run-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0c0b9242417cee673214b88c4554bfaa55fadb35f1235c9abbb116ea0ca39c5a.json",
+          "objectKey": "acffc211330bf8a10bcc2c578affb0f11ca6e8268405e7baffc164d91724e62e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

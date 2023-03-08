@@ -1,10 +1,10 @@
-import { AssetHashType, DockerImage } from '@aws-cdk/core';
+import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions } from '@aws-cdk/core';
 
 
 /**
  * Options for bundling
  */
-export interface BundlingOptions {
+export interface BundlingOptions extends DockerRunOptions {
 
   /**
    * Whether to export Poetry dependencies with hashes. Note that this can cause builds to fail if not all dependencies
@@ -14,6 +14,13 @@ export interface BundlingOptions {
    * @default Hashes are NOT included in the exported `requirements.txt` file
    */
   readonly poetryIncludeHashes?: boolean;
+
+  /**
+ * List of file patterns to exclude when copying assets from source for bundling.
+ *
+ * @default - Empty list
+ */
+  readonly assetExcludes?: string[];
 
   /**
    * Output path suffix: the suffix for the directory into which the bundled output is written.
@@ -39,13 +46,6 @@ export interface BundlingOptions {
    * @default - No build arguments.
    */
   readonly buildArgs?: { [key: string]: string };
-
-  /**
-   * Environment variables defined when bundling runs.
-   *
-   * @default - no environment variables are defined.
-   */
-  readonly environment?: { [key: string]: string; };
 
   /**
    * Determines how asset hash is calculated. Assets will get rebuild and
@@ -86,4 +86,51 @@ export interface BundlingOptions {
    * @default - Based on `assetHashType`
    */
   readonly assetHash?: string;
+
+  /**
+   * Command hooks
+   *
+   * @default - do not run additional commands
+   */
+  readonly commandHooks?: ICommandHooks;
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: BundlingFileAccess;
+}
+
+/**
+ * Command hooks
+ *
+ * These commands will run in the environment in which bundling occurs: inside
+ * the container for Docker bundling or on the host OS for local bundling.
+ *
+ * Commands are chained with `&&`.
+ *
+ * ```text
+ * {
+ *   // Run tests prior to bundling
+ *   beforeBundling(inputDir: string, outputDir: string): string[] {
+ *     return [`pytest`];
+ *   }
+ *   // ...
+ * }
+ * ```
+ */
+export interface ICommandHooks {
+  /**
+   * Returns commands to run before bundling.
+   *
+   * Commands are chained with `&&`.
+   */
+  beforeBundling(inputDir: string, outputDir: string): string[];
+
+  /**
+   * Returns commands to run after bundling.
+   *
+   * Commands are chained with `&&`.
+   */
+  afterBundling(inputDir: string, outputDir: string): string[];
 }

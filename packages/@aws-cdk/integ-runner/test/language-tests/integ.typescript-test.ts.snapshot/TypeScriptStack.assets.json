@@ -1,0 +1,19 @@
+{
+  "version": "22.0.0",
+  "files": {
+    "a28a0c4ed7dfaee5dec40a71393fffa16401094a480e0340d4713a9bb0677c36": {
+      "source": {
+        "path": "TypeScriptStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a28a0c4ed7dfaee5dec40a71393fffa16401094a480e0340d4713a9bb0677c36.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

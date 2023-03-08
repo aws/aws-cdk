@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-servicecatalogappregistry-application": {
         "id": "integ-servicecatalogappregistry-application",
         "path": "integ-servicecatalogappregistry-application",
@@ -26,8 +18,8 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
                   "aws:cdk:cloudformation:props": {
-                    "name": "myApplicationtest",
-                    "description": "my application description"
+                    "name": "TestApplication",
+                    "description": "My application description"
                   }
                 },
                 "constructInfo": {
@@ -149,7 +141,7 @@
                         "release": "go time"
                       }
                     },
-                    "name": "myAttributeGroupTest",
+                    "name": "myAttributeGroup",
                     "description": "my attribute group description"
                   }
                 },
@@ -168,6 +160,14 @@
             "id": "MyRole",
             "path": "integ-servicecatalogappregistry-application/MyRole",
             "children": {
+              "ImportMyRole": {
+                "id": "ImportMyRole",
+                "path": "integ-servicecatalogappregistry-application/MyRole/ImportMyRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-servicecatalogappregistry-application/MyRole/Resource",
@@ -213,17 +213,41 @@
               "fqn": "@aws-cdk/aws-iam.Role",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-servicecatalogappregistry-application/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-servicecatalogappregistry-application/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.252"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

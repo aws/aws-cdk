@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::IoTEvents::AlarmModel.AcknowledgeFlow": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-alarmmodel-acknowledgeflow.html",
@@ -93,6 +93,7 @@
       "Properties": {
         "AlarmActions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-alarmmodel-alarmeventactions.html#cfn-iotevents-alarmmodel-alarmeventactions-alarmactions",
+          "DuplicatesAllowed": true,
           "ItemType": "AlarmAction",
           "Required": false,
           "Type": "List",

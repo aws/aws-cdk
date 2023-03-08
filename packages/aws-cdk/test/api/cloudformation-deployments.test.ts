@@ -7,14 +7,16 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import { FakeCloudformationStack } from './fake-cloudformation-stack';
+import { DEFAULT_BOOTSTRAP_VARIANT } from '../../lib';
 import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployments';
 import { deployStack } from '../../lib/api/deploy-stack';
+import { HotswapMode } from '../../lib/api/hotswap/common';
 import { EcrRepositoryInfo, ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 import { buildAssets, publishAssets } from '../../lib/util/asset-publishing';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
-import { FakeCloudformationStack } from './fake-cloudformation-stack';
 
 let sdkProvider: MockSdkProvider;
 let deployments: CloudFormationDeployments;
@@ -99,12 +101,12 @@ test('passes through hotswap=true to deployStack()', async () => {
     stack: testStack({
       stackName: 'boop',
     }),
-    hotswap: true,
+    hotswap: HotswapMode.FALL_BACK,
   });
 
   // THEN
   expect(deployStack).toHaveBeenCalledWith(expect.objectContaining({
-    hotswap: true,
+    hotswap: HotswapMode.FALL_BACK,
   }));
 });
 
@@ -930,6 +932,7 @@ function testStackWithAssetManifest() {
     public found: boolean = true;
     public bucketUrl: string = 's3://fake/here';
     public bucketName: string = 'fake';
+    public variant: string = DEFAULT_BOOTSTRAP_VARIANT;
     public version: number = 1234;
     public get bootstrapStack(): CloudFormationStack {
       throw new Error('This should never happen');

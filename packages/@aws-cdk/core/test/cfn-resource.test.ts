@@ -1,8 +1,9 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import * as core from '../lib';
 import { getWarnings } from './util';
+import * as core from '../lib';
+import { Names } from '../lib';
 
 describe('cfn resource', () => {
   describe('._toCloudFormation', () => {
@@ -133,6 +134,142 @@ describe('cfn resource', () => {
 
       // THEN
       expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrowError('AWS::Lambda::Function does not support snapshot removal policy');
+    });
+  });
+
+  describe('dependency methods', () => {
+    test('can explicitly add a dependency between resources', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
+      resource1.addDependency(resource2);
+
+      expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
+        Resource1: {
+          Type: 'Test::Resource::Fake1',
+          DependsOn: [
+            'Resource2',
+          ],
+        },
+        Resource2: {
+          Type: 'Test::Resource::Fake2',
+        },
+      });
+    });
+
+    test('can explicitly remove a dependency between resources', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
+      resource1.addDependency(resource2);
+      resource1.removeDependency(resource2);
+
+      expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
+        Resource1: {
+          Type: 'Test::Resource::Fake1',
+        },
+        Resource2: {
+          Type: 'Test::Resource::Fake2',
+        },
+      });
+    });
+
+    test('can explicitly add, obtain, and remove dependencies across stacks', () => {
+      const app = new core.App();
+      const stack1 = new core.Stack(app, 'TestStack1');
+      // Use a really long construct id to identify issues between Names.uniqueId and Names.uniqueResourceName
+      const reallyLongConstructId = 'A'.repeat(247);
+      const stack2 = new core.Stack(app, reallyLongConstructId, { stackName: 'TestStack2' });
+      // Sanity check since this test depends on the discrepancy
+      expect(Names.uniqueId(stack2)).not.toBe(Names.uniqueResourceName(stack2, {}));
+      const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new core.CfnResource(stack2, 'Resource2', { type: 'Test::Resource::Fake2' });
+      const resource3 = new core.CfnResource(stack1, 'Resource3', { type: 'Test::Resource::Fake3' });
+
+      resource1.addDependency(resource2);
+      // Adding the same resource dependency twice should be a no-op
+      resource1.addDependency(resource2);
+      resource1.addDependency(resource3);
+      expect(stack1.dependencies.length).toEqual(1);
+      expect(stack1.dependencies[0].node.id).toEqual(stack2.node.id);
+      // obtainDependencies should assemble and flatten resource-to-resource dependencies even across stacks
+      expect(resource1.obtainDependencies().map(x => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
+
+      resource1.removeDependency(resource2);
+      // For symmetry, removing a dependency that doesn't exist should be a no-op
+      resource1.removeDependency(resource2);
+      expect(stack1.dependencies.length).toEqual(0);
+    });
+
+    test('can explicitly add, then replace dependencies across stacks', () => {
+      const app = new core.App();
+      const stack1 = new core.Stack(app, 'TestStack1');
+      const stack2 = new core.Stack(app, 'TestStack2');
+      const stack3 = new core.Stack(app, 'TestStack3');
+      const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new core.CfnResource(stack2, 'Resource2', { type: 'Test::Resource::Fake2' });
+      const resource3 = new core.CfnResource(stack3, 'Resource3', { type: 'Test::Resource::Fake3' });
+
+      resource1.addDependency(resource2);
+      // Adding the same resource dependency twice should be a no-op
+      resource1.replaceDependency(resource2, resource3);
+      expect(stack1.dependencies).toEqual([stack3]);
+      // obtainDependencies should assemble and flatten resource-to-resource dependencies even across stacks
+      expect(resource1.obtainDependencies().map(x => x.node.path)).toEqual([resource3.node.path]);
+
+      // Replacing a dependency that doesn't exist should raise an exception
+      expect(() => {
+        resource1.replaceDependency(resource2, resource3);
+      }).toThrow(/ does not depend on /);
+    });
+
+    test('do nothing if source is target', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
+      resource1.addDependency(resource1);
+
+      expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
+        Resource1: {
+          Type: 'Test::Resource::Fake1',
+        },
+      });
+    });
+
+    test('do nothing if target does not synth', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+
+      class NoSynthResource extends core.CfnResource {
+        protected shouldSynthesize(): boolean {
+          return false;
+        }
+      }
+
+      const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new NoSynthResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
+      resource1.removeDependency(resource2);
+      resource1.addDependency(resource2);
+
+      expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
+        Resource1: {
+          Type: 'Test::Resource::Fake1',
+        },
+      });
+    });
+
+    test('replace throws an error if oldTarget is not depended on', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+
+      const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
+      const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
+      const resource3 = new core.CfnResource(stack, 'Resource3', { type: 'Test::Resource::Fake3' });
+      expect(() => {
+        resource1.replaceDependency(resource2, resource3);
+      }).toThrow(/does not depend on/);
     });
   });
 

@@ -158,7 +158,7 @@ listener.addAction('Fixed', {
     elbv2.ListenerCondition.pathPatterns(['/ok']),
   ],
   action: elbv2.ListenerAction.fixedResponse(200, {
-    contentType: elbv2.ContentType.TEXT_PLAIN,
+    contentType: 'text/plain',
     messageBody: 'OK',
   })
 });
@@ -203,6 +203,33 @@ If you do not provide any options for this method, it redirects HTTP port 80 to 
 
 By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
 ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
+
+### Load Balancer attributes
+
+You can modify attributes of Application Load Balancers:
+
+```ts
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true,
+
+  // Whether HTTP/2 is enabled
+  http2Enabled: false,
+
+  // The idle timeout value, in seconds
+  idleTimeout: cdk.Duration.seconds(1000),
+  
+  // Whether HTTP headers with header fields thatare not valid
+  // are removed by the load balancer (true), or routed to targets
+  dropInvalidHeaderFields: true,
+
+  // How the load balancer handles requests that might
+  // pose a security risk to your application
+  desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
+});
+```
+
+For more information, see [Load balancer attributes](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes)
 
 ## Defining a Network Load Balancer
 
@@ -576,4 +603,51 @@ const listener = elbv2.NetworkListener.fromLookup(this, 'ALBListener', {
   listenerProtocol: elbv2.Protocol.TCP,
   listenerPort: 12345,
 });
+```
+
+## Metrics
+
+You may create metrics for Load Balancers and Target Groups through the `metrics` attribute:
+
+**Load Balancer:**
+
+```ts
+declare const alb: elbv2.IApplicationLoadBalancer;
+
+const albMetrics: elbv2.IApplicationLoadBalancerMetrics = alb.metrics;
+const metricConnectionCount: cloudwatch.Metric = albMetrics.activeConnectionCount();
+```
+
+**Target Group:**
+
+```ts
+declare const targetGroup: elbv2.IApplicationTargetGroup;
+
+const targetGroupMetrics: elbv2.IApplicationTargetGroupMetrics = targetGroup.metrics;
+const metricHealthyHostCount: cloudwatch.Metric = targetGroupMetrics.healthyHostCount();
+```
+
+Metrics are also available to imported resources:
+
+```ts
+declare const stack: Stack;
+
+const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'MyTargetGroup', {
+  targetGroupArn: Fn.importValue('TargetGroupArn'),
+  loadBalancerArns: Fn.importValue('LoadBalancerArn'),
+});
+
+const targetGroupMetrics: elbv2.IApplicationTargetGroupMetrics = targetGroup.metrics;
+```
+
+Notice that TargetGroups must be imported by supplying the Load Balancer too, otherwise accessing the `metrics` will
+throw an error:
+
+```ts
+declare const stack: Stack;
+const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'MyTargetGroup', {
+  targetGroupArn: Fn.importValue('TargetGroupArn'),
+});
+
+const targetGroupMetrics: elbv2.IApplicationTargetGroupMetrics = targetGroup.metrics; // throws an Error()
 ```

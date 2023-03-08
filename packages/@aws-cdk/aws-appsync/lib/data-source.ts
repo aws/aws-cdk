@@ -125,15 +125,15 @@ export abstract class BaseDataSource extends Construct {
       serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
     });
-    this.name = name;
+    this.name = supportedName;
     this.api = props.api;
   }
 
   /**
    * creates a new resolver for this datasource and API using the given properties
    */
-  public createResolver(props: BaseResolverProps): Resolver {
-    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+  public createResolver(id: string, props: BaseResolverProps): Resolver {
+    return new Resolver(this.api, id, {
       api: this.api,
       dataSource: this,
       ...props,
@@ -143,8 +143,8 @@ export abstract class BaseDataSource extends Construct {
   /**
    * creates a new appsync function for this datasource and API using the given properties
    */
-  public createFunction(props: BaseAppsyncFunctionProps): AppsyncFunction {
-    return new AppsyncFunction(this, `${props.name}Function`, {
+  public createFunction(id: string, props: BaseAppsyncFunctionProps): AppsyncFunction {
+    return new AppsyncFunction(this.api, id, {
       api: this.api,
       dataSource: this,
       ...props,

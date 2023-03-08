@@ -97,6 +97,7 @@ describe('cluster', () => {
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
     });
 
+    expect(stack.resolve(cluster.clusterResourceIdentifier)).toEqual({ 'Fn::GetAtt': ['DatabaseB269D8BB', 'DBClusterResourceId'] });
     expect(cluster.instanceIdentifiers).toHaveLength(1);
     expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
       Ref: 'DatabaseInstance1844F58FD',
@@ -738,6 +739,7 @@ describe('cluster', () => {
       clusterIdentifier: 'identifier',
     });
 
+    expect(() => cluster.clusterResourceIdentifier).toThrow(/Cannot access `clusterResourceIdentifier` of an imported cluster/);
     expect(() => cluster.clusterEndpoint).toThrow(/Cannot access `clusterEndpoint` of an imported cluster/);
     expect(() => cluster.clusterReadEndpoint).toThrow(/Cannot access `clusterReadEndpoint` of an imported cluster/);
     expect(() => cluster.instanceIdentifiers).toThrow(/Cannot access `instanceIdentifiers` of an imported cluster/);
@@ -750,6 +752,7 @@ describe('cluster', () => {
     const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
       clusterEndpointAddress: 'addr',
       clusterIdentifier: 'identifier',
+      clusterResourceIdentifier: 'identifier',
       instanceEndpointAddresses: ['instance-addr'],
       instanceIdentifiers: ['identifier'],
       port: 3306,
@@ -759,6 +762,7 @@ describe('cluster', () => {
       })],
     });
 
+    expect(cluster.clusterResourceIdentifier).toEqual('identifier');
     expect(cluster.clusterEndpoint.socketAddress).toEqual('addr:3306');
     expect(cluster.clusterReadEndpoint.socketAddress).toEqual('reader-address:3306');
     expect(cluster.instanceIdentifiers).toEqual(['identifier']);
@@ -954,7 +958,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
+  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
@@ -966,6 +970,9 @@ describe('cluster', () => {
       privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
       isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
       isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: vpcWithIsolated,
     });
 
     // WHEN
@@ -984,6 +991,7 @@ describe('cluster', () => {
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup,
     });
 
     // THEN
@@ -1005,11 +1013,17 @@ describe('cluster', () => {
         },
         vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
         excludeCharacters: '°_@',
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            stack.getLogicalId(securityGroup.node.defaultChild as ec2.CfnSecurityGroup),
+            'GroupId',
+          ],
+        },
       },
     });
   });
 
-  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
+  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
@@ -1021,6 +1035,9 @@ describe('cluster', () => {
       privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
       isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
       isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: vpcWithIsolated,
     });
     const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
 
@@ -1041,6 +1058,7 @@ describe('cluster', () => {
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup,
     });
 
     // THEN
@@ -1062,6 +1080,12 @@ describe('cluster', () => {
         },
         vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
         excludeCharacters: '°_@',
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            stack.getLogicalId(securityGroup.node.defaultChild as ec2.CfnSecurityGroup),
+            'GroupId',
+          ],
+        },
       },
     });
   });
@@ -2071,6 +2095,7 @@ describe('cluster', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBInstance', 2);
 
+    expect(stack.resolve(cluster.clusterResourceIdentifier)).toEqual({ 'Fn::GetAtt': ['DatabaseB269D8BB', 'DBClusterResourceId'] });
     expect(cluster.instanceIdentifiers).toHaveLength(2);
     expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
       Ref: 'DatabaseInstance1844F58FD',

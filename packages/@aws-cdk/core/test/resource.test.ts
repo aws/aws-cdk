@@ -1,12 +1,12 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { toCloudFormation } from './util';
 import {
   App, App as Root, CfnCondition,
   CfnDeletionPolicy, CfnResource,
   Fn, IResource, RemovalPolicy, Resource, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
-import { toCloudFormation } from './util';
 
 describe('resource', () => {
   test('all resources derive from Resource, which derives from Entity', () => {
@@ -151,11 +151,11 @@ describe('resource', () => {
     const dependent = new CfnResource(stack, 'Dependent', { type: 'R' });
 
     // WHEN
-    dependent.addDependsOn(r1);
-    dependent.addDependsOn(r1);
-    dependent.addDependsOn(r1);
-    dependent.addDependsOn(r1);
-    dependent.addDependsOn(r1);
+    dependent.addDependency(r1);
+    dependent.addDependency(r1);
+    dependent.addDependency(r1);
+    dependent.addDependency(r1);
+    dependent.addDependency(r1);
 
     // THEN
     expect(toCloudFormation(stack)).toEqual({
@@ -192,7 +192,10 @@ describe('resource', () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
-    r1.cfnOptions.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
+    r1.cfnOptions.creationPolicy = {
+      autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 },
+      startFleet: true,
+    };
     // eslint-disable-next-line max-len
     r1.cfnOptions.updatePolicy = {
       autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false },
@@ -210,7 +213,10 @@ describe('resource', () => {
       Resources: {
         Resource: {
           Type: 'Type',
-          CreationPolicy: { AutoScalingCreationPolicy: { MinSuccessfulInstancesPercent: 10 } },
+          CreationPolicy: {
+            AutoScalingCreationPolicy: { MinSuccessfulInstancesPercent: 10 },
+            StartFleet: true,
+          },
           UpdatePolicy: {
             AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: false },
             AutoScalingReplacingUpdate: { WillReplace: true },

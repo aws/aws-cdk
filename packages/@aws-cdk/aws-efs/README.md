@@ -40,6 +40,8 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
 });
 ```
 
+⚠️ An Amazon EFS file system's performance mode can't be MAX_IO when its throughputMode is ELASTIC.
+
 ⚠️ An Amazon EFS file system's performance mode can't be changed after the file system has been created.
 Updating this property will replace the file system.
 
@@ -56,6 +58,33 @@ const importedFileSystem = efs.FileSystem.fromFileSystemAttributes(this, 'existi
   securityGroup: ec2.SecurityGroup.fromSecurityGroupId(this, 'SG', 'sg-123456789', {
     allowAllOutbound: false,
   }),
+});
+```
+
+### IAM to control file system data access
+
+You can use both IAM identity policies and resource policies to control client access to Amazon EFS resources in a way that is scalable and optimized for cloud environments. Using IAM, you can permit clients to perform specific actions on a file system, including read-only, write, and root access.
+
+```ts
+const myFileSystemPolicy = new PolicyDocument({
+  statements: [new PolicyStatement({
+    actions: [
+      'elasticfilesystem:ClientWrite',
+      'elasticfilesystem:ClientMount',
+    ],
+    principals: [new AccountRootPrincipal()],
+    resources: ['*'],
+    conditions: {
+      Bool: {
+        'elasticfilesystem:AccessedViaMountTarget': 'true',
+      },
+    },
+  })],
+});
+
+const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
+  vpc: new ec2.Vpc(this, 'VPC'),
+  fileSystemPolicy: myFileSystemPolicy,
 });
 ```
 

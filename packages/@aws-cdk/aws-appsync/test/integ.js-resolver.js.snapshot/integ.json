@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "JsResolverIntegTest/DefaultTest": {
+      "stacks": [
+        "AppSyncJsResolverTestStack"
+      ],
+      "assertionStack": "JsResolverIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "JsResolverIntegTestDefaultTestDeployAssert57AD8D20"
+    }
+  }
+}

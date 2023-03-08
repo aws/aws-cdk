@@ -6,7 +6,7 @@ import { EngineVersion } from './engine-version';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 
 /**
- * The extra options passed to the {@link IClusterEngine.bindToCluster} method.
+ * The extra options passed to the `IClusterEngine.bindToCluster` method.
  */
 export interface ClusterEngineBindOptions {
   /**
@@ -32,7 +32,7 @@ export interface ClusterEngineBindOptions {
 }
 
 /**
- * The type returned from the {@link IClusterEngine.bindToCluster} method.
+ * The type returned from the `IClusterEngine.bindToCluster` method.
  */
 export interface ClusterEngineConfig {
   /**
@@ -208,7 +208,7 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
 
 /**
  * The versions for the Aurora cluster engine
- * (those returned by {@link DatabaseClusterEngine.aurora}).
+ * (those returned by `DatabaseClusterEngine.aurora`).
  */
 export class AuroraEngineVersion {
   /** Version "5.6.10a". */
@@ -285,7 +285,7 @@ export class AuroraEngineVersion {
 
 /**
  * Creation properties of the plain Aurora database cluster engine.
- * Used in {@link DatabaseClusterEngine.aurora}.
+ * Used in `DatabaseClusterEngine.aurora`.
  */
 export interface AuroraClusterEngineProps {
   /** The version of the Aurora cluster engine. */
@@ -315,7 +315,7 @@ class AuroraClusterEngine extends MySqlClusterEngineBase {
 
 /**
  * The versions for the Aurora MySQL cluster engine
- * (those returned by {@link DatabaseClusterEngine.auroraMysql}).
+ * (those returned by `DatabaseClusterEngine.auroraMysql`).
  *
  * https://docs.aws.amazon.com/AmazonRDS/latest/AuroraMySQLReleaseNotes/Welcome.html
  */
@@ -412,6 +412,10 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_10_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.2');
   /** Version "5.7.mysql_aurora.2.10.3". */
   public static readonly VER_2_10_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.3');
+  /** Version "5.7.mysql_aurora.2.11.0". */
+  public static readonly VER_2_11_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.11.0');
+  /** Version "5.7.mysql_aurora.2.11.1". */
+  public static readonly VER_2_11_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.11.1');
   /** Version "8.0.mysql_aurora.3.01.0". */
   public static readonly VER_3_01_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.01.0');
   /** Version "8.0.mysql_aurora.3.01.1". */
@@ -420,6 +424,10 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_02_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.02.0');
   /** Version "8.0.mysql_aurora.3.02.1". */
   public static readonly VER_3_02_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.02.1');
+  /** Version "8.0.mysql_aurora.3.02.2". */
+  public static readonly VER_3_02_2 = AuroraMysqlEngineVersion.builtIn_8_0('3.02.2');
+  /** Version "8.0.mysql_aurora.3.03.0". */
+  public static readonly VER_3_03_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.03.0');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -465,7 +473,7 @@ export class AuroraMysqlEngineVersion {
 
 /**
  * Creation properties of the Aurora MySQL database cluster engine.
- * Used in {@link DatabaseClusterEngine.auroraMysql}.
+ * Used in `DatabaseClusterEngine.auroraMysql`.
  */
 export interface AuroraMysqlClusterEngineProps {
   /** The version of the Aurora MySQL cluster engine. */
@@ -514,7 +522,7 @@ export interface AuroraPostgresEngineFeatures {
 
 /**
  * The versions for the Aurora PostgreSQL cluster engine
- * (those returned by {@link DatabaseClusterEngine.auroraPostgres}).
+ * (those returned by `DatabaseClusterEngine.auroraPostgres`).
  *
  * https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/AuroraPostgreSQL.Updates.html
  */
@@ -645,6 +653,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_11_15 = AuroraPostgresEngineVersion.of('11.15', '11', { s3Import: true, s3Export: true });
   /** Version "11.16". */
   public static readonly VER_11_16 = AuroraPostgresEngineVersion.of('11.16', '11', { s3Import: true, s3Export: true });
+  /** Version "11.17". */
+  public static readonly VER_11_17 = AuroraPostgresEngineVersion.of('11.17', '11', { s3Import: true, s3Export: true });
+  /** Version "11.18". */
+  public static readonly VER_11_18 = AuroraPostgresEngineVersion.of('11.18', '11', { s3Import: true, s3Export: true });
   /** Version "12.4". */
   public static readonly VER_12_4 = AuroraPostgresEngineVersion.of('12.4', '12', { s3Import: true, s3Export: true });
   /** Version "12.6". */
@@ -659,6 +671,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_12_10 = AuroraPostgresEngineVersion.of('12.10', '12', { s3Import: true, s3Export: true });
   /** Version "12.11". */
   public static readonly VER_12_11 = AuroraPostgresEngineVersion.of('12.11', '12', { s3Import: true, s3Export: true });
+  /** Version "12.12". */
+  public static readonly VER_12_12 = AuroraPostgresEngineVersion.of('12.12', '12', { s3Import: true, s3Export: true });
+  /** Version "12.13". */
+  public static readonly VER_12_13 = AuroraPostgresEngineVersion.of('12.13', '12', { s3Import: true, s3Export: true });
   /** Version "13.3". */
   public static readonly VER_13_3 = AuroraPostgresEngineVersion.of('13.3', '13', { s3Import: true, s3Export: true });
   /** Version "13.4". */
@@ -669,6 +685,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_13_6 = AuroraPostgresEngineVersion.of('13.6', '13', { s3Import: true, s3Export: true });
   /** Version "13.7". */
   public static readonly VER_13_7 = AuroraPostgresEngineVersion.of('13.7', '13', { s3Import: true, s3Export: true });
+  /** Version "13.8". */
+  public static readonly VER_13_8 = AuroraPostgresEngineVersion.of('13.8', '13', { s3Import: true, s3Export: true });
+  /** Version "13.9". */
+  public static readonly VER_13_9 = AuroraPostgresEngineVersion.of('13.9', '13', { s3Import: true, s3Export: true });
   /** Version "14.3". */
   public static readonly VER_14_3 = AuroraPostgresEngineVersion.of('14.3', '14', { s3Import: true, s3Export: true });
   /**
@@ -678,6 +698,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_14_4 = AuroraPostgresEngineVersion.of('14.4', '14', { s3Import: true, s3Export: true });
   /** Version "14.5". */
   public static readonly VER_14_5 = AuroraPostgresEngineVersion.of('14.5', '14', { s3Import: true, s3Export: true });
+  /** Version "14.6". */
+  public static readonly VER_14_6 = AuroraPostgresEngineVersion.of('14.6', '14', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
@@ -716,7 +738,7 @@ export class AuroraPostgresEngineVersion {
 
 /**
  * Creation properties of the Aurora PostgreSQL database cluster engine.
- * Used in {@link DatabaseClusterEngine.auroraPostgres}.
+ * Used in `DatabaseClusterEngine.auroraPostgres`.
  */
 export interface AuroraPostgresClusterEngineProps {
   /** The version of the Aurora PostgreSQL cluster engine. */
@@ -796,7 +818,7 @@ export class DatabaseClusterEngine {
    *
    * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
    *   as that can pose an availability risk.
-   *   We recommend using versioned engines created using the {@link aurora()} method
+   *   We recommend using versioned engines created using the `aurora()` method
    */
   public static readonly AURORA: IClusterEngine = new AuroraClusterEngine();
 
@@ -805,7 +827,7 @@ export class DatabaseClusterEngine {
    *
    * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
    *   as that can pose an availability risk.
-   *   We recommend using versioned engines created using the {@link auroraMysql()} method
+   *   We recommend using versioned engines created using the `auroraMysql()` method
    */
   public static readonly AURORA_MYSQL: IClusterEngine = new AuroraMysqlClusterEngine();
 
@@ -814,7 +836,7 @@ export class DatabaseClusterEngine {
    *
    * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
    *   as that can pose an availability risk.
-   *   We recommend using versioned engines created using the {@link auroraPostgres()} method
+   *   We recommend using versioned engines created using the `auroraPostgres()` method
    */
   public static readonly AURORA_POSTGRESQL: IClusterEngine = new AuroraPostgresClusterEngine();
 

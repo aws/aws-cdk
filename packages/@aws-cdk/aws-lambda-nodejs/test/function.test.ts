@@ -45,6 +45,38 @@ test('NodejsFunction with .ts handler', () => {
   });
 });
 
+test('NodejsFunction with overridden handler - no dots', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler1', {
+    handler: 'myHandler',
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Handler: 'index.myHandler', // automatic index. prefix
+    Runtime: 'nodejs14.x',
+  });
+});
+
+test('NodejsFunction with overridden handler - with dots', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler1', {
+    handler: 'run.sh',
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Handler: 'run.sh', // No index. prefix
+    Runtime: 'nodejs14.x',
+  });
+});
+
 test('NodejsFunction with .js handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler2');

@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy } from '@aws-cdk/core';
+import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size } from '@aws-cdk/core';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
@@ -225,8 +225,21 @@ export interface RestApiProps extends RestApiOptions {
    * payload size.
    *
    * @default - Compression is disabled.
+   * @deprecated - superseded by `minCompressionSize`
    */
   readonly minimumCompressionSize?: number;
+
+  /**
+   * A Size(in bytes, kibibytes, mebibytes etc) that is used to enable compression (with non-negative
+   * between 0 and 10485760 (10M) bytes, inclusive) or disable compression
+   * (when undefined) on an API. When compression is enabled, compression or
+   * decompression is not applied on the payload if the payload size is
+   * smaller than this value. Setting it to zero allows compression for any
+   * payload size.
+   *
+   * @default - Compression is disabled.
+   */
+  readonly minCompressionSize?: Size;
 
   /**
    * The ID of the API Gateway RestApi resource that you want to clone.
@@ -261,6 +274,18 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
    */
   readonly apiDefinition: ApiDefinition;
+
+  /**
+   * A Size(in bytes, kibibytes, mebibytes etc) that is used to enable compression (with non-negative
+   * between 0 and 10485760 (10M) bytes, inclusive) or disable compression
+   * (when undefined) on an API. When compression is enabled, compression or
+   * decompression is not applied on the payload if the payload size is
+   * smaller than this value. Setting it to zero allows compression for any
+   * payload size.
+   *
+   * @default - Compression is disabled.
+   */
+  readonly minCompressionSize?: Size;
 }
 
 /**
@@ -616,7 +641,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 /**
  * Represents a REST API in Amazon API Gateway, created with an OpenAPI specification.
  *
- * Some properties normally accessible on @see {@link RestApi} - such as the description -
+ * Some properties normally accessible on @see `RestApi` - such as the description -
  * must be declared in the specification. All Resources and Methods need to be defined as
  * part of the OpenAPI specification file, and cannot be added via the CDK.
  *
@@ -648,6 +673,7 @@ export class SpecRestApi extends RestApiBase {
       name: this.restApiName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
+      minimumCompressionSize: props.minCompressionSize?.toBytes(),
       body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),
@@ -758,12 +784,16 @@ export class RestApi extends RestApiBase {
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, props);
 
+    if (props.minCompressionSize !== undefined && props.minimumCompressionSize !== undefined) {
+      throw new Error('both properties minCompressionSize and minimumCompressionSize cannot be set at once.');
+    }
+
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
-      minimumCompressionSize: props.minimumCompressionSize,
+      minimumCompressionSize: props.minCompressionSize?.toBytes() ?? props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
       endpointConfiguration: this._configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,

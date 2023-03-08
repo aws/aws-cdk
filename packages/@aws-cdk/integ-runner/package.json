@@ -14,6 +14,7 @@
     "awslint": "cdk-awslint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
+    "integ": "integ-runner",
     "watch": "cdk-watch",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
@@ -52,15 +53,18 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@types/mock-fs": "^4.13.1",
-    "mock-fs": "^4.14.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/fs-extra": "^8.1.2",
+    "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.5.2",
-    "@types/node": "^14.18.33",
-    "@types/workerpool": "^6.1.0",
-    "@types/yargs": "^15.0.14",
-    "jest": "^27.5.1"
+    "@types/mock-fs": "^4.13.1",
+    "@types/workerpool": "^6.1.1",
+    "@types/yargs": "^15.0.15",
+    "constructs": "^10.0.0",
+    "mock-fs": "^4.14.0",
+    "jest": "^27.5.1",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
@@ -71,7 +75,7 @@
     "aws-cdk": "0.0.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "workerpool": "^6.3.1",
+    "workerpool": "^6.4.0",
     "yargs": "^16.2.0"
   },
   "repository": {

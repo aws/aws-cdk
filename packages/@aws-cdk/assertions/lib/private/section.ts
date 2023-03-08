@@ -1,18 +1,18 @@
+import { sortKeyComparator } from './sorting';
 import { Match } from '../match';
 import { Matcher, MatchResult } from '../matcher';
 
 export type MatchSuccess = { match: true, matches: { [key: string]: any }, analyzed: { [key: string]: any }, analyzedCount: number };
-export type MatchFailure = { match: false, closestResult?: MatchResult, analyzed: { [key: string]: any }, analyzedCount: number };
+export type MatchFailure = { match: false, closestResults: Record<string, MatchResult>, analyzed: { [key: string]: any }, analyzedCount: number };
 
 export function matchSection(section: any, props: any): MatchSuccess | MatchFailure {
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
-  let closestResult: MatchResult | undefined = undefined;
-  let matching: { [key: string]: any } = {};
-  let analyzed: { [key: string]: any } = {};
+  const matching: { [key: string]: any } = {};
+  const analyzed: { [key: string]: any } = {};
+  const failures = new Array<[string, MatchResult]>();
 
   eachEntryInSection(
     section,
-
     (logicalId, entry) => {
       analyzed[logicalId] = entry;
       const result = matcher.test(entry);
@@ -20,16 +20,18 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
       if (!result.hasFailed()) {
         matching[logicalId] = entry;
       } else {
-        if (closestResult === undefined || closestResult.failCount > result.failCount) {
-          closestResult = result;
-        }
+        failures.push([logicalId, result]);
       }
     },
   );
   if (Object.keys(matching).length > 0) {
     return { match: true, matches: matching, analyzedCount: Object.keys(analyzed).length, analyzed: analyzed };
   } else {
-    return { match: false, closestResult, analyzedCount: Object.keys(analyzed).length, analyzed: analyzed };
+    // Sort by cost, use logicalId as a tie breaker. Take the 3 closest
+    // matches (helps debugging in case we get the top pick wrong).
+    failures.sort(sortKeyComparator(([logicalId, result]) => [result.failCost, logicalId]));
+    const closestResults = Object.fromEntries(failures.slice(0, 3));
+    return { match: false, closestResults, analyzedCount: Object.keys(analyzed).length, analyzed: analyzed };
   }
 }
 
@@ -56,12 +58,24 @@ export function formatAllMismatches(analyzed: { [key: string]: any }, matches: {
   ].join('\n');
 }
 
-export function formatFailure(closestResult: MatchResult): string {
+export function formatSectionMatchFailure(qualifier: string, result: MatchFailure, what='Template'): string {
   return [
-    'The closest result is:',
-    leftPad(JSON.stringify(closestResult.target, undefined, 2)),
-    'with the following mismatches:',
-    ...closestResult.toHumanStrings().map(s => `\t${s}`),
+    `${what} has ${result.analyzedCount} ${qualifier}`,
+    result.analyzedCount > 0 ? ', but none match as expected' : '',
+    '.\n',
+    formatFailure(result.closestResults),
+  ].join('');
+}
+
+export function formatFailure(closestResults: Record<string, MatchResult>): string {
+  const keys = Object.keys(closestResults);
+  if (keys.length === 0) {
+    return 'No matches found';
+  }
+
+  return [
+    `The ${keys.length} closest matches:`,
+    ...keys.map(key => `${key} :: ${closestResults[key].renderMismatch()}`),
   ].join('\n');
 }
 

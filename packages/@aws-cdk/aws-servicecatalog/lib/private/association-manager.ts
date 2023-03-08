@@ -1,6 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { hashValues } from './util';
+import { InputValidator } from './validation';
 import {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions, StackSetsConstraintOptions,
   TagUpdateConstraintOptions, TemplateRule, TemplateRuleAssertion,
@@ -12,8 +14,6 @@ import {
   CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOptionAssociation,
 } from '../servicecatalog.generated';
 import { TagOptions } from '../tag-options';
-import { hashValues } from './util';
-import { InputValidator } from './validation';
 
 export class AssociationManager {
   public static associateProductWithPortfolio(
@@ -50,7 +50,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
+      constraint.addDependency(association.cfnPortfolioProductAssociation);
     } else {
       throw new Error(`Cannot have multiple tag update constraints for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
@@ -70,7 +70,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
+      constraint.addDependency(association.cfnPortfolioProductAssociation);
     } else {
       throw new Error(`Topic ${topic.node.path} is already subscribed to association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
@@ -93,7 +93,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
+      constraint.addDependency(association.cfnPortfolioProductAssociation);
     } else {
       throw new Error(`Provisioning rule ${options.rule.ruleName} already configured on association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
@@ -133,7 +133,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
+      constraint.addDependency(association.cfnPortfolioProductAssociation);
     } else {
       throw new Error(`Cannot configure multiple StackSet deployment constraints for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
@@ -173,7 +173,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
+      constraint.addDependency(association.cfnPortfolioProductAssociation);
     } else {
       throw new Error(`Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }

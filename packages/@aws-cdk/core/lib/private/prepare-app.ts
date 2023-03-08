@@ -1,8 +1,8 @@
 import { ConstructOrder, Dependable, IConstruct } from 'constructs';
+import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
-import { resolveReferences } from './refs';
 
 /**
  * Prepares the app for synthesis. This function is called by the root `prepare`
@@ -22,7 +22,7 @@ export function prepareApp(root: IConstruct) {
 
     for (const target of targetCfnResources) {
       for (const source of sourceCfnResources) {
-        source.addDependsOn(target);
+        source.addDependency(target);
       }
     }
   }

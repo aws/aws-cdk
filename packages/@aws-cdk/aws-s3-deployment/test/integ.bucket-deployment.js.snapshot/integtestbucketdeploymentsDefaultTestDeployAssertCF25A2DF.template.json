@@ -11,35 +11,14 @@
     },
     "service": "S3",
     "api": "listObjects",
+    "expected": "{\"$ObjectLike\":{\"Contents\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"403.html\"}},{\"$ObjectLike\":{\"Key\":\"some-key\"}}]}}}",
     "parameters": {
      "Bucket": {
-      "Fn::ImportValue": "test-bucket-deployments-2:ExportsOutputRefDestination4368A3649E0CF338F"
-     },
-     "MaxKeys": 1
+      "Fn::ImportValue": "test-bucket-deployments-2:ExportsOutputRefDestination52A57FAA3531B2DE2"
+     }
     },
     "flattenResponse": "false",
-    "salt": "1663692910218"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallS3listObjectsAssertEqualsS3listObjects03999BE0": {
-   "Type": "Custom::DeployAssert@AssertEquals",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "actual": {
-     "Fn::GetAtt": [
-      "AwsApiCallS3listObjects",
-      "apiCallResponse"
-     ]
-    },
-    "expected": "{\"$ObjectLike\":{\"Contents\":[{\"Key\":\"fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip\"}]}}",
-    "salt": "1663692910218"
+    "salt": "1677600919513"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -103,7 +82,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.zip"
+     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -117,11 +96,11 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAssertEqualsS3listObjectsbf7bcf3cadf69373bbd3568d34e8bb76": {
+  "AssertionResultsAwsApiCallS3listObjects": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsAssertEqualsS3listObjects03999BE0",
-     "data"
+     "AwsApiCallS3listObjects",
+     "assertion"
     ]
    }
   }

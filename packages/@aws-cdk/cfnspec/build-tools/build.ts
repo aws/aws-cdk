@@ -7,9 +7,9 @@
 
 import * as path from 'path';
 import * as md5 from 'md5';
-import { schema } from '../lib';
 import { massageSpec, normalize } from './massage-spec';;
 import { writeSorted, applyPatchSet, applyAndWrite } from './patch-set';
+import { schema } from '../lib';
 
 async function main() {
   const inputDir = path.join(process.cwd(), 'spec-source');

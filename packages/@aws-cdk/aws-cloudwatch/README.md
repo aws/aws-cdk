@@ -136,14 +136,17 @@ to the metric function call:
 declare const fn: lambda.Function;
 
 const minuteErrorRate = fn.metricErrors({
-  statistic: 'avg',
+  statistic: cloudwatch.Stats.AVERAGE,
   period: Duration.minutes(1),
   label: 'Lambda failure rate'
 });
 ```
 
-This function also allows changing the metric label or color (which will be
-useful when embedding them in graphs, see below).
+The `statistic` field accepts a `string`; the `cloudwatch.Stats` object has a
+number of predefined factory functions that help you constructs strings that are
+appropriate for CloudWatch. The `metricErrors` function also allows changing the
+metric label or color, which will be useful when embedding them in graphs (see
+below).
 
 > Rates versus Sums
 >
@@ -163,6 +166,60 @@ useful when embedding them in graphs, see below).
 > happen to know the Metric you want to alarm on makes sense as a rate
 > (`Average`) you can always choose to change the statistic.
 
+### Available Aggregation Statistics
+
+For your metrics aggregation, you can use the following statistics:
+
+| Statistic                |    Short format     |                 Long format                  | Factory name         |
+| ------------------------ | :-----------------: | :------------------------------------------: | -------------------- |
+| SampleCount (n)          |         ❌          |                      ❌                      | `Stats.SAMPLE_COUNT` |
+| Average (avg)            |         ❌          |                      ❌                      | `Stats.AVERAGE`      |
+| Sum                      |         ❌          |                      ❌                      | `Stats.SUM`          |
+| Minimum (min)            |         ❌          |                      ❌                      | `Stats.MINIMUM`      |
+| Maximum (max)            |         ❌          |                      ❌                      | `Stats.MAXIMUM`      |
+| Interquartile mean (IQM) |         ❌          |                      ❌                      | `Stats.IQM`          |
+| Percentile (p)           |        `p99`        |                      ❌                      | `Stats.p(99)`        |
+| Winsorized mean (WM)     | `wm99` = `WM(:99%)` | `WM(x:y) \| WM(x%:y%) \| WM(x%:) \| WM(:y%)` | `Stats.wm(10, 90)`   |
+| Trimmed count (TC)       | `tc99` = `TC(:99%)` | `TC(x:y) \| TC(x%:y%) \| TC(x%:) \| TC(:y%)` | `Stats.tc(10, 90)`   |
+| Trimmed sum (TS)         | `ts99` = `TS(:99%)` | `TS(x:y) \| TS(x%:y%) \| TS(x%:) \| TS(:y%)` | `Stats.ts(10, 90)`   |
+| Percentile rank (PR)     |         ❌          |        `PR(x:y) \| PR(x:) \| PR(:y)`         | `Stats.pr(10, 5000)` |
+
+The most common values are provided in the `cloudwatch.Stats` class. You can provide any string if your statistic is not in the class.
+
+Read more at [CloudWatch statistics definitions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html).
+
+```ts
+new cloudwatch.Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensionsMap: {
+    HostedZoneId: hostedZone.hostedZoneId
+  },
+  statistic: cloudwatch.Stats.SAMPLE_COUNT,
+  period: cloudwatch.Duration.minutes(5)
+});
+
+new cloudwatch.Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensionsMap: {
+    HostedZoneId: hostedZone.hostedZoneId
+  },
+  statistic: cloudwatch.Stats.p(99),
+  period: cloudwatch.Duration.minutes(5)
+});
+
+new cloudwatch.Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensionsMap: {
+    HostedZoneId: hostedZone.hostedZoneId
+  },
+  statistic: 'TS(7.5%:90%)',
+  period: cloudwatch.Duration.minutes(5)
+});
+```
+
 ### Labels
 
 Metric labels are displayed in the legend of graphs that include the metrics.
@@ -175,7 +232,7 @@ in the legend. For example, if you use:
 declare const fn: lambda.Function;
 
 const minuteErrorRate = fn.metricErrors({
-  statistic: 'sum',
+  statistic: cloudwatch.Stats.SUM,
   period: Duration.hours(1),
 
   // Show the maximum hourly error count in the legend
@@ -363,7 +420,7 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   left: [executionCountMetric],
 
   right: [errorCountMetric.with({
-    statistic: "average",
+    statistic: cloudwatch.Stats.AVERAGE,
     label: "Error rate",
     color: cloudwatch.Color.GREEN,
   })]
@@ -508,6 +565,17 @@ dashboard.addWidgets(new cloudwatch.TextWidget({
 }));
 ```
 
+Optionally set the TextWidget background to be transparent
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TextWidget({
+  markdown: '# Key Performance Indicators',
+  background: TextWidgetBackground.TRANSPARENT
+}));
+```
+
 ### Alarm Status widget
 
 An alarm status widget displays instantly the status of any type of alarms and gives the
@@ -600,7 +668,7 @@ you can use the following widgets to pack widgets together in different ways:
 
 ### Column widget
 
-A column widget contains other widgets and they will be laid out in a 
+A column widget contains other widgets and they will be laid out in a
 vertical column. Widgets will be put one after another in order.
 
 ```ts
@@ -615,7 +683,7 @@ You can add a widget after object instantiation with the method
 
 ### Row widget
 
-A row widget contains other widgets and they will be laid out in a 
+A row widget contains other widgets and they will be laid out in a
 horizontal row. Widgets will be put one after another in order.
 If the total width of the row exceeds the max width of the grid of 24
 columns, the row will wrap automatically and adapt its height.

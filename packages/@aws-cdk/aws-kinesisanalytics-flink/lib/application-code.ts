@@ -4,7 +4,7 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from 'constructs';
 
 /**
- * The return type of {@link ApplicationCode.bind}. This represents
+ * The return type of `ApplicationCode.bind`. This represents
  * CloudFormation configuration and an s3 bucket holding the Flink application
  * JAR file.
  */

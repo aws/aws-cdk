@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::IoTSiteWise::AccessPolicy.AccessPolicyIdentity": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotsitewise-accesspolicy-accesspolicyidentity.html",
@@ -147,6 +147,7 @@
       "Properties": {
         "CompositeModelProperties": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotsitewise-assetmodel-assetmodelcompositemodel.html#cfn-iotsitewise-assetmodel-assetmodelcompositemodel-compositemodelproperties",
+          "DuplicatesAllowed": true,
           "ItemType": "AssetModelProperty",
           "Required": false,
           "Type": "List",
@@ -275,6 +276,7 @@
         },
         "Variables": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotsitewise-assetmodel-metric.html#cfn-iotsitewise-assetmodel-metric-variables",
+          "DuplicatesAllowed": true,
           "ItemType": "ExpressionVariable",
           "Required": true,
           "Type": "List",
@@ -339,6 +341,7 @@
         },
         "Variables": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotsitewise-assetmodel-transform.html#cfn-iotsitewise-assetmodel-transform-variables",
+          "DuplicatesAllowed": true,
           "ItemType": "ExpressionVariable",
           "Required": true,
           "Type": "List",
@@ -435,6 +438,23 @@
           "UpdateType": "Immutable"
         }
       }
+    },
+    "AWS::IoTSiteWise::Portal.Alarms": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotsitewise-portal-alarms.html",
+      "Properties": {
+        "AlarmRoleArn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotsitewise-portal-alarms.html#cfn-iotsitewise-portal-alarms-alarmrolearn",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "NotificationLambdaArn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotsitewise-portal-alarms.html#cfn-iotsitewise-portal-alarms-notificationlambdaarn",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
     }
   },
   "ResourceTypes": {
@@ -488,6 +508,7 @@
         },
         "AssetHierarchies": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotsitewise-asset.html#cfn-iotsitewise-asset-assethierarchies",
+          "DuplicatesAllowed": true,
           "ItemType": "AssetHierarchy",
           "Required": false,
           "Type": "List",
@@ -507,6 +528,7 @@
         },
         "AssetProperties": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotsitewise-asset.html#cfn-iotsitewise-asset-assetproperties",
+          "DuplicatesAllowed": true,
           "ItemType": "AssetProperty",
           "Required": false,
           "Type": "List",
@@ -535,6 +557,7 @@
       "Properties": {
         "AssetModelCompositeModels": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotsitewise-assetmodel.html#cfn-iotsitewise-assetmodel-assetmodelcompositemodels",
+          "DuplicatesAllowed": true,
           "ItemType": "AssetModelCompositeModel",
           "Required": false,
           "Type": "List",
@@ -548,6 +571,7 @@
         },
         "AssetModelHierarchies": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotsitewise-assetmodel.html#cfn-iotsitewise-assetmodel-assetmodelhierarchies",
+          "DuplicatesAllowed": true,
           "ItemType": "AssetModelHierarchy",
           "Required": false,
           "Type": "List",
@@ -561,6 +585,7 @@
         },
         "AssetModelProperties": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotsitewise-assetmodel.html#cfn-iotsitewise-assetmodel-assetmodelproperties",
+          "DuplicatesAllowed": true,
           "ItemType": "AssetModelProperty",
           "Required": false,
           "Type": "List",
@@ -568,6 +593,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotsitewise-assetmodel.html#cfn-iotsitewise-assetmodel-tags",
+          "DuplicatesAllowed": true,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -677,8 +703,8 @@
       "Properties": {
         "Alarms": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotsitewise-portal.html#cfn-iotsitewise-portal-alarms",
-          "PrimitiveType": "Json",
           "Required": false,
+          "Type": "Alarms",
           "UpdateType": "Mutable"
         },
         "NotificationSenderEmail": {

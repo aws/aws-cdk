@@ -72,6 +72,14 @@
                 "id": "ServiceRole",
                 "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/ServiceRole/Resource",
@@ -195,6 +203,14 @@
                     "id": "ServiceRole",
                     "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/Resource",
@@ -336,7 +352,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                          "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -403,6 +419,14 @@
                 "id": "ServiceRole",
                 "path": "lambda-layer-awscli-integ-stack/Lambda$python3.9/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "lambda-layer-awscli-integ-stack/Lambda$python3.9/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "lambda-layer-awscli-integ-stack/Lambda$python3.9/ServiceRole/Resource",
@@ -526,6 +550,14 @@
                     "id": "ServiceRole",
                     "path": "lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/ServiceRole/Resource",
@@ -667,7 +699,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                          "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -744,8 +776,8 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       },
       "lambda-layer-awscli-integ-test": {
@@ -761,7 +793,7 @@
                 "path": "lambda-layer-awscli-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
@@ -786,8 +818,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -807,7 +839,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.252"
         }
       }
     },

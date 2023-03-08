@@ -1,6 +1,7 @@
 import { Stack, Token } from '@aws-cdk/core';
-import { StepOutput } from '../helpers-internal/step-output';
 import { FileSet, IFileSetProducer } from './file-set';
+import { StackOutputReference } from './shell-step';
+import { StepOutput } from '../helpers-internal/step-output';
 
 /**
  * A generic Step which can be added to a Pipeline
@@ -115,6 +116,13 @@ export abstract class Step implements IFileSetProducer {
       this._dependencies.add(output.step);
       StepOutput.recordProducer(output);
     }
+  }
+
+  /**
+   * StackOutputReferences this step consumes.
+   */
+  public get consumedStackOutputs(): StackOutputReference[] {
+    return [];
   }
 }
 

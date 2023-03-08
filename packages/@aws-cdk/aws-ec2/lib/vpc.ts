@@ -701,6 +701,8 @@ export interface VpcAttributes {
    * List of public subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
+   *
+   * @default - The VPC does not have any public subnets
    */
   readonly publicSubnetIds?: string[];
 
@@ -708,20 +710,35 @@ export interface VpcAttributes {
    * List of names for the public subnets
    *
    * Must be undefined or have a name for every public subnet group.
+   *
+   * @default - All public subnets will have the name `Public`
    */
   readonly publicSubnetNames?: string[];
 
   /**
-   * List of IDs of routing tables for the public subnets.
+   * List of IDs of route tables for the public subnets.
    *
    * Must be undefined or have a name for every public subnet group.
+   *
+   * @default - Retrieving the route table ID of any public subnet will fail
    */
   readonly publicSubnetRouteTableIds?: string[];
+
+  /**
+   * List of IPv4 CIDR blocks for the public subnets.
+   *
+   * Must be undefined or have an entry for every public subnet group.
+   *
+   * @default - Retrieving the IPv4 CIDR block of any public subnet will fail
+   */
+  readonly publicSubnetIpv4CidrBlocks?: string[];
 
   /**
    * List of private subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
+   *
+   * @default - The VPC does not have any private subnets
    */
   readonly privateSubnetIds?: string[];
 
@@ -729,20 +746,35 @@ export interface VpcAttributes {
    * List of names for the private subnets
    *
    * Must be undefined or have a name for every private subnet group.
+   *
+   * @default - All private subnets will have the name `Private`
    */
   readonly privateSubnetNames?: string[];
 
   /**
-   * List of IDs of routing tables for the private subnets.
+   * List of IDs of route tables for the private subnets.
    *
    * Must be undefined or have a name for every private subnet group.
+   *
+   * @default - Retrieving the route table ID of any private subnet will fail
    */
   readonly privateSubnetRouteTableIds?: string[];
+
+  /**
+   * List of IPv4 CIDR blocks for the private subnets.
+   *
+   * Must be undefined or have an entry for every private subnet group.
+   *
+   * @default - Retrieving the IPv4 CIDR block of any private subnet will fail
+   */
+  readonly privateSubnetIpv4CidrBlocks?: string[];
 
   /**
    * List of isolated subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
+   *
+   * @default - The VPC does not have any isolated subnets
    */
   readonly isolatedSubnetIds?: string[];
 
@@ -750,15 +782,28 @@ export interface VpcAttributes {
    * List of names for the isolated subnets
    *
    * Must be undefined or have a name for every isolated subnet group.
+   *
+   * @default - All isolated subnets will have the name `Isolated`
    */
   readonly isolatedSubnetNames?: string[];
 
   /**
-   * List of IDs of routing tables for the isolated subnets.
+   * List of IDs of route tables for the isolated subnets.
    *
    * Must be undefined or have a name for every isolated subnet group.
+   *
+   * @default - Retrieving the route table ID of any isolated subnet will fail
    */
   readonly isolatedSubnetRouteTableIds?: string[];
+
+  /**
+   * List of IPv4 CIDR blocks for the isolated subnets.
+   *
+   * Must be undefined or have an entry for every isolated subnet group.
+   *
+   * @default - Retrieving the IPv4 CIDR block of any isolated subnet will fail
+   */
+  readonly isolatedSubnetIpv4CidrBlocks?: string[];
 
   /**
    * VPN gateway's identifier
@@ -1227,6 +1272,7 @@ export class Vpc extends VpcBase {
         ...overrides,
         filter,
         returnAsymmetricSubnets: true,
+        returnVpnGateways: options.returnVpnGateways,
         subnetGroupNameTag: options.subnetGroupNameTag,
       } as cxschema.VpcContextQuery,
       dummyValue: undefined,
@@ -2084,9 +2130,9 @@ class ImportedVpc extends VpcBase {
     }
 
     /* eslint-disable max-len */
-    const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds');
-    const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, SubnetType.PRIVATE_WITH_EGRESS, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds');
-    const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, props.isolatedSubnetRouteTableIds, SubnetType.PRIVATE_ISOLATED, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames', 'isolatedSubnetRouteTableIds');
+    const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, props.publicSubnetIpv4CidrBlocks, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds', 'publicSubnetIpv4CidrBlocks');
+    const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, props.privateSubnetIpv4CidrBlocks, SubnetType.PRIVATE_WITH_EGRESS, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds', 'privateSubnetIpv4CidrBlocks');
+    const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, props.isolatedSubnetRouteTableIds, props.isolatedSubnetIpv4CidrBlocks, SubnetType.PRIVATE_ISOLATED, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames', 'isolatedSubnetRouteTableIds', 'isolatedSubnetIpv4CidrBlocks');
     /* eslint-enable max-len */
 
     this.publicSubnets = pub.import(this);

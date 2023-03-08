@@ -1,4 +1,5 @@
 # Amazon S3 Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -19,24 +20,24 @@ const bucket = new s3.Bucket(this, 'MyFirstBucket');
 
 `Bucket` constructs expose the following deploy-time attributes:
 
- * `bucketArn` - the ARN of the bucket (i.e. `arn:aws:s3:::bucket_name`)
- * `bucketName` - the name of the bucket (i.e. `bucket_name`)
- * `bucketWebsiteUrl` - the Website URL of the bucket (i.e.
-   `http://bucket_name.s3-website-us-west-1.amazonaws.com`)
- * `bucketDomainName` - the URL of the bucket (i.e. `bucket_name.s3.amazonaws.com`)
- * `bucketDualStackDomainName` - the dual-stack URL of the bucket (i.e.
-   `bucket_name.s3.dualstack.eu-west-1.amazonaws.com`)
- * `bucketRegionalDomainName` - the regional URL of the bucket (i.e.
-   `bucket_name.s3.eu-west-1.amazonaws.com`)
- * `arnForObjects(pattern)` - the ARN of an object or objects within the bucket (i.e.
-   `arn:aws:s3:::bucket_name/exampleobject.png` or
-   `arn:aws:s3:::bucket_name/Development/*`)
- * `urlForObject(key)` - the HTTP URL of an object within the bucket (i.e.
-   `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
- * `virtualHostedUrlForObject(key)` - the virtual-hosted style HTTP URL of an object
-   within the bucket (i.e. `https://china-bucket-s3.cn-north-1.amazonaws.com.cn/mykey`)
- * `s3UrlForObject(key)` - the S3 URL of an object within the bucket (i.e.
-   `s3://bucket/mykey`)
+- `bucketArn` - the ARN of the bucket (i.e. `arn:aws:s3:::bucket_name`)
+- `bucketName` - the name of the bucket (i.e. `bucket_name`)
+- `bucketWebsiteUrl` - the Website URL of the bucket (i.e.
+  `http://bucket_name.s3-website-us-west-1.amazonaws.com`)
+- `bucketDomainName` - the URL of the bucket (i.e. `bucket_name.s3.amazonaws.com`)
+- `bucketDualStackDomainName` - the dual-stack URL of the bucket (i.e.
+  `bucket_name.s3.dualstack.eu-west-1.amazonaws.com`)
+- `bucketRegionalDomainName` - the regional URL of the bucket (i.e.
+  `bucket_name.s3.eu-west-1.amazonaws.com`)
+- `arnForObjects(pattern)` - the ARN of an object or objects within the bucket (i.e.
+  `arn:aws:s3:::bucket_name/exampleobject.png` or
+  `arn:aws:s3:::bucket_name/Development/*`)
+- `urlForObject(key)` - the HTTP URL of an object within the bucket (i.e.
+  `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
+- `virtualHostedUrlForObject(key)` - the virtual-hosted style HTTP URL of an object
+  within the bucket (i.e. `https://china-bucket-s3.cn-north-1.amazonaws.com.cn/mykey`)
+- `s3UrlForObject(key)` - the S3 URL of an object within the bucket (i.e.
+  `s3://bucket/mykey`)
 
 ## Encryption
 
@@ -90,11 +91,13 @@ A bucket policy will be automatically created for the bucket upon the first call
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket');
-const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
-  actions: ['s3:GetObject'],
-  resources: [bucket.arnForObjects('file.txt')],
-  principals: [new iam.AccountRootPrincipal()],
-}));
+const result = bucket.addToResourcePolicy(
+  new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: [bucket.arnForObjects('file.txt')],
+    principals: [new iam.AccountRootPrincipal()],
+  })
+);
 ```
 
 If you try to add a policy statement to an existing bucket, this method will
@@ -104,11 +107,13 @@ not do anything:
 const bucket = s3.Bucket.fromBucketName(this, 'existingBucket', 'bucket-name');
 
 // No policy statement will be added to the resource
-const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
-  actions: ['s3:GetObject'],
-  resources: [bucket.arnForObjects('file.txt')],
-  principals: [new iam.AccountRootPrincipal()],
-}));
+const result = bucket.addToResourcePolicy(
+  new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: [bucket.arnForObjects('file.txt')],
+    principals: [new iam.AccountRootPrincipal()],
+  })
+);
 ```
 
 That's because it's not possible to tell whether the bucket
@@ -117,11 +122,13 @@ statements to it. We recommend that you always check the result of the call:
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket');
-const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
-  actions: ['s3:GetObject'],
-  resources: [bucket.arnForObjects('file.txt')],
-  principals: [new iam.AccountRootPrincipal()],
-}));
+const result = bucket.addToResourcePolicy(
+  new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: [bucket.arnForObjects('file.txt')],
+    principals: [new iam.AccountRootPrincipal()],
+  })
+);
 
 if (!result.statementAdded) {
   // Uh-oh! Someone probably made a mistake here.
@@ -166,7 +173,42 @@ const bucket = new s3.Bucket(this, 'Bucket', {
 
 To use a bucket in a different stack in the same CDK application, pass the object to the other stack:
 
-[sharing bucket between stacks](test/integ.bucket-sharing.lit.ts)
+```ts
+/**
+ * Stack that defines the bucket
+ */
+class Producer extends cdk.Stack {
+  public readonly myBucket: s3.Bucket;
+
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const bucket = new s3.Bucket(this, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    this.myBucket = bucket;
+  }
+}
+
+interface ConsumerProps extends cdk.StackProps {
+  userBucket: s3.IBucket;
+}
+
+/**
+ * Stack that consumes the bucket
+ */
+class Consumer extends cdk.Stack {
+  constructor(scope: cdk.App, id: string, props: ConsumerProps) {
+    super(scope, id, props);
+
+    const user = new iam.User(this, 'MyUser');
+    props.userBucket.grantReadWrite(user);
+  }
+}
+
+const producer = new Producer(app, 'ProducerStack');
+new Consumer(app, 'ConsumerStack', { userBucket: producer.myBucket });
+```
 
 ## Importing existing buckets
 
@@ -181,7 +223,9 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 });
 
 // now you can just call methods on the bucket
-bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {
+  prefix: 'home/myusername/*',
+});
 ```
 
 Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
@@ -190,7 +234,7 @@ name or ARN respectively:
 
 ```ts
 const byName = s3.Bucket.fromBucketName(this, 'BucketByName', 'my-bucket');
-const byArn  = s3.Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::my-bucket');
+const byArn = s3.Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::my-bucket');
 ```
 
 The bucket's region defaults to the current stack's region, but can also be explicitly set in cases where one of the bucket's
@@ -234,9 +278,10 @@ have the `.jpg` suffix are removed from the bucket.
 ```ts
 declare const myQueue: sqs.Queue;
 const bucket = new s3.Bucket(this, 'MyBucket');
-bucket.addEventNotification(s3.EventType.OBJECT_REMOVED,
-  new s3n.SqsDestination(myQueue),
-  { prefix: 'foo/', suffix: '.jpg' });
+bucket.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.SqsDestination(myQueue), {
+  prefix: 'foo/',
+  suffix: '.jpg',
+});
 ```
 
 Adding notifications on existing buckets:
@@ -249,7 +294,7 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
 
-When you add an event notification to a bucket, a custom resource is created to 
+When you add an event notification to a bucket, a custom resource is created to
 manage the notifications. By default, a new role is created for the Lambda
 function that implements this feature. If you want to use your own role instead,
 you should provide it in the `Bucket` constructor:
@@ -261,10 +306,10 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 });
 ```
 
-Whatever role you provide, the CDK will try to modify it by adding the 
-permissions from `AWSLambdaBasicExecutionRole` (an AWS managed policy) as well 
-as the permissions `s3:PutBucketNotification` and `s3:GetBucketNotification`. 
-If you’re passing an imported role, and you don’t want this to happen, configure 
+Whatever role you provide, the CDK will try to modify it by adding the
+permissions from `AWSLambdaBasicExecutionRole` (an AWS managed policy) as well
+as the permissions `s3:PutBucketNotification` and `s3:GetBucketNotification`.
+If you’re passing an imported role, and you don’t want this to happen, configure
 it to be immutable:
 
 ```ts
@@ -273,11 +318,10 @@ const importedRole = iam.Role.fromRoleArn(this, 'role', 'arn:aws:iam::1234567890
 });
 ```
 
-> If you provide an imported immutable role, make sure that it has at least all 
+> If you provide an imported immutable role, make sure that it has at least all
 > the permissions mentioned above. Otherwise, the deployment will fail!
 
-[S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
-
+[s3 bucket notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 
 ### EventBridge notifications
 
@@ -292,7 +336,7 @@ const bucket = new s3.Bucket(this, 'MyEventBridgeBucket', {
 });
 ```
 
-[S3 EventBridge notifications]: https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html
+[s3 eventbridge notifications]: https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html
 
 ## Block Public Access
 
@@ -349,7 +393,25 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 });
 ```
 
-[S3 Server access logging]: https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
+### Allowing access log delivery using a Bucket Policy (recommended)
+
+When possible, it is recommended to use a bucket policy to grant access instead of
+using ACLs. When the `@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy` feature flag
+is enabled, this is done by default for server access logs. If S3 Server Access Logs
+are the only logs delivered to your bucket (or if all other services logging to the
+bucket support using bucket policy instead of ACLs), you can set object ownership
+to [bucket owner enforced](#bucket-owner-enforced-recommended), as is recommended.
+
+```ts
+const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
+  objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+});
+
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  serverAccessLogsBucket: accessLogsBucket,
+  serverAccessLogsPrefix: 'logs',
+});
+```
 
 ## S3 Inventory
 
@@ -421,16 +483,18 @@ Alternatively, you can also define multiple `websiteRoutingRules`, to define com
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyRedirectedBucket', {
-  websiteRoutingRules: [{
-    hostName: 'www.example.com',
-    httpRedirectCode: '302',
-    protocol: s3.RedirectProtocol.HTTPS,
-    replaceKey: s3.ReplaceKey.prefixWith('test/'),
-    condition: {
-      httpErrorCodeReturnedEquals: '200',
-      keyPrefixEquals: 'prefix',
+  websiteRoutingRules: [
+    {
+      hostName: 'www.example.com',
+      httpRedirectCode: '302',
+      protocol: s3.RedirectProtocol.HTTPS,
+      replaceKey: s3.ReplaceKey.prefixWith('test/'),
+      condition: {
+        httpErrorCodeReturnedEquals: '200',
+        keyPrefixEquals: 'prefix',
+      },
     },
-  }],
+  ],
 });
 ```
 
@@ -461,7 +525,7 @@ bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual 
 
 You can use one of following properties to specify the bucket [object Ownership].
 
-[object Ownership]: https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+[object ownership]: https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
 
 ### Object writer
 
@@ -485,13 +549,22 @@ new s3.Bucket(this, 'MyBucket', {
 
 ### Bucket owner enforced (recommended)
 
-ACLs are disabled, and the bucket owner automatically owns and has full control over every object in the bucket. ACLs no longer affect permissions to data in the S3 bucket. The bucket uses policies to define access control.
+ACLs are disabled, and the bucket owner automatically owns and has full control
+over every object in the bucket. ACLs no longer affect permissions to data in the
+S3 bucket. The bucket uses policies to define access control.
 
 ```ts
 new s3.Bucket(this, 'MyBucket', {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
 });
 ```
+
+Some services may not not support log delivery to buckets that have object ownership
+set to bucket owner enforced, such as
+[S3 buckets using ACLs](#allowing-access-log-delivery-using-a-bucket-policy-recommended)
+or [CloudFront Distributions][cloudfront s3 bucket].
+
+[cloudfront s3 bucket]: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html#AccessLogsBucketAndFileOwnership
 
 ## Bucket deletion
 
@@ -512,7 +585,7 @@ const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
 ```
 
 **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
-switching this to `false` in a CDK version *before* `1.126.0` will lead to
+switching this to `false` in a CDK version _before_ `1.126.0` will lead to
 all objects in the bucket being deleted. Be sure to update your bucket resources
 by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
 
@@ -541,15 +614,16 @@ bucket.transferAccelerationUrlForObject('objectname');
 
 ```ts
 new s3.Bucket(this, 'MyBucket', {
-  intelligentTieringConfigurations: [{
-    name: 'foo',
-    prefix: 'folder/name',
-    archiveAccessTierTime: cdk.Duration.days(90),
-    deepArchiveAccessTierTime: cdk.Duration.days(180),
-    tags: [{key: 'tagname', value: 'tagvalue'}]
-  }],
+  intelligentTieringConfigurations: [
+    {
+      name: 'foo',
+      prefix: 'folder/name',
+      archiveAccessTierTime: cdk.Duration.days(90),
+      deepArchiveAccessTierTime: cdk.Duration.days(180),
+      tags: [{ key: 'tagname', value: 'tagvalue' }],
+    },
+  ],
 });
-
 ```
 
 ## Lifecycle Rule
@@ -558,34 +632,72 @@ new s3.Bucket(this, 'MyBucket', {
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket', {
-  lifecycleRules: [{
-    abortIncompleteMultipartUploadAfter: cdk.Duration.minutes(30),
-    enabled: false,
-    expiration: cdk.Duration.days(30),
-    expirationDate: new Date(),
-    expiredObjectDeleteMarker: false,
-    id: 'id',
-    noncurrentVersionExpiration: cdk.Duration.days(30),
-
-    // the properties below are optional
-    noncurrentVersionsToRetain: 123,
-    noncurrentVersionTransitions: [{
-      storageClass: s3.StorageClass.GLACIER,
-      transitionAfter: cdk.Duration.days(30),
+  lifecycleRules: [
+    {
+      abortIncompleteMultipartUploadAfter: cdk.Duration.minutes(30),
+      enabled: false,
+      expiration: cdk.Duration.days(30),
+      expirationDate: new Date(),
+      expiredObjectDeleteMarker: false,
+      id: 'id',
+      noncurrentVersionExpiration: cdk.Duration.days(30),
 
       // the properties below are optional
       noncurrentVersionsToRetain: 123,
-    }],
-    objectSizeGreaterThan: 500, 
-    prefix: 'prefix',
-    objectSizeLessThan: 10000, 
-    transitions: [{
-      storageClass: s3.StorageClass.GLACIER,
+      noncurrentVersionTransitions: [
+        {
+          storageClass: s3.StorageClass.GLACIER,
+          transitionAfter: cdk.Duration.days(30),
 
-      // the properties below are optional
-      transitionAfter: cdk.Duration.days(30),
-      transitionDate: new Date(),
-    }],
-  }]
+          // the properties below are optional
+          noncurrentVersionsToRetain: 123,
+        },
+      ],
+      objectSizeGreaterThan: 500,
+      prefix: 'prefix',
+      objectSizeLessThan: 10000,
+      transitions: [
+        {
+          storageClass: s3.StorageClass.GLACIER,
+
+          // the properties below are optional
+          transitionAfter: cdk.Duration.days(30),
+          transitionDate: new Date(),
+        },
+      ],
+    },
+  ],
+});
+```
+
+## Object Lock Configuration
+
+[Object Lock](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html)
+can be configured to enable a write-once-read-many model for an S3 bucket. Object Lock must be
+configured when a bucket is created; if a bucket is created without Object Lock, it cannot be
+enabled later via the CDK.
+
+Object Lock can be enabled on an S3 bucket by specifying:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  objectLockEnabled: true,
+});
+```
+
+Usually, it is desired to not just enable Object Lock for a bucket but to also configure a
+[retention mode](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes)
+and a [retention period](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-periods).
+These can be specified by providing `objectLockDefaultRetention`:
+
+```ts
+// Configure for governance mode with a duration of 7 years
+new s3.Bucket(this, 'Bucket1', {
+  objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(7 * 365)),
+});
+
+// Configure for compliance mode with a duration of 1 year
+new s3.Bucket(this, 'Bucket2', {
+  objectLockDefaultRetention: s3.ObjectLockRetention.compliance(cdk.Duration.days(365)),
 });
 ```

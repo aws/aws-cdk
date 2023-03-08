@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { cdkCredentialsConfig, obtainEcrCredentials } from './docker-credentials';
-import { Logger, shell, ShellOptions } from './shell';
+import { Logger, shell, ShellOptions, ProcessFailedError } from './shell';
 import { createCriticalSection } from './util';
 
 interface BuildOptions {
@@ -15,8 +15,10 @@ interface BuildOptions {
   readonly target?: string;
   readonly file?: string;
   readonly buildArgs?: Record<string, string>;
+  readonly buildSecrets?: Record<string, string>;
   readonly networkMode?: string;
   readonly platform?: string;
+  readonly outputs?: string[];
 }
 
 export interface DockerCredentialsConfig {
@@ -27,6 +29,11 @@ export interface DockerCredentialsConfig {
 export interface DockerDomainCredentials {
   readonly secretsManagerSecretId?: string;
   readonly ecrRepository?: string;
+}
+
+enum InspectImageErrorCode {
+  Docker = 1,
+  Podman = 125
 }
 
 export class Docker {
@@ -44,8 +51,31 @@ export class Docker {
       await this.execute(['inspect', tag], { quiet: true });
       return true;
     } catch (e) {
-      if (e.code !== 'PROCESS_FAILED' || e.exitCode !== 1) { throw e; }
-      return false;
+      const error: ProcessFailedError = e;
+
+      /**
+       * The only error we expect to be thrown will have this property and value.
+       * If it doesn't, it's unrecognized so re-throw it.
+       */
+      if (error.code !== 'PROCESS_FAILED') {
+        throw error;
+      }
+
+      /**
+       * If we know the shell command above returned an error, check to see
+       * if the exit code is one we know to actually mean that the image doesn't
+       * exist.
+       */
+      switch (error.exitCode) {
+        case InspectImageErrorCode.Docker:
+        case InspectImageErrorCode.Podman:
+          // Docker and Podman will return this exit code when an image doesn't exist, return false
+          // context: https://github.com/aws/aws-cdk/issues/16209
+          return false;
+        default:
+          // This is an error but it's not an exit code we recognize, throw.
+          throw error;
+      }
     }
   }
 
@@ -53,11 +83,13 @@ export class Docker {
     const buildCommand = [
       'build',
       ...flatten(Object.entries(options.buildArgs || {}).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+      ...flatten(Object.entries(options.buildSecrets || {}).map(([k, v]) => ['--secret', `id=${k},${v}`])),
       '--tag', options.tag,
       ...options.target ? ['--target', options.target] : [],
       ...options.file ? ['--file', options.file] : [],
       ...options.networkMode ? ['--network', options.networkMode] : [],
       ...options.platform ? ['--platform', options.platform] : [],
+      ...options.outputs ? options.outputs.map(output => [`--output=${output}`]) : [],
       '.',
     ];
     await this.execute(buildCommand, { cwd: options.directory });

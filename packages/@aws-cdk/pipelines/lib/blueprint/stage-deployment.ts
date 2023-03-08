@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
-import { isStackArtifact } from '../private/cloud-assembly-internals';
-import { pipelineSynth } from '../private/construct-internals';
 import { StackDeployment } from './stack-deployment';
 import { StackSteps, Step } from './step';
+import { isStackArtifact } from '../private/cloud-assembly-internals';
+import { pipelineSynth } from '../private/construct-internals';
 
 /**
  * Properties for a `StageDeployment`

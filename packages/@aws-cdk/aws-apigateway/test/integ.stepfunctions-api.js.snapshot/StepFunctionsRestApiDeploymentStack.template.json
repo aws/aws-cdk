@@ -31,7 +31,9 @@
    },
    "DependsOn": [
     "StateMachineRoleB840431D"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "StepFunctionsRestApiC6E3E883": {
    "Type": "AWS::ApiGateway::RestApi",

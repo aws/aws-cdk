@@ -1,6 +1,6 @@
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { StackSynthesizer } from './stack-synthesizer';
 import { IStackSynthesizer, ISynthesisSession } from './types';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 
 /**
  * Synthesizer for a nested stack
@@ -11,10 +11,12 @@ import { IStackSynthesizer, ISynthesisSession } from './types';
  * App builder do not need to use this class directly.
  */
 export class NestedStackSynthesizer extends StackSynthesizer {
-  public readonly bootstrapQualifier?: string;
   constructor(private readonly parentDeployment: IStackSynthesizer) {
     super();
-    this.bootstrapQualifier = parentDeployment.bootstrapQualifier;
+  }
+
+  public get bootstrapQualifier(): string | undefined {
+    return this.parentDeployment.bootstrapQualifier;
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {

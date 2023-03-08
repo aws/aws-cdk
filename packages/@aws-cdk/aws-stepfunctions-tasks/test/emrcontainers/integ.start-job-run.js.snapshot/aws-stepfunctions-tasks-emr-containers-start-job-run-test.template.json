@@ -980,7 +980,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/35095179411a39bfcf3668f0b9792ab6c226f9bbfed6ed11f64266838c2fb3f3.json"
+       "/d808c7b09f17a5b8142a9ee7eff4287d5ce8461eced11312cb8d647602e4f2f4.json"
       ]
      ]
     },
@@ -1015,7 +1015,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/e089d05accc52f6f51c5b40401a767550506efa521391b1c3aad9366e5582d33.json"
+       "/e5f80caa912def8e04aa645be0d878c4be62a3c71e5ed2335f37702f0e365e33.json"
       ]
      ]
     },
@@ -1160,7 +1160,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": true
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "StartaJobRunGetEksClusterInfoCustomResourcePolicy7AA7B106"
@@ -1281,7 +1281,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1657,7 +1657,9 @@
    "DependsOn": [
     "StateMachineRoleDefaultPolicyDF1E6607",
     "StateMachineRoleB840431D"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

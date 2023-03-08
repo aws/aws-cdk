@@ -104,13 +104,65 @@ const bbSource = codebuild.Source.bitBucket({
 
 ### For all Git sources
 
-For all Git sources, you can fetch submodules while cloing git repo.
+For all Git sources, you can fetch submodules while cloning git repo.
 
 ```ts
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
   fetchSubmodules: true,
+});
+```
+
+## BuildSpec
+
+The build spec can be provided from a number of different sources
+
+### File path relative to the root of the source
+
+You can specify a specific filename that exists within the project's source artifact to use as the buildspec.
+
+```ts
+const project = new codebuild.Project(this, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromSourceFileName('my-buildspec.yml'),
+  source: codebuild.Source.gitHub({
+    owner: 'awslabs',
+    repo: 'aws-cdk',
+  })
+});
+```
+
+This will use `my-buildspec.yml` file within the `awslabs/aws-cdk` repository as the build spec.
+
+### File within the CDK project codebuild
+
+You can also specify a file within your cdk project directory to use as the buildspec.
+
+```ts
+const project = new codebuild.Project(this, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromAsset('my-buildspec.yml'),
+});
+```
+
+This file will be uploaded to S3 and referenced from the codebuild project.
+
+### Inline object
+
+```ts
+const project = new codebuild.Project(this, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+});
+```
+
+This will result in the buildspec being rendered as JSON within the codebuild project, if you prefer it to be rendered as YAML, use `fromObjectToYaml`.
+
+```ts
+const project = new codebuild.Project(this, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+    version: '0.2',
+  }),
 });
 ```
 
@@ -135,9 +187,6 @@ const project = new codebuild.Project(this, 'MyProject', {
 });
 ```
 
-If you'd prefer your buildspec to be rendered as YAML in the template,
-use the `fromObjectToYaml()` method instead of `fromObject()`.
-
 Because we've not set the `name` property, this example will set the
 `overrideArtifactName` parameter, and produce an artifact named as defined in
 the Buildspec file, uploaded to an S3 bucket (`bucket`). The path will be
@@ -158,7 +207,7 @@ const project = new codebuild.PipelineProject(this, 'Project', {
 })
 ```
 
-For more details, see the readme of the `@aws-cdk/@aws-codepipeline-actions` package.
+For more details, see the readme of the `@aws-cdk/aws-codepipeline-actions` package.
 
 ## Caching
 

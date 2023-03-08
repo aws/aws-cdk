@@ -59,6 +59,7 @@
      "profile",
      "aws.cognito.signin.user.admin"
     ],
+    "AuthSessionValidity": 3,
     "CallbackURLs": [
      "https://redirect-here.myapp.com"
     ],
@@ -131,7 +132,31 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": true
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"service\":\"CognitoIdentityServiceProvider\",\"action\":\"describeUserPoolClient\",\"parameters\":{\"UserPoolId\":\"",
+       {
+        "Ref": "myuserpool01998219"
+       },
+       "\",\"ClientId\":\"",
+       {
+        "Ref": "myuserpoolmyuserpoolclientAFB2274E"
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"",
+       {
+        "Ref": "myuserpoolmyuserpoolclientAFB2274E"
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyF83BED40"
@@ -203,7 +228,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip"
+     "S3Key": "a268caa53756f51bda8ad5f499be4ed8484a81b314811806fbb66f874837c476.zip"
     },
     "Role": {
      "Fn::GetAtt": [

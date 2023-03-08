@@ -25,7 +25,7 @@ AWS IoT Events can trigger actions when it detects a specified event or transiti
 Currently supported are:
 
 - Use timer
-- Set variable to detector instanse
+- Set variable to detector instance
 - Invoke a Lambda function
 
 ## Use timer
@@ -96,9 +96,9 @@ online.transitionTo(offline, { when: iotevents.Expression.timeout('MyTimer') });
 offline.transitionTo(online, { when: iotevents.Expression.currentInput(input) });
 ```
 
-## Set variable to detector instanse
+## Set variable to detector instance
 
-The code snippet below creates an Action that set variable to detector instanse
+The code snippet below creates an Action that set variable to detector instance
 when it is triggered.
 
 ```ts

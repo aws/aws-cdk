@@ -1,14 +1,13 @@
 {
-  "version": "20.0.0",
+  "enableLookups": true,
+  "version": "22.0.0",
   "testCases": {
-    "integ.product": {
+    "integ-product/DefaultTest": {
       "stacks": [
         "integ-servicecatalog-product"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ-product/DefaultTest/DeployAssert",
+      "assertionStackName": "integproductDefaultTestDeployAssertEB23E2A9"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

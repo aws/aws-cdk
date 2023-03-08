@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "testCases": {
-    "integ.save-logs-insights-query-definition": {
+    "LogsInsightsQueryDefinitionIntegTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-logs-querydefinition-integ"
+        "aws-cdk-logs-insights-querydefinition-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "LogsInsightsQueryDefinitionIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LogsInsightsQueryDefinitionIntegTestDefaultTestDeployAssert902BAAD5"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

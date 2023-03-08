@@ -91,9 +91,10 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.108",
+    "@types/aws-lambda": "^8.10.111",
     "@types/jest": "^27.5.2",
-    "@types/lodash": "^4.14.189",
+    "@types/lodash": "^4.14.191",
+    "@aws-cdk/aws-ssm": "0.0.0",
     "jest": "^27.5.1",
     "lodash": "^4.17.21"
   },
@@ -189,7 +190,9 @@
       "props-physical-name:@aws-cdk/aws-lambda.EventInvokeConfigProps",
       "props-physical-name:@aws-cdk/aws-lambda.CodeSigningConfigProps",
       "props-physical-name:@aws-cdk/aws-lambda.FunctionUrlProps",
-      "from-method:@aws-cdk/aws-lambda.FunctionUrl"
+      "from-method:@aws-cdk/aws-lambda.FunctionUrl",
+      "docs-public-apis:@aws-cdk/aws-lambda.RuntimeManagementMode.mode",
+      "docs-public-apis:@aws-cdk/aws-lambda.RuntimeManagementMode.arn"
     ]
   },
   "stability": "stable",

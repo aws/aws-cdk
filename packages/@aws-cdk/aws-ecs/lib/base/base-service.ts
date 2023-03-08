@@ -19,11 +19,12 @@ import {
 import * as cxapi from '@aws-cdk/cx-api';
 
 import { Construct } from 'constructs';
+import { ScalableTaskCount } from './scalable-task-count';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
-import { ScalableTaskCount } from './scalable-task-count';
+import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 
 /**
  * The interface for a service.
@@ -102,6 +103,76 @@ export interface EcsTarget {
  * Interface for ECS load balancer target.
  */
 export interface IEcsLoadBalancerTarget extends elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
+}
+
+/**
+ * Interface for Service Connect configuration.
+ */
+export interface ServiceConnectProps {
+  /**
+   * The cloudmap namespace to register this service into.
+   *
+   * @default the cloudmap namespace specified on the cluster.
+   */
+  readonly namespace?: string;
+
+  /**
+   * The list of Services, including a port mapping, terse client alias, and optional intermediate DNS name.
+   *
+   * This property may be left blank if the current ECS service does not need to advertise any ports via Service Connect.
+   *
+   * @default none
+   */
+  readonly services?: ServiceConnectService[];
+
+  /**
+   * The log driver configuration to use for the Service Connect agent logs.
+   *
+   * @default - none
+   */
+  readonly logDriver?: LogDriver;
+}
+
+/**
+ * Interface for service connect Service props.
+ */
+export interface ServiceConnectService {
+  /**
+   * portMappingName specifies which port and protocol combination should be used for this
+   * service connect service.
+   */
+  readonly portMappingName: string;
+
+  /**
+   * Optionally specifies an intermediate dns name to register in the CloudMap namespace.
+   * This is required if you wish to use the same port mapping name in more than one service.
+   *
+   * @default - port mapping name
+   */
+  readonly discoveryName?: string;
+
+  /**
+   * The terse DNS alias to use for this port mapping in the service connect mesh.
+   * Service Connect-enabled clients will be able to reach this service at
+   * http://dnsName:port.
+   *
+   * @default - No alias is created. The service is reachable at `portMappingName.namespace:port`.
+   */
+  readonly dnsName?: string;
+
+  /**
+   The port for clients to use to communicate with this service via Service Connect.
+   *
+   * @default the container port specified by the port mapping in portMappingName.
+   */
+  readonly port?: number;
+
+  /**
+   * Optional. The port on the Service Connect agent container to use for traffic ingress to this service.
+   *
+   * @default - none
+   */
+  readonly ingressPortOverride?: number;
 }
 
 /**
@@ -216,6 +287,14 @@ export interface BaseServiceOptions {
    *  @default - undefined
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * Configuration for Service Connect.
+   *
+   * @default No ports are advertised via Service Connect on this service, and the service
+   * cannot make requests to other services via Service Connect.
+   */
+  readonly serviceConnectConfiguration?: ServiceConnectProps;
 }
 
 /**
@@ -367,6 +446,9 @@ export abstract class BaseService extends Resource
     });
   }
 
+  private static MIN_PORT = 1;
+  private static MAX_PORT = 65535;
+
   /**
    * The security groups which manage the allowed network traffic for the service.
    */
@@ -416,6 +498,12 @@ export abstract class BaseService extends Resource
    * For more information, see Service Discovery.
    */
   protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
+
+  /**
+   * The service connect configuration for this service.
+   * @internal
+   */
+  protected _serviceConnectConfig?: CfnService.ServiceConnectConfigurationProperty;
 
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
@@ -469,6 +557,7 @@ export abstract class BaseService extends Resource
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
+      serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
       ...additionalProps,
     });
 
@@ -502,6 +591,10 @@ export abstract class BaseService extends Resource
       this.enableCloudMap(props.cloudMapOptions);
     }
 
+    if (props.serviceConnectConfiguration) {
+      this.enableServiceConnect(props.serviceConnectConfiguration);
+    }
+
     if (props.enableExecuteCommand) {
       this.enableExecuteCommand();
 
@@ -515,6 +608,135 @@ export abstract class BaseService extends Resource
       }
     }
     this.node.defaultChild = this.resource;
+  }
+
+  /**   * Enable Service Connect
+   */
+  public enableServiceConnect(config?: ServiceConnectProps) {
+    if (this._serviceConnectConfig) {
+      throw new Error('Service connect configuration cannot be specified more than once.');
+    }
+
+    this.validateServiceConnectConfiguration(config);
+
+    let cfg = config || {};
+
+    /**
+     * Namespace already exists as validated in validateServiceConnectConfiguration.
+     * Resolve which namespace to use by picking:
+     * 1. The namespace defined in service connect config.
+     * 2. The namespace defined in the cluster's defaultCloudMapNamespace property.
+    */
+    let namespace;
+    if (this.cluster.defaultCloudMapNamespace) {
+      namespace = this.cluster.defaultCloudMapNamespace.namespaceName;
+    }
+
+    if (cfg.namespace) {
+      namespace = cfg.namespace;
+    }
+
+    /**
+     * Map services to CFN property types. This block manages:
+     * 1. Finding the correct port.
+     * 2. Client alias enumeration
+     */
+    const services = cfg.services?.map(svc => {
+      const containerPort = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
+      if (!containerPort) {
+        throw new Error(`Port mapping with name ${svc.portMappingName} does not exist.`);
+      }
+      const alias = {
+        port: svc.port || containerPort,
+        dnsName: svc.dnsName,
+      };
+
+      return {
+        portName: svc.portMappingName,
+        discoveryName: svc.discoveryName,
+        ingressPortOverride: svc.ingressPortOverride,
+        clientAliases: [alias],
+      } as CfnService.ServiceConnectServiceProperty;
+    });
+
+    let logConfig: LogDriverConfig | undefined;
+    if (cfg.logDriver && this.taskDefinition.defaultContainer) {
+      // Default container existence is validated in validateServiceConnectConfiguration.
+      // We only need the default container so that bind() can get the task definition from the container definition.
+      logConfig = cfg.logDriver.bind(this, this.taskDefinition.defaultContainer);
+    }
+
+    this._serviceConnectConfig = {
+      enabled: true,
+      logConfiguration: logConfig,
+      namespace: namespace,
+      services: services,
+    };
+  };
+
+  /**
+   * Validate Service Connect Configuration
+   */
+  private validateServiceConnectConfiguration(config?: ServiceConnectProps) {
+    if (!this.taskDefinition.defaultContainer) {
+      throw new Error('Task definition must have at least one container to enable service connect.');
+    }
+
+    // Check the implicit enable case; when config isn't specified or namespace isn't specified, we need to check that there is a namespace on the cluster.
+    if ((!config || !config.namespace) && !this.cluster.defaultCloudMapNamespace) {
+      throw new Error('Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace');
+    }
+
+    // When config isn't specified, return.
+    if (!config) {
+      return;
+    }
+
+    if (!config.services) {
+      return;
+    }
+    let portNames = new Map<string, string[]>();
+    config.services.forEach(serviceConnectService => {
+      // port must exist on the task definition
+      if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
+        throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
+      };
+
+      // Check that no two service connect services use the same discovery name.
+      const discoveryName = serviceConnectService.discoveryName || serviceConnectService.portMappingName;
+      if (portNames.get(serviceConnectService.portMappingName)?.includes(discoveryName)) {
+        throw new Error(`Cannot create multiple services with the discoveryName '${discoveryName}'.`);
+      }
+
+      let currentDiscoveries = portNames.get(serviceConnectService.portMappingName);
+      if (!currentDiscoveries) {
+        portNames.set(serviceConnectService.portMappingName, [discoveryName]);
+      } else {
+        currentDiscoveries.push(discoveryName);
+        portNames.set(serviceConnectService.portMappingName, currentDiscoveries);
+      }
+
+      // IngressPortOverride should be within the valid port range if it exists.
+      if (serviceConnectService.ingressPortOverride && !this.isValidPort(serviceConnectService.ingressPortOverride)) {
+        throw new Error(`ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`);
+      }
+
+      // clientAlias.port should be within the valid port range
+      if (serviceConnectService.port &&
+        !this.isValidPort(serviceConnectService.port)) {
+        throw new Error(`Client Alias port ${serviceConnectService.port} is not valid.`);
+      }
+    });
+  }
+
+  /**
+   * Determines if a port is valid
+   *
+   * @param port: The port number
+   * @returns boolean whether the port is valid
+   */
+  private isValidPort(port?: number): boolean {
+    return !!(port && Number.isInteger(port) && port >= BaseService.MIN_PORT && port <= BaseService.MAX_PORT);
   }
 
   /**
@@ -749,6 +971,10 @@ export abstract class BaseService extends Resource
     const sdNamespace = options.cloudMapNamespace ?? this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
       throw new Error('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.');
+    }
+
+    if (sdNamespace.type === cloudmap.NamespaceType.HTTP) {
+      throw new Error('Cannot enable DNS service discovery for HTTP Cloudmap Namespace.');
     }
 
     // Determine DNS type based on network mode

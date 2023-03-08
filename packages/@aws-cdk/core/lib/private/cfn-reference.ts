@@ -54,7 +54,7 @@ export class CfnReference extends Reference {
    *     Lazy.string({ produce: () => new CfnReference(...) })
    *
    */
-  public static for(target: CfnElement, attribute: string, refRender?: ReferenceRendering) {
+  public static for(target: CfnElement, attribute: string, refRender?: ReferenceRendering, typeHint?: ResolutionTypeHint) {
     return CfnReference.singletonReference(target, attribute, refRender, () => {
       const cfnIntrinsic = refRender === ReferenceRendering.FN_SUB
         ? ('${' + target.logicalId + (attribute === 'Ref' ? '' : `.${attribute}`) + '}')
@@ -66,7 +66,7 @@ export class CfnReference extends Reference {
               : [target.logicalId, attribute],
           }
         );
-      return new CfnReference(cfnIntrinsic, attribute, target);
+      return new CfnReference(cfnIntrinsic, attribute, target, typeHint);
     });
   }
 
@@ -118,9 +118,9 @@ export class CfnReference extends Reference {
   private readonly replacementTokens: Map<Stack, IResolvable>;
   private readonly targetStack: Stack;
 
-  protected constructor(value: any, displayName: string, public readonly target: IConstruct) {
+  protected constructor(value: any, displayName: string, public readonly target: IConstruct, typeHint?: ResolutionTypeHint) {
     // prepend scope path to display name
-    super(value, target, displayName);
+    super(value, target, displayName, typeHint);
 
     this.replacementTokens = new Map<Stack, IResolvable>();
     this.targetStack = Stack.of(target);
@@ -180,3 +180,4 @@ import { CfnElement } from '../cfn-element';
 import { IResolvable, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { ResolutionTypeHint } from '../type-hints';

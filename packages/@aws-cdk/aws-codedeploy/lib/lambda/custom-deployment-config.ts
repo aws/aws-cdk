@@ -1,8 +1,8 @@
 import { Duration, Names, Resource } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
-import { arnForDeploymentConfig, validateName } from '../utils';
 import { ILambdaDeploymentConfig } from './deployment-config';
+import { arnForDeploymentConfig, validateName } from '../private/utils';
 
 /**
  * Lambda Deployment config type
@@ -62,7 +62,7 @@ export interface CustomLambdaDeploymentConfigProps {
 /**
  * A custom Deployment Configuration for a Lambda Deployment Group.
  * @resource AWS::CodeDeploy::DeploymentGroup
- * @deprecated CloudFormation now supports Lambda deployment configurations without custom resources. Use {@link LambdaDeploymentConfig}.
+ * @deprecated CloudFormation now supports Lambda deployment configurations without custom resources. Use `LambdaDeploymentConfig`.
  */
 export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDeploymentConfig {
 
@@ -151,6 +151,8 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      // APIs are available in 2.1055.0
+      installLatestAwsSdk: false,
     });
 
     this.node.addValidation({ validate: () => validateName('Deployment config', this.deploymentConfigName) });

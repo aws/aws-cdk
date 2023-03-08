@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::Events::Connection.ApiKeyAuthParameters": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-connection-apikeyauthparameters.html",
@@ -86,6 +86,7 @@
       "Properties": {
         "BodyParameters": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-connection-connectionhttpparameters.html#cfn-events-connection-connectionhttpparameters-bodyparameters",
+          "DuplicatesAllowed": true,
           "ItemType": "Parameter",
           "Required": false,
           "Type": "List",
@@ -93,6 +94,7 @@
         },
         "HeaderParameters": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-connection-connectionhttpparameters.html#cfn-events-connection-connectionhttpparameters-headerparameters",
+          "DuplicatesAllowed": true,
           "ItemType": "Parameter",
           "Required": false,
           "Type": "List",
@@ -100,6 +102,7 @@
         },
         "QueryStringParameters": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-connection-connectionhttpparameters.html#cfn-events-connection-connectionhttpparameters-querystringparameters",
+          "DuplicatesAllowed": true,
           "ItemType": "Parameter",
           "Required": false,
           "Type": "List",
@@ -989,6 +992,7 @@
         },
         "EventBuses": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-endpoint.html#cfn-events-endpoint-eventbuses",
+          "DuplicatesAllowed": true,
           "ItemType": "EndpointEventBus",
           "Required": true,
           "Type": "List",

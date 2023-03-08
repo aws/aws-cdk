@@ -7,8 +7,8 @@ import { ContextProvider, IResource, Lazy, Resource, Stack, Token } from '@aws-c
 import * as cxapi from '@aws-cdk/cx-api';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { Construct } from 'constructs';
-import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
+import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 
 /**
  * Shared properties of both Application and Network Load Balancers
@@ -251,18 +251,8 @@ export abstract class BaseLoadBalancer extends Resource {
     this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
     this.setAttribute('access_logs.s3.prefix', prefix);
 
-    const region = Stack.of(this).region;
-    if (Token.isUnresolved(region)) {
-      throw new Error('Region is required to enable ELBv2 access logging');
-    }
-
-    const account = RegionInfo.get(region).elbv2Account;
-    if (!account) {
-      throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);
-    }
-
     const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
-    bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + '/' : '')}AWSLogs/${Stack.of(this).account}/*`);
+    bucket.grantPut(this.resourcePolicyPrincipal(), `${(prefix ? prefix + '/' : '')}AWSLogs/${Stack.of(this).account}/*`);
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],
@@ -301,6 +291,22 @@ export abstract class BaseLoadBalancer extends Resource {
    */
   public removeAttribute(key: string) {
     this.setAttribute(key, undefined);
+  }
+
+  protected resourcePolicyPrincipal(): iam.IPrincipal {
+    const region = Stack.of(this).region;
+    if (Token.isUnresolved(region)) {
+      throw new Error('Region is required to enable ELBv2 access logging');
+    }
+
+    const account = RegionInfo.get(region).elbv2Account;
+    if (!account) {
+      // New Regions use a service principal
+      // https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
+      return new iam.ServicePrincipal('logdelivery.elasticloadbalancing.amazonaws.com');
+    }
+
+    return new iam.AccountPrincipal(account);
   }
 
   protected validateLoadBalancer(): string[] {

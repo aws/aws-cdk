@@ -1,7 +1,7 @@
-import { Match, Matcher } from '..';
 import { AbsentMatch } from './matchers/absent';
-import { formatAllMismatches, formatFailure, matchSection } from './section';
+import { formatAllMismatches, matchSection, formatSectionMatchFailure } from './section';
 import { Resource, Template } from './template';
+import { Match, Matcher } from '..';
 
 export function findResources(template: Template, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
   const section = template.Resources ?? {};
@@ -57,14 +57,7 @@ export function hasResource(template: Template, type: string, props: any): strin
     return;
   }
 
-  if (result.closestResult === undefined) {
-    return `No resource with type ${type} found`;
-  }
-
-  return [
-    `Template has ${result.analyzedCount} resources with type ${type}, but none match as expected.`,
-    formatFailure(result.closestResult),
-  ].join('\n');
+  return formatSectionMatchFailure(`resources with type ${type}`, result);
 }
 
 export function hasResourceProperties(template: Template, type: string, props: any): string | void {

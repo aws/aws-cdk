@@ -2,18 +2,18 @@ import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import { Token } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import { FullActionDescriptor } from './full-action-descriptor';
+import * as validation from './validation';
 import { IAction, IPipeline, IStage } from '../action';
 import { Artifact } from '../artifact';
 import { CfnPipeline } from '../codepipeline.generated';
 import { Pipeline, StageProps } from '../pipeline';
-import { FullActionDescriptor } from './full-action-descriptor';
-import * as validation from './validation';
 
 /**
  * A Stage in a Pipeline.
  *
- * Stages are added to a Pipeline by calling {@link Pipeline#addStage},
- * which returns an instance of {@link codepipeline.IStage}.
+ * Stages are added to a Pipeline by calling `Pipeline#addStage`,
+ * which returns an instance of `codepipeline.IStage`.
  *
  * This class is private to the CodePipeline module.
  */

@@ -1,4 +1,6 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as cdk from '@aws-cdk/core';
+import { REDSHIFT_COLUMN_ID } from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
@@ -55,7 +57,18 @@ export enum TableAction {
  */
 export interface Column {
   /**
-   * The name of the column.
+   * The unique identifier of the column.
+   *
+   * This is not the name of the column, and renaming this identifier will cause a new column to be created and the old column to be dropped.
+   *
+   * **NOTE** - This field will be set, however, only by setting the `@aws-cdk/aws-redshift:columnId` feature flag will this field be used.
+   *
+   * @default - the column name is used as the identifier
+   */
+  readonly id?: string;
+
+  /**
+   * The name of the column. This will appear on Amazon Redshift.
    */
   readonly name: string;
 
@@ -77,6 +90,20 @@ export interface Column {
    * @default - column is not a SORTKEY
    */
   readonly sortKey?: boolean;
+
+  /**
+   * The encoding to use for the column.
+   *
+   * @default - Amazon Redshift determines the encoding based on the data type.
+   */
+  readonly encoding?: ColumnEncoding;
+
+  /**
+   * A comment to attach to the column.
+   *
+   * @default - no comment
+   */
+  readonly comment?: string;
 }
 
 /**
@@ -115,6 +142,13 @@ export interface TableProps extends DatabaseOptions {
    * @default cdk.RemovalPolicy.Retain
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
+     * A comment to attach to the table.
+     *
+     * @default - no comment
+     */
+  readonly tableComment?: string;
 }
 
 /**
@@ -208,6 +242,7 @@ export class Table extends TableBase {
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
+    this.addColumnIds(props.tableColumns);
     this.validateDistKeyColumns(props.tableColumns);
     if (props.distStyle) {
       this.validateDistStyle(props.distStyle, props.tableColumns);
@@ -219,6 +254,8 @@ export class Table extends TableBase {
     this.tableColumns = props.tableColumns;
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
+
+    const useColumnIds = !!cdk.FeatureFlags.of(this).isEnabled(REDSHIFT_COLUMN_ID);
 
     this.resource = new DatabaseQuery<TableHandlerProps>(this, 'Resource', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
@@ -232,6 +269,8 @@ export class Table extends TableBase {
         tableColumns: this.tableColumns,
         distStyle: props.distStyle,
         sortStyle: props.sortStyle ?? this.getDefaultSortStyle(props.tableColumns),
+        tableComment: props.tableComment,
+        useColumnIds,
       },
     });
 
@@ -287,6 +326,18 @@ export class Table extends TableBase {
     const sortKeyColumns = getSortKeyColumns(columns);
     return (sortKeyColumns.length === 0) ? TableSortStyle.AUTO : TableSortStyle.COMPOUND;
   }
+
+  private addColumnIds(columns: Column[]): void {
+    const columnIds = new Set<string>();
+    for (const column of columns) {
+      if (column.id) {
+        if (columnIds.has(column.id)) {
+          throw new Error(`Column id '${column.id}' is not unique.`);
+        }
+        columnIds.add(column.id);
+      }
+    }
+  }
 }
 
 /**
@@ -333,4 +384,113 @@ export enum TableSortStyle {
    * Specifies that the data is sorted using an interleaved sort key.
    */
   INTERLEAVED = 'INTERLEAVED',
+}
+
+/**
+ * The compression encoding of a column.
+ *
+ * @see https://docs.aws.amazon.com/redshift/latest/dg/c_Compression_encodings.html
+ */
+export enum ColumnEncoding {
+  /**
+   * Amazon Redshift assigns an optimal encoding based on the column data.
+   * This is the default.
+   */
+  AUTO = 'AUTO',
+
+  /**
+   * The column is not compressed.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/c_Raw_encoding.html
+   */
+  RAW = 'RAW',
+
+  /**
+   * The column is compressed using the AZ64 algorithm.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/az64-encoding.html
+   */
+  AZ64 = 'AZ64',
+
+  /**
+   * The column is compressed using a separate dictionary for each block column value on disk.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/c_Byte_dictionary_encoding.html
+   */
+  BYTEDICT = 'BYTEDICT',
+
+  /**
+   * The column is compressed based on the difference between values in the column.
+   * This records differences as 1-byte values.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/c_Delta_encoding.html
+   */
+  DELTA = 'DELTA',
+
+  /**
+   * The column is compressed based on the difference between values in the column.
+   * This records differences as 2-byte values.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/c_Delta_encoding.html
+   */
+  DELTA32K = 'DELTA32K',
+
+  /**
+   * The column is compressed using the LZO algorithm.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/lzo-encoding.html
+   */
+  LZO = 'LZO',
+
+  /**
+   * The column is compressed to a smaller storage size than the original data type.
+   * The compressed storage size is 1 byte.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/c_MostlyN_encoding.html
+   */
+  MOSTLY8 = 'MOSTLY8',
+
+  /**
+   * The column is compressed to a smaller storage size than the original data type.
+   * The compressed storage size is 2 bytes.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/c_MostlyN_encoding.html
+   */
+  MOSTLY16 = 'MOSTLY16',
+
+  /**
+   * The column is compressed to a smaller storage size than the original data type.
+   * The compressed storage size is 4 bytes.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/c_MostlyN_encoding.html
+   */
+  MOSTLY32 = 'MOSTLY32',
+
+  /**
+   * The column is compressed by recording the number of occurrences of each value in the column.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/c_Runlength_encoding.html
+   */
+  RUNLENGTH = 'RUNLENGTH',
+
+  /**
+   * The column is compressed by recording the first 245 unique words and then using a 1-byte index to represent each word.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/c_Text255_encoding.html
+   */
+  TEXT255 = 'TEXT255',
+
+  /**
+   * The column is compressed by recording the first 32K unique words and then using a 2-byte index to represent each word.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/c_Text255_encoding.html
+   */
+  TEXT32K = 'TEXT32K',
+
+  /**
+   * The column is compressed using the ZSTD algorithm.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/zstd-encoding.html
+   */
+  ZSTD = 'ZSTD',
 }

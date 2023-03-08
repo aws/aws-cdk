@@ -1,14 +1,12 @@
 {
-  "version": "21.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.scoped-rule": {
+    "aws-cdk-config-rule-integ/DefaultTest": {
       "stacks": [
         "aws-cdk-config-rule-scoped-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-cdk-config-rule-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkconfigruleintegDefaultTestDeployAssert37C5819B"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

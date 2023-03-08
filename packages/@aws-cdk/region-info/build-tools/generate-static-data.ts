@@ -1,6 +1,10 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import {
+  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS,
+  ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS, EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS, ADOT_LAMBDA_LAYER_ARNS,
+} from './fact-tables';
+import {
   AWS_REGIONS,
   AWS_SERVICES,
   before,
@@ -8,10 +12,6 @@ import {
   RULE_CLASSIC_PARTITION_BECOMES_OPT_IN,
 } from '../lib/aws-entities';
 import { Default } from '../lib/default';
-import {
-  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS,
-  ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS, EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
-} from './fact-tables';
 
 async function main(): Promise<void> {
   checkRegions(APPMESH_ECR_ACCOUNTS);
@@ -89,6 +89,18 @@ async function main(): Promise<void> {
       for (const arch in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version]) {
         registerFact(region, ['cloudwatchLambdaInsightsVersion', version, arch], CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][arch][region]);
 
+      }
+    }
+
+    for (const type in ADOT_LAMBDA_LAYER_ARNS) {
+      for (const version in ADOT_LAMBDA_LAYER_ARNS[type]) {
+        for (const arch in ADOT_LAMBDA_LAYER_ARNS[type][version]) {
+          registerFact(
+            region,
+            ['adotLambdaLayer', type, version, arch],
+            ADOT_LAMBDA_LAYER_ARNS[type][version][arch][region],
+          );
+        }
       }
     }
   }

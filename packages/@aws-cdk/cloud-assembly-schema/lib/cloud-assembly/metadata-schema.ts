@@ -119,6 +119,13 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
   readonly buildArgs?: { [key: string]: string };
 
   /**
+   * Build secrets to pass to the `docker build` command
+   *
+   * @default no build secrets are passed
+   */
+  readonly buildSecrets?: { [key: string]: string };
+
+  /**
    * Docker target to build to
    *
    * @default no build target
@@ -145,6 +152,14 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @default - current machine platform
    */
   readonly platform?: string;
+
+  /**
+   * Outputs to pass to the `docker build` command.
+   *
+   * @default - no outputs are passed to the build command (default outputs are used)
+   * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
+   */
+  readonly outputs?: string[];
 }
 
 /**

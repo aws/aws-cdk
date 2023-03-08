@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::ServiceCatalog::CloudFormationProduct.ProvisioningArtifactProperties": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-servicecatalog-cloudformationproduct-provisioningartifactproperties.html",
@@ -223,6 +223,10 @@
         "CloudformationStackArn": {
           "PrimitiveType": "String"
         },
+        "Outputs": {
+          "PrimitiveItemType": "String",
+          "Type": "Map"
+        },
         "ProvisionedProductId": {
           "PrimitiveType": "String"
         },
@@ -290,6 +294,7 @@
         },
         "ProvisioningParameters": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-servicecatalog-cloudformationprovisionedproduct.html#cfn-servicecatalog-cloudformationprovisionedproduct-provisioningparameters",
+          "DuplicatesAllowed": true,
           "ItemType": "ProvisioningParameter",
           "Required": false,
           "Type": "List",
@@ -303,6 +308,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-servicecatalog-cloudformationprovisionedproduct.html#cfn-servicecatalog-cloudformationprovisionedproduct-tags",
+          "DuplicatesAllowed": true,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -601,6 +607,7 @@
         },
         "Definition": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-servicecatalog-serviceaction.html#cfn-servicecatalog-serviceaction-definition",
+          "DuplicatesAllowed": true,
           "ItemType": "DefinitionParameter",
           "Required": true,
           "Type": "List",

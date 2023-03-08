@@ -2,8 +2,8 @@ import { Template } from '@aws-cdk/assertions';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as sources from '../lib';
 import { TestFunction } from './test-function';
+import * as sources from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -32,6 +32,7 @@ describe('KinesisEventSource', () => {
               'kinesis:SubscribeToShard',
               'kinesis:DescribeStream',
               'kinesis:ListStreams',
+              'kinesis:DescribeStreamConsumer',
             ],
             'Effect': 'Allow',
             'Resource': {

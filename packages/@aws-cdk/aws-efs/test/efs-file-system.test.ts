@@ -162,6 +162,29 @@ test('file system is created correctly with bursting throughput mode', () => {
   });
 });
 
+test('file system is created correctly with elastic throughput mode', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    throughputMode: ThroughputMode.ELASTIC,
+    performanceMode: PerformanceMode.GENERAL_PURPOSE,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    ThroughputMode: 'elastic',
+  });
+});
+
+test('Exception when throughput mode is set to ELASTIC, performance mode cannot be MaxIO', () => {
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      throughputMode: ThroughputMode.ELASTIC,
+      performanceMode: PerformanceMode.MAX_IO,
+    });
+  }).toThrowError(/ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO/);
+});
+
 test('Exception when throughput mode is set to PROVISIONED, but provisioned throughput is not set', () => {
   expect(() => {
     new FileSystem(stack, 'EfsFileSystem', {
@@ -390,4 +413,48 @@ test('can create when using a VPC with multiple subnets per availability zone', 
   });
   // make sure only one mount target is created.
   Template.fromStack(stack).resourceCountIs('AWS::EFS::MountTarget', 1);
+});
+
+test('can specify file system policy', () => {
+  // WHEN
+  const myFileSystemPolicy = new iam.PolicyDocument({
+    statements: [new iam.PolicyStatement({
+      actions: [
+        'elasticfilesystem:ClientWrite',
+        'elasticfilesystem:ClientMount',
+      ],
+      principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:role/Testing_Role')],
+      resources: ['arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd'],
+      conditions: {
+        Bool: {
+          'elasticfilesystem:AccessedViaMountTarget': 'true',
+        },
+      },
+    })],
+  });
+  new FileSystem(stack, 'EfsFileSystem', { vpc, fileSystemPolicy: myFileSystemPolicy });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemPolicy: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: 'arn:aws:iam::111122223333:role/Testing_Role',
+          },
+          Action: [
+            'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientMount',
+          ],
+          Resource: 'arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd',
+          Condition: {
+            Bool: {
+              'elasticfilesystem:AccessedViaMountTarget': 'true',
+            },
+          },
+        },
+      ],
+    },
+  });
 });

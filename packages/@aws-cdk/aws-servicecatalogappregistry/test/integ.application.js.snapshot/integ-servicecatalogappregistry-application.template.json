@@ -3,8 +3,8 @@
   "TestApplication2FBC585F": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
-    "Name": "myApplicationtest",
-    "Description": "my application description"
+    "Name": "TestApplication",
+    "Description": "My application description"
    }
   },
   "TestApplicationResourceAssociationd232b63e52a8414E905D": {
@@ -84,7 +84,7 @@
       "release": "go time"
      }
     },
-    "Name": "myAttributeGroupTest",
+    "Name": "myAttributeGroup",
     "Description": "my attribute group description"
    }
   },

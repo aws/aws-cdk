@@ -26,6 +26,7 @@
   - [ECS Applications](#ecs-applications)
   - [ECS Deployment Groups](#ecs-deployment-groups)
   - [ECS Deployment Configurations](#ecs-deployment-configurations)
+  - [ECS Deployments](#ecs-deployments)
 
 ## Introduction
 
@@ -568,14 +569,14 @@ deployment and can automatically roll back the deployment.
 
 ```ts
 new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
-  // The deployment will wait for approval for up to 8 hours before stopping the deployment
-  deploymentApprovalWaitTime: Duration.hours(8),
   autoRollback: {
     // CodeDeploy will automatically roll back if the 8-hour approval period times out and the deployment stops
     stoppedDeployment: true,
   },
   service,
   blueGreenDeploymentConfig: {
+    // The deployment will wait for approval for up to 8 hours before stopping the deployment
+    deploymentApprovalWaitTime: Duration.hours(8),
     blueTargetGroup,
     greenTargetGroup,
     listener,
@@ -662,4 +663,56 @@ const deploymentConfig = codedeploy.EcsDeploymentConfig.fromEcsDeploymentConfigN
   'ExistingDeploymentConfiguration',
   'MyExistingDeploymentConfiguration',
 );
+```
+
+## ECS Deployments
+
+[![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg)](https://constructs.dev/packages/@cdklabs/cdk-ecs-codedeploy)
+
+An experimental construct is available on the Construct Hub called [@cdklabs/cdk-ecs-codedeploy](https://constructs.dev/packages/@cdklabs/cdk-ecs-codedeploy) that manages ECS CodeDeploy deployments.
+
+```ts
+declare const deploymentGroup: codeDeploy.IEcsDeploymentGroup;
+declare const taskDefinition: ecs.ITaskDefinition;
+
+new EcsDeployment({
+  deploymentGroup,
+  targetService: {
+    taskDefinition,
+    containerName: 'mycontainer',
+    containerPort: 80,
+  },
+});
+```
+
+The deployment will use the AutoRollbackConfig for the EcsDeploymentGroup unless it is overridden in the deployment:
+
+```ts
+new EcsDeployment({
+  deploymentGroup,
+  targetService: {
+    taskDefinition,
+    containerName: 'mycontainer',
+    containerPort: 80,
+  },
+  autoRollback: {
+    failedDeployment: true,
+    deploymentInAlarm: true,
+    stoppedDeployment: false,
+  },
+});
+```
+
+By default, the CodeDeploy Deployment will timeout after 30 minutes. The timeout value can be overridden:
+
+```ts
+new EcsDeployment({
+  deploymentGroup,
+  targetService: {
+    taskDefinition,
+    containerName: 'mycontainer',
+    containerPort: 80,
+  },
+  timeout: Duration.minutes(60),
+});
 ```

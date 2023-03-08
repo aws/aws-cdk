@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::OpsWorksCM::Server.EngineAttribute": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opsworkscm-server-engineattribute.html",
@@ -28,7 +28,7 @@
         "Endpoint": {
           "PrimitiveType": "String"
         },
-        "Id": {
+        "ServerName": {
           "PrimitiveType": "String"
         }
       },
@@ -138,12 +138,6 @@
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
-          "UpdateType": "Immutable"
-        },
-        "ServerName": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-servername",
-          "PrimitiveType": "String",
-          "Required": false,
           "UpdateType": "Immutable"
         },
         "ServiceRoleArn": {

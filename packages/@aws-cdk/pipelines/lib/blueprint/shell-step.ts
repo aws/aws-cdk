@@ -1,8 +1,8 @@
 import { CfnOutput, Stack } from '@aws-cdk/core';
-import { mapValues } from '../private/javascript';
 import { FileSet, IFileSetProducer } from './file-set';
 import { StackDeployment } from './stack-deployment';
 import { Step } from './step';
+import { mapValues } from '../private/javascript';
 
 /**
  * Construction properties for a `ShellStep`.
@@ -232,6 +232,10 @@ export class ShellStep extends Step {
       this.outputs.push({ directory, fileSet });
     }
     return fileSet;
+  }
+
+  public get consumedStackOutputs(): StackOutputReference[] {
+    return Object.values(this.envFromCfnOutputs);
   }
 }
 

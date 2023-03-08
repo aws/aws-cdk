@@ -516,7 +516,9 @@ describe('security group', () => {
       });
     });
   });
+});
 
+describe('security group lookup', () => {
   testDeprecated('can look up a security group', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
@@ -528,7 +530,7 @@ describe('security group', () => {
 
     const securityGroup = SecurityGroup.fromLookup(stack, 'stack', 'sg-1234');
 
-    expect(securityGroup.securityGroupId).toEqual('sg-12345');
+    expect(securityGroup.securityGroupId).toEqual('sg-12345678');
     expect(securityGroup.allowAllOutbound).toEqual(true);
 
   });
@@ -547,7 +549,7 @@ describe('security group', () => {
     const securityGroup = SecurityGroup.fromLookupById(stack, 'SG1', 'sg-12345');
 
     // THEN
-    expect(securityGroup.securityGroupId).toEqual('sg-12345');
+    expect(securityGroup.securityGroupId).toEqual('sg-12345678');
     expect(securityGroup.allowAllOutbound).toEqual(true);
 
   });
@@ -571,7 +573,7 @@ describe('security group', () => {
     const securityGroup = SecurityGroup.fromLookupByName(stack, 'SG1', 'sg-12345', vpc);
 
     // THEN
-    expect(securityGroup.securityGroupId).toEqual('sg-12345');
+    expect(securityGroup.securityGroupId).toEqual('sg-12345678');
     expect(securityGroup.allowAllOutbound).toEqual(true);
 
   });
@@ -595,9 +597,33 @@ describe('security group', () => {
     const securityGroup = SecurityGroup.fromLookupByName(stack, 'SG1', 'my-security-group', vpc);
 
     // THEN
-    expect(securityGroup.securityGroupId).toEqual('sg-12345');
+    expect(securityGroup.securityGroupId).toEqual('sg-12345678');
     expect(securityGroup.allowAllOutbound).toEqual(true);
 
+  });
+
+  test('can look up a security group and use it as a peer', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+      vpcId: 'vpc-1234',
+      availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+    });
+
+    // WHEN
+    const securityGroup = SecurityGroup.fromLookupByName(stack, 'SG1', 'my-security-group', vpc);
+
+    // THEN
+    expect(() => {
+      Peer.securityGroupId(securityGroup.securityGroupId);
+    }).not.toThrow();
   });
 
   test('throws if securityGroupId is tokenized', () => {

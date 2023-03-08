@@ -2,12 +2,12 @@ import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecrAssets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, Stack, CfnOutput } from '@aws-cdk/core';
+import { App, Stack, CfnOutput, Duration } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
-import * as eks from '../lib';
+import * as kplus from 'cdk8s-plus-24';
 import { BucketPinger } from './bucket-pinger/bucket-pinger';
+import * as eks from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');
@@ -24,18 +24,21 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
 const cluster = new eks.Cluster(stack, 'Cluster', {
   vpc: vpc,
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_24,
 });
 
 const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
 
 const serviceAccount = cluster.addServiceAccount('my-service-account');
-const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(serviceAccount.serviceAccountName);
+const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(stack, 'kplus-sa', serviceAccount.serviceAccountName);
 new kplus.Deployment(chart, 'Deployment', {
   containers: [{
     image: dockerImage.imageUri,
     envVariables: {
       BUCKET_NAME: kplus.EnvValue.fromValue(bucketName),
+    },
+    securityContext: {
+      user: 1000,
     },
   }],
   restartPolicy: kplus.RestartPolicy.ALWAYS,
@@ -56,6 +59,8 @@ serviceAccount.role.addToPrincipalPolicy(
 // if the bucket does not exist, then it will throw an error and fail the deployment.
 const pinger = new BucketPinger(stack, 'S3BucketPinger', {
   bucketName,
+  // we need more timeout for the sdk-call in the pod as it could take more than 1 minute.
+  timeout: Duration.minutes(3),
 });
 
 // the pinger must wait for the cluster to be updated.

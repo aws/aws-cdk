@@ -1,10 +1,10 @@
 import { AssetMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
-import { ToolkitInfo } from '../lib/api';
-import { addMetadataAssetsToManifest } from '../lib/assets';
-import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
 import { testStack } from './util';
 import { MockSdk } from './util/mock-sdk';
 import { MockToolkitInfo } from './util/mock-toolkitinfo';
+import { ToolkitInfo } from '../lib/api';
+import { addMetadataAssetsToManifest } from '../lib/assets';
+import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
 
 let toolkit: ToolkitInfo;
 let assets: AssetManifestBuilder;

@@ -375,15 +375,20 @@ $ cdk deploy --hotswap [StackNames]
 ```
 
 This will attempt to perform a faster, short-circuit deployment if possible
-(for example, if you only changed the code of a Lambda function in your CDK app,
-but nothing else in your CDK code),
+(for example, if you changed the code of a Lambda function in your CDK app),
 skipping CloudFormation, and updating the affected resources directly;
 this includes changes to resources in nested stacks.
 If the tool detects that the change does not support hotswapping,
-it will fall back and perform a full CloudFormation deployment,
-exactly like `cdk deploy` does without the `--hotswap` flag.
+it will ignore it and display that ignored change.
+To have hotswap fall back and perform a full CloudFormation deployment,
+exactly like `cdk deploy` does without the `--hotswap` flag,
+specify `--hotswap-fallback`, like so:
 
-Passing this option to `cdk deploy` will make it use your current AWS credentials to perform the API calls -
+```console
+$ cdk deploy --hotswap-fallback [StackNames]
+```
+
+Passing either option to `cdk deploy` will make it use your current AWS credentials to perform the API calls -
 it will not assume the Roles from your bootstrap stack,
 even if the `@aws-cdk/core:newStyleStackSynthesis` feature flag is set to `true`
 (as those Roles do not have the necessary permissions to update AWS resources directly, without using CloudFormation).
@@ -552,7 +557,7 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 ### `cdk bootstrap`
 
 Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket
-and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before
+and ECR repository that `cdk deploy` will use to store synthesized templates and the related assets, before
 triggering a CloudFormation stack update. The name of the deployed stack can be configured using the
 `--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using
 the `--public-access-block-configuration` argument. ECR uses immutable tags for images.
@@ -568,8 +573,9 @@ $ cdk bootstrap --app='node bin/main.js' foo bar
 By default, bootstrap stack will be protected from stack termination. This can be disabled using
 `--termination-protection` argument.
 
-If you have specific needs, policies, or requirements not met by the default template, you can customize it
-to fit your own situation, by exporting the default one to a file and either deploying it yourself
+If you have specific prerequisites not met by the example template, you can
+[customize it](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html#bootstrapping-customizing)
+to fit your requirements, by exporting the provided one to a file and either deploying it yourself
 using CloudFormation directly, or by telling the CLI to use a custom template. That looks as follows:
 
 ```console
@@ -581,6 +587,19 @@ $ cdk bootstrap --show-template > bootstrap-template.yaml
 # Tell CDK to use the customized template
 $ cdk bootstrap --template bootstrap-template.yaml
 ```
+
+Out of the box customization options are also available as arguments. To use a permissions boundary:
+
+- `--example-permissions-boundary` indicates the example permissions boundary, supplied by CDK
+- `--custom-permissions-boundary` specifies, by name a predefined, customer maintained, boundary
+
+A few notes to add at this point. The CDK supplied permissions boundary policy should be regarded as
+an example. Edit the content and reference the example policy if you're testing out the feature, turn
+it into a new policy for actual deployments (if one does not already exist). The concern here is drift
+as, most likely, a permissions boundary is maintained and has dedicated conventions, naming included.
+
+For more information on configuring permissions, including using permissions
+boundaries see the [Security And Safety Dev Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
 ### `cdk doctor`
 
@@ -651,7 +670,7 @@ You can suppress warnings in a variety of ways:
   }
   ```
 
-- acknowleding individual notices via `cdk acknowledge` (see below).
+- acknowledging individual notices via `cdk acknowledge` (see below).
 
 ### `cdk acknowledge`
 
@@ -738,8 +757,11 @@ Some of the interesting keys that can be used in the JSON configuration files:
         "key": "value"
     },
     "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
-    "toolkitBucketName": "fooBucket", // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
-    "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
+    "toolkitBucket": {
+        "bucketName": "fooBucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
+        "kmsKeyId": "fooKMSKey"       // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
+    },
+    "versionReporting": false,        // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
 

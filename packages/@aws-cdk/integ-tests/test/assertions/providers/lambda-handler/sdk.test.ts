@@ -104,4 +104,40 @@ describe('SdkHandler', () => {
       sinon.assert.calledWith(fake, { DryRun: false });
     });
   });
+
+  test('restrict output path', async () => {
+    // GIVEN
+    const responseFake = {
+      Name: 'bucket-name',
+      Contents: [
+        {
+          Key: 'first-key',
+          ETag: 'first-key-etag',
+        },
+        {
+          Key: 'second-key',
+          ETag: 'second-key-etag',
+        },
+      ],
+    } as SDK.S3.ListObjectsOutput;
+    AWS.mock('S3', 'listObjects', sinon.fake.resolves(responseFake));
+    const handler = sdkHandler() as any;
+    const request: AwsApiCallRequest = {
+      service: 'S3',
+      api: 'listObjects',
+      parameters: {
+        Bucket: 'myBucket',
+      },
+      outputPaths: ['Name', 'Contents.0.Key'],
+    };
+
+    // WHEN
+    const response: AwsApiCallResult = await handler.processEvent(request);
+
+    // THEN
+    expect(response).toEqual({
+      'apiCallResponse.Name': 'bucket-name',
+      'apiCallResponse.Contents.0.Key': 'first-key',
+    });
+  });
 });

@@ -1,23 +1,54 @@
-# AWS Cloud Development Kit Core Library
-<!--BEGIN STABILITY BANNER-->
+# AWS Cloud Development Kit Library
 
----
+The AWS CDK construct library provides APIs to define your CDK application and add
+CDK constructs to the application.
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+## Usage
 
-![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+### Upgrade from CDK 1.x
 
----
+When upgrading from CDK 1.x, remove all dependencies to individual CDK packages
+from your dependencies file and follow the rest of the sections.
 
-<!--END STABILITY BANNER-->
+### Installation
 
-This library includes the basic building blocks of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) (AWS CDK). It defines the core classes that are used in the rest of the
-AWS Construct Library.
+To use this package, you need to declare this package and the `constructs` package as
+dependencies.
 
-See the [AWS CDK Developer
-Guide](https://docs.aws.amazon.com/cdk/latest/guide/home.html) for
-information of most of the capabilities of this library. The rest of this
-README will only cover topics not already covered in the Developer Guide.
+According to the kind of project you are developing:
+
+- For projects that are CDK libraries, declare them both under the `devDependencies`
+  **and** `peerDependencies` sections.
+- For CDK apps, declare them under the `dependencies` section only.
+
+### Use in your code
+
+#### Classic import
+
+You can use a classic import to get access to each service namespaces:
+
+```ts
+import { Stack, App, aws_s3 as s3 } from 'aws-cdk-lib';
+
+const app = new App();
+const stack = new Stack(app, 'TestStack');
+
+new s3.Bucket(stack, 'TestBucket');
+```
+
+#### Barrel import
+
+Alternatively, you can use "barrel" imports:
+
+```ts
+import { App, Stack } from 'aws-cdk-lib';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+
+const app = new App();
+const stack = new Stack(app, 'TestStack');
+
+new Bucket(stack, 'TestBucket');
+```
 
 <!--BEGIN CORE DOCUMENTATION-->
 
@@ -429,6 +460,10 @@ A stack dependency has the following implications:
     automatically deploy `stackB`.
   - `stackB`'s deployment will be performed *before* `stackA`'s deployment.
 
+### CfnResource Dependencies
+
+To make declaring dependencies between `CfnResource` objects easier, you can declare dependencies from one `CfnResource` object on another by using the `cfnResource1.addDependency(cfnResource2)` method. This method will work for resources both within the same stack and across stacks as it detects the relative location of the two resources and adds the dependency either to the resource or between the relevant stacks, as appropriate. If more complex logic is in needed, you can similarly remove, replace, or view dependencies between `CfnResource` objects with the `CfnResource` `removeDependency`, `replaceDependency`, and `obtainDependencies` methods, respectively.
+
 ## Custom Resources
 
 Custom Resources are CloudFormation resources that are implemented by arbitrary
@@ -479,7 +514,7 @@ various provider types (ordered from low-level to high-level):
 
 Legend:
 
-- **Compute type**: which type of compute can is used to execute the handler.
+- **Compute type**: which type of compute can be used to execute the handler.
 - **Error Handling**: whether errors thrown by handler code are automatically
   trapped and a FAILED response is submitted to CloudFormation. If this is
   "Manual", developers must take care of trapping errors. Otherwise, events
@@ -854,16 +889,58 @@ rawBucket.cfnOptions.metadata = {
 ```
 
 Resource dependencies (the `DependsOn` attribute) is modified using the
-`cfnResource.addDependsOn` method:
+`cfnResource.addDependency` method:
 
 ```ts
 const resourceA = new CfnResource(this, 'ResourceA', resourceProps);
 const resourceB = new CfnResource(this, 'ResourceB', resourceProps);
 
-resourceB.addDependsOn(resourceA);
+resourceB.addDependency(resourceA);
 ```
 
 [cfn-resource-attributes]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
+
+#### CreationPolicy
+
+Some resources support a [CreationPolicy][creation-policy] to be specified as a CfnOption.
+
+The creation policy is invoked only when AWS CloudFormation creates the associated resource. Currently, the only AWS CloudFormation resources that support creation policies are `CfnAutoScalingGroup`, `CfnInstance`, `CfnWaitCondition` and `CfnFleet`.
+
+The `CfnFleet` resource from the `aws-appstream` module supports specifying `startFleet` as
+a property of the creationPolicy on the resource options. Setting it to true will make AWS CloudFormation wait until the fleet is started before continuing with the creation of
+resources that depend on the fleet resource.
+
+```ts
+const fleet = new CfnFleet(stack, 'Fleet', {
+  instanceType: 'stream.standard.small',
+  name: 'Fleet',
+  computeCapacity: {
+    desiredInstances: 1,
+  },
+  imageName: 'AppStream-AmazonLinux2-09-21-2022',
+});
+fleet.cfnOptions.creationPolicy = {
+  startFleet: true,
+};
+```
+
+The properties passed to the level 2 constructs `AutoScalingGroup` and `Instance` from the
+`aws-ec2` module abstract what is passed into the `CfnOption` properties `resourceSignal` and
+`autoScalingCreationPolicy`, but when using level 1 constructs you can specify these yourself.
+
+The CfnWaitCondition resource from the `aws-cloudformation` module suppports the `resourceSignal`.
+The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation will wait for
+3 success signals to occur within 15 minutes before the status of the resource will be set to 
+`CREATE_COMPLETE`.
+
+```ts
+resource.cfnOptions.resourceSignal = {
+  count: 3,
+  timeout: 'PR15M',
+}
+```
+
+[creation-policy]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
 
 ### Intrinsic Functions and Condition Expressions
 

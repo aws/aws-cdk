@@ -86,7 +86,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.108",
+    "@types/aws-lambda": "^8.10.111",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },
@@ -122,7 +122,8 @@
       "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.s3Action",
       "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.bounceAction",
       "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.lambdaAction",
-      "props-physical-name:@aws-cdk/aws-ses.EmailIdentityProps"
+      "props-physical-name:@aws-cdk/aws-ses.EmailIdentityProps",
+      "props-physical-name:@aws-cdk/aws-ses.VdmAttributesProps"
     ]
   },
   "awscdkio": {

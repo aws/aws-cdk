@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnSourceCredential } from './codebuild.generated';
 
 /**
- * Creation properties for {@link GitHubSourceCredentials}.
+ * Creation properties for `GitHubSourceCredentials`.
  */
 export interface GitHubSourceCredentialsProps {
   /**
@@ -34,7 +34,7 @@ export class GitHubSourceCredentials extends Resource {
 }
 
 /**
- * Creation properties for {@link GitHubEnterpriseSourceCredentials}.
+ * Creation properties for `GitHubEnterpriseSourceCredentials`.
  */
 export interface GitHubEnterpriseSourceCredentialsProps {
   /**
@@ -66,7 +66,7 @@ export class GitHubEnterpriseSourceCredentials extends Resource {
 }
 
 /**
- * Construction properties of {@link BitBucketSourceCredentials}.
+ * Construction properties of `BitBucketSourceCredentials`.
  */
 export interface BitBucketSourceCredentialsProps {
   /** Your BitBucket username. */

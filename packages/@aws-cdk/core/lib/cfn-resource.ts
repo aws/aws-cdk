@@ -6,7 +6,7 @@ import { CfnCondition } from './cfn-condition';
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct, Node } from 'constructs';
-import { addDependency } from './deps';
+import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { CLOUDFORMATION_TOKEN_RESOLVER } from './private/cloudformation-lang';
 import { Reference } from './reference';
@@ -15,6 +15,7 @@ import { TagManager } from './tag-manager';
 import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
+import { ResolutionTypeHint } from './type-hints';
 
 export interface CfnResourceProps {
   /**
@@ -172,8 +173,8 @@ export class CfnResource extends CfnRefElement {
    * in case there is no generated attribute.
    * @param attributeName The name of the attribute.
    */
-  public getAtt(attributeName: string): Reference {
-    return CfnReference.for(this, attributeName);
+  public getAtt(attributeName: string, typeHint?: ResolutionTypeHint): Reference {
+    return CfnReference.for(this, attributeName, undefined, typeHint);
   }
 
   /**
@@ -277,16 +278,65 @@ export class CfnResource extends CfnRefElement {
    * Indicates that this resource depends on another resource and cannot be
    * provisioned unless the other resource has been successfully provisioned.
    *
+   * @deprecated use addDependency
+   */
+  public addDependsOn(target: CfnResource) {
+    return this.addDependency(target);
+  }
+
+  /**
+   * Indicates that this resource depends on another resource and cannot be
+   * provisioned unless the other resource has been successfully provisioned.
+   *
    * This can be used for resources across stacks (or nested stack) boundaries
    * and the dependency will automatically be transferred to the relevant scope.
    */
-  public addDependsOn(target: CfnResource) {
+  public addDependency(target: CfnResource) {
     // skip this dependency if the target is not part of the output
     if (!target.shouldSynthesize()) {
       return;
     }
 
-    addDependency(this, target, `"${Node.of(this).path}" depends on "${Node.of(target).path}"`);
+    addDependency(this, target, `{${this.node.path}}.addDependency({${target.node.path}})`);
+  }
+
+  /**
+   * Indicates that this resource no longer depends on another resource.
+   *
+   * This can be used for resources across stacks (including nested stacks)
+   * and the dependency will automatically be removed from the relevant scope.
+   */
+  public removeDependency(target: CfnResource) : void {
+    // skip this dependency if the target is not part of the output
+    if (!target.shouldSynthesize()) {
+      return;
+    }
+
+    removeDependency(this, target);
+  }
+
+  /**
+   * Retrieves an array of resources this resource depends on.
+   *
+   * This assembles dependencies on resources across stacks (including nested stacks)
+   * automatically.
+   */
+  public obtainDependencies() {
+    return obtainDependencies(this);
+  }
+
+  /**
+   * Replaces one dependency with another.
+   * @param target The dependency to replace
+   * @param newTarget The new dependency to add
+   */
+  public replaceDependency(target: CfnResource, newTarget: CfnResource) : void {
+    if (this.obtainDependencies().includes(target)) {
+      this.removeDependency(target);
+      this.addDependency(newTarget);
+    } else {
+      throw new Error(`"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`);
+    }
   }
 
   /**
@@ -329,13 +379,31 @@ export class CfnResource extends CfnRefElement {
    * dependency between two resources that are directly defined in the same
    * stacks.
    *
-   * Use `resource.addDependsOn` to define the dependency between two resources,
+   * Use `resource.addDependency` to define the dependency between two resources,
    * which also takes stack boundaries into account.
    *
    * @internal
    */
   public _addResourceDependency(target: CfnResource) {
     this.dependsOn.add(target);
+  }
+
+  /**
+   * Get a shallow copy of dependencies between this resource and other resources
+   * in the same stack.
+   */
+  public obtainResourceDependencies() {
+    return Array.from(this.dependsOn.values());
+  }
+
+  /**
+   * Remove a dependency between this resource and other resources in the same
+   * stack.
+   *
+   * @internal
+   */
+  public _removeResourceDependency(target: CfnResource) {
+    this.dependsOn.delete(target);
   }
 
   /**

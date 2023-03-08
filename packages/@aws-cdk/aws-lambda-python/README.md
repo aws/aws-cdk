@@ -109,6 +109,22 @@ Packaging is executed using the `Packaging` class, which:
 ├── poetry.lock # your poetry lock file has to be present at the entry path
 ```
 
+**Excluding source files**
+
+You can exclude files from being copied using the optional bundling string array parameter `assetExcludes`
+
+```ts
+new python.PythonFunction(this, 'function', {
+  entry: '/path/to/poetry-function',
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    // translates to `rsync --exclude='.venv'`
+    assetExcludes: ['.venv'],
+  },
+});
+```
+
+
 ## Custom Bundling
 
 Custom bundling can be performed by passing in additional build arguments that point to index URLs to private repos, or by using an entirely custom Docker images for bundling dependencies. The build args currently supported are:
@@ -142,6 +158,24 @@ new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: { image },
+});
+```
+
+You can set additional Docker options to configure the build environment:
+
+ ```ts
+const entry = '/path/to/function';
+
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+      network: 'host',
+      securityOpt: 'no-new-privileges',
+      user: 'user:group',
+      volumesFrom: ['777f7dc92da7'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+   },
 });
 ```
 
@@ -195,6 +229,59 @@ new python.PythonFunction(this, 'function', {
   runtime: Runtime.PYTHON_3_8,
   bundling: {
     buildArgs: { PIP_INDEX_URL: indexUrl },
+  },
+});
+```
+
+## Command hooks
+
+It is  possible to run additional commands by specifying the `commandHooks` prop:
+
+```ts
+const entry = '/path/to/function';
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    commandHooks: {
+      // run tests
+      beforeBundling(inputDir: string): string[] {
+        return ['pytest'];
+      },
+      afterBundling(inputDir: string): string[] {
+        return ['pylint'];
+      },
+      // ...
+    },
+  },
+});
+```
+
+The following hooks are available:
+
+- `beforeBundling`: runs before all bundling commands
+- `afterBundling`: runs after all bundling commands
+
+They all receive the directory containing the dependencies file (`inputDir`) and the
+directory where the bundled asset will be output (`outputDir`). They must return
+an array of commands to run. Commands are chained with `&&`.
+
+The commands will run in the environment in which bundling occurs: inside the
+container for Docker bundling or on the host OS for local bundling.
+
+## Docker based bundling in complex Docker configurations
+
+By default the input and output of Docker based bundling is handled via bind mounts.
+In situtations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
+
+```ts
+const entry = '/path/to/function';
+
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
   },
 });
 ```

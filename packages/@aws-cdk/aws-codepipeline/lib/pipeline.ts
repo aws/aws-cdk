@@ -61,7 +61,7 @@ export interface StageProps {
 
   /**
    * The list of Actions to create this Stage with.
-   * You can always add more Actions later by calling {@link IStage#addAction}.
+   * You can always add more Actions later by calling `IStage#addAction`.
    */
   readonly actions?: IAction[];
 
@@ -127,7 +127,7 @@ export interface PipelineProps {
   /**
    * The list of Stages, in order,
    * to create this Pipeline with.
-   * You can always add more Stages later by calling {@link Pipeline#addStage}.
+   * You can always add more Stages later by calling `Pipeline#addStage`.
    *
    * @default - None.
    */
@@ -505,7 +505,7 @@ export class Pipeline extends PipelineBase {
    *
    * **Note**: the returned array is a defensive copy,
    * so adding elements to it has no effect.
-   * Instead, use the {@link addStage} method if you want to add more stages
+   * Instead, use the `addStage` method if you want to add more stages
    * to the pipeline.
    */
   public get stages(): IStage[] {
@@ -525,7 +525,7 @@ export class Pipeline extends PipelineBase {
   }
 
   /**
-   * Returns all of the {@link CrossRegionSupportStack}s that were generated automatically
+   * Returns all of the `CrossRegionSupportStack`s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
    *
    */
@@ -764,7 +764,7 @@ export class Pipeline extends PipelineBase {
         // because the role might be from a different environment),
         // but _only_ if it's a new Role -
         // an imported Role should not add the dependency
-        if (action.actionProperties.role instanceof iam.Role) {
+        if (iam.Role.isRole(action.actionProperties.role)) {
           const roleStack = Stack.of(action.actionProperties.role);
           pipelineStack.addDependency(roleStack);
         }
@@ -1088,7 +1088,7 @@ export class Pipeline extends PipelineBase {
 /**
  * An interface representing resources generated in order to support
  * the cross-region capabilities of CodePipeline.
- * You get instances of this interface from the {@link Pipeline#crossRegionSupport} property.
+ * You get instances of this interface from the `Pipeline#crossRegionSupport` property.
  *
  */
 export interface CrossRegionSupport {
@@ -1100,7 +1100,7 @@ export interface CrossRegionSupport {
 
   /**
    * The replication Bucket used by CodePipeline to operate in this region.
-   * Belongs to {@link stack}.
+   * Belongs to `stack`.
    */
   readonly replicationBucket: s3.IBucket;
 }

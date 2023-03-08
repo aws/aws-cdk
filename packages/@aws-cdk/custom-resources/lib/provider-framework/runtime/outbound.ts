@@ -43,7 +43,31 @@ async function defaultInvokeFunction(req: AWS.Lambda.InvocationRequest): Promise
     lambda = new AWS.Lambda(awsSdkConfig);
   }
 
-  return lambda.invoke(req).promise();
+  try {
+    /**
+     * Try an initial invoke.
+     *
+     * When you try to invoke a function that is inactive, the invocation fails and Lambda sets
+     * the function to pending state until the function resources are recreated.
+     * If Lambda fails to recreate the resources, the function is set to the inactive state.
+     *
+     * We're using invoke first because `waitFor` doesn't trigger an inactive function to do anything,
+     * it just runs `getFunction` and checks the state.
+     */
+    return await lambda.invoke(req).promise();
+  } catch (error) {
+
+    /**
+     * The status of the Lambda function is checked every second for up to 300 seconds.
+     * Exits the loop on 'Active' state and throws an error on 'Inactive' or 'Failed'.
+     *
+     * And now we wait.
+     */
+    await lambda.waitFor('functionActiveV2', {
+      FunctionName: req.FunctionName,
+    }).promise();
+    return await lambda.invoke(req).promise();
+  }
 }
 
 export let startExecution = defaultStartExecution;

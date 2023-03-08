@@ -9,31 +9,49 @@
 >
 > [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
+
 ---
 
 <!--END STABILITY BANNER-->
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-```ts nofixture
-import * as location from '@aws-cdk/aws-location';
+Amazon Location Service lets you add location data and functionality to applications, which
+includes capabilities such as maps, points of interest, geocoding, routing, geofences, and
+tracking. Amazon Location provides location-based services (LBS) using high-quality data from
+global, trusted providers Esri and HERE. With affordable data, tracking and geofencing
+capabilities, and built-in metrics for health monitoring, you can build sophisticated
+location-enabled applications.
+
+## Place Index
+
+A key function of Amazon Location Service is the ability to search the geolocation information.
+Amazon Location provides this functionality via the Place index resource. The place index includes
+which [data provider](https://docs.aws.amazon.com/location/latest/developerguide/what-is-data-provider.html)
+to use for the search.
+
+To create a place index, define a `PlaceIndex`:
+
+```ts
+new location.PlaceIndex(this, 'PlaceIndex', {
+  placeIndexName: 'MyPlaceIndex', // optional, defaults to a generated name
+  dataSource: location.DataSource.HERE, // optional, defaults to Esri
+});
 ```
 
-<!--BEGIN CFNONLY DISCLAIMER-->
+Use the `grant()` or `grantSearch()` method to grant the given identity permissions to perform actions
+on the place index:
 
-There are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:
+```ts
+declare const role: iam.Role;
 
-- Search [Construct Hub for Location construct libraries](https://constructs.dev/search?q=location)
-- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Location resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Location.html) directly.
-
-
-<!--BEGIN CFNONLY DISCLAIMER-->
-
-There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 
-However, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.
-
-For more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Location](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Location.html).
-
-(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)
-
-<!--END CFNONLY DISCLAIMER-->
+const placeIndex = new location.PlaceIndex(this, 'PlaceIndex');
+placeIndex.grantSearch(role);
+```

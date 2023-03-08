@@ -75,6 +75,32 @@ describe('Metric Math', () => {
     expect(m.warnings).toContainEqual(expect.stringContaining("'m1 + m2' references unknown identifiers"));
   });
 
+  test('metrics METRICS expression does not produce warning for unknown identifier', () => {
+    const m = new MathExpression({
+      expression: 'SUM(METRICS())',
+      usingMetrics: {},
+    });
+
+    expect(m.warnings).toBeUndefined();
+  });
+
+  test('metrics search expression does not produce warning for unknown identifier', () => {
+    const m = new MathExpression({
+      expression: "SEARCH('{dimension_one, dimension_two} my_metric', 'Average', 300)",
+      usingMetrics: {},
+    });
+
+    expect(m.warnings).toBeUndefined();
+  });
+
+  test('metrics insights expression does not produce warning for unknown identifier', () => {
+    const m = new MathExpression({
+      expression: "SELECT AVG(CpuUsage) FROM EC2 WHERE Instance = '123456'",
+    });
+
+    expect(m.warnings).toBeUndefined();
+  });
+
   test('math expression referring to unknown expressions produces a warning, even when nested', () => {
     const m = new MathExpression({
       expression: 'e1 + 5',

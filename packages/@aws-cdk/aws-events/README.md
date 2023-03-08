@@ -114,10 +114,11 @@ const rule = new events.Rule(this, 'rule', {
 
       // 'OR' condition
       'source-storage-class': events.Match.anyOf(
-        events.Match.prefix("GLACIER"), 
+        events.Match.prefix("GLACIER"),
         events.Match.exactString('DEEP_ARCHIVE'),
       ),
     },
+    'detail-type': events.Match.equalsIgnoreCase('object created'),
 
     // If you prefer, you can use a low level array of strings, as directly consumed by EventBridge
     source: ['aws.s3'],

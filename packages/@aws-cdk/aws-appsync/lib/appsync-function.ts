@@ -1,9 +1,11 @@
 import { Resource, IResource, Lazy, Fn } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnFunctionConfiguration } from './appsync.generated';
+import { Code } from './code';
 import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
+import { FunctionRuntime } from './runtime';
 
 /**
  * the base properties for AppSync Functions
@@ -31,6 +33,18 @@ export interface BaseAppsyncFunctionProps {
    * @default - no response mapping template
    */
   readonly responseMappingTemplate?: MappingTemplate;
+  /**
+   * The functions runtime
+   *
+   * @default - no function runtime, VTL mapping templates used
+   */
+  readonly runtime?: FunctionRuntime;
+  /**
+   * The function code
+   *
+   * @default - no code is used
+   */
+  readonly code?: Code;
 }
 
 /**
@@ -128,11 +142,25 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
 
   public constructor(scope: Construct, id: string, props: AppsyncFunctionProps) {
     super(scope, id);
+
+    // If runtime is specified, code must also be
+    if (props.runtime && !props.code) {
+      throw new Error('Code is required when specifying a runtime');
+    }
+
+    if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
+      throw new Error('Mapping templates cannot be used alongside code');
+    }
+
+    const code = props.code?.bind(this);
     this.function = new CfnFunctionConfiguration(this, 'Resource', {
       name: props.name,
       description: props.description,
       apiId: props.api.apiId,
       dataSourceName: props.dataSource.name,
+      runtime: props.runtime?.toProperties(),
+      codeS3Location: code?.s3Location,
+      code: code?.inlineCode,
       functionVersion: '2018-05-29',
       requestMappingTemplate: props.requestMappingTemplate?.renderTemplate(),
       responseMappingTemplate: props.responseMappingTemplate?.renderTemplate(),
@@ -142,7 +170,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
     this.functionId = this.function.attrFunctionId;
     this.dataSource = props.dataSource;
 
-    this.function.addDependsOn(this.dataSource.ds);
+    this.function.addDependency(this.dataSource.ds);
     props.api.addSchemaDependency(this.function);
   }
 }

@@ -1,9 +1,9 @@
 import { SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ContainerDefinition, Secret } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { ensureInRange, renderCommonLogDriverOptions, renderLogDriverSecretOptions, stringifyOptions } from './utils';
+import { ContainerDefinition, Secret } from '../container-definition';
 
 /**
  * Log Message Format
@@ -27,7 +27,7 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
    * viewable in plain text in the console.
    *
    * Please provide at least one of `token` or `secretToken`.
-   * @deprecated Use {@link SplunkLogDriverProps.secretToken} instead.
+   * @deprecated Use `SplunkLogDriverProps.secretToken` instead.
    * @default - token not provided.
    */
   readonly token?: SecretValue;

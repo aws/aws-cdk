@@ -1,5 +1,5 @@
 import { Secret } from '@aws-cdk/aws-secretsmanager';
-import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { App, Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { ClientAttributes, OAuthScope, StringAttribute, UserPool } from '../lib';
 
 const app = new App();
@@ -37,6 +37,7 @@ const client = userpool.addClient('myuserpoolclient', {
     callbackUrls: ['https://redirect-here.myapp.com'],
   },
   preventUserExistenceErrors: true,
+  authSessionValidity: Duration.minutes(3),
   writeAttributes: (new ClientAttributes()).withStandardAttributes(
     {
       address: true,

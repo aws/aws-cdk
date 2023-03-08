@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::InspectorV2::Filter.DateFilter": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-datefilter.html",
@@ -23,6 +23,7 @@
       "Properties": {
         "AwsAccountId": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-awsaccountid",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -30,6 +31,7 @@
         },
         "ComponentId": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-componentid",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -37,6 +39,7 @@
         },
         "ComponentType": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-componenttype",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -44,6 +47,7 @@
         },
         "Ec2InstanceImageId": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ec2instanceimageid",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -51,6 +55,7 @@
         },
         "Ec2InstanceSubnetId": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ec2instancesubnetid",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -58,6 +63,7 @@
         },
         "Ec2InstanceVpcId": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ec2instancevpcid",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -65,6 +71,7 @@
         },
         "EcrImageArchitecture": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimagearchitecture",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -72,6 +79,7 @@
         },
         "EcrImageHash": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimagehash",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -79,6 +87,7 @@
         },
         "EcrImagePushedAt": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimagepushedat",
+          "DuplicatesAllowed": true,
           "ItemType": "DateFilter",
           "Required": false,
           "Type": "List",
@@ -86,6 +95,7 @@
         },
         "EcrImageRegistry": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimageregistry",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -93,6 +103,7 @@
         },
         "EcrImageRepositoryName": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimagerepositoryname",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -100,6 +111,7 @@
         },
         "EcrImageTags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimagetags",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -107,6 +119,7 @@
         },
         "FindingArn": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-findingarn",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -114,6 +127,7 @@
         },
         "FindingStatus": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-findingstatus",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -121,6 +135,7 @@
         },
         "FindingType": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-findingtype",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -128,6 +143,7 @@
         },
         "FirstObservedAt": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-firstobservedat",
+          "DuplicatesAllowed": true,
           "ItemType": "DateFilter",
           "Required": false,
           "Type": "List",
@@ -135,6 +151,7 @@
         },
         "InspectorScore": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-inspectorscore",
+          "DuplicatesAllowed": true,
           "ItemType": "NumberFilter",
           "Required": false,
           "Type": "List",
@@ -142,6 +159,7 @@
         },
         "LastObservedAt": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-lastobservedat",
+          "DuplicatesAllowed": true,
           "ItemType": "DateFilter",
           "Required": false,
           "Type": "List",
@@ -149,6 +167,7 @@
         },
         "NetworkProtocol": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-networkprotocol",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -156,6 +175,7 @@
         },
         "PortRange": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-portrange",
+          "DuplicatesAllowed": true,
           "ItemType": "PortRangeFilter",
           "Required": false,
           "Type": "List",
@@ -163,6 +183,7 @@
         },
         "RelatedVulnerabilities": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-relatedvulnerabilities",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -170,6 +191,7 @@
         },
         "ResourceId": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-resourceid",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -177,6 +199,7 @@
         },
         "ResourceTags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-resourcetags",
+          "DuplicatesAllowed": true,
           "ItemType": "MapFilter",
           "Required": false,
           "Type": "List",
@@ -184,6 +207,7 @@
         },
         "ResourceType": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-resourcetype",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -191,6 +215,7 @@
         },
         "Severity": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-severity",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -198,6 +223,7 @@
         },
         "Title": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-title",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -205,6 +231,7 @@
         },
         "UpdatedAt": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-updatedat",
+          "DuplicatesAllowed": true,
           "ItemType": "DateFilter",
           "Required": false,
           "Type": "List",
@@ -212,6 +239,7 @@
         },
         "VendorSeverity": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-vendorseverity",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -219,6 +247,7 @@
         },
         "VulnerabilityId": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-vulnerabilityid",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -226,6 +255,7 @@
         },
         "VulnerabilitySource": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-vulnerabilitysource",
+          "DuplicatesAllowed": true,
           "ItemType": "StringFilter",
           "Required": false,
           "Type": "List",
@@ -233,6 +263,7 @@
         },
         "VulnerablePackages": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-vulnerablepackages",
+          "DuplicatesAllowed": true,
           "ItemType": "PackageFilter",
           "Required": false,
           "Type": "List",

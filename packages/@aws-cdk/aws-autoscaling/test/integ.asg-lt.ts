@@ -34,6 +34,12 @@ new autoscaling.AutoScalingGroup(stack, 'AsgFromLT', {
   desiredCapacity: 5,
 });
 
+new autoscaling.AutoScalingGroup(stack, 'AsgWithDefaultInstanceWarmup', {
+  vpc,
+  launchTemplate: lt,
+  defaultInstanceWarmup: cdk.Duration.seconds(5),
+});
+
 new autoscaling.AutoScalingGroup(stack, 'AsgFromMip', {
   vpc,
   mixedInstancesPolicy: {
@@ -65,6 +71,25 @@ new autoscaling.AutoScalingGroup(stack, 'AsgFromMipWithoutDistribution', {
   minCapacity: 0,
   maxCapacity: 10,
   desiredCapacity: 5,
+});
+
+new autoscaling.AutoScalingGroup(stack, 'AsgWithGp3Blockdevice', {
+  minCapacity: 0,
+  maxCapacity: 10,
+  desiredCapacity: 5,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  machineImage: new ec2.AmazonLinuxImage(),
+  blockDevices: [{
+    deviceName: 'ebs',
+    mappingEnabled: true,
+    volume: autoscaling.BlockDeviceVolume.ebs(15, {
+      deleteOnTermination: true,
+      encrypted: true,
+      volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+      throughput: 125,
+    }),
+  }],
+  vpc,
 });
 
 app.synth();

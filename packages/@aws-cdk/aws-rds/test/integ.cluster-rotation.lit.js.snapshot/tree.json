@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-rds-cluster-rotation": {
         "id": "aws-cdk-rds-cluster-rotation",
         "path": "aws-cdk-rds-cluster-rotation",
@@ -91,8 +83,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +250,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +417,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +536,8 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -656,6 +648,158 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "version": "0.0.0"
+            }
+          },
+          "SecurityGroup": {
+            "id": "SecurityGroup",
+            "path": "aws-cdk-rds-cluster-rotation/SecurityGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-rds-cluster-rotation/SecurityGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "aws-cdk-rds-cluster-rotation/SecurityGroup",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
+                      }
+                    ],
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+              "version": "0.0.0"
+            }
+          },
+          "Endpoint": {
+            "id": "Endpoint",
+            "path": "aws-cdk-rds-cluster-rotation/Endpoint",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-rds-cluster-rotation/Endpoint/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-cluster-rotation/Endpoint/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "aws-cdk-rds-cluster-rotation/Endpoint/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "securityGroupIngress": [
+                          {
+                            "cidrIp": {
+                              "Fn::GetAtt": [
+                                "VPCB9E5F0B4",
+                                "CidrBlock"
+                              ]
+                            },
+                            "ipProtocol": "tcp",
+                            "fromPort": 443,
+                            "toPort": 443,
+                            "description": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "from ",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "VPCB9E5F0B4",
+                                      "CidrBlock"
+                                    ]
+                                  },
+                                  ":443"
+                                ]
+                              ]
+                            }
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-rds-cluster-rotation/Endpoint/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
+                  "aws:cdk:cloudformation:props": {
+                    "serviceName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "com.amazonaws.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".secretsmanager"
+                        ]
+                      ]
+                    },
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
+                    },
+                    "privateDnsEnabled": true,
+                    "securityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "EndpointSecurityGroup3A4D971B",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetIds": [
+                      {
+                        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                      },
+                      {
+                        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                      }
+                    ],
+                    "vpcEndpointType": "Interface"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCEndpoint",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.InterfaceVpcEndpoint",
               "version": "0.0.0"
             }
           },
@@ -860,64 +1004,64 @@
                           "fqn": "@aws-cdk/aws-secretsmanager.RotationSchedule",
                           "version": "0.0.0"
                         }
-                      },
-                      "Policy": {
-                        "id": "Policy",
-                        "path": "aws-cdk-rds-cluster-rotation/Database/Secret/Attachment/Policy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-rds-cluster-rotation/Database/Secret/Attachment/Policy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::SecretsManager::ResourcePolicy",
-                              "aws:cdk:cloudformation:props": {
-                                "resourcePolicy": {
-                                  "Statement": [
-                                    {
-                                      "Action": "secretsmanager:DeleteSecret",
-                                      "Effect": "Deny",
-                                      "Principal": {
-                                        "AWS": {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":iam::",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":root"
-                                            ]
-                                          ]
-                                        }
-                                      },
-                                      "Resource": "*"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "aws-cdk-rds-cluster-rotation/Database/Secret/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-rds-cluster-rotation/Database/Secret/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::ResourcePolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "resourcePolicy": {
+                              "Statement": [
+                                {
+                                  "Action": "secretsmanager:DeleteSecret",
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":iam::",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":root"
+                                        ]
+                                      ]
                                     }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "secretId": {
-                                  "Ref": "DatabaseSecretAttachmentE5D1B020"
+                                  },
+                                  "Resource": "*"
                                 }
-                              }
+                              ],
+                              "Version": "2012-10-17"
                             },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
-                              "version": "0.0.0"
+                            "secretId": {
+                              "Ref": "DatabaseSecret3B817195"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
+                          "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
                       "version": "0.0.0"
                     }
                   }
@@ -933,11 +1077,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
-                    "engine": "aurora",
                     "copyTagsToSnapshot": true,
                     "dbSubnetGroupName": {
                       "Ref": "DatabaseSubnets56F17B9A"
                     },
+                    "engine": "aurora",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -1061,8 +1205,8 @@
                     "id": "SARMapping",
                     "path": "aws-cdk-rds-cluster-rotation/Database/RotationSingleUser/SARMapping",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -1156,17 +1300,509 @@
               "fqn": "@aws-cdk/aws-rds.DatabaseCluster",
               "version": "0.0.0"
             }
+          },
+          "CustomRotationOptions": {
+            "id": "CustomRotationOptions",
+            "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions",
+            "children": {
+              "Subnets": {
+                "id": "Subnets",
+                "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Subnets",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Subnets/Default",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "dbSubnetGroupDescription": "Subnets for CustomRotationOptions database",
+                        "subnetIds": [
+                          {
+                            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                          },
+                          {
+                            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "RDS security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from awscdkrdsclusterrotationSecurityGroupB986D266:{IndirectPort}": {
+                    "id": "from awscdkrdsclusterrotationSecurityGroupB986D266:{IndirectPort}",
+                    "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/SecurityGroup/from awscdkrdsclusterrotationSecurityGroupB986D266:{IndirectPort}",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "from awscdkrdsclusterrotationSecurityGroupB986D266:{IndirectPort}",
+                        "fromPort": {
+                          "Fn::GetAtt": [
+                            "CustomRotationOptions7CA9E132",
+                            "Endpoint.Port"
+                          ]
+                        },
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "CustomRotationOptionsSecurityGroup9F3B46A1",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "SecurityGroupDD263621",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": {
+                          "Fn::GetAtt": [
+                            "CustomRotationOptions7CA9E132",
+                            "Endpoint.Port"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Secret": {
+                "id": "Secret",
+                "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                      "aws:cdk:cloudformation:props": {
+                        "description": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "Generated by the CDK for stack: ",
+                              {
+                                "Ref": "AWS::StackName"
+                              }
+                            ]
+                          ]
+                        },
+                        "generateSecretString": {
+                          "passwordLength": 30,
+                          "secretStringTemplate": "{\"username\":\"admin\"}",
+                          "generateStringKey": "password",
+                          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Attachment": {
+                    "id": "Attachment",
+                    "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Attachment",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Attachment/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
+                          "aws:cdk:cloudformation:props": {
+                            "secretId": {
+                              "Ref": "CustomRotationOptionsSecret7DCFFFDB"
+                            },
+                            "targetId": {
+                              "Ref": "CustomRotationOptions7CA9E132"
+                            },
+                            "targetType": "AWS::RDS::DBCluster"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "RotationSchedule": {
+                        "id": "RotationSchedule",
+                        "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Attachment/RotationSchedule",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Attachment/RotationSchedule/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::SecretsManager::RotationSchedule",
+                              "aws:cdk:cloudformation:props": {
+                                "secretId": {
+                                  "Ref": "CustomRotationOptionsSecretAttachment697A23BF"
+                                },
+                                "rotationLambdaArn": {
+                                  "Fn::GetAtt": [
+                                    "CustomRotationOptionsRotationSingleUserC555446F",
+                                    "Outputs.RotationLambdaARN"
+                                  ]
+                                },
+                                "rotationRules": {
+                                  "automaticallyAfterDays": 7
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-secretsmanager.CfnRotationSchedule",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-secretsmanager.RotationSchedule",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Secret/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::ResourcePolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "resourcePolicy": {
+                              "Statement": [
+                                {
+                                  "Action": "secretsmanager:DeleteSecret",
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":iam::",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":root"
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "secretId": {
+                              "Ref": "CustomRotationOptionsSecret7DCFFFDB"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.DatabaseSecret",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
+                  "aws:cdk:cloudformation:props": {
+                    "copyTagsToSnapshot": true,
+                    "dbSubnetGroupName": {
+                      "Ref": "CustomRotationOptionsSubnets52AEBCED"
+                    },
+                    "engine": "aurora",
+                    "masterUsername": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "CustomRotationOptionsSecret7DCFFFDB"
+                          },
+                          ":SecretString:username::}}"
+                        ]
+                      ]
+                    },
+                    "masterUserPassword": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "CustomRotationOptionsSecret7DCFFFDB"
+                          },
+                          ":SecretString:password::}}"
+                        ]
+                      ]
+                    },
+                    "vpcSecurityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "CustomRotationOptionsSecurityGroup9F3B46A1",
+                          "GroupId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBCluster",
+                  "version": "0.0.0"
+                }
+              },
+              "Instance1": {
+                "id": "Instance1",
+                "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Instance1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                  "aws:cdk:cloudformation:props": {
+                    "dbClusterIdentifier": {
+                      "Ref": "CustomRotationOptions7CA9E132"
+                    },
+                    "dbInstanceClass": "db.t3.small",
+                    "dbSubnetGroupName": {
+                      "Ref": "CustomRotationOptionsSubnets52AEBCED"
+                    },
+                    "engine": "aurora"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "version": "0.0.0"
+                }
+              },
+              "Instance2": {
+                "id": "Instance2",
+                "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Instance2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                  "aws:cdk:cloudformation:props": {
+                    "dbClusterIdentifier": {
+                      "Ref": "CustomRotationOptions7CA9E132"
+                    },
+                    "dbInstanceClass": "db.t3.small",
+                    "dbSubnetGroupName": {
+                      "Ref": "CustomRotationOptionsSubnets52AEBCED"
+                    },
+                    "engine": "aurora"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "version": "0.0.0"
+                }
+              },
+              "RotationSingleUser": {
+                "id": "RotationSingleUser",
+                "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/RotationSingleUser",
+                "children": {
+                  "SARMapping": {
+                    "id": "SARMapping",
+                    "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/RotationSingleUser/SARMapping",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/RotationSingleUser/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Serverless::Application",
+                      "aws:cdk:cloudformation:props": {
+                        "location": {
+                          "applicationId": {
+                            "Fn::FindInMap": [
+                              "CustomRotationOptionsRotationSingleUserSARMapping635D6F45",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              "applicationId"
+                            ]
+                          },
+                          "semanticVersion": {
+                            "Fn::FindInMap": [
+                              "CustomRotationOptionsRotationSingleUserSARMapping635D6F45",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              "semanticVersion"
+                            ]
+                          }
+                        },
+                        "parameters": {
+                          "endpoint": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "https://",
+                                {
+                                  "Ref": "EndpointEEF1FD8F"
+                                },
+                                ".secretsmanager.",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ".",
+                                {
+                                  "Ref": "AWS::URLSuffix"
+                                }
+                              ]
+                            ]
+                          },
+                          "functionName": "dsclusterrotationCustomRotationOptionsRotationSingleUserBBE9175F",
+                          "vpcSubnetIds": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                                },
+                                ",",
+                                {
+                                  "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                                }
+                              ]
+                            ]
+                          },
+                          "vpcSecurityGroupIds": {
+                            "Fn::GetAtt": [
+                              "SecurityGroupDD263621",
+                              "GroupId"
+                            ]
+                          },
+                          "excludeCharacters": "!@#$%^&*"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sam.CfnApplication",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RotationLambda": {
+                    "id": "RotationLambda",
+                    "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/RotationSingleUser/RotationLambda",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.FunctionBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.SecretRotation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-rds.DatabaseCluster",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-rds-cluster-rotation/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-rds-cluster-rotation/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.252"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

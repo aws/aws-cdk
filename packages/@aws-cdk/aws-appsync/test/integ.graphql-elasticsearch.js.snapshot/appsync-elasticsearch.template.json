@@ -185,7 +185,7 @@
     }
    }
   },
-  "apidsQuerygetTestsResolver5C6FBB59": {
+  "apiQueryGetTests5F79F353": {
    "Type": "AWS::AppSync::Resolver",
    "Properties": {
     "ApiId": {

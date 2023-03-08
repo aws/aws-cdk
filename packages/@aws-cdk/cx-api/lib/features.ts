@@ -65,6 +65,7 @@ export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-contai
 export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueImdsv2TemplateName';
 export const ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME = '@aws-cdk/aws-ecs:arnFormatIncludesClusterName';
 export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
+export const IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName';
 export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotRemovalPolicy';
 export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName';
 export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLoggingPolicy';
@@ -74,6 +75,15 @@ export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals'
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
 export const IAM_STANDARDIZED_SERVICE_PRINCIPALS = '@aws-cdk/aws-iam:standardizedServicePrincipals';
 export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
+export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
+export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
+export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
+export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
+export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
+export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId';
+export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
+export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
+export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -556,6 +566,169 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is a feature flag as the new behavior provides a better default experience for the users.
       `,
     introducedIn: { v2: '2.51.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.',
+    detailsMd: `
+      Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
+      to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
+      of a role using the same default policy name.
+
+      This new implementation creates default policy names based on the constructs node path in their stack.
+      `,
+    introducedIn: { v2: '2.60.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'Use S3 Bucket Policy instead of ACLs for Server Access Logging',
+    detailsMd: `
+      Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+      rather than using the canned \`LogDeliveryWrite\` ACL. ACLs do not work when Object Ownership is
+      enabled on the bucket.
+
+      This flag uses a Bucket Policy statement to allow Server Access Log delivery, following best
+      practices for S3.
+
+      @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
+    `,
+    introducedIn: { v2: '2.59.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ROUTE53_PATTERNS_USE_CERTIFICATE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use the official `Certificate` resource instead of `DnsValidatedCertificate`',
+    detailsMd: `
+      Enable this feature flag to use the official CloudFormation supported \`Certificate\` resource instead
+      of the deprecated \`DnsValidatedCertificate\` construct. If this flag is enabled and you are creating
+      the stack in a region other than us-east-1 then you must also set \`crossRegionReferences=true\` on the
+      stack.
+      `,
+    introducedIn: { v2: 'V2·NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Define a `DnsValidatedCertificate` explicitly and pass in the `certificate` property',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'Whether to install the latest SDK by default in AwsCustomResource',
+    detailsMd: `
+      This was originally introduced and enabled by default to not be limited by the SDK version
+      that's installed on AWS Lambda. However, it creates issues for Lambdas bound to VPCs that
+      do not have internet access, or in environments where 'npmjs.com' is not available.
+
+      The recommended setting is to disable the default installation behavior, and pass the
+      flag on a resource-by-resource basis to enable it if necessary.
+    `,
+    compatibilityWithOldBehaviorMd: 'Set installLatestAwsSdk: true on all resources that need it.',
+    introducedIn: { v2: '2.60.0' },
+    recommendedValue: false,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DATABASE_PROXY_UNIQUE_RESOURCE_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'Use unique resource name for Database Proxy',
+    detailsMd: `
+      If this flag is not set, the default behavior for \`DatabaseProxy\` is
+      to use \`id\` of the constructor for \`dbProxyName\` when it's not specified in the argument.
+      In this case, users can't deploy \`DatabaseProxy\`s that have the same \`id\` in the same region.
+
+      If this flag is set, the default behavior is to use unique resource names for each \`DatabaseProxy\`.
+
+      This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
+    `,
+    introducedIn: { v2: '2.65.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP]: {
+    type: FlagType.BugFix,
+    summary: 'Remove CloudWatch alarms from deployment group',
+    detailsMd: `
+      Enable this flag to be able to remove all CloudWatch alarms from a deployment group by removing
+      the alarms from the construct. If this flag is not set, removing all alarms from the construct
+      will still leave the alarms configured for the deployment group.
+    `,
+    introducedIn: { v2: '2.65.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID]: {
+    type: FlagType.BugFix,
+    summary: 'Include authorizer configuration in the calculation of the API deployment logical ID.',
+    detailsMd: `
+      The logical ID of the AWS::ApiGateway::Deployment resource is calculated by hashing
+      the API configuration, including methods, and resources, etc. Enable this feature flag
+      to also include the configuration of any authorizer attached to the API in the
+      calculation, so any changes made to an authorizer will create a new deployment.
+      `,
+    introducedIn: { v2: '2.66.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA]: {
+    type: FlagType.BugFix,
+    summary: 'Define user data for a launch template by default when a machine image is provided.',
+    detailsMd: `
+      The ec2.LaunchTemplate construct did not define user data when a machine image is
+      provided despite the document. If this is set, a user data is automatically defined
+      according to the OS of the machine image.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.67.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'SecretTargetAttachments uses the ResourcePolicy of the attached Secret.',
+    detailsMd: `
+      Enable this feature flag to make SecretTargetAttachments use the ResourcePolicy of the attached Secret.
+      SecretTargetAttachments are created to connect a Secret to a target resource. 
+      In CDK code, they behave like regular Secret and can be used as a stand-in in most situations.
+      Previously, adding to the ResourcePolicy of a SecretTargetAttachment did attempt to create a separate ResourcePolicy for the same Secret.
+      However Secrets can only have a single ResourcePolicy, causing the CloudFormation deployment to fail.
+
+      When enabling this feature flag for an existing Stack, ResourcePolicies created via a SecretTargetAttachment will need replacement.
+      This won't be possible without intervention due to limitation outlined above.
+      First remove all permissions granted to the Secret and deploy without the ResourcePolicies.
+      Then you can re-add the permissions and deploy again.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.67.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [REDSHIFT_COLUMN_ID]: {
+    type: FlagType.BugFix,
+    summary: 'Whether to use an ID to track Redshift column changes',
+    detailsMd: `
+      Redshift columns are identified by their \`name\`. If a column is renamed, the old column
+      will be dropped and a new column will be created. This can cause data loss.
+
+      This flag enables the use of an \`id\` attribute for Redshift columns. If this flag is enabled, the
+      internal CDK architecture will track changes of Redshift columns through their \`id\`, rather
+      than their \`name\`. This will prevent data loss when columns are renamed.
+
+      **NOTE** - Enabling this flag comes at a **risk**. When enabled, update the \`id\`s of all columns,
+      **however** do not change the \`names\`s of the columns. If the \`name\`s of the columns are changed during
+      initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
+      of the \`id\`s, the \`name\`s of the columns can be changed without data loss.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };

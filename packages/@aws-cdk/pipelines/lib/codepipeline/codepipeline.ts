@@ -1,12 +1,19 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnCapabilities, Duration, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { ArtifactMap } from './artifact-map';
+import { CodeBuildStep } from './codebuild-step';
+import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
+import { namespaceStepOutputs } from './private/outputs';
+import { StackOutputsMap } from './stack-outputs-map';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
@@ -19,11 +26,6 @@ import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { ArtifactMap } from './artifact-map';
-import { CodeBuildStep } from './codebuild-step';
-import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
-import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
-import { namespaceStepOutputs } from './private/outputs';
 
 
 /**
@@ -224,6 +226,16 @@ export interface CodePipelineProps {
    * @default true
    */
   readonly useChangeSets?: boolean;
+
+  /**
+   * Enable KMS key rotation for the generated KMS keys.
+   *
+   * By default KMS key rotation is disabled, but will add
+   * additional costs when enabled.
+   *
+   * @default - false (key rotation is disabled)
+   */
+  readonly enableKeyRotation?: boolean;
 }
 
 /**
@@ -305,14 +317,20 @@ export interface CodeBuildOptions {
  * users that don't need to switch out engines.
  */
 export class CodePipeline extends PipelineBase {
+  /**
+   * Whether SelfMutation is enabled for this CDK Pipeline
+   */
+  public readonly selfMutationEnabled: boolean;
+
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
   private _synthProject?: cb.IProject;
-  private readonly selfMutation: boolean;
+  private _selfMutationProject?: cb.IProject;
   private readonly useChangeSets: boolean;
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
   private readonly cachedFnSub = new CachedFnSub();
+  private stackOutputs: StackOutputsMap;
 
   /**
    * Asset roles shared for publishing
@@ -332,11 +350,12 @@ export class CodePipeline extends PipelineBase {
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {
     super(scope, id, props);
 
-    this.selfMutation = props.selfMutation ?? true;
+    this.selfMutationEnabled = props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
     this.cliVersion = props.cliVersion ?? preferredCliVersion();
     this.useChangeSets = props.useChangeSets ?? true;
+    this.stackOutputs = new StackOutputsMap(this);
   }
 
   /**
@@ -349,6 +368,22 @@ export class CodePipeline extends PipelineBase {
       throw new Error('Call pipeline.buildPipeline() before reading this property');
     }
     return this._synthProject;
+  }
+
+  /**
+   * The CodeBuild project that performs the SelfMutation
+   *
+   * Will throw an error if this is accessed before `buildPipeline()`
+   * is called, or if selfMutation has been disabled.
+   */
+  public get selfMutationProject(): cb.IProject {
+    if (!this._pipeline) {
+      throw new Error('Call pipeline.buildPipeline() before reading this property');
+    }
+    if (!this._selfMutationProject) {
+      throw new Error('No selfMutationProject since the selfMutation property was set to false');
+    }
+    return this._selfMutationProject;
   }
 
   /**
@@ -378,6 +413,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.crossAccountKeys !== undefined) {
         throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (this.props.enableKeyRotation !== undefined) {
+        throw new Error('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
       if (this.props.reuseCrossRegionSupportStacks !== undefined) {
         throw new Error('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
       }
@@ -395,17 +433,22 @@ export class CodePipeline extends PipelineBase {
         // to happen only after the builds of the latest pipeline definition).
         restartExecutionOnUpdate: true,
         role: this.props.role,
+        enableKeyRotation: this.props.enableKeyRotation,
       });
     }
 
     const graphFromBp = new PipelineGraph(this, {
-      selfMutation: this.selfMutation,
+      selfMutation: this.selfMutationEnabled,
       singlePublisherPerAssetType: this.singlePublisherPerAssetType,
       prepareStep: this.useChangeSets,
     });
     this._cloudAssemblyFileSet = graphFromBp.cloudAssemblyFileSet;
 
     this.pipelineStagesAndActionsFromGraph(graphFromBp);
+
+    // Write a dotfile for the pipeline layout
+    const dotFile = `${Names.uniqueId(this)}.dot`;
+    fs.writeFileSync(path.join(this.myCxAsmRoot, dotFile), graphFromBp.graph.renderDot().replace(/input\.dot/, dotFile), { encoding: 'utf-8' });
   }
 
   private get myCxAsmRoot(): string {
@@ -426,7 +469,7 @@ export class CodePipeline extends PipelineBase {
 
   private pipelineStagesAndActionsFromGraph(structure: PipelineGraph) {
     // Translate graph into Pipeline Stages and Actions
-    let beforeSelfMutation = this.selfMutation;
+    let beforeSelfMutation = this.selfMutationEnabled;
     for (const stageNode of flatten(structure.graph.sortedChildren())) {
       if (!isGraph(stageNode)) {
         throw new Error(`Top-level children must be graphs, got '${stageNode}'`);
@@ -467,6 +510,7 @@ export class CodePipeline extends PipelineBase {
               codeBuildDefaults: nodeType ? this.codeBuildDefaultsFor(nodeType) : undefined,
               beforeSelfMutation,
               variablesNamespace,
+              stackOutputsMap: this.stackOutputs,
             });
 
             if (node.data?.type === 'self-update') {
@@ -503,6 +547,9 @@ export class CodePipeline extends PipelineBase {
 
       if (nodeType === CodeBuildProjectType.SYNTH) {
         this._synthProject = result.project;
+      }
+      if (nodeType === CodeBuildProjectType.SELF_MUTATE) {
+        this._selfMutationProject = result.project;
       }
     }
 

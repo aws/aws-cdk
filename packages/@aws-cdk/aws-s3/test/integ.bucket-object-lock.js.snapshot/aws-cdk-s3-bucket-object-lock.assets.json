@@ -1,0 +1,19 @@
+{
+  "version": "30.1.0",
+  "files": {
+    "e7897599241ca9562999cb8666f011365be1fbf7f990cfea3947f6026fd8fbb9": {
+      "source": {
+        "path": "aws-cdk-s3-bucket-object-lock.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e7897599241ca9562999cb8666f011365be1fbf7f990cfea3947f6026fd8fbb9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

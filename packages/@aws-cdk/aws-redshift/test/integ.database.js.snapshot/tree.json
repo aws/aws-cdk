@@ -4,18 +4,61 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.92"
-        }
-      },
       "aws-cdk-redshift-cluster-database": {
         "id": "aws-cdk-redshift-cluster-database",
         "path": "aws-cdk-redshift-cluster-database",
         "children": {
+          "custom-kms-key": {
+            "id": "custom-kms-key",
+            "path": "aws-cdk-redshift-cluster-database/custom-kms-key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-redshift-cluster-database/custom-kms-key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kms.Key",
+              "version": "0.0.0"
+            }
+          },
           "Vpc": {
             "id": "Vpc",
             "path": "aws-cdk-redshift-cluster-database/Vpc",
@@ -659,57 +702,6 @@
               "version": "0.0.0"
             }
           },
-          "custom-kms-key": {
-            "id": "custom-kms-key",
-            "path": "aws-cdk-redshift-cluster-database/custom-kms-key",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-redshift-cluster-database/custom-kms-key/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
-                  "aws:cdk:cloudformation:props": {
-                    "keyPolicy": {
-                      "Statement": [
-                        {
-                          "Action": "kms:*",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":iam::",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":root"
-                                ]
-                              ]
-                            }
-                          },
-                          "Resource": "*"
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kms.CfnKey",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-kms.Key",
-              "version": "0.0.0"
-            }
-          },
           "Cluster": {
             "id": "Cluster",
             "path": "aws-cdk-redshift-cluster-database/Cluster",
@@ -1025,6 +1017,14 @@
                             "id": "ServiceRole",
                             "path": "aws-cdk-redshift-cluster-database/User/Resource/Provider/framework-onEvent/ServiceRole",
                             "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "aws-cdk-redshift-cluster-database/User/Resource/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.Resource",
+                                  "version": "0.0.0"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "aws-cdk-redshift-cluster-database/User/Resource/Provider/framework-onEvent/ServiceRole/Resource",
@@ -1166,7 +1166,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
+                                  "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                                 },
                                 "role": {
                                   "Fn::GetAtt": [
@@ -1228,7 +1228,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.92"
+                  "version": "10.1.252"
                 }
               },
               "TablePrivileges": {
@@ -1259,6 +1259,14 @@
                                 "id": "ServiceRole",
                                 "path": "aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole",
                                 "children": {
+                                  "ImportServiceRole": {
+                                    "id": "ImportServiceRole",
+                                    "path": "aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                                    "constructInfo": {
+                                      "fqn": "@aws-cdk/core.Resource",
+                                      "version": "0.0.0"
+                                    }
+                                  },
                                   "Resource": {
                                     "id": "Resource",
                                     "path": "aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/Resource",
@@ -1400,7 +1408,7 @@
                                       "s3Bucket": {
                                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                       },
-                                      "s3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
+                                      "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                                     },
                                     "role": {
                                       "Fn::GetAtt": [
@@ -1462,13 +1470,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.92"
+                      "version": "10.1.252"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.92"
+                  "version": "10.1.252"
                 }
               }
             },
@@ -1485,6 +1493,14 @@
                 "id": "ServiceRole",
                 "path": "aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/Resource",
@@ -1623,7 +1639,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "fb53353ae3322d38cf92fc2d8a73910a88c06a725900f0815aeaab985e6a19e3.zip"
+                      "s3Key": "169a8c0beb97c903ee155ea9653e39b0884c9e3b860ac72ffbe906b3c1f4e338.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1675,6 +1691,14 @@
                             "id": "ServiceRole",
                             "path": "aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/ServiceRole",
                             "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.Resource",
+                                  "version": "0.0.0"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/ServiceRole/Resource",
@@ -1816,7 +1840,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
+                                  "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                                 },
                                 "role": {
                                   "Fn::GetAtt": [
@@ -1878,7 +1902,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.92"
+                  "version": "10.1.252"
                 }
               }
             },
@@ -1886,11 +1910,89 @@
               "fqn": "@aws-cdk/aws-redshift.Table",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-redshift-cluster-database/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-redshift-cluster-database/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "redshift-cluster-database-integ": {
+        "id": "redshift-cluster-database-integ",
+        "path": "redshift-cluster-database-integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "redshift-cluster-database-integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "redshift-cluster-database-integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.252"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "redshift-cluster-database-integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "redshift-cluster-database-integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "redshift-cluster-database-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.252"
         }
       }
     },

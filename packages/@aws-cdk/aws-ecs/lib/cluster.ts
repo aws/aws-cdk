@@ -6,12 +6,14 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, ArnFormat } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
+
+const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
 /**
  * The properties used to define an ECS cluster.
@@ -50,7 +52,7 @@ export interface ClusterProps {
    * The capacity providers to add to the cluster
    *
    * @default - None. Currently only FARGATE and FARGATE_SPOT are supported.
-   * @deprecated Use {@link ClusterProps.enableFargateCapacityProviders} instead.
+   * @deprecated Use `ClusterProps.enableFargateCapacityProviders` instead.
    */
   readonly capacityProviders?: string[];
 
@@ -94,6 +96,14 @@ export enum MachineImageType {
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
+
+  /**
+    * Return whether the given object is a Cluster
+   */
+  public static isCluster(x: any) : x is Cluster {
+    return x !== null && typeof(x) === 'object' && CLUSTER_SYMBOL in x;
+  }
+
   /**
    * Import an existing cluster to the stack from its attributes.
    */
@@ -162,6 +172,11 @@ export class Cluster extends Resource implements ICluster {
   private _capacityProviderNames: string[] = [];
 
   /**
+   * The cluster default capacity provider strategy. This takes the form of a list of CapacityProviderStrategy objects.
+   */
+  private _defaultCapacityProviderStrategy: CapacityProviderStrategy[] = [];
+
+  /**
    * The AWS Cloud Map namespace to associate with the cluster.
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
@@ -180,6 +195,11 @@ export class Cluster extends Resource implements ICluster {
    * The execute command configuration for the cluster
    */
   private _executeCommandConfiguration?: ExecuteCommandConfiguration;
+
+  /**
+   * CfnCluster instance
+   */
+  private _cfnCluster: CfnCluster;
 
   /**
    * Constructs a new instance of the Cluster class.
@@ -212,21 +232,20 @@ export class Cluster extends Resource implements ICluster {
       this._executeCommandConfiguration = props.executeCommandConfiguration;
     }
 
-    const cluster = new CfnCluster(this, 'Resource', {
+    this._cfnCluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
       configuration: this._executeCommandConfiguration && this.renderExecuteCommandConfiguration(),
     });
 
-    this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
+    this.clusterArn = this.getResourceArnAttribute(this._cfnCluster.attrArn, {
       service: 'ecs',
       resource: 'cluster',
       resourceName: this.physicalName,
     });
-    this.clusterName = this.getResourceNameAttribute(cluster.ref);
+    this.clusterName = this.getResourceNameAttribute(this._cfnCluster.ref);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
-
 
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace !== undefined
       ? this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace)
@@ -241,7 +260,7 @@ export class Cluster extends Resource implements ICluster {
     // since it's harmless, but we'd prefer not to add unexpected new
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
-    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._capacityProviderNames));
+    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id));
   }
 
   /**
@@ -255,7 +274,43 @@ export class Cluster extends Resource implements ICluster {
     }
   }
 
-  private renderExecuteCommandConfiguration() : CfnCluster.ClusterConfigurationProperty {
+  /**
+   * Add default capacity provider strategy for this cluster.
+   *
+   * @param defaultCapacityProviderStrategy cluster default capacity provider strategy. This takes the form of a list of CapacityProviderStrategy objects.
+   *
+   * For example
+   * [
+   *   {
+   *     capacityProvider: 'FARGATE',
+   *     base: 10,
+   *     weight: 50
+   *   }
+   * ]
+   */
+  public addDefaultCapacityProviderStrategy(defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
+    if (this._defaultCapacityProviderStrategy.length > 0) {
+      throw new Error('Cluster default capacity provider strategy is already set.');
+    }
+
+    if (defaultCapacityProviderStrategy.some(dcp => dcp.capacityProvider.includes('FARGATE')) && defaultCapacityProviderStrategy.some(dcp => !dcp.capacityProvider.includes('FARGATE'))) {
+      throw new Error('A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again.');
+    }
+
+    defaultCapacityProviderStrategy.forEach(dcp => {
+      if (!this._capacityProviderNames.includes(dcp.capacityProvider)) {
+        throw new Error(`Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.`);
+      }
+    });
+
+    const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
+    if (defaultCapacityProvidersWithBase.length > 1) {
+      throw new Error('Only 1 capacity provider in a capacity provider strategy can have a nonzero base.');
+    }
+    this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
+  }
+
+  private renderExecuteCommandConfiguration(): CfnCluster.ClusterConfigurationProperty {
     return {
       executeCommandConfiguration: {
         kmsKeyId: this._executeCommandConfiguration?.kmsKey?.keyArn,
@@ -284,8 +339,8 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * Add an AWS Cloud Map DNS namespace for this cluster.
-   * NOTE: HttpNamespaces are not supported, as ECS always requires a DNSConfig when registering an instance to a Cloud
-   * Map service.
+   * NOTE: HttpNamespaces are supported only for use cases involving Service Connect. For use cases involving both Service-
+   * Discovery and Service Connect, customers should manage the HttpNamespace outside of the Cluster.addDefaultCloudMapNamespace method.
    */
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
@@ -296,18 +351,50 @@ export class Cluster extends Resource implements ICluster {
       ? options.type
       : cloudmap.NamespaceType.DNS_PRIVATE;
 
-    const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
-      new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-        name: options.name,
-        vpc: this.vpc,
-      }) :
-      new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-        name: options.name,
-      });
+    let sdNamespace;
+    switch (namespaceType) {
+      case cloudmap.NamespaceType.DNS_PRIVATE:
+        sdNamespace = new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+          vpc: this.vpc,
+        });
+        break;
+      case cloudmap.NamespaceType.DNS_PUBLIC:
+        sdNamespace = new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+        });
+        break;
+      case cloudmap.NamespaceType.HTTP:
+        sdNamespace = new cloudmap.HttpNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+        });
+        break;
+      default:
+        throw new Error(`Namespace type ${namespaceType} is not supported.`);
+    }
 
     this._defaultCloudMapNamespace = sdNamespace;
+    if (options.useForServiceConnect) {
+      this._cfnCluster.serviceConnectDefaults = {
+        namespace: options.name,
+      };
+    }
 
     return sdNamespace;
+  }
+
+  /**
+   * Getter for _defaultCapacityProviderStrategy. This is necessary to correctly create Capacity Provider Associations.
+   */
+  public get defaultCapacityProviderStrategy() {
+    return this._defaultCapacityProviderStrategy;
+  }
+
+  /**
+   * Getter for _capacityProviderNames added to cluster
+   */
+  public get capacityProviderNames() {
+    return this._capacityProviderNames;
   }
 
   /**
@@ -318,7 +405,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * It is highly recommended to use {@link Cluster.addAsgCapacityProvider} instead of this method.
+   * It is highly recommended to use `Cluster.addAsgCapacityProvider` instead of this method.
    *
    * This method adds compute capacity to a cluster by creating an AutoScalingGroup with the specified options.
    *
@@ -355,7 +442,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
-  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions= {}) {
+  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
     // Don't add the same capacity provider more than once.
     if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
       return;
@@ -375,7 +462,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * This method adds compute capacity to a cluster using the specified AutoScalingGroup.
    *
-   * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
+   * @deprecated Use `Cluster.addAsgCapacityProvider` instead.
    * @param autoScalingGroup the ASG to add to this cluster.
    * [disable-awslint:ref-via-interface] is needed in order to install the ECS
    * agent by updating the ASGs user data.
@@ -483,8 +570,8 @@ export class Cluster extends Resource implements ICluster {
    * This method enables the Fargate or Fargate Spot capacity providers on the cluster.
    *
    * @param provider the capacity provider to add to this cluster.
-   * @deprecated Use {@link enableFargateCapacityProviders} instead.
-   * @see {@link addAsgCapacityProvider} to add an Auto Scaling Group capacity provider to the cluster.
+   * @deprecated Use `enableFargateCapacityProviders` instead.
+   * @see `addAsgCapacityProvider` to add an Auto Scaling Group capacity provider to the cluster.
    */
   public addCapacityProvider(provider: string) {
     if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
@@ -601,6 +688,12 @@ export class Cluster extends Resource implements ICluster {
     }).attachTo(this);
   }
 }
+
+Object.defineProperty(Cluster.prototype, CLUSTER_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
 
 /**
  * A regional grouping of one or more container instances on which you can run tasks and services.
@@ -808,7 +901,7 @@ export interface AddAutoScalingGroupCapacityOptions {
   readonly spotInstanceDraining?: boolean
 
   /**
-   * If {@link AddAutoScalingGroupCapacityOptions.taskDrainTime} is non-zero, then the ECS cluster creates an
+   * If `AddAutoScalingGroupCapacityOptions.taskDrainTime` is non-zero, then the ECS cluster creates an
    * SNS Topic to as part of a system to drain instances of tasks when the instance is being shut down.
    * If this property is provided, then this key will be used to encrypt the contents of that SNS Topic.
    * See [SNS Data Encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-data-encryption.html) for more information.
@@ -890,6 +983,14 @@ export interface CloudMapNamespaceOptions {
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
   readonly vpc?: ec2.IVpc;
+
+  /**
+   * This property specifies whether to set the provided namespace as the service connect default in the cluster properties.
+   *
+   * @default false
+   */
+  readonly useForServiceConnect?: boolean;
+
 }
 
 enum ContainerInsights {
@@ -907,8 +1008,6 @@ enum ContainerInsights {
 
 /**
  * A Capacity Provider strategy to use for the service.
- *
- * NOTE: defaultCapacityProviderStrategy on cluster not currently supported.
  */
 export interface CapacityProviderStrategy {
   /**
@@ -1042,14 +1141,25 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
   readonly autoScalingGroup: autoscaling.IAutoScalingGroup;
 
   /**
-   * Whether to enable managed scaling
+   * When enabled the scale-in and scale-out actions of the cluster's Auto Scaling Group will be managed for you.
+   * This means your cluster will automatically scale instances based on the load your tasks put on the cluster.
+   * For more information, see [Using Managed Scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html#asg-capacity-providers-managed-scaling) in the ECS Developer Guide.
    *
    * @default true
    */
   readonly enableManagedScaling?: boolean;
 
   /**
-   * Whether to enable managed termination protection
+   * When enabled the Auto Scaling Group will only terminate EC2 instances that no longer have running non-daemon
+   * tasks.
+   *
+   * Scale-in protection will be automatically enabled on instances. When all non-daemon tasks are
+   * stopped on an instance, ECS initiates the scale-in process and turns off scale-in protection for the
+   * instance. The Auto Scaling Group can then terminate the instance. For more information see [Managed termination
+   *  protection](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html#managed-termination-protection)
+   * in the ECS Developer Guide.
+   *
+   * Managed scaling must also be enabled.
    *
    * @default true
    */
@@ -1102,7 +1212,7 @@ export class AsgCapacityProvider extends Construct {
   readonly machineImageType: MachineImageType;
 
   /**
-   * Whether managed termination protection is enabled
+   * Whether managed termination protection is enabled.
    */
   readonly enableManagedTerminationProtection?: boolean;
 
@@ -1115,19 +1225,18 @@ export class AsgCapacityProvider extends Construct {
 
   constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
     super(scope, id);
-
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
-
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
-
     this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
+    this.enableManagedTerminationProtection = props.enableManagedTerminationProtection ?? true;
 
-    this.enableManagedTerminationProtection =
-      props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;
-
+    if (this.enableManagedTerminationProtection && props.enableManagedScaling === false) {
+      throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }
     if (this.enableManagedTerminationProtection) {
       this.autoScalingGroup.protectNewInstancesFromScaleIn();
     }
+
     if (props.capacityProviderName) {
       if (!(/^(?!aws|ecs|fargate).+/gm.test(props.capacityProviderName))) {
         throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
@@ -1156,26 +1265,23 @@ export class AsgCapacityProvider extends Construct {
  * the caller created any EC2 Capacity Providers.
  */
 class MaybeCreateCapacityProviderAssociations implements IAspect {
-  private scope: Construct;
+  private scope: Cluster;
   private id: string;
-  private capacityProviders: string[]
-  private resource?: CfnClusterCapacityProviderAssociations
+  private resource?: CfnClusterCapacityProviderAssociations;
 
-  constructor(scope: Construct, id: string, capacityProviders: string[] ) {
+  constructor(scope: Cluster, id: string) {
     this.scope = scope;
     this.id = id;
-    this.capacityProviders = capacityProviders;
   }
 
   public visit(node: IConstruct): void {
-    if (node instanceof Cluster) {
-      if (this.capacityProviders.length > 0 && !this.resource) {
-        const resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
+    if (Cluster.isCluster(node)) {
+      if ((this.scope.defaultCapacityProviderStrategy.length > 0 || this.scope.capacityProviderNames.length > 0 && !this.resource)) {
+        this.resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
           cluster: node.clusterName,
-          defaultCapacityProviderStrategy: [],
-          capacityProviders: Lazy.list({ produce: () => this.capacityProviders }),
+          defaultCapacityProviderStrategy: this.scope.defaultCapacityProviderStrategy,
+          capacityProviders: this.scope.capacityProviderNames,
         });
-        this.resource = resource;
       }
     }
   }

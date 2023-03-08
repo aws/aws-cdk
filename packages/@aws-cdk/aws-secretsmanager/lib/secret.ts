@@ -161,7 +161,7 @@ export interface SecretProps {
    * to the CloudFormation template (via the AWS Console, SDKs, or CLI).
    *
    * Specifies text data that you want to encrypt and store in this new version of the secret.
-   * May be a simple string value. To provide a string representation of JSON structure, use {@link SecretProps.secretObjectValue} instead.
+   * May be a simple string value. To provide a string representation of JSON structure, use `SecretProps.secretObjectValue` instead.
    *
    * Only one of `secretStringBeta1`, `secretStringValue`, 'secretObjectValue', and `generateSecretString` can be provided.
    *
@@ -179,7 +179,7 @@ export interface SecretProps {
    * to the CloudFormation template (via the AWS Console, SDKs, or CLI).
    *
    * Specifies a JSON object that you want to encrypt and store in this new version of the secret.
-   * To specify a simple string value instead, use {@link SecretProps.secretStringValue}
+   * To specify a simple string value instead, use `SecretProps.secretStringValue`
    *
    * Only one of `secretStringBeta1`, `secretStringValue`, 'secretObjectValue', and `generateSecretString` can be provided.
    *
@@ -835,21 +835,37 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
   protected readonly autoCreatePolicy = true;
 
+  private readonly attachedSecret: ISecret;
+
   constructor(scope: Construct, id: string, props: SecretTargetAttachmentProps) {
     super(scope, id);
+    this.attachedSecret = props.secret;
 
     const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {
-      secretId: props.secret.secretArn,
+      secretId: this.attachedSecret.secretArn,
       targetId: props.target.asSecretAttachmentTarget().targetId,
       targetType: attachmentTargetTypeToString(props.target.asSecretAttachmentTarget().targetType),
     });
 
-    this.encryptionKey = props.secret.encryptionKey;
-    this.secretName = props.secret.secretName;
+    this.encryptionKey = this.attachedSecret.encryptionKey;
+    this.secretName = this.attachedSecret.secretName;
 
     // This allows to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;
     this.secretTargetAttachmentSecretArn = attachment.ref;
+  }
+
+  /**
+   * Forward any additions to the resource policy to the original secret.
+   * This is required because a secret can only have a single resource policy.
+   * If we do not forward policy additions, a new policy resource is created using the secret attachment ARN.
+   * This ends up being rejected by CloudFormation.
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (FeatureFlags.of(this).isEnabled(cxapi.SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY)) {
+      return this.attachedSecret.addToResourcePolicy(statement);
+    }
+    return super.addToResourcePolicy(statement);
   }
 }
 

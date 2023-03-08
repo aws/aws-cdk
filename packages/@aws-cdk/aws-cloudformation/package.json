@@ -78,6 +78,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
@@ -88,7 +89,7 @@
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.108",
+    "@types/aws-lambda": "^8.10.111",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
   },

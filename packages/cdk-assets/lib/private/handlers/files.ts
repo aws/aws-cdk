@@ -83,34 +83,6 @@ export class FileAssetHandler implements IAssetHandler {
     const publishFile = this.asset.source.executable ?
       await this.externalPackageFile(this.asset.source.executable) : await this.packageFile(this.asset.source);
 
-    // Add a validation to catch the cases where we're accidentally producing an empty ZIP file (or worse,
-    // an empty file)
-    if (publishFile.contentType === 'application/zip') {
-      const fileSize = (await fs.stat(publishFile.packagedPath)).size;
-      if (fileSize <= EMPTY_ZIP_FILE_SIZE) {
-        const message = [
-          '🚨 WARNING: EMPTY ZIP FILE 🚨',
-          '',
-          'Zipping this asset produced an empty zip file. We do not know the root cause for this yet, and we need your help tracking it down.',
-          '',
-          'Please visit https://github.com/aws/aws-cdk/issues/18459 and tell us:',
-          'Your OS version, Nodejs version, CLI version, package manager, what the asset is supposed to contain, whether',
-          'or not this error is reproducible, what files are in your cdk.out directory, if you recently changed anything,',
-          'and anything else you think might be relevant.',
-          '',
-          'The deployment will continue, but it may fail. You can try removing the cdk.out directory and running the command',
-          'again; let us know if that resolves it.',
-          '',
-          'If you meant to produce an empty asset file on purpose, you can add an empty dotfile to the asset for now',
-          'to disable this notice.',
-        ];
-
-        for (const line of message) {
-          this.host.emitMessage(EventType.FAIL, line);
-        }
-      }
-    }
-
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
 
     const params = Object.assign({}, {

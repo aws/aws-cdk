@@ -2,12 +2,13 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { Construct, Node } from 'constructs';
+import { toCloudFormation } from './util';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Lazy, ScopedAws, Stack, validateString,
   Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
-  Aws,
+  Aws, Fn, ResolutionTypeHint,
   PermissionsBoundary,
   PERMISSIONS_BOUNDARY_CONTEXT_KEY,
   Aspects,
@@ -16,7 +17,6 @@ import {
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
-import { toCloudFormation } from './util';
 
 describe('stack', () => {
   test('a stack can be serialized into a CloudFormation template, initially it\'s empty', () => {
@@ -466,6 +466,190 @@ describe('stack', () => {
     });
   });
 
+  test('cross-stack references of lists returned from Fn::GetAtt work', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const exportResource = new CfnResource(stack1, 'exportedResource', {
+      type: 'BLA',
+    });
+    const stack2 = new Stack(app, 'Stack2');
+    // L1s represent attribute names with `attr${attributeName}`
+    (exportResource as any).attrList = ['magic-attr-value'];
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: exportResource.getAtt('List', ResolutionTypeHint.STRING_LIST),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttexportedResourceList0EA3E0D9: {
+          Value: {
+            'Fn::Join': [
+              '||', {
+                'Fn::GetAtt': [
+                  'exportedResource',
+                  'List',
+                ],
+              },
+            ],
+          },
+          Export: { Name: 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9' },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Split': [
+                '||',
+                {
+                  'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-stack references of lists returned from Fn::GetAtt can be used with CFN intrinsics', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const exportResource = new CfnResource(stack1, 'exportedResource', {
+      type: 'BLA',
+    });
+    const stack2 = new Stack(app, 'Stack2');
+    // L1s represent attribute names with `attr${attributeName}`
+    (exportResource as any).attrList = ['magic-attr-value'];
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: Fn.select(3, exportResource.getAtt('List', ResolutionTypeHint.STRING_LIST) as any),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttexportedResourceList0EA3E0D9: {
+          Value: {
+            'Fn::Join': [
+              '||', {
+                'Fn::GetAtt': [
+                  'exportedResource',
+                  'List',
+                ],
+              },
+            ],
+          },
+          Export: { Name: 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9' },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-stack references of lists returned from Fn::Ref work', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const param = new CfnParameter(stack1, 'magicParameter', {
+      default: 'BLAT,BLAH',
+      type: 'List<String>',
+    });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: param.value,
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Outputs: {
+        ExportsOutputRefmagicParameter4CC6F7BE: {
+          Value: {
+            'Fn::Join': [
+              '||', {
+                Ref: 'magicParameter',
+              },
+            ],
+          },
+          Export: { Name: 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE' },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Split': [
+                '||',
+                {
+                  'Fn::ImportValue': 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE',
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('cross-region stack references, crossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
@@ -896,7 +1080,7 @@ describe('stack', () => {
         RefToResource1: resourceA.ref,
       },
     });
-    resource2.addDependsOn(resourceB);
+    resource2.addDependency(resourceB);
 
     // THEN
     const assembly = app.synth();
@@ -932,6 +1116,206 @@ describe('stack', () => {
     expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
+  test('_addAssemblyDependency adds to _stackDependencies', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'ChildA');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
+
+    expect(childA._obtainAssemblyDependencies({ source: resourceA }))
+      .toEqual([resource1, resource2]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
+
+  test('_addAssemblyDependency adds one StackDependencyReason with defaults', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'ChildA');
+
+    childA._addAssemblyDependency(child1);
+
+    expect(childA._obtainAssemblyDependencies({ source: childA }))
+      .toEqual([child1]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
+
+  test('_addAssemblyDependency raises error on cycle', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const child2 = new Stack(parent, 'Child2');
+
+    child2._addAssemblyDependency(child1);
+    expect(() => child1._addAssemblyDependency(child2)).toThrow("'Parent/Child2' depends on");
+  });
+
+  test('_addAssemblyDependency raises error for nested stacks', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new NestedStack(parent, 'Child1');
+    const child2 = new NestedStack(parent, 'Child2');
+
+    expect(() => child1._addAssemblyDependency(child2)).toThrow('Cannot add assembly-level');
+  });
+
+  test('_addAssemblyDependency handles duplicate dependency reasons', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const child2 = new Stack(parent, 'Child2');
+
+    child2._addAssemblyDependency(child1);
+    const depsBefore = child2._obtainAssemblyDependencies({ source: child2 });
+    child2._addAssemblyDependency(child1);
+    expect(depsBefore).toEqual(child2._obtainAssemblyDependencies({ source: child2 }));
+  });
+
+  test('_removeAssemblyDependency removes one StackDependencyReason of two from _stackDependencies', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'ChildA');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
+
+    expect(childA._obtainAssemblyDependencies({ source: resourceA })).toEqual([resource2]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
+
+  test('_removeAssemblyDependency removes a StackDependency from _stackDependencies with the last reason', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'Child2');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource2 });
+
+    expect(childA._obtainAssemblyDependencies({ source: childA })).toEqual([]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+  });
+
+  test('_removeAssemblyDependency removes a StackDependency with default reason', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'Child2');
+
+    childA._addAssemblyDependency(child1);
+    childA._removeAssemblyDependency(child1);
+
+    expect(childA._obtainAssemblyDependencies({ source: childA })).toEqual([]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+  });
+
+  test('_removeAssemblyDependency raises an error for nested stacks', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new NestedStack(parent, 'Child1');
+    const childA = new NestedStack(parent, 'Child2');
+
+    expect(() => childA._removeAssemblyDependency(child1)).toThrow('There cannot be assembly-level');
+  });
+
+  test('_removeAssemblyDependency handles a non-matching dependency reason', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'Child2');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1);
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
+  });
+
   test('automatic cross-stack references and manual exports look the same', () => {
     // GIVEN: automatic
     const appA = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
@@ -945,6 +1329,29 @@ describe('stack', () => {
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
     producerM.exportValue(resourceM.getAtt('Att'));
+
+    // THEN - producers are the same
+    const templateA = appA.synth().getStackByName(producerA.stackName).template;
+    const templateM = appM.synth().getStackByName(producerM.stackName).template;
+
+    expect(templateA).toEqual(templateM);
+  });
+
+  test('automatic cross-stack references and manual list exports look the same', () => {
+    // GIVEN: automatic
+    const appA = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
+    const producerA = new Stack(appA, 'Producer');
+    const consumerA = new Stack(appA, 'Consumer');
+    const resourceA = new CfnResource(producerA, 'Resource', { type: 'AWS::Resource' });
+    (resourceA as any).attrAtt = ['Foo', 'Bar'];
+    new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att', ResolutionTypeHint.STRING_LIST)}` });
+
+    // GIVEN: manual
+    const appM = new App();
+    const producerM = new Stack(appM, 'Producer');
+    const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
+    (resourceM as any).attrAtt = ['Foo', 'Bar'];
+    producerM.exportStringListValue(resourceM.getAtt('Att', ResolutionTypeHint.STRING_LIST));
 
     // THEN - producers are the same
     const templateA = appA.synth().getStackByName(producerA.stackName).template;
@@ -1032,6 +1439,15 @@ describe('stack', () => {
     }).toThrow(/or make sure to export a resource attribute/);
   });
 
+  test('manual list exports require a name if not supplying a resource attribute', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    expect(() => {
+      stack.exportStringListValue(['someValue']);
+    }).toThrow(/or make sure to export a resource attribute/);
+  });
+
   test('manual exports can also just be used to create an export of anything', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack');
@@ -1039,6 +1455,37 @@ describe('stack', () => {
     const importV = stack.exportValue('someValue', { name: 'MyExport' });
 
     expect(stack.resolve(importV)).toEqual({ 'Fn::ImportValue': 'MyExport' });
+  });
+
+  test('manual list exports can also just be used to create an export of anything', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    const importV = stack.exportStringListValue(['someValue', 'anotherValue'], { name: 'MyExport' });
+
+    expect(stack.resolve(importV)).toEqual(
+      {
+        'Fn::Split': [
+          '||',
+          {
+            'Fn::ImportValue': 'MyExport',
+          },
+        ],
+      },
+    );
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportMyExport: {
+          Value: 'someValue||anotherValue',
+          Export: {
+            Name: 'MyExport',
+          },
+        },
+      },
+    });
   });
 
   test('CfnSynthesisError is ignored when preparing cross references', () => {
@@ -1251,7 +1698,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow(/Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
+    }).toThrow(/Stack "Stack2" cannot reference [^ ]+ in stack "Stack1"/);
   });
 
   test('urlSuffix does not imply a stack dependency', () => {
@@ -1784,7 +2231,6 @@ describe('regionalFact', () => {
       },
     });
   });
-
 });
 
 class StackWithPostProcessor extends Stack {

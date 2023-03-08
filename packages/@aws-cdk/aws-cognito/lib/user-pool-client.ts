@@ -240,6 +240,15 @@ export interface UserPoolClientOptions {
   readonly oAuth?: OAuthSettings;
 
   /**
+   * Cognito creates a session token for each API request in an authentication flow.
+   * AuthSessionValidity is the duration, in minutes, of that session token.
+   * see defaults in `AuthSessionValidity`. Valid duration is from 3 to 15 minutes.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-authsessionvalidity
+   * @default - Duration.minutes(3)
+   */
+  readonly authSessionValidity?: Duration;
+
+  /**
    * Whether Cognito returns a UserNotFoundException exception when the
    * user does not exist in the user pool (false), or whether it returns
    * another type of error that doesn't reveal the user's absence.
@@ -409,6 +418,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
     });
+    this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
 
     this.userPoolClientId = resource.ref;
@@ -441,7 +451,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
         'DescribeCognitoUserPoolClient',
         {
           resourceType: 'Custom::DescribeCognitoUserPoolClient',
-          onCreate: {
+          onUpdate: {
             region: Stack.of(this).region,
             service: 'CognitoIdentityServiceProvider',
             action: 'describeUserPoolClient',
@@ -454,6 +464,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
           policy: AwsCustomResourcePolicy.fromSdkCalls({
             resources: [this.userPool.userPoolArn],
           }),
+          // APIs are available in 2.1055.0
+          installLatestAwsSdk: false,
         },
       ).getResponseField('UserPoolClient.ClientSecret'));
     }
@@ -520,6 +532,11 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     }
     if (providers.length === 0) { return undefined; }
     return Array.from(providers);
+  }
+
+  private configureAuthSessionValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {
+    this.validateDuration('authSessionValidity', Duration.minutes(3), Duration.minutes(15), props.authSessionValidity);
+    resource.authSessionValidity = props.authSessionValidity ? props.authSessionValidity.toMinutes() : undefined;
   }
 
   private configureTokenValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {

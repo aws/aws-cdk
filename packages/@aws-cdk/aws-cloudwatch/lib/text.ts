@@ -1,6 +1,20 @@
 import { ConcreteWidget } from './widget';
 
 /**
+ * Background types available
+ */
+export enum TextWidgetBackground {
+  /**
+   * Solid background
+   */
+  SOLID = 'solid',
+  /**
+  * Transparent background
+  */
+  TRANSPARENT = 'transparent'
+}
+
+/**
  * Properties for a Text widget
  */
 export interface TextWidgetProps {
@@ -22,6 +36,13 @@ export interface TextWidgetProps {
    * @default 2
    */
   readonly height?: number;
+
+  /**
+   * Background for the widget
+   *
+   * @default solid
+   */
+  readonly background?: TextWidgetBackground;
 }
 
 /**
@@ -29,10 +50,12 @@ export interface TextWidgetProps {
  */
 export class TextWidget extends ConcreteWidget {
   private readonly markdown: string;
+  private readonly background?: TextWidgetBackground;
 
   constructor(props: TextWidgetProps) {
     super(props.width || 6, props.height || 2);
     this.markdown = props.markdown;
+    this.background = props.background;
   }
 
   public position(x: number, y: number): void {
@@ -49,6 +72,7 @@ export class TextWidget extends ConcreteWidget {
       y: this.y,
       properties: {
         markdown: this.markdown,
+        background: this.background,
       },
     }];
   }

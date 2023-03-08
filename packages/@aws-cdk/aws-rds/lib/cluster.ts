@@ -269,7 +269,7 @@ interface DatabaseClusterBaseProps {
 
   /**
    * The KMS key for storage encryption.
-   * If specified, {@link storageEncrypted} will be set to `true`.
+   * If specified, `storageEncrypted` will be set to `true`.
    *
    * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
@@ -320,6 +320,13 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    * Identifier of the cluster
    */
   public abstract readonly clusterIdentifier: string;
+
+  /**
+   * The immutable identifier for the cluster; for example: cluster-ABCD1234EFGH5678IJKL90MNOP.
+   *
+   * This AWS Region-unique identifier is used in things like IAM authentication policies.
+   */
+  public abstract readonly clusterResourceIdentifier: string;
 
   /**
    * Identifiers of the replicas
@@ -557,6 +564,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;
 
+  private readonly _clusterResourceIdentifier?: string;
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;
   private readonly _instanceIdentifiers?: string[];
@@ -566,6 +574,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
     super(scope, id);
 
     this.clusterIdentifier = attrs.clusterIdentifier;
+    this._clusterResourceIdentifier = attrs.clusterResourceIdentifier;
 
     const defaultPort = attrs.port ? ec2.Port.tcp(attrs.port) : undefined;
     this.connections = new ec2.Connections({
@@ -580,6 +589,13 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
     this._instanceEndpoints = (attrs.instanceEndpointAddresses && attrs.port)
       ? attrs.instanceEndpointAddresses.map(addr => new Endpoint(addr, attrs.port!))
       : undefined;
+  }
+
+  public get clusterResourceIdentifier() {
+    if (!this._clusterResourceIdentifier) {
+      throw new Error('Cannot access `clusterResourceIdentifier` of an imported cluster without a clusterResourceIdentifier');
+    }
+    return this._clusterResourceIdentifier;
   }
 
   public get clusterEndpoint() {
@@ -637,6 +653,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
   }
 
   public readonly clusterIdentifier: string;
+  public readonly clusterResourceIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
@@ -662,6 +679,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
     });
 
     this.clusterIdentifier = cluster.ref;
+    this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -729,6 +747,7 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
  */
 export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly clusterIdentifier: string;
+  public readonly clusterResourceIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
@@ -774,6 +793,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     });
 
     this.clusterIdentifier = cluster.ref;
+    this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
     if (secret) {
       this.secret = secret.attach(this);

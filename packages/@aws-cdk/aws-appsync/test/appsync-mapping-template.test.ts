@@ -12,7 +12,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
   });
 });
 
@@ -34,7 +34,7 @@ describe('Lambda Mapping Templates', () => {
     // WHEN
     const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
 
-    lambdaDS.createResolver({
+    lambdaDS.createResolver('QueryAllPosts', {
       typeName: 'Query',
       fieldName: 'allPosts',
       requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(),
@@ -52,7 +52,7 @@ describe('Lambda Mapping Templates', () => {
     // WHEN
     const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
 
-    lambdaDS.createResolver({
+    lambdaDS.createResolver('PostRelatedPosts', {
       typeName: 'Post',
       fieldName: 'relatedPosts',
       requestMappingTemplate: appsync.MappingTemplate.lambdaRequest('$util.toJson($ctx)', 'BatchInvoke'),

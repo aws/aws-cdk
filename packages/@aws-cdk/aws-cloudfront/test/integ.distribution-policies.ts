@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import * as cloudfront from '../lib';
 import { TestOrigin } from './test-origin';
+import * as cloudfront from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-distribution-policies');
@@ -25,6 +25,8 @@ const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(stack, 'Respo
     accessControlMaxAge: cdk.Duration.seconds(600),
     originOverride: true,
   },
+  removeHeaders: ['Server'],
+  serverTimingSamplingRate: 50,
 });
 
 new cloudfront.Distribution(stack, 'Dist', {

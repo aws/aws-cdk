@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "testCases": {
-    "integ.user-pool-ses-email": {
+    "IntegTest/DefaultTest": {
       "stacks": [
-        "integ-user-pool-signup-code"
+        "integ-user-ses-email"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

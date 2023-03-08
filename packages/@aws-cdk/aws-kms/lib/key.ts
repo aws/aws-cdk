@@ -203,12 +203,9 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
     const grantPrincipal = grantee.grantPrincipal;
-    if (!isConstruct(grantPrincipal)) {
-      return undefined;
-    }
     // this logic should only apply to newly created
     // (= not imported) resources
-    if (!Resource.isOwnedResource(grantPrincipal)) {
+    if (!iam.principalIsOwnedResource(grantPrincipal)) {
       return undefined;
     }
     const keyStack = Stack.of(this);
@@ -223,20 +220,20 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
-    if (!isConstruct(grantee)) {
+    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
       return false;
     }
     const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee);
+    const identityStack = Stack.of(grantee.grantPrincipal);
     return bucketStack.region !== identityStack.region;
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!isConstruct(grantee)) {
+    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
       return false;
     }
     const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee);
+    const identityStack = Stack.of(grantee.grantPrincipal);
     return bucketStack.account !== identityStack.account;
   }
 }
@@ -482,14 +479,14 @@ export class Key extends KeyBase {
   }
 
   /**
-   * Create a mutable {@link IKey} based on a low-level {@link CfnKey}.
+   * Create a mutable `IKey` based on a low-level `CfnKey`.
    * This is most useful when combined with the cloudformation-include module.
-   * This method is different than {@link fromKeyArn()} because the {@link IKey}
+   * This method is different than `fromKeyArn()` because the `IKey`
    * returned from this method is mutable;
    * meaning, calling any mutating methods on it,
-   * like {@link IKey.addToResourcePolicy()},
+   * like `IKey.addToResourcePolicy()`,
    * will actually be reflected in the resulting template,
-   * as opposed to the object returned from {@link fromKeyArn()},
+   * as opposed to the object returned from `fromKeyArn()`,
    * on which calling those methods would have no effect.
    */
   public static fromCfnKey(cfnKey: CfnKey): IKey {
@@ -724,21 +721,4 @@ export class Key extends KeyBase {
       principals: [new iam.AccountRootPrincipal()],
     }));
   }
-}
-
-/**
- * Whether the given object is a Construct
- *
- * Normally we'd do `x instanceof Construct`, but that is not robust against
- * multiple copies of the `constructs` library on disk. This can happen
- * when upgrading and downgrading between v2 and v1, and in the use of CDK
- * Pipelines is going to an error that says "Can't use Pipeline/Pipeline/Role in
- * a cross-environment fashion", which is very confusing.
- */
-function isConstruct(x: any): x is Construct {
-  const sym = Symbol.for('constructs.Construct.node');
-  return (typeof x === 'object' && x &&
-    (x instanceof Construct // happy fast case
-    || !!(x as any).node // constructs v10
-    || !!(x as any)[sym])); // constructs v3
 }

@@ -30,12 +30,26 @@ const importedGroupWithImplicitlySetName = ProfilingGroup.fromProfilingGroupName
   profilingGroup2.profilingGroupName,
 );
 
+const importedGroupFromArn = ProfilingGroup.fromProfilingGroupArn(
+  stack,
+  'ImportedProfilingGroupFromArn',
+  'arn:aws:codeguru-profiler:a-region-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
+);
+
 new CfnOutput(stack, 'ExplicitlySetProfilingGroupName', {
   value: importedGroupWithExplicitlySetName.profilingGroupName,
 });
 
 new CfnOutput(stack, 'ImplicitlySetProfilingGroupName', {
   value: importedGroupWithImplicitlySetName.profilingGroupName,
+});
+
+new CfnOutput(stack, 'ImportedFromArnProfilingGroupName', {
+  value: importedGroupFromArn.profilingGroupName,
+});
+
+new CfnOutput(stack, 'ImportedFromArnProfilingGroupArn', {
+  value: importedGroupFromArn.profilingGroupArn,
 });
 
 const testCase = new IntegTest(app, 'test', {
@@ -52,4 +66,8 @@ describe.assertAtPath('Stacks.0.Outputs.0.OutputValue', ExpectedResult.stringLik
 describe.assertAtPath('Stacks.0.Outputs.1.OutputKey', ExpectedResult.stringLikeRegexp('ImplicitlySetProfilingGroupName'));
 describe.assertAtPath('Stacks.0.Outputs.1.OutputValue', ExpectedResult.stringLikeRegexp('ProfilingGroupTestStackProfilingGroupWithImplicitlySetName98463923'));
 
-app.synth();
+describe.assertAtPath('Stacks.0.Outputs.2.OutputKey', ExpectedResult.stringLikeRegexp('ImportedFromArnProfilingGroupName'));
+describe.assertAtPath('Stacks.0.Outputs.2.OutputValue', ExpectedResult.stringLikeRegexp('MyAwesomeProfilingGroup'));
+
+describe.assertAtPath('Stacks.0.Outputs.3.OutputKey', ExpectedResult.stringLikeRegexp('ImportedFromArnProfilingGroupArn'));
+describe.assertAtPath('Stacks.0.Outputs.3.OutputValue', ExpectedResult.stringLikeRegexp('arn:aws:codeguru-profiler:a-region-1:1234567890:profilingGroup/MyAwesomeProfilingGroup'));
