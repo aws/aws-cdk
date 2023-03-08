@@ -10,6 +10,10 @@ export interface TestContext {
   log(s: string): void;
 };
 
+if (process.env.JEST_TEST_CONCURRENT === 'true') {
+  process.stderr.write('ℹ️ JEST_TEST_CONCURRENT is true: tests will run concurrently and filters have no effect!');
+}
+
 /**
  * A wrapper for jest's 'test' which takes regression-disabled tests into account and prints a banner
  */
@@ -18,7 +22,6 @@ export function integTest(
   callback: (context: TestContext) => Promise<void>,
   timeoutMillis?: number,
 ): void {
-
   // Integ tests can run concurrently, and are responsible for blocking
   // themselves if they cannot.  Because `test.concurrent` executes the test
   // code immediately, regardles of any `--testNamePattern`, this cannot be the
