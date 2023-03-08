@@ -2,38 +2,41 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as s3 from '@aws-cdk/aws-s3';
 import { DockerImageAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
+import * as iam from '@aws-cdk/aws-iam';
 
 /**
  * Information on how a Staging Stack should look.
  */
 export interface IStagingStack extends IConstruct {
   /**
-   * // TODO
+   * The app-scoped, environment-keyed bucket created in this staging stack.
    */
   readonly stagingBucket: s3.Bucket;
 
   /**
-   * // TODO
+   * The well-known name of the app-scpoed, environment-keyed bucket created in this staging stack.
    */
   readonly stagingBucketName: string;
 
   /**
-   * // TODO
+   * The app-scoped, environment-keyed repositories created in this staging stack.
+   * A repository is created per image asset family.
    */
   readonly stagingRepos: Record<string, ecr.Repository>;
 
   /**
-   * // TODO
+   * The well-known name of the IAM role assumed for publishing to s3.
    */
   readonly fileAssetPublishingRoleArn: string;
 
   /**
-   * // TODO
+   * The well-known name of the IAM role assumed for publishing to ecr.
    */
   readonly dockerAssetPublishingRoleArn: string;
 
   /**
-   * // TODO
+   * Returns the well-known name of the app-scoped, environment-keyed repository associated
+   * with the given asset.
    */
   getRepoName(asset: DockerImageAssetSource): string;
 }
@@ -45,9 +48,23 @@ export interface StagingStackProps extends StackProps {
   /**
    * Explicit name for the staging bucket
    *
-   * @default - DEFAULT
+   * @default - a well-known name unique to this app/env.
    */
   readonly stagingBucketName?: string;
+
+  /**
+   * Pass in an existing role to be used as the file publishing role.
+   *
+   * @default - a well-known name unique to this app/env.
+   */
+  readonly fileAssetPublishingRoleArn?: string;
+
+  /**
+   * Pass in an existing role to be used as the image publishing role.
+   *
+   * @default - a well-known name unique to this app/env.
+   */
+  readonly dockerAssetPublishingRoleArn?: string;
 }
 
 /**
@@ -60,28 +77,52 @@ export class StagingStack extends Stack implements IStagingStack {
   public static readonly DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
-   * // TODO
+   * Default asset publishing role ARN for docker (ECR) assets.
+   */
+  public static readonly DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_ARN = 'cdk-${Qualifier}-asset-publishing-role-${AWS::AccountId}-${AWS::Region}';
+
+  /**
+   * The app-scoped, evironment-keyed staging bucket.
    */
   public readonly stagingBucket: s3.Bucket;
 
   /**
-   * // TODO
+   * The app-scoped, environment-keyed ecr repositories associated with this app.
    */
   public readonly stagingRepos: Record<string, ecr.Repository>;
 
+  /**
+   * The well-known arn of the file asset publishing role.
+   */
   public readonly fileAssetPublishingRoleArn: string;
+
+  /**
+   * The well-known arn of the docker asset publishing role.
+   */
   public readonly dockerAssetPublishingRoleArn: string;
 
   /**
-   * // TODO
+   * The well known name of the staging bucket
    */
   public readonly stagingBucketName: string;
 
   constructor(scope: Construct, id: string, props: StagingStackProps = {}) {
     super(scope, id, props);
 
-    this.fileAssetPublishingRoleArn = 'file-asset-placeholder-arn';
-    this.dockerAssetPublishingRoleArn = 'docker-asset-placeholder-arn';
+    this.fileAssetPublishingRoleArn = props.fileAssetPublishingRoleArn ?? StagingStack.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN;
+    if (!props.fileAssetPublishingRoleArn) {
+      new iam.Role(this, 'File-Asset-Publishing-Role', {
+        roleName: StagingStack.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN.split('/')[1],
+        assumedBy: new iam.ServicePrincipal('sts.amazonaws.com'),
+      });
+    }
+    this.dockerAssetPublishingRoleArn = props.dockerAssetPublishingRoleArn ?? StagingStack.DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_ARN;
+    if (!props.dockerAssetPublishingRoleArn) {
+      new iam.Role(this, 'Docker-Asset-Publishing-Role', {
+        roleName: StagingStack.DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_ARN.split('/')[1],
+        assumedBy: new iam.ServicePrincipal('sts.amazonaws.com'),
+      });
+    }
 
     this.stagingBucketName = props.stagingBucketName ?? 'default-bucket';
     this.stagingBucket = new s3.Bucket(this, 'StagingBucket', {

@@ -50,7 +50,7 @@ describe('bootstrap v3', () => {
         'current_account-current_region': {
           bucketName: 'default-bucket',
           objectKey: templateObjectKey,
-          assumeRoleArn: 'file-asset-placeholder-arn',
+          assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}',
         },
       },
     });
@@ -83,6 +83,18 @@ describe('bootstrap v3', () => {
     const repo = 'a-repo';
     expect(evalCFN(location.repositoryName)).toEqual(repo);
     expect(evalCFN(location.imageUri)).toEqual(`the_account.dkr.ecr.the_region.domain.aws/${repo}:abcdef`);
+  });
+
+  test('file asset depends on staging stack', () => {
+    // WHEN
+    const location = stack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'abcdef',
+    });
+
+    // THEN - we have a fixed asset location
+    console.log(stack.dependencies);
   });
 
   /**
