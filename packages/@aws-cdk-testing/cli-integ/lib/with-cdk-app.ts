@@ -9,6 +9,9 @@ import { packageSourceInSubprocess } from './package-sources/subprocess';
 import { RESOURCES_DIR } from './resources';
 import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
 import { AwsContext, withAws } from './with-aws';
+import { withTimeout } from './with-timeout';
+
+export const DEFAULT_TEST_TIMEOUT_S = 10 * 60;
 
 /**
  * Higher order function to execute a block with a CDK app fixture
@@ -18,8 +21,10 @@ import { AwsContext, withAws } from './with-aws';
  * For backwards compatibility with existing tests (so we don't have to change
  * too much) the inner block is expected to take a `TestFixture` object.
  */
-export function withCdkApp<A extends TestContext & AwsContext>(block: (context: TestFixture) => Promise<void>) {
-  return async (context: A) => {
+export function withCdkApp(
+  block: (context: TestFixture) => Promise<void>,
+): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
+  return async (context: TestContext & AwsContext & DisableBootstrapContext) => {
     const randy = context.randomString;
     const stackNamePrefix = `cdktest-${randy}`;
     const integTestDir = path.join(os.tmpdir(), `cdk-integ-${randy}`);
@@ -61,7 +66,9 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
         });
       }
 
-      await ensureBootstrapped(fixture);
+      if (!context.disableBootstrap) {
+        await ensureBootstrapped(fixture);
+      }
 
       await block(fixture);
     } catch (e) {
@@ -131,8 +138,28 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
  * test declaration but centralizing it is going to make it convenient to modify in the future.
  */
 export function withDefaultFixture(block: (context: TestFixture) => Promise<void>) {
-  return withAws<TestContext>(withCdkApp(block));
-  //              ^~~~~~ this is disappointing TypeScript! Feels like you should have been able to derive this.
+  return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCdkApp(block)));
+}
+
+export interface DisableBootstrapContext {
+  /**
+   * Whether to disable creating the default bootstrap
+   * stack prior to running the test
+   *
+   * This should be set to true when running tests that
+   * explicitly create a bootstrap stack
+   *
+   * @default false
+   */
+  readonly disableBootstrap?: boolean;
+}
+
+/**
+ * To be used in place of `withDefaultFixture` when the test
+ * should not create the default bootstrap stack
+ */
+export function withoutBootstrap(block: (context: TestFixture) => Promise<void>) {
+  return withAws(withCdkApp(block), true);
 }
 
 export interface CdkCliOptions extends ShellOptions {
@@ -246,6 +273,8 @@ export class TestFixture extends ShellHelper {
     return this.cdk(['deploy',
       ...(neverRequireApproval ? ['--require-approval=never'] : []), // Default to no approval in an unattended test
       ...(options.options ?? []),
+      // use events because bar renders bad in tests
+      '--progress', 'events',
       ...this.fullStackName(stackNames)], options);
   }
 

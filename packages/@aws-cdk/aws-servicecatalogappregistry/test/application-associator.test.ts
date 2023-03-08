@@ -28,6 +28,34 @@ describe('Scope based Associations with Application within Same Account', () => 
       Name: 'MyAssociatedApplication',
       Tags: { managedBy: 'CDK_Application_Associator' },
     });
+    Template.fromStack(appAssociator.appRegistryApplication().stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
+    Template.fromStack(anotherStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+    Template.fromStack(anotherStack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
+      Application: 'MyAssociatedApplication',
+      Resource: { Ref: 'AWS::StackId' },
+    });
+  });
+
+  test('ApplicationAssociator with url disabled will not create cfn output', () => {
+    const appAssociator = new appreg.ApplicationAssociator(app, 'MyApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
+        stackName: 'MyAssociatedApplicationStack',
+        emitApplicationManagerUrlAsOutput: false,
+      })],
+    });
+
+    const anotherStack = new AppRegistrySampleStack(app, 'SampleStack');
+    Template.fromStack(appAssociator.appRegistryApplication().stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::Application', 1);
+    Template.fromStack(appAssociator.appRegistryApplication().stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
+      Name: 'MyAssociatedApplication',
+      Tags: { managedBy: 'CDK_Application_Associator' },
+    });
+
+    expect(
+      Template.fromStack(appAssociator.appRegistryApplication().stack)
+        .findOutputs('*', {}),
+    ).toEqual({});
     Template.fromStack(anotherStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(anotherStack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
       Application: 'MyAssociatedApplication',
@@ -35,6 +63,38 @@ describe('Scope based Associations with Application within Same Account', () => 
     });
   });
 });
+
+describe('Associate attribute group with Application', () => {
+  let app: cdk.App;
+  beforeEach(() => {
+    app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+  });
+
+  test('Associate Attribute Group with application created by ApplicationAssociator', () => {
+
+    const customAttributeGroup = new CustomAppRegistryAttributeGroup(app, 'AppRegistryAttributeGroup');
+
+    const appAssociator = new appreg.ApplicationAssociator(app, 'TestApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'TestAssociatedApplication',
+        stackName: 'TestAssociatedApplicationStack',
+      })],
+    });
+
+    customAttributeGroup.attributeGroup.associateWith(appAssociator.appRegistryApplication());
+    Template.fromStack(customAttributeGroup.attributeGroup.stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 1);
+    Template.fromStack(customAttributeGroup.attributeGroup.stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
+      Application: 'TestAssociatedApplication',
+      AttributeGroup: { 'Fn::GetAtt': ['MyFirstAttributeGroupDBC21379', 'Id'] },
+    });
+
+  });
+});
+
 describe('Scope based Associations with Application with Cross Region/Account', () => {
   let app: cdk.App;
   beforeEach(() => {
@@ -57,6 +117,28 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const nestedStack = new cdk.Stack(firstStack, 'MyFirstStack', {
       env: { account: 'account2', region: 'region' },
     });
+    Template.fromStack(firstStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+    Template.fromStack(nestedStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+  });
+
+  test('ApplicationAssociator disables cfn output', () => {
+    const appAssociator = new appreg.ApplicationAssociator(app, 'MyApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
+        stackName: 'MyAssociatedApplicationStack',
+        emitApplicationManagerUrlAsOutput: false,
+      })],
+    });
+    const firstStack = new cdk.Stack(app, 'testStack', {
+      env: { account: 'account2', region: 'region' },
+    });
+    const nestedStack = new cdk.Stack(firstStack, 'MyFirstStack', {
+      env: { account: 'account2', region: 'region' },
+    });
+
+    expect(
+      Template.fromStack(appAssociator.appRegistryApplication().stack).findOutputs('*', {}),
+    ).toEqual({});
     Template.fromStack(firstStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(nestedStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
   });
@@ -139,7 +221,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       associateStage: false,
     });
     app.synth();
-    Annotations.fromStack(pipelineStack).hasError('*',
+    Annotations.fromStack(pipelineStack).hasWarning('*',
       'Associate Stage: SampleStage to ensure all stacks in your cdk app are associated with AppRegistry. You can use ApplicationAssociator.associateStage to associate any stage.');
   });
 
@@ -155,6 +237,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       associateStage: true,
     });
     app.synth();
+    Template.fromStack(application.appRegistryApplication().stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
     Template.fromStack(pipelineStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
   });
 });
@@ -209,5 +292,20 @@ class AppRegistrySampleStage extends cdk.Stage {
 class AppRegistrySampleStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+  }
+}
+
+class CustomAppRegistryAttributeGroup extends cdk.Stack {
+  public readonly attributeGroup: appreg.AttributeGroup;
+
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+    const myAttributeGroup = new appreg.AttributeGroup(this, 'MyFirstAttributeGroup', {
+      attributeGroupName: 'MyFirstAttributeGroupName',
+      description: 'Test attribute group',
+      attributes: {},
+    });
+
+    this.attributeGroup = myAttributeGroup;
   }
 }

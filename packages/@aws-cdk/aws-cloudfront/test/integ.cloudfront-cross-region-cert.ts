@@ -2,8 +2,8 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
-import * as cloudfront from '../lib';
 import { TestOrigin } from './test-origin';
+import * as cloudfront from '../lib';
 
 const account = process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT;
 const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;

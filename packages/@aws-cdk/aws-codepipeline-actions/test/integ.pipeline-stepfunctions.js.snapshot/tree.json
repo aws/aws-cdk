@@ -24,6 +24,14 @@
                 "id": "Role",
                 "path": "aws-cdk-codepipeline-stepfunctions/SimpleStateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-codepipeline-stepfunctions/SimpleStateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-codepipeline-stepfunctions/SimpleStateMachine/Role/Resource",
@@ -279,6 +287,14 @@
                 "id": "Role",
                 "path": "aws-cdk-codepipeline-stepfunctions/MyPipeline/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-codepipeline-stepfunctions/MyPipeline/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-codepipeline-stepfunctions/MyPipeline/Role/Resource",
@@ -524,6 +540,14 @@
                         "id": "CodePipelineActionRole",
                         "path": "aws-cdk-codepipeline-stepfunctions/MyPipeline/Source/Source/CodePipelineActionRole",
                         "children": {
+                          "ImportCodePipelineActionRole": {
+                            "id": "ImportCodePipelineActionRole",
+                            "path": "aws-cdk-codepipeline-stepfunctions/MyPipeline/Source/Source/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-codepipeline-stepfunctions/MyPipeline/Source/Source/CodePipelineActionRole/Resource",
@@ -686,13 +710,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.237"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.237"
                 }
               },
               "Invoke": {
@@ -707,6 +731,14 @@
                         "id": "CodePipelineActionRole",
                         "path": "aws-cdk-codepipeline-stepfunctions/MyPipeline/Invoke/Invoke/CodePipelineActionRole",
                         "children": {
+                          "ImportCodePipelineActionRole": {
+                            "id": "ImportCodePipelineActionRole",
+                            "path": "aws-cdk-codepipeline-stepfunctions/MyPipeline/Invoke/Invoke/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-codepipeline-stepfunctions/MyPipeline/Invoke/Invoke/CodePipelineActionRole/Resource",
@@ -838,13 +870,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.237"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.237"
                 }
               }
             },
@@ -902,7 +934,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IApplication, Application } from './application';
+import { hashValues } from './common';
 
 /**
   * Properties used to define targetapplication.
@@ -10,7 +11,8 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
     * Stack ID in which application will be created or imported. The id of a stack is also the identifier that you use to
     * refer to it in the [AWS CDK Toolkit](https://docs.aws.amazon.com/cdk/v2/guide/cli.html).
     *
-    * @default - ApplicationAssociatorStack
+    * @default - The value of `stackName` will be used as stack id
+    * @deprecated - Use `stackName` instead to control the name and id of the stack
     */
   readonly stackId?: string;
 }
@@ -31,6 +33,13 @@ export interface CreateTargetApplicationOptions extends TargetApplicationCommonO
     * @default - Application containing stacks deployed via CDK.
     */
   readonly applicationDescription?: string;
+
+  /**
+   * Whether create cloudFormation Output for application manager URL.
+   *
+   * @default - Application containing stacks deployed via CDK.
+   */
+  readonly emitApplicationManagerUrlAsOutput?: boolean;
 }
 
 /**
@@ -90,17 +99,28 @@ class CreateTargetApplication extends TargetApplication {
     super();
   }
   public bind(scope: Construct): BindTargetApplicationResult {
-    const stackId = this.applicationOptions.stackId ?? 'ApplicationAssociatorStack';
+    (this.applicationOptions.stackName as string) =
+            this.applicationOptions.stackName || `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
+    const stackId = this.applicationOptions.stackName;
     (this.applicationOptions.description as string) =
             this.applicationOptions.description || 'Stack to create AppRegistry application';
     (this.applicationOptions.env as cdk.Environment) =
             this.applicationOptions.env || { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+    (this.applicationOptions.emitApplicationManagerUrlAsOutput as boolean) = this.applicationOptions.emitApplicationManagerUrlAsOutput ?? true;
+
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = new Application(applicationStack, 'DefaultCdkApplication', {
       applicationName: this.applicationOptions.applicationName,
       description: this.applicationOptions.applicationDescription || 'Application containing stacks deployed via CDK.',
     });
     cdk.Tags.of(appRegApplication).add('managedBy', 'CDK_Application_Associator');
+
+    if (this.applicationOptions.emitApplicationManagerUrlAsOutput) {
+      new cdk.CfnOutput(appRegApplication, 'ApplicationManagerUrl', {
+        value: `https://${appRegApplication.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${appRegApplication.applicationName}`,
+        description: 'System Manager Application Manager URL for the application created.',
+      });
+    }
 
     return {
       application: appRegApplication,
@@ -117,7 +137,9 @@ class ExistingTargetApplication extends TargetApplication {
     super();
   }
   public bind(scope: Construct): BindTargetApplicationResult {
-    const stackId = this.applicationOptions.stackId ?? 'ApplicationAssociatorStack';
+    (this.applicationOptions.stackName as string) =
+            this.applicationOptions.stackName || `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
+    const stackId = this.applicationOptions.stackName;
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = Application.fromApplicationArn(applicationStack, 'ExistingApplication', this.applicationOptions.applicationArnValue);
     return {

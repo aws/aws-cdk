@@ -1,11 +1,11 @@
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as s3 from '../lib';
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    /// !show
     const bucket = new s3.Bucket(this, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
@@ -15,10 +15,11 @@ class TestStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'RealBucketDomain', { value: bucket.bucketDomainName });
     new cdk.CfnOutput(this, 'ImportedBucketDomain', { value: bucket2.bucketDomainName });
-    /// !hide
   }
 }
 
 const app = new cdk.App();
-new TestStack(app, 'aws-cdk-s3-urls');
-app.synth();
+
+new IntegTest(app, 'cdk-integ-bucket-domain-name', {
+  testCases: [new TestStack(app, 'aws-cdk-domain-name')],
+});

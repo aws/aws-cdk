@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Annotations, Template } from '@aws-cdk/assertions';
 import { App, CfnResource, Stack } from '@aws-cdk/core';
 import { Group, ManagedPolicy, User } from '../lib';
 
@@ -102,4 +102,45 @@ test('cross-env group ARNs include path', () => {
       ],
     },
   });
+});
+
+test('throw warning if attached managed policies exceed 10 in constructor', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new Group(stack, 'MyGroup', {
+    groupName: 'MyGroup',
+    managedPolicies: [
+      ManagedPolicy.fromAwsManagedPolicyName('0'),
+      ManagedPolicy.fromAwsManagedPolicyName('1'),
+      ManagedPolicy.fromAwsManagedPolicyName('2'),
+      ManagedPolicy.fromAwsManagedPolicyName('3'),
+      ManagedPolicy.fromAwsManagedPolicyName('4'),
+      ManagedPolicy.fromAwsManagedPolicyName('5'),
+      ManagedPolicy.fromAwsManagedPolicyName('6'),
+      ManagedPolicy.fromAwsManagedPolicyName('7'),
+      ManagedPolicy.fromAwsManagedPolicyName('8'),
+      ManagedPolicy.fromAwsManagedPolicyName('9'),
+      ManagedPolicy.fromAwsManagedPolicyName('10'),
+    ],
+  });
+
+  Annotations.fromStack(stack).hasWarning('*', 'You added 11 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10.');
+});
+
+test('throw warning if attached managed policies exceed 10 when calling `addManagedPolicy`', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const group = new Group(stack, 'MyGroup', {
+    groupName: 'MyGroup',
+  });
+
+  for (let i = 0; i <= 11; i++) {
+    group.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(i.toString()));
+  }
+
+  Annotations.fromStack(stack).hasWarning('/Default/MyGroup', 'You added 11 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10.');
 });

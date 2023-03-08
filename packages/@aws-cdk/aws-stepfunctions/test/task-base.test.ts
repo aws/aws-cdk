@@ -2,9 +2,9 @@ import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as sfn from '../lib';
 import { FakeTask } from './private/fake-task';
 import { renderGraph } from './private/render-util';
+import * as sfn from '../lib';
 
 describe('Task base', () => {
   let stack: cdk.Stack;
