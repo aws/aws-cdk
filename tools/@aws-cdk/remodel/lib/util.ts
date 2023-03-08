@@ -2,6 +2,24 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
+// Recursively find .ts files from starting directory
+export async function discoverSourceFiles(dir: string): Promise<string[]> {
+  const items = await fs.readdir(dir);
+
+  const paths = await Promise.all(items.map(async (item) => {
+    const resolved = path.resolve(dir, item);
+    const stat = await fs.stat(resolved);
+    if (stat.isDirectory()) {
+      return discoverSourceFiles(path.join(dir, item));
+    } else if (item.endsWith('.ts')) {
+      return path.join(dir, item);
+    }
+    return undefined;
+  }));
+
+  return paths.flat().filter(x => Boolean(x)) as string[];
+}
+
 export async function discoverIntegPaths(dir: string): Promise<IntegPath[]> {
   const items = await fs.readdir(dir);
 
