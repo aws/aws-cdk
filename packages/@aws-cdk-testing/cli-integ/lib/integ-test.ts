@@ -35,8 +35,9 @@ export function integTest(
     output.write(`${name}\n`);
     output.write('================================================================\n');
 
+    const now = Date.now();
+    process.stderr.write(`[INTEG TEST::${name}] Starting (pid ${process.pid})...\n`);
     try {
-      process.stderr.write(`▶️ [INTEG TEST::${name}] Starting...\n`);
       return await callback({
         output,
         randomString: randomString(),
@@ -45,7 +46,7 @@ export function integTest(
         },
       });
     } catch (e) {
-      process.stderr.write(`💥 [INTEG TEST::${name}] Failed: ${e}\n`);
+      process.stderr.write(`[INTEG TEST::${name}] Failed: ${e}\n`);
       output.write(e.message);
       output.write(e.stack);
       // Print output only if the test fails. Use 'console.log' so the output is buffered by
@@ -54,7 +55,8 @@ export function integTest(
       console.log(output.buffer().toString());
       throw e;
     } finally {
-      process.stderr.write(`⏹️ [INTEG TEST::${name}] Done.\n`);
+      const duration = Date.now() - now;
+      process.stderr.write(`[INTEG TEST::${name}] Done (${duration} ms).\n`);
     }
   }, timeoutMillis);
 }
