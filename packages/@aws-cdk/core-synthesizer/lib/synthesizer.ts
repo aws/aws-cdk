@@ -1,4 +1,5 @@
-import { App, AssetManifestBuilder, DockerImageAssetLocation, DockerImageAssetSource, Environment, FileAssetLocation, FileAssetSource, IBoundStackSynthesizer, IReusableStackSynthesizer, ISynthesisSession, Stack, StackSynthesizer, Stage } from '@aws-cdk/core';
+import { App, AssetManifestBuilder, DockerImageAssetLocation, DockerImageAssetSource, Environment, FileAssetLocation, FileAssetSource, IBoundStackSynthesizer, IReusableStackSynthesizer, ISynthesisSession, Stack, StackSynthesizer, Stage, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { IStagingStack, StagingStack } from './staging-stack';
 
 /**
@@ -27,7 +28,23 @@ export class UnboundStagingStackSynthesizer extends StackSynthesizer implements 
   constructor(private readonly props: StagingStackSynthesizerProps = {}) {
     super();
 
-    // TODO: no tokens
+    for (const key in props) {
+      if (props.hasOwnProperty(key)) {
+        validateNoToken(key as keyof StagingStackSynthesizerProps);
+      }
+    }
+
+    function validateNoToken<A extends keyof StagingStackSynthesizerProps>(key: A) {
+      const prop = props[key];
+      if (typeof prop === 'string' && Token.isUnresolved(prop)) {
+        throw new Error(`DefaultStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
+          '${Qualifier}',
+          cxapi.EnvironmentPlaceholders.CURRENT_REGION,
+          cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
+          cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
+        ].join(', '));
+      }
+    }
   }
 
   /**
