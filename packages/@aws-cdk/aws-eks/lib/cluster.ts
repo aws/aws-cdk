@@ -846,7 +846,6 @@ export class KubernetesVersion {
 
   /**
    * Kubernetes version 1.21
-   * @deprecated Use newer version of EKS
    */
   public static readonly V1_21 = KubernetesVersion.of('1.21');
 
