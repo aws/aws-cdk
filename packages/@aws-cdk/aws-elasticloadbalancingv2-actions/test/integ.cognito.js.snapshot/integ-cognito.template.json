@@ -432,11 +432,11 @@
     "GroupDescription": "Automatically created Security Group for ELB integcognitoLBFBBBA626",
     "SecurityGroupEgress": [
      {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow to IdP endpoint",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
      }
     ],
     "SecurityGroupIngress": [

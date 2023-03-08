@@ -1,7 +1,7 @@
 {
-  "version": "20.0.0",
+  "version": "30.1.0",
   "files": {
-    "9271c99fa7fd8d6ae26202fec69aaabba91d343b835d6cdc41a76f14fb6462d9": {
+    "03b4d158d0add3f414e246227b019ec3a9848a1f539b3c90c17f687872402977": {
       "source": {
         "path": "integ-cognito.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9271c99fa7fd8d6ae26202fec69aaabba91d343b835d6cdc41a76f14fb6462d9.json",
+          "objectKey": "03b4d158d0add3f414e246227b019ec3a9848a1f539b3c90c17f687872402977.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
