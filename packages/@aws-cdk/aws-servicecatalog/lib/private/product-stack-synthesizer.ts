@@ -23,7 +23,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
       throw new Error('An Asset Bucket must be provided to use Assets');
     }
     const outdir = cdk.App.of(this.boundStack)?.outdir ?? 'cdk.out';
-    const assetPath = `./${outdir}/${asset.fileName}`;
+    const assetPath = `${outdir}/${asset.fileName}`;
     if (!this.bucketDeployment) {
       const parentStack = (this.boundStack as ProductStack)._getParentStack();
       if (!cdk.Resource.isOwnedResource(this.assetBucket)) {

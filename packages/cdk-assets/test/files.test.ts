@@ -2,10 +2,10 @@ jest.mock('child_process');
 
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
-import { AssetPublishing, AssetManifest } from '../lib';
 import { FakeListener } from './fake-listener';
 import { mockAws, mockedApiFailure, mockedApiResult, mockUpload } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
+import { AssetPublishing, AssetManifest } from '../lib';
 
 const ABS_PATH = '/simple/cdk.out/some_external_file';
 
