@@ -274,7 +274,8 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     }).toThrow(/Validation failed/);
 
     const report = logMock.mock.calls[0][0];
-    expect(report).toContain('test-plugin');
+    expect(report).toContain('║ error  │ Validation plugin \'broken-plugin\' failed: Something went wrong ║');
+    expect(report).toContain('║ Plugin │ test-plugin ║');
   });
 
   test('plugin tries to modify a template', () => {
@@ -387,7 +388,7 @@ class BrokenPlugin implements core.IValidationPlugin {
   public readonly name = 'broken-plugin';
 
   validate(_context: core.IValidationContext): ValidationPluginReport {
-    throw new Error('broken');
+    throw new Error('Something went wrong');
   }
 }
 
