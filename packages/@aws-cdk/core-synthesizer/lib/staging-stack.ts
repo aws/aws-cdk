@@ -1,8 +1,8 @@
 import * as ecr from '@aws-cdk/aws-ecr';
-import * as s3 from '@aws-cdk/aws-s3';
-import { App, DockerImageAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
-import { Construct, IConstruct } from 'constructs';
 import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import { DockerImageAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 
 /**
  * Information on how a Staging Stack should look.
