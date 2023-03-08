@@ -114,6 +114,7 @@ export class S3ObjectsItemReader implements IItemReader {
   public render(): any {
     return FieldUtils.renderObject({
       Resource: this.resource,
+      ...(this.maxItems && { ReaderConfig: { MaxItems: this.maxItems } }),
       Parameters: {
         Bucket: this.bucket.bucketName,
         ...(this.prefix && { Prefix: this.prefix }),
@@ -125,14 +126,12 @@ export class S3ObjectsItemReader implements IItemReader {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
-    const resource = `arn:aws:s3:::${this.bucket.bucketName}`;
-
     return [
       new iam.PolicyStatement({
         actions: [
           's3:ListBucket',
         ],
-        resources: [resource],
+        resources: [this.bucket.bucketArn],
       }),
     ];
   }
@@ -187,6 +186,7 @@ abstract class S3ItemReader implements IItemReader {
       Resource: this.resource,
       ReaderConfig: {
         InputType: this.inputType,
+        ...(this.maxItems && { MaxItems: this.maxItems }),
       },
       Parameters: {
         Bucket: this.bucket.bucketName,
@@ -281,8 +281,10 @@ export class CsvHeaders {
 export interface S3CsvItemReaderProps extends S3ItemReaderProps {
   /**
    * CSV file header configuration
+   *
+   * @default - CsvHeaders with CsvHeadersLocation.FIRST_ROW
    */
-  readonly csvHeaders: CsvHeaders
+  readonly csvHeaders?: CsvHeaders
 }
 
 /**
@@ -293,12 +295,12 @@ export class S3CsvItemReader extends S3ItemReader {
   /**
    * CSV headers configuration
    */
-  readonly csvHeaders: CsvHeaders
+  readonly csvHeaders: CsvHeaders;
   protected readonly inputType: string = 'CSV';
 
   constructor(props: S3CsvItemReaderProps) {
     super(props);
-    this.csvHeaders = props.csvHeaders;
+    this.csvHeaders = props.csvHeaders || CsvHeaders.useFirstRow();
   }
 
   public render(): any {

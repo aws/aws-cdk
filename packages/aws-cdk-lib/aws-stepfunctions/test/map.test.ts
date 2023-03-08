@@ -48,6 +48,45 @@ describe('Map State', () => {
     });
   }),
 
+  test('State Machine With Map State and ResultPath', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.Map(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      resultPath: stepfunctions.JsonPath.DISCARD,
+    });
+    map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.MapStateMode.INLINE,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          ResultPath: null,
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
   testDeprecated('State Machine With Map State and Parameters', () => {
     // GIVEN
     const stack = new cdk.Stack();

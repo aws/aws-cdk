@@ -71,6 +71,54 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test('State Machine With Distributed Map State with ResultPath', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      itemSelector: {
+        foo: 'foo',
+        bar: stepfunctions.JsonPath.stringAt('$.bar'),
+      },
+      resultPath: stepfunctions.JsonPath.DISCARD,
+    });
+    map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemSelector: {
+            'foo': 'foo',
+            'bar.$': '$.bar',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.MapStateMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          MaxConcurrency: 1,
+          ResultPath: null,
+        },
+      },
+    });
+  }),
+
   test('State Machine With Distributed Map State and ResultSelector', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -128,6 +176,7 @@ describe('Distributed Map State', () => {
       itemReader: new stepfunctions.S3ObjectsItemReader({
         bucket: readerBucket,
         prefix: 'test',
+        maxItems: 10,
       }),
       itemSelector: {
         foo: 'foo',
@@ -162,6 +211,9 @@ describe('Distributed Map State', () => {
           },
           ItemReader: {
             Resource: 'arn:aws:states:::s3:listObjectsV2',
+            ReaderConfig: {
+              MaxItems: 10,
+            },
             Parameters: {
               Bucket: {
                 Ref: stack.getLogicalId(readerBucket.node.defaultChild as CfnBucket),
@@ -246,7 +298,7 @@ describe('Distributed Map State', () => {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3CsvItemReader({
         bucket: readerBucket,
-        key: 'test.json',
+        key: 'test.csv',
         csvHeaders: CsvHeaders.useFirstRow(),
       }),
       itemSelector: {
@@ -290,7 +342,7 @@ describe('Distributed Map State', () => {
               Bucket: {
                 Ref: stack.getLogicalId(readerBucket.node.defaultChild as CfnBucket),
               },
-              Key: 'test.json',
+              Key: 'test.csv',
             },
           },
           MaxConcurrency: 1,
