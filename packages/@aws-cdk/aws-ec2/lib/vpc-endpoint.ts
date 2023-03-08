@@ -508,7 +508,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder',
         'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data', 's3',
         'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs',
-        'states', 'sts', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
+        'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
     };
     if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
       return 'cn.com.amazonaws';

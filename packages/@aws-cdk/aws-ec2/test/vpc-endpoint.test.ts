@@ -666,6 +666,23 @@ describe('vpc endpoint', () => {
 
 
     });
+    test('test vpc interface endpoint for step functions sync can be created correctly in cn-northwest-1', () => {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-northwest-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('Step Functions Sync Endpoint', {
+        service: InterfaceVpcEndpointAwsService.STEP_FUNCTIONS_SYNC,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'cn.com.amazonaws.cn-northwest-1.sync-states',
+      });
+
+
+    });
     test('test vpc interface endpoint without cn.com.amazonaws prefix can be created correctly in cn-north-1', () => {
       //GIVEN
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-north-1' } });
