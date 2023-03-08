@@ -77,10 +77,11 @@ describe('bootstrap v3', () => {
     const location = stack.synthesizer.addDockerImageAsset({
       directoryName: '.',
       sourceHash: 'abcdef',
+      uniqueId: 'abcdef',
     });
 
     // THEN - we have a fixed asset location
-    const repo = 'a-repo';
+    const repo = 'abcdefrepo';
     expect(evalCFN(location.repositoryName)).toEqual(repo);
     expect(evalCFN(location.imageUri)).toEqual(`the_account.dkr.ecr.the_region.domain.aws/${repo}:abcdef`);
   });

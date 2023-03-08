@@ -1,6 +1,6 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as s3 from '@aws-cdk/aws-s3';
-import { DockerImageAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { App, DockerImageAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import * as iam from '@aws-cdk/aws-iam';
 
@@ -124,7 +124,7 @@ export class StagingStack extends Stack implements IStagingStack {
       });
     }
 
-    this.stagingBucketName = props.stagingBucketName ?? 'default-bucket';
+    this.stagingBucketName = props.stagingBucketName ?? 'default-bucket'; // 'cdk-${AWS::AccountId}-${AWS::Region}'+`${App.of(this)?.stageName}`;
     this.stagingBucket = new s3.Bucket(this, 'StagingBucket', {
       bucketName: this.stagingBucketName,
       autoDeleteObjects: true,
@@ -135,12 +135,14 @@ export class StagingStack extends Stack implements IStagingStack {
   }
 
   public getRepoName(asset: DockerImageAssetSource): string {
-    // This may work for now. At least one of directoryName or executable is required
-    const uniqueId = asset.directoryName ?? asset.executable!.toString();
-    const repoName = `a${uniqueId}repo`.replace('.', '-'); // TODO: actually sanitize
+    if (!asset.uniqueId) {
+      throw new Error('uniqueId is required when using bootstrap v3');
+    }
+
+    const repoName = `${asset.uniqueId}repo`.replace('.', '-'); // TODO: actually sanitize
     console.log(repoName);
-    if (this.stagingRepos[uniqueId] === undefined) {
-      this.stagingRepos[uniqueId] = new ecr.Repository(this, repoName, {
+    if (this.stagingRepos[asset.uniqueId] === undefined) {
+      this.stagingRepos[asset.uniqueId] = new ecr.Repository(this, repoName, {
         repositoryName: repoName,
         // TODO: lifecycle rules
       });

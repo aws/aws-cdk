@@ -112,7 +112,8 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
     console.log(templateAsset, assetManifestId);
 
     this.emitArtifact(session, {
-      additionalDependencies: [assetManifestId],
+      // TODO: uhh is this right?
+      additionalDependencies: [assetManifestId/*, this.stagingStack.node.id*/],
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
     });
   }
