@@ -185,7 +185,7 @@ export interface TableProps {
   readonly enablePartitionFiltering?: boolean;
 
   /**
-   * The user-supplied properties for the description of the physical storage of this table.
+   * The user-supplied properties for the description of the physical storage of this table. These properties help describe the format of the data that is stored within the crawled data sources.
    *
    * There are reserved keys that are used by AWS Glue. They CAN be mutated, but they are best left alone.
    *
@@ -194,8 +194,20 @@ export interface TableProps {
    * @see https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_EXTERNAL_TABLE.html#r_CREATE_EXTERNAL_TABLE-parameters - under "TABLE PROPERTIES" contains a non-exhaustive list of the keys that have functionality.
    *
    * @example
-   * { foo: 'bar' } // will have no effect
-   * { 'skip.header.line.count': 1 } // will set the number of header lines to skip to 1.
+   *
+   *    declare const glueDatabase: glue.IDatabase;
+   *    const table = new glue.Table(this, 'Table', {
+   *      database: glueDatabase,
+   *      columns: [{
+   *          name: 'col1',
+   *          type: glue.Schema.STRING,
+   *      }],
+   *      dataFormat: glue.DataFormat.CSV,
+   *      storageParameters: {
+   *          foo: 'bar', // Will have no effect
+   *          'skip.header.line.count': 1, // Will be used to skip the first line of the file
+   *      },
+   *    });
    *
    * @default - The parameter is not defined
    */
