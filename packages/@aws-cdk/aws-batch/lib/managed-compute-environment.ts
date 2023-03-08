@@ -375,7 +375,7 @@ interface IManagedEc2ComputeEnvironment extends IManagedComputeEnvironment {
 
   /**
    * The minimum vCPUs that an environment should maintain,
-   * even if the compute environment is DISABLED. 
+   * even if the compute environment is DISABLED.
    *
    * @default 0
    */
@@ -501,7 +501,7 @@ export class ManagedEc2ComputeEnvironment extends ManagedComputeEnvironmentBase 
 
   /**
     * The minimum vCPUs that an environment should maintain,
-    * even if the compute environment is DISABLED. 
+    * even if the compute environment is DISABLED.
     *
     * @default 0
     */
