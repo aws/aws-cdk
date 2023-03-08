@@ -20,18 +20,14 @@
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/297bfa1758edc6b71a084153702165132d111eb7914b4bf8ed951da4b98faede.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "aws-cdk-redshift-cluster-database.assets"
-        ],
+        "additionalDependencies": ["aws-cdk-redshift-cluster-database.assets"],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
-      "dependencies": [
-        "aws-cdk-redshift-cluster-database.assets"
-      ],
+      "dependencies": ["aws-cdk-redshift-cluster-database.assets"],
       "metadata": {
         "/aws-cdk-redshift-cluster-database/custom-kms-key/Resource": [
           {
