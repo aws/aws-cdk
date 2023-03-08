@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
 import * as ec2 from '../lib';
+
 const app = new cdk.App();
 
 class VpcEndpointStack extends cdk.Stack {
@@ -49,16 +49,5 @@ class VpcEndpointStack extends cdk.Stack {
   }
 }
 
-const stack = new VpcEndpointStack(app, 'aws-cdk-ec2-vpc-endpoint');
-
-new integ.IntegTest(app, 'exec-command-integ-test', {
-  testCases: [stack],
-  diffAssets: true,
-  cdkCommandOptions: {
-    deploy: {
-      args: {
-        rollback: true,
-      },
-    },
-  },
-});
+new VpcEndpointStack(app, 'aws-cdk-ec2-vpc-endpoint');
+app.synth();
