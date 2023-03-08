@@ -196,4 +196,27 @@ describe('update', () => {
       Sql: `.+ ON ${tableName} FROM ${username}`,
     }));
   });
+
+  test('does not replace when table id is appended', async () => {
+    const newTablePrivileges = [{ tableId: 'newTableId', tableName, actions }];
+    const newResourceProperties = {
+      ...resourceProperties,
+      tablePrivileges: newTablePrivileges,
+    };
+
+    const newEvent = {
+      ...event,
+      OldResourceProperties: {
+        ...event.OldResourceProperties,
+        tablePrivileges: [{ tableName, actions }],
+      },
+    };
+
+    await expect(managePrivileges(newResourceProperties, newEvent)).resolves.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `.+ ON ${tableName} FROM ${username}`,
+    }));
+  });
 });
