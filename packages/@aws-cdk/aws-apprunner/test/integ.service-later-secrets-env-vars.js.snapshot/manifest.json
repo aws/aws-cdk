@@ -1,0 +1,135 @@
+{
+  "version": "30.1.0",
+  "artifacts": {
+    "integ-apprunner-later-secrets-env-vars.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-apprunner-later-secrets-env-vars.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-apprunner-later-secrets-env-vars": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-apprunner-later-secrets-env-vars.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7cbdc4561bb7693ec11f95d96ee8a14d99732d386c66f27cb36e08a108d4ef30.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-apprunner-later-secrets-env-vars.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-apprunner-later-secrets-env-vars.assets"
+      ],
+      "metadata": {
+        "/integ-apprunner-later-secrets-env-vars/LaterSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LaterSecretF6C54C5B"
+          }
+        ],
+        "/integ-apprunner-later-secrets-env-vars/Service9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service9DECC815E"
+          }
+        ],
+        "/integ-apprunner-later-secrets-env-vars/Service9/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service9InstanceRole8BD2CEE0"
+          }
+        ],
+        "/integ-apprunner-later-secrets-env-vars/Service9/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service9InstanceRoleDefaultPolicy85BF9E64"
+          }
+        ],
+        "/integ-apprunner-later-secrets-env-vars/URL9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL9"
+          }
+        ],
+        "/integ-apprunner-later-secrets-env-vars/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-apprunner-later-secrets-env-vars/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-apprunner-later-secrets-env-vars"
+    },
+    "AppRunnerLaterSecretsEnvVarsDefaultTestDeployAssert07867A67.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AppRunnerLaterSecretsEnvVarsDefaultTestDeployAssert07867A67.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AppRunnerLaterSecretsEnvVarsDefaultTestDeployAssert07867A67": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AppRunnerLaterSecretsEnvVarsDefaultTestDeployAssert07867A67.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AppRunnerLaterSecretsEnvVarsDefaultTestDeployAssert07867A67.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AppRunnerLaterSecretsEnvVarsDefaultTestDeployAssert07867A67.assets"
+      ],
+      "metadata": {
+        "/AppRunnerLaterSecretsEnvVars/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AppRunnerLaterSecretsEnvVars/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AppRunnerLaterSecretsEnvVars/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
