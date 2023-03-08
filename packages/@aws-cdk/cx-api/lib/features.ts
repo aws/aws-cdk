@@ -83,6 +83,7 @@ export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-code
 export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId';
 export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
 export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
+export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -687,7 +688,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       according to the OS of the machine image.
       `,
     recommendedValue: true,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.67.0' },
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -707,7 +708,28 @@ export const FLAGS: Record<string, FlagInfo> = {
       Then you can re-add the permissions and deploy again.
       `,
     recommendedValue: true,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.67.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [REDSHIFT_COLUMN_ID]: {
+    type: FlagType.BugFix,
+    summary: 'Whether to use an ID to track Redshift column changes',
+    detailsMd: `
+      Redshift columns are identified by their \`name\`. If a column is renamed, the old column
+      will be dropped and a new column will be created. This can cause data loss.
+
+      This flag enables the use of an \`id\` attribute for Redshift columns. If this flag is enabled, the
+      internal CDK architecture will track changes of Redshift columns through their \`id\`, rather
+      than their \`name\`. This will prevent data loss when columns are renamed.
+
+      **NOTE** - Enabling this flag comes at a **risk**. When enabled, update the \`id\`s of all columns,
+      **however** do not change the \`names\`s of the columns. If the \`name\`s of the columns are changed during
+      initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
+      of the \`id\`s, the \`name\`s of the columns can be changed without data loss.
+      `,
+    introducedIn: { v2: '2.68.0' },
+    recommendedValue: true,
   },
 };
 

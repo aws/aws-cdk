@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "aws-cdk": "%cdk-version%",
-    "jest": "^29.4.2"
+    "jest": "^29.5.0"
   },
   "dependencies": {
     "aws-cdk-lib": "%cdk-version%",
