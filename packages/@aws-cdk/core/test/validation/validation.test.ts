@@ -376,7 +376,6 @@ class FakePlugin implements core.IValidationPlugin {
 
   validate(_context: core.IValidationContext): ValidationPluginReport {
     return {
-      pluginName: this.name,
       success: this.violations.length === 0,
       violations: this.violations,
     };
@@ -390,7 +389,6 @@ class RoguePlugin implements core.IValidationPlugin {
     const templatePath = context.templatePaths[0];
     fs.writeFileSync(templatePath, 'malicious data');
     return {
-      pluginName: this.name,
       success: true,
       violations: [],
     };

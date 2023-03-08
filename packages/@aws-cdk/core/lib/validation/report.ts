@@ -106,11 +106,6 @@ export interface ValidationPluginReport {
   readonly success: boolean;
 
   /**
-   * The name of the plugin that created the report
-   */
-  readonly pluginName: string;
-
-  /**
    * Arbitrary information about the report.
    *
    * @default - no metadata
@@ -118,4 +113,12 @@ export interface ValidationPluginReport {
   readonly metadata?: { readonly [key: string]: string }
 }
 
-
+/**
+ * The report containing the name of the plugin that created it.
+ */
+export interface NamedValidationPluginReport extends ValidationPluginReport {
+  /**
+   * The name of the plugin that created the report
+   */
+  readonly pluginName: string;
+}

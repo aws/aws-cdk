@@ -193,7 +193,6 @@ class ValidationPlugin implements IValidationPlugin {
 
   validate(_context: IValidationContext): ValidationPluginReport {
     return {
-      pluginName: this.name,
       success: true,
       violations: [],
     };
