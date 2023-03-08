@@ -100,6 +100,8 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Associate an attribute group with application
    * If the attribute group is already associated, it will ignore duplicate request.
+   *
+   * @deprecated Use `AttributeGroup.associateWith` instead.
    */
   public associateAttributeGroup(attributeGroup: IAttributeGroup): void {
     if (!this.associatedAttributeGroups.has(attributeGroup.node.addr)) {
@@ -254,7 +256,7 @@ export class Application extends ApplicationBase {
    * Application manager URL for the Application.
    * @attribute
    */
-  public readonly applicationManagerUrl?: cdk.CfnOutput;
+  public readonly applicationManagerUrl?: string;
   public readonly applicationArn: string;
   public readonly applicationId: string;
   public readonly applicationName?: string;
@@ -275,10 +277,8 @@ export class Application extends ApplicationBase {
     this.applicationName = props.applicationName;
     this.nodeAddress = cdk.Names.nodeUniqueId(application.node);
 
-    this.applicationManagerUrl = new cdk.CfnOutput(this, 'ApplicationManagerUrl', {
-      value: `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`,
-      description: 'Application manager url for the application created.',
-    });
+    this.applicationManagerUrl =
+        `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`;
   }
 
   protected generateUniqueHash(resourceAddress: string): string {

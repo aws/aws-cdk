@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.67.0](https://github.com/aws/aws-cdk/compare/v2.66.1...v2.67.0) (2023-03-02)
+
+
+### Features
+
+* **apigateway:** minCompressionSize on SpecRestApi ([#24067](https://github.com/aws/aws-cdk/issues/24067)) ([2a81f0f](https://github.com/aws/aws-cdk/commit/2a81f0f7d9eb73cd0e807904357a5daf7d6e5017)), closes [#22926](https://github.com/aws/aws-cdk/issues/22926)
+* **bootstrap:** prevent accidental bootstrap overwrites ([#24302](https://github.com/aws/aws-cdk/issues/24302)) ([3b251a5](https://github.com/aws/aws-cdk/commit/3b251a5e8e74332076c9e5dc810a80775fa77d61))
+* **cli:** update csharp & fsharp template to net6.0 ([#23926](https://github.com/aws/aws-cdk/issues/23926)) ([3bd611d](https://github.com/aws/aws-cdk/commit/3bd611dcbdf802dbc918d0ecedaf3ac3d9d73503)), closes [#23921](https://github.com/aws/aws-cdk/issues/23921)
+* **codebuild:** adds file asset support to build-spec ([#24289](https://github.com/aws/aws-cdk/issues/24289)) ([7cda567](https://github.com/aws/aws-cdk/commit/7cda5673fd3f6c5cd56ea59d71b14115f2a388f2)), closes [#1138](https://github.com/aws/aws-cdk/issues/1138)
+* **ecs:** enable default capacity provider strategy ([#23955](https://github.com/aws/aws-cdk/issues/23955)) ([5a30ea6](https://github.com/aws/aws-cdk/commit/5a30ea6536df0fda0e0e7bb89d45666f57fb8890))
+* **eks:** add helm flag --skip-crds ([#24213](https://github.com/aws/aws-cdk/issues/24213)) ([f68dbc2](https://github.com/aws/aws-cdk/commit/f68dbc2ce76a2df51081e959aa70e373a9bf5ac6)), closes [#24296](https://github.com/aws/aws-cdk/issues/24296)
+* **sns:** Add FilterPolicyScope support ([#23108](https://github.com/aws/aws-cdk/issues/23108)) ([d986e14](https://github.com/aws/aws-cdk/commit/d986e143df3cf9b42031eba0f5a2d9a71d6d9208))
+* **stepfunctions-tasks:** add revision number ([#24226](https://github.com/aws/aws-cdk/issues/24226)) ([643042b](https://github.com/aws/aws-cdk/commit/643042b8a15779b8a535567085b31424f4373515)), closes [#23491](https://github.com/aws/aws-cdk/issues/23491)
+
+
+### Bug Fixes
+
+* **cdk-assets:** Error when building Docker Image Assets with Podman ([#24003](https://github.com/aws/aws-cdk/issues/24003)) ([4b08e20](https://github.com/aws/aws-cdk/commit/4b08e20be3b829c752e425883da09188b2dcff72)), closes [/github.com/aws/aws-cdk/issues/16209#issue-978267269](https://github.com/aws//github.com/aws/aws-cdk/issues/16209/issues/issue-978267269) [#16209](https://github.com/aws/aws-cdk/issues/16209)
+* **cloudwatch:** math expressions incorrectly warn about search and metrics ([#24313](https://github.com/aws/aws-cdk/issues/24313)) ([f3596eb](https://github.com/aws/aws-cdk/commit/f3596eb26f1e4ab360875bf5f79a7de991d2a9ec)), closes [#20136](https://github.com/aws/aws-cdk/issues/20136)
+* **ec2:** userData in launchTemplate is created automatically when machineImege is provided ([#23593](https://github.com/aws/aws-cdk/issues/23593)) ([bb4311b](https://github.com/aws/aws-cdk/commit/bb4311bf05b64cc95a89a319743e3883fd3c5b15)), closes [#23592](https://github.com/aws/aws-cdk/issues/23592) [/github.com/aws/aws-cdk/pull/12385#discussion_r564614928](https://github.com/aws//github.com/aws/aws-cdk/pull/12385/issues/discussion_r564614928)
+* **ecr-assets:** fix repeated deploys of stacks with tar assets ([#23497](https://github.com/aws/aws-cdk/issues/23497)) ([c2296a8](https://github.com/aws/aws-cdk/commit/c2296a87116c7bbaf6103a03364326c760a8f952)), closes [#18823](https://github.com/aws/aws-cdk/issues/18823) [#18822](https://github.com/aws/aws-cdk/issues/18822)
+* **efs:** support tagging for access point ([#24336](https://github.com/aws/aws-cdk/issues/24336)) ([f9af47f](https://github.com/aws/aws-cdk/commit/f9af47f1fe48e66412d95f3eeef931c9322ba5b7)), closes [#20743](https://github.com/aws/aws-cdk/issues/20743)
+* **eks:** changing the subnets or securityGroupIds order causes an error ([#24163](https://github.com/aws/aws-cdk/issues/24163)) ([09c2c19](https://github.com/aws/aws-cdk/commit/09c2c19f22979482020652d902a73dfcc4e593bd)), closes [#24162](https://github.com/aws/aws-cdk/issues/24162)
+* **eks:** fix helm deploy login for public ECR repositories ([#24104](https://github.com/aws/aws-cdk/issues/24104)) ([71ec6b6](https://github.com/aws/aws-cdk/commit/71ec6b660cf5062c12c5205dadfc28f893251e4f)), closes [#23977](https://github.com/aws/aws-cdk/issues/23977)
+* **eks:** integ tests errors ([#24276](https://github.com/aws/aws-cdk/issues/24276)) ([07f2d7b](https://github.com/aws/aws-cdk/commit/07f2d7b0b947cec31ed3132b95372b9975efa01e))
+* **secretsmanager:** secret resource policy already exists in stack (under feature flag) ([#24365](https://github.com/aws/aws-cdk/issues/24365)) ([7dd8b7e](https://github.com/aws/aws-cdk/commit/7dd8b7e1ce88a13e597e52ff95353d74ab4807f1)), closes [#24383](https://github.com/aws/aws-cdk/issues/24383)
+* **servicecatalog:** wrong asset path is generated in case outdir is absolute ([#24393](https://github.com/aws/aws-cdk/issues/24393)) ([0ebbf58](https://github.com/aws/aws-cdk/commit/0ebbf58bdd3307f536334beb5d1153e3ef660f18)), closes [#24392](https://github.com/aws/aws-cdk/issues/24392)
+* **sns:** sns subscription filter policy condition limit should be 150 ([#24269](https://github.com/aws/aws-cdk/issues/24269)) ([1e1131c](https://github.com/aws/aws-cdk/commit/1e1131c207de2df7d5881a57cc28daa59bad975a))
+* Correct SamlConsolePrincipal for non-China ([#24277](https://github.com/aws/aws-cdk/issues/24277)) ([e47646c](https://github.com/aws/aws-cdk/commit/e47646c0ff317a421b2f042158fcc0c7ae1aa2cf)), closes [#24243](https://github.com/aws/aws-cdk/issues/24243)
+
+## [2.66.1](https://github.com/aws/aws-cdk/compare/v2.66.0...v2.66.1) (2023-02-23)
+
+
+### Bug Fixes
+
+* Correct SamlConsolePrincipal for non-China ([#24277](https://github.com/aws/aws-cdk/issues/24277)) ([d562871](https://github.com/aws/aws-cdk/commit/d562871824350483e80bf6a28868280381e9e83e)), closes [#24243](https://github.com/aws/aws-cdk/issues/24243)
+
 ## [2.66.0](https://github.com/aws/aws-cdk/compare/v2.65.0...v2.66.0) (2023-02-21)
 
 

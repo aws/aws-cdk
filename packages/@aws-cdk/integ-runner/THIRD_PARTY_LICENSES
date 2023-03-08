@@ -156,7 +156,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1317.0 - https://www.npmjs.com/package/aws-sdk/v/2.1317.0 | Apache-2.0
+** aws-sdk@2.1329.0 - https://www.npmjs.com/package/aws-sdk/v/2.1329.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -1534,7 +1534,7 @@ THE SOFTWARE.
 
 ----------------
 
-** readable-stream@2.3.7 - https://www.npmjs.com/package/readable-stream/v/2.3.7 | MIT
+** readable-stream@2.3.8 - https://www.npmjs.com/package/readable-stream/v/2.3.8 | MIT
 Node.js is licensed for use as follows:
 
 """
@@ -1586,7 +1586,7 @@ IN THE SOFTWARE.
 
 ----------------
 
-** readable-stream@3.6.0 - https://www.npmjs.com/package/readable-stream/v/3.6.0 | MIT
+** readable-stream@3.6.1 - https://www.npmjs.com/package/readable-stream/v/3.6.1 | MIT
 Node.js is licensed for use as follows:
 
 """
@@ -2263,7 +2263,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** workerpool@6.3.1 - https://www.npmjs.com/package/workerpool/v/6.3.1 | Apache-2.0
+** workerpool@6.4.0 - https://www.npmjs.com/package/workerpool/v/6.4.0 | Apache-2.0
 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -2452,7 +2452,7 @@ Apache License
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright (C) 2014-2022 Jos de Jong wjosdejong@gmail.com
+   Copyright (C) 2014-2023 Jos de Jong wjosdejong@gmail.com
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
