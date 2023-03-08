@@ -87,14 +87,15 @@ export class ResourcePool<A extends string=string> {
 
   private makeLease(value: A): ILease<A> {
     let disposed = false;
+    process.stderr.write(`Lease acquired by ${process.pid}: ${value}`);
     return {
       value,
-      dispose: () => {
+      dispose: async () => {
         if (disposed) {
           throw new Error('Calling dispose() on an already-disposed lease.');
         }
         disposed = true;
-        return this.returnValue(value);
+        return this.returnValue(value).finally(() => process.stderr.write(`Lease returned by ${process.pid}: ${value}`));
       },
     };
   }
