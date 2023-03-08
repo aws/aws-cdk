@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "30.1.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "cdk-integ-lambda-nodejs.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90cb9162c12b37a3990ecbde27ea037907171ccb64eeb60f046f098a9ae069cd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/76dea8b92881f37d669c02f0271a5aa08e02b115b3fbe57063dbb99c5acb1932.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -219,6 +213,30 @@
             "data": "tshandlervpcA502E26A"
           }
         ],
+        "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandlercustomhandlernodotsServiceRole1775E15E"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandlercustomhandlernodots381F62EE"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandlercustomhandlerdotsServiceRole0575D3CB"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandlercustomhandlerdots2695F653"
+          }
+        ],
         "/cdk-integ-lambda-nodejs/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -233,6 +251,12 @@
         ]
       },
       "displayName": "cdk-integ-lambda-nodejs"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

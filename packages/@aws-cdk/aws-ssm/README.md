@@ -125,7 +125,26 @@ new ssm.StringParameter(this, 'Parameter', {
 });
 ```
 
-[creating SSM parameters](test/integ.parameter.lit.ts)
+```ts
+// Create a new SSM Parameter holding a String
+const param = new ssm.StringParameter(stack, 'StringParameter', {
+  // description: 'Some user-friendly description',
+  // name: 'ParameterName',
+  stringValue: 'Initial parameter value',
+  // allowedPattern: '.*',
+});
+
+// Grant read access to some Role
+param.grantRead(role);
+
+// Create a new SSM Parameter holding a StringList
+const listParameter = new ssm.StringListParameter(stack, 'StringListParameter', {
+  // description: 'Some user-friendly description',
+  // name: 'ParameterName',
+  stringListValue: ['Initial parameter value A', 'Initial parameter value B'],
+  // allowedPattern: '.*',
+});
+```
 
 When specifying an `allowedPattern`, the values provided as string literals
 are validated against the pattern and an exception is raised if a value

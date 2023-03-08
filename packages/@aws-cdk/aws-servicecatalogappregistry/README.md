@@ -84,7 +84,27 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
-This will create an application `MyAssociatedApplication` with the `TagKey` as `managedBy` and `TagValue` as `CDK_Application_Associator`.
+This will create a stack `MyAssociatedApplicationStack` containing an application `MyAssociatedApplication` 
+with the `TagKey` as `managedBy` and `TagValue` as `CDK_Application_Associator`.
+
+By default, the stack will have System Managed Application Manager console URL as its output for the application created. 
+If you want to remove the output, then use as shown in the example below:
+
+```ts
+const app = new App();
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
+    applicationName: 'MyAssociatedApplication',
+    // 'Application containing stacks deployed via CDK.' is the default
+    applicationDescription: 'Associated Application description',
+    stackName: 'MyAssociatedApplicationStack',
+    // Disables emitting Application Manager url as output
+    emitApplicationManagerUrlAsOutput: false,
+    // AWS Account and Region that are implied by the current CLI configuration is the default
+    env: { account: '123456789012', region: 'us-east-1' },
+  })],
+});
+```
 
 If you want to re-use an existing Application with ARN: `arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId`
 and want to associate all stacks in the `App` scope to your imported application, then use as shown in the example below:
@@ -97,6 +117,45 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
     stackName: 'MyAssociatedApplicationStack',
   })],
 });
+```
+
+If you want to associate an Attribute Group with application created by `ApplicationAssociator`, then use as shown in the example below:
+
+```ts
+import * as cdk from "@aws-cdk/core";
+
+const app = new App();
+
+class CustomAppRegistryAttributeGroup extends cdk.Stack {
+  public readonly attributeGroup: appreg.AttributeGroup
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+    const myAttributeGroup = new appreg.AttributeGroup(app, 'MyFirstAttributeGroup', {
+      attributeGroupName: 'MyAttributeGroupName',
+      description: 'Test attribute group',
+      attributes: {},
+    });
+
+    this.attributeGroup = myAttributeGroup;
+  }
+}
+
+const customAttributeGroup = new CustomAppRegistryAttributeGroup(app, 'AppRegistryAttributeGroup');
+
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
+    applicationName: 'MyAssociatedApplication',
+    // 'Application containing stacks deployed via CDK.' is the default
+    applicationDescription: 'Associated Application description',
+    stackName: 'MyAssociatedApplicationStack',
+    // AWS Account and Region that are implied by the current CLI configuration is the default
+    env: { account: '123456789012', region: 'us-east-1' },
+  })],
+});
+
+// Associate application to the attribute group.
+customAttributeGroup.attributeGroup.associateWith(associatedApp.appRegistryApplication());
+
 ```
 
 If you are using CDK Pipelines to deploy your application, the application stacks will be inside Stages, and
@@ -189,6 +248,16 @@ You can associate an attribute group with an application with the `associateAttr
 declare const application: appreg.Application;
 declare const attributeGroup: appreg.AttributeGroup;
 application.associateAttributeGroup(attributeGroup);
+```
+
+### Associating an attribute group with application
+
+You can associate an application with an attribute group with `associateWith`:
+
+```ts
+declare const application: appreg.Application;
+declare const attributeGroup: appreg.AttributeGroup;
+attributeGroup.associateWith(application);
 ```
 
 ### Associating application with a Stack

@@ -4,8 +4,29 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack, StackProps, RemovalPolicy, Stage, StageProps, DefaultStackSynthesizer } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
-import { PlainStackApp } from './testhelpers';
 import * as pipelines from '../lib';
+
+/**
+ * A test stack
+ *
+ * It contains a single Bucket. Such robust. Much uptime.
+ */
+export class BucketStack extends Stack {
+  public readonly bucket: s3.IBucket;
+
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+    this.bucket = new s3.Bucket(this, 'Bucket');
+  }
+}
+
+
+export class PlainStackApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    new BucketStack(this, 'Stack');
+  }
+}
 
 class MyStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {

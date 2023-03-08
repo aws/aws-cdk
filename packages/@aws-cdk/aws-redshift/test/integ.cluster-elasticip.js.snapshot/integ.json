@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "testCases": {
     "aws-cdk-redshift-elastic-ip-test/DefaultTest": {
       "stacks": [
         "aws-cdk-redshift-cluster-database"
       ],
-      "assertionStack": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert"
+      "assertionStack": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkredshiftelasticiptestDefaultTestDeployAssertEAC4B798"
     }
   }
 }

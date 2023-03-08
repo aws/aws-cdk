@@ -176,6 +176,30 @@ describe('Attribute Group', () => {
     });
   });
 
+  describe('Associate application to an attribute group', () => {
+    let attributeGroup: appreg.AttributeGroup;
+
+    beforeEach(() => {
+      attributeGroup = new appreg.AttributeGroup(stack, 'MyAttributeGroupForAssociation', {
+        attributeGroupName: 'MyAttributeGroupForAssociation',
+        attributes: {},
+      });
+    });
+
+    test('Associate an application to an attribute group', () => {
+      const application = new appreg.Application(stack, 'MyApplication', {
+        applicationName: 'MyTestApplication',
+      });
+      attributeGroup.associateWith(application);
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
+        Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
+        AttributeGroup: { 'Fn::GetAtt': ['MyAttributeGroupForAssociation6B3E1329', 'Id'] },
+      });
+
+    });
+
+  });
+
   describe('Resource sharing of an attribute group', () => {
     let attributeGroup: appreg.AttributeGroup;
 

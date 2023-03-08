@@ -32,7 +32,7 @@ test('double dispose throws', async () => {
   const lease = await pool.take();
 
   await lease.dispose();
-  expect(() => lease.dispose()).toThrow();
+  await expect(() => lease.dispose()).rejects.toThrow();
 });
 
 test('somewhat balance', async () => {

@@ -250,7 +250,7 @@ interface FunctionConfig {
 }
 
 function addEdgeLambdaToRoleTrustStatement(role: iam.IRole) {
-  if (role instanceof iam.Role && role.assumeRolePolicy) {
+  if (iam.Role.isRole(role) && role.assumeRolePolicy) {
     const statement = new iam.PolicyStatement();
     const edgeLambdaServicePrincipal = new iam.ServicePrincipal('edgelambda.amazonaws.com');
     statement.addPrincipals(edgeLambdaServicePrincipal);

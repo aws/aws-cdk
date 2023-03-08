@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../integ-handlers/ts-web-handler.ts", "../../integ-handlers/util.ts"],
+  "sourcesContent": ["import { Server } from 'http';\nimport { mult } from './util';\n\n// Create simple http server\nconst server = new Server((_req, res) => {\n  res.writeHead(200, { 'Content-Type': 'text/plain' });\n  res.end(`${mult(3, 4)}`);\n  console.log(mult(3, 4)); // eslint-disable-line no-console\n});\n\nconst port = parseInt(process.env.PORT || '3001', 10);\nserver.listen(port);\n", "export function add(a: number, b: number): number {\n  return a + b;\n}\n\nexport function mult(a: number, b: number): number {\n  return a * b;\n}\n"],
+  "mappings": "aAAA,IAAAA,EAAuB,gBCIhB,SAASC,EAAKC,EAAWC,EAAmB,CACjD,OAAOD,EAAIC,CACb,CDFA,IAAMC,EAAS,IAAI,SAAO,CAACC,EAAMC,IAAQ,CACvCA,EAAI,UAAU,IAAK,CAAE,eAAgB,YAAa,CAAC,EACnDA,EAAI,IAAI,GAAGC,EAAK,EAAG,CAAC,GAAG,EACvB,QAAQ,IAAIA,EAAK,EAAG,CAAC,CAAC,CACxB,CAAC,EAEKC,EAAO,SAAS,QAAQ,IAAI,MAAQ,OAAQ,EAAE,EACpDJ,EAAO,OAAOI,CAAI",
+  "names": ["import_http", "mult", "a", "b", "server", "_req", "res", "mult", "port"]
+}

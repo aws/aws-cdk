@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "aws-cdk-msk-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5c5b94db03f045cf89b28c56612a2b112fa3d83037d4f96122b61ebcfaaa1383.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a9b33d873aac9026db60e46ffd1764d09d46440f81b1ffd7fdb395e54501d620.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -443,6 +443,36 @@
             "data": "BootstrapBrokers8"
           }
         ],
+        "/aws-cdk-msk-integ/Cluster_V3_3_2/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV332SecurityGroupDDA33760"
+          }
+        ],
+        "/aws-cdk-msk-integ/Cluster_V3_3_2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV332929A761F"
+          }
+        ],
+        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A"
+          }
+        ],
+        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00"
+          }
+        ],
+        "/aws-cdk-msk-integ/BootstrapBrokers9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapBrokers9"
+          }
+        ],
         "/aws-cdk-msk-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -474,7 +504,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e05a31925a856f753d012d462f51a3f4b884235b0fe9c3cea1b63e4c95fcd2c4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26ebb083b5aa4c4938dd01e52996de45327a2629e9d6d262659c6f011a7b21a1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

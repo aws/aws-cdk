@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.68.0](https://github.com/aws/aws-cdk/compare/v2.67.0...v2.68.0) (2023-03-08)
+
+
+### Bug Fixes
+
+* **apprunner-alpha:** env vars and secrets can't solely be added via .add*() methods ([#24346](https://github.com/aws/aws-cdk/issues/24346)) ([45195b6](https://github.com/aws/aws-cdk/commit/45195b6f2e5162eaa795d3a412d89dd09680aa8b)), closes [#24345](https://github.com/aws/aws-cdk/issues/24345)
+* **cli:** cannot `cdk import` resources with multiple identifiers ([#24439](https://github.com/aws/aws-cdk/issues/24439)) ([a70ff1a](https://github.com/aws/aws-cdk/commit/a70ff1ad332af780c052e3117b73df060deee7ae)), closes [#20895](https://github.com/aws/aws-cdk/issues/20895)
+* **core:** Fix dotnet version check to allow .NET 7.0 ([#24467](https://github.com/aws/aws-cdk/issues/24467)) ([a4856e9](https://github.com/aws/aws-cdk/commit/a4856e997684f84476fe92e00afcd4da76a69b04)), closes [#24466](https://github.com/aws/aws-cdk/issues/24466)
+* **lambda-nodejs:** esbuild preCompilation tsconfig precedence is wrong ([#23871](https://github.com/aws/aws-cdk/issues/23871)) ([790a709](https://github.com/aws/aws-cdk/commit/790a709d758333f4622c5fb860d9bbb48dee7106))
+* **lambda-nodejs:** Required auto prefix of `handler` with `index.` breaks custom non-`index` handler settings used by layers ([#24406](https://github.com/aws/aws-cdk/issues/24406)) ([d7a1c34](https://github.com/aws/aws-cdk/commit/d7a1c34e540e12413319918a5d807060057a1a1b)), closes [#24403](https://github.com/aws/aws-cdk/issues/24403)
+* **rds:** add clusterResourceIdentifier property to database cluster ([#23605](https://github.com/aws/aws-cdk/issues/23605)) ([6bda4e5](https://github.com/aws/aws-cdk/commit/6bda4e5ae4205a917a00714433f136550c59e409))
+
 ## [2.67.0](https://github.com/aws/aws-cdk/compare/v2.66.1...v2.67.0) (2023-03-02)
 
 

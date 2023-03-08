@@ -16,7 +16,7 @@ func Test%name.PascalCased%Stack(t *testing.T) {
 	stack := New%name.PascalCased%Stack(app, "MyStack", nil)
 
 	// THEN
-	template := assertions.Template_FromStack(stack)
+	template := assertions.Template_FromStack(stack, nil)
 
 	template.HasResourceProperties(jsii.String("AWS::SQS::Queue"), map[string]interface{}{
 		"VisibilityTimeout": 300,

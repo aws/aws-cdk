@@ -4,6 +4,36 @@ import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultS
 import { Construct } from 'constructs';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
 
+describe('isRole() returns', () => {
+  test('true if given Role instance', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+    // WHEN
+    const pureRole = new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // THEN
+    expect(Role.isRole(pureRole)).toBe(true);
+  });
+
+  test('false if given imported role instance', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+    // WHEN
+    const importedRole = Role.fromRoleName(stack, 'ImportedRole', 'ImportedRole');
+    // THEN
+    expect(Role.isRole(importedRole)).toBe(false);
+  });
+
+  test('false if given undefined', () => {
+    // THEN
+    expect(Role.isRole(undefined)).toBe(false);
+  });
+});
+
 describe('customizeRoles', () => {
   test('throws if precreatedRoles is not used', () => {
     // GIVEN

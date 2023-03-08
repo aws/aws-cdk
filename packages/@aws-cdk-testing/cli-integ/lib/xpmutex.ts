@@ -141,7 +141,7 @@ export class XpMutex {
       // signal due to unfortunate timing.
       const wait = this.pool.awaitUnlock(5000);
 
-      const lock = await this.acquire();
+      const lock = await this.tryAcquire();
       if (lock) {
         // Ignore the wait (count as handled)
         wait.then(() => {}, () => {});

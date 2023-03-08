@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "redshift-cluster-database-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-redshift-cluster-database"
+      ],
+      "assertionStack": "redshift-cluster-database-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48"
+    }
+  }
+}

@@ -10,6 +10,10 @@ export interface TestContext {
   log(s: string): void;
 };
 
+if (process.env.JEST_TEST_CONCURRENT === 'true') {
+  process.stderr.write('ℹ️ JEST_TEST_CONCURRENT is true: tests will run concurrently and filters have no effect!');
+}
+
 /**
  * A wrapper for jest's 'test' which takes regression-disabled tests into account and prints a banner
  */
@@ -18,7 +22,6 @@ export function integTest(
   callback: (context: TestContext) => Promise<void>,
   timeoutMillis?: number,
 ): void {
-
   // Integ tests can run concurrently, and are responsible for blocking
   // themselves if they cannot.  Because `test.concurrent` executes the test
   // code immediately, regardles of any `--testNamePattern`, this cannot be the
@@ -35,6 +38,8 @@ export function integTest(
     output.write(`${name}\n`);
     output.write('================================================================\n');
 
+    const now = Date.now();
+    process.stderr.write(`[INTEG TEST::${name}] Starting (pid ${process.pid})...\n`);
     try {
       return await callback({
         output,
@@ -44,6 +49,7 @@ export function integTest(
         },
       });
     } catch (e) {
+      process.stderr.write(`[INTEG TEST::${name}] Failed: ${e}\n`);
       output.write(e.message);
       output.write(e.stack);
       // Print output only if the test fails. Use 'console.log' so the output is buffered by
@@ -51,6 +57,9 @@ export function integTest(
       // eslint-disable-next-line no-console
       console.log(output.buffer().toString());
       throw e;
+    } finally {
+      const duration = Date.now() - now;
+      process.stderr.write(`[INTEG TEST::${name}] Done (${duration} ms).\n`);
     }
   }, timeoutMillis);
 }

@@ -2,8 +2,7 @@ import { Key } from '@aws-cdk/aws-kms';
 import { Bucket, BucketEncryption } from '@aws-cdk/aws-s3';
 import { StateMachine } from '@aws-cdk/aws-stepfunctions';
 import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { S3Location } from '../../lib';
-import { SageMakerCreateTrainingJob } from '../../lib/sagemaker/create-training-job';
+import { S3Location, SageMakerCreateTrainingJob } from '../../lib';
 
 /*
  * Creates a state machine with a task state to create a training job in AWS SageMaker

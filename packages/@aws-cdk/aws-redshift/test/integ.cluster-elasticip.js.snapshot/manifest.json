@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-redshift-cluster-database.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -274,6 +268,12 @@
         ]
       },
       "displayName": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
