@@ -909,6 +909,7 @@
     },
     "tablePrivileges": [
      {
+      "tableId": "Table",
       "tableName": {
        "Ref": "Table7ABB320E"
       },
@@ -1004,7 +1005,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "169a8c0beb97c903ee155ea9653e39b0884c9e3b860ac72ffbe906b3c1f4e338.zip"
+     "S3Key": "1800fcf66ddf160d8e270d9f02e586e00a03447f743317e52d56623c827d3be7.zip"
     },
     "Role": {
      "Fn::GetAtt": [
