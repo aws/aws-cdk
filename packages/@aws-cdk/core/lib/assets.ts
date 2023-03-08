@@ -242,6 +242,13 @@ export interface DockerImageAssetSource {
    */
   readonly dockerOutputs?: string[];
 
+  /**
+   * Unique identifier of the docker image asset and its potential revisions.
+   * Required if using Bootstrap v3.
+   *
+   * @default - no unique id
+   */
+  readonly uniqueId?: string;
 }
 
 /**
