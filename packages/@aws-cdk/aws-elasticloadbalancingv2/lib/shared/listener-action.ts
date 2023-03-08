@@ -5,25 +5,11 @@ import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generate
  */
 export interface IListenerAction {
   /**
-   * Render the actions in this chain
+   * Render the listener default actions in this chain
    */
-  renderActions(): CfnListenerRule.ActionProperty[];
+  renderActions(): CfnListener.ActionProperty[];
   /**
-   * Render the actions in this chain
+   * Render the listener rule actions in this chain
    */
-  renderDefaultActions(): CfnListener.ActionProperty[];
-}
-
-/**
- * Properties for listener actions
- */
-export interface ListenerActionProps {
-  /**
-   * Property for actions
-   */
-  readonly action: CfnListenerRule.ActionProperty
-  /**
-   * Property for Default actions
-   */
-  readonly defaultAction: CfnListener.ActionProperty
+  renderRuleActions(): CfnListenerRule.ActionProperty[];
 }

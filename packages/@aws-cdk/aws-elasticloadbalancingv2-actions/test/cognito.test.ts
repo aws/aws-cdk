@@ -2,7 +2,6 @@ import { Template } from '@aws-cdk/assertions';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { ApplicationProtocol, ListenerCondition } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as actions from '../lib';
 
@@ -88,12 +87,12 @@ test('Can set sessionTimeout for actions and defaultActions', () => {
 
   // WHEN
   const listener = lb.addListener('Listener', {
-    protocol: ApplicationProtocol.HTTP,
+    protocol: elbv2.ApplicationProtocol.HTTP,
     defaultAction: action,
   });
   listener.addAction('Action2', {
     priority: 1,
-    conditions: [ListenerCondition.pathPatterns(['/action2*'])],
+    conditions: [elbv2.ListenerCondition.pathPatterns(['/action2*'])],
     action: action,
   });
 
@@ -129,7 +128,7 @@ test('Can set sessionTimeout for actions and defaultActions', () => {
           UserPoolArn: { 'Fn::GetAtt': ['UserPool6BA7E5F2', 'Arn'] },
           UserPoolClientId: { Ref: 'Client4A7F64DF' },
           UserPoolDomain: { Ref: 'Domain66AC69E0' },
-          // SessionTimeout in DefaultActions is number
+          // SessionTimeout in Actions is number
           SessionTimeout: 86400,
         },
         Order: 1,

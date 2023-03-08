@@ -72,7 +72,7 @@ export interface AuthenticateCognitoActionProps {
  */
 export class AuthenticateCognitoAction extends elbv2.ListenerAction {
 
-  private static config(options: AuthenticateCognitoActionProps): elbv2.CfnListenerRule.AuthenticateCognitoConfigProperty {
+  private static config(options: AuthenticateCognitoActionProps): elbv2.CfnListener.AuthenticateCognitoConfigProperty {
     return {
       userPoolArn: options.userPool.userPoolArn,
       userPoolClientId: options.userPoolClient.userPoolClientId,
@@ -81,7 +81,7 @@ export class AuthenticateCognitoAction extends elbv2.ListenerAction {
       onUnauthenticatedRequest: options.onUnauthenticatedRequest,
       scope: options.scope,
       sessionCookieName: options.sessionCookieName,
-      sessionTimeout: options.sessionTimeout?.toSeconds(),
+      sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
     };
   }
 
@@ -90,17 +90,15 @@ export class AuthenticateCognitoAction extends elbv2.ListenerAction {
    */
   constructor(options: AuthenticateCognitoActionProps) {
     super({
-      action: {
-        type: 'authenticate-cognito',
-        authenticateCognitoConfig: AuthenticateCognitoAction.config(options),
-      },
-      defaultAction: {
-        type: 'authenticate-cognito',
-        authenticateCognitoConfig: {
-          ...AuthenticateCognitoAction.config(options),
-          sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
-        },
-      },
+      type: 'authenticate-cognito',
+      authenticateCognitoConfig: AuthenticateCognitoAction.config(options),
     }, options.next);
+    this.addRuleAction({
+      type: 'authenticate-cognito',
+      authenticateCognitoConfig: {
+        ...AuthenticateCognitoAction.config(options),
+        sessionTimeout: options.sessionTimeout?.toSeconds(),
+      },
+    });
   }
 }

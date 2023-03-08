@@ -235,7 +235,7 @@ export class ApplicationListenerRule extends Construct {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
       conditions: cdk.Lazy.any({ produce: () => this.renderConditions() }),
-      actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderActions() : [] }),
+      actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderRuleActions() : [] }),
     });
 
     if (props.hostHeader) {

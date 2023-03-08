@@ -119,7 +119,7 @@ export abstract class BaseListener extends Resource implements IListener {
 
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
-      defaultActions: Lazy.any({ produce: () => this.defaultAction?.renderDefaultActions() ?? [] }),
+      defaultActions: Lazy.any({ produce: () => this.defaultAction?.renderActions() ?? [] }),
     });
 
     this.listenerArn = resource.ref;

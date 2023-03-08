@@ -1,9 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Duration } from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
-import { ListenerCondition } from '../../lib';
 
 let stack: cdk.Stack;
 let group1: elbv2.ApplicationTargetGroup;
@@ -119,13 +117,13 @@ describe('tests', () => {
         issuer: 'D',
         tokenEndpoint: 'E',
         userInfoEndpoint: 'F',
-        sessionTimeout: Duration.days(1),
+        sessionTimeout: cdk.Duration.days(1),
         next: elbv2.ListenerAction.forward([group1]),
       }),
     });
     listener.addAction('AdditionalOidcAuthenticationAction', {
       priority: 1,
-      conditions: [ListenerCondition.pathPatterns(['/page*'])],
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/page*'])],
       action: elbv2.ListenerAction.authenticateOidc({
         authorizationEndpoint: 'A',
         clientId: 'B',
@@ -133,7 +131,7 @@ describe('tests', () => {
         issuer: 'D',
         tokenEndpoint: 'E',
         userInfoEndpoint: 'F',
-        sessionTimeout: Duration.days(1),
+        sessionTimeout: cdk.Duration.days(1),
         next: elbv2.ListenerAction.forward([group1]),
       }),
     });
@@ -172,7 +170,7 @@ describe('tests', () => {
             Issuer: 'D',
             TokenEndpoint: 'E',
             UserInfoEndpoint: 'F',
-            // SessionTimeout in DefaultActions is number
+            // SessionTimeout in Actions is number
             SessionTimeout: 86400,
           },
           Order: 1,
