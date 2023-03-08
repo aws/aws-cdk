@@ -97,8 +97,8 @@ export class Docker {
       ...options.networkMode ? ['--network', options.networkMode] : [],
       ...options.platform ? ['--platform', options.platform] : [],
       ...options.outputs ? options.outputs.map(output => [`--output=${output}`]) : [],
-      ...options.cacheFrom ? options.cacheFrom.map(cacheFrom => this.cacheOptionToFlag(cacheFrom)) : [],
-      ...options.cacheTo ? [this.cacheOptionToFlag(options.cacheTo)] : [],
+      ...options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : [],
+      ...options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : [],
       '.',
     ];
     await this.execute(buildCommand, { cwd: options.directory });
