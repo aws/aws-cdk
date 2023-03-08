@@ -626,6 +626,136 @@
     "VpcPrivateSubnet2DefaultRoute060D2087",
     "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ]
+  },
+  "tshandlercustomhandlernodotsServiceRole1775E15E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "tshandlercustomhandlernodots381F62EE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "5017e4b2e278e32bc634202d075b7ed8961b0d784f75450f7918a6a4f6f7df4a.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "tshandlercustomhandlernodotsServiceRole1775E15E",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "tshandlercustomhandlernodotsServiceRole1775E15E"
+   ]
+  },
+  "tshandlercustomhandlerdotsServiceRole0575D3CB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "tshandlercustomhandlerdots2695F653": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a33898f49e24c41ff9be236439c418d30e576c5f57763097162d9ec4245216ce.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "tshandlercustomhandlerdotsServiceRole0575D3CB",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "Handler": "ts-web.run.sh",
+    "Layers": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:lambda:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":753240598075:layer:LambdaAdapterLayerX86:13"
+       ]
+      ]
+     }
+    ],
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "tshandlercustomhandlerdotsServiceRole0575D3CB"
+   ]
   }
  },
  "Parameters": {
