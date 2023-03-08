@@ -24,9 +24,9 @@ export interface ApplicationAssociatorProps {
  * in case of a `Pipeline` stack, stage underneath the pipeline will not automatically be associated and
  * needs to be associated separately.
  *
- * If cross account stack is detected, then this construct will share the application with the consumer accounts.
- * To edit this behavior, set the `associateCrossAccountStacks` value in TargetApplicationOptions.
- * If set to `false`, the application will not be automatically shared or associated within the consumer accounts.
+ * If cross account stack is detected, then by default this construct will skip associating the application
+ * with the consumer accounts. To edit this behavior, set the `associateCrossAccountStacks` value in TargetApplicationOptions.
+ * If set to `true`, the application will automatically be shared with the consumer accounts to allow associations.
  * Cross account feature will only work for non environment agnostic stacks.
  */
 export class ApplicationAssociator extends Construct {

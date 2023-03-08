@@ -157,9 +157,6 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
-This will also share the Application with the accounts of any cross-account stacks defined in the
-CDK app scope to allow the association.
-
 ## Attribute Group
 
 An AppRegistry attribute group acts as a container for user-defined attributes for an application.
