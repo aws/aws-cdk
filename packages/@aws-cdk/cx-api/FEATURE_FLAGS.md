@@ -48,7 +48,7 @@ Flags come in three types:
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
 | [@aws-cdk/aws-ec2:launchTemplateDefaultUserData](#aws-cdkaws-ec2launchtemplatedefaultuserdata) | Define user data for a launch template by default when a machine image is provided. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
-| [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | V2NEXT | (fix) |
+| [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | 2.68.0 | (fix) |
 
 <!-- END table -->
 
@@ -897,7 +897,7 @@ of the `id`s, the `name`s of the columns can be changed without data loss.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.68.0 | `false` | `true` |
 
 
 <!-- END details -->
