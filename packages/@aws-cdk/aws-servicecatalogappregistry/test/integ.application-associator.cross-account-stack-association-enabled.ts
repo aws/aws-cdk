@@ -7,7 +7,7 @@ const localStack = new cdk.Stack(app, 'integ-servicecatalogappregistry-first-res
 
 new appreg.ApplicationAssociator(app, 'RegisterCdkApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
-    associateCrossAccountStacks: false,
+    associateCrossAccountStacks: true,
     applicationName: 'AppRegistryAssociatedApplication',
     stackName: 'TestAppRegistryApplicationStack',
   })],

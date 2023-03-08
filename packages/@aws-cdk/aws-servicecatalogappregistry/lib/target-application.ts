@@ -18,9 +18,9 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
 
   /**
     * Determines whether any cross-account stacks defined in the CDK app definition should be associated with the
-    * target application. If set to `false`, the application will not be shared with the accounts that own the stacks.
+    * target application. If set to `true`, the application will first be shared with the accounts that own the stacks.
     *
-    * @default true
+    * @default - false
     */
   readonly associateCrossAccountStacks?: boolean;
 }
@@ -120,7 +120,7 @@ class CreateTargetApplication extends TargetApplication {
 
     return {
       application: appRegApplication,
-      associateCrossAccountStacks: this.applicationOptions.associateCrossAccountStacks ?? true,
+      associateCrossAccountStacks: this.applicationOptions.associateCrossAccountStacks ?? false,
     };
   }
 }
@@ -141,7 +141,7 @@ class ExistingTargetApplication extends TargetApplication {
     const appRegApplication = Application.fromApplicationArn(applicationStack, 'ExistingApplication', this.applicationOptions.applicationArnValue);
     return {
       application: appRegApplication,
-      associateCrossAccountStacks: this.applicationOptions.associateCrossAccountStacks ?? true,
+      associateCrossAccountStacks: this.applicationOptions.associateCrossAccountStacks ?? false,
     };
   }
 }

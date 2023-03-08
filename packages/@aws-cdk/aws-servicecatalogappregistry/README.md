@@ -139,21 +139,26 @@ const cdkPipeline = new ApplicationPipelineStack(app, 'CDKApplicationPipelineSta
 });
 ```
 
-By default, ApplicationAssociator will perform cross-account stack associations with the target Application.
-This will also share the Application with the accounts of any cross-account stacks defined in the
-CDK app scope to allow the association. If you wish to turn off cross-account sharing and associations, 
-set the `associateCrossAccountStacks` field to `false`, as shown in the example below:
+By default, ApplicationAssociator will not perform cross-account stack associations with the target Application,
+to avoid introducing deployment failures for accounts which have not been setup for cross-account associations.
+To enable cross-account stack associations, make sure all accounts are in the same organization as the account
+that owns the target Application and that resource sharing is enabled within the organization. 
+If you wish to turn turn on cross-account sharing and associations, set the `associateCrossAccountStacks` field to `true`,
+as shown in the example below:
 
 ```ts
 const app = new App();
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
-    associateCrossAccountStacks: false,
+    associateCrossAccountStacks: true,
     applicationName: 'MyAssociatedApplication',
     env: { account: '123456789012', region: 'us-east-1' },
   })],
 });
 ```
+
+This will also share the Application with the accounts of any cross-account stacks defined in the
+CDK app scope to allow the association.
 
 ## Attribute Group
 

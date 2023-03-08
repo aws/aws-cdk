@@ -177,7 +177,9 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
    *
    */
   public associateAllStacksInScope(scope: Construct): void {
-    cdk.Aspects.of(scope).add(new StageStackAssociator(this));
+    cdk.Aspects.of(scope).add(new StageStackAssociator(this, {
+      associateCrossAccountStacks: true,
+    }));
   }
 
   /**

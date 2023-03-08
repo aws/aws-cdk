@@ -8,6 +8,24 @@
         "id": "integ-servicecatalogappregistry-first-resource",
         "path": "integ-servicecatalogappregistry-first-resource",
         "children": {
+          "AppRegistryAssociation": {
+            "id": "AppRegistryAssociation",
+            "path": "integ-servicecatalogappregistry-first-resource/AppRegistryAssociation",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+              "aws:cdk:cloudformation:props": {
+                "application": "AppRegistryAssociatedApplication",
+                "resource": {
+                  "Ref": "AWS::StackId"
+                },
+                "resourceType": "CFN_STACK"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "integ-servicecatalogappregistry-first-resource/BootstrapVersion",
@@ -78,6 +96,29 @@
               "version": "0.0.0"
             }
           },
+          "AppRegistryAssociation": {
+            "id": "AppRegistryAssociation",
+            "path": "TestAppRegistryApplicationStack/AppRegistryAssociation",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+              "aws:cdk:cloudformation:props": {
+                "application": {
+                  "Fn::GetAtt": [
+                    "DefaultCdkApplication4573D5A3",
+                    "Id"
+                  ]
+                },
+                "resource": {
+                  "Ref": "AWS::StackId"
+                },
+                "resourceType": "CFN_STACK"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "TestAppRegistryApplicationStack/BootstrapVersion",
@@ -104,6 +145,24 @@
         "id": "integ-servicecatalogappregistry-second-resource",
         "path": "integ-servicecatalogappregistry-second-resource",
         "children": {
+          "AppRegistryAssociation": {
+            "id": "AppRegistryAssociation",
+            "path": "integ-servicecatalogappregistry-second-resource/AppRegistryAssociation",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+              "aws:cdk:cloudformation:props": {
+                "application": "AppRegistryAssociatedApplication",
+                "resource": {
+                  "Ref": "AWS::StackId"
+                },
+                "resourceType": "CFN_STACK"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "integ-servicecatalogappregistry-second-resource/BootstrapVersion",
@@ -146,6 +205,24 @@
                 "id": "DeployAssert",
                 "path": "ApplicationAssociatorTest/DefaultTest/DeployAssert",
                 "children": {
+                  "AppRegistryAssociation": {
+                    "id": "AppRegistryAssociation",
+                    "path": "ApplicationAssociatorTest/DefaultTest/DeployAssert/AppRegistryAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "application": "AppRegistryAssociatedApplication",
+                        "resource": {
+                          "Ref": "AWS::StackId"
+                        },
+                        "resourceType": "CFN_STACK"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "ApplicationAssociatorTest/DefaultTest/DeployAssert/BootstrapVersion",

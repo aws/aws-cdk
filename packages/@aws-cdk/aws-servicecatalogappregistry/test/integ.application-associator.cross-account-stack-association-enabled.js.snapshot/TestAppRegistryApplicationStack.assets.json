@@ -1,7 +1,7 @@
 {
   "version": "30.1.0",
   "files": {
-    "b5378353b9c863b7395dc581d2fd4f24ffe6da2d1cb7d90b4c6e70667086bdd4": {
+    "c4d674e9642d6dbbd0df5c93890473101fc95bbc70de7e28d79ba771b5284de8": {
       "source": {
         "path": "TestAppRegistryApplicationStack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "689943422764-us-east-1": {
           "bucketName": "cdk-hnb659fds-assets-689943422764-us-east-1",
-          "objectKey": "b5378353b9c863b7395dc581d2fd4f24ffe6da2d1cb7d90b4c6e70667086bdd4.json",
+          "objectKey": "c4d674e9642d6dbbd0df5c93890473101fc95bbc70de7e28d79ba771b5284de8.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::689943422764:role/cdk-hnb659fds-file-publishing-role-689943422764-us-east-1"
         }

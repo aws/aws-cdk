@@ -10,7 +10,7 @@ export interface StackAssociatorBaseProps {
   * Indicates if the target Application should be shared with the cross-account stack owners and then
   * associated with the cross-account stacks.
   *
-  * @default - true
+  * @default - false
   */
   readonly associateCrossAccountStacks?: boolean;
 }
@@ -29,7 +29,7 @@ abstract class StackAssociatorBase implements IAspect {
   protected readonly sharedAccounts: Set<string> = new Set();
 
   constructor(props?: StackAssociatorBaseProps) {
-    this.associateCrossAccountStacks = props?.associateCrossAccountStacks ?? true;
+    this.associateCrossAccountStacks = props?.associateCrossAccountStacks ?? false;
   }
 
   public visit(node: IConstruct): void {
@@ -57,7 +57,9 @@ abstract class StackAssociatorBase implements IAspect {
    * @param node A Stage stack.
    */
   private associate(node: Stack): void {
-    if (!this.associateCrossAccountStacks) {
+    if (!isRegionUnresolved(this.application.env.region, node.region)
+      && node.account != this.application.env.account
+      && !this.associateCrossAccountStacks) {
       // Skip association when cross-account sharing/association is not enabled.
       // A warning will have been displayed as part of `handleCrossAccountStack()`.
       return;
