@@ -103,6 +103,7 @@ new glue.Table(stack, 'MyPartitionFilteredTable', {
   storageParameters: {
     'separatorChar': ',',
     'skip.header.line.count': 2,
+    'foo': 'bar',
   },
 });
 

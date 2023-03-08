@@ -657,7 +657,8 @@
                         },
                         "parameters": {
                           "separatorChar": ",",
-                          "skip.header.line.count": 2
+                          "skip.header.line.count": 2,
+                          "foo": "bar"
                         }
                       },
                       "tableType": "EXTERNAL_TABLE"

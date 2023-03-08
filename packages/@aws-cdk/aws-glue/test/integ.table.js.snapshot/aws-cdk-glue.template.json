@@ -481,7 +481,8 @@
       "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
       "Parameters": {
        "separatorChar": ",",
-       "skip.header.line.count": 2
+       "skip.header.line.count": 2,
+       "foo": "bar"
       },
       "SerdeInfo": {
        "SerializationLibrary": "org.openx.data.jsonserde.JsonSerDe"
