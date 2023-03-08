@@ -1171,6 +1171,17 @@ ec2.CloudFormationInit.fromElements(
 );
 ```
 
+However, when using `ec2.CloudFormationInit.fromElements` the order you add the elements has no bearing on the execution order. The `cfn-init` helper script processes them in the following order: 
+* packages - `ec2.InitPackage`
+* groups - `ec2.InitGroup`
+* users - `ec2.InitUser`
+* sources - `ec2.InitSources`
+* files - `ec2.InitFile`
+* commands - `ec2.InitCommand`
+* services - `ec2.InitService`
+
+If you require a different order, use the `ec2.CloudFormationInit.fromConfigSets` syntax as shown above.
+
 ### Bastion Hosts
 
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.

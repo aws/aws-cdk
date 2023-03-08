@@ -11,8 +11,25 @@ import { UserData } from './user-data';
  * A CloudFormation-init configuration
  */
 export class CloudFormationInit {
-  /**
+    /**
    * Build a new config from a set of Init Elements
+   * The cfn-init helper script processes these elements in the following order: 
+   * - `ec2.InitPackage`
+   * - `ec2.InitGroup`
+   * - `ec2.InitUser`
+   * - `ec2.InitSources`
+   * - `ec2.InitFile`
+   * - `ec2.InitCommand`
+   * - `ec2.InitService`
+   * If you require a different order, use `ec2.CloudFormationInit.fromConfigSets` syntax.
+   * 
+   * ```ts
+   * const handle = new ec2.InitServiceRestartHandle();
+   * ec2.CloudFormationInit.fromElements(
+   *   ec2.InitCommand.shellCommand('/usr/bin/custom-nginx-install.sh', { serviceRestartHandles: [handle] }),
+   *   ec2.InitService.enable('nginx', { serviceRestartHandle: handle }),
+   * );
+   * ```
    */
   public static fromElements(...elements: InitElement[]): CloudFormationInit {
     return CloudFormationInit.fromConfig(new InitConfig(elements));
