@@ -148,6 +148,8 @@ export class LegacyStackSynthesizer extends StackSynthesizer implements IReusabl
         networkMode: asset.networkMode,
         platform: asset.platform,
         outputs: asset.dockerOutputs,
+        cacheFrom: asset.dockerCacheFrom,
+        cacheTo: asset.dockerCacheTo,
       };
 
       this.boundStack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
