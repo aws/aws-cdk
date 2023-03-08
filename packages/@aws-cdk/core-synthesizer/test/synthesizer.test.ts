@@ -86,6 +86,44 @@ describe('bootstrap v3', () => {
     expect(evalCFN(location.imageUri)).toEqual(`the_account.dkr.ecr.the_region.domain.aws/${repo}:abcdef`);
   });
 
+  test('separate docker image assets have separate repos', () => {
+    // WHEN
+    const location1 = stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      uniqueId: 'abcdef',
+    });
+
+    const location2 = stack.synthesizer.addDockerImageAsset({
+      directoryName: './hello',
+      sourceHash: 'abcdefg',
+      uniqueId: 'abcdefg',
+    });
+
+    // THEN - images have different asset locations
+    expect(evalCFN(location1.repositoryName)).not.toEqual(evalCFN(location2.repositoryName));
+  });
+
+  test('docker image assets with same unique id have same repos', () => {
+    // WHEN
+    const location1 = stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      uniqueId: 'abcdef',
+    });
+
+    const location2 = stack.synthesizer.addDockerImageAsset({
+      directoryName: './hello',
+      sourceHash: 'abcdefg',
+      uniqueId: 'abcdef',
+    });
+
+    // THEN - images share same ecr repo
+    const repo = 'abcdefrepo';
+    expect(evalCFN(location1.repositoryName)).toEqual(repo);
+    expect(evalCFN(location1.repositoryName)).toEqual(evalCFN(location2.repositoryName));
+  });
+
   test('file asset depends on staging stack', () => {
     // WHEN
     const location = stack.synthesizer.addFileAsset({
