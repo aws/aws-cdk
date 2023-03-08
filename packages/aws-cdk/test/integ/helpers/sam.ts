@@ -118,7 +118,7 @@ export class SamIntegrationTestFixture extends TestFixture {
     args.push('--port');
     args.push(port.toString());
 
-    return this.samShell(['sam', 'local', 'start-api', ...args], '(Press CTRL+C to quit)', ()=>{
+    return this.samShell(['sam', 'local', 'start-api', ...args], 'Press CTRL+C to quit', ()=>{
       return new Promise<ActionOutput>((resolve, reject) => {
         axios.get(`http://127.0.0.1:${port}${apiPath}`).then( resp => {
           resolve(resp.data);
