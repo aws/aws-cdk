@@ -19,8 +19,6 @@ describe('findModulePath', () => {
   });
 
   test('multiple fuzzy matches', () => {
-    expect(relative(findModulePath('assert'))).toEqual('packages/@aws-cdk/assert');
-
     // also matches 'packages/aws-cdk' and 'tools/eslint-plugin-cdk'
     expect(relative(findModulePath('cdk'))).toEqual('packages/cdk');
   });
