@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.67.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.66.1-alpha.0...v2.67.0-alpha.0) (2023-03-02)
+
+
+### Features
+
+* **msk:** add Kafka versions 3.1.1, 3.2.0, and  and 3.3.1 ([#23918](https://github.com/aws/aws-cdk/issues/23918)) ([53a1d5f](https://github.com/aws/aws-cdk/commit/53a1d5fd81eabf5e9d846411754a554549f9f62c)), closes [#23899](https://github.com/aws/aws-cdk/issues/23899)
+
+
+### Bug Fixes
+
+* **servicecatalogappregistry:** applicationName can not be changed after deployment ([#24409](https://github.com/aws/aws-cdk/issues/24409)) ([6aa763f](https://github.com/aws/aws-cdk/commit/6aa763f100e5561f4554627116a458abba930480))
+
+## [2.66.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.66.0-alpha.0...v2.66.1-alpha.0) (2023-02-23)
+
 ## [2.66.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.65.0-alpha.0...v2.66.0-alpha.0) (2023-02-21)
 
 

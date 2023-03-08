@@ -456,6 +456,12 @@
     "FileSystemId": {
      "Ref": "Efs9E8BF36B"
     },
+    "AccessPointTags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-lambda-1/Efs/AccessPoint"
+     }
+    ],
     "PosixUser": {
      "Gid": "1001",
      "Uid": "1001"

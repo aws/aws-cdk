@@ -67,7 +67,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.5.2",
-    "aws-sdk": "^2.1317.0",
+    "aws-sdk": "^2.1329.0",
     "aws-sdk-mock": "5.6.0",
     "jest": "^27.5.1",
     "nock": "^13.3.0",
