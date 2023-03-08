@@ -3,12 +3,48 @@ import { CfnResource } from '../../cfn-resource';
 import { TreeMetadata, Node } from '../../private/tree-metadata';
 import { Stack } from '../../stack';
 
+/**
+ * A construct centric view of a stack trace
+ */
 export interface ConstructTrace {
+  /**
+   * The construct node id
+   */
   readonly id: string;
+
+  /**
+   * The construct path
+   */
   readonly path: string;
-  readonly parent?: ConstructTrace;
+  /**
+   * The construct trace for the next construct
+   * in the tree
+   *
+   * @default - undefined if this is the last construct in the tree
+   */
+  readonly child?: ConstructTrace;
+
+  /**
+   * The name of the library the construct comes from
+   *
+   * @default - undefined if this is a locally defined construct
+   */
   readonly library?: string;
+
+  /**
+   * The version of the library the construct comes from
+   *
+   * @default - undefined if this is a locally defined construct
+   */
   readonly libraryVersion?: string;
+
+  /**
+   * The line from the stack trace that contains the location
+   * in the source file where the construct is defined
+   *
+   * @default - undefined if the construct comes from a library
+   * and the location would point to node_modules
+   */
   readonly location?: string;
 }
 
@@ -79,7 +115,7 @@ export class ConstructTree {
    * @returns the TreeMetadata Node
    */
   public getTreeNode(path: string): Node | undefined {
-    return this.treeMetadata.getTreeNode(path);
+    return this.treeMetadata.getNodeBranch(path);
   }
 
   /**

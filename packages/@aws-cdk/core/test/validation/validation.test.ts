@@ -44,12 +44,12 @@ describe('validations', () => {
       templatePath: '/path/to/stack.template.json',
       constructPath: 'Default/Fake',
       title: 'test-rule',
-      creationStack: `\t└──  Fake (Default/Fake)
-\t     │ Library: @aws-cdk/core.CfnResource
+      creationStack: `\t└──  Default (Default)
+\t     │ Library: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
 \t     │ Location: undefined
-\t     └──  Default (Default)
-\t          │ Library: @aws-cdk/core.Stack
+\t     └──  Fake (Default/Fake)
+\t          │ Library: @aws-cdk/core.CfnResource
 \t          │ Library Version: 0.0.0
 \t          │ Location: undefined`,
       resourceLogicalId: 'Fake',
@@ -195,12 +195,12 @@ ${reset(red(bright('rule-1 (1 occurrences)')))}
     - Construct Path: Default/Fake
     - Template Path: /path/to/stack.template.json
     - Creation Stack:
-\t└──  Fake (Default/Fake)
-\t     │ Library: @aws-cdk/core.CfnResource
+\t└──  Default (Default)
+\t     │ Library: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
 \t     │ Location: undefined
-\t     └──  Default (Default)
-\t          │ Library: @aws-cdk/core.Stack
+\t     └──  Fake (Default/Fake)
+\t          │ Library: @aws-cdk/core.CfnResource
 \t          │ Library Version: 0.0.0
 \t          │ Location: undefined
     - Resource ID: Fake
@@ -227,12 +227,12 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     - Construct Path: Default/Fake
     - Template Path: /path/to/stack.template.json
     - Creation Stack:
-\t└──  Fake (Default/Fake)
-\t     │ Library: @aws-cdk/core.CfnResource
+\t└──  Default (Default)
+\t     │ Library: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
 \t     │ Location: undefined
-\t     └──  Default (Default)
-\t          │ Library: @aws-cdk/core.Stack
+\t     └──  Fake (Default/Fake)
+\t          │ Library: @aws-cdk/core.CfnResource
 \t          │ Library Version: 0.0.0
 \t          │ Location: undefined
     - Resource ID: Fake
@@ -262,7 +262,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     });
 
     const stack = new core.Stack(app);
-    new core.CfnResource(stack, 'DefaultResource', {
+    new core.CfnResource(stack, 'Fake', {
       type: 'Test::Resource::Fake',
       properties: {
         result: 'success',
@@ -338,8 +338,21 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
               description: 'test recommendation',
               violatingConstructs: [
                 {
-                  constructStack:
-                    '└──  Fake (Default/Fake)\n\t     │ Library: @aws-cdk/core.CfnResource\n\t     │ Library Version: 0.0.0\n\t     │ Location: undefined\n\t     └──  Default (Default)\n\t          │ Library: @aws-cdk/core.Stack\n\t          │ Library Version: 0.0.0\n\t          │ Location: undefined',
+                  constructStack: {
+                    'child': {
+                      'child': undefined,
+                      'id': 'Fake',
+                      'library': '@aws-cdk/core.CfnResource',
+                      'libraryVersion': '0.0.0',
+                      'location': undefined,
+                      'path': 'Default/Fake',
+                    },
+                    'id': 'Default',
+                    'library': '@aws-cdk/core.Stack',
+                    'libraryVersion': '0.0.0',
+                    'location': undefined,
+                    'path': 'Default',
+                  },
                   constructPath: 'Default/Fake',
                   locations: ['test-location'],
                   resourceLogicalId: 'Fake',

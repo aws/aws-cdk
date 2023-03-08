@@ -86,25 +86,35 @@ export class TreeMetadata extends Construct {
   }
 
   /**
-   * TODO: docs
+   * This gets a specific "branch" of the tree for a given construct path.
+   * It will return the root Node of the tree with non-relevant branches filtered
+   * out (i.e. node children that don't traverse to the given construct path)
    *
    * @internal
    */
-  public getTreeNode(constructPath: string): Node | undefined {
+  public getNodeBranch(constructPath: string): Node | undefined {
     if (!this._tree) {
       throw new Error('tree has not been created yet!');
     }
     const tree = this._tree[constructPath];
-    return {
+    const newTree: Node = {
       id: tree.id,
       path: tree.path,
-      children: tree.children,
       attributes: tree.attributes,
       constructInfo: tree.constructInfo,
       // need to re-add the parent because the current node
       // won't have the parent's parent
       parent: tree.parent ? this._tree[tree.parent.path] : undefined,
     };
+    // need the properties to be mutable
+    let branch = newTree as any;
+    do {
+      branch.parent.children = {
+        [branch.id]: branch,
+      };
+      branch = branch.parent;
+    } while (branch.parent);
+    return branch as Node;
   }
 
   private synthAttributes(construct: IConstruct): { [key: string]: any } | undefined {
