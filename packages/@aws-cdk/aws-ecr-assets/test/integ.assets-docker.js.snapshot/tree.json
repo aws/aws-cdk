@@ -262,8 +262,8 @@
               "version": "0.0.0"
             }
           },
-          "ImageUri5": {
-            "id": "ImageUri5",
+          "ImageUri4": {
+            "id": "ImageUri4",
             "path": "integ-assets-docker/ImageUri5",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnOutput",
