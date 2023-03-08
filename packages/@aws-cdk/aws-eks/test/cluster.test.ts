@@ -656,7 +656,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.25',
+        version: CLUSTER_VERSION.version,
         resourcesVpcConfig: {
           securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
@@ -1589,7 +1589,7 @@ describe('cluster', () => {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.EksOptimizedImage({ kubernetesVersion: '1.25' }).getImage(stack);
+      new eks.EksOptimizedImage({ kubernetesVersion: CLUSTER_VERSION.version }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1773,7 +1773,7 @@ describe('cluster', () => {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new BottleRocketImage({ kubernetesVersion: '1.25' }).getImage(stack);
+      new BottleRocketImage({ kubernetesVersion: CLUSTER_VERSION.version }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1804,7 +1804,7 @@ describe('cluster', () => {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: '1.25',
+          version: CLUSTER_VERSION.version,
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
