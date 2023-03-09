@@ -19,8 +19,6 @@ describe('findModulePath', () => {
   });
 
   test('multiple fuzzy matches', () => {
-    expect(relative(findModulePath('assert'))).toEqual('packages/@aws-cdk/assert');
-
     // also matches 'packages/aws-cdk' and 'tools/eslint-plugin-cdk'
     expect(relative(findModulePath('cdk'))).toEqual('packages/cdk');
   });
@@ -41,7 +39,6 @@ describe('moduleStability', () => {
 
     // The list of experimental modules is constantly changing. Comment out the assertion.
     // expect(moduleStability(absolute('packages/@aws-cdk/aws-apigatewayv2'))).toEqual('experimental');
-    // expect(moduleStability(absolute('packages/@aws-cdk/assert'))).toEqual('experimental');
 
     expect(moduleStability(absolute('tools/@aws-cdk/cdk-build-tools'))).toBeUndefined();
   });
