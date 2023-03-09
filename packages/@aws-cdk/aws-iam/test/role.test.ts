@@ -1294,3 +1294,11 @@ test('cross-env role ARNs include path', () => {
     },
   });
 });
+
+test('fromRoleName should validate role name', () => {
+  const app = new App();
+  const stack = new Stack(app, 'MyStack');
+  expect(() => {
+    Role.fromRoleName(stack, 'Invalid role name', 'arn:aws:iam::***:role/myrole');
+  }).toThrow(/does not match the IAM conventions/);
+});
