@@ -97,6 +97,7 @@ integ.assertions.awsApiCall('S3', 'putObject', {
     integ.assertions.awsApiCall('S3', 'getObject', {
       Bucket: deployBucket.bucketName,
       Key: 'key',
+      KMSEncryptionKeyARN: 'aws::arn::your-arn-here',
     }),
   ),
 );
