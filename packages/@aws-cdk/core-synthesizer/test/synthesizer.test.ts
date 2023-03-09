@@ -3,7 +3,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Stack, CfnResource, FileAssetPackaging } from '@aws-cdk/core';
 import { evaluateCFN } from '@aws-cdk/core/test/evaluate-cfn';
 import * as cxapi from '@aws-cdk/cx-api';
-import { UnboundStagingStackSynthesizer } from '../lib';
+import { AppScopedStagingSynthesizer } from '../lib';
 
 const CFN_CONTEXT = {
   'AWS::Region': 'the_region',
@@ -11,13 +11,13 @@ const CFN_CONTEXT = {
   'AWS::URLSuffix': 'domain.aws',
 };
 
-describe('bootstrap v3', () => {
+describe(AppScopedStagingSynthesizer, () => {
   let app: App;
   let stack: Stack;
 
   beforeEach(() => {
     app = new App({
-      defaultStackSynthesizer: new UnboundStagingStackSynthesizer(),
+      defaultStackSynthesizer: new AppScopedStagingSynthesizer(),
     });
     stack = new Stack(app, 'Stack');
   });
@@ -86,6 +86,13 @@ describe('bootstrap v3', () => {
     expect(evalCFN(location.imageUri)).toEqual(`the_account.dkr.ecr.the_region.domain.aws/${repo}:abcdef`);
   });
 
+  test('throws with docker image asset without uniqueId', () => {
+    expect(() => stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+    })).toThrowError('Assets synthesized with AppScopedStagingSynthesizer must include a \'uniqueId\' in the asset source definition.');
+  });
+
   test('separate docker image assets have separate repos', () => {
     // WHEN
     const location1 = stack.synthesizer.addDockerImageAsset({
@@ -133,7 +140,7 @@ describe('bootstrap v3', () => {
     });
 
     // THEN - we have a fixed asset location
-    console.log(stack.dependencies);
+    console.log(location.bucketName);
   });
 
   /**

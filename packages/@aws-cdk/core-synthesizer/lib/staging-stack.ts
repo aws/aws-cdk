@@ -70,7 +70,7 @@ export interface StagingStackProps extends StackProps {
 /**
  * A default Staging Stack
  */
-export class StagingStack extends Stack implements IStagingStack {
+export class DefaultStagingStack extends Stack implements IStagingStack {
   /**
    * Default asset publishing role ARN for file (S3) assets.
    */
@@ -109,22 +109,22 @@ export class StagingStack extends Stack implements IStagingStack {
   constructor(scope: Construct, id: string, props: StagingStackProps = {}) {
     super(scope, id, props);
 
-    this.fileAssetPublishingRoleArn = props.fileAssetPublishingRoleArn ?? StagingStack.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN;
+    this.fileAssetPublishingRoleArn = props.fileAssetPublishingRoleArn ?? DefaultStagingStack.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN;
     if (!props.fileAssetPublishingRoleArn) {
       new iam.Role(this, 'File-Asset-Publishing-Role', {
-        roleName: StagingStack.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN.split('/')[1],
+        roleName: DefaultStagingStack.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN.split('/')[1],
         assumedBy: new iam.ServicePrincipal('sts.amazonaws.com'),
       });
     }
-    this.dockerAssetPublishingRoleArn = props.dockerAssetPublishingRoleArn ?? StagingStack.DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_ARN;
+    this.dockerAssetPublishingRoleArn = props.dockerAssetPublishingRoleArn ?? DefaultStagingStack.DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_ARN;
     if (!props.dockerAssetPublishingRoleArn) {
       new iam.Role(this, 'Docker-Asset-Publishing-Role', {
-        roleName: StagingStack.DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_ARN.split('/')[1],
+        roleName: DefaultStagingStack.DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_ARN.split('/')[1],
         assumedBy: new iam.ServicePrincipal('sts.amazonaws.com'),
       });
     }
 
-    this.stagingBucketName = props.stagingBucketName ?? 'default-bucket'; // 'cdk-${AWS::AccountId}-${AWS::Region}'+`${App.of(this)?.stageName}`;
+    this.stagingBucketName = props.stagingBucketName ?? 'default-bucket'; //`cdk-${this.account}-${this.region}`;
     this.stagingBucket = new s3.Bucket(this, 'StagingBucket', {
       bucketName: this.stagingBucketName,
       autoDeleteObjects: true,
@@ -136,7 +136,7 @@ export class StagingStack extends Stack implements IStagingStack {
 
   public getRepoName(asset: DockerImageAssetSource): string {
     if (!asset.uniqueId) {
-      throw new Error('uniqueId is required when using bootstrap v3');
+      throw new Error('Assets synthesized with AppScopedStagingSynthesizer must include a \'uniqueId\' in the asset source definition.');
     }
 
     const repoName = `${asset.uniqueId}repo`.replace('.', '-'); // TODO: actually sanitize

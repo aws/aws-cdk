@@ -1,6 +1,6 @@
 import { App, AssetManifestBuilder, DockerImageAssetLocation, DockerImageAssetSource, Environment, FileAssetLocation, FileAssetSource, IBoundStackSynthesizer, IReusableStackSynthesizer, ISynthesisSession, Stack, StackSynthesizer, Stage, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IStagingStack, StagingStack } from './staging-stack';
+import { IStagingStack, DefaultStagingStack } from './staging-stack';
 
 /**
  * New stack synthesizer properties
@@ -24,7 +24,7 @@ export interface StagingStackSynthesizerProps {
 /**
  * New Stack Synthesizer
  */
-export class UnboundStagingStackSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer, IBoundStackSynthesizer {
+export class AppScopedStagingSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer {
   constructor(private readonly props: StagingStackSynthesizerProps = {}) {
     super();
 
@@ -37,7 +37,7 @@ export class UnboundStagingStackSynthesizer extends StackSynthesizer implements 
     function validateNoToken<A extends keyof StagingStackSynthesizerProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
-        throw new Error(`DefaultStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
+        throw new Error(`AppScopedStagingSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
           '${Qualifier}',
           cxapi.EnvironmentPlaceholders.CURRENT_REGION,
           cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
@@ -112,8 +112,9 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   private getCreateStagingStack(app: Stage, env: Environment): IStagingStack {
     // TODO: env could be tokens
     const stackName = `StagingStack${app.stageName}`;
-    return app.node.tryFindChild(stackName) as IStagingStack ?? new StagingStack(app, stackName, {
+    return app.node.tryFindChild(stackName) as IStagingStack ?? new DefaultStagingStack(app, stackName, {
       env,
+      stackName,
     });
   }
 
