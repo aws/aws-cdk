@@ -228,7 +228,7 @@ class EksClusterStack extends Stack {
     const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
       launchTemplateData: {
         imageId: new eks.EksOptimizedImage({
-          kubernetesVersion: eks.KubernetesVersion.V1_21.version,
+          kubernetesVersion: eks.KubernetesVersion.V1_25.version,
         }).getImage(this).imageId,
         instanceType: new ec2.InstanceType('t3.small').toString(),
         userData: Fn.base64(userData.render()),
