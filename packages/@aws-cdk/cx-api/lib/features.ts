@@ -746,7 +746,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
       of the \`id\`s, the \`name\`s of the columns can be changed without data loss.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.68.0' },
     recommendedValue: true,
   },
 };

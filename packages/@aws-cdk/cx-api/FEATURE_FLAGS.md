@@ -920,7 +920,7 @@ of the `id`s, the `name`s of the columns can be changed without data loss.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.68.0 | `false` | `true` |
 
 
 <!-- END details -->
