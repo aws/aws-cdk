@@ -502,6 +502,10 @@ const awsCustom = new cr.AwsCustomResource(this, 'aws-custom', {
 })
 ```
 
+You can omit `PhysicalResourceId` property in `onUpdate` to passthrough the value in `onCreate`. This behavior is useful when using Update APIs that response with an empty body.
+
+> AwsCustomResource.getResponseField() and .getResponseFieldReference() will not work if the Create and Update APIs don't consistently return the same fields.
+
 ### Handling Custom Resource Errors
 
 Every error produced by the API call is treated as is and will cause a "FAILED" response to be submitted to CloudFormation.
