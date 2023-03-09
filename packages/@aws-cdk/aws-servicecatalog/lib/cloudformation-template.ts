@@ -1,10 +1,8 @@
+import { IBucket } from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { Construct } from 'constructs';
 import { hashValues } from './private/util';
 import { ProductStack } from './product-stack';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Represents the Product Provisioning Artifact Template.
@@ -49,9 +47,16 @@ export abstract class CloudFormationTemplate {
  */
 export interface CloudFormationTemplateConfig {
   /**
-    * The http url of the template in S3.
-    */
+   * The http url of the template in S3.
+   */
   readonly httpUrl: string;
+
+  /**
+   * The S3 bucket containing product stack assets.
+   * @default - None - no assets are used in this product
+   */
+  readonly assetBucket?: IBucket;
+
 }
 
 /**
@@ -102,8 +107,8 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
  */
 class CloudFormationProductStackTemplate extends CloudFormationTemplate {
   /**
-   * @param stack A service catalog product stack.
-  */
+   * @param productStack A service catalog product stack.
+   */
   constructor(public readonly productStack: ProductStack) {
     super();
   }
@@ -111,6 +116,7 @@ class CloudFormationProductStackTemplate extends CloudFormationTemplate {
   public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
       httpUrl: this.productStack._getTemplateUrl(),
+      assetBucket: this.productStack._getAssetBucket(),
     };
   }
 }

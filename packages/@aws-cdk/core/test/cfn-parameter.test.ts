@@ -14,8 +14,6 @@ describe('cfn parameter', () => {
     // THEN
     expect(stack.resolve(numVal)).toEqual({ Ref: 'numberParam' });
     expect(stack.resolve(strVal)).toEqual({ Ref: 'stringParam' });
-
-
   });
 
   test('valueAsString fails for unsupported types', () => {
@@ -25,7 +23,5 @@ describe('cfn parameter', () => {
 
     // WHEN - THEN
     expect(() => listParam.valueAsList).toThrow(/Parameter type \(List\)/);
-
-
   });
 });

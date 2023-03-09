@@ -7,6 +7,7 @@ const stack = new Stack(app, 'integ-user-pool');
 const userpool = new UserPool(stack, 'myuserpool', {
   userPoolName: 'MyUserPool',
   removalPolicy: RemovalPolicy.DESTROY,
+  deletionProtection: false,
 });
 
 new CfnOutput(stack, 'user-pool-id', {

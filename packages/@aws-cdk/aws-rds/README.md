@@ -31,7 +31,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
     vpc,
   },
@@ -50,6 +50,22 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
+To use dual-stack mode, specify `NetworkType.DUAL` on the `networkType` property:
+
+```ts
+declare const vpc: ec2.Vpc; // VPC and subnets must have IPv6 CIDR blocks
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
+  instanceProps: {
+    vpc,
+    publiclyAccessible: false,
+  },
+  networkType: rds.NetworkType.DUAL,
+});
+```
+
+For more information about dual-stack mode, see [Working with a DB cluster in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html).
+
 Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 
 ```ts
@@ -63,9 +79,30 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
 });
 ```
 
+### Updating the database instances in a cluster
+
+Database cluster instances may be updated in bulk or on a rolling basis.
+
+An update to all instances in a cluster may cause significant downtime. To reduce the downtime, set the `instanceUpdateBehavior` property in `DatabaseClusterBaseProps` to `InstanceUpdateBehavior.ROLLING`. This adds a dependency between each instance so the update is performed on only one instance at a time.
+
+Use `InstanceUpdateBehavior.BULK` to update all instances at once.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  instances: 2,
+  instanceProps: {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+    vpc,
+  },
+  instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING, // Optional - defaults to rds.InstanceUpdateBehaviour.BULK
+});
+```
+
 ## Starting an instance database
 
-To set up a instance database, define a `DatabaseInstance`. You must
+To set up an instance database, define a `DatabaseInstance`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
@@ -78,7 +115,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   credentials: rds.Credentials.fromGeneratedSecret('syscdk'), // Optional - will default to 'admin' username and generated password
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   }
 });
 ```
@@ -107,6 +144,20 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   maxAllocatedStorage: 200,
 });
 ```
+
+To use dual-stack mode, specify `NetworkType.DUAL` on the `networkType` property:
+
+```ts
+declare const vpc: ec2.Vpc; // VPC and subnets must have IPv6 CIDR blocks
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_14_4 }),
+  vpc,
+  networkType: rds.NetworkType.DUAL,
+  publiclyAccessible: false,
+});
+```
+
+For more information about dual-stack mode, see [Working with a DB instance in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html).
 
 Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create an instance from snapshot or
 a source database respectively:
@@ -137,6 +188,28 @@ Creating a "production" Oracle database instance with option and parameter group
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
 
+Use the `storageType` property to specify the [type of storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
+to use for the instance:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  storageType: rds.StorageType.IO1,
+  iops: 5000,
+});
+
+const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  allocatedStorage: 500,
+  storageType: rds.StorageType.GP3,
+  storageThroughput: 500, // only applicable for GP3
+});
+```
+
 ## Setting Public Accessibility
 
 You can set public accessibility for the database instance or cluster using the `publiclyAccessible` property.
@@ -154,7 +227,7 @@ new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   },
   publiclyAccessible: true,
 });
@@ -165,7 +238,7 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
   instanceProps: {
     vpc,
     vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
     publiclyAccessible: true,
   },
@@ -185,7 +258,7 @@ const rule = instance.onEvent('InstanceEvent', { target: new targets.LambdaFunct
 
 ## Login credentials
 
-By default, database instances and clusters will have `admin` user with an auto-generated password.
+By default, database instances and clusters (with the exception of `DatabaseInstanceFromSnapshot` and `ServerlessClusterFromSnapshot`) will have `admin` user with an auto-generated password.
 An alternative username (and password) may be specified for the admin user instead of the default.
 
 The following examples use a `DatabaseInstance`, but the same usage is applicable to `DatabaseCluster`.
@@ -232,6 +305,27 @@ new rds.DatabaseInstance(this, 'InstanceWithCustomizedSecret', {
 });
 ```
 
+### Snapshot credentials
+
+As noted above, Databases created with `DatabaseInstanceFromSnapshot` or `ServerlessClusterFromSnapshot` will not create user and auto-generated password by default because it's not possible to change the master username for a snapshot. Instead, they will use the existing username and password from the snapshot. You can still generate a new password - to generate a secret similarly to the other constructs, pass in credentials with `fromGeneratedSecret()` or `fromGeneratedPassword()`.
+
+```ts
+declare const vpc: ec2.Vpc;
+const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
+const myKey = new kms.Key(this, 'MyKey');
+
+new rds.DatabaseInstanceFromSnapshot(this, 'InstanceFromSnapshotWithCustomizedSecret', {
+  engine,
+  vpc,
+  snapshotIdentifier: 'mySnapshot',
+  credentials: rds.SnapshotCredentials.fromGeneratedSecret('username', {
+    encryptionKey: myKey,
+    excludeCharacters: '!&*^#@()',
+    replicaRegions: [{ region: 'eu-west-1' }, { region: 'eu-west-2' }],
+  }),
+});
+```
+
 ## Connecting
 
 To control who can access the cluster or instance, use the `.connections` attribute. RDS databases have
@@ -265,9 +359,11 @@ When the master password is generated and stored in AWS Secrets Manager, it can 
 import * as cdk from '@aws-cdk/core';
 
 declare const instance: rds.DatabaseInstance;
+declare const mySecurityGroup: ec2.SecurityGroup;
 instance.addRotationSingleUser({
   automaticallyAfter: cdk.Duration.days(7), // defaults to 30 days
   excludeCharacters: '!@#$%^&*', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+  securityGroup: mySecurityGroup, // defaults to an auto-created security group
 });
 ```
 
@@ -313,18 +409,20 @@ declare const instance: rds.DatabaseInstance;
 declare const myEndpoint: ec2.InterfaceVpcEndpoint;
 
 instance.addRotationSingleUser({
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }, // Place rotation Lambda in private subnets
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }, // Place rotation Lambda in private subnets
   endpoint: myEndpoint, // Use VPC interface endpoint
 });
 ```
 
-See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
+See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
 
 ## IAM Authentication
 
 You can also authenticate to a database instance using AWS Identity and Access Management (IAM) database authentication;
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html> for more information
 and a list of supported versions and limitations.
+
+**Note**: `grantConnect()` does not currently work - see [this GitHub issue](https://github.com/aws/aws-cdk/issues/11851).
 
 The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
 
@@ -588,6 +686,7 @@ declare const vpc: ec2.Vpc;
 
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
+  copyTagsToSnapshot: true, // whether to save the cluster tags when creating the snapshot. Default is 'true'
   parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
   vpc,
   scaling: {
@@ -645,7 +744,7 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
 
 declare const code: lambda.Code;
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code,
   environment: {
@@ -662,8 +761,8 @@ To learn more about using the Data API, see the [documentation](https://docs.aws
 
 ### Default VPC
 
-The `vpc` parameter is optional. 
+The `vpc` parameter is optional.
 
 If not provided, the cluster will be created in the default VPC of the account and region.
-As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster. 
+As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster.
 If you want to provide one of `vpcSubnets`, `subnetGroup` or `securityGroups` parameter, please provide a `vpc`.

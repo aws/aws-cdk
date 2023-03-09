@@ -1,6 +1,6 @@
-import { IConstruct } from './construct-compat';
+import { IConstruct } from 'constructs';
 
-const ASPECTS_SYMBOL = Symbol('cdk-aspects');
+const ASPECTS_SYMBOL = Symbol.for('cdk-aspects');
 
 /**
  * Represents an Aspect
@@ -17,7 +17,6 @@ export interface IAspect {
  * synthesis.
  */
 export class Aspects {
-
   /**
    * Returns the `Aspects` object associated with a construct scope.
    * @param scope The scope for which these aspects will apply.
@@ -25,7 +24,7 @@ export class Aspects {
   public static of(scope: IConstruct): Aspects {
     let aspects = (scope as any)[ASPECTS_SYMBOL];
     if (!aspects) {
-      aspects = new Aspects(scope);
+      aspects = new Aspects();
 
       Object.defineProperty(scope, ASPECTS_SYMBOL, {
         value: aspects,
@@ -36,23 +35,24 @@ export class Aspects {
     return aspects;
   }
 
-  // TODO(2.0): private readonly _aspects = new Array<IAspect>();
-  private constructor(private readonly scope: IConstruct) { }
+  private readonly _aspects: IAspect[];
+
+  private constructor() {
+    this._aspects = [];
+  }
 
   /**
    * Adds an aspect to apply this scope before synthesis.
    * @param aspect The aspect to add.
    */
   public add(aspect: IAspect) {
-    // TODO(2.0): this._aspects.push(aspect);
-    this.scope.node._actualNode.applyAspect(aspect);
+    this._aspects.push(aspect);
   }
 
   /**
    * The list of aspects which were directly applied on this scope.
    */
-  public get aspects(): IAspect[] {
-    // TODO(2.0): return  [ ...this._aspects ];
-    return [...(this.scope.node._actualNode as any)._aspects]; // clone
+  public get all(): IAspect[] {
+    return [...this._aspects];
   }
 }

@@ -7,6 +7,7 @@ import { IInstance } from './instance';
 import { IpInstance, IpInstanceBaseProps } from './ip-instance';
 import { INamespace, NamespaceType } from './namespace';
 import { NonIpInstance, NonIpInstanceBaseProps } from './non-ip-instance';
+import { defaultDiscoveryType } from './private/utils';
 import { CfnService } from './servicediscovery.generated';
 
 export interface IService extends IResource {
@@ -42,6 +43,11 @@ export interface IService extends IResource {
    * The Routing Policy used by the service
    */
   readonly routingPolicy: RoutingPolicy;
+
+  /**
+   * The discovery type used by the service
+   */
+  readonly discoveryType: DiscoveryType;
 }
 
 /**
@@ -87,6 +93,13 @@ export interface BaseServiceProps {
  * PublicDnsNamespace
  */
 export interface DnsServiceProps extends BaseServiceProps {
+  /**
+   * Controls how instances within this service can be discovered
+   *
+   * @default DNS_AND_API
+   */
+  readonly discoveryType?: DiscoveryType;
+
   /**
    * The DNS type of the record that you want AWS Cloud Map to create. Supported record types
    * include A, AAAA, A and AAAA (A_AAAA), CNAME, and SRV.
@@ -136,6 +149,7 @@ abstract class ServiceBase extends Resource implements IService {
   public abstract dnsRecordType: DnsRecordType;
   public abstract routingPolicy: RoutingPolicy;
   public abstract readonly serviceName: string;
+  public abstract discoveryType: DiscoveryType;
 }
 
 export interface ServiceAttributes {
@@ -145,6 +159,7 @@ export interface ServiceAttributes {
   readonly serviceArn: string;
   readonly dnsRecordType: DnsRecordType;
   readonly routingPolicy: RoutingPolicy;
+  readonly discoveryType?: DiscoveryType;
 }
 
 /**
@@ -160,6 +175,7 @@ export class Service extends ServiceBase {
       public dnsRecordType = attrs.dnsRecordType;
       public routingPolicy = attrs.routingPolicy;
       public serviceName = attrs.serviceName;
+      public discoveryType = attrs.discoveryType || defaultDiscoveryType(attrs.namespace);
     }
 
     return new Import(scope, id);
@@ -195,14 +211,31 @@ export class Service extends ServiceBase {
    */
   public readonly routingPolicy: RoutingPolicy;
 
+  /**
+   * The discovery type used by this service.
+   */
+  public readonly discoveryType: DiscoveryType;
+
   constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
     const namespaceType = props.namespace.type;
+    const discoveryType = props.discoveryType || defaultDiscoveryType(props.namespace);
+
+    if (namespaceType == NamespaceType.HTTP && discoveryType == DiscoveryType.DNS_AND_API) {
+      throw new Error(
+        'Cannot specify `discoveryType` of DNS_AND_API when using an HTTP namespace.',
+      );
+    }
 
     // Validations
-    if (namespaceType === NamespaceType.HTTP && (props.routingPolicy || props.dnsRecordType)) {
-      throw new Error('Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace.');
+    if (
+      discoveryType === DiscoveryType.API &&
+      (props.routingPolicy || props.dnsRecordType)
+    ) {
+      throw new Error(
+        'Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace.',
+      );
     }
 
     if (props.healthCheck && props.customHealthCheck) {
@@ -247,13 +280,14 @@ export class Service extends ServiceBase {
       throw new Error('Must support `A` or `AAAA` records to register loadbalancers.');
     }
 
-    const dnsConfig: CfnService.DnsConfigProperty | undefined = props.namespace.type === NamespaceType.HTTP
-      ? undefined
-      : {
-        dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtl),
-        namespaceId: props.namespace.namespaceId,
-        routingPolicy,
-      };
+    const dnsConfig: CfnService.DnsConfigProperty | undefined =
+      discoveryType === DiscoveryType.API
+        ? undefined
+        : {
+          dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtl),
+          namespaceId: props.namespace.namespaceId,
+          routingPolicy,
+        };
 
     const healthCheckConfigDefaults = {
       type: HealthCheckType.HTTP,
@@ -274,6 +308,7 @@ export class Service extends ServiceBase {
       healthCheckConfig,
       healthCheckCustomConfig,
       namespaceId: props.namespace.namespaceId,
+      type: props.discoveryType == DiscoveryType.API ? 'HTTP' : undefined,
     });
 
     this.serviceName = service.attrName;
@@ -282,6 +317,7 @@ export class Service extends ServiceBase {
     this.namespace = props.namespace;
     this.dnsRecordType = dnsRecordType;
     this.routingPolicy = routingPolicy;
+    this.discoveryType = discoveryType;
   }
 
   /**
@@ -382,6 +418,20 @@ export interface HealthCheckCustomConfig {
    * @default 1
    */
   readonly failureThreshold?: number;
+}
+
+/**
+ * Specifies information about the discovery type of a service
+ */
+export enum DiscoveryType {
+  /**
+   * Instances are discoverable via API only
+   */
+  API = 'API',
+  /**
+   * Instances are discoverable via DNS or API
+   */
+  DNS_AND_API = 'DNS_AND_API'
 }
 
 export enum DnsRecordType {

@@ -1,12 +1,8 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The CodePipeline variables emitted by CodeStar source Action.
@@ -27,7 +23,7 @@ export interface CodeStarSourceVariables {
 }
 
 /**
- * Construction properties for {@link CodeStarConnectionsSourceAction}.
+ * Construction properties for `CodeStarConnectionsSourceAction`.
  */
 export interface CodeStarConnectionsSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
@@ -73,7 +69,7 @@ export interface CodeStarConnectionsSourceActionProps extends codepipeline.Commo
    * or a link that allows CodeBuild to clone the repository before building.
    *
    * **Note**: if this option is true,
-   * then only CodeBuild actions can use the resulting {@link output}.
+   * then only CodeBuild actions can use the resulting `output`.
    *
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#action-reference-CodestarConnectionSource-config

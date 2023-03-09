@@ -31,7 +31,7 @@ The two main components of Amazon Cognito are [user
 pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html) and [identity
 pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html). User pools are user directories
 that provide sign-up and sign-in options for your app users. Identity pools enable you to grant your users access to
-other AWS services. Identity Pool L2 Constructs can be found [here](../aws-cognito-identitypool).
+other AWS services. Identity Pool L2 Constructs can be found [here](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cognito-identitypool-alpha-readme.html).
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
@@ -53,6 +53,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [App Clients](#app-clients)
   - [Resource Servers](#resource-servers)
   - [Domains](#domains)
+  - [Deletion protection](#deletion-protection)
 
 ## User Pools
 
@@ -66,12 +67,29 @@ the `userPoolName` to give your own identifier to the user pool. If not, CloudFo
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   userPoolName: 'myawesomeapp-userpool',
+  signInCaseSensitive: false, // case insensitive is preferred in most situations
 });
 ```
+
+By default, usernames and email addresses in user pools are case sensitive, which means `user@example.com` and `User@example.com`
+are considered different. In most situations it is preferred to have usernames and email addresses be case insensitive so that
+capitalization differences are ignored. As shown above, you can make a user pool case insensitive by setting `signInCaseSensitive`
+to `false`. The case sensitivity cannot be changed once a user pool is created.
 
 The default set up for the user pool is configured such that only administrators will be allowed
 to create users. Features such as Multi-factor authentication (MFAs) and Lambda Triggers are not
 configured by default.
+
+Use the `grant()` method to add an IAM policy statement associated with the user pool to an
+IAM principal's policy.
+
+```ts
+const userPool = new cognito.UserPool(this, 'myuserpool');
+const role = new iam.Role(this, 'role', {
+  assumedBy: new iam.ServicePrincipal('foo'),
+});
+userPool.grant(role, 'cognito-idp:AdminCreateUser');
+```
 
 ### Sign Up
 
@@ -221,6 +239,30 @@ them for specific users using the [AdminUpdateUserAttributes API].
 
 [AdminUpdateUserAttributes API]: https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminUpdateUserAttributes.html
 
+### Attribute verification
+
+When your user updates an email address or phone number attribute, Amazon Cognito marks it unverified until they verify the new value.
+You can’t send messages to an unverified email address or phone number.
+Your user can’t sign in with an unverified alias attribute.
+You can choose how Amazon Cognito handles an updated email address or phone number after the update and before the verification.
+
+Learn more on [configuring email or phone verification in Cognito's documentation.](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html?icmpid=docs_cognito_console_help_panel)
+
+The following code configures a user pool that keeps the original value for the two standard attributes (email and phone_number) until the new values are verified.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  // ...
+  signInAliases: { username: true },
+  autoVerify: { email: true, phone: true },
+  keepOriginal: {
+    email: true,
+    phone: true,
+  },
+});
+```
+
+
 ### Security
 
 Cognito sends various messages to its users via SMS, for different actions, ranging from account verification to
@@ -314,6 +356,16 @@ new cognito.UserPool(this, 'UserPool', {
 The default for account recovery is by phone if available and by email otherwise.
 A user will not be allowed to reset their password via phone if they are also using it for MFA.
 
+#### Advanced Security Mode
+
+User pools can be configured to use Advanced security. You can turn the user pool advanced security features on, and customize the actions that are taken in response to different risks. Or you can use audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publish metrics to Amazon CloudWatch. See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to learn more.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  // ...
+  advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
+});
+```
 
 ### Emails
 
@@ -364,6 +416,33 @@ new cognito.UserPool(this, 'myuserpool', {
 
 ```
 
+When sending emails from an SES verified domain, `sesVerifiedDomain` can be used to specify the domain.
+The email address does not need to be verified when sending emails from a verified domain, because the identity of the email configuration is can be determined from the domain alone.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  email: cognito.UserPoolEmail.withSES({
+    sesRegion: 'us-east-1',
+    fromEmail: 'noreply@myawesomeapp.com',
+    fromName: 'Awesome App',
+    replyTo: 'support@myawesomeapp.com',
+    sesVerifiedDomain: 'myawesomeapp.com',
+  }),
+});
+```
+
+If `fromName` does not comply RFC 5322 atom or quoted-string, it will be quoted or mime-encoded.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  email: cognito.UserPoolEmail.withSES({
+    fromEmail: 'noreply@myawesomeapp.com',
+    fromName: 'myname@mycompany.com',
+  }),
+});
+// => From: "myname@mycompany.com" <noreply@myawesomeapp.com>
+```
+
 ### Device Tracking
 
 User pools can be configured to track devices that users have logged in to.
@@ -393,7 +472,7 @@ on the construct, as so -
 
 ```ts
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'path/to/asset')),
 });
@@ -407,7 +486,7 @@ const userpool = new cognito.UserPool(this, 'myuserpool', {
 });
 
 userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'path/to/asset')),
 }));
@@ -477,6 +556,8 @@ The following third-party identity providers are currently supported in the CDK 
 - [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
 - [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
 - [Sign In With Apple](https://developer.apple.com/sign-in-with-apple/get-started/)
+- [OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-oidc-idp.html)
+- [SAML](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-saml-idp.html)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
@@ -488,6 +569,21 @@ const userpool = new cognito.UserPool(this, 'Pool');
 const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
   clientId: 'amzn-client-id',
   clientSecret: 'amzn-client-secret',
+  userPool: userpool,
+});
+```
+
+Using Google identity provider is possible to use clientSecretValue with SecretValue from secrets manager.
+
+```ts
+const userpool = new cognito.UserPool(this, 'Pool');
+const secret = secretsManager.Secret.fromSecretAttributes(this, "CognitoClientSecret", {
+    secretCompleteArn: "arn:aws:secretsmanager:xxx:xxx:secret:xxx-xxx"
+}).secretValue
+
+const provider = new cognito.UserPoolIdentityProviderGoogle(this, 'Google', {
+  clientId: 'amzn-client-id',
+  clientSecretValue: secret,
   userPool: userpool,
 });
 ```
@@ -617,8 +713,8 @@ pool.addClient('app-client', {
 });
 ```
 
-If the identity provider and the app client are created in the same stack, specify the dependency between both constructs to 
-make sure that the identity provider already exists when the app client will be created. The app client cannot handle the 
+If the identity provider and the app client are created in the same stack, specify the dependency between both constructs to
+make sure that the identity provider already exists when the app client will be created. The app client cannot handle the
 dependency to the identity provider automatically because the client does not have access to the provider's construct.
 
 ```ts
@@ -639,6 +735,17 @@ const client = pool.addClient('app-client', {
 client.node.addDependency(provider);
 ```
 
+The property `authSessionValidity` is the session token for each API request in the authentication flow.
+Valid duration is from 3 to 15 minutes.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  authSessionValidity: Duration.minutes(15),
+});
+```
+
 In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
 More information is available at [Using Tokens with User Pools](https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
 The expiration time for these tokens can be configured as shown below.
@@ -653,11 +760,11 @@ pool.addClient('app-client', {
 });
 ```
 
-Clients can (and should) be allowed to read and write relevant user attributes only. Usually every client can be allowed to 
+Clients can (and should) be allowed to read and write relevant user attributes only. Usually every client can be allowed to
 read the `given_name` attribute but not every client should be allowed to set the `email_verified` attribute.
 The same criteria applies for both standard and custom attributes, more info is available at
 [Attribute Permissions and Scopes](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes).
-The default behaviour is to allow read and write permissions on all attributes. The following code shows how this can be 
+The default behaviour is to allow read and write permissions on all attributes. The following code shows how this can be
 configured for a client.
 
 ```ts
@@ -688,7 +795,21 @@ pool.addClient('app-client', {
   // ...
   enableTokenRevocation: true,
 });
-``` 
+```
+
+User Pool clients can generate a client ID as well as a client secret, to support more advanced authentication workflows.
+
+To create a client with an autogenerated client secret, pass the `generateSecret: true` prop:
+
+```ts
+const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
+  userPool: importedPool,
+  generateSecret: true,
+});
+
+// Allows you to pass the generated secret to other pieces of infrastructure
+const secret = userPoolClient.userPoolClientSecret;
+```
 
 ### Resource Servers
 
@@ -797,3 +918,16 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 ```ts
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
+
+### Deletion protection
+
+Deletion protection can be enabled on a user pool to prevent accidental deletion:
+
+```ts
+const userpool = new cognito.UserPool(this, 'UserPool', {
+  // ...
+  deletionProtection: true,
+});
+```
+
+By default deletion protection is disabled.

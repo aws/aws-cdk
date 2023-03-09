@@ -1,5 +1,5 @@
-import * as cdk from '../lib';
 import { toCloudFormation } from './util';
+import * as cdk from '../lib';
 
 describe('condition', () => {
   test('chain conditions', () => {
@@ -31,8 +31,6 @@ describe('condition', () => {
         },
       },
     });
-
-
   });
 
   test('condition expressions can be embedded as strings', () => {
@@ -60,6 +58,5 @@ describe('condition', () => {
         },
       },
     });
-
   });
 });

@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
+import { FakeSourceAction } from './fake-source-action';
 import { IStage } from '../lib/action';
 import { Artifact } from '../lib/artifact';
 import { Pipeline } from '../lib/pipeline';
 import { validateName } from '../lib/private/validation';
-import { FakeSourceAction } from './fake-source-action';
 
 interface NameValidationTestCase {
   name: string;
@@ -44,7 +44,7 @@ describe('general validation', () => {
       const stack = new cdk.Stack();
       const pipeline = new Pipeline(stack, 'Pipeline');
 
-      expect(cdk.ConstructNode.validate(pipeline.node).length).toEqual(1);
+      expect(pipeline.node.validate().length).toEqual(1);
     });
 
     test('should fail if Pipeline has a Source Action in a non-first Stage', () => {
@@ -61,7 +61,7 @@ describe('general validation', () => {
         ],
       });
 
-      expect(cdk.ConstructNode.validate(pipeline.node).length).toEqual(1);
+      expect(pipeline.node.validate().length).toEqual(1);
     });
   });
 });

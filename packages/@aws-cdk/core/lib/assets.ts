@@ -175,6 +175,19 @@ export interface DockerImageAssetSource {
   readonly dockerBuildArgs?: { [key: string]: string };
 
   /**
+   * Build secrets to pass to the `docker build` command.
+   *
+   * Since Docker build secrets are resolved before deployment, keys and
+   * values cannot refer to unresolved tokens (such as `lambda.functionArn` or
+   * `queue.queueUrl`).
+   *
+   * Only allowed when `directoryName` is specified.
+   *
+   * @default - no build secrets are passed
+   */
+  readonly dockerBuildSecrets?: { [key: string]: string };
+
+  /**
    * Docker target to build to
    *
    * Only allowed when `directoryName` is specified.
@@ -212,6 +225,35 @@ export interface DockerImageAssetSource {
    * @default - no networking mode specified
    */
   readonly networkMode?: string;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * Specify this property to build images on a specific platform.
+   *
+   * @default - no platform specified (the current machine architecture will be used)
+   */
+  readonly platform?: string;
+
+  /**
+   * Outputs to pass to the `docker build` command.
+   *
+   * @default - no build args are passed
+   */
+  readonly dockerOutputs?: string[];
+
+  /**
+   * Cache from options to pass to the `docker build` command.
+   * @default - no cache from args are passed
+   */
+  readonly dockerCacheFrom?: DockerCacheOption[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   * @default - no cache to args are passed
+   */
+  readonly dockerCacheTo?: DockerCacheOption;
+
 }
 
 /**
@@ -274,21 +316,14 @@ export interface FileAssetLocation {
   readonly s3ObjectUrl: string;
 
   /**
-   * The ARN of the KMS key used to encrypt the file asset bucket, if any
+   * The ARN of the KMS key used to encrypt the file asset bucket, if any.
    *
-   * If so, the consuming role should be given "kms:Decrypt" permissions in its
-   * identity policy.
+   * The CDK bootstrap stack comes with a key policy that does not require
+   * setting this property, so you only need to set this property if you
+   * have customized the bootstrap stack to require it.
    *
-   * It's the responsibility of they key's creator to make sure that all
-   * consumers that the key's key policy is configured such that the key can be used
-   * by all consumers that need it.
-   *
-   * The default bootstrap stack provisioned by the CDK CLI ensures this, and
-   * can be used as an example for how to configure the key properly.
-   *
-   * @default - Asset bucket is not encrypted
-   * @deprecated Since bootstrap bucket v4, the key policy properly allows use of the
-   * key via the bucket and no additional parameters have to be granted anymore.
+   * @default - Asset bucket is not encrypted, or decryption permissions are
+   * defined by a Key Policy.
    */
   readonly kmsKeyArn?: string;
 
@@ -309,7 +344,7 @@ export interface FileAssetLocation {
  */
 export interface DockerImageAssetLocation {
   /**
-   * The URI of the image in Amazon ECR.
+   * The URI of the image in Amazon ECR (including a tag).
    */
   readonly imageUri: string;
 
@@ -317,4 +352,32 @@ export interface DockerImageAssetLocation {
    * The name of the ECR repository.
    */
   readonly repositoryName: string;
+
+  /**
+   * The tag of the image in Amazon ECR.
+   * @default - the hash of the asset, or the `dockerTagPrefix` concatenated with the asset hash if a `dockerTagPrefix` is specified in the stack synthesizer
+   */
+  readonly imageTag?: string;
+}
+
+/**
+ * Options for configuring the Docker cache backend
+ */
+export interface DockerCacheOption {
+  /**
+   * The type of cache to use.
+   * Refer to https://docs.docker.com/build/cache/backends/ for full list of backends.
+   * @default - unspecified
+   *
+   * @example 'registry'
+   */
+  readonly type: string;
+  /**
+   * Any parameters to pass into the docker cache backend configuration.
+   * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
+   * @default {} No options provided
+   *
+   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   */
+  readonly params?: { [key: string]: string };
 }

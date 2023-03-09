@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
- * Customization options when creating a {@link CodePipeline} event target.
+ * Customization options when creating a `CodePipeline` event target.
  */
 export interface CodePipelineTargetOptions extends TargetBaseProps {
   /**
@@ -26,14 +26,17 @@ export class CodePipeline implements events.IRuleTarget {
   }
 
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+    const role = this.options.eventRole || singletonEventRole(this.pipeline);
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      resources: [this.pipeline.pipelineArn],
+      actions: ['codepipeline:StartPipelineExecution'],
+    }));
+
     return {
       ...bindBaseTargetConfig(this.options),
       id: '',
       arn: this.pipeline.pipelineArn,
-      role: this.options.eventRole || singletonEventRole(this.pipeline, [new iam.PolicyStatement({
-        resources: [this.pipeline.pipelineArn],
-        actions: ['codepipeline:StartPipelineExecution'],
-      })]),
+      role,
       targetResource: this.pipeline,
     };
   }

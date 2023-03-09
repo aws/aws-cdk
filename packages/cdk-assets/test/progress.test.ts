@@ -1,8 +1,8 @@
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
-import { AssetManifest, AssetPublishing } from '../lib';
 import { FakeListener } from './fake-listener';
 import { mockAws, mockedApiResult, mockUpload } from './mock-aws';
+import { AssetManifest, AssetPublishing } from '../lib';
 
 let aws: ReturnType<typeof mockAws>;
 beforeEach(() => {
@@ -50,6 +50,19 @@ test('test listener', async () => {
   const progressListener = new FakeListener();
 
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener });
+  await pub.publish();
+
+  const allMessages = progressListener.messages.join('\n');
+
+  // Log mentions asset/destination ids
+  expect(allMessages).toContain('theAsset:theDestination1');
+  expect(allMessages).toContain('theAsset:theDestination2');
+});
+
+test('test publishing in parallel', async () => {
+  const progressListener = new FakeListener();
+
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener, publishInParallel: true });
   await pub.publish();
 
   const allMessages = progressListener.messages.join('\n');

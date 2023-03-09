@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "lambda-python-custom-build/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-custom-build"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-custom-build/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythoncustombuildDefaultTestDeployAssert3F59C307"
+    }
+  }
+}

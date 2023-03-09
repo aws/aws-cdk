@@ -30,3 +30,5 @@ test/
 !*.lit.ts
 
 layer/node_modules
+
+**/*.snapshot

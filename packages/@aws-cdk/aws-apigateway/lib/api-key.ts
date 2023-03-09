@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
+import { IStage } from './stage';
 import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
 
 /**
@@ -56,8 +57,16 @@ export interface ApiKeyProps extends ApiKeyOptions {
   /**
    * A list of resources this api key is associated with.
    * @default none
+   * @deprecated - use `stages` instead
    */
   readonly resources?: IRestApi[];
+
+  /**
+   * A list of Stages this api key is associated with.
+   *
+   * @default - the api key is not associated with any stages
+   */
+  readonly stages?: IStage[];
 
   /**
    * An AWS Marketplace customer identifier to use when integrating with the AWS SaaS Marketplace.
@@ -168,7 +177,7 @@ export class ApiKey extends ApiKeyBase {
       enabled: props.enabled ?? true,
       generateDistinctId: props.generateDistinctId,
       name: this.physicalName,
-      stageKeys: this.renderStageKeys(props.resources),
+      stageKeys: this.renderStageKeys(props.resources, props.stages),
       value: props.value,
     });
 
@@ -182,17 +191,29 @@ export class ApiKey extends ApiKeyBase {
     });
   }
 
-  private renderStageKeys(resources: IRestApi[] | undefined): CfnApiKey.StageKeyProperty[] | undefined {
-    if (!resources) {
+  private renderStageKeys(resources?: IRestApi[], stages?: IStage[]): CfnApiKey.StageKeyProperty[] | undefined {
+    if (!resources && !stages) {
       return undefined;
     }
 
-    return resources.map((resource: IRestApi) => {
-      const restApi = resource;
-      const restApiId = restApi.restApiId;
-      const stageName = restApi.deploymentStage!.stageName.toString();
-      return { restApiId, stageName };
-    });
+    if (resources && stages) {
+      throw new Error('Only one of "resources" or "stages" should be provided');
+    }
+
+    return resources
+      ? resources.map((resource: IRestApi) => {
+        const restApi = resource;
+        if (!restApi.deploymentStage) {
+          throw new Error('Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
+          'Either set the RestApi.deploymentStage or create an ApiKey from a Stage');
+        }
+        const restApiId = restApi.restApiId;
+        const stageName = restApi.deploymentStage!.stageName.toString();
+        return { restApiId, stageName };
+      })
+      : stages ? stages.map((stage => {
+        return { restApiId: stage.restApi.restApiId, stageName: stage.stageName };
+      })) : undefined;
   }
 }
 

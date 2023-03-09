@@ -1,6 +1,6 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Annotations, Match } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
-import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';
+import { Dashboard, GraphWidget, PeriodOverride, TextWidget, MathExpression, TextWidgetBackground } from '../lib';
 
 describe('Dashboard', () => {
   test('widgets in different adds are laid out underneath each other', () => {
@@ -13,11 +13,13 @@ describe('Dashboard', () => {
       width: 10,
       height: 2,
       markdown: 'first',
+      background: TextWidgetBackground.SOLID,
     }));
     dashboard.addWidgets(new TextWidget({
       width: 1,
       height: 4,
       markdown: 'second',
+      background: TextWidgetBackground.TRANSPARENT,
     }));
     dashboard.addWidgets(new TextWidget({
       width: 4,
@@ -30,8 +32,8 @@ describe('Dashboard', () => {
     expect(Object.keys(resources).length).toEqual(1);
     const key = Object.keys(resources)[0];
     hasWidgets(resources[key].Properties, [
-      { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: { markdown: 'first' } },
-      { type: 'text', width: 1, height: 4, x: 0, y: 2, properties: { markdown: 'second' } },
+      { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: { markdown: 'first', background: TextWidgetBackground.SOLID } },
+      { type: 'text', width: 1, height: 4, x: 0, y: 2, properties: { markdown: 'second', background: TextWidgetBackground.TRANSPARENT } },
       { type: 'text', width: 4, height: 1, x: 0, y: 6, properties: { markdown: 'third' } },
     ]);
 
@@ -175,8 +177,39 @@ describe('Dashboard', () => {
 
     // THEN
     expect(() => toThrow()).toThrow(/field dashboardName contains invalid characters/);
+  });
 
+  test('dashboardArn should not include a region', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', {
+      env: {
+        region: 'invalid-region',
+      },
+    });
 
+    // WHEN
+    const dashboard = new Dashboard(stack, 'MyStack');
+
+    // THEN
+    expect(dashboard.dashboardArn).not.toContain('invalid-region');
+  });
+
+  test('metric warnings are added to dashboard', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+    const m = new MathExpression({ expression: 'oops' });
+
+    // WHEN
+    new Dashboard(stack, 'MyDashboard', {
+      widgets: [
+        [new GraphWidget({ left: [m] }), new TextWidget({ markdown: 'asdf' })],
+      ],
+    });
+
+    // THEN
+    const template = Annotations.fromStack(stack);
+    template.hasWarning('/MyStack/MyDashboard', Match.stringLikeRegexp("Math expression 'oops' references unknown identifiers"));
   });
 });
 

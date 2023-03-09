@@ -1,5 +1,6 @@
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { IUser } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnEnvironmentEC2 } from '../lib/cloud9.generated';
@@ -25,9 +26,47 @@ export interface IEc2Environment extends cdk.IResource {
 }
 
 /**
+ * The connection type used for connecting to an Amazon EC2 environment.
+ */
+export enum ConnectionType {
+  /**
+   * Connect through SSH
+   */
+  CONNECT_SSH = 'CONNECT_SSH',
+  /**
+   * Connect through AWS Systems Manager
+   * When using SSM, service role and instance profile aren't automatically created.
+   * See https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html#service-role-ssm
+   */
+  CONNECT_SSM = 'CONNECT_SSM'
+}
+
+/**
+ * The image ID used for creating an Amazon EC2 environment.
+ */
+export enum ImageId {
+  /**
+   * Create using Amazon Linux 2
+   */
+  AMAZON_LINUX_2 = 'amazonlinux-2-x86_64',
+  /**
+   * Create using Ubunut 18.04
+   */
+  UBUNTU_18_04 = 'ubuntu-18.04-x86_64'
+}
+/**
  * Properties for Ec2Environment
  */
 export interface Ec2EnvironmentProps {
+  /**
+   * Owner of the environment.
+   *
+   * The owner has full control of the environment and can invite additional members.
+   *
+   * @default - The identity that CloudFormation executes under will be the owner
+   */
+  readonly owner?: Owner;
+
   /**
    * The type of instance to connect to the environment.
    *
@@ -70,6 +109,21 @@ export interface Ec2EnvironmentProps {
    */
   // readonly clonedRepositories?: Cloud9Repository[];
   readonly clonedRepositories?: CloneRepository[];
+
+  /**
+   * The connection type used for connecting to an Amazon EC2 environment.
+   *
+   * Valid values are: CONNECT_SSH (default) and CONNECT_SSM (connected through AWS Systems Manager)
+   *
+   * @default - CONNECT_SSH
+   */
+  readonly connectionType?: ConnectionType
+
+  /**
+   * The image ID used for creating an Amazon EC2 environment.
+   *
+   */
+  readonly imageId: ImageId
 }
 
 /**
@@ -129,21 +183,28 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection');
     }
 
+    if (!props.imageId) {
+      throw new Error('No imageId specified, please specify imageId');
+    }
+
     const vpcSubnets = props.subnetSelection ?? { subnetType: ec2.SubnetType.PUBLIC };
     const c9env = new CfnEnvironmentEC2(this, 'Resource', {
       name: props.ec2EnvironmentName,
       description: props.description,
+      ownerArn: props.owner?.ownerArn,
       instanceType: props.instanceType?.toString() ?? ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
       subnetId: this.vpc.selectSubnets(vpcSubnets).subnetIds[0],
       repositories: props.clonedRepositories ? props.clonedRepositories.map(r => ({
         repositoryUrl: r.repositoryUrl,
         pathComponent: r.pathComponent,
       })) : undefined,
+      connectionType: props.connectionType ?? ConnectionType.CONNECT_SSH,
+      imageId: props.imageId,
     });
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
     this.ec2EnvironmentName = c9env.getAtt('Name').toString();
-    this.ideUrl = `https://${this.stack.region}.console.aws.amazon.com/cloud9/ide/${this.environmentId}`;
+    this.ideUrl = `https://${this.env.region}.console.aws.amazon.com/cloud9/ide/${this.environmentId}`;
   }
 }
 
@@ -165,4 +226,39 @@ export class CloneRepository {
   }
 
   private constructor(public readonly repositoryUrl: string, public readonly pathComponent: string) {}
+}
+
+/**
+ * An environment owner
+ *
+ *
+ */
+export class Owner {
+  /**
+   * Make an IAM user the environment owner
+   *
+   * User need to have AWSCloud9Administrator permissions
+   * @see https://docs.aws.amazon.com/cloud9/latest/user-guide/share-environment.html#share-environment-about
+   *
+   * @param user the User object to use as the environment owner
+   */
+  public static user(user: IUser): Owner {
+    return { ownerArn: user.userArn };
+  }
+
+
+  /**
+   * Make the Account Root User the environment owner (not recommended)
+   *
+   * @param accountId the AccountId to use as the environment owner.
+   */
+  public static accountRoot(accountId: string): Owner {
+    return { ownerArn: `arn:aws:iam::${accountId}:root` };
+  }
+
+  /**
+   *
+   * @param ownerArn of environment owner.
+   */
+  private constructor(public readonly ownerArn: string) {}
 }

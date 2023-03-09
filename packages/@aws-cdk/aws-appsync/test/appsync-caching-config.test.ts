@@ -13,7 +13,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
   });
 });
 
@@ -25,7 +25,7 @@ describe('Lambda caching config', () => {
     func = new lambda.Function(stack, 'func', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/lambda-tutorial')),
       handler: 'lambda-tutorial.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
   });
 
@@ -33,7 +33,7 @@ describe('Lambda caching config', () => {
     // WHEN
     const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
 
-    lambdaDS.createResolver({
+    lambdaDS.createResolver('QueryAllPosts', {
       typeName: 'Query',
       fieldName: 'allPosts',
     });
@@ -50,7 +50,7 @@ describe('Lambda caching config', () => {
     // WHEN
     const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
 
-    lambdaDS.createResolver({
+    lambdaDS.createResolver('QueryAllPosts', {
       typeName: 'Query',
       fieldName: 'allPosts',
       cachingConfig: {
@@ -77,7 +77,7 @@ describe('Lambda caching config', () => {
 
     // THEN
     expect(() => {
-      lambdaDS.createResolver({
+      lambdaDS.createResolver('QueryAllPosts', {
         typeName: 'Query',
         fieldName: 'allPosts',
         cachingConfig: {
@@ -95,7 +95,7 @@ describe('Lambda caching config', () => {
 
     // THEN
     expect(() => {
-      lambdaDS.createResolver({
+      lambdaDS.createResolver('QueryAllPosts', {
         typeName: 'Query',
         fieldName: 'allPosts',
         cachingConfig: {
@@ -113,7 +113,7 @@ describe('Lambda caching config', () => {
 
     // THEN
     expect(() => {
-      lambdaDS.createResolver({
+      lambdaDS.createResolver('QueryAllPosts', {
         typeName: 'Query',
         fieldName: 'allPosts',
         cachingConfig: {

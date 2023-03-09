@@ -5,19 +5,18 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IDependable, Stack, Token } from '@aws-cdk/core';
-import { Construct, Node } from 'constructs';
+import { Stack, Token } from '@aws-cdk/core';
+import { Construct, IDependable, Node } from 'constructs';
+import { mergeBuildSpecs } from './buildspecs';
 import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
-import { PipelineQueries } from '../../helpers-internal/pipeline-queries';
 import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
-import { hash, stackVariableNamespace } from '../../private/identifiers';
+import { hash } from '../../private/identifiers';
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../../private/javascript';
 import { ArtifactMap } from '../artifact-map';
 import { CodeBuildStep } from '../codebuild-step';
 import { CodeBuildOptions } from '../codepipeline';
 import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from '../codepipeline-action-factory';
-import { mergeBuildSpecs } from './buildspecs';
 
 export interface CodeBuildFactoryProps {
   /**
@@ -43,6 +42,13 @@ export interface CodeBuildFactoryProps {
    * @default - A role is automatically created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Custom execution role to be used for the Code Build Action
+   *
+   * @default - A role is automatically created
+   */
+  readonly actionRole?: iam.IRole;
 
   /**
    * If true, the build spec will be passed via the Cloud Assembly instead of rendered onto the Project
@@ -145,6 +151,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const factory = CodeBuildFactory.fromShellStep(constructId, step, {
       projectName: step.projectName,
       role: step.role,
+      actionRole: step.actionRole,
       ...additional,
       projectOptions: mergeCodeBuildOptions(additional?.projectOptions, {
         buildEnvironment: step.buildEnvironment,
@@ -153,6 +160,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         partialBuildSpec: step.partialBuildSpec,
         vpc: step.vpc,
         subnetSelection: step.subnetSelection,
+        cache: step.cache,
         timeout: step.timeout,
       }),
     });
@@ -290,6 +298,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       vpc: projectOptions.vpc,
       subnetSelection: projectOptions.subnetSelection,
       securityGroups: projectOptions.securityGroups,
+      cache: projectOptions.cache,
       buildSpec: projectBuildSpec,
       role: this.props.role,
       timeout: projectOptions.timeout,
@@ -305,15 +314,25 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       });
     }
 
-    const queries = new PipelineQueries(options.pipeline);
-
     const stackOutputEnv = mapValues(this.props.envFromCfnOutputs ?? {}, outputRef =>
-      `#{${stackVariableNamespace(queries.producingStack(outputRef))}.${outputRef.outputName}}`,
+      options.stackOutputsMap.toCodePipeline(outputRef),
     );
 
     const configHashEnv = options.beforeSelfMutation
       ? { _PROJECT_CONFIG_HASH: projectConfigHash }
       : {};
+
+
+    // Start all CodeBuild projects from a single (shared) Action Role, so that we don't have to generate an Action Role for each
+    // individual CodeBuild Project and blow out the pipeline policy size (and potentially # of resources in the stack).
+    const actionRoleCid = 'CodeBuildActionRole';
+    const actionRole = this.props.actionRole
+      ?? options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole
+      ?? new iam.Role(options.pipeline, actionRoleCid, {
+        assumedBy: new iam.PrincipalWithConditions(new iam.AccountRootPrincipal(), {
+          Bool: { 'aws:ViaAWSService': iam.ServicePrincipal.servicePrincipalName('codepipeline.amazonaws.com') },
+        }),
+      });
 
     stage.addAction(new codepipeline_actions.CodeBuildAction({
       actionName: actionName,
@@ -323,6 +342,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       project,
       runOrder: options.runOrder,
       variablesNamespace: options.variablesNamespace,
+      role: actionRole,
 
       // Inclusion of the hash here will lead to the pipeline structure for any changes
       // made the config of the underlying CodeBuild Project.
@@ -409,6 +429,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       vpc: b.vpc ?? a.vpc,
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
       timeout: b.timeout ?? a.timeout,
+      cache: b.cache ?? a.cache,
     };
   }
 }
@@ -504,7 +525,7 @@ function filterBuildSpecCommands(buildSpec: codebuild.BuildSpec, osType: ec2.Ope
   function extractTag(x: any): [string | undefined, any] {
     if (typeof x !== 'string') { return [undefined, x]; }
     for (const tag of [winTag, linuxTag]) {
-      if (x.startsWith(tag)) { return [tag, x.substr(tag.length)]; }
+      if (x.startsWith(tag)) { return [tag, x.slice(tag.length)]; }
     }
     return [undefined, x];
   }

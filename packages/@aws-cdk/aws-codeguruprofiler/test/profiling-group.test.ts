@@ -14,6 +14,10 @@ describe('profiling group', () => {
     });
 
     const profilingGroup = ProfilingGroup.fromProfilingGroupArn(stack, 'MyProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup');
+    expect(profilingGroup.profilingGroupName).toBe('MyAwesomeProfilingGroup');
+    expect(profilingGroup.profilingGroupArn).toBe('arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup');
+    expect(profilingGroup.env.region).toBe('us-east-1');
+
     profilingGroup.grantRead(readAppRole);
 
     Template.fromStack(stack).templateMatches({
@@ -167,6 +171,13 @@ describe('profiling group', () => {
         },
       },
     });
+  });
+
+  test('use name specified via fromProfilingGroupName', () => {
+    const stack = new Stack();
+
+    const profilingGroup = ProfilingGroup.fromProfilingGroupName(stack, 'MyProfilingGroup', 'MyAwesomeProfilingGroup');
+    expect(profilingGroup.profilingGroupName).toEqual('MyAwesomeProfilingGroup');
   });
 
   test('default profiling group', () => {

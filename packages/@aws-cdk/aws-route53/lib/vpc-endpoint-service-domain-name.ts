@@ -1,13 +1,9 @@
-import * as crypto from 'crypto';
 import { IVpcEndpointService } from '@aws-cdk/aws-ec2';
 import { Fn, Names, Stack } from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { IPublicHostedZone, TxtRecord } from '../lib';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties to configure a VPC Endpoint Service domain name
@@ -38,7 +34,7 @@ export interface VpcEndpointServiceDomainNameProps {
 /**
  * A Private DNS configuration for a VPC endpoint service.
  */
-export class VpcEndpointServiceDomainName extends CoreConstruct {
+export class VpcEndpointServiceDomainName extends Construct {
 
   // Track all domain names created, so someone doesn't accidentally associate two domains with a single service
   private static readonly endpointServices: IVpcEndpointService[] = [];
@@ -134,6 +130,8 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
           ]),
         ],
       }),
+      // APIs are available in 2.1055.0
+      installLatestAwsSdk: false,
     });
 
     // Look up the name/value pair if the domain changes, or the service changes,
@@ -158,6 +156,7 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      installLatestAwsSdk: false,
     });
 
     // We only want to call and get the name/value pair after we've told AWS to enable Private DNS
@@ -210,6 +209,7 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
           ]),
         ],
       }),
+      installLatestAwsSdk: false,
     });
     // Only verify after the record has been created
     startVerification.node.addDependency(verificationRecord);
@@ -229,7 +229,5 @@ interface PrivateDnsConfiguration {
  * Hash a string
  */
 function hashcode(s: string): string {
-  const hash = crypto.createHash('md5');
-  hash.update(s);
-  return hash.digest('hex');
+  return md5hash(s);
 };

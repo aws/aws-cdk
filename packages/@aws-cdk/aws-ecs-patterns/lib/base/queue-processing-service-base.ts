@@ -5,13 +5,9 @@ import {
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, FeatureFlags, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
@@ -102,6 +98,7 @@ export interface QueueProcessingServiceBaseProps {
    * The maximum number of times that a message can be received by consumers.
    * When this value is exceeded for a message the message will be automatically sent to the Dead Letter Queue.
    *
+   * If the queue construct is specified, maxReceiveCount should be omitted.
    * @default 3
    */
   readonly maxReceiveCount?: number;
@@ -110,6 +107,7 @@ export interface QueueProcessingServiceBaseProps {
    * Timeout of processing a single message. After dequeuing, the processor has this much time to handle the message and delete it from the queue
    * before it becomes visible again for dequeueing by another processor. Values must be between 0 and (12 hours).
    *
+   * If the queue construct is specified, visibilityTimeout should be omitted.
    * @default Duration.seconds(30)
    */
   readonly visibilityTimeout?: Duration;
@@ -117,6 +115,7 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The number of seconds that Dead Letter Queue retains a message.
    *
+   * If the queue construct is specified, retentionPeriod should be omitted.
    * @default Duration.days(14)
    */
   readonly retentionPeriod?: Duration;
@@ -215,12 +214,19 @@ export interface QueueProcessingServiceBaseProps {
    *
    */
   readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
  * The base class for QueueProcessingEc2Service and QueueProcessingFargateService services.
  */
-export abstract class QueueProcessingServiceBase extends CoreConstruct {
+export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * The SQS queue that the service will process from
    */
@@ -285,6 +291,10 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
+    if (props.queue && (props.retentionPeriod || props.visibilityTimeout || props.maxReceiveCount)) {
+      const errorProps = ['retentionPeriod', 'visibilityTimeout', 'maxReceiveCount'].filter(prop => props.hasOwnProperty(prop));
+      throw new Error(`${errorProps.join(', ')} can be set only when queue is not set. Specify them in the QueueProps of the queue`);
+    }
     // Create the SQS queue and it's corresponding DLQ if one is not provided
     if (props.queue) {
       this.sqsQueue = props.queue;
@@ -319,7 +329,7 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
     this.desiredCount = props.desiredTaskCount ?? 1;
 
     // Determine the desired task count (minimum) and maximum scaling capacity
-    if (!this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
+    if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
       this.minCapacity = props.minScalingCapacity ?? this.desiredCount;
       this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
     } else {

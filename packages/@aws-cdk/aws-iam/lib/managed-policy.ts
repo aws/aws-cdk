@@ -1,12 +1,14 @@
 import { ArnFormat, Resource, Stack, Arn, Aws } from '@aws-cdk/core';
+import { getCustomizeRolesConfig, PolicySynthesizer } from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
+import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { undefinedIfEmpty } from './util';
 
 /**
  * A managed policy
@@ -99,7 +101,7 @@ export interface ManagedPolicyProps {
  * Managed policy
  *
  */
-export class ManagedPolicy extends Resource implements IManagedPolicy {
+export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantable {
   /**
    * Import a customer managed policy from the managedPolicyName.
    *
@@ -201,9 +203,12 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
    */
   public readonly path: string;
 
+  public readonly grantPrincipal: IPrincipal;
+
   private readonly roles = new Array<IRole>();
   private readonly users = new Array<IUser>();
   private readonly groups = new Array<IGroup>();
+  private readonly _precreatedPolicy?: IManagedPolicy;
 
   constructor(scope: Construct, id: string, props: ManagedPolicyProps = {}) {
     super(scope, id, {
@@ -217,15 +222,33 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
       this.document = props.document;
     }
 
-    const resource = new CfnManagedPolicy(this, 'Resource', {
-      policyDocument: this.document,
-      managedPolicyName: this.physicalName,
-      description: this.description,
-      path: this.path,
-      roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
-      users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
-      groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
-    });
+    const config = getCustomizeRolesConfig(this);
+    const _precreatedPolicy = ManagedPolicy.fromManagedPolicyName(this, 'Imported'+id, id);
+    this.managedPolicyName = id;
+    this.managedPolicyArn = _precreatedPolicy.managedPolicyArn;
+    if (config.enabled) {
+      this._precreatedPolicy = _precreatedPolicy;
+    }
+    if (!config.preventSynthesis) {
+      const resource = new CfnManagedPolicy(this, 'Resource', {
+        policyDocument: this.document,
+        managedPolicyName: this.physicalName,
+        description: this.description,
+        path: this.path,
+        roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
+        users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
+        groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
+      });
+
+      // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
+      this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).splitArn(resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
+      this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
+        region: '', // IAM is global in each partition
+        service: 'iam',
+        resource: 'policy',
+        resourceName: this.physicalName,
+      });
+    }
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));
@@ -243,14 +266,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
       props.statements.forEach(p => this.addStatements(p));
     }
 
-    // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
-    this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).splitArn(resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
-    this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
-      region: '', // IAM is global in each partition
-      service: 'iam',
-      resource: 'policy',
-      resourceName: this.physicalName,
-    });
+    this.grantPrincipal = new ManagedPolicyGrantPrincipal(this);
+
+    this.node.addValidation({ validate: () => this.validateManagedPolicy() });
   }
 
   /**
@@ -284,7 +302,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
     this.groups.push(group);
   }
 
-  protected validate(): string[] {
+  private validateManagedPolicy(): string[] {
     const result = new Array<string>();
 
     // validate that the policy document is not empty
@@ -294,6 +312,39 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
 
     result.push(...this.document.validateForIdentityPolicy());
 
+    if (result.length === 0 && this._precreatedPolicy) {
+      PolicySynthesizer.getOrCreate(this).addManagedPolicy(this.node.path, {
+        policyStatements: this.document.toJSON()?.Statement,
+        roles: this.roles.map(role => role.node.path),
+      });
+    }
     return result;
+  }
+}
+
+class ManagedPolicyGrantPrincipal implements IPrincipal {
+  public readonly assumeRoleAction = 'sts:AssumeRole';
+  public readonly grantPrincipal: IPrincipal;
+  public readonly principalAccount?: string;
+
+  constructor(private _managedPolicy: ManagedPolicy) {
+    this.grantPrincipal = this;
+    this.principalAccount = _managedPolicy.env.account;
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    // This property is referenced to add policy statements as a resource-based policy.
+    // We should fail because a managed policy cannot be used as a principal of a policy document.
+    // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
+    throw new Error(`Cannot use a ManagedPolicy '${this._managedPolicy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    this._managedPolicy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this._managedPolicy };
   }
 }

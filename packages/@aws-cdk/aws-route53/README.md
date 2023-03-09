@@ -62,8 +62,8 @@ declare const myZone: route53.HostedZone;
 
 new route53.NsRecord(this, 'NSRecord', {
   zone: myZone,
-  recordName: 'foo',  
-  values: [            
+  recordName: 'foo',
+  values: [
     'ns-1.awsdns.co.uk.',
     'ns-2.awsdns.com.',
   ],
@@ -132,16 +132,48 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
 
-To add a NS record to a HostedZone in different account you can do the following:
+### Replacing existing record sets (dangerous!)
+
+Use the `deleteExisting` prop to delete an existing record set before deploying the new one.
+This is useful if you want to minimize downtime and avoid "manual" actions while deploying a
+stack with a record set that already exists. This is typically the case for record sets that
+are not already "owned" by CloudFormation or "owned" by another stack or construct that is
+going to be deleted (migration).
+
+> **N.B.:** this feature is dangerous, use with caution! It can only be used safely when
+> `deleteExisting` is set to `true` as soon as the resource is added to the stack. Changing
+> an existing Record Set's `deleteExisting` property from `false -> true` after deployment
+> will delete the record!
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecord', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+  deleteExisting: true,
+});
+```
+
+### Cross Account Zone Delegation
+
+If you want to have your root domain hosted zone in one account and your subdomain hosted
+zone in a diferent one, you can use `CrossAccountZoneDelegationRecord` to set up delegation
+between them.
 
 In the account containing the parent hosted zone:
 
 ```ts
 const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
   zoneName: 'someexample.com',
-  crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('12345678901'),
-  crossAccountZoneDelegationRoleName: 'MyDelegationRole',
 });
+const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
+  // The role name must be predictable
+  roleName: 'MyDelegationRole',
+  // The other account
+  assumedBy: new iam.AccountPrincipal('12345678901'),
+});
+parentZone.grantDelegation(crossAccountRole);
 ```
 
 In the account containing the child zone to be delegated:
@@ -171,7 +203,7 @@ new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
 
 ## Imports
 
-If you don't know the ID of the Hosted Zone to import, you can use the 
+If you don't know the ID of the Hosted Zone to import, you can use the
 `HostedZone.fromLookup`:
 
 ```ts
@@ -181,14 +213,14 @@ route53.HostedZone.fromLookup(this, 'MyZone', {
 ```
 
 `HostedZone.fromLookup` requires an environment to be configured. Check
-out the [documentation](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) for more documentation and examples. CDK 
+out the [documentation](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) for more documentation and examples. CDK
 automatically looks into your `~/.aws/config` file for the `[default]` profile.
 If you want to specify a different account run `cdk deploy --profile [profile]`.
 
 ```text
-new MyDevStack(app, 'dev', { 
-  env: { 
-    account: process.env.CDK_DEFAULT_ACCOUNT, 
+new MyDevStack(app, 'dev', {
+  env: {
+    account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,
   },
 });
@@ -208,6 +240,18 @@ you know the ID and the retrieval for the `zoneName` is undesirable.
 
 ```ts
 const zone = route53.HostedZone.fromHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
+```
+
+You can import a Public Hosted Zone as well with the similar `PublicHostedZone.fromPublicHostedZoneId` and `PublicHostedZone.fromPublicHostedZoneAttributes` methods:
+
+```ts
+const zoneFromAttributes = route53.PublicHostedZone.fromPublicHostedZoneAttributes(this, 'MyZone', {
+  zoneName: 'example.com',
+  hostedZoneId: 'ZOJJZC49E0EPZ',
+});
+
+// Does not know zoneName
+const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
 ```
 
 ## VPC Endpoint Service Private DNS

@@ -24,7 +24,7 @@ describe('delivery stream', () => {
     });
     mockS3Destination = {
       bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
-        dependable = new class extends cdk.Construct {
+        dependable = new class extends Construct {
           constructor(depScope: Construct, id: string) {
             super(depScope, id);
             new cdk.CfnResource(this, 'Resource', { type: 'CDK::Dummy' });

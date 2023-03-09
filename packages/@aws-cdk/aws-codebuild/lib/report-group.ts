@@ -8,8 +8,8 @@ import { renderReportGroupArn, reportGroupArnComponents } from './report-group-u
 /**
  * The interface representing the ReportGroup resource -
  * either an existing one, imported using the
- * {@link ReportGroup.fromReportGroupName} method,
- * or a new one, created with the {@link ReportGroup} class.
+ * `ReportGroup.fromReportGroupName` method,
+ * or a new one, created with the `ReportGroup` class.
  */
 export interface IReportGroup extends cdk.IResource {
   /**
@@ -38,14 +38,16 @@ abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
   public abstract readonly reportGroupArn: string;
   public abstract readonly reportGroupName: string;
   protected abstract readonly exportBucket?: s3.IBucket;
+  protected abstract readonly type?: ReportGroupType;
 
   public grantWrite(identity: iam.IGrantable): iam.Grant {
+    const typeAction = this.type === ReportGroupType.CODE_COVERAGE ? 'codebuild:BatchPutCodeCoverages' : 'codebuild:BatchPutTestCases';
     const ret = iam.Grant.addToPrincipal({
       grantee: identity,
       actions: [
         'codebuild:CreateReport',
         'codebuild:UpdateReport',
-        'codebuild:BatchPutTestCases',
+        typeAction,
       ],
       resourceArns: [this.reportGroupArn],
     });
@@ -59,7 +61,21 @@ abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
 }
 
 /**
- * Construction properties for {@link ReportGroup}.
+ * The type of reports in the report group.
+ */
+export enum ReportGroupType {
+  /**
+   * The report group contains test reports.
+   */
+  TEST = 'TEST',
+  /**
+   * The report group contains code coverage reports.
+   */
+  CODE_COVERAGE = 'CODE_COVERAGE'
+}
+
+/**
+ * Construction properties for `ReportGroup`.
  */
 export interface ReportGroupProps {
   /**
@@ -79,7 +95,7 @@ export interface ReportGroupProps {
   /**
    * Whether to output the report files into the export bucket as-is,
    * or create a ZIP from them before doing the export.
-   * Ignored if {@link exportBucket} has not been provided.
+   * Ignored if `exportBucket` has not been provided.
    *
    * @default - false (the files will not be ZIPped)
    */
@@ -93,6 +109,16 @@ export interface ReportGroupProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
+   * The type of report group. This can be one of the following values:
+   *
+   * - **TEST** - The report group contains test reports.
+   * - **CODE_COVERAGE** - The report group contains code coverage reports.
+   *
+   * @default TEST
+   */
+  readonly type?: ReportGroupType
 }
 
 /**
@@ -110,6 +136,7 @@ export class ReportGroup extends ReportGroupBase {
       public readonly reportGroupName = reportGroupName;
       public readonly reportGroupArn = renderReportGroupArn(scope, reportGroupName);
       protected readonly exportBucket = undefined;
+      protected readonly type = undefined;
     }
 
     return new Import(scope, id);
@@ -118,14 +145,15 @@ export class ReportGroup extends ReportGroupBase {
   public readonly reportGroupArn: string;
   public readonly reportGroupName: string;
   protected readonly exportBucket?: s3.IBucket;
+  protected readonly type?: ReportGroupType;
 
   constructor(scope: Construct, id: string, props: ReportGroupProps = {}) {
     super(scope, id, {
       physicalName: props.reportGroupName,
     });
-
+    this.type = props.type ? props.type : ReportGroupType.TEST;
     const resource = new CfnReportGroup(this, 'Resource', {
-      type: 'TEST',
+      type: this.type,
       exportConfig: {
         exportConfigType: props.exportBucket ? 'S3' : 'NO_EXPORT',
         s3Destination: props.exportBucket

@@ -1,7 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import * as fs from 'fs-extra';
+import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
-import { TreeMetadata } from './private/tree-metadata';
+import { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
@@ -69,11 +71,53 @@ export interface AppProps {
   readonly context?: { [key: string]: any };
 
   /**
+   * Additional context values for the application.
+   *
+   * Context provided here has precedence over context set by:
+   *
+   * - The CLI via --context
+   * - The `context` key in `cdk.json`
+   * - The `AppProps.context` property
+   *
+   * This property is recommended over the `AppProps.context` property since you
+   * can make final decision over which context value to take in your app.
+   *
+   * Context can be read from any construct using `node.getContext(key)`.
+   *
+   * @example
+   * // context from the CLI and from `cdk.json` are stored in the
+   * // CDK_CONTEXT env variable
+   * const cliContext = JSON.parse(process.env.CDK_CONTEXT!);
+   *
+   * // determine whether to take the context passed in the CLI or not
+   * const determineValue = process.env.PROD ? cliContext.SOMEKEY : 'my-prod-value';
+   * new App({
+   *   postCliContext: {
+   *     SOMEKEY: determineValue,
+   *   },
+   * });
+   *
+   * @default - no additional context
+   */
+  readonly postCliContext?: { [key: string]: any };
+
+  /**
    * Include construct tree metadata as part of the Cloud Assembly.
    *
    * @default true
    */
   readonly treeMetadata?: boolean;
+
+  /**
+   * The stack synthesizer to use by default for all Stacks in the App
+   *
+   * The Stack Synthesizer controls aspects of synthesis and deployment,
+   * like how assets are referenced and what IAM roles to use. For more
+   * information, see the README of the main CDK package.
+   *
+   * @default - A `DefaultStackSynthesizer` with default settings
+   */
+  readonly defaultStackSynthesizer?: IReusableStackSynthesizer;
 }
 
 /**
@@ -102,6 +146,13 @@ export class App extends Stage {
   }
 
   /**
+   * Include construct tree metadata as part of the Cloud Assembly.
+   *
+   * @internal
+   */
+  public readonly _treeMetadata: boolean;
+
+  /**
    * Initializes a CDK application.
    * @param props initialization properties
    */
@@ -112,10 +163,14 @@ export class App extends Stage {
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });
 
-    this.loadContext(props.context);
+    this.loadContext(props.context, props.postCliContext);
 
     if (props.stackTraces === false) {
       this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
+    }
+
+    if (props.defaultStackSynthesizer) {
+      this.node.setContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER, props.defaultStackSynthesizer);
     }
 
     const analyticsReporting = props.analyticsReporting ?? props.runtimeInfo;
@@ -131,26 +186,39 @@ export class App extends Stage {
       process.once('beforeExit', () => this.synth());
     }
 
-    if (props.treeMetadata === undefined || props.treeMetadata) {
-      new TreeMetadata(this);
-    }
+    this._treeMetadata = props.treeMetadata ?? true;
   }
 
-  private loadContext(defaults: { [key: string]: string } = { }) {
+  private loadContext(defaults: { [key: string]: string } = { }, final: { [key: string]: string } = {}) {
     // prime with defaults passed through constructor
     for (const [k, v] of Object.entries(defaults)) {
       this.node.setContext(k, v);
     }
 
-    // read from environment
-    const contextJson = process.env[cxapi.CONTEXT_ENV];
-    const contextFromEnvironment = contextJson
-      ? JSON.parse(contextJson)
-      : { };
+    // reconstructing the context from the two possible sources:
+    const context = {
+      ...this.readContextFromEnvironment(),
+      ...this.readContextFromTempFile(),
+    };
 
-    for (const [k, v] of Object.entries(contextFromEnvironment)) {
+    for (const [k, v] of Object.entries(context)) {
       this.node.setContext(k, v);
     }
+
+    // finalContext passed through constructor overwrites
+    for (const [k, v] of Object.entries(final)) {
+      this.node.setContext(k, v);
+    }
+  }
+
+  private readContextFromTempFile() {
+    const location = process.env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV];
+    return location ? fs.readJSONSync(location) : {};
+  }
+
+  private readContextFromEnvironment() {
+    const contextJson = process.env[cxapi.CONTEXT_ENV];
+    return contextJson ? JSON.parse(contextJson) : {};
   }
 }
 

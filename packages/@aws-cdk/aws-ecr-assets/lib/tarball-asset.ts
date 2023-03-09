@@ -1,15 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { IAsset } from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { AssetStaging, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line
-import { IAsset } from '@aws-cdk/assets';
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Options for TarballImageAsset
@@ -30,7 +24,7 @@ export interface TarballImageAssetProps {
  *
  * The image will loaded from an existing tarball and uploaded to an ECR repository.
  */
-export class TarballImageAsset extends CoreConstruct implements IAsset {
+export class TarballImageAsset extends Construct implements IAsset {
   /**
    * The full URI of the image (including a tag). Use this reference to pull
    * the asset.
@@ -57,6 +51,11 @@ export class TarballImageAsset extends CoreConstruct implements IAsset {
    */
   public readonly assetHash: string;
 
+  /**
+   * The tag of this asset when it is uploaded to ECR. The tag may differ from the assetHash if a stack synthesizer adds a dockerTagPrefix.
+   */
+  public readonly imageTag: string;
+
   constructor(scope: Construct, id: string, props: TarballImageAssetProps) {
     super(scope, id);
 
@@ -78,12 +77,13 @@ export class TarballImageAsset extends CoreConstruct implements IAsset {
       executable: [
         'sh',
         '-c',
-        `docker load -i ${relativePathInOutDir} | sed "s/Loaded image: //g"`,
+        `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "s/Loaded image: //g"`,
       ],
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     this.imageUri = location.imageUri;
+    this.imageTag = location.imageTag ?? this.assetHash;
   }
 }
 

@@ -1,7 +1,8 @@
-import { IConstruct } from './construct-compat';
+import { IConstruct } from 'constructs';
 import { TokenString } from './private/encoding';
 import { TokenMap } from './private/token-map';
 import { TokenizedStringFragments } from './string-fragments';
+import { ResolutionTypeHint } from './type-hints';
 
 /**
  * Current resolution context for tokens
@@ -16,6 +17,11 @@ export interface IResolveContext {
    * True when we are still preparing, false if we're rendering the final output
    */
   readonly preparing: boolean;
+
+  /**
+   * Path in the JSON document that is being constructed
+   */
+  readonly documentPath: string[];
 
   /**
    * Resolve an inner object
@@ -54,6 +60,11 @@ export interface IResolvable {
    * to get this property populated, if it was skipped for performance reasons.
    */
   readonly creationStack: string[];
+
+  /**
+   * The type that this token will likely resolve to.
+   */
+  readonly typeHint?: ResolutionTypeHint;
 
   /**
    * Produce the Token's value at resolution time

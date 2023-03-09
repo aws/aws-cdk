@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "lambda-api-latebound-deploymentstage/DefaultTest": {
+      "stacks": [
+        "LateBoundDeploymentStageStack"
+      ],
+      "assertionStack": "lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert"
+    }
+  }
+}

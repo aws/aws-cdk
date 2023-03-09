@@ -1,5 +1,5 @@
-import { ConcreteDependable, DependableTrait, Resource } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Resource } from '@aws-cdk/core';
+import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -17,8 +17,8 @@ import { IRole } from '../role';
  * management, and instead have full control over all permissions.
  *
  * Note: if you want to ignore all mutations for an externally defined role
- * which was imported into the CDK with {@link Role.fromRoleArn}, you don't have to use this class -
- * simply pass the property mutable = false when calling {@link Role.fromRoleArn}.
+ * which was imported into the CDK with `Role.fromRoleArn`, you don't have to use this class -
+ * simply pass the property mutable = false when calling `Role.fromRoleArn`.
  */
 export class ImmutableRole extends Resource implements IRole {
   public readonly assumeRoleAction = this.role.assumeRoleAction;
@@ -36,9 +36,10 @@ export class ImmutableRole extends Resource implements IRole {
     });
 
     // implement IDependable privately
-    DependableTrait.implement(this, {
+    Dependable.implement(this, {
       dependencyRoots: [role],
     });
+    this.node.defaultChild = role.node.defaultChild;
   }
 
   public attachInlinePolicy(_policy: Policy): void {
@@ -57,7 +58,7 @@ export class ImmutableRole extends Resource implements IRole {
     // If we return `false`, the grants will try to add the statement to the resource
     // (if possible).
     const pretendSuccess = !this.addGrantsToResources;
-    return { statementAdded: pretendSuccess, policyDependable: new ConcreteDependable() };
+    return { statementAdded: pretendSuccess, policyDependable: new DependencyGroup() };
   }
 
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {
@@ -66,5 +67,9 @@ export class ImmutableRole extends Resource implements IRole {
 
   public grantPassRole(grantee: IPrincipal): Grant {
     return this.role.grantPassRole(grantee);
+  }
+
+  public grantAssumeRole(identity: IPrincipal): Grant {
+    return this.role.grantAssumeRole(identity);
   }
 }

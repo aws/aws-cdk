@@ -1,28 +1,17 @@
-# Amazon Elasticsearch Service Construct Library
+# Amazon OpenSearch Service Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-Features                           | Stability
------------------------------------|----------------------------------------------------------------
-CFN Resources                      | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
-Higher level constructs for Domain | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
-> stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-<!-- -->
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
-> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 
 <!--END STABILITY BANNER-->
 
-> Amazon Elasticsearch Service has been renamed to Amazon OpenSearch Service; consequently, the [@aws-cdk/aws-opensearchservice](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-opensearchservice-readme.html) module should be used instead. See [Amazon OpenSearch Service FAQs](https://aws.amazon.com/opensearch-service/faqs/#Name_change) for details. See [Migrating to OpenSearch](#migrating-to-opensearch) for migration instructions.
+> Instead of this module, we recommend using the [@aws-cdk/aws-opensearchservice](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-opensearchservice-readme.html) module. See [Amazon OpenSearch Service FAQs](https://aws.amazon.com/opensearch-service/faqs/#Name_change) for details. See [Migrating to OpenSearch](#migrating-to-opensearch) for migration instructions.
 
 ## Quick start
 
@@ -71,9 +60,9 @@ logging the domain logs and slow search logs.
 
 ## A note about SLR
 
-Some cluster configurations (e.g VPC access) require the existence of the [`AWSServiceRoleForAmazonElasticsearchService`](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/slr-es.html) Service-Linked Role.
+Some cluster configurations (e.g VPC access) require the existence of the [`AWSServiceRoleForAmazonElasticsearchService`](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/slr.html) service-linked role.
 
-When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn't exist, you will encounter a failure message simlar to:
+When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn't exist, you will encounter a failure message similar to:
 
 ```console
 Before you can proceed, you must enable a service-linked role to give Amazon ES...
@@ -146,7 +135,7 @@ rest.
 
 Elasticsearch domains can be placed inside a VPC, providing a secure communication between Amazon ES and other services within the VPC without the need for an internet gateway, NAT device, or VPN connection.
 
-> Visit [VPC Support for Amazon Elasticsearch Service Domains](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html) for more details.
+> See [Launching your Amazon OpenSearch Service domains within a VPC](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/vpc.html) for more details.
 
 ```ts
 const vpc = new ec2.Vpc(this, 'Vpc');
@@ -210,7 +199,7 @@ means anyone can access the domain using the configured master username and
 password.
 
 To enable unsigned basic auth access the domain is configured with an access
-policy that allows anyonmous requests, HTTPS required, node to node encryption,
+policy that allows anonymous requests, HTTPS required, node to node encryption,
 encryption at rest and fine grained access control.
 
 If the above settings are not set they will be configured as part of enabling
@@ -233,11 +222,66 @@ const domain = new es.Domain(this, 'Domain', {
 const masterUserPassword = domain.masterUserPassword;
 ```
 
+## Custom access policies
 
+If the domain requires custom access control it can be configured either as a
+constructor property, or later by means of a helper method.
+
+For simple permissions the `accessPolicies` constructor may be sufficient:
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
+  accessPolicies: [
+    new iam.PolicyStatement({
+      actions: ['es:*ESHttpPost', 'es:ESHttpPut*'],
+      effect: iam.Effect.ALLOW,
+      principals: [new iam.AccountPrincipal('123456789012')],
+      resources: ['*'],
+    }),
+  ]
+});
+```
+
+For more complex use-cases, for example, to set the domain up to receive data from a
+[cross-account Kinesis Firehose](https://aws.amazon.com/premiumsupport/knowledge-center/kinesis-firehose-cross-account-streaming/) the `addAccessPolicies` helper method
+allows for policies that include the explicit domain ARN.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
+});
+
+domain.addAccessPolicies(
+  new iam.PolicyStatement({
+    actions: ['es:ESHttpPost', 'es:ESHttpPut'],
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('123456789012')],
+    resources: [domain.domainArn, `${domain.domainArn}/*`],
+  }),
+  new iam.PolicyStatement({
+    actions: ['es:ESHttpGet'],
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('123456789012')],
+    resources: [
+      `${domain.domainArn}/_all/_settings`,
+      `${domain.domainArn}/_cluster/stats`,
+      `${domain.domainArn}/index-name*/_mapping/type-name`,
+      `${domain.domainArn}/roletest*/_mapping/roletest`,
+      `${domain.domainArn}/_nodes`,
+      `${domain.domainArn}/_nodes/stats`,
+      `${domain.domainArn}/_nodes/*/stats`,
+      `${domain.domainArn}/_stats`,
+      `${domain.domainArn}/index-name*/_stats`,
+      `${domain.domainArn}/roletest*/_stat`,
+    ],
+  }),
+);
+```
 
 ## Audit logs
 
-Audit logs can be enabled for a domain, but only when fine grained access control is enabled.
+Audit logs can be enabled for a domain, but only when fine-grained access control is enabled.
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
@@ -293,7 +337,7 @@ Additionally, an automatic CNAME-Record is created if a hosted zone is provided 
 
 ## Advanced options
 
-[Advanced options](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-advanced-options) can used to configure additional options.
+[Advanced cluster settings](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createupdatedomains.html#createdomain-configure-advanced-options) can used to configure additional options.
 
 ```ts
 new es.Domain(this, 'Domain', {
@@ -400,7 +444,7 @@ Make the following modifications to your CDK application to migrate to the `@aws
 Follow these steps to migrate your application without data loss:
 
 - Ensure that the [removal policy](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.RemovalPolicy.html) on your domains are set to `RemovalPolicy.RETAIN`. This is the default for the domain construct, so nothing is required unless you have specifically set the removal policy to some other value.
-- Remove the domain resource from your CloudFormation stacks by manually modifying the synthesized templates used to create the CloudFormation stacks. This may also involve modifying or deleting dependent resources, such as the custom resources that CDK creates to manage the domain's access policy or any other resource you have connected to the domain. You will need to search for references to each domain's logical ID to determine which other resources refer to it and replace or delete those references. Do not remove resources that are dependencies of the domain or you will have to recreate or import them before importing the domain. After modification, deploy the stacks through the AWS Management Console or using the AWS CLI. 
+- Remove the domain resource from your CloudFormation stacks by manually modifying the synthesized templates used to create the CloudFormation stacks. This may also involve modifying or deleting dependent resources, such as the custom resources that CDK creates to manage the domain's access policy or any other resource you have connected to the domain. You will need to search for references to each domain's logical ID to determine which other resources refer to it and replace or delete those references. Do not remove resources that are dependencies of the domain or you will have to recreate or import them before importing the domain. After modification, deploy the stacks through the AWS Management Console or using the AWS CLI.
 - Migrate your CDK application to use the new `@aws-cdk/aws-opensearchservice` module by applying the necessary modifications listed above. Synthesize your application and obtain the resulting stack templates.
 - Copy just the definition of the domain from the "migrated" templates to the corresponding "stripped" templates that you deployed above. [Import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-existing-stack.html) the orphaned domains into your CloudFormation stacks using these templates.
 - Synthesize and deploy your CDK application to reconfigure/recreate the modified dependent resources. The CloudFormation stacks should now contain the same resources as existed prior to migration.

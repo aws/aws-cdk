@@ -30,3 +30,4 @@ jest.config.js
 
 test/
 !*.lit.ts
+**/*.snapshot

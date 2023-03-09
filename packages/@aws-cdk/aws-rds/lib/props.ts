@@ -152,7 +152,7 @@ export interface CredentialsBaseOptions {
 
   /**
    * The characters to exclude from the generated password.
-   * Has no effect if {@link password} has been provided.
+   * Has no effect if `password` has been provided.
    *
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
@@ -239,7 +239,7 @@ export abstract class Credentials {
    */
   public static fromSecret(secret: secretsmanager.ISecret, username?: string): Credentials {
     return {
-      username: username ?? secret.secretValueFromJson('username').toString(),
+      username: username ?? secret.secretValueFromJson('username').unsafeUnwrap(),
       password: secret.secretValueFromJson('password'),
       encryptionKey: secret.encryptionKey,
       secret,
@@ -292,7 +292,7 @@ export abstract class Credentials {
 
   /**
    * The characters to exclude from the generated password.
-   * Only used if {@link password} has not been set.
+   * Only used if `password` has not been set.
    *
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
@@ -307,7 +307,7 @@ export abstract class Credentials {
 }
 
 /**
- * Options used in the {@link SnapshotCredentials.fromGeneratedPassword} method.
+ * Options used in the `SnapshotCredentials.fromGeneratedPassword` method.
  */
 export interface SnapshotCredentialsFromGeneratedPasswordOptions {
   /**
@@ -356,7 +356,9 @@ export abstract class SnapshotCredentials {
    *
    * Note - The username must match the existing master username of the snapshot.
    *
-   * NOTE: use `fromGeneratedSecret()` for new Clusters and Instances.
+   * NOTE: use `fromGeneratedSecret()` for new Clusters and Instances. Switching from
+   * `fromGeneratedPassword()` to `fromGeneratedSecret()` for already deployed Clusters
+   * or Instances will update their master password.
    */
   public static fromGeneratedPassword(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
     return {
@@ -384,7 +386,7 @@ export abstract class SnapshotCredentials {
    * }
    * ```
    */
-  public static fromSecret(secret: secretsmanager.Secret): SnapshotCredentials {
+  public static fromSecret(secret: secretsmanager.ISecret): SnapshotCredentials {
     return {
       generatePassword: false,
       password: secret.secretValueFromJson('password'),
@@ -435,11 +437,11 @@ export abstract class SnapshotCredentials {
    *
    * @default - none
    */
-  public abstract readonly secret?: secretsmanager.Secret;
+  public abstract readonly secret?: secretsmanager.ISecret;
 
   /**
    * The characters to exclude from the generated password.
-   * Only used if {@link generatePassword} if true.
+   * Only used if `generatePassword` if true.
    *
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
@@ -456,7 +458,7 @@ export abstract class SnapshotCredentials {
 /**
  * Properties common to single-user and multi-user rotation options.
  */
-interface CommonRotationUserOptions {
+export interface CommonRotationUserOptions {
   /**
    * Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.
@@ -490,6 +492,13 @@ interface CommonRotationUserOptions {
    * @default https://secretsmanager.<region>.amazonaws.com
    */
   readonly endpoint?: ec2.IInterfaceVpcEndpoint;
+
+  /**
+   * The security group for the Lambda rotation function
+   *
+   * @default - a new security group is created
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 /**

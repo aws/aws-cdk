@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "publicQueueProcessingFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-fargate-special-listener"
+      ],
+      "assertionStack": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert"
+    }
+  }
+}

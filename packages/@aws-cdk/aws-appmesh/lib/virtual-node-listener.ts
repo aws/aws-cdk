@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
 import { ListenerTlsOptions } from './listener-tls-options';
@@ -6,10 +7,6 @@ import {
   GrpcConnectionPool, GrpcTimeout, Http2ConnectionPool, HttpConnectionPool,
   HttpTimeout, OutlierDetection, Protocol, TcpConnectionPool, TcpTimeout,
 } from './shared-interfaces';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a VirtualNode listener
@@ -64,7 +61,7 @@ interface CommonHttpVirtualNodeListenerOptions extends VirtualNodeListenerCommon
 }
 
 /**
- * Represent the HTTP Node Listener prorperty
+ * Represent the HTTP Node Listener property
  */
 export interface HttpVirtualNodeListenerOptions extends CommonHttpVirtualNodeListenerOptions {
 
@@ -77,7 +74,7 @@ export interface HttpVirtualNodeListenerOptions extends CommonHttpVirtualNodeLis
 }
 
 /**
- * Represent the HTTP2 Node Listener prorperty
+ * Represent the HTTP2 Node Listener property
  */
 export interface Http2VirtualNodeListenerOptions extends CommonHttpVirtualNodeListenerOptions {
   /**
@@ -89,7 +86,7 @@ export interface Http2VirtualNodeListenerOptions extends CommonHttpVirtualNodeLi
 }
 
 /**
- * Represent the GRPC Node Listener prorperty
+ * Represent the GRPC Node Listener property
  */
 export interface GrpcVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
   /**
@@ -108,7 +105,7 @@ export interface GrpcVirtualNodeListenerOptions extends VirtualNodeListenerCommo
 }
 
 /**
- * Represent the TCP Node Listener prorperty
+ * Represent the TCP Node Listener property
  */
 export interface TcpVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
   /**

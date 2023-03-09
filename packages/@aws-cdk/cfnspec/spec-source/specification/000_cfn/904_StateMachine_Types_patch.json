@@ -1,0 +1,16 @@
+{
+  "ResourceTypes": {
+    "AWS::StepFunctions::StateMachine": {
+      "patch": {
+        "description": "Revert primitive item type on DefinitionSubstitutions property to string",
+        "operations": [
+          {
+            "op": "replace",
+            "path": "/Properties/DefinitionSubstitutions/PrimitiveItemType",
+            "value": "String"
+          }
+        ]
+      }
+    }
+  }
+}

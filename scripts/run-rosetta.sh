@@ -68,6 +68,7 @@ echo "💎 Extracting code samples" >&2
 time $ROSETTA extract \
     --compile \
     --verbose \
+    --compress-tablet \
     --cache ${rosetta_cache_file} \
     --directory packages/aws-cdk-lib \
     ${extract_opts} \
@@ -75,12 +76,13 @@ time $ROSETTA extract \
 
 if $infuse; then
     echo "💎 Generating synthetic examples for the remainder" >&2
-    time npx cdk-generate-synthetic-examples \
+    time npx cdk-generate-synthetic-examples@^0.1.14 \
         $(cat $jsii_pkgs_file)
 
     time $ROSETTA extract \
         --compile \
         --verbose \
+        --compress-tablet \
         --cache ${rosetta_cache_file} \
         --directory packages/aws-cdk-lib \
         $(cat $jsii_pkgs_file)

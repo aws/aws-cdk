@@ -28,3 +28,4 @@ package/node_modules
 test/
 
 !*.lit.ts
+**/*.snapshot

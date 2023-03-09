@@ -4,6 +4,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as route53 from '@aws-cdk/aws-route53';
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as targets from '../lib';
 
@@ -22,13 +23,14 @@ class TestStack extends Stack {
           body: 'hello, world!'
         };
       };`),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
 
     const certificate = acm.Certificate.fromCertificateArn(this, 'cert', certArn);
 
     const api = new apig.LambdaRestApi(this, 'api', {
+      cloudWatchRole: true,
       handler,
       domainName: {
         certificate,
@@ -50,5 +52,7 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'aws-cdk-apigw-alias-integ');
-app.synth();
+const testCase = new TestStack(app, 'aws-cdk-apigw-alias-integ');
+new IntegTest(app, 'apigateway-domain-name', {
+  testCases: [testCase],
+});

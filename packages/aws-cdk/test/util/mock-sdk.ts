@@ -26,11 +26,12 @@ export interface MockSdkProviderOptions {
 /**
  * An SDK that allows replacing (some of) the clients
  *
- * Its the responsibility of the consumer to replace all calls that
+ * It's the responsibility of the consumer to replace all calls that
  * actually will be called.
  */
 export class MockSdkProvider extends SdkProvider {
   public readonly sdk: ISDK;
+  private readonly _mockSdk?: MockSdk;
 
   constructor(options: MockSdkProviderOptions = {}) {
     super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
@@ -40,8 +41,15 @@ export class MockSdkProvider extends SdkProvider {
     if (options.realSdk ?? true) {
       this.sdk = new SDK(FAKE_CREDENTIALS, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
     } else {
-      this.sdk = new MockSdk();
+      this.sdk = this._mockSdk = new MockSdk();
     }
+  }
+
+  public get mockSdk(): MockSdk {
+    if (!this._mockSdk) {
+      throw new Error('MockSdkProvider was not created with \'realSdk: false\'');
+    }
+    return this._mockSdk;
   }
 
   async baseCredentialsPartition(_environment: cxapi.Environment, _mode: Mode): Promise<string | undefined> {
@@ -106,6 +114,10 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs, additionalProperties));
   }
 
+  public stubIam(stubs: SyncHandlerSubsetOf<AWS.IAM>, additionalProperties: { [key: string]: any } = {}) {
+    (this.sdk as any).iam = jest.fn().mockReturnValue(partialAwsService<AWS.IAM>(stubs, additionalProperties));
+  }
+
   public stubStepFunctions(stubs: SyncHandlerSubsetOf<AWS.StepFunctions>) {
     (this.sdk as any).stepFunctions = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
   }
@@ -130,6 +142,7 @@ export class MockSdkProvider extends SdkProvider {
 export class MockSdk implements ISDK {
   public readonly currentRegion: string = 'bermuda-triangle-1337';
   public readonly lambda = jest.fn();
+  public readonly iam = jest.fn();
   public readonly cloudFormation = jest.fn();
   public readonly ec2 = jest.fn();
   public readonly ssm = jest.fn();

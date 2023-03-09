@@ -1,13 +1,9 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
 import * as cxapi from '@aws-cdk/cx-api';
-import { Node } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { CfnRestApi } from './apigateway.generated';
 import { IRestApi } from './restapi';
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Represents an OpenAPI definition asset.

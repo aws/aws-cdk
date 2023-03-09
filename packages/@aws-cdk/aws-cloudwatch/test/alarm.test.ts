@@ -1,7 +1,7 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Match, Template, Annotations } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric } from '../lib';
+import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric, Stats } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -46,6 +46,22 @@ describe('Alarm', () => {
 
     expect(() => {
       alarm.addAlarmAction(new Ec2TestAlarmAction('arn:aws:automate:us-east-1:ec2:reboot'));
+    }).toThrow(/EC2 alarm actions requires an EC2 Per-Instance Metric. \(.+ does not have an 'InstanceId' dimension\)/);
+  });
+
+  test('non ec2 instance related alarm does not accept EC2 action in other partitions', () => {
+    const stack = new Stack();
+    const alarm = new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    expect(() => {
+      alarm.addAlarmAction(new Ec2TestAlarmAction('arn:aws-us-gov:automate:us-east-1:ec2:reboot'));
+    }).toThrow(/EC2 alarm actions requires an EC2 Per-Instance Metric. \(.+ does not have an 'InstanceId' dimension\)/);
+    expect(() => {
+      alarm.addAlarmAction(new Ec2TestAlarmAction('arn:aws-cn:automate:us-east-1:ec2:reboot'));
     }).toThrow(/EC2 alarm actions requires an EC2 Per-Instance Metric. \(.+ does not have an 'InstanceId' dimension\)/);
   });
 
@@ -251,6 +267,97 @@ describe('Alarm', () => {
       Statistic: Match.absent(),
       ExtendedStatistic: 'tm99.9999999999',
     });
+  });
+
+  test('can use a generic pair string for extended statistic to make alarm', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    testMetric.with({
+      statistic: 'TM(10%:90%)',
+    }).createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Statistic: Match.absent(),
+      ExtendedStatistic: 'TM(10%:90%)',
+    });
+  });
+
+  test('can use stats class to make alarm', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    testMetric.with({
+      statistic: Stats.p(99.9),
+    }).createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ExtendedStatistic: 'p99.9',
+    });
+  });
+
+  test('can use stats class pair to make alarm', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    testMetric.with({
+      statistic: Stats.ts(10, 90),
+    }).createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ExtendedStatistic: 'TS(10%:90%)',
+    });
+  });
+
+  test('metric warnings are added to Alarm for unrecognized statistic', () => {
+    const stack = new Stack(undefined, 'MyStack');
+    const m = new Metric({
+      namespace: 'CDK/Test',
+      metricName: 'Metric',
+      statistic: 'invalid',
+    });
+
+    // WHEN
+    new Alarm(stack, 'MyAlarm', {
+      metric: m,
+      evaluationPeriods: 1,
+      threshold: 1,
+    });
+
+    // THEN
+    const template = Annotations.fromStack(stack);
+    template.hasWarning('/MyStack/MyAlarm', Match.stringLikeRegexp('Unrecognized statistic.*Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic'));
+  });
+
+  test('metric warnings are added to Alarm for math expressions', () => {
+    const stack = new Stack(undefined, 'MyStack');
+    const m = new MathExpression({ expression: 'oops' });
+
+    // WHEN
+    new Alarm(stack, 'MyAlarm', {
+      metric: m,
+      evaluationPeriods: 1,
+      threshold: 1,
+    });
+
+    // THEN
+    const template = Annotations.fromStack(stack);
+    template.hasWarning('/MyStack/MyAlarm', Match.stringLikeRegexp("Math expression 'oops' references unknown identifiers"));
   });
 });
 

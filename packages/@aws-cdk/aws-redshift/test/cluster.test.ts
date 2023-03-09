@@ -1,5 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -19,7 +20,7 @@ test('check that instantiation works', () => {
   new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
   });
@@ -69,7 +70,7 @@ test('can create a cluster with imported vpc and security group', () => {
   new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
     securityGroups: [sg],
@@ -253,27 +254,116 @@ test('create an encrypted cluster with custom KMS key', () => {
     },
   });
 });
+describe('parameter group', () => {
+  test('cluster instantiated with parameter group', () => {
+    // WHEN
+    const group = new ClusterParameterGroup(stack, 'Params', {
+      description: 'bye',
+      parameters: {
+        param: 'value',
+      },
+    });
 
-test('cluster with parameter group', () => {
-  // WHEN
-  const group = new ClusterParameterGroup(stack, 'Params', {
-    description: 'bye',
-    parameters: {
-      param: 'value',
-    },
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: group,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      ClusterParameterGroupName: { Ref: 'ParamsA8366201' },
+    });
+
   });
 
-  new Cluster(stack, 'Redshift', {
-    masterUser: {
-      masterUsername: 'admin',
-    },
-    vpc,
-    parameterGroup: group,
+  test('Adding to the cluster parameter group on a cluster not instantiated with a parameter group', () => {
+
+    // WHEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      clusterName: 'foobar',
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    cluster.addToParameterGroup('foo', 'bar');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Redshift::Cluster', {
+      ClusterParameterGroupName: { Ref: Match.anyValue() },
+    });
+
+    template.hasResourceProperties('AWS::Redshift::ClusterParameterGroup', {
+      Description: 'Parameter Group for the foobar Redshift cluster',
+      ParameterGroupFamily: 'redshift-1.0',
+      Parameters: [
+        {
+          ParameterName: 'foo',
+          ParameterValue: 'bar',
+        },
+      ],
+    });
   });
 
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
-    ClusterParameterGroupName: { Ref: 'ParamsA8366201' },
+  test('Adding to the cluster parameter group on a cluster instantiated with a parameter group', () => {
+
+    // WHEN
+    const group = new ClusterParameterGroup(stack, 'Params', {
+      description: 'lorem ipsum',
+      parameters: {
+        param: 'value',
+      },
+    });
+
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: group,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Redshift::Cluster', {
+      ClusterParameterGroupName: { Ref: Match.anyValue() },
+    });
+
+    template.hasResourceProperties('AWS::Redshift::ClusterParameterGroup', {
+      Description: 'lorem ipsum',
+      ParameterGroupFamily: 'redshift-1.0',
+      Parameters: [
+        {
+          ParameterName: 'param',
+          ParameterValue: 'value',
+        },
+        {
+          ParameterName: 'foo',
+          ParameterValue: 'bar',
+        },
+      ],
+    });
+  });
+
+  test('Adding a parameter to an IClusterParameterGroup', () => {
+    // GIVEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      clusterName: 'foobar',
+      parameterGroup: ClusterParameterGroup.fromClusterParameterGroupName(stack, 'Params', 'foo'),
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    // WHEN
+    expect(() => cluster.addToParameterGroup('param', 'value2'))
+      // THEN
+      .toThrowError('Cannot add a parameter to an imported parameter group');
   });
 
 });
@@ -326,8 +416,10 @@ test('can create a cluster with logging enabled', () => {
       masterUsername: 'admin',
     },
     vpc,
-    loggingBucket: bucket,
-    loggingKeyPrefix: 'prefix',
+    loggingProperties: {
+      loggingBucket: bucket,
+      loggingKeyPrefix: 'prefix',
+    },
   });
 
   // THEN
@@ -344,7 +436,7 @@ test('throws when trying to add rotation to a cluster without secret', () => {
   const cluster = new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort'),
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
     },
     vpc,
   });
@@ -372,7 +464,7 @@ test('throws validation error when trying to set encryptionKey without enabling 
 
   // THEN
   expect(() => {
-    new Cluster(stack, 'Redshift', props );
+    new Cluster(stack, 'Redshift', props);
   }).toThrowError();
 
 });
@@ -420,6 +512,367 @@ test('default child returns a CfnCluster', () => {
   });
 
   expect(cluster.node.defaultChild).toBeInstanceOf(CfnCluster);
+});
+
+test.each([
+  ['elastic', false],
+  ['classic', true],
+])('resize type (%s)', (_, classicResizing) => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    classicResizing,
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+    Properties: {
+      AllowVersionUpgrade: true,
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      ClusterType: 'multi-node',
+      AutomatedSnapshotRetentionPeriod: 1,
+      Encrypted: true,
+      NumberOfNodes: 2,
+      NodeType: 'dc2.large',
+      DBName: 'default_db',
+      PubliclyAccessible: false,
+      ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }],
+      Classic: classicResizing,
+    },
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('resize type not set', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+    Properties: {
+      AllowVersionUpgrade: true,
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      ClusterType: 'multi-node',
+      AutomatedSnapshotRetentionPeriod: 1,
+      Encrypted: true,
+      NumberOfNodes: 2,
+      NodeType: 'dc2.large',
+      DBName: 'default_db',
+      PubliclyAccessible: false,
+      ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }],
+    },
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('elastic ip address', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    vpc,
+    elasticIp: '1.3.3.7',
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+    Properties: {
+      AllowVersionUpgrade: true,
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      ClusterType: 'multi-node',
+      AutomatedSnapshotRetentionPeriod: 1,
+      Encrypted: true,
+      NumberOfNodes: 2,
+      NodeType: 'dc2.large',
+      DBName: 'default_db',
+      PubliclyAccessible: false,
+      ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }],
+      ElasticIp: '1.3.3.7',
+    },
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+describe('reboot for Parameter Changes', () => {
+  test('throw error for cluster without parameter group', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster.enableRebootForParameterChanges();
+    // WHEN
+    expect(() => Template.fromStack(stack))
+      // THEN
+      .toThrowError(/Cannot enable reboot for parameter changes/);
+  });
+
+  test('throw error for cluster with imported parameter group', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: ClusterParameterGroup.fromClusterParameterGroupName(stack, 'foo', 'bar'),
+    });
+    cluster.enableRebootForParameterChanges();
+    // WHEN
+    expect(() => Template.fromStack(stack))
+      // THEN
+      .toThrowError(/Cannot enable reboot for parameter changes/);
+  });
+
+  test('not throw error when parameter group is created after enabling reboots', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      rebootForParameterChanges: true,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+    // WHEN
+    expect(() => Template.fromStack(stack))
+      // THEN
+      .not.toThrowError(/Cannot enable reboot for parameter changes/);
+  });
+
+  test('not create duplicate resources when reboot feature is enabled multiple times on a cluster', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      rebootForParameterChanges: true,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+    //WHEN
+    cluster.enableRebootForParameterChanges();
+    // THEN
+    Template.fromStack(stack).resourceCountIs('Custom::RedshiftClusterRebooter', 1);
+  });
+
+  test('cluster with parameter group', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+
+    const cluster2 = new Cluster(stack, 'Redshift2', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster2.addToParameterGroup('foo', 'bar');
+
+    // WHEN
+    cluster.enableRebootForParameterChanges();
+    cluster2.enableRebootForParameterChanges();
+
+    //THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('Custom::RedshiftClusterRebooter', 2);
+    template.templateMatches({
+      Resources: {
+        SingletonLambda511e207f13df4b8bb632c32b30b65ac281740AC5: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Handler: 'index.handler',
+            Runtime: 'nodejs16.x',
+            Timeout: 900,
+          },
+        },
+      },
+    });
+  });
+
+  test('Custom resource ParametersString property updates', () => {
+    // Given
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+    cluster.addToParameterGroup('foo', 'bar');
+    cluster.enableRebootForParameterChanges();
+
+    // WHEN
+    cluster.addToParameterGroup('lorem', 'ipsum');
+
+    //THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('Custom::RedshiftClusterRebooter', {
+      ParametersString: JSON.stringify(
+        {
+          foo: 'bar',
+          lorem: 'ipsum',
+        },
+      ),
+    });
+  });
+});
+
+describe('default IAM role', () => {
+
+  test('Default role not in role list', () => {
+    // GIVEN
+    const clusterRole1 = new iam.Role(stack, 'clusterRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') });
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') });
+
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        roles: [clusterRole1],
+        defaultRole: defaultRole1,
+      });
+    }).toThrow(/Default role must be included in role list./);
+  });
+
+  test('throws error when default role not attached to cluster when adding default role post creation', () => {
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') });
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    expect(() => {
+      cluster.addDefaultIamRole(defaultRole1);
+    }).toThrow(/Default role must be associated to the Redshift cluster to be set as the default role./);
+  });
+});
+
+describe('IAM role', () => {
+  test('roles can be directly attached to cluster during declaration', () => {
+    // GIVEN
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      roles: [role],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      Properties: {
+        IamRoles: Match.arrayEquals([
+          { 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] },
+        ]),
+      },
+    });
+  });
+
+  test('roles can be attached to cluster after declaration', () => {
+    // GIVEN
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    // WHEN
+    cluster.addIamRole(role);
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      Properties: {
+        IamRoles: Match.arrayEquals([
+          { 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] },
+        ]),
+      },
+    });
+  });
+
+  test('roles can be attached to cluster in another stack', () => {
+    // GIVEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    const newTestStack = new cdk.Stack(stack, 'NewTestStack', { env: { account: stack.account, region: stack.region } });
+    const role = new iam.Role(newTestStack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+
+    // WHEN
+    cluster.addIamRole(role);
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      Properties: {
+        IamRoles: Match.arrayEquals([
+          { 'Fn::ImportValue': Match.stringLikeRegexp('NewTestStack:ExportsOutputFnGetAttRole*') },
+        ]),
+      },
+    });
+  });
+
+  test('throws when adding role that is already in cluster', () => {
+    // GIVEN
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      roles: [role],
+    });
+
+    expect(() =>
+      // WHEN
+      cluster.addIamRole(role),
+      // THEN
+    ).toThrow(`Role '${role.roleArn}' is already attached to the cluster`);
+  });
 });
 
 function testStack() {

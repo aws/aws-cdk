@@ -1,9 +1,8 @@
-import { ConstructOrder } from 'constructs';
+import { ConstructOrder, Dependable, IConstruct } from 'constructs';
+import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
-import { IConstruct } from '../construct-compat';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
-import { resolveReferences } from './refs';
 
 /**
  * Prepares the app for synthesis. This function is called by the root `prepare`
@@ -17,13 +16,13 @@ import { resolveReferences } from './refs';
  */
 export function prepareApp(root: IConstruct) {
   // apply dependencies between resources in depending subtrees
-  for (const dependency of root.node.dependencies) {
+  for (const dependency of findTransitiveDeps(root)) {
     const targetCfnResources = findCfnResources(dependency.target);
     const sourceCfnResources = findCfnResources(dependency.source);
 
     for (const target of targetCfnResources) {
       for (const source of sourceCfnResources) {
-        source.addDependsOn(target);
+        source.addDependency(target);
       }
     }
   }
@@ -102,4 +101,34 @@ function findCfnResources(root: IConstruct): CfnResource[] {
 
 interface INestedStackPrivateApi {
   _prepareTemplateAsset(): boolean;
+}
+
+/**
+ * Return all dependencies registered on this node or any of its children
+ */
+function findTransitiveDeps(root: IConstruct): Dependency[] {
+  const found = new Map<IConstruct, Set<IConstruct>>(); // Deduplication map
+  const ret = new Array<Dependency>();
+
+  for (const source of root.node.findAll()) {
+    for (const dependable of source.node.dependencies) {
+      for (const target of Dependable.of(dependable).dependencyRoots) {
+        let foundTargets = found.get(source);
+        if (!foundTargets) { found.set(source, foundTargets = new Set()); }
+
+        if (!foundTargets.has(target)) {
+          ret.push({ source, target });
+          foundTargets.add(target);
+        }
+      }
+    }
+  }
+
+  return ret;
+}
+
+
+interface Dependency {
+  readonly source: IConstruct;
+  readonly target: IConstruct;
 }

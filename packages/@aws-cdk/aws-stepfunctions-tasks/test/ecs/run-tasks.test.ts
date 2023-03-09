@@ -414,7 +414,7 @@ test('Running an EC2 Task with placement strategies', () => {
       LaunchType: 'EC2',
       TaskDefinition: 'TD',
       PlacementConstraints: [{ Type: 'memberOf', Expression: 'blieptuut' }],
-      PlacementStrategy: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
+      PlacementStrategy: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
     },
     Resource: {
       'Fn::Join': [
@@ -562,4 +562,73 @@ test('Running a task with WAIT_FOR_TASK_TOKEN and task token in environment', ()
     launchTarget: new tasks.EcsEc2LaunchTarget(),
     taskDefinition,
   })).not.toThrow();
+});
+
+test('Set revision number of ECS task denition family', () => {
+  // When
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+  const runTask = new tasks.EcsRunTask(stack, 'task', {
+    cluster,
+    taskDefinition: taskDefinition,
+    revisionNumber: 1,
+    launchTarget: new tasks.EcsFargateLaunchTarget(),
+  });
+
+  // Then
+  expect(stack.resolve(runTask.toStateJson())).toEqual(
+    {
+      End: true,
+      Parameters: {
+        Cluster: {
+          'Fn::GetAtt': [
+            'ClusterEB0386A7',
+            'Arn',
+          ],
+        },
+        LaunchType: 'FARGATE',
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'taskSecurityGroup28F0D539',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'VpcPrivateSubnet1Subnet536B997A',
+              },
+              {
+                Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+              },
+            ],
+          },
+        },
+        TaskDefinition: 'TD:1',
+      },
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              'Ref': 'AWS::Partition',
+            },
+            ':states:::ecs:runTask',
+          ],
+        ],
+      },
+      Type: 'Task',
+    },
+  );
 });

@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';

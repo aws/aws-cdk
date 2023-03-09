@@ -1,7 +1,7 @@
-import { AssetType, FileSet, ShellStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
-import { PipelineBase } from '../main/pipeline-base';
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 import { PipelineQueries } from './pipeline-queries';
+import { AssetType, FileSet, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
+import { PipelineBase } from '../main/pipeline-base';
 
 export interface PipelineGraphProps {
   /**
@@ -54,7 +54,9 @@ export class PipelineGraph {
   private readonly assetNodesByType = new Map<AssetType, AGraphNode>();
   private readonly synthNode?: AGraphNode;
   private readonly selfMutateNode?: AGraphNode;
-  private readonly stackOutputDependencies = new DependencyBuilders<StackDeployment, any>();
+  private readonly stackOutputDependencies = new DependencyBuilders<StackDeployment>();
+  /** Mapping steps to depbuilders, satisfied by the step itself  */
+  private readonly nodeDependencies = new DependencyBuilders<Step>();
   private readonly publishTemplate: boolean;
   private readonly prepareStep: boolean;
   private readonly singlePublisher: boolean;
@@ -88,7 +90,7 @@ export class PipelineGraph {
     if (props.selfMutation) {
       const stage: AGraph = Graph.of('UpdatePipeline', { type: 'group' });
       this.graph.add(stage);
-      this.selfMutateNode = GraphNode.of('SelfMutate', { type: 'self-update' });
+      this.selfMutateNode = aGraphNode('SelfMutate', { type: 'self-update' });
       stage.add(this.selfMutateNode);
 
       this.selfMutateNode.dependOn(this.synthNode);
@@ -102,8 +104,7 @@ export class PipelineGraph {
       waves[i].dependOn(waves[i - 1]);
     }
 
-    // Add additional dependencies between steps that depend on stack outputs and the stacks
-    // that produce them.
+    this.addMissingDependencyNodes();
   }
 
   public isSynthNode(node: AGraphNode) {
@@ -111,7 +112,7 @@ export class PipelineGraph {
   }
 
   private addBuildStep(step: Step) {
-    return this.addAndRecurse(step, this.topLevelGraph('Build'));
+    return this.addStepNode(step, this.topLevelGraph('Build'));
   }
 
   private addWave(wave: Wave): AGraph {
@@ -134,11 +135,12 @@ export class PipelineGraph {
 
     for (const stack of stage.stacks) {
       const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
-      const prepareNode: AGraphNode | undefined = this.prepareStep ? GraphNode.of('Prepare', { type: 'prepare', stack }) : undefined;
-      const deployNode: AGraphNode = GraphNode.of('Deploy', {
+      const prepareNode: AGraphNode | undefined = this.prepareStep ? aGraphNode('Prepare', { type: 'prepare', stack }) : undefined;
+      const deployNode: AGraphNode = aGraphNode('Deploy', {
         type: 'execute',
         stack,
         captureOutputs: this.queries.stackOutputsReferenced(stack).length > 0,
+        withoutChangeSet: prepareNode === undefined,
       });
 
       retGraph.add(stackGraph);
@@ -157,9 +159,9 @@ export class PipelineGraph {
       // add changeset steps at the stack level
       if (stack.changeSet.length > 0) {
         if (prepareNode) {
-          this.addChangeSet(stack.changeSet, prepareNode, deployNode, stackGraph);
+          this.addChangeSetNode(stack.changeSet, prepareNode, deployNode, stackGraph);
         } else {
-          throw new Error('Your pipeline engine does not support changeSet steps');
+          throw new Error(`Cannot use \'changeSet\' steps for stack \'${stack.stackName}\': the pipeline does not support them or they have been disabled`);
         }
       }
 
@@ -173,7 +175,7 @@ export class PipelineGraph {
 
       const cloudAssembly = this.cloudAssemblyFileSet;
 
-      firstDeployNode.dependOn(this.addAndRecurse(cloudAssembly.producer, retGraph));
+      firstDeployNode.dependOn(this.addStepNode(cloudAssembly.producer, retGraph));
 
       // add the template asset
       if (this.publishTemplate) {
@@ -194,7 +196,7 @@ export class PipelineGraph {
 
       // Add stack output synchronization point
       if (this.queries.stackOutputsReferenced(stack).length > 0) {
-        this.stackOutputDependencies.get(stack).dependOn(deployNode);
+        this.stackOutputDependencies.for(stack).dependOn(deployNode);
       }
     }
 
@@ -217,9 +219,9 @@ export class PipelineGraph {
     return retGraph;
   }
 
-  private addChangeSet(changeSet: Step[], prepareNode: AGraphNode, deployNode: AGraphNode, graph: AGraph) {
+  private addChangeSetNode(changeSet: Step[], prepareNode: AGraphNode, deployNode: AGraphNode, graph: AGraph) {
     for (const c of changeSet) {
-      const changeSetNode = this.addAndRecurse(c, graph);
+      const changeSetNode = this.addStepNode(c, graph);
       changeSetNode?.dependOn(prepareNode);
       deployNode.dependOn(changeSetNode);
     }
@@ -229,12 +231,12 @@ export class PipelineGraph {
     const currentNodes = new GraphNodeCollection(parent.nodes);
     const preNodes = new GraphNodeCollection(new Array<AGraphNode>());
     for (const p of pre) {
-      const preNode = this.addAndRecurse(p, parent);
+      const preNode = this.addStepNode(p, parent);
       currentNodes.dependOn(preNode);
       preNodes.nodes.push(preNode!);
     }
     for (const p of post) {
-      const postNode = this.addAndRecurse(p, parent);
+      const postNode = this.addStepNode(p, parent);
       postNode?.dependOn(...currentNodes.nodes);
     }
     return preNodes;
@@ -249,13 +251,18 @@ export class PipelineGraph {
     return ret as AGraph;
   }
 
-  private addAndRecurse(step: Step, parent: AGraph) {
+  /**
+   * Add a Node to a Graph for a given Step
+   *
+   * Adds all dependencies for that Node to the same Step as well.
+   */
+  private addStepNode(step: Step, parent: AGraph) {
     if (step === PipelineGraph.NO_STEP) { return undefined; }
 
     const previous = this.added.get(step);
     if (previous) { return previous; }
 
-    const node: AGraphNode = GraphNode.of(step.id, { type: 'step', step });
+    const node: AGraphNode = aGraphNode(step.id, { type: 'step', step });
 
     // If the step is a source step, change the parent to a special "Source" stage
     // (CodePipeline wants it that way)
@@ -266,21 +273,54 @@ export class PipelineGraph {
     parent.add(node);
     this.added.set(step, node);
 
+    // This used to recurse -- that's not safe, because it might create nodes in the
+    // wrong graph (it would create a dependency node, that might need to be created in
+    // a different graph, in the current one). Instead, use DependencyBuilders.
     for (const dep of step.dependencies) {
-      const producerNode = this.addAndRecurse(dep, parent);
-      node.dependOn(producerNode);
+      this.nodeDependencies.for(dep).dependBy(node);
     }
+    this.nodeDependencies.for(step).dependOn(node);
 
     // Add stack dependencies (by use of the dependency builder this also works
     // if we encounter the Step before the Stack has been properly added yet)
-    if (step instanceof ShellStep) {
-      for (const output of Object.values(step.envFromCfnOutputs)) {
-        const stack = this.queries.producingStack(output);
-        this.stackOutputDependencies.get(stack).dependBy(node);
-      }
+    for (const output of step.consumedStackOutputs) {
+      const stack = this.queries.producingStack(output);
+      this.stackOutputDependencies.for(stack).dependBy(node);
     }
 
     return node;
+  }
+
+  /**
+   * Add dependencies that aren't in the pipeline yet
+   *
+   * Build steps reference as many sources (or other builds) as they want, which will be added
+   * automatically. Do that here. We couldn't do it earlier, because if there were dependencies
+   * between steps we didn't want to reparent those unnecessarily.
+   */
+  private addMissingDependencyNodes() {
+    // May need to do this more than once to recursively add all missing producers
+    let attempts = 20;
+    while (attempts-- > 0) {
+      const unsatisfied = this.nodeDependencies.unsatisfiedBuilders().filter(([s]) => s !== PipelineGraph.NO_STEP);
+      if (unsatisfied.length === 0) { return; }
+
+      for (const [step, builder] of unsatisfied) {
+        // Add a new node for this step to the parent of the "leftmost" consumer.
+        const leftMostConsumer = new GraphNodeCollection(builder.consumers).first();
+        const parent = leftMostConsumer.parentGraph;
+        if (!parent) {
+          throw new Error(`Consumer doesn't have a parent graph: ${leftMostConsumer}`);
+        }
+        this.addStepNode(step, parent);
+      }
+    }
+
+    const unsatisfied = this.nodeDependencies.unsatisfiedBuilders();
+    throw new Error([
+      'Recursion depth too large while adding dependency nodes:',
+      unsatisfied.map(([step, builder]) => `${builder.consumersAsString()} awaiting ${step}.`),
+    ].join(' '));
   }
 
   private publishAsset(stackAsset: StackAsset): AGraphNode {
@@ -299,7 +339,7 @@ export class PipelineGraph {
         ? (this.singlePublisher ? 'FileAsset' : `FileAsset${++this._fileAssetCtr}`)
         : (this.singlePublisher ? 'DockerAsset' : `DockerAsset${++this._dockerAssetCtr}`);
 
-      assetNode = GraphNode.of(id, { type: 'publish-assets', assets: [] });
+      assetNode = aGraphNode(id, { type: 'publish-assets', assets: [] });
       assetsGraph.add(assetNode);
       assetNode.dependOn(this.lastPreparationNode);
 
@@ -311,6 +351,7 @@ export class PipelineGraph {
     if (data?.type !== 'publish-assets') {
       throw new Error(`${assetNode} has the wrong data.type: ${data?.type}`);
     }
+
     if (!data.assets.some(a => a.assetSelector === stackAsset.assetSelector)) {
       data.assets.push(stackAsset);
     }
@@ -327,20 +368,48 @@ export class PipelineGraph {
 }
 
 type GraphAnnotation =
-  { readonly type: 'group' }
+  | { readonly type: 'group' }
   | { readonly type: 'stack-group'; readonly stack: StackDeployment }
   | { readonly type: 'publish-assets'; readonly assets: StackAsset[] }
   | { readonly type: 'step'; readonly step: Step; isBuildStep?: boolean }
   | { readonly type: 'self-update' }
   | { readonly type: 'prepare'; readonly stack: StackDeployment }
-  | { readonly type: 'execute'; readonly stack: StackDeployment; readonly captureOutputs: boolean }
+  | ExecuteAnnotation
+  // Explicitly disable exhaustiveness checking on GraphAnnotation.  This forces all consumers to adding
+  // a 'default' clause which allows us to extend this list in the future.
+  // The code below looks weird, 'type' must be a non-enumerable type that is not assignable to 'string'.
+  | { readonly type: { error: 'you must add a default case to your switch' } }
   ;
+
+interface ExecuteAnnotation {
+  readonly type: 'execute';
+  /**
+   * The stack to deploy
+   */
+  readonly stack: StackDeployment;
+
+  /**
+   * Whether or not outputs should be captured
+   */
+  readonly captureOutputs: boolean;
+
+  /**
+   * If this is executing a change set, or should do a direct deployment
+   *
+   * @default false
+   */
+  readonly withoutChangeSet?: boolean;
+}
 
 // Type aliases for the graph nodes tagged with our specific annotation type
 // (to save on generics in the code above).
 export type AGraphNode = GraphNode<GraphAnnotation>;
 export type AGraph = Graph<GraphAnnotation>;
 
+function aGraphNode(id: string, x: GraphAnnotation): AGraphNode {
+  return GraphNode.of(id, x);
+}
+
 function stripPrefix(s: string, prefix: string) {
-  return s.startsWith(prefix) ? s.substr(prefix.length) : s;
+  return s.startsWith(prefix) ? s.slice(prefix.length) : s;
 }

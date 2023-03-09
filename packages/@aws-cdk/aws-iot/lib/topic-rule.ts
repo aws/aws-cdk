@@ -124,7 +124,7 @@ export class TopicRule extends Resource implements ITopicRule {
         actions: Lazy.any({ produce: () => this.actions }),
         awsIotSqlVersion: sqlConfig.awsIotSqlVersion,
         description: props.description,
-        errorAction: props.errorAction?.bind(this).configuration,
+        errorAction: props.errorAction?._bind(this).configuration,
         ruleDisabled: props.enabled === undefined ? undefined : !props.enabled,
         sql: sqlConfig.sql,
       },
@@ -148,7 +148,7 @@ export class TopicRule extends Resource implements ITopicRule {
    * @param action the action to associate with the topic rule.
    */
   public addAction(action: IAction): void {
-    const { configuration } = action.bind(this);
+    const { configuration } = action._bind(this);
 
     const keys = Object.keys(configuration);
     if (keys.length === 0) {

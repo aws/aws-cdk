@@ -1,5 +1,5 @@
-import * as crypto from 'crypto';
 import { unresolved } from './encoding';
+import { md5hash } from './md5';
 
 /**
  * Resources with this ID are hidden from humans
@@ -76,7 +76,7 @@ export function makeUniqueId(components: string[]) {
  * The hash is limited in size.
  */
 function pathHash(path: string[]): string {
-  const md5 = crypto.createHash('md5').update(path.join(PATH_SEP)).digest('hex');
+  const md5 = md5hash(path.join(PATH_SEP));
   return md5.slice(0, HASH_LEN).toUpperCase();
 }
 

@@ -1,19 +1,16 @@
-import * as crypto from 'crypto';
 import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack, Names } from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
+import { Construct } from 'constructs';
 import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a Kafka event source
  */
-export interface KafkaEventSourceProps extends BaseStreamEventSourceProps{
+export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   /**
    * The Kafka topic to subscribe to
    */
@@ -25,6 +22,13 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps{
    * @default none
    */
   readonly secret?: secretsmanager.ISecret
+  /**
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id
+   *
+   * @default - none
+   */
+  readonly consumerGroupId?: string;
 }
 
 /**
@@ -97,6 +101,14 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
    * @default AuthenticationMethod.SASL_SCRAM_512_AUTH
    */
   readonly authenticationMethod?: AuthenticationMethod
+
+  /**
+   * The secret with the root CA certificate used by your Kafka brokers for TLS encryption
+   * This field is required if your Kafka brokers use certificates signed by a private CA
+   *
+   * @default - none
+   */
+  readonly rootCACertificate?: secretsmanager.ISecret;
 }
 
 /**
@@ -120,6 +132,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         kafkaTopic: this.innerProps.topic,
+        kafkaConsumerGroupId: this.innerProps.consumerGroupId,
       }),
     );
 
@@ -188,12 +201,13 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    if (!Construct.isConstruct(target)) { throw new Error('Function is not a construct. Unexpected error.'); }
+    if (!(target instanceof Construct)) { throw new Error('Function is not a construct. Unexpected error.'); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({
         kafkaBootstrapServers: this.innerProps.bootstrapServers,
         kafkaTopic: this.innerProps.topic,
+        kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
       }),
@@ -205,9 +219,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   private mappingId(target: lambda.IFunction) {
-    let hash = crypto.createHash('md5');
-    hash.update(JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers)));
-    const idHash = hash.digest('hex');
+    const idHash = md5hash(JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers)));
     return `KafkaEventSource:${idHash}:${this.innerProps.topic}`;
   }
 
@@ -232,6 +244,13 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     const sourceAccessConfigurations = [];
     if (this.innerProps.secret !== undefined) {
       sourceAccessConfigurations.push({ type: authType, uri: this.innerProps.secret.secretArn });
+    }
+
+    if (this.innerProps.rootCACertificate !== undefined) {
+      sourceAccessConfigurations.push({
+        type: lambda.SourceAccessConfigurationType.SERVER_ROOT_CA_CERTIFICATE,
+        uri: this.innerProps.rootCACertificate.secretArn,
+      });
     }
 
     if (this.innerProps.vpcSubnets !== undefined && this.innerProps.securityGroup !== undefined) {

@@ -1,0 +1,147 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "integ-distribution-key-group": {
+        "id": "integ-distribution-key-group",
+        "path": "integ-distribution-key-group",
+        "children": {
+          "MyPublicKey": {
+            "id": "MyPublicKey",
+            "path": "integ-distribution-key-group/MyPublicKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-key-group/MyPublicKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::PublicKey",
+                  "aws:cdk:cloudformation:props": {
+                    "publicKeyConfig": {
+                      "name": "integdistributionkeygroupMyPublicKeyC0F3B115",
+                      "callerReference": "c8752fac3fe06fc93f3fbd12d7e0282d8967409e4d",
+                      "encodedKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS\nJAyxd/kGTbJfQNg9YhInb7TSm0dGu0yx8yZ3fnpmxuRPqJIlaVr+fT4YRl71gEYa\ndlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj\n6fc+nbcC0joDvGz80xuy1W4hLV9oC9c3GT26xfZb2jy9MVtA3cppNuTwqrFi3t6e\n0iGpraxZlT5wewjZLpQkngqYr6s3aucPAZVsGTEYPo4nD5mswmtZOm+tgcOrivtD\n/3sD/qZLQ6c5siqyS8aTraD6y+VXugujfarTU65IeZ6QAUbLMsWuZOIi5Jn8zAwx\nNQIDAQAB\n-----END PUBLIC KEY-----"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnPublicKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.PublicKey",
+              "version": "0.0.0"
+            }
+          },
+          "MyKeyGroup": {
+            "id": "MyKeyGroup",
+            "path": "integ-distribution-key-group/MyKeyGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-key-group/MyKeyGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::KeyGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "keyGroupConfig": {
+                      "name": "integdistributionkeygroupMyKeyGroupF179E01A",
+                      "items": [
+                        {
+                          "Ref": "MyPublicKey78071F3D"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnKeyGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.KeyGroup",
+              "version": "0.0.0"
+            }
+          },
+          "Dist": {
+            "id": "Dist",
+            "path": "integ-distribution-key-group/Dist",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "integ-distribution-key-group/Dist/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-key-group/Dist/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": "www.example.com",
+                          "id": "integdistributionkeygroupDistOrigin1B9677703",
+                          "customOriginConfig": {
+                            "originProtocolPolicy": "https-only"
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "integdistributionkeygroupDistOrigin1B9677703",
+                        "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all",
+                        "trustedKeyGroups": [
+                          {
+                            "Ref": "MyKeyGroupAF22FD35"
+                          }
+                        ]
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

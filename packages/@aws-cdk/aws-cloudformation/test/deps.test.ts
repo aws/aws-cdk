@@ -15,12 +15,11 @@ describe('resource dependencies', () => {
     const r2 = new CfnResource(stack, 'r2', { type: 'r2' });
 
     // WHEN
-    r1.addDependsOn(r2);
+    r1.addDependency(r2);
 
     // THEN
-    expect(app.synth().getStackArtifact(stack.artifactId).template).toEqual({
-      Resources:
-        { r1: { Type: 'r1', DependsOn: ['r2'] }, r2: { Type: 'r2' } },
+    expect(app.synth().getStackArtifact(stack.artifactId).template?.Resources).toEqual({
+      r1: { Type: 'r1', DependsOn: ['r2'] }, r2: { Type: 'r2' },
     });
   });
 
@@ -98,7 +97,7 @@ describe('resource dependencies', () => {
   // eslint-disable-next-line jest/valid-describe
   describeDeprecated('resource in sibling stack depends on a resource in nested stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const nested1 = new NestedStack(stack1, 'Nested1');
     const resourceInNested1 = new CfnResource(nested1, 'ResourceInNested', { type: 'NESTED' });
@@ -120,7 +119,7 @@ describe('resource dependencies', () => {
   // eslint-disable-next-line jest/valid-describe
   describeDeprecated('resource in nested stack depends on a resource in sibling stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const nested1 = new NestedStack(stack1, 'Nested1');
     const resourceInNested1 = new CfnResource(nested1, 'ResourceInNested', { type: 'NESTED' });
@@ -166,7 +165,7 @@ describe('resource dependencies', () => {
 describe('stack dependencies', () => {
   test('top level stack depends on itself', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'Stack');
 
     // WHEN
@@ -264,7 +263,7 @@ describe('stack dependencies', () => {
 
   testDeprecated('top-level stack depends on a nested stack within a sibling', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const nested1 = new NestedStack(stack1, 'Nested1');
     const stack2 = new Stack(app, 'Stack2');
@@ -283,7 +282,7 @@ describe('stack dependencies', () => {
 
   testDeprecated('nested stack within a sibling depends on top-level stack', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const nested1 = new NestedStack(stack1, 'Nested1');
     const stack2 = new Stack(app, 'Stack2');
@@ -305,7 +304,7 @@ describe('stack dependencies', () => {
  * Given a test function which sets the stage and verifies a dependency scenario
  * between two CloudFormation resources, returns two tests which exercise both
  * "construct dependency" (i.e. node.addDependency) and "resource dependency"
- * (i.e. resource.addDependsOn).
+ * (i.e. resource.addDependency).
  *
  * @param testFunction The test function
  */
@@ -315,7 +314,7 @@ function matrixForResourceDependencyTest(testFunction: (addDep: (source: CfnReso
       testFunction((source, target) => source.node.addDependency(target));
     });
     test('resource dependency', () => {
-      testFunction((source, target) => source.addDependsOn(target));
+      testFunction((source, target) => source.addDependency(target));
     });
   };
 }

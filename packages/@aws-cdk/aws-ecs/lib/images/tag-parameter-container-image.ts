@@ -1,14 +1,11 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
 /**
- * A special type of {@link ContainerImage} that uses an ECR repository for the image,
+ * A special type of `ContainerImage` that uses an ECR repository for the image,
  * but a CloudFormation Parameter for the tag of the image in that repository.
  * This allows providing this tag through the Parameter at deploy time,
  * for example in a CodePipeline that pushes a new tag of the image to the repository during a build step,

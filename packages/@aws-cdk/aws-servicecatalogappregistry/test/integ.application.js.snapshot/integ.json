@@ -1,0 +1,14 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "integ.application": {
+      "stacks": [
+        "integ-servicecatalogappregistry-application"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

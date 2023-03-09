@@ -64,6 +64,15 @@ export interface DockerImageSource {
   readonly dockerBuildArgs?: { [name: string]: string };
 
   /**
+   * Additional build secrets
+   *
+   * Only allowed when `directory` is set.
+   *
+   * @default - No additional build secrets
+   */
+  readonly dockerBuildSecrets?: { [name: string]: string };
+
+  /**
    * Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.
    *
    * Specify this property to build images on a specific networking mode.
@@ -71,6 +80,39 @@ export interface DockerImageSource {
    * @default - no networking mode specified
    */
   readonly networkMode?: string;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * Specify this property to build images on a specific platform/architecture.
+   *
+   * @default - current machine platform
+   */
+  readonly platform?: string;
+
+  /**
+   * Outputs
+   *
+   * @default - no outputs are passed to the build command (default outputs are used)
+   * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
+   */
+  readonly dockerOutputs?: string[];
+
+  /**
+   * Cache from options to pass to the `docker build` command.
+   *
+   * @default - no cache from options are passed to the build command
+   * @see https://docs.docker.com/build/cache/backends/
+   */
+  readonly cacheFrom?: DockerCacheOption[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   *
+   * @default - no cache to options are passed to the build command
+   * @see https://docs.docker.com/build/cache/backends/
+   */
+  readonly cacheTo?: DockerCacheOption;
 }
 
 /**
@@ -86,4 +128,26 @@ export interface DockerImageDestination extends AwsDestination {
    * Tag of the image to publish
    */
   readonly imageTag: string;
+}
+
+/**
+ * Options for configuring the Docker cache backend
+ */
+export interface DockerCacheOption {
+  /**
+   * The type of cache to use.
+   * Refer to https://docs.docker.com/build/cache/backends/ for full list of backends.
+   * @default - unspecified
+   *
+   * @example 'registry'
+   */
+  readonly type: string;
+  /**
+   * Any parameters to pass into the docker cache backend configuration.
+   * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
+   * @default {} No options provided
+   *
+   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   */
+  readonly params?: { [key: string]: string };
 }

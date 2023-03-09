@@ -1,12 +1,9 @@
 import { IConstruct } from 'constructs';
-import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, ResolveChangeContextOptions, StringConcat } from '../resolvable';
-import { TokenizedStringFragments } from '../string-fragments';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
-
-// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
-// eslint-disable-next-line import/order
-import { IConstruct as ICoreConstruct } from '../construct-compat';
+import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, ResolveChangeContextOptions, StringConcat } from '../resolvable';
+import { TokenizedStringFragments } from '../string-fragments';
+import { ResolutionTypeHint } from '../type-hints';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 const tokenMap = TokenMap.instance();
@@ -31,15 +28,6 @@ const RESOLUTION_TYPEHINT_SYM = Symbol.for('@aws-cdk/core.resolvedTypeHint');
  * object keys.
  */
 export const INTRINSIC_KEY_PREFIX = '$IntrinsicKey$';
-
-/**
- * Type hints for resolved values
- */
-export enum ResolutionTypeHint {
-  STRING = 'string',
-  NUMBER = 'number',
-  LIST = 'list',
-}
 
 /**
  * Options to the resolve() operation
@@ -114,7 +102,8 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
     const context: IResolveContext = {
       preparing: options.preparing,
-      scope: options.scope as ICoreConstruct,
+      scope: options.scope as IConstruct,
+      documentPath: newPrefix ?? [],
       registerPostProcessor(pp) { postProcessor = pp; },
       resolve(x: any, changeOptions?: ResolveChangeContextOptions) { return resolve(x, { ...options, ...changeOptions, prefix: newPrefix }); },
     };
@@ -193,7 +182,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   if (Array.isArray(obj)) {
     if (containsListTokenElement(obj)) {
-      return tagResolvedValue(options.resolver.resolveList(obj, makeContext()[0]), ResolutionTypeHint.LIST);
+      return tagResolvedValue(options.resolver.resolveList(obj, makeContext()[0]), ResolutionTypeHint.STRING_LIST);
     }
 
     const arr = obj

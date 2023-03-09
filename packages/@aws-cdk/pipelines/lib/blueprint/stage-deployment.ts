@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
-import { isStackArtifact } from '../private/cloud-assembly-internals';
-import { pipelineSynth } from '../private/construct-internals';
 import { StackDeployment } from './stack-deployment';
 import { StackSteps, Step } from './step';
+import { isStackArtifact } from '../private/cloud-assembly-internals';
+import { pipelineSynth } from '../private/construct-internals';
 
 /**
  * Properties for a `StageDeployment`
@@ -116,6 +116,12 @@ export class StageDeployment {
    * Instructions for additional steps that are run at stack level
    */
   public readonly stackSteps: StackSteps[];
+
+  /**
+   * Determine if all stacks in stage should be deployed with prepare
+   * step or not.
+   */
+  public readonly prepareStep?: boolean;
 
   private constructor(
     /** The stacks deployed in this stage */

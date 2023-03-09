@@ -1,11 +1,11 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
-
+import * as integ from '@aws-cdk/integ-tests';
 import { NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-fargate-multi-nlb-health');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -44,6 +44,10 @@ new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
       listener: 'listener2',
     },
   ],
+});
+
+new integ.IntegTest(app, 'networkMultipleTargetGroupsFargateServiceTest', {
+  testCases: [stack],
 });
 
 app.synth();

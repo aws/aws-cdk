@@ -18,7 +18,7 @@
 This package provides constructs for creating Kinesis Analytics Flink
 applications. To learn more about using using managed Flink applications, see
 the [AWS developer
-guide](https://docs.aws.amazon.com/kinesisanalytics/latest/java/what-is.html).
+guide](https://docs.aws.amazon.com/kinesisanalytics/latest/java/).
 
 ## Creating Flink Applications
 
@@ -46,7 +46,7 @@ const flinkApp = new flink.Application(this, 'Application', {
     },
   },
   // ...
-  runtime: flink.Runtime.FLINK_1_13,
+  runtime: flink.Runtime.FLINK_1_15,
   code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
 });
 ```
@@ -59,7 +59,7 @@ snapshotting, monitoring, and parallelism.
 declare const bucket: s3.Bucket;
 const flinkApp = new flink.Application(this, 'Application', {
   code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
-  runtime: flink.Runtime.FLINK_1_13,
+  runtime: flink.Runtime.FLINK_1_15,
   checkpointingEnabled: true, // default is true
   checkpointInterval: Duration.seconds(30), // default is 1 minute
   minPauseBetweenCheckpoints: Duration.seconds(10), // default is 5 seconds
@@ -70,5 +70,17 @@ const flinkApp = new flink.Application(this, 'Application', {
   parallelismPerKpu: 2, // default is 1
   snapshotsEnabled: false, // default is true
   logGroup: new logs.LogGroup(this, 'LogGroup'), // by default, a new LogGroup will be created
+});
+```
+
+Flink applications can optionally be deployed in a VPC:
+
+```ts
+declare const bucket: s3.Bucket;
+declare const vpc: ec2.Vpc;
+const flinkApp = new flink.Application(this, 'Application', {
+  code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
+  runtime: flink.Runtime.FLINK_1_15,
+  vpc,
 });
 ```

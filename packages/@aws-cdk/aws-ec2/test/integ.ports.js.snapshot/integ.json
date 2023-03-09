@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "Ports/DefaultTest": {
+      "stacks": [
+        "PortsTestStack"
+      ],
+      "assertionStack": "Ports/DefaultTest/DeployAssert"
+    }
+  }
+}

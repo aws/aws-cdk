@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "athena-workgroup-tags-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-athena-workgroup-tags"
+      ],
+      "assertionStack": "athena-workgroup-tags-test/DefaultTest/DeployAssert",
+      "assertionStackName": "athenaworkgrouptagstestDefaultTestDeployAssert5C4419AB"
+    }
+  }
+}

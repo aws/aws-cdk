@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "DynamoDBFilterCriteria/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-filter-criteria-dynamodb"
+      ],
+      "assertionStack": "DynamoDBFilterCriteria/DefaultTest/DeployAssert",
+      "assertionStackName": "DynamoDBFilterCriteriaDefaultTestDeployAssert448231D5"
+    }
+  }
+}

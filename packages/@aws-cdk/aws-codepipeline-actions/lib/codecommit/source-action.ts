@@ -3,16 +3,13 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
 import { Names, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
 /**
  * How should the CodeCommit Action detect changes.
- * This is the type of the {@link CodeCommitSourceAction.trigger} property.
+ * This is the type of the `CodeCommitSourceAction.trigger` property.
  */
 export enum CodeCommitTrigger {
   /**
@@ -57,7 +54,7 @@ export interface CodeCommitSourceVariables {
 }
 
 /**
- * Construction properties of the {@link CodeCommitSourceAction CodeCommit source CodePipeline Action}.
+ * Construction properties of the `CodeCommitSourceAction CodeCommit source CodePipeline Action`.
  */
 export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
@@ -96,7 +93,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * or a link that allows CodeBuild to clone the repository before building.
    *
    * **Note**: if this option is true,
-   * then only CodeBuild actions can use the resulting {@link output}.
+   * then only CodeBuild actions can use the resulting `output`.
    *
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
@@ -174,6 +171,7 @@ export class CodeCommitSourceAction extends Action {
           eventRole: this.props.eventRole,
         }),
         branches: [this.branch],
+        crossStackScope: stage.pipeline as unknown as Construct,
       });
     }
 

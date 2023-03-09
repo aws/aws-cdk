@@ -1,11 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
+import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -57,6 +54,21 @@ export interface StageProps {
    * temporary directory will be created.
    */
   readonly outdir?: string;
+
+  /**
+   * Name of this stage.
+   *
+   * @default - Derived from the id.
+   */
+  readonly stageName?: string;
+
+  /**
+   * Options for applying a permissions boundary to all IAM Roles
+   * and Users created within this Stage
+   *
+   * @default - no permissions boundary is applied
+   */
+  readonly permissionsBoundary?: PermissionsBoundary;
 }
 
 /**
@@ -70,7 +82,7 @@ export interface StageProps {
  * copies of your application which should be be deployed to different
  * environments.
  */
-export class Stage extends CoreConstruct {
+export class Stage extends Construct {
   /**
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.
@@ -139,8 +151,11 @@ export class Stage extends CoreConstruct {
     this.region = props.env?.region ?? this.parentStage?.region;
     this.account = props.env?.account ?? this.parentStage?.account;
 
+
+    props.permissionsBoundary?._bind(this);
+
     this._assemblyBuilder = this.createBuilder(props.outdir);
-    this.stageName = [this.parentStage?.stageName, id].filter(x => x).join('-');
+    this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
   }
 
   /**

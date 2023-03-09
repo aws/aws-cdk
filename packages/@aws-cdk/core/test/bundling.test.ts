@@ -2,7 +2,9 @@ import * as child_process from 'child_process';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { DockerImage, FileSystem } from '../lib';
+import { DockerBuildSecret, DockerImage, FileSystem } from '../lib';
+
+const dockerCmd = process.env.CDK_DOCKER ?? 'docker';
 
 describe('bundling', () => {
   afterEach(() => {
@@ -33,7 +35,7 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith('docker', [
+    expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:delegated',
@@ -43,7 +45,6 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 
   test('bundling with image from asset', () => {
@@ -75,17 +76,16 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.firstCall.calledWith('docker', [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--build-arg', 'TEST_ARG=cdk-test',
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
-
   });
 
   test('bundling with image from asset with platform', () => {
@@ -103,7 +103,7 @@ describe('bundling', () => {
     fingerprintStub.callsFake(() => imageHash);
     const platform = 'linux/someArch99';
 
-    const image = DockerImage.fromBuild('docker-path', { platform });
+    const image = DockerImage.fromBuild('docker-path', { platform: platform });
     image.run();
 
     const tagHash = crypto.createHash('sha256').update(JSON.stringify({
@@ -112,18 +112,55 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.firstCall.calledWith('docker', [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--platform', platform,
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+      'run', '--rm',
+      tag,
+    ])).toEqual(true);
+  });
+
+  test('bundling with image from asset with target stage', () => {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
+    const targetStage = 'i-love-testing';
+
+    const image = DockerImage.fromBuild('docker-path', { targetStage: targetStage });
+    image.run();
+
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      targetStage,
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
+      'build', '-t', tag,
+      '--target', targetStage,
+      'docker-path',
+    ])).toEqual(true);
+
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
 
   });
+
 
   test('throws in case of spawnSync error', () => {
     sinon.stub(child_process, 'spawnSync').returns({
@@ -138,7 +175,6 @@ describe('bundling', () => {
 
     const image = DockerImage.fromRegistry('alpine');
     expect(() => image.run()).toThrow(/UnknownError/);
-
   });
 
   test('throws if status is not 0', () => {
@@ -153,14 +189,12 @@ describe('bundling', () => {
 
     const image = DockerImage.fromRegistry('alpine');
     expect(() => image.run()).toThrow(/\[Status -1\]/);
-
   });
 
   test('BundlerDockerImage json is the bundler image name by default', () => {
     const image = DockerImage.fromRegistry('alpine');
 
     expect(image.toJSON()).toEqual('alpine');
-
   });
 
   test('BundlerDockerImage json is the bundler image if building an image', () => {
@@ -185,7 +219,6 @@ describe('bundling', () => {
     expect(image.image).toEqual(`cdk-${tagHash}`);
     expect(image.toJSON()).toEqual(imageHash);
     expect(fingerprintStub.calledWith('docker-path', sinon.match({ extraHash: JSON.stringify({}) }))).toEqual(true);
-
   });
 
   test('custom dockerfile is passed through to docker exec', () => {
@@ -206,8 +239,6 @@ describe('bundling', () => {
     expect(spawnSyncStub.calledOnce).toEqual(true);
     const expected = path.join(imagePath, 'my-dockerfile');
     expect(new RegExp(`-f ${expected}`).test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? '')).toEqual(true);
-
-
   });
 
   test('fromAsset', () => {
@@ -226,7 +257,6 @@ describe('bundling', () => {
     });
     expect(image).toBeDefined();
     expect(image.image).toBeDefined();
-
   });
 
   test('custom entrypoint is passed through to docker exec', () => {
@@ -253,7 +283,7 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith('docker', [
+    expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:delegated',
@@ -265,7 +295,6 @@ describe('bundling', () => {
       '--cool-entrypoint-arg',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 
   test('cp utility copies from an image', () => {
@@ -287,8 +316,6 @@ describe('bundling', () => {
     expect(spawnSyncStub.calledWith(sinon.match.any, ['create', 'alpine'], sinon.match.any)).toEqual(true);
     expect(spawnSyncStub.calledWith(sinon.match.any, ['cp', `${containerId}:/foo/bar`, '/baz'], sinon.match.any)).toEqual(true);
     expect(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-v', containerId])).toEqual(true);
-
-
   });
 
   test('cp utility cleans up after itself', () => {
@@ -320,7 +347,6 @@ describe('bundling', () => {
 
     // THEN
     expect(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-v', containerId])).toEqual(true);
-
   });
 
   test('cp utility copies to a temp dir of outputPath is omitted', () => {
@@ -340,8 +366,6 @@ describe('bundling', () => {
 
     // THEN
     expect(/cdk-docker-cp-/.test(tempPath)).toEqual(true);
-
-
   });
 
   test('adding user provided security-opt', () => {
@@ -370,7 +394,7 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith('docker', [
+    expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '--security-opt', 'no-new-privileges',
       '-u', 'user:group',
@@ -381,7 +405,77 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
 
+  test('adding user provided network options', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const image = DockerImage.fromRegistry('alpine');
+
+    // GIVEN
+    image.run({
+      command: ['cool', 'command'],
+      network: 'host',
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    expect(spawnSyncStub.calledWith(dockerCmd, [
+      'run', '--rm',
+      '--network', 'host',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
+      '-w', '/working-directory',
+      'alpine',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('adding user provided docker volume options', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 1,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const image = DockerImage.fromRegistry('alpine');
+
+    try {
+      image.run({
+        command: ['cool', 'command'],
+        volumesFrom: ['foo', 'bar'],
+        volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+        workingDirectory: '/working-directory',
+        user: 'user:group',
+      });
+    } catch (e) {
+      // We expect this to fail as the test environment will not have the required docker setup for the command to exit successfully
+      // nevertheless what we want to check here is that the command was built correctly and triggered
+    };
+
+    expect(spawnSyncStub.calledWith(dockerCmd, [
+      'run', '--rm',
+      '-u', 'user:group',
+      '--volumes-from', 'foo',
+      '--volumes-from', 'bar',
+      '-v', '/host-path:/container-path:delegated',
+      '-w', '/working-directory',
+      'alpine',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
   test('ensure selinux docker mount', () => {
@@ -415,7 +509,7 @@ describe('bundling', () => {
     });
 
     // THEN
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:z,delegated',
@@ -423,7 +517,6 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 
   test('ensure selinux docker mount on linux with selinux disabled', () => {
@@ -457,7 +550,7 @@ describe('bundling', () => {
     });
 
     // THEN
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:delegated',
@@ -465,8 +558,8 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
+
   test('ensure no selinux docker mount if selinuxenabled isn\'t an available command', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('linux');
@@ -498,7 +591,7 @@ describe('bundling', () => {
     });
 
     // THEN
-    expect(spawnSyncStub.secondCall.calledWith('docker', [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:delegated',
@@ -506,6 +599,13 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
 
+  test('ensure correct Docker CLI arguments are returned', () => {
+    // GIVEN
+    const fromSrc = DockerBuildSecret.fromSrc('path.json');
+
+    // THEN
+    expect(fromSrc).toEqual('src=path.json');
   });
 });

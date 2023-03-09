@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Arn, ArnFormat, Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
@@ -65,7 +65,7 @@ export interface LogOptions {
   /**
    * Determines whether execution data is included in your log.
    *
-   * @default true
+   * @default false
    */
   readonly includeExecutionData?: boolean;
 
@@ -127,6 +127,13 @@ export interface StateMachineProps {
    * @default false
    */
   readonly tracingEnabled?: boolean;
+
+  /**
+   * The removal policy to apply to state machine
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -145,6 +152,19 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     return new Import(scope, id, {
       environmentFromArn: stateMachineArn,
     });
+  }
+
+  /**
+   * Import a state machine via resource name
+   */
+  public static fromStateMachineName(scope: Construct, id: string, stateMachineName: string): IStateMachine {
+    const stateMachineArn = Stack.of(scope).formatArn({
+      service: 'states',
+      resource: 'stateMachine',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: stateMachineName,
+    });
+    return this.fromStateMachineArn(scope, id, stateMachineArn);
   }
 
   public abstract readonly stateMachineArn: string;
@@ -402,6 +422,7 @@ export class StateMachine extends StateMachineBase {
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
       tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
     });
+    resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
     resource.node.addDependency(this.role);
 

@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/core';
+import { App, Aws, CfnParameter, SecretValue, Stack } from '@aws-cdk/core';
 import * as cpactions from '../lib';
 
 /* eslint-disable quote-props */
@@ -45,8 +45,7 @@ describe('pipeline', () => {
     });
 
     expect(Template.fromStack(stack).toJSON()).not.toEqual({});
-    expect([]).toEqual(ConstructNode.validate(pipeline.node));
-
+    expect([]).toEqual(pipeline.node.validate());
   });
 
   test('Tokens can be used as physical names of the Pipeline', () => {
@@ -63,7 +62,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText('secret'),
+          oauthToken: SecretValue.unsafePlainText('secret'),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.POLL,
@@ -102,7 +101,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.POLL,
@@ -161,7 +160,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.NONE,
@@ -220,7 +219,7 @@ describe('pipeline', () => {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.valueAsString),
+          oauthToken: SecretValue.unsafePlainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
         }),
@@ -297,8 +296,7 @@ describe('pipeline', () => {
       ],
     });
 
-    expect([]).toEqual(ConstructNode.validate(p.node));
-
+    expect([]).toEqual(p.node.validate());
   });
 
   test('onStateChange', () => {
@@ -388,8 +386,7 @@ describe('pipeline', () => {
       ],
     });
 
-    expect([]).toEqual(ConstructNode.validate(pipeline.node));
-
+    expect([]).toEqual(pipeline.node.validate());
   });
 
   describe('PipelineProject', () => {
@@ -434,7 +431,7 @@ describe('pipeline', () => {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');

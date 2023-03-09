@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
+import { App, CfnElement, CfnResource, Lazy, Size, Stack } from '@aws-cdk/core';
 import * as apigw from '../lib';
 
 describe('restapi', () => {
@@ -53,6 +53,7 @@ describe('restapi', () => {
         },
         myapiCloudWatchRole095452E5: {
           Type: 'AWS::IAM::Role',
+          DeletionPolicy: 'Retain',
           Properties: {
             AssumeRolePolicyDocument: {
               Statement: [
@@ -71,6 +72,7 @@ describe('restapi', () => {
         },
         myapiAccountEC421A0A: {
           Type: 'AWS::ApiGateway::Account',
+          DeletionPolicy: 'Retain',
           Properties: {
             CloudWatchRoleArn: { 'Fn::GetAtt': ['myapiCloudWatchRole095452E5', 'Arn'] },
           },
@@ -333,6 +335,22 @@ describe('restapi', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Account', 1);
   });
 
+  test('featureFlag @aws-cdk/aws-apigateway:disableCloudWatchRole CloudWatch role is not created created for API Gateway', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
+    });
+    const stack = new Stack(app);
+    const api = new apigw.RestApi(stack, 'myapi');
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Account', 0);
+  });
+
   test('"url" and "urlForPath" return the URL endpoints of the deployed API', () => {
     // GIVEN
     const stack = new Stack();
@@ -422,6 +440,16 @@ describe('restapi', () => {
 
     // THEN
     expect(() => api.arnForExecuteApi('method', 'hey-path', 'stage')).toThrow(/"path" must begin with a "\/": 'hey-path'/);
+  });
+
+  test('"executeApiArn" path can be a token', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+    api.root.addMethod('GET');
+
+    // THEN
+    expect(() => api.arnForExecuteApi('method', Lazy.string(({ produce: () => 'path' })), 'stage')).not.toThrow();
   });
 
   test('"executeApiArn" will convert ANY to "*"', () => {
@@ -840,114 +868,252 @@ describe('restapi', () => {
     expect(method.api).toBeDefined();
   });
 
-  describe('Import', () => {
-    test('fromRestApiId()', () => {
-      // GIVEN
-      const stack = new Stack();
-
-      // WHEN
-      const imported = apigw.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
-
-      // THEN
-      expect(stack.resolve(imported.restApiId)).toEqual('api-rxt4498f');
+  test('RestApi minCompressionSize', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
     });
 
-    test('fromRestApiAttributes()', () => {
-      // GIVEN
-      const stack = new Stack();
+    const stack = new Stack(app);
+    const api = new apigw.RestApi(stack, 'RestApi', {
+      minCompressionSize: Size.bytes(1024),
+    });
 
-      // WHEN
-      const imported = apigw.RestApi.fromRestApiAttributes(stack, 'imported-api', {
-        restApiId: 'test-restapi-id',
-        rootResourceId: 'test-root-resource-id',
-      });
-      const resource = imported.root.addResource('pets');
-      resource.addMethod('GET');
+    // WHEN
+    api.root.addMethod('GET');
 
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
-        PathPart: 'pets',
-        ParentId: stack.resolve(imported.restApiRootResourceId),
-      });
-      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
-        HttpMethod: 'GET',
-        ResourceId: stack.resolve(resource.resourceId),
-      });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: 'RestApi',
+      MinimumCompressionSize: 1024,
     });
   });
 
-  describe('SpecRestApi', () => {
-    test('add Methods and Resources', () => {
-      // GIVEN
-      const stack = new Stack();
-      const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
-        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
-      });
-
-      // WHEN
-      const resource = api.root.addResource('pets');
-      resource.addMethod('GET');
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
-        PathPart: 'pets',
-        ParentId: stack.resolve(api.restApiRootResourceId),
-      });
-      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
-        HttpMethod: 'GET',
-        ResourceId: stack.resolve(resource.resourceId),
-      });
+  testDeprecated('RestApi minimumCompressionSize', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
     });
 
-    test('"endpointTypes" can be used to specify endpoint configuration for SpecRestApi', () => {
-      // GIVEN
-      const stack = new Stack();
-
-      // WHEN
-      const api = new apigw.SpecRestApi(stack, 'api', {
-        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
-        endpointTypes: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
-      });
-
-      api.root.addMethod('GET');
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
-        EndpointConfiguration: {
-          Types: [
-            'EDGE',
-            'PRIVATE',
-          ],
-        },
-      });
+    const stack = new Stack(app);
+    const api = new apigw.RestApi(stack, 'RestApi', {
+      minimumCompressionSize: 1024,
     });
 
-    test('addApiKey is supported', () => {
-      // GIVEN
-      const stack = new Stack();
-      const api = new apigw.SpecRestApi(stack, 'myapi', {
-        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
-      });
-      api.root.addMethod('OPTIONS');
+    // WHEN
+    api.root.addMethod('GET');
 
-      // WHEN
-      api.addApiKey('myapikey', {
-        apiKeyName: 'myApiKey1',
-        value: '01234567890ABCDEFabcdef',
-      });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: 'RestApi',
+      MinimumCompressionSize: 1024,
+    });
+  });
 
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
-        Enabled: true,
-        Name: 'myApiKey1',
-        StageKeys: [
-          {
-            RestApiId: { Ref: 'myapi162F20B8' },
-            StageName: { Ref: 'myapiDeploymentStageprod329F21FF' },
-          },
+  testDeprecated('throws error when both minimumCompressionSize and minCompressionSize are used', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
+    });
+
+    // WHEN
+    const stack = new Stack(app);
+
+    // THEN
+    expect(() => new apigw.RestApi(stack, 'RestApi', {
+      minCompressionSize: Size.bytes(500),
+      minimumCompressionSize: 1024,
+    })).toThrow(/both properties minCompressionSize and minimumCompressionSize cannot be set at once./);
+  });
+});
+
+
+describe('Import', () => {
+  test('fromRestApiId()', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const imported = apigw.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
+
+    // THEN
+    expect(stack.resolve(imported.restApiId)).toEqual('api-rxt4498f');
+    expect(imported.restApiName).toEqual('imported-api');
+  });
+
+  test('fromRestApiAttributes()', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const imported = apigw.RestApi.fromRestApiAttributes(stack, 'imported-api', {
+      restApiId: 'test-restapi-id',
+      rootResourceId: 'test-root-resource-id',
+    });
+    const resource = imported.root.addResource('pets');
+    resource.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
+      PathPart: 'pets',
+      ParentId: stack.resolve(imported.restApiRootResourceId),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      ResourceId: stack.resolve(resource.resourceId),
+    });
+    expect(imported.restApiName).toEqual('imported-api');
+  });
+
+  test('fromRestApiAttributes() with restApiName', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const imported = apigw.RestApi.fromRestApiAttributes(stack, 'imported-api', {
+      restApiId: 'test-restapi-id',
+      rootResourceId: 'test-root-resource-id',
+      restApiName: 'test-restapi-name',
+    });
+    const resource = imported.root.addResource('pets');
+    resource.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
+      PathPart: 'pets',
+      ParentId: stack.resolve(imported.restApiRootResourceId),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      ResourceId: stack.resolve(resource.resourceId),
+    });
+    expect(imported.restApiName).toEqual('test-restapi-name');
+  });
+});
+
+describe('SpecRestApi', () => {
+  test('add Methods and Resources', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+    });
+
+    // WHEN
+    const resource = api.root.addResource('pets');
+    resource.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
+      PathPart: 'pets',
+      ParentId: stack.resolve(api.restApiRootResourceId),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      ResourceId: stack.resolve(resource.resourceId),
+    });
+  });
+
+  test('"endpointTypes" can be used to specify endpoint configuration for SpecRestApi', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      endpointTypes: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+        Types: [
+          'EDGE',
+          'PRIVATE',
         ],
-        Value: '01234567890ABCDEFabcdef',
-      });
+      },
+    });
+  });
+
+  testDeprecated('addApiKey is supported', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.SpecRestApi(stack, 'myapi', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+    });
+    api.root.addMethod('OPTIONS');
+
+    // WHEN
+    api.addApiKey('myapikey', {
+      apiKeyName: 'myApiKey1',
+      value: '01234567890ABCDEFabcdef',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
+      Enabled: true,
+      Name: 'myApiKey1',
+      StageKeys: [
+        {
+          RestApiId: { Ref: 'myapi162F20B8' },
+          StageName: { Ref: 'myapiDeploymentStageprod329F21FF' },
+        },
+      ],
+      Value: '01234567890ABCDEFabcdef',
+    });
+  });
+
+  test('featureFlag @aws-cdk/aws-apigateway:disableCloudWatchRole CloudWatch role is not created created for API Gateway', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
+    });
+
+    const stack = new Stack(app);
+    const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+    });
+
+    // WHEN
+    const resource = api.root.addResource('pets');
+    resource.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Account', 0);
+  });
+
+  test('SpecRestApi minimumCompressionSize', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
+    });
+
+    const stack = new Stack(app);
+    const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      minCompressionSize: Size.bytes(1024),
+    });
+
+    // WHEN
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: 'SpecRestApi',
+      MinimumCompressionSize: 1024,
     });
   });
 
@@ -1073,7 +1239,21 @@ describe('restapi', () => {
     });
   });
 
-  test('"disableExecuteApiEndpoint" can disable the default execute-api endpoint', () => {
+  test('disableExecuteApiEndpoint is false when set to false in RestApi', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'my-api', { disableExecuteApiEndpoint: false });
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      DisableExecuteApiEndpoint: false,
+    });
+  });
+
+  test('disableExecuteApiEndpoint is true when set to true in RestApi', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -1084,6 +1264,71 @@ describe('restapi', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       DisableExecuteApiEndpoint: true,
+    });
+  });
+
+  test('disableExecuteApiEndpoint is false when set to false in SpecRestApi', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'my-api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      disableExecuteApiEndpoint: false,
+    });
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      DisableExecuteApiEndpoint: false,
+    });
+  });
+
+  test('disableExecuteApiEndpoint is true when set to true in SpecRestApi', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.SpecRestApi(stack, 'my-api', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      disableExecuteApiEndpoint: true,
+    });
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      DisableExecuteApiEndpoint: true,
+    });
+  });
+
+  describe('Description', () => {
+    test('description can be set', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api', { description: 'My API' });
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::ApiGateway::RestApi',
+        {
+          Description: 'My API',
+        });
+    });
+
+    test('description is not set', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'my-api');
+      api.root.addMethod('GET');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::ApiGateway::RestApi', {});
     });
   });
 });

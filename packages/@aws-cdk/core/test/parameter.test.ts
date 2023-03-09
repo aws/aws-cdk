@@ -1,5 +1,6 @@
-import { CfnParameter, CfnResource, Construct, Stack } from '../lib';
+import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
+import { CfnParameter, CfnResource, Stack } from '../lib';
 
 describe('parameter', () => {
   test('parameters can be used and referenced using param.ref', () => {
@@ -29,8 +30,6 @@ describe('parameter', () => {
         },
       },
     });
-
-
   });
 
   test('parameters are tokens, so they can be assigned without .ref and their Ref will be taken', () => {
@@ -38,6 +37,5 @@ describe('parameter', () => {
     const param = new CfnParameter(stack, 'MyParam', { type: 'String' });
 
     expect(stack.resolve(param)).toEqual({ Ref: 'MyParam' });
-
   });
 });

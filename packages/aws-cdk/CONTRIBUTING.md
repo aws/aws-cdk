@@ -89,6 +89,20 @@ You can also run just these tests by executing:
 yarn integ-cli-no-regression
 ```
 
+##### Warning
+
+Since the tests take a long time to run, we run them in parallel in order to minimize running time. Jest does not have
+good support for parallelism, the only thing that exists is `test.concurrent()` and it has a couple of limitations:
+
+- It's not possible to only run a subset of tests, all tests will execute (the reason for this is that it will start all
+  tests in parallel, but only `await` your selected subset specified with the `-t TESTNAME` option. However, all tests
+  are running and Node will not exit until they're all finished).
+- It's not possible to use `beforeEach()` and `afterEach()`.
+
+Because of the first limitation, concurrency is only enabled on the build server (via the `JEST_TEST_CONCURRENT`
+environment variable), not locally. Note: tests using `beforeEach()` will appear to work locally, but will fail on the
+build server! Don't use it!
+
 #### Regression
 
 Validate that previously tested functionality still works in light of recent changes to the CLI. This is done by fetching the functional tests of the previous published release, and running them against the new CLI code.
@@ -126,7 +140,7 @@ Before diving into it, we establish a few key concepts:
 - `CANDIDATE_VERSION` - This is the version of the code that is being built in the pipeline, and its value is stored in the `build.json` file of the packaged artifact of the repo.
 - `PREVIOUS_VERSION` - This is the version previous to the `CANDIDATE_VERSION`.
 - `CLI_VERSION` - This is the version of the CLI we are testing. It is **always** the same as the `CANDIDATE_VERSION` since we want to test the latest CLI code.
-- `FRAMEWORK_VERSION` - This is the version of the framework we are testing. It varries between the two variation of the regression suites.
+- `FRAMEWORK_VERSION` - This is the version of the framework we are testing. It varies between the two variation of the regression suites.
 Its value can either be that of `CANDIDATE_VERSION` (for testing against the latest framework code), or `PREVIOUS_VERSION` (for testing against the previously published version of the framework code).
 
 Following are the steps involved in running these tests:
@@ -146,7 +160,7 @@ Following are the steps involved in running these tests:
     - [Install the CLI](./test/integ/run-against-dist#L30) using the `CANDIDATE_VERSION` version `CANDIDATE_VERSION` env variable.
     - Execute the given script.
 
-6. Both cli regression test scripts run the same [`run_regression_against_framework_version`](./test/integ/test-cli-regression.bash#L22) function. This function accepts which framework version should the regression run against, it can be either `CANDIDATE_VERSION` or `PREVIOUS_VERSION`. Note that the argument is not the actual value of the version, but instead is just an [indirection indentifier](./test/integ/test-cli-regression.bash#L81). The function will:
+6. Both cli regression test scripts run the same [`run_regression_against_framework_version`](./test/integ/test-cli-regression.bash#L22) function. This function accepts which framework version should the regression run against, it can be either `CANDIDATE_VERSION` or `PREVIOUS_VERSION`. Note that the argument is not the actual value of the version, but instead is just an [indirection identifier](./test/integ/test-cli-regression.bash#L81). The function will:
 
     - Calculate the actual value of the previous version based on the candidate version. (fetches from github)
     - Download the previous version tarball from npm and extract the integration tests.
@@ -187,3 +201,32 @@ These two sets of integration tests have 3 running modes:
 The integration test and canary modes are used in the CDK publishing pipeline
 and the CDK canaries, respectively. You wouldn't normally need to run
 them directly that way.
+
+## Bundling
+
+Our CLI package is built and packaged using the [node-bundle](../../tools/%40aws-cdk/node-bundle/README.md) tool.
+
+This has two affects one should be aware of:
+
+### Runtime Dependencies
+
+All runtime dependencies are converted to `devDependencies`, as they are bundled inside
+the package and don't require installation by consumers. This process happens on-demand during packaging,
+this is why our [source code](./package.json) still contains those dependencies,
+but the [npm](https://www.npmjs.com/package/aws-cdk) package does not.
+
+### Attributions
+
+The bundler also creates an attributions document that lists out license information for the entire
+dependency closure. This document is stored in the [THIRD_PARTY_LICENSES](./THIRD_PARTY_LICENSES) file.
+Our build process validates that the file committed to source matches the expected auto-generated one.
+We do this so that our source code always contains the up to date attributions document, and so that we can
+backtrack/review changes to it using normal code review processes.
+
+Whenever a dependency changes (be it direct or transitive, new package or new version), the attributions document
+will change, and needs to be regenerated. For you, this means that:
+
+1. When you manually upgrade a dependency, you must also regenerate the document by running `yarn pkglint` inside the CLI package.
+2. When you build the CLI locally, you must ensure your dependencies are up to date by running `yarn install` inside the CLI package.
+Otherwise, you might get an error like so: `aws-cdk: - [bundle/outdated-attributions] THIRD_PARTY_LICENSES is outdated (fixable)`.
+

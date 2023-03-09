@@ -2,9 +2,7 @@ import { Template, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
-import { App, RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+import { RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy } from '../lib';
 
 let stack = new Stack();
@@ -15,26 +13,8 @@ beforeEach(() => {
   vpc = new ec2.Vpc(stack, 'VPC');
 });
 
-testFutureBehavior(
-  'when @aws-cdk/aws-efs:defaultEncryptionAtRest is enabled, encryption is enabled by default',
-  { [cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST]: true },
-  App,
-  (app) => {
-    const customStack = new Stack(app);
-
-    const customVpc = new ec2.Vpc(customStack, 'VPC');
-    new FileSystem(customVpc, 'EfsFileSystem', {
-      vpc: customVpc,
-    });
-
-    Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
-      Encrypted: true,
-    });
-
-  });
-
-testLegacyBehavior('when @aws-cdk/aws-efs:defaultEncryptionAtRest is missing, encryption is disabled by default', App, (app) => {
-  const customStack = new Stack(app);
+test('encryption is enabled by default', () => {
+  const customStack = new Stack();
 
   const customVpc = new ec2.Vpc(customStack, 'VPC');
   new FileSystem(customVpc, 'EfsFileSystem', {
@@ -42,9 +22,8 @@ testLegacyBehavior('when @aws-cdk/aws-efs:defaultEncryptionAtRest is missing, en
   });
 
   Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
-    Encrypted: Match.absent(),
+    Encrypted: true,
   });
-
 });
 
 test('default file system is created correctly', () => {
@@ -181,6 +160,29 @@ test('file system is created correctly with bursting throughput mode', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     ThroughputMode: 'bursting',
   });
+});
+
+test('file system is created correctly with elastic throughput mode', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    throughputMode: ThroughputMode.ELASTIC,
+    performanceMode: PerformanceMode.GENERAL_PURPOSE,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    ThroughputMode: 'elastic',
+  });
+});
+
+test('Exception when throughput mode is set to ELASTIC, performance mode cannot be MaxIO', () => {
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      throughputMode: ThroughputMode.ELASTIC,
+      performanceMode: PerformanceMode.MAX_IO,
+    });
+  }).toThrowError(/ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO/);
 });
 
 test('Exception when throughput mode is set to PROVISIONED, but provisioned throughput is not set', () => {
@@ -403,7 +405,7 @@ test('can create when using a VPC with multiple subnets per availability zone', 
   // create a vpc with two subnets in the same availability zone.
   const oneAzVpc = new ec2.Vpc(stack, 'Vpc', {
     maxAzs: 1,
-    subnetConfiguration: [{ name: 'One', subnetType: ec2.SubnetType.ISOLATED }, { name: 'Two', subnetType: ec2.SubnetType.ISOLATED }],
+    subnetConfiguration: [{ name: 'One', subnetType: ec2.SubnetType.PRIVATE_ISOLATED }, { name: 'Two', subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
     natGateways: 0,
   });
   new FileSystem(stack, 'EfsFileSystem', {
@@ -411,4 +413,48 @@ test('can create when using a VPC with multiple subnets per availability zone', 
   });
   // make sure only one mount target is created.
   Template.fromStack(stack).resourceCountIs('AWS::EFS::MountTarget', 1);
+});
+
+test('can specify file system policy', () => {
+  // WHEN
+  const myFileSystemPolicy = new iam.PolicyDocument({
+    statements: [new iam.PolicyStatement({
+      actions: [
+        'elasticfilesystem:ClientWrite',
+        'elasticfilesystem:ClientMount',
+      ],
+      principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:role/Testing_Role')],
+      resources: ['arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd'],
+      conditions: {
+        Bool: {
+          'elasticfilesystem:AccessedViaMountTarget': 'true',
+        },
+      },
+    })],
+  });
+  new FileSystem(stack, 'EfsFileSystem', { vpc, fileSystemPolicy: myFileSystemPolicy });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemPolicy: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: 'arn:aws:iam::111122223333:role/Testing_Role',
+          },
+          Action: [
+            'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientMount',
+          ],
+          Resource: 'arn:aws:elasticfilesystem:us-east-2:111122223333:file-system/fs-1234abcd',
+          Condition: {
+            Bool: {
+              'elasticfilesystem:AccessedViaMountTarget': 'true',
+            },
+          },
+        },
+      ],
+    },
+  });
 });

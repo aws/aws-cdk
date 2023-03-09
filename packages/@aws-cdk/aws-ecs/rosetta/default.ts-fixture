@@ -1,6 +1,6 @@
 // Fixture with packages imported, but nothing else
 import { Construct } from 'constructs';
-import { SecretValue, Stack } from '@aws-cdk/core';
+import { SecretValue, Stack, Size } from '@aws-cdk/core';
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ecs = require('@aws-cdk/aws-ecs');
@@ -14,6 +14,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import ssm = require('@aws-cdk/aws-ssm');
 import targets = require('@aws-cdk/aws-events-targets');
+import iam = require('@aws-cdk/aws-iam');
 import path = require('path');
 
 class Fixture extends Stack {

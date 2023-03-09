@@ -127,6 +127,11 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
   public readonly openIdConnectProviderIssuer: string;
 
   /**
+   * The thumbprints configured for this provider.
+   */
+  public readonly openIdConnectProviderthumbprints: string;
+
+  /**
    * Defines an OpenID Connect provider.
    * @param scope The definition scope
    * @param id Construct ID
@@ -135,24 +140,31 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
   public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
     super(scope, id);
 
+    const provider = this.getOrCreateProvider();
     const resource = new CustomResource(this, 'Resource', {
       resourceType: RESOURCE_TYPE,
-      serviceToken: this.getOrCreateProvider(),
+      serviceToken: provider.serviceToken,
       properties: {
         ClientIDList: props.clientIds,
         ThumbprintList: props.thumbprints,
         Url: props.url,
+
+        // code changes can cause thumbprint changes in case they weren't explicitly provided.
+        // add the code hash as a property so that CFN invokes the UPDATE handler in these cases,
+        // thus updating the thumbprint if necessary.
+        CodeHash: provider.codeHash,
       },
     });
 
     this.openIdConnectProviderArn = Token.asString(resource.ref);
     this.openIdConnectProviderIssuer = Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
+    this.openIdConnectProviderthumbprints = Token.asString(resource.getAtt('Thumbprints'));
   }
 
   private getOrCreateProvider() {
-    return CustomResourceProvider.getOrCreate(this, RESOURCE_TYPE, {
+    return CustomResourceProvider.getOrCreateProvider(this, RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'oidc-provider'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
       policyStatements: [
         {
           Effect: 'Allow',

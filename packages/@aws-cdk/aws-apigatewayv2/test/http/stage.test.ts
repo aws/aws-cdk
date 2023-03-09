@@ -163,4 +163,31 @@ describe('HttpStage with domain mapping', () => {
 
     expect(t).toThrow(/domainUrl is not available when no API mapping is associated with the Stage/);
   });
+
+  test('correctly sets throttle settings', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+
+    // WHEN
+    new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      throttle: {
+        burstLimit: 1000,
+        rateLimit: 1000,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: '$default',
+      DefaultRouteSettings: {
+        ThrottlingBurstLimit: 1000,
+        ThrottlingRateLimit: 1000,
+      },
+    });
+  });
 });

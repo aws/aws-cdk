@@ -26,9 +26,7 @@ runs a service on it:
 declare const vpc: ec2.Vpc;
 
 // Create an ECS cluster
-const cluster = new ecs.Cluster(this, 'Cluster', {
-  vpc,
-});
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 
 // Add capacity to it
 cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
@@ -52,10 +50,9 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
 
 For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
 
-## Launch Types: AWS Fargate vs Amazon EC2
+## Launch Types: AWS Fargate vs Amazon EC2 vs AWS ECS Anywhere
 
-There are two sets of constructs in this library; one to run tasks on Amazon EC2 and
-one to run tasks on AWS Fargate.
+There are three sets of constructs in this library:
 
 - Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on Amazon EC2 instances running in your account.
 - Use the `FargateTaskDefinition` and `FargateService` constructs to run tasks on
@@ -74,7 +71,9 @@ Here are the main differences:
   Application/Network Load Balancers. Only the AWS log driver is supported.
   Many host features are not supported such as adding kernel capabilities
   and mounting host devices/volumes inside the container.
-- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Only Bridge networking mode is supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
+- **AWS ECS Anywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure
+  owned by the customer. Bridge, Host and None networking modes are supported. Does not
+  support autoscaling, load balancing, cloudmap or attachment of volumes.
 
 For more information on Amazon EC2 vs AWS Fargate, networking and ECS Anywhere see the AWS Documentation:
 [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html),
@@ -96,7 +95,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
-The following code imports an existing cluster using the ARN which can be used to 
+The following code imports an existing cluster using the ARN which can be used to
 import an Amazon ECS service either EC2 or Fargate.
 
 ```ts
@@ -139,7 +138,10 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   // ... other options here ...
 });
 
-cluster.addAutoScalingGroup(autoScalingGroup);
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
 ```
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
@@ -163,6 +165,37 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   instanceType: new ec2.InstanceType('t2.micro'),
 });
 ```
+
+To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
+
+```ts
+declare const vpc: ec2.Vpc;
+const launchTemplate = new ec2.LaunchTemplate(this, 'ASG-LaunchTemplate', {
+  instanceType: new ec2.InstanceType('t3.medium'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  userData: ec2.UserData.forLinux(),
+});
+
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  mixedInstancesPolicy: {
+    instancesDistribution: {
+      onDemandPercentageAboveBaseCapacity: 50,
+    },
+    launchTemplate: launchTemplate,
+  },
+});
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+  autoScalingGroup,
+  machineImageType: ecs.MachineImageType.AMAZON_LINUX_2,
+});
+
+cluster.addAsgCapacityProvider(capacityProvider);
+```
+
 
 ### Bottlerocket
 
@@ -297,7 +330,7 @@ const container = fargateTaskDefinition.addContainer("WebContainer", {
 });
 ```
 
-For a `Ec2TaskDefinition`:
+For an `Ec2TaskDefinition`:
 
 ```ts
 const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
@@ -386,6 +419,20 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
 });
 ```
 
+To grant a principal permission to run your `TaskDefinition`, you can use the `TaskDefinition.grantRun()` method:
+
+```ts
+declare const role: iam.IGrantable;
+const taskDef = new ecs.TaskDefinition(this, 'TaskDef', {
+  cpu: '512',
+  memoryMiB: '512',
+  compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+});
+
+// Gives role required permissions to run taskDef
+taskDef.grantRun(role);
+```
+
 ### Images
 
 Images supply the software that runs inside the container. Images can be
@@ -393,8 +440,8 @@ obtained from either DockerHub or from ECR repositories, built directly from a l
 
 - `ecs.ContainerImage.fromRegistry(imageName)`: use a public image.
 - `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
-- `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
-  to start. If no tag is provided, "latest" is assumed.
+- `ecs.ContainerImage.fromEcrRepository(repo, tagOrDigest)`: use the given ECR repository as the image
+  to start. If no tag or digest is provided, "latest" is assumed.
 - `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
@@ -432,11 +479,32 @@ const newContainer = taskDefinition.addContainer('container', {
   },
 });
 newContainer.addEnvironment('QUEUE_NAME', 'MyQueue');
+newContainer.addSecret('API_KEY', ecs.Secret.fromSecretsManager(secret));
+newContainer.addSecret('DB_PASSWORD', ecs.Secret.fromSecretsManager(secret, 'password'));
 ```
 
 The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
 files is restricted to the EC2 launch type for files hosted on S3. Further details provided in the AWS documentation
 about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
+
+### Linux parameters
+
+To apply additional linux-specific options related to init process and memory management to the container, use the `linuxParameters` property:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  linuxParameters: new ecs.LinuxParameters(this, 'LinuxParameters', {
+    initProcessEnabled: true,
+    sharedMemorySize: 1024,
+    maxSwap: Size.mebibytes(5000),
+    swappiness: 90,
+  }),
+});
+```
 
 ### System controls
 
@@ -450,8 +518,8 @@ taskDefinition.addContainer('container', {
   memoryLimitMiB: 1024,
   systemControls: [
     {
-      namespace: 'net',
-      value: 'ipv4.tcp_tw_recycle',
+      namespace: 'net.ipv6.conf.all.default.disable_ipv6',
+      value: '1',
     },
   ],
 });
@@ -479,7 +547,7 @@ taskDefinition.addContainer('windowsservercore', {
 });
 ```
 
-### Using Graviton2 with Fargate  
+### Using Graviton2 with Fargate
 
 AWS Graviton2 supports AWS Fargate. For more details, please see this [blog post](https://aws.amazon.com/blogs/aws/announcing-aws-graviton2-support-for-aws-fargate-get-up-to-40-better-price-performance-for-your-serverless-containers/)
 
@@ -656,6 +724,37 @@ There are two higher-level constructs available which include a load balancer fo
 - `LoadBalancedFargateService`
 - `LoadBalancedEc2Service`
 
+### Import existing services
+
+`Ec2Service` and `FargateService` provide methods to import existing EC2/Fargate services.
+The ARN of the existing service has to be specified to import the service.
+
+Since AWS has changed the [ARN format for ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids),
+feature flag `@aws-cdk/aws-ecs:arnFormatIncludesClusterName` must be enabled to use the new ARN format.
+The feature flag changes behavior for the entire CDK project. Therefore it is not possible to mix the old and the new format in one CDK project.
+
+```tss
+declare const cluster: ecs.Cluster;
+
+// Import service from EC2 service attributes
+const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+  serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+  cluster,
+});
+
+// Import service from EC2 service ARN
+const service = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+
+// Import service from Fargate service attributes
+const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+  serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+  cluster,
+});
+
+// Import service from Fargate service ARN
+const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+```
+
 ## Task Auto-Scaling
 
 You can configure the task count of a service to match demand. Task auto-scaling is
@@ -790,13 +889,15 @@ taskDefinition.addContainer('TheContainer', {
 ### splunk Log Driver
 
 ```ts
+declare const secret: ecs.Secret;
+
 // Create a Task Definition for the container to start
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
   logging: ecs.LogDrivers.splunk({
-    token: SecretValue.secretsManager('my-splunk-token'),
+    secretToken: secret,
     url: 'my-splunk-url',
   }),
 });
@@ -993,11 +1094,25 @@ it in the constructor. Then add the Capacity Provider to the cluster. Finally,
 you can refer to the Provider by its name in your service's or task's Capacity
 Provider strategy.
 
-By default, an Auto Scaling Group Capacity Provider will manage the Auto Scaling
-Group's size for you. It will also enable managed termination protection, in
-order to prevent EC2 Auto Scaling from terminating EC2 instances that have tasks
-running on them. If you want to disable this behavior, set both
-`enableManagedScaling` to and `enableManagedTerminationProtection` to `false`.
+By default, Auto Scaling Group Capacity Providers will manage the scale-in and
+scale-out behavior of the auto scaling group based on the load your tasks put on
+the cluster, this is called [Managed Scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html#asg-capacity-providers-managed-scaling). If you'd
+rather manage scaling behavior yourself set `enableManagedScaling` to `false`.
+
+Additionally [Managed Termination Protection](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html#managed-termination-protection) is enabled by default to
+prevent scale-in behavior from terminating instances that have non-daemon tasks
+running on them. This is ideal for tasks that should be ran to completion. If your
+tasks are safe to interrupt then this protection can be disabled by setting
+`enableManagedTerminationProtection` to `false`. Managed Scaling must be enabled for
+Managed Termination Protection to work.
+
+> Currently there is a known [CloudFormation issue](https://github.com/aws/containers-roadmap/issues/631)
+> that prevents CloudFormation from automatically deleting Auto Scaling Groups that
+> have Managed Termination Protection enabled. To work around this issue you could set
+> `enableManagedTerminationProtection` to `false` on the Auto Scaling Group Capacity
+> Provider. If you'd rather not disable Managed Termination Protection, you can [manually
+> delete the Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-process-shutdown.html).
+> For other workarounds, see [this GitHub issue](https://github.com/aws/aws-cdk/issues/18179).
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1036,6 +1151,43 @@ new ecs.Ec2Service(this, 'EC2Service', {
     },
   ],
 });
+```
+
+### Cluster Default Provider Strategy
+
+A capacity provider strategy determines whether ECS tasks are launched on EC2 instances or Fargate/Fargate Spot. It can be specified at the cluster, service, or task level, and consists of one or more capacity providers. You can specify an optional base and weight value for finer control of how tasks are launched. The `base` specifies a minimum number of tasks on one capacity provider, and the `weight`s of each capacity provider determine how tasks are distributed after `base` is satisfied.
+
+You can associate a default capacity provider strategy with an Amazon ECS cluster. After you do this, a default capacity provider strategy is used when creating a service or running a standalone task in the cluster and whenever a custom capacity provider strategy or a launch type isn't specified. We recommend that you define a default capacity provider strategy for each cluster.
+
+For more information visit https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-capacity-providers.html
+
+When the service does not have a capacity provider strategy, the cluster's default capacity provider strategy will be used. Default Capacity Provider Strategy can be added by using the method `addDefaultCapacityProviderStrategy`. A capacity provider strategy cannot contain a mix of EC2 Autoscaling Group capacity providers and Fargate providers.
+
+```ts
+declare const capacityProvider: ecs.CapacityProvider;
+
+const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+  enableFargateCapacityProviders: true,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+cluster.addDefaultCapacityProviderStrategy([
+  { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+  { capacityProvider: 'FARGATE_SPOT', weight: 50 },
+]);
+```
+
+```ts
+declare const capacityProvider: ecs.CapacityProvider;
+
+const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+  enableFargateCapacityProviders: true,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+cluster.addDefaultCapacityProviderStrategy([
+  { capacityProvider: capacityProvider.capacityProviderName },
+]);
 ```
 
 ## Elastic Inference Accelerators
@@ -1129,6 +1281,82 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
       s3KeyPrefix: 'exec-command-output',
     },
     logging: ecs.ExecuteCommandLogging.OVERRIDE,
+  },
+});
+```
+
+## Amazon ECS Service Connect
+
+Service Connect is a managed AWS mesh network offering. It simplifies DNS queries and inter-service communication for
+ECS Services by allowing customers to set up simple DNS aliases for their services, which are accessible to all
+services that have enabled Service Connect.
+
+To enable Service Connect, you must have created a CloudMap namespace. The CDK can infer your cluster's default CloudMap namespace,
+or you can specify a custom namespace. You must also have created a named port mapping on at least one container in your Task Definition.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const container: ecs.ContainerDefinition;
+
+container.addPortMappings({
+  name: 'api',
+  containerPort: 8080,
+});
+
+taskDefinition.addContainer(container);
+
+cluster.addDefaultCloudMapNamespace({
+  name: 'local',
+});
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        portMappingName: 'api',
+        dnsName: 'http-api',
+        port: 80,
+      },
+    ],
+  },
+});
+```
+
+Service Connect-enabled services may now reach this service at `http-api:80`. Traffic to this endpoint will
+be routed to the container's port 8080.
+
+To opt a service into using service connect without advertising a port, simply call the 'enableServiceConnect' method on an initialized service.
+
+```ts
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition
+)
+service.enableServiceConnect();
+```
+
+Service Connect also allows custom logging, Service Discovery name, and configuration of the port where service connect traffic is received.
+
+```ts
+const customService = new ecs.FargateService(this, 'CustomizedService', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    logDriver: ecs.LogDrivers.awslogs({
+      streamPrefix: 'sc-traffic',
+    }),
+    services: [
+      {
+        portMappingName: 'api',
+        dnsName: 'customized-api',
+        port: 80,
+        ingressPortOverride: 20040,
+        discoveryName: 'custom',
+      },
+    ],
   },
 });
 ```

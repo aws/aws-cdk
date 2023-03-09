@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "cdk-integ-s3-bucket-auto-delete-objects/DefaultTest": {
+      "stacks": [
+        "cdk-s3-bucket-auto-delete-objects"
+      ],
+      "assertionStack": "cdk-integ-s3-bucket-auto-delete-objects/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegs3bucketautodeleteobjectsDefaultTestDeployAssert7EEB3F44"
+    }
+  }
+}

@@ -2,6 +2,7 @@ import * as apigateway from '@aws-cdk/aws-apigateway';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { AuthType, HttpMethod, CallApiGatewayRestApiEndpoint } from '../../lib';
 
 /*
@@ -14,10 +15,10 @@ import { AuthType, HttpMethod, CallApiGatewayRestApiEndpoint } from '../../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'CallRestApiInteg');
-const restApi = new apigateway.RestApi(stack, 'MyRestApi');
+const restApi = new apigateway.RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 
 const hello = new apigateway.LambdaIntegration(new lambda.Function(stack, 'Hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: "hello, world!" }; };'),
 }));
@@ -40,4 +41,8 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
+});
+
+new IntegTest(app, 'call-rest-api', {
+  testCases: [stack],
 });

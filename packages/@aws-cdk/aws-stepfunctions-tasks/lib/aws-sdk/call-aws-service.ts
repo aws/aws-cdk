@@ -52,6 +52,18 @@ export interface CallAwsServiceProps extends sfn.TaskStateBaseProps {
    * @default - service:action
    */
   readonly iamAction?: string;
+
+  /**
+   * Additional IAM statements that will be added to the state machine
+   * role's policy.
+   *
+   * Use in the case where the call requires more than a single statement to
+   * be executed, e.g. `rekognition:detectLabels` requires also S3 permissions
+   * to read the object on which it must act.
+   *
+   * @default - no additional statements are added
+   */
+  readonly additionalIamStatements?: iam.PolicyStatement[];
 }
 
 /**
@@ -68,13 +80,19 @@ export class CallAwsService extends sfn.TaskStateBase {
       throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
     }
 
+    const iamServiceMap: Record<string, string> = {
+      sfn: 'states',
+    };
+    const iamService = iamServiceMap[props.service] ?? props.service;
+
     this.taskPolicies = [
       new iam.PolicyStatement({
         resources: props.iamResources,
         // The prefix and the action name are case insensitive
         // https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
-        actions: [props.iamAction ?? `${props.service}:${props.action}`],
+        actions: [props.iamAction ?? `${iamService}:${props.action}`],
       }),
+      ...props.additionalIamStatements ?? [],
     ];
   }
 

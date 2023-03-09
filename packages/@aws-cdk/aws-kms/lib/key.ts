@@ -1,8 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration, Token, ContextProvider, Arn, ArnFormat } from '@aws-cdk/core';
+import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Duration, Token, ContextProvider, Arn, ArnFormat } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, Construct } from 'constructs';
+import { Construct } from 'constructs';
 import { Alias } from './alias';
 import { KeyLookupOptions } from './key-lookup';
 import { CfnKey } from './kms.generated';
@@ -94,6 +94,12 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private readonly aliases: Alias[] = [];
 
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.policy?.validateForResourcePolicy() ?? [] });
+  }
+
   /**
    * Defines a new alias for the key.
    */
@@ -123,12 +129,6 @@ abstract class KeyBase extends Resource implements IKey {
 
     this.policy.addStatements(statement);
     return { statementAdded: true, policyDependable: this.policy };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**
@@ -203,48 +203,37 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
     const grantPrincipal = grantee.grantPrincipal;
-    if (!isConstruct(grantPrincipal)) {
-      return undefined;
-    }
     // this logic should only apply to newly created
     // (= not imported) resources
-    if (!this.principalIsANewlyCreatedResource(grantPrincipal)) {
+    if (!iam.principalIsOwnedResource(grantPrincipal)) {
       return undefined;
     }
-    // return undefined;
     const keyStack = Stack.of(this);
     const granteeStack = Stack.of(grantPrincipal);
     if (keyStack === granteeStack) {
       return undefined;
     }
+
     return granteeStack.dependencies.includes(keyStack)
       ? granteeStack.account
       : undefined;
   }
 
-  private principalIsANewlyCreatedResource(principal: IConstruct): boolean {
-    // yes, this sucks
-    // this is just a temporary stopgap to stem the bleeding while we work on a proper fix
-    return principal instanceof iam.Role ||
-      principal instanceof iam.User ||
-      principal instanceof iam.Group;
-  }
-
   private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
-    if (!isConstruct(grantee)) {
+    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
       return false;
     }
     const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee);
+    const identityStack = Stack.of(grantee.grantPrincipal);
     return bucketStack.region !== identityStack.region;
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!isConstruct(grantee)) {
+    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
       return false;
     }
     const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee);
+    const identityStack = Stack.of(grantee.grantPrincipal);
     return bucketStack.account !== identityStack.account;
   }
 }
@@ -472,8 +461,8 @@ export class Key extends KeyBase {
       // policies is really the only option
       protected readonly trustAccountIdentities: boolean = true;
 
-      constructor(keyId: string) {
-        super(scope, id);
+      constructor(keyId: string, props: ResourceProps = {}) {
+        super(scope, id, props);
 
         this.keyId = keyId;
       }
@@ -484,18 +473,20 @@ export class Key extends KeyBase {
       throw new Error(`KMS key ARN must be in the format 'arn:aws:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`);
     }
 
-    return new Import(keyResourceName);
+    return new Import(keyResourceName, {
+      environmentFromArn: keyArn,
+    });
   }
 
   /**
-   * Create a mutable {@link IKey} based on a low-level {@link CfnKey}.
+   * Create a mutable `IKey` based on a low-level `CfnKey`.
    * This is most useful when combined with the cloudformation-include module.
-   * This method is different than {@link fromKeyArn()} because the {@link IKey}
+   * This method is different than `fromKeyArn()` because the `IKey`
    * returned from this method is mutable;
    * meaning, calling any mutating methods on it,
-   * like {@link IKey.addToResourcePolicy()},
+   * like `IKey.addToResourcePolicy()`,
    * will actually be reflected in the resulting template,
-   * as opposed to the object returned from {@link fromKeyArn()},
+   * as opposed to the object returned from `fromKeyArn()`,
    * on which calling those methods would have no effect.
    */
   public static fromCfnKey(cfnKey: CfnKey): IKey {
@@ -730,21 +721,4 @@ export class Key extends KeyBase {
       principals: [new iam.AccountRootPrincipal()],
     }));
   }
-}
-
-/**
- * Whether the given object is a Construct
- *
- * Normally we'd do `x instanceof Construct`, but that is not robust against
- * multiple copies of the `constructs` library on disk. This can happen
- * when upgrading and downgrading between v2 and v1, and in the use of CDK
- * Pipelines is going to an error that says "Can't use Pipeline/Pipeline/Role in
- * a cross-environment fashion", which is very confusing.
- */
-function isConstruct(x: any): x is Construct {
-  const sym = Symbol.for('constructs.Construct.node');
-  return (typeof x === 'object' && x &&
-    (x instanceof Construct // happy fast case
-    || !!(x as any).node // constructs v10
-    || !!(x as any)[sym])); // constructs v3
 }

@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Dependable, IConstruct, IDependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 
@@ -23,6 +24,13 @@ export interface CommonGrantOptions {
    * The resource ARNs to grant to
    */
   readonly resourceArns: string[];
+
+  /**
+   * Any conditions to attach to the grant
+   *
+   * @default - No conditions
+   */
+  readonly conditions?: Record<string, Record<string, unknown>>;
 }
 
 /**
@@ -58,7 +66,7 @@ export interface GrantOnPrincipalOptions extends CommonGrantOptions {
    *
    * @default - the construct in which this construct is defined
    */
-  readonly scope?: cdk.IConstruct;
+  readonly scope?: IConstruct;
 }
 
 /**
@@ -96,7 +104,7 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
  * This class is not instantiable by consumers on purpose, so that they will be
  * required to call the Grant factory functions.
  */
-export class Grant implements cdk.IDependable {
+export class Grant implements IDependable {
   /**
    * Grant the given permissions to the principal
    *
@@ -159,6 +167,7 @@ export class Grant implements cdk.IDependable {
     const statement = new PolicyStatement({
       actions: options.actions,
       resources: options.resourceArns,
+      conditions: options.conditions,
     });
 
     const addedToPrincipal = options.grantee.grantPrincipal.addToPrincipalPolicy(statement);
@@ -223,16 +232,26 @@ export class Grant implements cdk.IDependable {
   /**
    * The statement that was added to the principal's policy
    *
-   * Can be accessed to (e.g.) add additional conditions to the statement.
+   * @deprecated Use `principalStatements` instead
    */
   public readonly principalStatement?: PolicyStatement;
 
   /**
+   * The statements that were added to the principal's policy
+   */
+  public readonly principalStatements = new Array<PolicyStatement>();
+
+  /**
    * The statement that was added to the resource policy
    *
-   * Can be accessed to (e.g.) add additional conditions to the statement.
+   * @deprecated Use `resourceStatements` instead
    */
   public readonly resourceStatement?: PolicyStatement;
+
+  /**
+   * The statements that were added to the principal's policy
+   */
+  public readonly resourceStatements = new Array<PolicyStatement>();
 
   /**
    * The options originally used to set this result
@@ -242,14 +261,26 @@ export class Grant implements cdk.IDependable {
    */
   private readonly options: CommonGrantOptions;
 
+  private readonly dependables = new Array<IDependable>();
+
   private constructor(props: GrantProps) {
     this.options = props.options;
     this.principalStatement = props.principalStatement;
     this.resourceStatement = props.resourceStatement;
+    if (this.principalStatement) {
+      this.principalStatements.push(this.principalStatement);
+    }
+    if (this.resourceStatement) {
+      this.resourceStatements.push(this.resourceStatement);
+    }
+    if (props.policyDependable) {
+      this.dependables.push(props.policyDependable);
+    }
 
-    cdk.DependableTrait.implement(this, {
+    const self = this;
+    Dependable.implement(this, {
       get dependencyRoots() {
-        return props.policyDependable ? cdk.DependableTrait.get(props.policyDependable).dependencyRoots : [];
+        return Array.from(new Set(self.dependables.flatMap(d => Dependable.of(d).dependencyRoots)));
       },
     });
   }
@@ -276,10 +307,28 @@ export class Grant implements cdk.IDependable {
    *
    * The same as construct.node.addDependency(grant), but slightly nicer to read.
    */
-  public applyBefore(...constructs: cdk.IConstruct[]) {
+  public applyBefore(...constructs: IConstruct[]) {
     for (const construct of constructs) {
       construct.node.addDependency(this);
     }
+  }
+
+  /**
+   * Combine two grants into a new one
+   */
+  public combine(rhs: Grant) {
+    const combinedPrinc = [...this.principalStatements, ...rhs.principalStatements];
+    const combinedRes = [...this.resourceStatements, ...rhs.resourceStatements];
+
+    const ret = new Grant({
+      options: this.options,
+      principalStatement: combinedPrinc[0],
+      resourceStatement: combinedRes[0],
+    });
+    ret.principalStatements.splice(0, ret.principalStatements.length, ...combinedPrinc);
+    ret.resourceStatements.splice(0, ret.resourceStatements.length, ...combinedRes);
+    ret.dependables.push(...this.dependables, ...rhs.dependables);
+    return ret;
   }
 }
 
@@ -297,7 +346,7 @@ interface GrantProps {
    *
    * Used to add dependencies on grants
    */
-  readonly policyDependable?: cdk.IDependable;
+  readonly policyDependable?: IDependable;
 }
 
 /**
@@ -325,7 +374,7 @@ export interface AddToResourcePolicyResult {
    * @default - If `statementAdded` is true, the resource object itself.
    * Otherwise, no dependable.
    */
-  readonly policyDependable?: cdk.IDependable;
+  readonly policyDependable?: IDependable;
 }
 
 /**
@@ -335,11 +384,11 @@ export interface AddToResourcePolicyResult {
  * inner dependables, as they may be mutable so we need to defer
  * the query.
  */
-export class CompositeDependable implements cdk.IDependable {
-  constructor(...dependables: cdk.IDependable[]) {
-    cdk.DependableTrait.implement(this, {
-      get dependencyRoots(): cdk.IConstruct[] {
-        return Array.prototype.concat.apply([], dependables.map(d => cdk.DependableTrait.get(d).dependencyRoots));
+export class CompositeDependable implements IDependable {
+  constructor(...dependables: IDependable[]) {
+    Dependable.implement(this, {
+      get dependencyRoots(): IConstruct[] {
+        return Array.prototype.concat.apply([], dependables.map(d => Dependable.of(d).dependencyRoots));
       },
     });
   }

@@ -3,6 +3,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as ses from '@aws-cdk/aws-ses';
 import * as sns from '@aws-cdk/aws-sns';
+import * as route53 from '@aws-cdk/aws-route53';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {

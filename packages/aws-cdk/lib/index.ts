@@ -1,3 +1,2 @@
 export * from './api';
-export * from './plugin';
-export { cli } from './cli';
+export { cli, exec } from './cli';

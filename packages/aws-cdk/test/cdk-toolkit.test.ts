@@ -52,17 +52,22 @@ jest.mock('../lib/logging', () => ({
   ...jest.requireActual('../lib/logging'),
   data: mockData,
 }));
+jest.setTimeout(30_000);
 
+import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { instanceMockFrom, MockCloudExecutable, TestStackArtifact, withMocked } from './util';
+import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudformation-deployments';
+import { CloudFormationDeployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
+import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
+import { CdkToolkit, Tag, AssetBuildTime } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { flatten } from '../lib/util';
-import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
@@ -192,6 +197,7 @@ describe('readCurrentTemplate', () => {
     // WHEN
     await cdkToolkit.deploy({
       selector: { patterns: ['Test-Stack-C'] },
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
     });
 
     // THEN
@@ -225,6 +231,7 @@ describe('readCurrentTemplate', () => {
     // WHEN
     await cdkToolkit.deploy({
       selector: { patterns: ['Test-Stack-C'] },
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
     });
 
     // THEN
@@ -259,6 +266,7 @@ describe('readCurrentTemplate', () => {
     // WHEN
     await cdkToolkit.deploy({
       selector: { patterns: ['Test-Stack-C'] },
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
     });
 
     // THEN
@@ -296,6 +304,7 @@ describe('readCurrentTemplate', () => {
     // WHEN
     await cdkToolkit.deploy({
       selector: { patterns: ['Test-Stack-C'] },
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
     });
 
     // THEN
@@ -332,6 +341,7 @@ describe('readCurrentTemplate', () => {
     // WHEN
     await cdkToolkit.deploy({
       selector: { patterns: ['Test-Stack-C'] },
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
     });
 
     // THEN
@@ -365,6 +375,7 @@ describe('readCurrentTemplate', () => {
     // WHEN
     await cdkToolkit.deploy({
       selector: { patterns: ['Test-Stack-A'] },
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
     });
 
     // THEN
@@ -387,7 +398,10 @@ describe('deploy', () => {
     const toolkit = defaultToolkitSetup();
 
     // WHEN
-    await expect(() => toolkit.deploy({ selector: { patterns: ['Test-Stack-D'] } })).rejects.toThrow('No stacks match the name(s) Test-Stack-D');
+    await expect(() => toolkit.deploy({
+      selector: { patterns: ['Test-Stack-D'] },
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
+    })).rejects.toThrow('No stacks match the name(s) Test-Stack-D');
   });
 
   describe('with hotswap deployment', () => {
@@ -409,14 +423,14 @@ describe('deploy', () => {
 
       // WHEN
       await cdkToolkit.deploy({
-        selector: { patterns: ['Test-Stack-A'] },
+        selector: { patterns: ['Test-Stack-A-Display-Name'] },
         requireApproval: RequireApproval.Never,
-        hotswap: true,
+        hotswap: HotswapMode.FALL_BACK,
       });
 
       // THEN
       expect(mockCfnDeployments.deployStack).toHaveBeenCalledWith(expect.objectContaining({
-        hotswap: true,
+        hotswap: HotswapMode.FALL_BACK,
       }));
     });
   });
@@ -427,7 +441,10 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] } });
+      await toolkit.deploy({
+        selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] },
+        hotswap: HotswapMode.FULL_DEPLOYMENT,
+      });
     });
 
     test('with stacks all stacks specified as double wildcard', async () => {
@@ -435,7 +452,10 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ selector: { patterns: ['**'] } });
+      await toolkit.deploy({
+        selector: { patterns: ['**'] },
+        hotswap: HotswapMode.FULL_DEPLOYMENT,
+      });
     });
 
 
@@ -444,7 +464,10 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A'] } });
+      await toolkit.deploy({
+        selector: { patterns: ['Test-Stack-A-Display-Name'] },
+        hotswap: HotswapMode.FULL_DEPLOYMENT,
+      });
     });
 
     test('with stacks all stacks specified as wildcard', async () => {
@@ -452,12 +475,18 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ selector: { patterns: ['*'] } });
+      await toolkit.deploy({
+        selector: { patterns: ['*'] },
+        hotswap: HotswapMode.FULL_DEPLOYMENT,
+      });
     });
 
     test('with sns notification arns', async () => {
       // GIVEN
-      const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
+      const notificationArns = [
+        'arn:aws:sns:us-east-2:444455556666:MyTopic',
+        'arn:aws:sns:eu-west-1:111155556666:my-great-topic',
+      ];
       const toolkit = new CdkToolkit({
         cloudExecutable,
         configuration: cloudExecutable.configuration,
@@ -472,11 +501,35 @@ describe('deploy', () => {
       await toolkit.deploy({
         selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] },
         notificationArns,
+        hotswap: HotswapMode.FULL_DEPLOYMENT,
       });
     });
 
-    test('globless bootstrap uses environment without question', async () => {
+    test('fail with incorrect sns notification arns', async () => {
       // GIVEN
+      const notificationArns = ['arn:::cfn-my-cool-topic'];
+      const toolkit = new CdkToolkit({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: new FakeCloudFormation({
+          'Test-Stack-A': { Foo: 'Bar' },
+        }, notificationArns),
+      });
+
+      // WHEN
+      await expect(() =>
+        toolkit.deploy({
+          selector: { patterns: ['Test-Stack-A'] },
+          notificationArns,
+          hotswap: HotswapMode.FULL_DEPLOYMENT,
+        }),
+      ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
+
+    });
+
+    test('globless bootstrap uses environment without question', async () => {
+    // GIVEN
       const toolkit = defaultToolkitSetup();
 
       // WHEN
@@ -530,6 +583,79 @@ describe('deploy', () => {
       expect(cloudExecutable.hasApp).toEqual(false);
       expect(mockSynthesize).not.toHaveBeenCalled();
     });
+
+    test('can disable asset parallelism', async () => {
+      // GIVEN
+      cloudExecutable = new MockCloudExecutable({
+        stacks: [MockStack.MOCK_STACK_WITH_ASSET],
+      });
+      const fakeCloudFormation = new FakeCloudFormation({});
+
+      const toolkit = new CdkToolkit({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: fakeCloudFormation,
+      });
+
+      // WHEN
+      // Not the best test but following this through to the asset publishing library fails
+      await withMocked(fakeCloudFormation, 'buildStackAssets', async (mockBuildStackAssets) => {
+        await toolkit.deploy({
+          selector: { patterns: ['Test-Stack-Asset'] },
+          assetParallelism: false,
+          hotswap: HotswapMode.FULL_DEPLOYMENT,
+        });
+
+        expect(mockBuildStackAssets).toHaveBeenCalledWith(expect.objectContaining({
+          buildOptions: expect.objectContaining({
+            parallel: false,
+          }),
+        }));
+      });
+    });
+
+    test('can disable asset prebuild', async () => {
+      // GIVEN
+      cloudExecutable = new MockCloudExecutable({
+        stacks: [MockStack.MOCK_STACK_WITH_ASSET],
+      });
+      const fakeCloudFormation = new FakeCloudFormation({});
+
+      const toolkit = new CdkToolkit({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: fakeCloudFormation,
+      });
+
+      // WHEN
+      // Not the best test but following this through to the asset publishing library fails
+      await withMocked(fakeCloudFormation, 'buildStackAssets', async (mockBuildStackAssets) => {
+        await toolkit.deploy({
+          selector: { patterns: ['Test-Stack-Asset'] },
+          assetBuildTime: AssetBuildTime.JUST_IN_TIME,
+          hotswap: HotswapMode.FULL_DEPLOYMENT,
+        });
+
+        expect(mockBuildStackAssets).not.toHaveBeenCalled();
+      });
+    });
+  });
+});
+
+describe('destroy', () => {
+  test('destroy correct stack', async () => {
+    const toolkit = defaultToolkitSetup();
+
+    await expect(() => {
+      return toolkit.destroy({
+        selector: { patterns: ['Test-Stack-A/Test-Stack-C'] },
+        exclusively: true,
+        force: true,
+        fromDeploy: true,
+      });
+    }).resolves;
   });
 });
 
@@ -538,7 +664,10 @@ describe('watch', () => {
     const toolkit = defaultToolkitSetup();
 
     await expect(() => {
-      return toolkit.watch({ selector: { patterns: [] } });
+      return toolkit.watch({
+        selector: { patterns: [] },
+        hotswap: HotswapMode.HOTSWAP_ONLY,
+      });
     }).rejects.toThrow("Cannot use the 'watch' command without specifying at least one directory to monitor. " +
       'Make sure to add a "watch" key to your cdk.json');
   });
@@ -547,7 +676,10 @@ describe('watch', () => {
     cloudExecutable.configuration.settings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
 
-    await toolkit.watch({ selector: { patterns: [] } });
+    await toolkit.watch({
+      selector: { patterns: [] },
+      hotswap: HotswapMode.HOTSWAP_ONLY,
+    });
 
     const includeArgs = fakeChokidarWatch.includeArgs;
     expect(includeArgs.length).toBe(1);
@@ -559,7 +691,10 @@ describe('watch', () => {
     });
     const toolkit = defaultToolkitSetup();
 
-    await toolkit.watch({ selector: { patterns: [] } });
+    await toolkit.watch({
+      selector: { patterns: [] },
+      hotswap: HotswapMode.HOTSWAP_ONLY,
+    });
 
     expect(fakeChokidarWatch.includeArgs).toStrictEqual(['my-dir']);
   });
@@ -570,7 +705,10 @@ describe('watch', () => {
     });
     const toolkit = defaultToolkitSetup();
 
-    await toolkit.watch({ selector: { patterns: [] } });
+    await toolkit.watch({
+      selector: { patterns: [] },
+      hotswap: HotswapMode.HOTSWAP_ONLY,
+    });
 
     expect(fakeChokidarWatch.includeArgs).toStrictEqual(['my-dir1', '**/my-dir2/*']);
   });
@@ -580,7 +718,10 @@ describe('watch', () => {
     cloudExecutable.configuration.settings.set(['output'], 'cdk.out');
     const toolkit = defaultToolkitSetup();
 
-    await toolkit.watch({ selector: { patterns: [] } });
+    await toolkit.watch({
+      selector: { patterns: [] },
+      hotswap: HotswapMode.HOTSWAP_ONLY,
+    });
 
     expect(fakeChokidarWatch.excludeArgs).toStrictEqual([
       'cdk.out/**',
@@ -596,7 +737,10 @@ describe('watch', () => {
     });
     const toolkit = defaultToolkitSetup();
 
-    await toolkit.watch({ selector: { patterns: [] } });
+    await toolkit.watch({
+      selector: { patterns: [] },
+      hotswap: HotswapMode.HOTSWAP_ONLY,
+    });
 
     const excludeArgs = fakeChokidarWatch.excludeArgs;
     expect(excludeArgs.length).toBe(5);
@@ -609,12 +753,82 @@ describe('watch', () => {
     });
     const toolkit = defaultToolkitSetup();
 
-    await toolkit.watch({ selector: { patterns: [] } });
+    await toolkit.watch({
+      selector: { patterns: [] },
+      hotswap: HotswapMode.HOTSWAP_ONLY,
+    });
 
     const excludeArgs = fakeChokidarWatch.excludeArgs;
     expect(excludeArgs.length).toBe(6);
     expect(excludeArgs[0]).toBe('my-dir1');
     expect(excludeArgs[1]).toBe('**/my-dir2');
+  });
+
+  test('allows watching with deploy concurrency', async () => {
+    cloudExecutable.configuration.settings.set(['watch'], {});
+    const toolkit = defaultToolkitSetup();
+    const cdkDeployMock = jest.fn();
+    toolkit.deploy = cdkDeployMock;
+
+    await toolkit.watch({
+      selector: { patterns: [] },
+      concurrency: 3,
+      hotswap: HotswapMode.HOTSWAP_ONLY,
+    });
+    fakeChokidarWatcherOn.readyCallback();
+
+    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ concurrency: 3 }));
+  });
+
+  describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+    test('passes through the correct hotswap mode to deployStack()', async () => {
+      cloudExecutable.configuration.settings.set(['watch'], {});
+      const toolkit = defaultToolkitSetup();
+      const cdkDeployMock = jest.fn();
+      toolkit.deploy = cdkDeployMock;
+
+      await toolkit.watch({ selector: { patterns: [] }, hotswap: hotswapMode });
+      fakeChokidarWatcherOn.readyCallback();
+
+      expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: hotswapMode }));
+    });
+  });
+
+  test('respects HotswapMode.HOTSWAP_ONLY', async () => {
+    cloudExecutable.configuration.settings.set(['watch'], {});
+    const toolkit = defaultToolkitSetup();
+    const cdkDeployMock = jest.fn();
+    toolkit.deploy = cdkDeployMock;
+
+    await toolkit.watch({ selector: { patterns: [] }, hotswap: HotswapMode.HOTSWAP_ONLY });
+    fakeChokidarWatcherOn.readyCallback();
+
+    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.HOTSWAP_ONLY }));
+  });
+
+  test('respects HotswapMode.FALL_BACK', async () => {
+    cloudExecutable.configuration.settings.set(['watch'], {});
+    const toolkit = defaultToolkitSetup();
+    const cdkDeployMock = jest.fn();
+    toolkit.deploy = cdkDeployMock;
+
+    await toolkit.watch({ selector: { patterns: [] }, hotswap: HotswapMode.FALL_BACK });
+    fakeChokidarWatcherOn.readyCallback();
+
+    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.FALL_BACK }));
+  });
+
+
+  test('respects HotswapMode.FULL_DEPLOYMENT', async () => {
+    cloudExecutable.configuration.settings.set(['watch'], {});
+    const toolkit = defaultToolkitSetup();
+    const cdkDeployMock = jest.fn();
+    toolkit.deploy = cdkDeployMock;
+
+    await toolkit.watch({ selector: { patterns: [] }, hotswap: HotswapMode.FULL_DEPLOYMENT });
+    fakeChokidarWatcherOn.readyCallback();
+
+    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.FULL_DEPLOYMENT }));
   });
 
   describe('with file change events', () => {
@@ -626,7 +840,10 @@ describe('watch', () => {
       toolkit = defaultToolkitSetup();
       cdkDeployMock = jest.fn();
       toolkit.deploy = cdkDeployMock;
-      await toolkit.watch({ selector: { patterns: [] } });
+      await toolkit.watch({
+        selector: { patterns: [] },
+        hotswap: HotswapMode.HOTSWAP_ONLY,
+      });
     });
 
     test("does not trigger a 'deploy' before the 'ready' event has fired", async () => {
@@ -681,7 +898,9 @@ describe('synth', () => {
     const toolkit = defaultToolkitSetup();
     await toolkit.synth([], false, false);
 
-    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-A-Display-Name, Test-Stack-B');
+    // Separate tests as colorizing hampers detection
+    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-A-Display-Name');
+    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-B');
   });
 
   test('with no stdout option', async () => {
@@ -689,7 +908,7 @@ describe('synth', () => {
     const toolkit = defaultToolkitSetup();
 
     // THEN
-    await toolkit.synth(['Test-Stack-A'], false, true);
+    await toolkit.synth(['Test-Stack-A-Display-Name'], false, true);
     expect(mockData.mock.calls.length).toEqual(0);
   });
 
@@ -857,6 +1076,23 @@ class MockStack {
     },
     displayName: 'Test-Stack-A/witherrors',
   }
+  public static readonly MOCK_STACK_WITH_ASSET: TestStackArtifact = {
+    stackName: 'Test-Stack-Asset',
+    template: { Resources: { TemplateName: 'Test-Stack-Asset' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    assetManifest: {
+      version: Manifest.version(),
+      files: {
+        xyz: {
+          source: {
+            path: path.resolve(__dirname, '..', 'LICENSE'),
+          },
+          destinations: {
+          },
+        },
+      },
+    },
+  }
 }
 
 class FakeCloudFormation extends CloudFormationDeployments {
@@ -867,7 +1103,7 @@ class FakeCloudFormation extends CloudFormationDeployments {
     expectedTags: { [stackName: string]: { [key: string]: string } } = {},
     expectedNotificationArns?: string[],
   ) {
-    super({ sdkProvider: undefined as any });
+    super({ sdkProvider: new MockSdkProvider() });
 
     for (const [stackName, tags] of Object.entries(expectedTags)) {
       this.expectedTags[stackName] =
@@ -880,9 +1116,17 @@ class FakeCloudFormation extends CloudFormationDeployments {
   }
 
   public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    expect([MockStack.MOCK_STACK_A.stackName, MockStack.MOCK_STACK_B.stackName, MockStack.MOCK_STACK_C.stackName])
-      .toContain(options.stack.stackName);
-    expect(options.tags).toEqual(this.expectedTags[options.stack.stackName]);
+    expect([
+      MockStack.MOCK_STACK_A.stackName,
+      MockStack.MOCK_STACK_B.stackName,
+      MockStack.MOCK_STACK_C.stackName,
+      MockStack.MOCK_STACK_WITH_ASSET.stackName,
+    ]).toContain(options.stack.stackName);
+
+    if (this.expectedTags[options.stack.stackName]) {
+      expect(options.tags).toEqual(this.expectedTags[options.stack.stackName]);
+    }
+
     expect(options.notificationArns).toEqual(this.expectedNotificationArns);
     return Promise.resolve({
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.stackName}/MockedOut`,
@@ -892,6 +1136,11 @@ class FakeCloudFormation extends CloudFormationDeployments {
     });
   }
 
+  public destroyStack(options: DestroyStackOptions): Promise<void> {
+    expect(options.stack).toBeDefined();
+    return Promise.resolve();
+  }
+
   public readCurrentTemplate(stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
     switch (stack.stackName) {
       case MockStack.MOCK_STACK_A.stackName:
@@ -899,6 +1148,8 @@ class FakeCloudFormation extends CloudFormationDeployments {
       case MockStack.MOCK_STACK_B.stackName:
         return Promise.resolve({});
       case MockStack.MOCK_STACK_C.stackName:
+        return Promise.resolve({});
+      case MockStack.MOCK_STACK_WITH_ASSET.stackName:
         return Promise.resolve({});
       default:
         return Promise.reject(`Not an expected mock stack: ${stack.stackName}`);

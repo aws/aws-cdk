@@ -3,8 +3,8 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { getResourceArn } from '../resource-arn-suffix';
 import { ContainerOverride } from './run-ecs-task-base-types';
+import { getResourceArn } from '../resource-arn-suffix';
 
 /**
  * Basic properties for ECS Tasks
@@ -20,6 +20,8 @@ export interface CommonEcsRunTaskProps {
    *
    * Note: this must be TaskDefinition, and not ITaskDefinition,
    * as it requires properties that are not known for imported task definitions
+   * If you want to run a RunTask with an imported task definition,
+   * consider using CustomState
    */
   readonly taskDefinition: ecs.TaskDefinition;
 
@@ -128,7 +130,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     securityGroup?: ec2.ISecurityGroup) {
 
     if (subnetSelection === undefined) {
-      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
+      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_EGRESS };
     }
 
     // If none is given here, one will be created later on during bind()

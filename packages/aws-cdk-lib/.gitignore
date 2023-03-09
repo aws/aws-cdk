@@ -6,8 +6,13 @@
 !NOTICE
 !README.md
 !scripts/
+!scripts/*.ts
+!scripts/*.sh
+scripts/*.d.ts
 
 .LAST_BUILD
 *.snk
 junit.xml
 !.eslintrc.js
+dist
+.LAST_PACKAGE

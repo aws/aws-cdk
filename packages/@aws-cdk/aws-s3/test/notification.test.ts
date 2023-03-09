@@ -146,4 +146,43 @@ describe('notification', () => {
       }),
     }, { suffix: '.png' }, { suffix: '.zip' })).toThrow(/suffix rule/);
   });
+
+  test('EventBridge notification custom resource', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new s3.Bucket(stack, 'MyBucket', {
+      eventBridgeEnabled: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+      NotificationConfiguration: {
+        EventBridgeConfiguration: {},
+      },
+    });
+  });
+  test('check notifications handler runtime version', () => {
+    const stack = new cdk.Stack();
+
+    const importedRole = iam.Role.fromRoleArn(stack, 'role', 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch');
+
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+      notificationsHandlerRole: importedRole,
+    });
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: 'python3.9',
+    });
+  });
 });

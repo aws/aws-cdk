@@ -65,8 +65,53 @@ describe('Metric Math', () => {
     expect(m.with({ period: Duration.minutes(10) })).toEqual(m);
 
     expect(m.with({ period: Duration.minutes(5) })).not.toEqual(m);
+  });
 
+  test('math expression referring to unknown expressions produces a warning', () => {
+    const m = new MathExpression({
+      expression: 'm1 + m2',
+    });
 
+    expect(m.warnings).toContainEqual(expect.stringContaining("'m1 + m2' references unknown identifiers"));
+  });
+
+  test('metrics METRICS expression does not produce warning for unknown identifier', () => {
+    const m = new MathExpression({
+      expression: 'SUM(METRICS())',
+      usingMetrics: {},
+    });
+
+    expect(m.warnings).toBeUndefined();
+  });
+
+  test('metrics search expression does not produce warning for unknown identifier', () => {
+    const m = new MathExpression({
+      expression: "SEARCH('{dimension_one, dimension_two} my_metric', 'Average', 300)",
+      usingMetrics: {},
+    });
+
+    expect(m.warnings).toBeUndefined();
+  });
+
+  test('metrics insights expression does not produce warning for unknown identifier', () => {
+    const m = new MathExpression({
+      expression: "SELECT AVG(CpuUsage) FROM EC2 WHERE Instance = '123456'",
+    });
+
+    expect(m.warnings).toBeUndefined();
+  });
+
+  test('math expression referring to unknown expressions produces a warning, even when nested', () => {
+    const m = new MathExpression({
+      expression: 'e1 + 5',
+      usingMetrics: {
+        e1: new MathExpression({
+          expression: 'm1 + m2',
+        }),
+      },
+    });
+
+    expect(m.warnings).toContainEqual(expect.stringContaining("'m1 + m2' references unknown identifiers"));
   });
 
   describe('in graphs', () => {
@@ -142,6 +187,27 @@ describe('Metric Math', () => {
         [{ expression: 'b + c', visible: false, id: 'e' }],
         ['Test', 'ACount', { visible: false, id: 'b' }],
         ['Test', 'CCount', { visible: false, id: 'c' }],
+      ]);
+
+
+    });
+
+    test('passing an empty string as the label of a MathExpressions does not emit a label', () => {
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + e',
+            label: '',
+            usingMetrics: {
+              a,
+            },
+          }),
+        ],
+      });
+
+      graphMetricsAre(graph, [
+        [{ expression: 'a + e' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
       ]);
 
 

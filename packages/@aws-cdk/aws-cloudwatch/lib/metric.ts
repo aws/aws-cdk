@@ -1,16 +1,13 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as constructs from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
-import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
+import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
-import { normalizeStatistic, parseStatistic } from './private/statistic';
+import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
+import { Stats } from './stats';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
-export type DimensionHash = {[dim: string]: any};
+export type DimensionHash = { [dim: string]: any };
 
 export type DimensionsMap = { [dim: string]: string };
 
@@ -28,6 +25,8 @@ export interface CommonMetricOptions {
   /**
    * What function to use for aggregating.
    *
+   * Use the `aws_cloudwatch.Stats` helper class to construct valid input strings.
+   *
    * Can be one of the following:
    *
    * - "Minimum" | "min"
@@ -36,6 +35,11 @@ export interface CommonMetricOptions {
    * - "Sum" | "sum"
    * - "SampleCount | "n"
    * - "pNN.NN"
+   * - "tmNN.NN" | "tm(NN.NN%:NN.NN%)"
+   * - "iqm"
+   * - "wmNN.NN" | "wm(NN.NN%:NN.NN%)"
+   * - "tcNN.NN" | "tc(NN.NN%:NN.NN%)"
+   * - "tsNN.NN" | "ts(NN.NN%:NN.NN%)"
    *
    * @default Average
    */
@@ -75,6 +79,18 @@ export interface CommonMetricOptions {
 
   /**
    * Label for this metric when added to a Graph in a Dashboard
+   *
+   * You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
+   * to show summary information about the entire displayed time series
+   * in the legend. For example, if you use:
+   *
+   * ```
+   * [max: ${MAX}] MyMetric
+   * ```
+   *
+   * As the metric label, the maximum value in the visible range will
+   * be shown next to the time series name in the graph's legend.
+   *
    * @default - No label
    */
   readonly label?: string;
@@ -127,7 +143,28 @@ export interface MetricOptions extends CommonMetricOptions {
  */
 export interface MathExpressionOptions {
   /**
-   * Label for this metric when added to a Graph in a Dashboard
+   * Label for this expression when added to a Graph in a Dashboard
+   *
+   * If this expression evaluates to more than one time series (for
+   * example, through the use of `METRICS()` or `SEARCH()` expressions),
+   * each time series will appear in the graph using a combination of the
+   * expression label and the individual metric label. Specify the empty
+   * string (`''`) to suppress the expression label and only keep the
+   * metric label.
+   *
+   * You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
+   * to show summary information about the displayed time series
+   * in the legend. For example, if you use:
+   *
+   * ```
+   * [max: ${MAX}] MyMetric
+   * ```
+   *
+   * As the metric label, the maximum value in the visible range will
+   * be shown next to the time series name in the graph's legend. If the
+   * math expression produces more than one time series, the maximum
+   * will be shown for each individual time series produce by this
+   * math expression.
    *
    * @default - Expression value is used as label
    */
@@ -161,13 +198,13 @@ export interface MathExpressionOptions {
   readonly searchAccount?: string;
 
   /**
-    * Region to evaluate search expressions within.
-    *
-    * Specifying a searchRegion has no effect to the region used
-    * for metrics within the expression (passed via usingMetrics).
-    *
-    * @default - Deployment region.
-    */
+   * Region to evaluate search expressions within.
+   *
+   * Specifying a searchRegion has no effect to the region used
+   * for metrics within the expression (passed via usingMetrics).
+   *
+   * @default - Deployment region.
+   */
   readonly searchRegion?: string;
 }
 
@@ -246,17 +283,34 @@ export class Metric implements IMetric {
   /** Region which this metric comes from. */
   public readonly region?: string;
 
+  /** Warnings attached to this metric. */
+  public readonly warnings?: string[];
+
   constructor(props: MetricProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     const periodSec = this.period.toSeconds();
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
       throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
+
+    this.warnings = undefined;
     this.dimensions = this.validateDimensions(props.dimensionsMap ?? props.dimensions);
     this.namespace = props.namespace;
     this.metricName = props.metricName;
-    // Try parsing, this will throw if it's not a valid stat
-    this.statistic = normalizeStatistic(props.statistic || 'Average');
+
+    const parsedStat = parseStatistic(props.statistic || Stats.AVERAGE);
+    if (parsedStat.type === 'generic') {
+      // Unrecognized statistic, do not throw, just warn
+      // There may be a new statistic that this lib does not support yet
+      const label = props.label ? `, label "${props.label}"`: '';
+      this.warnings = [
+        `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
+          ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
+          ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.',
+      ];
+    }
+    this.statistic = normalizeStatistic(parsedStat);
+
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
@@ -313,7 +367,7 @@ export class Metric implements IMetric {
    * If the scope we attach to is in an environment-agnostic stack,
    * nothing is done and the same Metric object is returned.
    */
-  public attachTo(scope: constructs.IConstruct): Metric {
+  public attachTo(scope: IConstruct): Metric {
     const stack = cdk.Stack.of(scope);
 
     return this.with({
@@ -349,14 +403,22 @@ export class Metric implements IMetric {
       throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
-    const stat = parseStatistic(metricConfig.metricStat.statistic);
+    const parsed = parseStatistic(metricConfig.metricStat.statistic);
+
+    let extendedStatistic: string | undefined = undefined;
+    if (parsed.type === 'single') {
+      extendedStatistic = singleStatisticToString(parsed);
+    } else if (parsed.type === 'pair') {
+      extendedStatistic = pairStatisticToString(parsed);
+    }
+
     return {
       dimensions: metricConfig.metricStat.dimensions,
       namespace: metricConfig.metricStat.namespace,
       metricName: metricConfig.metricStat.metricName,
       period: metricConfig.metricStat.period.toSeconds(),
-      statistic: stat.type === 'simple' ? stat.statistic : undefined,
-      extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
+      statistic: parsed.type === 'simple' ? parsed.statistic as Statistic : undefined,
+      extendedStatistic,
       unit: this.unit,
     };
   }
@@ -520,6 +582,11 @@ export class MathExpression implements IMetric {
    */
   public readonly searchRegion?: string;
 
+  /**
+   * Warnings generated by this math expression
+   */
+  public readonly warnings?: string[];
+
   constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     this.expression = props.expression;
@@ -535,6 +602,27 @@ export class MathExpression implements IMetric {
     }
 
     this.validateNoIdConflicts();
+
+    // Check that all IDs used in the expression are also in the `usingMetrics` map. We
+    // can't throw on this anymore since we didn't use to do this validation from the start
+    // and now there will be loads of people who are violating the expected contract, but
+    // we can add warnings.
+    const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(i => !this.usingMetrics[i]);
+
+    const warnings: string[] = [];
+
+    if (!this.expression.toUpperCase().match('\\s*SELECT|SEARCH|METRICS\\s.*') && missingIdentifiers.length > 0) {
+      warnings.push(`Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`);
+    }
+
+    // Also copy warnings from deeper levels so graphs, alarms only have to inspect the top-level objects
+    for (const m of Object.values(this.usingMetrics)) {
+      warnings.push(...m.warnings ?? []);
+    }
+
+    if (warnings.length > 0) {
+      this.warnings = warnings;
+    }
   }
 
   /**
@@ -644,13 +732,25 @@ export class MathExpression implements IMetric {
       });
     }
   }
-
 }
 
-const VALID_VARIABLE = new RegExp('^[a-z][a-zA-Z0-9_]*$');
+/**
+ * Pattern for a variable name. Alphanum starting with lowercase.
+ */
+const VARIABLE_PAT = '[a-z][a-zA-Z0-9_]*';
+
+const VALID_VARIABLE = new RegExp(`^${VARIABLE_PAT}$`);
+const FIND_VARIABLE = new RegExp(VARIABLE_PAT, 'g');
 
 function validVariableName(x: string) {
   return VALID_VARIABLE.test(x);
+}
+
+/**
+ * Return all variable names used in an expression
+ */
+function allIdentifiersInExpression(x: string) {
+  return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
 }
 
 /**
@@ -808,4 +908,14 @@ interface IModifiableMetric {
 
 function isModifiableMetric(m: any): m is IModifiableMetric {
   return typeof m === 'object' && m !== null && !!m.with;
+}
+
+// Polyfill for string.matchAll(regexp)
+function matchAll(x: string, re: RegExp): RegExpMatchArray[] {
+  const ret = new Array<RegExpMatchArray>();
+  let m: RegExpExecArray | null;
+  while (m = re.exec(x)) {
+    ret.push(m);
+  }
+  return ret;
 }

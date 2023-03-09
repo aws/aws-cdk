@@ -94,6 +94,85 @@ describe('Origin Groups', () => {
     });
   });
 
+  test('correctly render the OriginGroups property of DistributionConfig with originId set', () => {
+    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'), { originId: 'MyCustomOrigin1' });
+    const originGroup = new origins.OriginGroup({
+      primaryOrigin,
+      fallbackOrigin: failoverOrigin,
+      fallbackStatusCodes: [500],
+    });
+
+    new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: originGroup },
+    });
+
+    const primaryOriginId = 'DistributionOrigin13547B94F';
+    const originGroupId = 'DistributionOriginGroup1A1A31B49';
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          TargetOriginId: originGroupId,
+        },
+        Origins: [
+          {
+            Id: primaryOriginId,
+            DomainName: {
+              'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'],
+            },
+            S3OriginConfig: {
+              OriginAccessIdentity: {
+                'Fn::Join': ['', [
+                  'origin-access-identity/cloudfront/',
+                  { Ref: 'DistributionOrigin1S3Origin5F5C0696' },
+                ]],
+              },
+            },
+          },
+          {
+            Id: 'MyCustomOrigin1',
+            DomainName: {
+              'Fn::Join': ['', [
+                'imported-bucket.s3.',
+                { Ref: 'AWS::Region' },
+                '.',
+                { Ref: 'AWS::URLSuffix' },
+              ]],
+            },
+            S3OriginConfig: {
+              OriginAccessIdentity: {
+                'Fn::Join': ['', [
+                  'origin-access-identity/cloudfront/',
+                  { Ref: 'DistributionOrigin2S3OriginE484D4BF' },
+                ]],
+              },
+            },
+          },
+        ],
+        OriginGroups: {
+          Items: [
+            {
+              FailoverCriteria: {
+                StatusCodes: {
+                  Items: [500],
+                  Quantity: 1,
+                },
+              },
+              Id: 'DistributionOriginGroup1A1A31B49',
+              Members: {
+                Items: [
+                  { OriginId: primaryOriginId },
+                  { OriginId: 'MyCustomOrigin1' },
+                ],
+                Quantity: 2,
+              },
+            },
+          ],
+          Quantity: 1,
+        },
+      },
+    });
+  });
+
   test('cannot have an Origin with their own failover configuration as the primary Origin', () => {
     const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
     const originGroup = new origins.OriginGroup({

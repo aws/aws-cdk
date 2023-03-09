@@ -11,7 +11,7 @@ test('minimal', () => {
   // WHEN
   new triggers.TriggerFunction(stack, 'MyTrigger', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromInline('foo'),
   });
 
@@ -19,7 +19,7 @@ test('minimal', () => {
   const template = Template.fromStack(stack);
   template.hasResourceProperties('AWS::Lambda::Function', {});
   template.hasResourceProperties('Custom::Trigger', {
-    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B707afb4f5c680fa04113c095ec4e8b5d' },
+    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B555ea1a8a066d494bd9b85921db605fb' },
   });
 });
 
@@ -33,7 +33,7 @@ test('before/after', () => {
 
   // WHEN
   const myTrigger = new triggers.TriggerFunction(stack, 'MyTrigger', {
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromInline('zoo'),
     handler: 'index.handler',
 
@@ -64,4 +64,28 @@ test('before/after', () => {
   dependsOn(triggerId, topic2Id);
   dependsOn(topic3Id, triggerId);
   dependsOn(topic4Id, triggerId);
+});
+
+test('multiple functions', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new triggers.TriggerFunction(stack, 'MyTrigger', {
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromInline('foo'),
+  });
+
+  new triggers.TriggerFunction(stack, 'MySecondTrigger', {
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromInline('bar'),
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  const roles = template.findResources('AWS::IAM::Role');
+  const triggerIamRole = roles.AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A;
+  expect(triggerIamRole.Properties.Policies[0].PolicyDocument.Statement.length).toBe(2);
 });

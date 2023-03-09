@@ -1,8 +1,8 @@
 import { format } from 'util';
 import * as chalk from 'chalk';
-import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
+import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { formatTable } from './format-table';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
@@ -340,7 +340,7 @@ class Formatter {
      */
     function normalizePath(p: string) {
       if (p.startsWith('/')) {
-        p = p.substr(1);
+        p = p.slice(1);
       }
 
       let parts = p.split('/');

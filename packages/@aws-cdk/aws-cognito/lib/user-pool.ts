@@ -1,4 +1,4 @@
-import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IKey } from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
@@ -60,6 +60,25 @@ export interface AutoVerifiedAttrs {
   /**
    * Whether the phone number of the user should be auto verified at sign up.
    * @default - true, if phone is turned on for `signIn`. false, otherwise.
+   */
+  readonly phone?: boolean;
+}
+
+/**
+ * Attributes that will be kept until the user verifies the changed attribute.
+ */
+export interface KeepOriginalAttrs {
+  /**
+   * Whether the email address of the user should remain the original value until the new email address is verified.
+   *
+   * @default - false
+   */
+  readonly email?: boolean;
+
+  /**
+   * Whether the phone number of the user should remain the original value until the new phone number is verified.
+   *
+   * @default - false
    */
   readonly phone?: boolean;
 }
@@ -478,6 +497,19 @@ export interface DeviceTracking {
 }
 
 /**
+ * The different ways in which a user pool's Advanced Security Mode can be configured.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-userpooladdons.html#cfn-cognito-userpool-userpooladdons-advancedsecuritymode
+ */
+export enum AdvancedSecurityMode {
+  /** Enable advanced security mode */
+  ENFORCED = 'ENFORCED',
+  /** gather metrics on detected risks without taking action. Metrics are published to Amazon CloudWatch */
+  AUDIT = 'AUDIT',
+  /** Advanced security mode is disabled */
+  OFF = 'OFF'
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -523,6 +555,14 @@ export interface UserPoolProps {
   readonly smsRoleExternalId?: string;
 
   /**
+   * The region to integrate with SNS to send SMS messages
+   *
+   * This property will do nothing if SMS configuration is not configured
+   * @default - The same region as the user pool, with a few exceptions - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sms-settings.html#user-pool-sms-settings-first-time
+   */
+  readonly snsRegion?: string;
+
+  /**
    * Setting this would explicitly enable or disable SMS role creation.
    * When left unspecified, CDK will determine based on other properties if a role is needed or not.
    * @default - CDK will determine based on other properties of the user pool if an SMS role should be created or not.
@@ -552,6 +592,14 @@ export interface UserPoolProps {
    * If absent, no attributes will be auto-verified.
    */
   readonly autoVerify?: AutoVerifiedAttrs;
+
+  /**
+   * Attributes which Cognito will look to handle changes to the value of your users' email address and phone number attributes.
+   * EMAIL and PHONE are the only available options.
+   *
+   * @default - Nothing is kept.
+   */
+  readonly keepOriginal?: KeepOriginalAttrs;
 
   /**
    * The set of attributes that are required for every user in the user pool.
@@ -585,8 +633,8 @@ export interface UserPoolProps {
   /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
    *
-   * @default - { sms: true, oneTimePassword: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
-   * { sms: false, oneTimePassword: false }, otherwise
+   * @default - { sms: true, otp: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
+   * { sms: false, otp: false }, otherwise
    */
   readonly mfaSecondFactor?: MfaSecondFactor;
 
@@ -639,6 +687,13 @@ export interface UserPoolProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
+   * Indicates whether the user pool should have deletion protection enabled.
+   *
+   * @default false
+   */
+  readonly deletionProtection?: boolean;
+
+  /**
    * Device tracking settings
    * @default - see defaults on each property of DeviceTracking.
    */
@@ -650,6 +705,12 @@ export interface UserPoolProps {
    * @default - no key ID configured
    */
   readonly customSenderKmsKey?: IKey;
+
+  /**
+   * The user pool's Advanced Security Mode
+   * @default - no value
+   */
+  readonly advancedSecurityMode?: AdvancedSecurityMode;
 }
 
 /**
@@ -695,6 +756,12 @@ export interface IUserPool extends IResource {
    * Register an identity provider with this user pool.
    */
   registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
+
+  /**
+   * Adds an IAM policy statement associated with this user pool to an
+   * IAM principal's policy.
+   */
+  grant(grantee: IGrantable, ...actions: string[]): Grant;
 }
 
 abstract class UserPoolBase extends Resource implements IUserPool {
@@ -725,6 +792,15 @@ abstract class UserPoolBase extends Resource implements IUserPool {
 
   public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
     this.identityProviders.push(provider);
+  }
+
+  public grant(grantee: IGrantable, ...actions: string[]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.userPoolArn],
+      scope: this,
+    });
   }
 }
 
@@ -877,6 +953,9 @@ export class UserPool extends UserPoolBase {
       emailVerificationSubject,
       smsVerificationMessage,
       verificationMessageTemplate,
+      userPoolAddOns: undefinedIfNoKeys({
+        advancedSecurityMode: props.advancedSecurityMode,
+      }),
       schema: this.schemaConfiguration(props),
       mfaConfiguration: props.mfa,
       enabledMfas: this.mfaConfiguration(props),
@@ -887,6 +966,8 @@ export class UserPool extends UserPoolBase {
       }),
       accountRecoverySetting: this.accountRecovery(props),
       deviceConfiguration: props.deviceTracking,
+      userAttributeUpdateSettings: this.configureUserAttributeChanges(props),
+      deletionProtection: defaultDeletionProtection(props.deletionProtection),
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
 
@@ -928,7 +1009,8 @@ export class UserPool extends UserPoolBase {
     const capitalize = name.charAt(0).toUpperCase() + name.slice(1);
     fn.addPermission(`${capitalize}Cognito`, {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
-      sourceArn: this.userPoolArn,
+      sourceArn: Lazy.string({ produce: () => this.userPoolArn }),
+      scope: this,
     });
   }
 
@@ -1032,6 +1114,7 @@ export class UserPool extends UserPoolBase {
       return {
         snsCallerArn: props.smsRole.roleArn,
         externalId: props.smsRoleExternalId,
+        snsRegion: props.snsRegion,
       };
     }
 
@@ -1046,7 +1129,7 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
 
-    const smsRoleExternalId = Names.uniqueId(this).substr(0, 1223); // sts:ExternalId max length of 1224
+    const smsRoleExternalId = Names.uniqueId(this).slice(0, 1223); // sts:ExternalId max length of 1224
     const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
       assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
         conditions: {
@@ -1072,6 +1155,7 @@ export class UserPool extends UserPoolBase {
     return {
       externalId: smsRoleExternalId,
       snsCallerArn: smsRole.roleArn,
+      snsRegion: props.snsRegion,
     };
   }
 
@@ -1196,6 +1280,26 @@ export class UserPool extends UserPoolBase {
         throw new Error(`Unsupported AccountRecovery type - ${accountRecovery}`);
     }
   }
+
+  private configureUserAttributeChanges(props: UserPoolProps): CfnUserPool.UserAttributeUpdateSettingsProperty | undefined {
+    if (!props.keepOriginal) {
+      return undefined;
+    }
+
+    const attributesRequireVerificationBeforeUpdate: string[] = [];
+
+    if (props.keepOriginal.email) {
+      attributesRequireVerificationBeforeUpdate.push(StandardAttributeNames.email);
+    }
+
+    if (props.keepOriginal.phone) {
+      attributesRequireVerificationBeforeUpdate.push(StandardAttributeNames.phoneNumber);
+    }
+
+    return {
+      attributesRequireVerificationBeforeUpdate,
+    };
+  }
 }
 
 function undefinedIfNoKeys(struct: object): object | undefined {
@@ -1204,4 +1308,16 @@ function undefinedIfNoKeys(struct: object): object | undefined {
 }
 function encodePuny(input: string | undefined): string | undefined {
   return input !== undefined ? punycodeEncode(input) : input;
+}
+
+function defaultDeletionProtection(deletionProtection?: boolean): 'ACTIVE' | 'INACTIVE' | undefined {
+  if (deletionProtection === true) {
+    return 'ACTIVE';
+  }
+
+  if (deletionProtection === false) {
+    return 'INACTIVE';
+  }
+
+  return undefined;
 }

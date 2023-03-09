@@ -28,6 +28,7 @@
   - [IAM Authorizers](#iam-authorizers)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda Authorizer](#lambda-authorizer)
+  - [IAM Authorizers](#iam-authorizer)
 
 ## Introduction
 
@@ -87,26 +88,26 @@ const api = new apigwv2.HttpApi(this, 'HttpApi', {
 });
 
 api.addRoutes({
-  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.example.com'),
   path: '/books',
   methods: [apigwv2.HttpMethod.GET],
 });
 
 api.addRoutes({
-  integration: new HttpUrlIntegration('BooksIdIntegration', 'https://get-books-proxy.myproxy.internal'),
+  integration: new HttpUrlIntegration('BooksIdIntegration', 'https://get-books-proxy.example.com'),
   path: '/books/{id}',
   methods: [apigwv2.HttpMethod.GET],
 });
 
 api.addRoutes({
-  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.example.com'),
   path: '/books',
   methods: [apigwv2.HttpMethod.POST],
   authorizationScopes: ['write:books']
 });
 
 api.addRoutes({
-  integration: new HttpUrlIntegration('LoginIntegration', 'https://get-books-proxy.myproxy.internal'),
+  integration: new HttpUrlIntegration('LoginIntegration', 'https://get-books-proxy.example.com'),
   path: '/login',
   methods: [apigwv2.HttpMethod.POST],
   authorizer: new apigwv2.HttpNoneAuthorizer(),
@@ -141,7 +142,7 @@ const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', issuer, {
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.example.com'),
   path: '/books',
   authorizer,
 });
@@ -167,7 +168,7 @@ const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool);
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.example.com'),
   path: '/books',
   authorizer,
 });
@@ -194,7 +195,7 @@ const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', authHandler, {
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.example.com'),
   path: '/books',
   authorizer,
 });
@@ -217,7 +218,7 @@ const httpApi = new apigwv2.HttpApi(this, 'HttpApi', {
 });
 
 const routes = httpApi.addRoutes({
-  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.example.com'),
   path: '/books/{book}',
 });
 
@@ -255,4 +256,43 @@ new apigwv2.WebSocketApi(this, 'WebSocketApi', {
     authorizer,
   },
 });
+```
+
+### IAM Authorizer
+
+IAM authorizers can be used to allow identity-based access to your WebSocket API.
+
+```ts
+import { WebSocketIamAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+// This function handles your connect route
+declare const connectHandler: lambda.Function;
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'WebSocketApi');
+
+webSocketApi.addRoute('$connect', {
+  integration: new WebSocketLambdaIntegration('Integration', connectHandler),
+  authorizer: new WebSocketIamAuthorizer()
+});
+
+// Create an IAM user (identity)
+const user = new iam.User(this, 'User');
+
+const webSocketArn = Stack.of(this).formatArn({
+  service: 'execute-api',
+  resource: webSocketApi.apiId,
+});
+
+// Grant access to the IAM user
+user.attachInlinePolicy(new iam.Policy(this, 'AllowInvoke', {
+  statements: [
+    new iam.PolicyStatement({
+      actions: ['execute-api:Invoke'],
+      effect: iam.Effect.ALLOW,
+      resources: [webSocketArn],
+    }),
+  ],
+}));
+
 ```

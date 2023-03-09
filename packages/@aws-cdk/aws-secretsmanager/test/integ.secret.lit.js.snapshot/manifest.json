@@ -1,0 +1,112 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "Integ-SecretsManager-Secret.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Integ-SecretsManager-Secret.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "Integ-SecretsManager-Secret": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Integ-SecretsManager-Secret.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0f1ea0ff19e664945a34a95a8a95491e3fa70b47bdb0e6b5fdf28945fdfbb69.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Integ-SecretsManager-Secret.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Integ-SecretsManager-Secret.assets"
+      ],
+      "metadata": {
+        "/Integ-SecretsManager-Secret/TestRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRole6C9272DF"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/TestRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoleDefaultPolicyD1C92014"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretA720EF05"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/TemplatedSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TemplatedSecret3D98B577"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/OtherUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OtherUser6093621C"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/AccessKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AccessKeyE6B25659"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/PredefinedSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PredefinedSecret660AF4EC"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/JSONSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JSONSecret6FE68AEF"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Integ-SecretsManager-Secret/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Integ-SecretsManager-Secret"
+    }
+  }
+}

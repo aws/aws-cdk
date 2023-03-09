@@ -14,8 +14,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ## Cloud Assembly
 
 The *Cloud Assembly* is the output of the synthesis operation. It is produced as part of the
-[`cdk synth`](https://github.com/aws/aws-cdk/tree/master/packages/aws-cdk#cdk-synthesize)
-command, or the [`app.synth()`](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/core/lib/app.ts#L135) method invocation.
+[`cdk synth`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk#cdk-synthesize)
+command, or the [`app.synth()`](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/lib/app.ts#L135) method invocation.
 
 Its essentially a set of files and directories, one of which is the `manifest.json` file. It defines the set of instructions that are
 needed in order to deploy the assembly directory.

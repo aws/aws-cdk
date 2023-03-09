@@ -34,6 +34,7 @@ cdk.context.json
 .cdk.staging/
 cdk.out/
 *.tabl.json
+cdk-integ.out.*/
 
 # Yarn error log
 yarn-error.log
@@ -47,3 +48,6 @@ yarn-error.log
 
 /.versionrc.json
 RELEASE_NOTES.md
+
+# Produced by integ tests
+read*lock

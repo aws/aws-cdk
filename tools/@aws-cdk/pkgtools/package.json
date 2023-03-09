@@ -33,8 +33,8 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/fs-extra": "^8.1.2",
-    "@types/yargs": "^15.0.14"
+    "@types/fs-extra": "^9.0.13",
+    "@types/yargs": "^15.0.15"
   },
   "dependencies": {
     "fs-extra": "^9.1.0",
@@ -46,7 +46,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "ubergen": {
     "exclude": true

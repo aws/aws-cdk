@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "38d79637293a2170812ef1108634858c002345d4d5803191fa1d821a30b29d37": {
+      "source": {
+        "path": "aws-cdk-codebuild-breakpoint.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "38d79637293a2170812ef1108634858c002345d4d5803191fa1d821a30b29d37.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

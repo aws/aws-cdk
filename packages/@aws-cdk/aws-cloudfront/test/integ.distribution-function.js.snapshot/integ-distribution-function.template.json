@@ -1,0 +1,104 @@
+{
+ "Resources": {
+  "Function76856677": {
+   "Type": "AWS::CloudFront::Function",
+   "Properties": {
+    "Name": "eu-west-1integdistributionfunctionFunctionDCD62A02",
+    "AutoPublish": true,
+    "FunctionCode": "function handler(event) { return event.request }",
+    "FunctionConfig": {
+     "Comment": "eu-west-1integdistributionfunctionFunctionDCD62A02",
+     "Runtime": "cloudfront-js-1.0"
+    }
+   }
+  },
+  "DistB3B78991": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+      "Compress": true,
+      "FunctionAssociations": [
+       {
+        "EventType": "viewer-request",
+        "FunctionARN": {
+         "Fn::GetAtt": [
+          "Function76856677",
+          "FunctionARN"
+         ]
+        }
+       }
+      ],
+      "TargetOriginId": "integdistributionfunctionDistOrigin1D1E9DF17",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "integdistributionfunctionDistOrigin1D1E9DF17"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "FunctionArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Function76856677",
+     "FunctionARN"
+    ]
+   }
+  },
+  "FunctionStage": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Function76856677",
+     "Stage"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

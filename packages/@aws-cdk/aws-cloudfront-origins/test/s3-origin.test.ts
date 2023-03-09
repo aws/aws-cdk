@@ -152,6 +152,61 @@ describe('With bucket', () => {
       },
     });
   });
+
+  test('Can set a custom originId', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const bucket2 = new s3.Bucket(stack, 'Bucket2');
+    const origin2 = new S3Origin(bucket2, { originId: 'MyOtherCustomOrigin' });
+    const origin = new S3Origin(bucket, { originId: 'MyCustomOrigin' });
+    const distro = new cloudfront.Distribution(stack, 'Dist', {
+      defaultBehavior: { origin },
+    });
+    distro.addBehavior('/test', origin2);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        CacheBehaviors: [
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: '/test',
+            TargetOriginId: 'MyOtherCustomOrigin',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+        ],
+        DefaultCacheBehavior: {
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
+          TargetOriginId: 'MyCustomOrigin',
+          ViewerProtocolPolicy: 'allow-all',
+        },
+        Origins: [
+          {
+            Id: 'MyCustomOrigin',
+          },
+          {
+            Id: 'MyOtherCustomOrigin',
+          },
+        ],
+      },
+    });
+  });
+  test('Cannot set an originId duplicates', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const bucket2 = new s3.Bucket(stack, 'Bucket2');
+    const origin = new S3Origin(bucket, { originId: 'MyCustomOrigin' });
+    const origin2 = new S3Origin(bucket2, { originId: 'MyCustomOrigin' });
+    expect(() => {
+      new cloudfront.Distribution(stack, 'Dist', {
+        defaultBehavior: { origin },
+        additionalBehaviors: {
+          Origin2: {
+            origin: origin2,
+          },
+        },
+      });
+    }).toThrow(/Origin with id MyCustomOrigin already exists/);
+  });
 });
 
 describe('With website-configured bucket', () => {
@@ -192,6 +247,21 @@ describe('With website-configured bucket', () => {
         originSslProtocols: [
           'TLSv1.2',
         ],
+      },
+    });
+  });
+
+  test('Can set an originId', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket', {
+      websiteIndexDocument: 'index.html',
+    });
+    const origin = new S3Origin(bucket, { originId: 'MyCustomOrigin' });
+    new cloudfront.Distribution(stack, 'Dist', { defaultBehavior: { origin } });
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: [{
+          Id: 'MyCustomOrigin',
+        }],
       },
     });
   });

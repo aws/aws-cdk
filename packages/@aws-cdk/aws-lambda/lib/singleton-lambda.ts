@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct, IDependable, Node } from 'constructs';
 import { Architecture } from './architecture';
 import { Function as LambdaFunction, FunctionProps, EnvironmentOptions } from './function';
 import { FunctionBase } from './function-base';
@@ -50,7 +50,7 @@ export class SingletonFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
-  public readonly permissionsNode: cdk.ConstructNode;
+  public readonly permissionsNode: Node;
   public readonly architecture: Architecture;
 
   /**
@@ -117,6 +117,10 @@ export class SingletonFunction extends FunctionBase {
     return this.lambdaFunction.currentVersion;
   }
 
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn, `${this.functionArn}:*`];
+  };
+
   /**
    * Adds an environment variable to this Lambda function.
    * If this is a ref to a Lambda function, this operation results in a no-op.
@@ -147,7 +151,7 @@ export class SingletonFunction extends FunctionBase {
    * Using node.addDependency() does not work on this method as the underlying lambda function is modeled
    * as a singleton across the stack. Use this method instead to declare dependencies.
    */
-  public addDependency(...up: cdk.IDependable[]) {
+  public addDependency(...up: IDependable[]) {
     this.lambdaFunction.node.addDependency(...up);
   }
 
@@ -155,7 +159,7 @@ export class SingletonFunction extends FunctionBase {
    * The SingletonFunction construct cannot be added as a dependency of another construct using
    * node.addDependency(). Use this method instead to declare this as a dependency of another construct.
    */
-  public dependOn(down: cdk.IConstruct) {
+  public dependOn(down: IConstruct) {
     down.node.addDependency(this.lambdaFunction);
   }
 
@@ -168,7 +172,7 @@ export class SingletonFunction extends FunctionBase {
    * Returns the construct tree node that corresponds to the lambda function.
    * @internal
    */
-  protected _functionNode(): cdk.ConstructNode {
+  protected _functionNode(): Node {
     return this.lambdaFunction.node;
   }
 

@@ -184,7 +184,7 @@ behavior('can add another action to an existing stage', (suite) => {
     const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.stage('Source').addAction(new cpa.GitHubSourceAction({
       actionName: 'GitHub2',
-      oauthToken: SecretValue.plainText('oops'),
+      oauthToken: SecretValue.unsafePlainText('oops'),
       output: new cp.Artifact(),
       owner: 'OWNER',
       repo: 'REPO',
@@ -199,7 +199,7 @@ behavior('can add another action to an existing stage', (suite) => {
 
     pipeline.pipeline.stages[0].addAction(new cpa.GitHubSourceAction({
       actionName: 'GitHub2',
-      oauthToken: SecretValue.plainText('oops'),
+      oauthToken: SecretValue.unsafePlainText('oops'),
       output: new cp.Artifact(),
       owner: 'OWNER',
       repo: 'REPO',

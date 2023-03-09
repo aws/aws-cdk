@@ -2,10 +2,10 @@ jest.mock('child_process');
 
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
-import { AssetPublishing, AssetManifest } from '../lib';
 import { FakeListener } from './fake-listener';
 import { mockAws, mockedApiFailure, mockedApiResult, mockUpload } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
+import { AssetPublishing, AssetManifest } from '../lib';
 
 const ABS_PATH = '/simple/cdk.out/some_external_file';
 
@@ -308,18 +308,6 @@ test('correctly identify asset path if path is absolute', async () => {
   await pub.publish();
 
   expect(true).toBeTruthy(); // No exception, satisfy linter
-});
-
-test('empty directory prints failures', async () => {
-  const progressListener = new FakeListener();
-  const pub = new AssetPublishing(AssetManifest.fromPath('/emptyzip/cdk.out'), { aws, progressListener });
-
-  aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: undefined });
-  aws.mockS3.upload = mockUpload(); // Should not be hit
-
-  await pub.publish();
-
-  expect(progressListener.messages).toContainEqual(expect.stringContaining('EMPTY ZIP FILE'));
 });
 
 describe('external assets', () => {

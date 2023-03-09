@@ -1,9 +1,6 @@
 // eslint-disable-next-line import/order
 import { LifecycleHook } from './lifecycle-hook';
 import * as iam from '@aws-cdk/aws-iam';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
 import * as constructs from 'constructs';
 
 /**

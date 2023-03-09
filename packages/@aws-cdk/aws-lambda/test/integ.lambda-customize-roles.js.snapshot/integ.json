@@ -1,0 +1,20 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "IntegTest/DefaultTest": {
+      "stacks": [
+        "integ-lambda-customize-roles"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "enabled": false
+        },
+        "destroy": {
+          "enabled": false
+        }
+      },
+      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
+    }
+  }
+}

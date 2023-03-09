@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "9c3c35264f83a7dd2a6f065a425f3ec72b52a57950b28c17accccb128d213615": {
+      "source": {
+        "path": "aws-cdk-kinesis-event-target.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9c3c35264f83a7dd2a6f065a425f3ec72b52a57950b28c17accccb128d213615.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

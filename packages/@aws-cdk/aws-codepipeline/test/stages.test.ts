@@ -1,9 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import * as codepipeline from '../lib';
-import { Stage } from '../lib/private/stage';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
+import * as codepipeline from '../lib';
+import { Stage } from '../lib/private/stage';
 
 /* eslint-disable quote-props */
 
@@ -150,6 +150,39 @@ describe('stages', () => {
         stageName: 'ThirdStage',
       }, pipeline));
       expect(pipeline.stageCount).toEqual(2);
+    });
+
+    test('can disable transitions to a stage', () => {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+
+      const firstStage = pipeline.addStage({ stageName: 'FirstStage' });
+      const secondStage = pipeline.addStage({ stageName: 'SecondStage', transitionToEnabled: false });
+
+      // -- dummy actions here are needed to satisfy validation rules
+      const sourceArtifact = new codepipeline.Artifact();
+      firstStage.addAction(new FakeSourceAction({
+        actionName: 'dummyAction',
+        output: sourceArtifact,
+      }));
+      secondStage.addAction(new FakeBuildAction({
+        actionName: 'dummyAction',
+        input: sourceArtifact,
+      }));
+      // --
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          { Name: 'FirstStage' },
+          { Name: 'SecondStage' },
+        ],
+        DisableInboundStageTransitions: [
+          {
+            Reason: 'Transition disabled',
+            StageName: 'SecondStage',
+          },
+        ],
+      });
     });
   });
 });

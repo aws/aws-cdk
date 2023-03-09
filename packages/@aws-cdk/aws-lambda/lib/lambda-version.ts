@@ -30,6 +30,8 @@ export interface IVersion extends IFunction {
    * Defines an alias for this version.
    * @param aliasName The name of the alias
    * @param options Alias options
+   *
+   * @deprecated Calling `addAlias` on a `Version` object will cause the Alias to be replaced on every function update. Call `function.addAlias()` or `new Alias()` instead.
    */
   addAlias(aliasName: string, options?: AliasOptions): Alias;
 }
@@ -244,6 +246,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * Defines an alias for this version.
    * @param aliasName The name of the alias (e.g. "live")
    * @param options Alias options
+   * @deprecated Calling `addAlias` on a `Version` object will cause the Alias to be replaced on every function update. Call `function.addAlias()` or `new Alias()` instead.
    */
   public addAlias(aliasName: string, options: AliasOptions = {}): Alias {
     return addAlias(this, this, aliasName, options);

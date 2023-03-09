@@ -5,7 +5,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
 
 const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-  name: 'covfefe',
+  name: 'MyHTTPNamespace',
 });
 
 const service1 = namespace.createService('NonIpService', {

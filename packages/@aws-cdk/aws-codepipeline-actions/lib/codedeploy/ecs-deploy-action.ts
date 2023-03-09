@@ -2,11 +2,9 @@ import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import { Lazy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { forceSupportStackDependency } from '../private/stack-dependency';
 
 /**
  * Configuration for replacing a placeholder string in the ECS task
@@ -37,7 +35,7 @@ export interface CodeDeployEcsContainerImageInput {
 }
 
 /**
- * Construction properties of the {@link CodeDeployEcsDeployAction CodeDeploy ECS deploy CodePipeline Action}.
+ * Construction properties of the `CodeDeployEcsDeployAction CodeDeploy ECS deploy CodePipeline Action`.
  */
 export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
@@ -180,6 +178,7 @@ export class CodeDeployEcsDeployAction extends Action {
 
     // the Action's Role needs to read from the Bucket to get artifacts
     options.bucket.grantRead(options.role);
+    forceSupportStackDependency(options.bucket, options.role);
 
     const taskDefinitionTemplateArtifact = determineTaskDefinitionArtifact(this.actionProps);
     const appSpecTemplateArtifact = determineAppSpecArtifact(this.actionProps);

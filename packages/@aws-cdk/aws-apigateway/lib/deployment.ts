@@ -1,13 +1,9 @@
-import * as crypto from 'crypto';
 import { Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { CfnDeployment } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface DeploymentProps {
   /**
@@ -137,7 +133,7 @@ class LatestDeploymentResource extends CfnDeployment {
   private readonly originalLogicalId: string;
   private readonly api: IRestApi;
 
-  constructor(scope: CoreConstruct, id: string, props: LatestDeploymentResourceProps) {
+  constructor(scope: Construct, id: string, props: LatestDeploymentResourceProps) {
     super(scope, id, {
       description: props.description,
       restApiId: props.restApi.restApiId,
@@ -177,9 +173,7 @@ class LatestDeploymentResource extends CfnDeployment {
     // if hash components were added to the deployment, we use them to calculate
     // a logical ID for the deployment resource.
     if (hash.length > 0) {
-      const md5 = crypto.createHash('md5');
-      hash.map(x => this.stack.resolve(x)).forEach(c => md5.update(JSON.stringify(c)));
-      lid += md5.digest('hex');
+      lid += md5hash(hash.map(x => this.stack.resolve(x)).map(c => JSON.stringify(c)).join(''));
     }
 
     return lid;

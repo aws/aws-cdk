@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Tags, Token, TokenComparison } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
@@ -42,13 +42,23 @@ export interface IRepository extends IResource {
   repositoryUriForTag(tag?: string): string;
 
   /**
-   * Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`.
+   * Returns the URI of the repository for a certain digest. Can be used in `docker push/pull`.
    *
    *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
    *
    * @param digest Image digest to use (tools usually default to the image with the "latest" tag if omitted)
    */
   repositoryUriForDigest(digest?: string): string;
+
+  /**
+   * Returns the URI of the repository for a certain tag or digest, inferring based on the syntax of the tag. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
+   *
+   * @param tagOrDigest Image tag or digest to use (tools usually default to the image with the "latest" tag if omitted)
+   */
+  repositoryUriForTagOrDigest(tagOrDigest?: string): string;
 
   /**
    * Add a policy statement to the repository's resource policy
@@ -163,6 +173,22 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   * Returns the URL of the repository. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
+   *
+   * @param tagOrDigest Optional image tag or digest (digests must start with `sha256:`)
+   */
+  public repositoryUriForTagOrDigest(tagOrDigest?: string): string {
+    if (tagOrDigest?.startsWith('sha256:')) {
+      return this.repositoryUriForDigest(tagOrDigest);
+    } else {
+      return this.repositoryUriForTag(tagOrDigest);
+    }
+  }
+
+  /**
    * Returns the repository URI, with an appended suffix, if provided.
    * @param suffix An image tag or an image digest.
    * @private
@@ -253,17 +279,49 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     rule.addTarget(options.target);
     return rule;
   }
+
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions,
-      resourceArns: [this.repositoryArn],
-      resourceSelfArns: [],
-      resource: this,
-    });
+    const crossAccountPrincipal = this.unsafeCrossAccountResourcePolicyPrincipal(grantee);
+    if (crossAccountPrincipal) {
+      // If the principal is from a different account,
+      // that means addToPrincipalOrResource() will update the Resource Policy of this repo to trust that principal.
+      // However, ECR verifies that the principal used in the Policy exists,
+      // and will error out if it doesn't.
+      // Because of that, if the principal is a newly created resource,
+      // and there is not a dependency relationship between the Stacks of this repo and the principal,
+      // trust the entire account of the principal instead
+      // (otherwise, deploying this repo will fail).
+      // To scope down the permissions as much as possible,
+      // only trust principals from that account with a specific tag
+      const crossAccountPrincipalStack = Stack.of(crossAccountPrincipal);
+      const roleTag = `${crossAccountPrincipalStack.stackName}_${crossAccountPrincipal.node.addr}`;
+      Tags.of(crossAccountPrincipal).add('aws-cdk:id', roleTag);
+      this.addToResourcePolicy(new iam.PolicyStatement({
+        actions,
+        principals: [new iam.AccountPrincipal(crossAccountPrincipalStack.account)],
+        conditions: {
+          StringEquals: { 'aws:PrincipalTag/aws-cdk:id': roleTag },
+        },
+      }));
+
+      return iam.Grant.addToPrincipal({
+        grantee,
+        actions,
+        resourceArns: [this.repositoryArn],
+        scope: this,
+      });
+    } else {
+      return iam.Grant.addToPrincipalOrResource({
+        grantee,
+        actions,
+        resourceArns: [this.repositoryArn],
+        resourceSelfArns: [],
+        resource: this,
+      });
+    }
   }
 
   /**
@@ -292,6 +350,43 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       'ecr:InitiateLayerUpload',
       'ecr:UploadLayerPart',
       'ecr:CompleteLayerUpload');
+  }
+
+  /**
+   * Returns the resource that backs the given IAM grantee if we cannot put a direct reference
+   * to the grantee in the resource policy of this ECR repository,
+   * and 'undefined' in case we can.
+   */
+  private unsafeCrossAccountResourcePolicyPrincipal(grantee: iam.IGrantable): IConstruct | undefined {
+    // A principal cannot be safely added to the Resource Policy of this ECR repository, if:
+    // 1. The principal is from a different account, and
+    // 2. The principal is a new resource (meaning, not just referenced), and
+    // 3. The Stack this repo belongs to doesn't depend on the Stack the principal belongs to.
+
+    // condition #1
+    const principal = grantee.grantPrincipal;
+    const principalAccount = principal.principalAccount;
+    if (!principalAccount) {
+      return undefined;
+    }
+    const repoAndPrincipalAccountCompare = Token.compareStrings(this.env.account, principalAccount);
+    if (repoAndPrincipalAccountCompare === TokenComparison.BOTH_UNRESOLVED ||
+        repoAndPrincipalAccountCompare === TokenComparison.SAME) {
+      return undefined;
+    }
+
+    // condition #2
+    if (!iam.principalIsOwnedResource(principal)) {
+      return undefined;
+    }
+
+    // condition #3
+    const principalStack = Stack.of(principal);
+    if (this.stack.dependencies.includes(principalStack)) {
+      return undefined;
+    }
+
+    return principal;
   }
 }
 
@@ -465,7 +560,6 @@ export class Repository extends RepositoryBase {
     });
   }
 
-
   private static validateRepositoryName(physicalName: string) {
     const repositoryName = physicalName;
     if (!repositoryName || Token.isUnresolved(repositoryName)) {
@@ -508,9 +602,7 @@ export class Repository extends RepositoryBase {
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
-      imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
-        scanOnPush: true,
-      },
+      imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
       imageTagMutability: props.imageTagMutability || undefined,
       encryptionConfiguration: this.parseEncryption(props),
     });
@@ -528,6 +620,8 @@ export class Repository extends RepositoryBase {
       resource: 'repository',
       resourceName: this.physicalName,
     });
+
+    this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
@@ -535,13 +629,7 @@ export class Repository extends RepositoryBase {
       this.policyDocument = new iam.PolicyDocument();
     }
     this.policyDocument.addStatements(statement);
-    return { statementAdded: false, policyDependable: this.policyDocument };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policyDocument?.validateForResourcePolicy() || []);
-    return errors;
+    return { statementAdded: true, policyDependable: this.policyDocument };
   }
 
   /**

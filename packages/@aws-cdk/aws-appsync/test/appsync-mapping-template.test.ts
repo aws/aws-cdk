@@ -12,7 +12,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
   });
 });
 
@@ -26,7 +26,7 @@ describe('Lambda Mapping Templates', () => {
     func = new lambda.Function(stack, 'func', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/lambda-tutorial')),
       handler: 'lambda-tutorial.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
   });
 
@@ -34,7 +34,7 @@ describe('Lambda Mapping Templates', () => {
     // WHEN
     const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
 
-    lambdaDS.createResolver({
+    lambdaDS.createResolver('QueryAllPosts', {
       typeName: 'Query',
       fieldName: 'allPosts',
       requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(),
@@ -52,17 +52,19 @@ describe('Lambda Mapping Templates', () => {
     // WHEN
     const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
 
-    lambdaDS.createResolver({
+    lambdaDS.createResolver('PostRelatedPosts', {
       typeName: 'Post',
       fieldName: 'relatedPosts',
       requestMappingTemplate: appsync.MappingTemplate.lambdaRequest('$util.toJson($ctx)', 'BatchInvoke'),
       responseMappingTemplate: appsync.MappingTemplate.lambdaResult(),
+      maxBatchSize: 10,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
       FieldName: 'relatedPosts',
       RequestMappingTemplate: batchMT,
+      MaxBatchSize: 10,
     });
   });
 });

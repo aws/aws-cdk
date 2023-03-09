@@ -1,11 +1,8 @@
+import { Construct } from 'constructs';
 import { CfnGatewayRoute, CfnRoute } from './appmesh.generated';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
 /**
- * The type returned from the `bind()` method in {@link HttpRoutePathMatch}.
+ * The type returned from the `bind()` method in `HttpRoutePathMatch`.
  */
 export interface HttpRoutePathMatchConfig {
   /**
@@ -97,7 +94,7 @@ class HttpRouteWholePathMatch extends HttpRoutePathMatch {
 }
 
 /**
- * The type returned from the `bind()` method in {@link HttpGatewayRoutePathMatch}.
+ * The type returned from the `bind()` method in `HttpGatewayRoutePathMatch`.
  */
 export interface HttpGatewayRoutePathMatchConfig {
   /**

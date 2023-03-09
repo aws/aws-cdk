@@ -1,5 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
 
@@ -15,6 +16,20 @@ describe('api key', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
       Enabled: true,
     });
+  });
+
+  testDeprecated('throws if deploymentStage is not set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restApi = apigateway.RestApi.fromRestApiId(stack, 'imported', 'abc');
+
+    // THEN
+    expect(() => {
+      new apigateway.ApiKey(stack, 'my-api-key', {
+        resources: [restApi],
+      });
+
+    }).toThrow(/Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage"/);
   });
 
 
@@ -36,7 +51,7 @@ describe('api key', () => {
   });
 
 
-  test('specify props for apiKey', () => {
+  testDeprecated('specify props for apiKey', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', {
@@ -81,6 +96,27 @@ describe('api key', () => {
     });
   });
 
+  test('add description to apiKey added to a stage', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api');
+    api.root.addMethod('GET'); // api must have atleast one method.
+
+    const stage = apigateway.Stage.fromStageAttributes(stack, 'Stage', {
+      restApi: api,
+      stageName: 'MyStage',
+    });
+    // WHEN
+    stage.addApiKey('my-api-key', {
+      description: 'The most secret api key',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
+      Description: 'The most secret api key',
+    });
+  });
+
   test('use an imported api key', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -116,11 +152,15 @@ describe('api key', () => {
       deployOptions: { stageName: 'test' },
     });
     api.root.addMethod('GET'); // api must have atleast one method.
+    const stage = apigateway.Stage.fromStageAttributes(stack, 'Stage', {
+      restApi: api,
+      stageName: 'MyStage',
+    });
 
     // WHEN
     const apiKey = new apigateway.ApiKey(stack, 'test-api-key', {
       customerId: 'test-customer',
-      resources: [api],
+      stages: [stage],
     });
     apiKey.grantRead(user);
 
@@ -167,11 +207,15 @@ describe('api key', () => {
       deployOptions: { stageName: 'test' },
     });
     api.root.addMethod('GET'); // api must have atleast one method.
+    const stage = apigateway.Stage.fromStageAttributes(stack, 'Stage', {
+      restApi: api,
+      stageName: 'MyStage',
+    });
 
     // WHEN
     const apiKey = new apigateway.ApiKey(stack, 'test-api-key', {
       customerId: 'test-customer',
-      resources: [api],
+      stages: [stage],
     });
     apiKey.grantWrite(user);
 
@@ -223,11 +267,15 @@ describe('api key', () => {
       deployOptions: { stageName: 'test' },
     });
     api.root.addMethod('GET'); // api must have atleast one method.
+    const stage = apigateway.Stage.fromStageAttributes(stack, 'Stage', {
+      restApi: api,
+      stageName: 'MyStage',
+    });
 
     // WHEN
     const apiKey = new apigateway.ApiKey(stack, 'test-api-key', {
       customerId: 'test-customer',
-      resources: [api],
+      stages: [stage],
     });
     apiKey.grantReadWrite(user);
 
@@ -298,11 +346,15 @@ describe('api key', () => {
         deployOptions: { stageName: 'test' },
       });
       api.root.addMethod('GET'); // api must have atleast one method.
+      const stage = apigateway.Stage.fromStageAttributes(stack, 'Stage', {
+        restApi: api,
+        stageName: 'MyStage',
+      });
 
       // WHEN
       new apigateway.RateLimitedApiKey(stack, 'test-api-key', {
         customerId: 'test-customer',
-        resources: [api],
+        stages: [stage],
       });
 
       // THEN
@@ -311,7 +363,7 @@ describe('api key', () => {
         StageKeys: [
           {
             RestApiId: { Ref: 'testapiD6451F70' },
-            StageName: { Ref: 'testapiDeploymentStagetest5869DF71' },
+            StageName: 'MyStage',
           },
         ],
       });
@@ -330,11 +382,15 @@ describe('api key', () => {
         deployOptions: { stageName: 'test' },
       });
       api.root.addMethod('GET'); // api must have atleast one method.
+      const stage = apigateway.Stage.fromStageAttributes(stack, 'Stage', {
+        restApi: api,
+        stageName: 'MyStage',
+      });
 
       // WHEN
       new apigateway.RateLimitedApiKey(stack, 'test-api-key', {
         customerId: 'test-customer',
-        resources: [api],
+        stages: [stage],
         quota: {
           limit: 10000,
           period: apigateway.Period.MONTH,
@@ -348,7 +404,7 @@ describe('api key', () => {
         StageKeys: [
           {
             RestApiId: { Ref: 'testapiD6451F70' },
-            StageName: { Ref: 'testapiDeploymentStagetest5869DF71' },
+            StageName: 'MyStage',
           },
         ],
       });

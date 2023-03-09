@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "14e034eeffbdd95a18b6c1a8c7a4876e1dfbedde51220bb1a196a337a6848c16": {
+      "source": {
+        "path": "cdk-backup.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "14e034eeffbdd95a18b6c1a8c7a4876e1dfbedde51220bb1a196a337a6848c16.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

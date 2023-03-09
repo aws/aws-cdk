@@ -2,7 +2,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import {
   ApplicationConfigPropertyToJson,
   BootstrapActionConfigToJson,
@@ -10,6 +9,7 @@ import {
   InstancesConfigPropertyToJson,
   KerberosAttributesPropertyToJson,
 } from './private/cluster-utils';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for EmrCreateCluster
@@ -211,7 +211,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         throw new Error(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`);
       }
       if (this.props.releaseLabel && this.props.stepConcurrencyLevel !== 1) {
-        const [major, minor] = this.props.releaseLabel.substr(4).split('.');
+        const [major, minor] = this.props.releaseLabel.slice(4).split('.');
         if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
           throw new Error(`Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`);
         }
@@ -391,8 +391,8 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    * @see https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html
    */
   private validateReleaseLabel(releaseLabel: string): string {
-    const prefix = releaseLabel.substr(0, 4);
-    const versions = releaseLabel.substr(4).split('.');
+    const prefix = releaseLabel.slice(0, 4);
+    const versions = releaseLabel.slice(4).split('.');
     if (prefix !== 'emr-' || versions.length !== 3 || versions.some((e) => isNotANumber(e))) {
       throw new Error(`The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`);
     }

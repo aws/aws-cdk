@@ -17,6 +17,7 @@ const SCHEMA_DIR = path.resolve(__dirname, '../schema');
 const SCHEMA_DEFINITIONS: { [schemaName: string]: { rootTypeName: string } } = {
   'assets': { rootTypeName: 'AssetManifest' },
   'cloud-assembly': { rootTypeName: 'AssemblyManifest' },
+  'integ': { rootTypeName: 'IntegManifest' },
 };
 
 export const SCHEMAS = Object.keys(SCHEMA_DEFINITIONS);

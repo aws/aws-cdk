@@ -14,7 +14,7 @@ describe('with basic auth connection', () => {
   beforeEach(() => {
     stack = new Stack();
     connection = new events.Connection(stack, 'Connection', {
-      authorization: events.Authorization.basic('username', SecretValue.plainText('password')),
+      authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
       description: 'ConnectionDescription',
       connectionName: 'testConnection',
     });
@@ -62,6 +62,66 @@ describe('with basic auth connection', () => {
         {
           RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
           Id: 'Target0',
+        },
+      ],
+    });
+  });
+
+  test('with header parameter', () => {
+    // WHEN
+    rule.addTarget(new targets.ApiDestination(destination, {
+      headerParameters: { headerName: 'headerValue' },
+    }));
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Events::Rule', {
+      Targets: [
+        {
+          Arn: { 'Fn::GetAtt': ['DestinationApiDestinationA879FAE5', 'Arn'] },
+          Id: 'Target0',
+          RoleArn: { 'Fn::GetAtt': ['DestinationEventsRole7DA63556', 'Arn'] },
+          HttpParameters: { HeaderParameters: { headerName: 'headerValue' } },
+        },
+      ],
+    });
+  });
+
+  test('with query parameter', () => {
+    // WHEN
+    rule.addTarget(new targets.ApiDestination(destination, {
+      queryStringParameters: { queryName: 'queryValue' },
+    }));
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Events::Rule', {
+      Targets: [
+        {
+          Arn: { 'Fn::GetAtt': ['DestinationApiDestinationA879FAE5', 'Arn'] },
+          Id: 'Target0',
+          RoleArn: { 'Fn::GetAtt': ['DestinationEventsRole7DA63556', 'Arn'] },
+          HttpParameters: { QueryStringParameters: { queryName: 'queryValue' } },
+        },
+      ],
+    });
+  });
+
+  test('with path parameter', () => {
+    // WHEN
+    rule.addTarget(new targets.ApiDestination(destination, {
+      pathParameterValues: ['pathValue'],
+    }));
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Events::Rule', {
+      Targets: [
+        {
+          Arn: { 'Fn::GetAtt': ['DestinationApiDestinationA879FAE5', 'Arn'] },
+          Id: 'Target0',
+          RoleArn: { 'Fn::GetAtt': ['DestinationEventsRole7DA63556', 'Arn'] },
+          HttpParameters: { PathParameterValues: ['pathValue'] },
         },
       ],
     });

@@ -1,9 +1,9 @@
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import * as constructs from 'constructs';
 
 /**
@@ -95,9 +95,7 @@ export class AssetCode extends Code {
    * Hash a string
    */
   private hashcode(s: string): string {
-    const hash = crypto.createHash('md5');
-    hash.update(s);
-    return hash.digest('hex');
+    return md5hash(s);
   };
 }
 

@@ -4,10 +4,6 @@ import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Base interface for target tracking props
  *
@@ -119,7 +115,7 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   readonly scalingTarget: IScalableTarget;
 }
 
-export class TargetTrackingScalingPolicy extends CoreConstruct {
+export class TargetTrackingScalingPolicy extends Construct {
   /**
    * ARN of the scaling policy
    */
@@ -184,12 +180,31 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
  */
 export enum PredefinedMetric {
   /**
-   * DYNAMODB_READ_CAPACITY_UTILIZATIO
-   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   * Average percentage of instances in an AppStream fleet that are being used.
+   */
+  APPSTREAM_AVERAGE_CAPACITY_UTILIZATION = 'AppStreamAverageCapacityUtilization',
+  /**
+   * Percentage of provisioned read capacity units utilized by a Keyspaces table.
+   */
+  CASSANDRA_READ_CAPACITY_UTILIZATION = 'CassandraReadCapacityUtilization',
+  /**
+   * Percentage of provisioned write capacity units utilized by a Keyspaces table.
+   */
+  CASSANDRA_WRITE_CAPACITY_UTILIZATION = 'CassandraWriteCapacityUtilization',
+  /**
+   * Percentage of provisioned inference units utilized by a Comprehend endpoint.
+   */
+  COMPREHEND_INFERENCE_UTILIZATION = 'ComprehendInferenceUtilization',
+  /**
+   * Average CPU Utilization of read replica instances in a Neptune DB cluster.
+   */
+  NEPTURE_READER_AVERAGE_CPU_UTILIZATION = 'NeptuneReaderAverageCPUUtilization',
+  /**
+   * Percentage of provisioned read capacity units consumed by a DynamoDB table.
    */
   DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
   /**
-   * DYNAMODB_WRITE_CAPACITY_UTILIZATION
+   * Percentage of provisioned write capacity units consumed by a DynamoDB table.
    *
    * Suffix `dummy` is necessary due to jsii bug (https://github.com/aws/jsii/issues/2782).
    * Duplicate values will be dropped, so this suffix is added as a workaround.

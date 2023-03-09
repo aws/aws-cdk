@@ -77,4 +77,20 @@ describe('archive', () => {
       },
     });
   });
+
+  test('should have defined defaultChild', () => {
+    const stack = new Stack();
+
+    const eventBus = new EventBus(stack, 'Bus');
+
+    const archive = new Archive(stack, 'Archive', {
+      sourceEventBus: eventBus,
+      eventPattern: {
+        account: [stack.account],
+      },
+      retention: Duration.days(10),
+    });
+
+    expect(archive.node.defaultChild).toBe(archive.node.findChild('Archive'));
+  });
 });

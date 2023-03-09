@@ -73,6 +73,44 @@ export interface BundleProps {
    * @default - no check.
    */
   readonly test?: string;
+
+  /**
+   * Include a sourcemap in the bundle.
+   *
+   * @default "inline"
+   */
+  readonly sourcemap?: 'linked' | 'inline' | 'external' | 'both';
+
+  /**
+   * Minifies the bundled code.
+   *
+   * @default false
+   */
+  readonly minify?: boolean;
+
+  /**
+   * Removes whitespace from the code.
+   * This is enabled by default when `minify` is used.
+   *
+   * @default false
+   */
+  readonly minifyWhitespace?: boolean;
+
+  /**
+   * Renames local variables to be shorter.
+   * This is enabled by default when `minify` is used.
+   *
+   * @default false
+   */
+  readonly minifyIdentifiers?: boolean;
+
+  /**
+   * Rewrites syntax to a more compact format.
+   * This is enabled by default when `minify` is used.
+   *
+   * @default false
+   */
+  readonly minifySyntax?: boolean;
 }
 
 /**
@@ -148,6 +186,11 @@ export class Bundle {
   private readonly allowedLicenses: string[];
   private readonly dontAttribute?: string;
   private readonly test?: string;
+  private readonly sourcemap?: 'linked' | 'inline' | 'external' | 'both';
+  private readonly minify?: boolean;
+  private readonly minifyWhitespace?: boolean;
+  private readonly minifyIdentifiers?: boolean;
+  private readonly minifySyntax?: boolean;
 
   private _bundle?: esbuild.BuildResult;
   private _dependencies?: Package[];
@@ -165,6 +208,11 @@ export class Bundle {
     this.allowedLicenses = props.allowedLicenses ?? DEFAULT_ALLOWED_LICENSES;
     this.dontAttribute = props.dontAttribute;
     this.entryPoints = {};
+    this.sourcemap = props.sourcemap;
+    this.minify = props.minify;
+    this.minifyWhitespace = props.minifyWhitespace;
+    this.minifyIdentifiers = props.minifyIdentifiers;
+    this.minifySyntax = props.minifySyntax;
 
     const entryPoints = props.entryPoints ?? (this.manifest.main ? [this.manifest.main] : []);
 
@@ -224,19 +272,22 @@ export class Bundle {
 
     const target = fs.mkdtempSync(path.join(os.tmpdir(), 'bundle-write-'));
 
+    // we definitely don't need these directories in the package
+    // so no need to copy them over.
+    const ignoreDirectories = ['node_modules', '.git'];
+
     // copy the entire project since we are retaining the original files.
-    // except for `node_modules` and `.git` which definitely don't belong in the package.
-    fs.copySync(this.packageDir, target, { filter: n => !n.includes('node_modules') && !n.includes('.git') });
+    fs.copySync(this.packageDir, target, { filter: n => !n.split(path.sep).some((p => ignoreDirectories.includes(p))) });
 
     // clone the original manifest since we are going to
     // to mutate it.
     const manifest = { ...this.manifest };
 
-      // manifest mutations
+    // manifest mutations
     this.removeDependencies(manifest);
     this.addExternals(manifest);
 
-      // write artifacts
+    // write artifacts
     this.writeOutputs(target);
     this.writeResources(target);
     this.writeManifest(target, manifest);
@@ -304,7 +355,7 @@ export class Bundle {
     }
     const inputs = Object.keys(this.bundle.metafile!.inputs);
     const packages = new Set(Array.from(inputs).map(i => this.closestPackagePath(path.join(this.packageDir, i))));
-    this._dependencies = Array.from(packages).map(p => this.createPackage(p)).filter(d => d.name !== this.manifest.name);
+    this._dependencies = Array.from(packages).map(p => this.createPackage(p)).filter(d => d.name !== undefined && d.name !== this.manifest.name);
     return this._dependencies;
   }
 
@@ -389,10 +440,14 @@ export class Bundle {
     const bundle = esbuild.buildSync({
       entryPoints: this.entryPoints,
       bundle: true,
-      target: 'node12',
+      target: 'node14',
       platform: 'node',
-      sourcemap: 'inline',
+      sourcemap: this.sourcemap ?? 'inline',
       metafile: true,
+      minify: this.minify,
+      minifyWhitespace: this.minifyWhitespace,
+      minifyIdentifiers: this.minifyIdentifiers,
+      minifySyntax: this.minifySyntax,
       treeShaking: true,
       absWorkingDir: this.packageDir,
       external: [...(this.externals.dependencies ?? []), ...(this.externals.optionalDependencies ?? [])],

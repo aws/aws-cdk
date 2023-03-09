@@ -1,0 +1,276 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.102"
+        }
+      },
+      "alarm-metrics": {
+        "id": "alarm-metrics",
+        "path": "alarm-metrics",
+        "children": {
+          "Table": {
+            "id": "Table",
+            "path": "alarm-metrics/Table",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "alarm-metrics/Table/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "metric",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "metric",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 5,
+                      "writeCapacityUnits": 5
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "alarm-metrics/Table/ScalingRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "TableThrottleAlarm": {
+            "id": "TableThrottleAlarm",
+            "path": "alarm-metrics/TableThrottleAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "alarm-metrics/TableThrottleAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "metrics": [
+                      {
+                        "expression": "putitem + scan",
+                        "id": "expr_1",
+                        "label": "Sum of throttled requests across all operations"
+                      },
+                      {
+                        "metricStat": {
+                          "metric": {
+                            "metricName": "ThrottledRequests",
+                            "namespace": "AWS/DynamoDB",
+                            "dimensions": [
+                              {
+                                "name": "Operation",
+                                "value": "PutItem"
+                              },
+                              {
+                                "name": "TableName",
+                                "value": {
+                                  "Ref": "TableCD117FA1"
+                                }
+                              }
+                            ]
+                          },
+                          "period": 60,
+                          "stat": "Sum"
+                        },
+                        "id": "putitem",
+                        "returnData": false
+                      },
+                      {
+                        "metricStat": {
+                          "metric": {
+                            "metricName": "ThrottledRequests",
+                            "namespace": "AWS/DynamoDB",
+                            "dimensions": [
+                              {
+                                "name": "Operation",
+                                "value": "Scan"
+                              },
+                              {
+                                "name": "TableName",
+                                "value": {
+                                  "Ref": "TableCD117FA1"
+                                }
+                              }
+                            ]
+                          },
+                          "period": 60,
+                          "stat": "Sum"
+                        },
+                        "id": "scan",
+                        "returnData": false
+                      }
+                    ],
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "TableErrorAlarm": {
+            "id": "TableErrorAlarm",
+            "path": "alarm-metrics/TableErrorAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "alarm-metrics/TableErrorAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "metrics": [
+                      {
+                        "expression": "putitem + scan",
+                        "id": "expr_1",
+                        "label": "Sum of errors across all operations"
+                      },
+                      {
+                        "metricStat": {
+                          "metric": {
+                            "metricName": "SystemErrors",
+                            "namespace": "AWS/DynamoDB",
+                            "dimensions": [
+                              {
+                                "name": "Operation",
+                                "value": "PutItem"
+                              },
+                              {
+                                "name": "TableName",
+                                "value": {
+                                  "Ref": "TableCD117FA1"
+                                }
+                              }
+                            ]
+                          },
+                          "period": 60,
+                          "stat": "Sum"
+                        },
+                        "id": "putitem",
+                        "returnData": false
+                      },
+                      {
+                        "metricStat": {
+                          "metric": {
+                            "metricName": "SystemErrors",
+                            "namespace": "AWS/DynamoDB",
+                            "dimensions": [
+                              {
+                                "name": "Operation",
+                                "value": "Scan"
+                              },
+                              {
+                                "name": "TableName",
+                                "value": {
+                                  "Ref": "TableCD117FA1"
+                                }
+                              }
+                            ]
+                          },
+                          "period": 60,
+                          "stat": "Sum"
+                        },
+                        "id": "scan",
+                        "returnData": false
+                      }
+                    ],
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "alarm-metrics-integ": {
+        "id": "alarm-metrics-integ",
+        "path": "alarm-metrics-integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "alarm-metrics-integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "alarm-metrics-integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.102"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "alarm-metrics-integ/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

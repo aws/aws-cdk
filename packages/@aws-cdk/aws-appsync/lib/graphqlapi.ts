@@ -1,14 +1,13 @@
+import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
+import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '@aws-cdk/aws-logs';
 import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
-import { Schema } from './schema';
-import { IIntermediateType } from './schema-base';
-import { ResolvableField } from './schema-field';
-import { ObjectType } from './schema-intermediate';
+import { ISchema } from './schema';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -166,11 +165,6 @@ export interface OpenIdConnectConfig {
 export interface LambdaAuthorizerConfig {
   /**
    * The authorizer lambda function.
-   * Note: This Lambda function must have the following resource-based policy assigned to it.
-   * When configuring Lambda authorizers in the console, this is done for you.
-   * To do so with the AWS CLI, run the following:
-   *
-   * `aws lambda add-permission --function-name "arn:aws:lambda:us-east-2:111122223333:function:my-function" --statement-id "appsync" --principal appsync.amazonaws.com --action lambda:InvokeFunction`
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-lambdaauthorizerconfig.html
    */
@@ -252,6 +246,31 @@ export interface LogConfig {
    * @default - None
    */
   readonly role?: IRole;
+
+  /**
+  * The number of days log events are kept in CloudWatch Logs.
+  * By default AppSync keeps the logs infinitely. When updating this property,
+  * unsetting it doesn't remove the log retention policy.
+  * To remove the retention policy, set the value to `INFINITE`
+  *
+  * @default RetentionDays.INFINITE
+  */
+  readonly retention?: RetentionDays
+}
+
+/**
+ * Domain name configuration for AppSync
+ */
+export interface DomainOptions {
+  /**
+   * The certificate to use with the domain name.
+   */
+  readonly certificate: ICertificate;
+
+  /**
+   * The actual domain name. For example, `api.example.com`.
+   */
+  readonly domainName: string;
 }
 
 /**
@@ -285,13 +304,23 @@ export interface GraphqlApiProps {
    * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
    *
    */
-  readonly schema?: Schema;
+  readonly schema: ISchema;
   /**
    * A flag indicating whether or not X-Ray tracing is enabled for the GraphQL API.
    *
    * @default - false
    */
   readonly xrayEnabled?: boolean;
+
+  /**
+   * The domain name configuration for the GraphQL API
+   *
+   * The Route 53 hosted zone and CName DNS record must be configured in addition to this setting to
+   * enable custom domain URL
+   *
+   * @default - no domain name
+   */
+  readonly domainName?: DomainOptions;
 }
 
 /**
@@ -391,7 +420,7 @@ export class GraphqlApi extends GraphqlApiBase {
     class Import extends GraphqlApiBase {
       public readonly apiId = attrs.graphqlApiId;
       public readonly arn = arn;
-      constructor (s: Construct, i: string) {
+      constructor(s: Construct, i: string) {
         super(s, i);
       }
     }
@@ -424,7 +453,7 @@ export class GraphqlApi extends GraphqlApiBase {
   /**
    * the schema attached to this api
    */
-  public readonly schema: Schema;
+  public readonly schema: ISchema;
 
   /**
    * The Authorization Types for this GraphQL Api
@@ -438,9 +467,15 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public readonly apiKey?: string;
 
+  /**
+   * the CloudWatch Log Group for this API
+   */
+  public readonly logGroup: ILogGroup;
+
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
+  private domainNameResource?: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
@@ -450,7 +485,7 @@ export class GraphqlApi extends GraphqlApiBase {
     const additionalModes = props.authorizationConfig?.additionalAuthorizationModes ?? [];
     const modes = [defaultMode, ...additionalModes];
 
-    this.modes = modes.map((mode) => mode.authorizationType );
+    this.modes = modes.map((mode) => mode.authorizationType);
 
     this.validateAuthorizationProps(modes);
 
@@ -469,17 +504,52 @@ export class GraphqlApi extends GraphqlApiBase {
     this.arn = this.api.attrArn;
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
-    this.schema = props.schema ?? new Schema();
-    this.schemaResource = this.schema.bind(this);
+    this.schema = props.schema;
+    this.schemaResource = new CfnGraphQLSchema(this, 'Schema', this.schema.bind(this));
+
+    if (props.domainName) {
+      this.domainNameResource = new CfnDomainName(this, 'DomainName', {
+        domainName: props.domainName.domainName,
+        certificateArn: props.domainName.certificate.certificateArn,
+        description: `domain for ${this.name} at ${this.graphqlUrl}`,
+      });
+      const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
+        domainName: props.domainName.domainName,
+        apiId: this.apiId,
+      });
+
+      domainNameAssociation.addDependency(this.domainNameResource);
+    }
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
       const config = modes.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
       })?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
-      this.apiKeyResource.addDependsOn(this.schemaResource);
+      this.apiKeyResource.addDependency(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
+
+    if (modes.some((mode) => mode.authorizationType === AuthorizationType.LAMBDA)) {
+      const config = modes.find((mode: AuthorizationMode) => {
+        return mode.authorizationType === AuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
+      })?.lambdaAuthorizerConfig;
+      config?.handler.addPermission(`${id}-appsync`, {
+        principal: new ServicePrincipal('appsync.amazonaws.com'),
+        action: 'lambda:InvokeFunction',
+      });
+    }
+
+    const logGroupName = `/aws/appsync/apis/${this.apiId}`;
+
+    this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
+
+    if (props.logConfig?.retention) {
+      new LogRetention(this, 'LogRetention', {
+        logGroupName: this.logGroup.logGroupName,
+        retention: props.logConfig.retention,
+      });
+    };
   }
 
   /**
@@ -561,7 +631,7 @@ export class GraphqlApi extends GraphqlApiBase {
    * @param construct the dependee
    */
   public addSchemaDependency(construct: CfnResource): boolean {
-    construct.addDependsOn(this.schemaResource);
+    construct.addDependency(this.schemaResource);
     return true;
   }
 
@@ -573,10 +643,11 @@ export class GraphqlApi extends GraphqlApiBase {
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
       ],
     }).roleArn;
+    const fieldLogLevel: FieldLogLevel = config.fieldLogLevel ?? FieldLogLevel.NONE;
     return {
       cloudWatchLogsRoleArn: logsRoleArn,
       excludeVerboseContent: config.excludeVerboseContent,
-      fieldLogLevel: config.fieldLogLevel,
+      fieldLogLevel: fieldLogLevel,
     };
   }
 
@@ -594,7 +665,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (!config) return undefined;
     return {
       userPoolId: config.userPool.userPoolId,
-      awsRegion: config.userPool.stack.region,
+      awsRegion: config.userPool.env.region,
       appIdClientRegex: config.appIdClientRegex,
       defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
     };
@@ -634,70 +705,12 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   /**
-   * Escape hatch to append to Schema as desired. Will always result
-   * in a newline.
-   *
-   * @param addition the addition to add to schema
-   * @param delimiter the delimiter between schema and addition
-   * @default - ''
-   *
+   * The AppSyncDomainName of the associated custom domain
    */
-  public addToSchema(addition: string, delimiter?: string): void {
-    this.schema.addToSchema(addition, delimiter);
-  }
-
-  /**
-   * Add type to the schema
-   *
-   * @param type the intermediate type to add to the schema
-   *
-   */
-  public addType(type: IIntermediateType): IIntermediateType {
-    return this.schema.addType(type);
-  }
-
-  /**
-   * Add a query field to the schema's Query. CDK will create an
-   * Object Type called 'Query'. For example,
-   *
-   * type Query {
-   *   fieldName: Field.returnType
-   * }
-   *
-   * @param fieldName the name of the query
-   * @param field the resolvable field to for this query
-   */
-  public addQuery(fieldName: string, field: ResolvableField): ObjectType {
-    return this.schema.addQuery(fieldName, field);
-  }
-
-  /**
-   * Add a mutation field to the schema's Mutation. CDK will create an
-   * Object Type called 'Mutation'. For example,
-   *
-   * type Mutation {
-   *   fieldName: Field.returnType
-   * }
-   *
-   * @param fieldName the name of the Mutation
-   * @param field the resolvable field to for this Mutation
-   */
-  public addMutation(fieldName: string, field: ResolvableField): ObjectType {
-    return this.schema.addMutation(fieldName, field);
-  }
-
-  /**
-   * Add a subscription field to the schema's Subscription. CDK will create an
-   * Object Type called 'Subscription'. For example,
-   *
-   * type Subscription {
-   *   fieldName: Field.returnType
-   * }
-   *
-   * @param fieldName the name of the Subscription
-   * @param field the resolvable field to for this Subscription
-   */
-  public addSubscription(fieldName: string, field: ResolvableField): ObjectType {
-    return this.schema.addSubscription(fieldName, field);
+  public get appSyncDomainName(): string {
+    if (!this.domainNameResource) {
+      throw new Error('Cannot retrieve the appSyncDomainName without a domainName configuration');
+    }
+    return this.domainNameResource.attrAppSyncDomainName;
   }
 }

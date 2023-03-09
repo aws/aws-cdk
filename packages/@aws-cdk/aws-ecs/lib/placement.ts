@@ -8,12 +8,12 @@ export enum BinPackResource {
   /**
    * Fill up hosts' CPU allocations first
    */
-  CPU = 'cpu',
+  CPU = 'CPU',
 
   /**
    * Fill up hosts' memory allocations first
    */
-  MEMORY = 'memory',
+  MEMORY = 'MEMORY',
 }
 
 /**

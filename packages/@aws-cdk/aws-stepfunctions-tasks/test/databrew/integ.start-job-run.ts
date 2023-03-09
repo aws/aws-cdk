@@ -15,7 +15,7 @@ class GlueDataBrewJobStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    const region = process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION;
+    const region = this.region;
 
     const outputBucket = new s3.Bucket(this, 'JobOutputBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -86,8 +86,8 @@ class GlueDataBrewJobStack extends cdk.Stack {
       datasetName: dataset.name,
       recipeName: recipe.name,
     });
-    project.addDependsOn(dataset);
-    project.addDependsOn(recipe);
+    project.addDependency(dataset);
+    project.addDependency(recipe);
 
     const job = new databrew.CfnJob(this, 'DataBrew Job', {
       name: 'job-1',
@@ -100,7 +100,7 @@ class GlueDataBrewJobStack extends cdk.Stack {
         },
       }],
     });
-    job.addDependsOn(project);
+    job.addDependency(project);
 
     const startGlueDataBrewJob = new GlueDataBrewStartJobRun(this, 'Start DataBrew Job run', {
       name: job.name,

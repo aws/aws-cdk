@@ -15,6 +15,24 @@ export interface LinuxUserDataOptions {
 }
 
 /**
+ * Options when constructing UserData for Windows
+ */
+export interface WindowsUserDataOptions {
+  /**
+   * Set to true to set this userdata to persist through an instance reboot; allowing
+   * it to run on every instance start.
+   * By default, UserData is run only once during the first instance launch.
+   *
+   * For more information, see:
+   * https://aws.amazon.com/premiumsupport/knowledge-center/execute-user-data-ec2/
+   * https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html#user-data-scripts
+   *
+   * @default false
+   */
+  readonly persist?: boolean;
+}
+
+/**
  * Options when downloading files from S3
  */
 export interface S3DownloadOptions {
@@ -78,8 +96,8 @@ export abstract class UserData {
   /**
    * Create a userdata object for Windows hosts
    */
-  public static forWindows(): UserData {
-    return new WindowsUserData();
+  public static forWindows(options: WindowsUserDataOptions = {}): UserData {
+    return new WindowsUserData(options);
   }
 
   /**
@@ -197,7 +215,7 @@ class WindowsUserData extends UserData {
   private readonly lines: string[] = [];
   private readonly onExitLines: string[] = [];
 
-  constructor() {
+  constructor(private readonly props: WindowsUserDataOptions = {}) {
     super();
   }
 
@@ -214,7 +232,7 @@ class WindowsUserData extends UserData {
       [...(this.renderOnExitLines()),
         ...this.lines,
         ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] )].join('\n')
-    }</powershell>`;
+    }</powershell>${(this.props.persist ?? false) ? '<persist>true</persist>' : ''}`;
   }
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
@@ -315,7 +333,7 @@ export interface MultipartBodyOptions {
 }
 
 /**
- * The base class for all classes which can be used as {@link MultipartUserData}.
+ * The base class for all classes which can be used as `MultipartUserData`.
  */
 export abstract class MultipartBody {
   /**
@@ -332,7 +350,7 @@ export abstract class MultipartBody {
    * Constructs the new `MultipartBody` wrapping existing `UserData`. Modification to `UserData` are reflected
    * in subsequent renders of the part.
    *
-   * For more information about content types see {@link MultipartBodyOptions.contentType}.
+   * For more information about content types see `MultipartBodyOptions.contentType`.
    *
    * @param userData user data to wrap into body part
    * @param contentType optional content type, if default one should not be used
@@ -363,7 +381,7 @@ export abstract class MultipartBody {
 }
 
 /**
- * The raw part of multi-part user data, which can be added to {@link MultipartUserData}.
+ * The raw part of multi-part user data, which can be added to `MultipartUserData`.
  */
 class MultipartBodyRaw extends MultipartBody {
   public constructor(private readonly props: MultipartBodyOptions) {
@@ -421,7 +439,7 @@ class MultipartBodyUserDataWrapper extends MultipartBody {
 }
 
 /**
- * Options for creating {@link MultipartUserData}
+ * Options for creating `MultipartUserData`
  */
 export interface MultipartUserDataOptions {
   /**

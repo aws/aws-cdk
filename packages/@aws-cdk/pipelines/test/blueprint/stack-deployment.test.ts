@@ -31,7 +31,7 @@ describe('templateUrl', () => {
     const sd = StageDeployment.fromStage(stage);
 
     // THEN
-    expect(sd.stacks[0].templateUrl).toBe('https://cdk-hnb659fds-assets-111-us-east-1.s3.us-east-1.amazonaws.com/93ae4de94f81d0905c37db64b7304f5d65233ca4d9581d3a32215743c9bb92dd.json');
+    expect(sd.stacks[0].templateUrl).toBe('https://cdk-hnb659fds-assets-111-us-east-1.s3.us-east-1.amazonaws.com/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json');
   });
 
   test('without region', () => {
@@ -43,7 +43,7 @@ describe('templateUrl', () => {
     const sd = StageDeployment.fromStage(stage);
 
     // THEN
-    expect(sd.stacks[0].templateUrl).toBe('https://cdk-hnb659fds-assets-111-.s3.amazonaws.com/$%7BAWS::Region%7D/93ae4de94f81d0905c37db64b7304f5d65233ca4d9581d3a32215743c9bb92dd.json');
+    expect(sd.stacks[0].templateUrl).toBe('https://cdk-hnb659fds-assets-111-.s3.amazonaws.com/$%7BAWS::Region%7D/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json');
   });
 
 });

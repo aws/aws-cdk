@@ -14,9 +14,7 @@ beforeEach( () => {
 });
 
 test('default database does not create a bucket', () => {
-  new glue.Database(stack, 'Database', {
-    databaseName: 'test_database',
-  });
+  new glue.Database(stack, 'Database');
 
   Template.fromStack(stack).templateMatches({
     Resources: {
@@ -27,7 +25,7 @@ test('default database does not create a bucket', () => {
             Ref: 'AWS::AccountId',
           },
           DatabaseInput: {
-            Name: 'test_database',
+            Name: 'database',
           },
         },
       },
@@ -38,7 +36,6 @@ test('default database does not create a bucket', () => {
 
 test('explicit locationURI', () => {
   new glue.Database(stack, 'Database', {
-    databaseName: 'test_database',
     locationUri: 's3://my-uri/',
   });
 
@@ -52,7 +49,7 @@ test('explicit locationURI', () => {
           },
           DatabaseInput: {
             LocationUri: 's3://my-uri/',
-            Name: 'test_database',
+            Name: 'database',
           },
         },
       },
@@ -78,7 +75,6 @@ test('fromDatabase', () => {
 test('locationUri length must be >= 1', () => {
   expect(() =>
     new glue.Database(stack, 'Database', {
-      databaseName: 'test_database',
       locationUri: '',
     }),
   ).toThrow();
@@ -87,8 +83,18 @@ test('locationUri length must be >= 1', () => {
 test('locationUri length must be <= 1024', () => {
   expect(() =>
     new glue.Database(stack, 'Database', {
-      databaseName: 'test_database',
       locationUri: 'a'.repeat(1025),
     }),
   ).toThrow();
+});
+
+test('can specify a physical name', () => {
+  new glue.Database(stack, 'Database', {
+    databaseName: 'my_database',
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Database', {
+    DatabaseInput: {
+      Name: 'my_database',
+    },
+  });
 });

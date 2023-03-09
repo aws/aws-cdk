@@ -1,8 +1,8 @@
 import { CfnOutput, Stack } from '@aws-cdk/core';
-import { mapValues } from '../private/javascript';
 import { FileSet, IFileSetProducer } from './file-set';
 import { StackDeployment } from './stack-deployment';
 import { Step } from './step';
+import { mapValues } from '../private/javascript';
 
 /**
  * Construction properties for a `ShellStep`.
@@ -160,7 +160,7 @@ export class ShellStep extends Step {
     if (props.input) {
       const fileSet = props.input.primaryOutput;
       if (!fileSet) {
-        throw new Error(`'${id}': primary input should be a step that produces a file set, got ${props.input}`);
+        throw new Error(`'${id}': primary input should be a step that has produced a file set, got ${props.input}`);
       }
       this.addDependencyFileSet(fileSet);
       this.inputs.push({ directory: '.', fileSet });
@@ -173,7 +173,7 @@ export class ShellStep extends Step {
 
       const fileSet = step.primaryOutput;
       if (!fileSet) {
-        throw new Error(`'${id}': additionalInput for directory '${directory}' should be a step that produces a file set, got ${step}`);
+        throw new Error(`'${id}': additionalInput for directory '${directory}' should be a step that has produced a file set, got ${step}`);
       }
       this.addDependencyFileSet(fileSet);
       this.inputs.push({ directory, fileSet });
@@ -232,6 +232,10 @@ export class ShellStep extends Step {
       this.outputs.push({ directory, fileSet });
     }
     return fileSet;
+  }
+
+  public get consumedStackOutputs(): StackOutputReference[] {
+    return Object.values(this.envFromCfnOutputs);
   }
 }
 

@@ -10,10 +10,6 @@ import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Specify the secret's version id or version stage
  */
@@ -370,7 +366,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
 /**
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
-export class ContainerDefinition extends CoreConstruct {
+export class ContainerDefinition extends Construct {
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
@@ -440,12 +436,6 @@ export class ContainerDefinition extends CoreConstruct {
   public readonly logDriverConfig?: LogDriverConfig;
 
   /**
-   * Whether this container definition references a specific JSON field of a secret
-   * stored in Secrets Manager.
-   */
-  public readonly referencesSecretJsonField?: boolean;
-
-  /**
    * The name of the image referenced by this container.
    */
   public readonly imageName: string;
@@ -462,9 +452,11 @@ export class ContainerDefinition extends CoreConstruct {
 
   private readonly imageConfig: ContainerImageConfig;
 
-  private readonly secrets?: CfnTaskDefinition.SecretProperty[];
+  private readonly secrets: CfnTaskDefinition.SecretProperty[] = [];
 
   private readonly environment: { [key: string]: string };
+
+  private _namedPorts: Map<string, PortMapping>;
 
   /**
    * Constructs a new instance of the ContainerDefinition class.
@@ -485,21 +477,15 @@ export class ContainerDefinition extends CoreConstruct {
     this.imageConfig = props.image.bind(this, this);
     this.imageName = this.imageConfig.imageName;
 
+    this._namedPorts = new Map<string, PortMapping>();
+
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
     }
 
     if (props.secrets) {
-      this.secrets = [];
       for (const [name, secret] of Object.entries(props.secrets)) {
-        if (secret.hasField) {
-          this.referencesSecretJsonField = true;
-        }
-        secret.grantRead(this.taskDefinition.obtainExecutionRole());
-        this.secrets.push({
-          name,
-          valueFrom: secret.arn,
-        });
+        this.addSecret(name, secret);
       }
     }
 
@@ -580,22 +566,15 @@ export class ContainerDefinition extends CoreConstruct {
    */
   public addPortMappings(...portMappings: PortMapping[]) {
     this.portMappings.push(...portMappings.map(pm => {
-      if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC || this.taskDefinition.networkMode === NetworkMode.HOST) {
-        if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
-          throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.taskDefinition.networkMode}`);
-        }
+      const portMap = new PortMap(this.taskDefinition.networkMode, pm);
+      portMap.validate();
+      const serviceConnect = new ServiceConnect(this.taskDefinition.networkMode, pm);
+      if (serviceConnect.isServiceConnect()) {
+        serviceConnect.validate();
+        this.setNamedPort(pm);
       }
-
-      if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
-        if (pm.hostPort === undefined) {
-          pm = {
-            ...pm,
-            hostPort: 0,
-          };
-        }
-      }
-
-      return pm;
+      const sanitizedPM = this.addHostPortIfNeeded(pm);
+      return sanitizedPM;
     }));
   }
 
@@ -604,6 +583,18 @@ export class ContainerDefinition extends CoreConstruct {
    */
   public addEnvironment(name: string, value: string) {
     this.environment[name] = value;
+  }
+
+  /**
+   * This method adds a secret as environment variable to the container.
+   */
+  public addSecret(name: string, secret: Secret) {
+    secret.grantRead(this.taskDefinition.obtainExecutionRole());
+
+    this.secrets.push({
+      name,
+      valueFrom: secret.arn,
+    });
   }
 
   /**
@@ -660,6 +651,52 @@ export class ContainerDefinition extends CoreConstruct {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Returns the port mapping with the given name, if it exists.
+   */
+  public findPortMappingByName(name: string): PortMapping | undefined {
+    return this._namedPorts.get(name);
+  }
+
+  /**
+   * This method adds an namedPort
+   */
+  private setNamedPort(pm: PortMapping) :void {
+    if (!pm.name) return;
+    if (this._namedPorts.has(pm.name)) {
+      throw new Error(`Port mapping name '${pm.name}' already exists on this container`);
+    }
+    this._namedPorts.set(pm.name, pm);
+  }
+
+
+  /**
+   * Set HostPort to 0 When netowork mode is Brdige
+   */
+  private addHostPortIfNeeded(pm: PortMapping) :PortMapping {
+    const newPM = {
+      ...pm,
+    };
+    if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE) return newPM;
+    if (pm.hostPort !== undefined) return newPM;
+    newPM.hostPort = 0;
+    return newPM;
+  }
+
+
+  /**
+   * Whether this container definition references a specific JSON field of a secret
+   * stored in Secrets Manager.
+   */
+  public get referencesSecretJsonField(): boolean | undefined {
+    for (const secret of this.secrets) {
+      if (secret.valueFrom.endsWith('::')) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -730,7 +767,7 @@ export class ContainerDefinition extends CoreConstruct {
       logConfiguration: this.logDriverConfig,
       environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
       environmentFiles: this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
-      secrets: this.secrets,
+      secrets: this.secrets.length ? this.secrets : undefined,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),
@@ -819,6 +856,23 @@ function renderEnvironmentFiles(partition: string, environmentFiles: Environment
 }
 
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
+  if (hc.interval?.toSeconds() !== undefined) {
+    if (5 > hc.interval?.toSeconds() || hc.interval?.toSeconds() > 300) {
+      throw new Error('Interval must be between 5 seconds and 300 seconds.');
+    }
+  }
+
+  if (hc.timeout?.toSeconds() !== undefined) {
+    if (2 > hc.timeout?.toSeconds() || hc.timeout?.toSeconds() > 120) {
+      throw new Error('Timeout must be between 2 seconds and 120 seconds.');
+    }
+  }
+  if (hc.interval?.toSeconds() !== undefined && hc.timeout?.toSeconds() !== undefined) {
+    if (hc.interval?.toSeconds() < hc.timeout?.toSeconds()) {
+      throw new Error('Health check interval should be longer than timeout.');
+    }
+  }
+
   return {
     command: getHealthCheckCommand(hc),
     interval: hc.interval?.toSeconds() ?? 30,
@@ -1006,7 +1060,138 @@ export interface PortMapping {
    *
    * @default TCP
    */
-  readonly protocol?: Protocol
+  readonly protocol?: Protocol;
+
+  /**
+   * The name to give the port mapping.
+   *
+   * Name is required in order to use the port mapping with ECS Service Connect.
+   * This field may only be set when the task definition uses Bridge or Awsvpc network modes.
+   *
+   * @default - no port mapping name
+   */
+  readonly name?: string;
+
+  /**
+   * The protocol used by Service Connect. Valid values are AppProtocol.http, AppProtocol.http2, and
+   * AppProtocol.grpc. The protocol determines what telemetry will be shown in the ECS Console for
+   * Service Connect services using this port mapping.
+   *
+   * This field may only be set when the task definition uses Bridge or Awsvpc network modes.
+   *
+   * @default - no app protocol
+   */
+  readonly appProtocol?: AppProtocol;
+}
+
+/**
+ * PortMap ValueObjectClass having by ContainerDefinition
+ */
+export class PortMap {
+
+  /**
+   * The networking mode to use for the containers in the task.
+   */
+  readonly networkmode: NetworkMode;
+
+  /**
+   * Port mappings allow containers to access ports on the host container instance to send or receive traffic.
+   */
+  readonly portmapping: PortMapping;
+
+  constructor(networkmode: NetworkMode, pm: PortMapping) {
+    this.networkmode = networkmode;
+    this.portmapping = pm;
+  }
+
+  /**
+   * validate invalid portmapping and networkmode parameters.
+   * throw Error when invalid parameters.
+   */
+  public validate(): void {
+    if (!this.isvalidPortName()) {
+      throw new Error('Port mapping name cannot be an empty string.');
+    }
+    if (!this.isValidPorts()) {
+      const pm = this.portmapping;
+      throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.networkmode}`);
+    }
+  }
+
+  private isvalidPortName(): boolean {
+    if (this.portmapping.name === '') {
+      return false;
+    }
+    return true;
+  }
+
+  private isValidPorts() :boolean {
+    const isAwsVpcMode = this.networkmode == NetworkMode.AWS_VPC;
+    const isHostMode = this.networkmode == NetworkMode.HOST;
+    if (!isAwsVpcMode && !isHostMode) return true;
+    const hostPort = this.portmapping.hostPort;
+    const containerPort = this.portmapping.containerPort;
+    if (containerPort !== hostPort && hostPort !== undefined ) return false;
+    return true;
+  }
+
+}
+
+
+/**
+ * ServiceConnect ValueObjectClass having by ContainerDefinition
+ */
+export class ServiceConnect {
+  /**
+   * Port mappings allow containers to access ports on the host container instance to send or receive traffic.
+   */
+  readonly portmapping: PortMapping;
+
+  /**
+   * The networking mode to use for the containers in the task.
+   */
+  readonly networkmode: NetworkMode;
+
+  constructor(networkmode: NetworkMode, pm: PortMapping) {
+    this.portmapping = pm;
+    this.networkmode = networkmode;
+  }
+
+  /**
+   * Judge parameters can be serviceconnect logick.
+   * If parameters can be serviceConnect return true.
+   */
+  public isServiceConnect() :boolean {
+    const hasPortname = this.portmapping.name;
+    const hasAppProtcol = this.portmapping.appProtocol;
+    if (hasPortname || hasAppProtcol) return true;
+    return false;
+  }
+
+  /**
+   * Judge serviceconnect parametes are valid.
+   * If invalid, throw Error.
+   */
+  public validate() :void {
+    if (!this.isValidNetworkmode()) {
+      throw new Error(`Service connect related port mapping fields 'name' and 'appProtocol' are not supported for network mode ${this.networkmode}`);
+    }
+    if (!this.isValidPortName()) {
+      throw new Error('Service connect-related port mapping field \'appProtocol\' cannot be set without \'name\'');
+    }
+  }
+
+  private isValidNetworkmode() :boolean {
+    const isAwsVpcMode = this.networkmode == NetworkMode.AWS_VPC;
+    const isBridgeMode = this.networkmode == NetworkMode.BRIDGE;
+    if (isAwsVpcMode || isBridgeMode) return true;
+    return false;
+  }
+
+  private isValidPortName() :boolean {
+    if (!this.portmapping.name) return false;
+    return true;
+  }
 }
 
 /**
@@ -1024,11 +1209,41 @@ export enum Protocol {
   UDP = 'udp',
 }
 
+
+/**
+ * Service connect app protocol.
+ */
+export class AppProtocol {
+  /**
+   * HTTP app protocol.
+   */
+  public static http = new AppProtocol('http');
+  /**
+   * HTTP2 app protocol.
+   */
+  public static http2 = new AppProtocol('http2');
+  /**
+   * GRPC app protocol.
+   */
+  public static grpc = new AppProtocol('grpc');
+
+  /**
+   * Custom value.
+   */
+  public readonly value: string;
+
+  protected constructor(value: string) {
+    this.value = value;
+  }
+}
+
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
   return {
     containerPort: pm.containerPort,
     hostPort: pm.hostPort,
     protocol: pm.protocol || Protocol.TCP,
+    appProtocol: pm.appProtocol?.value,
+    name: pm.name ? pm.name : undefined,
   };
 }
 

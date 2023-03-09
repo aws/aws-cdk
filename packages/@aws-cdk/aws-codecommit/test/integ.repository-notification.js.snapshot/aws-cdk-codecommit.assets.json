@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "c11d2ebc6dfc30e327f9f519b9d586b126a9b367963d3a0ae1010a086f2b6fa8": {
+      "source": {
+        "path": "aws-cdk-codecommit.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c11d2ebc6dfc30e327f9f519b9d586b126a9b367963d3a0ae1010a086f2b6fa8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

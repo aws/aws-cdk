@@ -18,3 +18,9 @@ nyc.config.js
 
 !test/verify/**/*.js
 junit.xml
+
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
+
+!**/*.snapshot/**/asset.*/**
+!test/integ-assets/**/*.js

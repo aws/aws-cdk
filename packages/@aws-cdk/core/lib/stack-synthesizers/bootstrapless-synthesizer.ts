@@ -1,10 +1,9 @@
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../construct-compat';
-import { assertBound } from './_shared';
 import { DefaultStackSynthesizer } from './default-synthesizer';
+import { ISynthesisSession } from './types';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 
 /**
- * Construction properties of {@link BootstraplessSynthesizer}.
+ * Construction properties of `BootstraplessSynthesizer`.
  */
 export interface BootstraplessSynthesizerProps {
   /**
@@ -34,6 +33,9 @@ export interface BootstraplessSynthesizerProps {
  * However, it will not assume asset buckets or repositories have been created,
  * and therefore does not support assets.
  *
+ * The name is poorly chosen -- it does still require bootstrapping, it just
+ * does not support assets.
+ *
  * Used by the CodePipeline construct for the support stacks needed for
  * cross-region replication S3 buckets. App builders do not need to use this
  * synthesizer directly.
@@ -56,13 +58,11 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
   }
 
   public synthesize(session: ISynthesisSession): void {
-    assertBound(this.stack);
-
-    this.synthesizeStackTemplate(this.stack, session);
+    this.synthesizeStackTemplate(this.boundStack, session);
 
     // do _not_ treat the template as an asset,
     // because this synthesizer doesn't have a bootstrap bucket to put it in
-    this.emitStackArtifact(this.stack, session, {
+    this.emitArtifact(session, {
       assumeRoleArn: this.deployRoleArn,
       cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
     });

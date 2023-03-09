@@ -57,7 +57,10 @@ export class CloudWatchPutMetricAction implements iot.IAction {
   constructor(private readonly props: CloudWatchPutMetricActionProps) {
   }
 
-  bind(rule: iot.ITopicRule): iot.ActionConfig {
+  /**
+   * @internal
+   */
+  public _bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.props.role ?? singletonActionRole(rule);
     cloudwatch.Metric.grantPutMetricData(role);
 

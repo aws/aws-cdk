@@ -7,6 +7,7 @@ import {
   ArnFormat,
   BootstraplessSynthesizer,
   DefaultStackSynthesizer,
+  FeatureFlags,
   IStackSynthesizer,
   Lazy,
   Names,
@@ -17,6 +18,7 @@ import {
   Stage as CdkStage,
   Token,
 } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
 import { CfnPipeline } from './codepipeline.generated';
@@ -25,10 +27,6 @@ import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -63,9 +61,24 @@ export interface StageProps {
 
   /**
    * The list of Actions to create this Stage with.
-   * You can always add more Actions later by calling {@link IStage#addAction}.
+   * You can always add more Actions later by calling `IStage#addAction`.
    */
   readonly actions?: IAction[];
+
+  /**
+   * Whether to enable transition to this stage.
+   *
+   * @default true
+   */
+  readonly transitionToEnabled?: boolean;
+
+  /**
+   * The reason for disabling transition to this stage. Only applicable
+   * if `transitionToEnabled` is set to `false`.
+   *
+   * @default 'Transition disabled'
+   */
+  readonly transitionDisabledReason?: string;
 }
 
 export interface StageOptions extends StageProps {
@@ -114,7 +127,7 @@ export interface PipelineProps {
   /**
    * The list of Stages, in order,
    * to create this Pipeline with.
-   * You can always add more Stages later by calling {@link Pipeline#addStage}.
+   * You can always add more Stages later by calling `Pipeline#addStage`.
    *
    * @default - None.
    */
@@ -350,6 +363,7 @@ export class Pipeline extends PipelineBase {
   private readonly crossAccountKeys: boolean;
   private readonly enableKeyRotation?: boolean;
   private readonly reuseCrossRegionSupportStacks: boolean;
+  private readonly codePipeline: CfnPipeline;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -411,21 +425,22 @@ export class Pipeline extends PipelineBase {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
-    const codePipeline = new CfnPipeline(this, 'Resource', {
+    this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
       stages: Lazy.any({ produce: () => this.renderStages() }),
+      disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: this.physicalName,
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
-    codePipeline.node.addDependency(this.role);
+    this.codePipeline.node.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
-    this.pipelineName = this.getResourceNameAttribute(codePipeline.ref);
-    this.pipelineVersion = codePipeline.attrVersion;
+    this.pipelineName = this.getResourceNameAttribute(this.codePipeline.ref);
+    this.pipelineVersion = this.codePipeline.attrVersion;
     this.crossRegionBucketsPassed = !!props.crossRegionReplicationBuckets;
 
     for (const [region, replicationBucket] of Object.entries(props.crossRegionReplicationBuckets || {})) {
@@ -444,6 +459,8 @@ export class Pipeline extends PipelineBase {
     for (const stage of props.stages || []) {
       this.addStage(stage);
     }
+
+    this.node.addValidation({ validate: () => this.validatePipeline() });
   }
 
   /**
@@ -488,7 +505,7 @@ export class Pipeline extends PipelineBase {
    *
    * **Note**: the returned array is a defensive copy,
    * so adding elements to it has no effect.
-   * Instead, use the {@link addStage} method if you want to add more stages
+   * Instead, use the `addStage` method if you want to add more stages
    * to the pipeline.
    */
   public get stages(): IStage[] {
@@ -508,7 +525,7 @@ export class Pipeline extends PipelineBase {
   }
 
   /**
-   * Returns all of the {@link CrossRegionSupportStack}s that were generated automatically
+   * Returns all of the `CrossRegionSupportStack`s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
    *
    */
@@ -534,7 +551,7 @@ export class Pipeline extends PipelineBase {
     validateNamespaceName(richAction.actionProperties.variablesNamespace);
 
     // bind the Action (type h4x)
-    const actionConfig = richAction.bind(actionScope as CoreConstruct, stage, {
+    const actionConfig = richAction.bind(actionScope, stage, {
       role: actionRole ? actionRole : this.role,
       bucket: crossRegionInfo.artifactBucket,
     });
@@ -557,9 +574,8 @@ export class Pipeline extends PipelineBase {
    * Validation happens according to the rules documented at
    *
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#pipeline-requirements
-   * @override
    */
-  protected validate(): string[] {
+  private validatePipeline(): string[] {
     return [
       ...this.validateSourceActionLocations(),
       ...this.validateHasStages(),
@@ -681,10 +697,19 @@ export class Pipeline extends PipelineBase {
   private generateNameForDefaultBucketKeyAlias(): string {
     const prefix = 'alias/codepipeline-';
     const maxAliasLength = 256;
-    const uniqueId = Names.uniqueId(this);
-    // take the last 256 - (prefix length) characters of uniqueId
-    const startIndex = Math.max(0, uniqueId.length - (maxAliasLength - prefix.length));
-    return prefix + uniqueId.substring(startIndex).toLowerCase();
+    const maxResourceNameLength = maxAliasLength - prefix.length;
+    // Names.uniqueId() may have naming collisions when the IDs of resources are similar
+    // and/or when they are too long and sliced. We do not want to update this and
+    // automatically change the name of every KMS key already generated so we are putting
+    // this under a feature flag.
+    const uniqueId = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME) ?
+      Names.uniqueResourceName(this, {
+        separator: '-',
+        maxLength: maxResourceNameLength,
+        allowedSpecialCharacters: '/_-',
+      }) :
+      Names.uniqueId(this).slice(-maxResourceNameLength);
+    return prefix + uniqueId.toLowerCase();
   }
 
   /**
@@ -708,13 +733,8 @@ export class Pipeline extends PipelineBase {
     }
 
     // the pipeline role needs assumeRole permissions to the action role
-    if (actionRole) {
-      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['sts:AssumeRole'],
-        resources: [actionRole.roleArn],
-      }));
-    }
-
+    const grant = actionRole?.grantAssumeRole(this.role);
+    grant?.applyBefore(this.codePipeline);
     return actionRole;
   }
 
@@ -744,7 +764,7 @@ export class Pipeline extends PipelineBase {
         // because the role might be from a different environment),
         // but _only_ if it's a new Role -
         // an imported Role should not add the dependency
-        if (action.actionProperties.role instanceof iam.Role) {
+        if (iam.Role.isRole(action.actionProperties.role)) {
           const roleStack = Stack.of(action.actionProperties.role);
           pipelineStack.addDependency(roleStack);
         }
@@ -1039,6 +1059,15 @@ export class Pipeline extends PipelineBase {
     return this._stages.map(stage => stage.render());
   }
 
+  private renderDisabledTransitions(): CfnPipeline.StageTransitionProperty[] {
+    return this._stages
+      .filter(stage => !stage.transitionToEnabled)
+      .map(stage => ({
+        reason: stage.transitionDisabledReason,
+        stageName: stage.stageName,
+      }));
+  }
+
   private requireRegion(): string {
     const region = this.env.region;
     if (Token.isUnresolved(region)) {
@@ -1059,7 +1088,7 @@ export class Pipeline extends PipelineBase {
 /**
  * An interface representing resources generated in order to support
  * the cross-region capabilities of CodePipeline.
- * You get instances of this interface from the {@link Pipeline#crossRegionSupport} property.
+ * You get instances of this interface from the `Pipeline#crossRegionSupport` property.
  *
  */
 export interface CrossRegionSupport {
@@ -1071,7 +1100,7 @@ export interface CrossRegionSupport {
 
   /**
    * The replication Bucket used by CodePipeline to operate in this region.
-   * Belongs to {@link stack}.
+   * Belongs to `stack`.
    */
   readonly replicationBucket: s3.IBucket;
 }

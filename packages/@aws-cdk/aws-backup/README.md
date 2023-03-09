@@ -34,12 +34,32 @@ Assigning resources to a plan can be done with `addSelection()`:
 
 ```ts
 declare const plan: backup.BackupPlan;
+declare const vpc: ec2.Vpc;
 const myTable = dynamodb.Table.fromTableName(this, 'Table', 'myTableName');
+const myDatabaseInstance = new rds.DatabaseInstance(this, 'DatabaseInstance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_26 }),
+  vpc,
+});
+const myDatabaseCluster = new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'),
+  instanceProps: {
+    vpc,
+  },
+});
+const myServerlessCluster = new rds.ServerlessCluster(this, 'ServerlessCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
+  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
+  vpc,
+});
 const myCoolConstruct = new Construct(this, 'MyCoolConstruct');
 
 plan.addSelection('Selection', {
   resources: [
     backup.BackupResource.fromDynamoDbTable(myTable), // A DynamoDB table
+    backup.BackupResource.fromRdsDatabaseInstance(myDatabaseInstance), // A RDS instance
+    backup.BackupResource.fromRdsDatabaseCluster(myDatabaseCluster), // A RDS database cluster
+    backup.BackupResource.fromRdsServerlessCluster(myServerlessCluster), // An Aurora Serverless cluster
     backup.BackupResource.fromTag('stage', 'prod'), // All resources that are tagged stage=prod in the region/account
     backup.BackupResource.fromConstruct(myCoolConstruct), // All backupable resources in `myCoolConstruct`
   ]
@@ -76,6 +96,21 @@ declare const plan: backup.BackupPlan;
 plan.addRule(new backup.BackupPlanRule({
   enableContinuousBackup: true,
   deleteAfter: Duration.days(14),
+}));
+```
+
+Rules can also specify to copy recovery points to another Backup Vault using `copyActions`. Copied recovery points can
+optionally have `moveToColdStorageAfter` and `deleteAfter` configured.
+
+```ts
+declare const plan: backup.BackupPlan;
+declare const secondaryVault: backup.BackupVault;
+plan.addRule(new backup.BackupPlanRule({
+  copyActions: [{
+    destinationBackupVault: secondaryVault,
+    moveToColdStorageAfter: Duration.days(30),
+    deleteAfter: Duration.days(120),
+  }]
 }));
 ```
 
@@ -175,6 +210,16 @@ backupVault.blockRecoveryPointDeletion();
 ```
 
 By default access is not restricted.
+
+Use the `lockConfiguration` property to enable [AWS Backup Vault Lock](https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html):
+
+```ts
+new BackupVault(stack, 'Vault', {
+  lockConfiguration: {
+    minRetention: Duration.days(30),
+  },
+});
+```
 
 ## Importing existing backup vault
 

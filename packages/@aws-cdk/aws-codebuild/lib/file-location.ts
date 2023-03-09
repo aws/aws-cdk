@@ -1,12 +1,9 @@
+import { Construct } from 'constructs';
 import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
- * The type returned from {@link IFileSystemLocation#bind}.
+ * The type returned from `IFileSystemLocation#bind`.
  */
 export interface FileSystemConfig {
   /**
@@ -18,14 +15,14 @@ export interface FileSystemConfig {
 
 /**
  * The interface of a CodeBuild FileSystemLocation.
- * Implemented by {@link EfsFileSystemLocation}.
+ * Implemented by `EfsFileSystemLocation`.
  */
 export interface IFileSystemLocation {
   /**
    * Called by the project when a file system is added so it can perform
    * binding operations on this file system location.
    */
-  bind(scope: CoreConstruct, project: IProject): FileSystemConfig;
+  bind(scope: Construct, project: IProject): FileSystemConfig;
 }
 
 /**
@@ -47,7 +44,7 @@ export class FileSystemLocation {
 class EfsFileSystemLocation implements IFileSystemLocation {
   constructor(private readonly props: EfsFileSystemLocationProps) {}
 
-  public bind(_scope: CoreConstruct, _project: IProject): FileSystemConfig {
+  public bind(_scope: Construct, _project: IProject): FileSystemConfig {
     return {
       location: {
         identifier: this.props.identifier,
@@ -61,7 +58,7 @@ class EfsFileSystemLocation implements IFileSystemLocation {
 }
 
 /**
- * Construction properties for {@link EfsFileSystemLocation}.
+ * Construction properties for `EfsFileSystemLocation`.
  */
 export interface EfsFileSystemLocationProps {
   /**

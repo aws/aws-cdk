@@ -19,3 +19,8 @@ nyc.config.js
 !test/function-code.js
 
 junit.xml
+
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
+
+!**/*.snapshot/**/asset.*/**

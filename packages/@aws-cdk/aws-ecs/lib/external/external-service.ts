@@ -5,7 +5,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
-import { fromServiceAtrributes } from '../base/from-service-attributes';
+import { fromServiceAttributes } from '../base/from-service-attributes';
 import { ScalableTaskCount } from '../base/scalable-task-count';
 import { Compatibility, LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -48,14 +48,14 @@ export interface ExternalServiceAttributes {
   /**
    * The service ARN.
    *
-   * @default - either this, or {@link serviceName}, is required
+   * @default - either this, or `serviceName`, is required
    */
   readonly serviceArn?: string;
 
   /**
    * The name of the service.
    *
-   * @default - either this, or {@link serviceArn}, is required
+   * @default - either this, or `serviceArn`, is required
    */
   readonly serviceName?: string;
 }
@@ -79,10 +79,10 @@ export class ExternalService extends BaseService implements IExternalService {
   }
 
   /**
-   * Imports from the specified service attrributes.
+   * Imports from the specified service attributes.
    */
   public static fromExternalServiceAttributes(scope: Construct, id: string, attrs: ExternalServiceAttributes): IBaseService {
-    return fromServiceAtrributes(scope, id, attrs);
+    return fromServiceAttributes(scope, id, attrs);
   }
 
   /**

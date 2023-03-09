@@ -2,14 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Architecture } from '@aws-cdk/aws-lambda';
+import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { LockFile } from './package-manager';
 import { BundlingOptions } from './types';
 import { callsites, findUpMultiple } from './util';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a NodejsFunction
@@ -27,6 +24,9 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
 
   /**
    * The name of the exported handler in the entry file.
+   *
+   * The handler is prefixed with `index.` unless the specified handler value contains a `.`,
+   * in which case it is used as-is.
    *
    * @default handler
    */
@@ -54,16 +54,16 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   readonly awsSdkConnectionReuse?: boolean;
 
   /**
-   * The path to the dependencies lock file (`yarn.lock` or `package-lock.json`).
+   * The path to the dependencies lock file (`yarn.lock`, `pnpm-lock.yaml` or `package-lock.json`).
    *
    * This will be used as the source for the volume mounted in the Docker
    * container.
    *
    * Modules specified in `nodeModules` will be installed using the right
-   * installer (`npm` or `yarn`) along with this lock file.
+   * installer (`yarn`, `pnpm` or `npm`) along with this lock file.
    *
    * @default - the path is found by walking up parent directories searching for
-   *   a `yarn.lock` or `package-lock.json` file
+   *   a `yarn.lock`, `pnpm-lock.yaml` or `package-lock.json` file
    */
   readonly depsLockFilePath?: string;
 
@@ -111,7 +111,7 @@ export class NodejsFunction extends lambda.Function {
         depsLockFilePath,
         projectRoot,
       }),
-      handler: `index.${handler}`,
+      handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
     });
 
     // Enable connection reuse for aws-sdk
@@ -144,10 +144,10 @@ function findLockFile(depsLockFilePath?: string): string {
   ]);
 
   if (lockFiles.length === 0) {
-    throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
+    throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock` or `package-lock.json`). Please specify it with `depsLockFilePath`.');
   }
   if (lockFiles.length > 1) {
-    throw new Error(`Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsFileLockPath\`.`);
+    throw new Error(`Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsLockFilePath\`.`);
   }
 
   return lockFiles[0];

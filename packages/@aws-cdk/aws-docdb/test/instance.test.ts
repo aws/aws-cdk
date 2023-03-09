@@ -117,7 +117,7 @@ describe('DatabaseInstance', () => {
           [
             'arn:',
             { Ref: 'AWS::Partition' },
-            ':docdb:us-test-1:12345:db:',
+            ':rds:us-test-1:12345:db:',
             { Ref: 'InstanceC1063A87' },
           ],
         ],
@@ -160,7 +160,7 @@ describe('DatabaseInstance', () => {
           [
             'arn:',
             { Ref: 'AWS::Partition' },
-            `:docdb:us-test-1:12345:db:${instanceIdentifier}`,
+            `:rds:us-test-1:12345:db:${instanceIdentifier}`,
           ],
         ],
       },
@@ -170,6 +170,25 @@ describe('DatabaseInstance', () => {
         Name: endpointExportName,
       },
       Value: `${instanceEndpointAddress}:${port}`,
+    });
+  });
+
+  test('can enable performance insights on instances', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new DatabaseInstance(stack, 'Instance', {
+      cluster: stack.cluster,
+      instanceType: SINGLE_INSTANCE_TYPE,
+      enablePerformanceInsights: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBInstance', {
+      Properties: {
+        EnablePerformanceInsights: true,
+      },
     });
   });
 });
@@ -187,7 +206,7 @@ class TestStack extends cdk.Stack {
     this.cluster = new DatabaseCluster(this, 'Database', {
       masterUser: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceType: CLUSTER_INSTANCE_TYPE,
       vpc: this.vpc,

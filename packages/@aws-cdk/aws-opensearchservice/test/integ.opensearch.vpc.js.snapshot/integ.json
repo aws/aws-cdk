@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "cdk-integ-opensearch-vpc-test/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-vpc"
+      ],
+      "assertionStack": "cdk-integ-opensearch-vpc-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegopensearchvpctestDefaultTestDeployAssertF8864CE2"
+    }
+  }
+}

@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-require-imports */
+import mocks = require('./mocks');
 import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');
 import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
-import mocks = require('./mocks');
 
 console.log = jest.fn();
 
@@ -18,7 +18,10 @@ outbound.httpRequest = mocks.httpRequestMock;
 outbound.invokeFunction = mocks.invokeFunctionMock;
 outbound.startExecution = mocks.startExecutionMock;
 
+const invokeFunctionSpy = jest.spyOn(outbound, 'invokeFunction');
+
 beforeEach(() => mocks.setup());
+afterEach(() => invokeFunctionSpy.mockClear());
 
 test('async flow: isComplete returns true only after 3 times', async () => {
   let isCompleteCalls = 0;
@@ -344,6 +347,41 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
     expectCloudFormationSuccess();
   });
 
+});
+
+describe('ResponseURL is passed to user function', () => {
+  test('for onEvent', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expect(invokeFunctionSpy).toHaveBeenCalledTimes(1);
+    expect(invokeFunctionSpy).toBeCalledWith(expect.objectContaining({
+      Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
+    }));
+  });
+
+  test('for isComplete', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expect(invokeFunctionSpy).toHaveBeenCalledTimes(2);
+    expect(invokeFunctionSpy).toHaveBeenLastCalledWith(expect.objectContaining({
+      Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
+    }));
+  });
 });
 
 // -----------------------------------------------------------------------------------------------------------------------

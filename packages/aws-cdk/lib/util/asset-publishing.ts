@@ -6,25 +6,106 @@ import { ISDK } from '../api/aws-auth/sdk';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { debug, error, print } from '../logging';
 
+export interface PublishAssetsOptions {
+  /**
+   * Print progress at 'debug' level
+   */
+  readonly quiet?: boolean;
+
+  /**
+   * Whether to build assets before publishing.
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly buildAssets?: boolean;
+
+  /**
+   * Whether to build/publish assets in parallel
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly parallel?: boolean;
+}
+
 /**
  * Use cdk-assets to publish all assets in the given manifest.
  */
-export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: SdkProvider, targetEnv: cxapi.Environment) {
+export async function publishAssets(
+  manifest: cdk_assets.AssetManifest,
+  sdk: SdkProvider,
+  targetEnv: cxapi.Environment,
+  options: PublishAssetsOptions = {},
+) {
   // This shouldn't really happen (it's a programming error), but we don't have
   // the types here to guide us. Do an runtime validation to be super super sure.
-  if (targetEnv.account === undefined || targetEnv.account === cxapi.UNKNOWN_ACCOUNT
-    || targetEnv.region === undefined || targetEnv.account === cxapi.UNKNOWN_REGION) {
+  if (
+    targetEnv.account === undefined ||
+    targetEnv.account === cxapi.UNKNOWN_ACCOUNT ||
+    targetEnv.region === undefined ||
+    targetEnv.account === cxapi.UNKNOWN_REGION
+  ) {
     throw new Error(`Asset publishing requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
   }
 
   const publisher = new cdk_assets.AssetPublishing(manifest, {
     aws: new PublishingAws(sdk, targetEnv),
-    progressListener: new PublishingProgressListener(),
+    progressListener: new PublishingProgressListener(options.quiet ?? false),
     throwOnError: false,
+    publishInParallel: options.parallel ?? true,
+    buildAssets: options.buildAssets ?? true,
+    publishAssets: true,
   });
   await publisher.publish();
   if (publisher.hasFailures) {
     throw new Error('Failed to publish one or more assets. See the error messages above for more information.');
+  }
+}
+
+export interface BuildAssetsOptions {
+  /**
+   * Print progress at 'debug' level
+   */
+  readonly quiet?: boolean;
+
+  /**
+   * Build assets in parallel
+   *
+   * @default true
+   */
+  readonly parallel?: boolean;
+}
+
+/**
+ * Use cdk-assets to build all assets in the given manifest.
+ */
+export async function buildAssets(
+  manifest: cdk_assets.AssetManifest,
+  sdk: SdkProvider,
+  targetEnv: cxapi.Environment,
+  options: BuildAssetsOptions = {},
+) {
+  // This shouldn't really happen (it's a programming error), but we don't have
+  // the types here to guide us. Do an runtime validation to be super super sure.
+  if (
+    targetEnv.account === undefined ||
+    targetEnv.account === cxapi.UNKNOWN_ACCOUNT ||
+    targetEnv.region === undefined ||
+    targetEnv.account === cxapi.UNKNOWN_REGION
+  ) {
+    throw new Error(`Asset building requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
+  }
+
+  const publisher = new cdk_assets.AssetPublishing(manifest, {
+    aws: new PublishingAws(sdk, targetEnv),
+    progressListener: new PublishingProgressListener(options.quiet ?? false),
+    throwOnError: false,
+    publishInParallel: options.parallel ?? true,
+    buildAssets: true,
+    publishAssets: false,
+  });
+  await publisher.publish();
+  if (publisher.hasFailures) {
+    throw new Error('Failed to build one or more assets. See the error messages above for more information.');
   }
 }
 
@@ -118,7 +199,11 @@ const EVENT_TO_LOGGER: Record<cdk_assets.EventType, (x: string) => void> = {
 };
 
 class PublishingProgressListener implements cdk_assets.IPublishProgressListener {
+  constructor(private readonly quiet: boolean) {
+  }
+
   public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
-    EVENT_TO_LOGGER[type](`[${event.percentComplete}%] ${type}: ${event.message}`);
+    const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
+    handler(`[${event.percentComplete}%] ${type}: ${event.message}`);
   }
 }

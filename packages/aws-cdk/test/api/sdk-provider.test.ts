@@ -4,12 +4,12 @@ import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
+import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
 import { ISDK, Mode, SDK, SdkProvider } from '../../lib/api/aws-auth';
+import { PluginHost } from '../../lib/api/plugin';
 import * as logging from '../../lib/logging';
-import { PluginHost } from '../../lib/plugin';
 import * as bockfs from '../bockfs';
 import { withMocked } from '../util';
-import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
 
 jest.mock('promptly', () => ({
   prompt: jest.fn().mockResolvedValue('1234'),
@@ -341,6 +341,34 @@ describe('with intercepted network calls', () => {
       });
     });
 
+    test('assuming a role does not fail when OS username cannot be read', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo', $account: '11111' },
+        },
+      });
+
+      await withMocked(os, 'userInfo', async (userInfo) => {
+        userInfo.mockImplementation(() => {
+          // SystemError thrown as documented: https://nodejs.org/docs/latest-v16.x/api/os.html#osuserinfooptions
+          throw new Error('SystemError on Linux: uv_os_get_passwd returned ENOENT. See #19401 issue.');
+        });
+
+        // WHEN
+        const provider = await providerFromProfile(undefined);
+
+        const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })).sdk as SDK;
+        await sdk.currentAccount();
+
+        // THEN
+        expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
+          roleSessionName: 'aws-cdk-noname',
+        }));
+      });
+    });
+
     test('even if current credentials are for the wrong account, we will still use them to AssumeRole', async () => {
       // GIVEN
       prepareCreds({
@@ -373,6 +401,22 @@ describe('with intercepted network calls', () => {
 
       // THEN
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('88888'));
+    });
+
+    test('if AssumeRole fails because of ExpiredToken, then fail completely', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo', $account: '88888' },
+        },
+      });
+      const provider = await providerFromProfile(undefined);
+
+      // WHEN - assumeRole fails with a specific error
+      await expect(async () => {
+        await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: '<FAIL:ExpiredToken>' });
+      }).rejects.toThrow(/ExpiredToken/);
     });
   });
 
@@ -509,6 +553,18 @@ describe('with intercepted network calls', () => {
   test('defaultAccount returns undefined if STS call fails', async () => {
     // GIVEN
     process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
+    process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
+
+    // WHEN
+    const provider = await providerFromProfile(undefined);
+
+    // THEN
+    await expect(provider.defaultAccount()).resolves.toBe(undefined);
+  });
+
+  test('defaultAccount returns undefined, event if STS call fails with ExpiredToken', async () => {
+    // GIVEN
+    process.env.AWS_ACCESS_KEY_ID = `${uid}'<FAIL:ExpiredToken>'`;
     process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
 
     // WHEN

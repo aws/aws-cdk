@@ -1,16 +1,13 @@
 import { EOL } from 'os';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
-
-const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('bucket', () => {
   test('default bucket', () => {
@@ -310,25 +307,19 @@ describe('bucket', () => {
     });
   });
 
-  test('bucketKeyEnabled can be enabled', () => {
+  test.each([s3.BucketEncryption.KMS, s3.BucketEncryption.KMS_MANAGED])('bucketKeyEnabled can be enabled with %p encryption', (encryption) => {
     const stack = new cdk.Stack();
 
-    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.KMS });
+    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption });
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       'BucketEncryption': {
         'ServerSideEncryptionConfiguration': [
           {
             'BucketKeyEnabled': true,
-            'ServerSideEncryptionByDefault': {
-              'KMSMasterKeyID': {
-                'Fn::GetAtt': [
-                  'MyBucketKeyC17130CF',
-                  'Arn',
-                ],
-              },
+            'ServerSideEncryptionByDefault': Match.objectLike({
               'SSEAlgorithm': 'aws:kms',
-            },
+            }),
           },
         ],
       },
@@ -340,11 +331,108 @@ describe('bucket', () => {
 
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3MANAGED)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3_MANAGED)");
     expect(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: NONE)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: UNENCRYPTED)");
 
+  });
+
+  test('logs to self, no encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED, serverAccessLogsPrefix: 'test' });
+    }).not.toThrowError();
+  });
+
+  test('logs to self, S3 encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED, serverAccessLogsPrefix: 'test' });
+    }).not.toThrowError();
+  });
+
+  test('logs to self, KMS_MANAGED encryption throws error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS_MANAGED, serverAccessLogsPrefix: 'test' });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to self, KMS encryption without key throws error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to self, KMS encryption with key throws error', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to self, KMS key with no specific encryption specified throws error', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, serverAccessLogsPrefix: 'test' });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, no encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).not.toThrowError();
+  });
+
+  test('logs to separate bucket, S3 encryption does not throw error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).not.toThrowError();
+  });
+
+  // When provided an external bucket (as an IBucket), we cannot detect KMS_MANAGED encryption. Since this
+  // check is impossible, we skip thist test.
+  // eslint-disable-next-line jest/no-disabled-tests
+  test.skip('logs to separate bucket, KMS_MANAGED encryption throws error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS_MANAGED });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, KMS encryption without key throws error', () => {
+    const stack = new cdk.Stack();
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, KMS encryption with key throws error', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+  });
+
+  test('logs to separate bucket, KMS key with no specific encryption specified throws error', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key });
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
+    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
   });
 
   test('bucket with versioning turned on', () => {
@@ -367,6 +455,110 @@ describe('bucket', () => {
         },
       },
     });
+  });
+
+  test('bucket with object lock enabled but no retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: Match.absent(),
+    });
+  });
+
+  test('object lock defaults to disabled', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket');
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: Match.absent(),
+    });
+  });
+
+  test('object lock defaults to enabled when default retention is specified', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(7 * 365)),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'GOVERNANCE',
+            Days: 7 * 365,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock enabled with governance retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(1)),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'GOVERNANCE',
+            Days: 1,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock enabled with compliance retention', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.compliance(cdk.Duration.days(1)),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: 'COMPLIANCE',
+            Days: 1,
+          },
+        },
+      },
+    });
+  });
+
+  test('bucket with object lock disabled throws error with retention set', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: false,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(1)),
+    })).toThrow('Object Lock must be enabled to configure default retention settings');
+  });
+
+  test('bucket with object lock requires duration than one day', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(0)),
+    })).toThrow('Object Lock retention duration must be at least 1 day');
+  });
+
+  // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
+  test('bucket with object lock requires duration less than 100 years', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: true,
+      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(365 * 101)),
+    })).toThrow('Object Lock retention duration must be less than 100 years');
   });
 
   test('bucket with block public access set to BlockAll', () => {
@@ -600,7 +792,6 @@ describe('bucket', () => {
   });
 
   describe('import/export', () => {
-
     test('static import(ref) allows importing an external/existing bucket', () => {
       const stack = new cdk.Stack();
 
@@ -690,9 +881,9 @@ describe('bucket', () => {
       });
     });
 
-    test('import can explicitly set bucket region', () => {
+    test('import can explicitly set bucket region with different suffix than stack', () => {
       const stack = new cdk.Stack(undefined, undefined, {
-        env: { region: 'us-east-1' },
+        env: { region: 'cn-north-1' },
       });
 
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
@@ -700,8 +891,59 @@ describe('bucket', () => {
         region: 'eu-west-1',
       });
 
-      expect(bucket.bucketRegionalDomainName).toEqual(`mybucket.s3.eu-west-1.${stack.urlSuffix}`);
-      expect(bucket.bucketWebsiteDomainName).toEqual(`mybucket.s3-website-eu-west-1.${stack.urlSuffix}`);
+      expect(bucket.bucketRegionalDomainName).toEqual('mybucket.s3.eu-west-1.amazonaws.com');
+      expect(bucket.bucketWebsiteDomainName).toEqual('mybucket.s3-website-eu-west-1.amazonaws.com');
+    });
+
+    test('new bucketWebsiteUrl format for specific region', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.us-east-2.amazonaws.com');
+    });
+
+    test('new bucketWebsiteUrl format for specific region with cn suffix', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'cn-north-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.cn-north-1.amazonaws.com.cn');
+    });
+
+
+    testDeprecated('new bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+        bucketWebsiteNewUrlFormat: true,
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.us-east-1.amazonaws.com');
+    });
+
+    testDeprecated('old bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+        bucketWebsiteNewUrlFormat: false,
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website-us-east-2.amazonaws.com');
     });
 
     test('import needs to specify a valid bucket name', () => {
@@ -712,6 +954,175 @@ describe('bucket', () => {
       expect(() => s3.Bucket.fromBucketAttributes(stack, 'MyBucket3', {
         bucketName: 'arn:aws:s3:::example-com',
       })).toThrow();
+    });
+  });
+
+  describe('fromCfnBucket()', () => {
+    let stack: cdk.Stack;
+    let cfnBucket: s3.CfnBucket;
+    let bucket: s3.IBucket;
+
+    beforeEach(() => {
+      stack = new cdk.Stack();
+      cfnBucket = new s3.CfnBucket(stack, 'CfnBucket');
+      bucket = s3.Bucket.fromCfnBucket(cfnBucket);
+    });
+
+    test("correctly resolves the 'bucketName' property", () => {
+      expect(stack.resolve(bucket.bucketName)).toStrictEqual({
+        Ref: 'CfnBucket',
+      });
+    });
+
+    test("correctly resolves the 'bucketArn' property", () => {
+      expect(stack.resolve(bucket.bucketArn)).toStrictEqual({
+        'Fn::GetAtt': ['CfnBucket', 'Arn'],
+      });
+    });
+
+    test('allows setting the RemovalPolicy of the underlying resource', () => {
+      bucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+        UpdateReplacePolicy: 'Retain',
+        DeletionPolicy: 'Retain',
+      });
+    });
+
+    test('correctly sets the default child of the returned L2', () => {
+      expect(bucket.node.defaultChild).toBe(cfnBucket);
+    });
+
+    test('allows granting permissions to Principals', () => {
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountRootPrincipal(),
+      });
+      bucket.grantRead(role);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
+              ],
+              'Resource': [{
+                'Fn::GetAtt': ['CfnBucket', 'Arn'],
+              }, {
+                'Fn::Join': ['', [
+                  { 'Fn::GetAtt': ['CfnBucket', 'Arn'] },
+                  '/*',
+                ]],
+              }],
+            },
+          ],
+        },
+      });
+    });
+
+    test("sets the isWebsite property to 'false' if 'websiteConfiguration' is 'undefined'", () => {
+      expect(bucket.isWebsite).toBeFalsy();
+    });
+
+    test("sets the isWebsite property to 'true' if 'websiteConfiguration' is not 'undefined'", () => {
+      cfnBucket = new s3.CfnBucket(stack, 'WebsiteCfnBucket', {
+        websiteConfiguration: {
+          indexDocument: 'index.html',
+        },
+      });
+      bucket = s3.Bucket.fromCfnBucket(cfnBucket);
+
+      expect(bucket.isWebsite).toBeTruthy();
+    });
+
+    test('allows granting public access by default', () => {
+      expect(() => {
+        bucket.grantPublicAccess();
+      }).not.toThrow();
+    });
+
+    test('does not allow granting public access for a Bucket that blocks it', () => {
+      cfnBucket = new s3.CfnBucket(stack, 'BlockedPublicAccessCfnBucket', {
+        publicAccessBlockConfiguration: {
+          blockPublicPolicy: true,
+        },
+      });
+      bucket = s3.Bucket.fromCfnBucket(cfnBucket);
+
+      expect(() => {
+        bucket.grantPublicAccess();
+      }).toThrow(/Cannot grant public access when 'blockPublicPolicy' is enabled/);
+    });
+
+    test('correctly fills the encryption key if the L1 references one', () => {
+      const cfnKey = new kms.CfnKey(stack, 'CfnKey', {
+        keyPolicy: {
+          'Statement': [
+            {
+              'Action': [
+                'kms:*',
+              ],
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { 'Ref': 'AWS::Partition' },
+                    ':iam::',
+                    { 'Ref': 'AWS::AccountId' },
+                    ':root',
+                  ]],
+                },
+              },
+              'Resource': '*',
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+      cfnBucket = new s3.CfnBucket(stack, 'KmsEncryptedCfnBucket', {
+        bucketEncryption: {
+          serverSideEncryptionConfiguration: [
+            {
+              serverSideEncryptionByDefault: {
+                kmsMasterKeyId: cfnKey.attrArn,
+                sseAlgorithm: 'aws:kms',
+              },
+            },
+          ],
+        },
+      });
+      bucket = s3.Bucket.fromCfnBucket(cfnBucket);
+
+      expect(bucket.encryptionKey).not.toBeUndefined();
+    });
+
+    test('allows importing a BucketPolicy that references a Bucket', () => {
+      new s3.CfnBucketPolicy(stack, 'CfnBucketPolicy', {
+        policyDocument: {
+          'Statement': [
+            {
+              'Action': 's3:*',
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': '*',
+              },
+              'Resource': ['*'],
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+        bucket: cfnBucket.ref,
+      });
+      bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['s3:*'],
+        principals: [new iam.AccountRootPrincipal()],
+      }));
+
+      Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 2);
     });
   });
 
@@ -781,8 +1192,8 @@ describe('bucket', () => {
   });
 
   describe('grantReadWrite', () => {
-    testFutureBehavior('can be used to grant reciprocal permissions to an identity', s3GrantWriteCtx, cdk.App, (app) => {
-      const stack = new cdk.Stack(app);
+    test('can be used to grant reciprocal permissions to an identity', () => {
+      const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
       bucket.grantReadWrite(user);
@@ -898,181 +1309,8 @@ describe('bucket', () => {
       });
     });
 
-    testLegacyBehavior('if an encryption key is included, encrypt/decrypt permissions are also added both ways', cdk.App, (app) => {
-      const stack = new cdk.Stack(app);
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
-      const user = new iam.User(stack, 'MyUser');
-      bucket.grantReadWrite(user);
-
-      Template.fromStack(stack).templateMatches({
-        'Resources': {
-          'MyBucketKeyC17130CF': {
-            'Type': 'AWS::KMS::Key',
-            'Properties': {
-              'Description': 'Created by Default/MyBucket',
-              'KeyPolicy': {
-                'Statement': [
-                  {
-                    'Action': [
-                      'kms:Create*',
-                      'kms:Describe*',
-                      'kms:Enable*',
-                      'kms:List*',
-                      'kms:Put*',
-                      'kms:Update*',
-                      'kms:Revoke*',
-                      'kms:Disable*',
-                      'kms:Get*',
-                      'kms:Delete*',
-                      'kms:ScheduleKeyDeletion',
-                      'kms:CancelKeyDeletion',
-                      'kms:GenerateDataKey',
-                      'kms:TagResource',
-                      'kms:UntagResource',
-                    ],
-                    'Effect': 'Allow',
-                    'Principal': {
-                      'AWS': {
-                        'Fn::Join': [
-                          '',
-                          [
-                            'arn:',
-                            {
-                              'Ref': 'AWS::Partition',
-                            },
-                            ':iam::',
-                            {
-                              'Ref': 'AWS::AccountId',
-                            },
-                            ':root',
-                          ],
-                        ],
-                      },
-                    },
-                    'Resource': '*',
-                  },
-                  {
-                    'Action': [
-                      'kms:Decrypt',
-                      'kms:DescribeKey',
-                      'kms:Encrypt',
-                      'kms:ReEncrypt*',
-                      'kms:GenerateDataKey*',
-                    ],
-                    'Effect': 'Allow',
-                    'Principal': {
-                      'AWS': {
-                        'Fn::GetAtt': [
-                          'MyUserDC45028B',
-                          'Arn',
-                        ],
-                      },
-                    },
-                    'Resource': '*',
-                  },
-                ],
-                'Version': '2012-10-17',
-              },
-            },
-            'DeletionPolicy': 'Retain',
-            'UpdateReplacePolicy': 'Retain',
-          },
-          'MyBucketF68F3FF0': {
-            'Type': 'AWS::S3::Bucket',
-            'DeletionPolicy': 'Retain',
-            'UpdateReplacePolicy': 'Retain',
-            'Properties': {
-              'BucketEncryption': {
-                'ServerSideEncryptionConfiguration': [
-                  {
-                    'ServerSideEncryptionByDefault': {
-                      'KMSMasterKeyID': {
-                        'Fn::GetAtt': [
-                          'MyBucketKeyC17130CF',
-                          'Arn',
-                        ],
-                      },
-                      'SSEAlgorithm': 'aws:kms',
-                    },
-                  },
-                ],
-              },
-            },
-          },
-          'MyUserDC45028B': {
-            'Type': 'AWS::IAM::User',
-          },
-          'MyUserDefaultPolicy7B897426': {
-            'Type': 'AWS::IAM::Policy',
-            'Properties': {
-              'PolicyDocument': {
-                'Statement': [
-                  {
-                    'Action': [
-                      's3:GetObject*',
-                      's3:GetBucket*',
-                      's3:List*',
-                      's3:DeleteObject*',
-                      's3:PutObject*',
-                      's3:Abort*',
-                    ],
-                    'Effect': 'Allow',
-                    'Resource': [
-                      {
-                        'Fn::GetAtt': [
-                          'MyBucketF68F3FF0',
-                          'Arn',
-                        ],
-                      },
-                      {
-                        'Fn::Join': [
-                          '',
-                          [
-                            {
-                              'Fn::GetAtt': [
-                                'MyBucketF68F3FF0',
-                                'Arn',
-                              ],
-                            },
-                            '/*',
-                          ],
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    'Action': [
-                      'kms:Decrypt',
-                      'kms:DescribeKey',
-                      'kms:Encrypt',
-                      'kms:ReEncrypt*',
-                      'kms:GenerateDataKey*',
-                    ],
-                    'Effect': 'Allow',
-                    'Resource': {
-                      'Fn::GetAtt': [
-                        'MyBucketKeyC17130CF',
-                        'Arn',
-                      ],
-                    },
-                  },
-                ],
-                'Version': '2012-10-17',
-              },
-              'PolicyName': 'MyUserDefaultPolicy7B897426',
-              'Users': [
-                {
-                  'Ref': 'MyUserDC45028B',
-                },
-              ],
-            },
-          },
-        },
-      });
-    });
-
-    testFutureBehavior('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', s3GrantWriteCtx, cdk.App, (app) => {
-      const stack = new cdk.Stack(app, 'Stack');
+    test('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', () => {
+      const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
 
@@ -1112,8 +1350,8 @@ describe('bucket', () => {
   });
 
   describe('grantWrite', () => {
-    testFutureBehavior('with KMS key has appropriate permissions for multipart uploads', s3GrantWriteCtx, cdk.App, (app) => {
-      const stack = new cdk.Stack(app);
+    test('with KMS key has appropriate permissions for multipart uploads', () => {
+      const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
       const user = new iam.User(stack, 'MyUser');
       bucket.grantWrite(user);
@@ -1182,8 +1420,8 @@ describe('bucket', () => {
       });
     });
 
-    testFutureBehavior('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', s3GrantWriteCtx, cdk.App, (app) => {
-      const stack = new cdk.Stack(app, 'Stack');
+    test('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', () => {
+      const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
 
@@ -1220,8 +1458,8 @@ describe('bucket', () => {
   });
 
   describe('grantPut', () => {
-    testFutureBehavior('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', s3GrantWriteCtx, cdk.App, (app) => {
-      const stack = new cdk.Stack(app, 'Stack');
+    test('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', () => {
+      const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
 
@@ -1253,8 +1491,8 @@ describe('bucket', () => {
     });
   });
 
-  testFutureBehavior('more grants', s3GrantWriteCtx, cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
+  test('more grants', () => {
+    const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
     const putter = new iam.User(stack, 'Putter');
     const writer = new iam.User(stack, 'Writer');
@@ -1915,10 +2153,14 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'http://my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'http://my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
@@ -1926,14 +2168,17 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'my-test-bucket.s3-website-',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+            'my-test-bucket.',
+            {
+              'Fn::FindInMap': [
+                'S3staticwebsiteMap',
+                { Ref: 'AWS::Region' },
+                'endpoint',
+              ],
+            },
           ],
         ],
       });
-
     });
     test('exports the WebsiteURL for imported buckets with url', () => {
       const stack = new cdk.Stack();
@@ -2196,6 +2441,96 @@ describe('bucket', () => {
         accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
       }),
     ).toThrow(/Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
+  });
+
+  test('Bucket skips setting up access log ACL but configures delivery for an imported target bucket', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = s3.Bucket.fromBucketName(stack, 'TargetBucket', 'target-logs-bucket');
+    new s3.Bucket(stack, 'TestBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+      serverAccessLogsPrefix: 'test/',
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: stack.resolve(accessLogBucket.bucketName),
+        LogFilePrefix: 'test/',
+      },
+    });
+    template.allResourcesProperties('AWS::S3::Bucket', {
+      AccessControl: Match.absent(),
+    });
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('Unable to add necessary logging permissions to imported target bucket'));
+  });
+
+  test('Bucket Allow Log delivery should use the recommended policy when flag enabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy', true);
+
+    // WHEN
+    const bucket = new s3.Bucket(stack, 'TestBucket', { serverAccessLogsPrefix: 'test' });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::Bucket', {
+      AccessControl: Match.absent(),
+    });
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: stack.resolve(bucket.bucketName),
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'logging.s3.amazonaws.com' },
+          Action: 's3:PutObject',
+          Resource: stack.resolve(`${bucket.bucketArn}/test*`),
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': stack.resolve(bucket.bucketArn),
+            },
+            StringEquals: {
+              'aws:SourceAccount': { 'Ref': 'AWS::AccountId' },
+            },
+          },
+        })]),
+      }),
+    });
+  });
+
+  test('Log Delivery bucket policy should properly set source bucket ARN/Account', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy', true);
+
+    // WHEN
+    const targetBucket = new s3.Bucket(stack, 'TargetBucket');
+    const sourceBucket = new s3.Bucket(stack, 'SourceBucket', { serverAccessLogsBucket: targetBucket });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: stack.resolve(targetBucket.bucketName),
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'logging.s3.amazonaws.com' },
+          Action: 's3:PutObject',
+          Resource: stack.resolve(`${targetBucket.bucketArn}/*`),
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': stack.resolve(sourceBucket.bucketArn),
+            },
+            StringEquals: {
+              'aws:SourceAccount': stack.resolve(sourceBucket.env.account),
+            },
+          },
+        })]),
+      }),
+    });
   });
 
   test('Defaults for an inventory bucket', () => {
@@ -2740,6 +3075,18 @@ describe('bucket', () => {
           'DeletionPolicy': 'Retain',
           'UpdateReplacePolicy': 'Retain',
         },
+      },
+    });
+  });
+
+  test('Event Bridge notification can be enabled after the bucket is created', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    bucket.enableEventBridgeNotification();
+
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+      NotificationConfiguration: {
+        EventBridgeConfiguration: {},
       },
     });
   });

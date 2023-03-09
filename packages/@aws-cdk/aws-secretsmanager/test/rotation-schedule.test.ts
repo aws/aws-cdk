@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import * as secretsmanager from '../lib';
 
 let stack: cdk.Stack;
@@ -14,7 +15,7 @@ test('create a rotation schedule with a rotation Lambda', () => {
   // GIVEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });
@@ -46,7 +47,7 @@ test('assign permissions for rotation schedule with a rotation Lambda', () => {
   // GIVEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });
@@ -105,7 +106,7 @@ test('grants correct permissions for secret imported by name', () => {
   // GIVEN
   const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'mySecretName');
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });
@@ -157,7 +158,7 @@ test('assign kms permissions for rotation schedule with a rotation Lambda', () =
   const encryptionKey = new kms.Key(stack, 'Key');
   const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey });
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });
@@ -229,6 +230,7 @@ describe('hosted rotation', () => {
       },
       HostedRotationLambda: {
         RotationType: 'MySQLSingleUser',
+        ExcludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
       },
       RotationRules: {
         AutomaticallyAfterDays: 30,
@@ -512,5 +514,90 @@ describe('hosted rotation', () => {
     // THEN
     expect(() => hostedRotation.connections.allowToAnyIpv4(ec2.Port.allTraffic()))
       .toThrow(/Cannot use connections for a hosted rotation that is not deployed in a VPC/);
+  });
+
+  test('can customize exclude characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+
+    // WHEN
+    secret.addRotationSchedule('RotationSchedule', {
+      hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser({
+        excludeCharacters: '()',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      HostedRotationLambda: {
+        RotationType: 'MySQLSingleUser',
+        ExcludeCharacters: '()',
+      },
+    });
+  });
+
+  test('exclude characters default to secret exclude characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+    const secret = new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        excludeCharacters: '[]',
+      },
+    });
+
+    // WHEN
+    secret.addRotationSchedule('RotationSchedule', {
+      hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      HostedRotationLambda: {
+        RotationType: 'MySQLSingleUser',
+        ExcludeCharacters: '[]',
+      },
+    });
+  });
+});
+
+describe('manual rotations', () => {
+  test('automaticallyAfter with any duration of zero leaves RotationRules unset', () => {
+    const checkRotationNotSet = (automaticallyAfter: Duration) => {
+      // GIVEN
+      const localStack = new cdk.Stack();
+      const secret = new secretsmanager.Secret(localStack, 'Secret');
+      const rotationLambda = new lambda.Function(localStack, 'Lambda', {
+        runtime: lambda.Runtime.NODEJS_14_X,
+        code: lambda.Code.fromInline('export.handler = event => event;'),
+        handler: 'index.handler',
+      });
+
+      // WHEN
+      new secretsmanager.RotationSchedule(localStack, 'RotationSchedule', {
+        secret,
+        rotationLambda,
+        automaticallyAfter,
+      });
+
+      // THEN
+      Template.fromStack(localStack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', Match.objectEquals({
+        SecretId: { Ref: 'SecretA720EF05' },
+        RotationLambdaARN: {
+          'Fn::GetAtt': [
+            'LambdaD247545B',
+            'Arn',
+          ],
+        },
+      }));
+    };
+
+    checkRotationNotSet(Duration.days(0));
+    checkRotationNotSet(Duration.hours(0));
+    checkRotationNotSet(Duration.minutes(0));
+    checkRotationNotSet(Duration.seconds(0));
+    checkRotationNotSet(Duration.millis(0));
   });
 });

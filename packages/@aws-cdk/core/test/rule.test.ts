@@ -1,5 +1,5 @@
-import { CfnRule, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import { CfnRule, Fn, Stack } from '../lib';
 
 describe('rule', () => {
   test('Rule can be used to create rules', () => {
@@ -25,8 +25,6 @@ describe('rule', () => {
         },
       },
     });
-
-
   });
 
   test('a template can contain multiple Rules', () => {
@@ -41,7 +39,5 @@ describe('rule', () => {
         Rule2: {},
       },
     });
-
-
   });
 });

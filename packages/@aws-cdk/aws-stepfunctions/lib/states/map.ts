@@ -1,10 +1,11 @@
+import { Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { StateType } from './private/state-type';
+import { renderJsonPath, State } from './state';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
-import { StateType } from './private/state-type';
-import { renderJsonPath, State } from './state';
 
 /**
  * Properties for defining a Map state
@@ -183,14 +184,14 @@ export class Map extends State implements INextable {
   /**
    * Validate this state
    */
-  protected validate(): string[] {
+  protected validateState(): string[] {
     const errors: string[] = [];
 
     if (this.iteration === undefined) {
       errors.push('Map state must have a non-empty iterator');
     }
 
-    if (this.maxConcurrency !== undefined && !isPositiveInteger(this.maxConcurrency)) {
+    if (this.maxConcurrency !== undefined && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
       errors.push('maxConcurrency has to be a positive integer');
     }
 

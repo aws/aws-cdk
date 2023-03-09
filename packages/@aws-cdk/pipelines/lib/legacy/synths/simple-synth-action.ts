@@ -7,15 +7,13 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../../docker-credentials';
-import { toPosixPath } from '../../private/fs';
+import { Construct } from 'constructs';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
+import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../../docker-credentials';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../private/default-codebuild-image';
+import { toPosixPath } from '../../private/fs';
 
 const DEFAULT_OUTPUT_DIR = 'cdk.out';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Configuration options for a SimpleSynth
@@ -71,7 +69,7 @@ export interface SimpleSynthOptions {
   /**
    * Build environment to use for CodeBuild job
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_5_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_6_0
    */
   readonly environment?: codebuild.BuildEnvironment;
 
@@ -343,7 +341,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     const testCommands = this.props.testCommands ?? [];
     const synthCommand = this.props.synthCommand;
 
-    const environment = { buildImage: codebuild.LinuxBuildImage.STANDARD_5_0, ...this.props.environment };
+    const environment = { buildImage: CDKP_DEFAULT_CODEBUILD_IMAGE, ...this.props.environment };
     const osType = (environment.buildImage instanceof codebuild.WindowsBuildImage)
       ? ec2.OperatingSystemType.WINDOWS
       : ec2.OperatingSystemType.LINUX;

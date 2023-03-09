@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
 
 const CFN_CONTEXT = {
@@ -10,9 +12,10 @@ const CFN_CONTEXT = {
   'AWS::URLSuffix': 'domain.aws',
 };
 
-let app: App;
-let stack: Stack;
 describe('new style synthesis', () => {
+  let app: App;
+  let stack: Stack;
+
   beforeEach(() => {
     app = new App({
       context: {
@@ -60,14 +63,18 @@ describe('new style synthesis', () => {
 
   });
 
-  test('version check is added to template', () => {
+  test('version check is added to both template and manifest artifact', () => {
     // GIVEN
     new CfnResource(stack, 'Resource', {
       type: 'Some::Resource',
     });
 
     // THEN
-    const template = app.synth().getStackByName('Stack').template;
+    const asm = app.synth();
+    const manifestArtifact = getAssetManifest(asm);
+    expect(manifestArtifact.requiresBootstrapStackVersion).toEqual(6);
+
+    const template = asm.getStackByName('Stack').template;
     expect(template?.Parameters?.BootstrapVersion?.Type).toEqual('AWS::SSM::Parameter::Value<String>');
     expect(template?.Parameters?.BootstrapVersion?.Default).toEqual('/cdk-bootstrap/hnb659fds/version');
     expect(template?.Parameters?.BootstrapVersion?.Description).toContain(cxapi.SSMPARAM_NO_INVALIDATE);
@@ -79,8 +86,6 @@ describe('new style synthesis', () => {
         { 'Fn::Contains': [['1', '2', '3', '4', '5'], { Ref: 'BootstrapVersion' }] },
       ],
     });
-
-
   });
 
   test('version check is not added to template if disabled', () => {
@@ -124,8 +129,43 @@ describe('new style synthesis', () => {
 
     // THEN - the asset manifest has an SSM parameter entry
     expect(manifestArtifact.bootstrapStackVersionSsmParameter).toEqual('stack-version-parameter');
+  });
+
+  test('contains asset but not requiring a specific version parameter', () => {
+    // GIVEN
+    class BootstraplessStackSynthesizer extends DefaultStackSynthesizer {
 
 
+      /**
+       * Synthesize the associated bootstrap stack to the session.
+       */
+      public synthesize(session: ISynthesisSession): void {
+        this.synthesizeTemplate(session);
+        session.assembly.addArtifact('FAKE_ARTIFACT_ID', {
+          type: ArtifactType.ASSET_MANIFEST,
+          properties: {
+            file: 'FAKE_ARTIFACT_ID.json',
+          },
+        });
+        this.emitArtifact(session, {
+          additionalDependencies: ['FAKE_ARTIFACT_ID'],
+        });
+      }
+    }
+
+    const myapp = new App();
+
+    // WHEN
+    new Stack(myapp, 'mystack', {
+      synthesizer: new BootstraplessStackSynthesizer(),
+    });
+
+    // THEN
+    const asm = myapp.synth();
+    const manifestArtifact = getAssetManifest(asm);
+
+    // THEN - the asset manifest should not define a required bootstrap stack version
+    expect(manifestArtifact.requiresBootstrapStackVersion).toEqual(undefined);
   });
 
   test('generates missing context with the lookup role ARN as one of the missing context properties', () => {
@@ -181,6 +221,27 @@ describe('new style synthesis', () => {
     expect(evalCFN(location.imageUri)).toEqual('the_account.dkr.ecr.the_region.domain.aws/cdk-hnb659fds-container-assets-the_account-the_region:abcdef');
 
 
+  });
+
+  test('dockerBuildArgs or dockerBuildSecrets without directoryName', () => {
+    // WHEN
+    expect(() => {
+      stack.synthesizer.addDockerImageAsset({
+        sourceHash: 'abcdef',
+        dockerBuildArgs: {
+          ABC: '123',
+        },
+      });
+    }).toThrowError(/Exactly one of 'directoryName' or 'executable' is required/);
+
+    expect(() => {
+      stack.synthesizer.addDockerImageAsset({
+        sourceHash: 'abcdef',
+        dockerBuildSecrets: {
+          DEF: '456',
+        },
+      });
+    }).toThrowError(/Exactly one of 'directoryName' or 'executable' is required/);
   });
 
   test('synthesis', () => {
@@ -361,17 +422,64 @@ describe('new style synthesis', () => {
     expect(imageTag).toEqual('test-prefix-docker-asset-hash');
   });
 
-  test('cannot use same synthesizer for multiple stacks', () => {
+  test('can use same synthesizer for multiple stacks', () => {
     // GIVEN
-    const synthesizer = new DefaultStackSynthesizer();
+    const synthesizer = new DefaultStackSynthesizer({
+      bootstrapStackVersionSsmParameter: 'bleep',
+    });
 
     // WHEN
-    new Stack(app, 'Stack2', { synthesizer });
-    expect(() => {
-      new Stack(app, 'Stack3', { synthesizer });
-    }).toThrow(/A StackSynthesizer can only be used for one Stack/);
+    const stack1 = new Stack(app, 'Stack1', { synthesizer });
+    const stack2 = new Stack(app, 'Stack2', { synthesizer });
 
+    // THEN
+    const asm = app.synth();
+    for (const st of [stack1, stack2]) {
+      const tpl = asm.getStackByName(st.stackName).template;
+      expect(tpl).toEqual(expect.objectContaining({
+        Parameters: expect.objectContaining({
+          BootstrapVersion: expect.objectContaining({
+            Default: 'bleep', // Assert that the settings have been applied
+          }),
+        }),
+      }));
+    }
   });
+
+  /**
+   * Evaluate a possibly string-containing value the same way CFN would do
+   *
+   * (Be invariant to the specific Fn::Sub or Fn::Join we would output)
+   */
+  function evalCFN(value: any) {
+    return evaluateCFN(stack.resolve(value), CFN_CONTEXT);
+  }
+});
+
+test('can specify synthesizer at the app level', () => {
+  // GIVEN
+  const app = new App({
+    defaultStackSynthesizer: new DefaultStackSynthesizer({
+      bootstrapStackVersionSsmParameter: 'bleep',
+    }),
+  });
+
+  // WHEN
+  const stack1 = new Stack(app, 'Stack1');
+  const stack2 = new Stack(app, 'Stack2');
+
+  // THEN
+  const asm = app.synth();
+  for (const st of [stack1, stack2]) {
+    const tpl = asm.getStackByName(st.stackName).template;
+    expect(tpl).toEqual(expect.objectContaining({
+      Parameters: expect.objectContaining({
+        BootstrapVersion: expect.objectContaining({
+          Default: 'bleep', // Assert that the settings have been applied
+        }),
+      }),
+    }));
+  }
 });
 
 test('get an exception when using tokens for parameters', () => {
@@ -382,15 +490,6 @@ test('get an exception when using tokens for parameters', () => {
     });
   }).toThrow(/cannot contain tokens/);
 });
-
-/**
- * Evaluate a possibly string-containing value the same way CFN would do
- *
- * (Be invariant to the specific Fn::Sub or Fn::Join we would output)
- */
-function evalCFN(value: any) {
-  return evaluateCFN(stack.resolve(value), CFN_CONTEXT);
-}
 
 function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {
   return x instanceof cxapi.AssetManifestArtifact;

@@ -1,5 +1,5 @@
 import * as events from '@aws-cdk/aws-events';
-import { Duration } from '@aws-cdk/core';
+import { Duration, Token } from '@aws-cdk/core';
 import { IBackupVault } from './vault';
 
 /**
@@ -70,6 +70,38 @@ export interface BackupPlanRuleProps {
    * @default false
    */
   readonly enableContinuousBackup?: boolean;
+
+  /**
+   * Copy operations to perform on recovery points created by this rule
+   *
+   * @default - no copy actions
+   */
+  readonly copyActions?: BackupPlanCopyActionProps[];
+}
+
+/**
+ * Properties for a BackupPlanCopyAction
+ */
+export interface BackupPlanCopyActionProps {
+  /**
+   * Destination Vault for recovery points to be copied into
+   */
+  readonly destinationBackupVault: IBackupVault;
+
+  /**
+   * Specifies the duration after creation that a copied recovery point is deleted from the destination vault.
+   * Must be at least 90 days greater than `moveToColdStorageAfter`, if specified.
+   *
+   * @default - recovery point is never deleted
+   */
+  readonly deleteAfter?: Duration;
+
+  /**
+   * Specifies the duration after creation that a copied recovery point is moved to cold storage.
+   *
+   * @default - recovery point is never moved to cold storage
+   */
+  readonly moveToColdStorageAfter?: Duration;
 }
 
 /**
@@ -183,6 +215,19 @@ export class BackupPlanRule {
     if (props.enableContinuousBackup && props.deleteAfter &&
       (props.deleteAfter?.toDays() < 1 || props.deleteAfter?.toDays() > 35)) {
       throw new Error(`'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
+    }
+
+    if (props.copyActions && props.copyActions.length > 0) {
+      props.copyActions.forEach(copyAction => {
+        if (copyAction.deleteAfter && !Token.isUnresolved(copyAction.deleteAfter) &&
+          copyAction.moveToColdStorageAfter && !Token.isUnresolved(copyAction.moveToColdStorageAfter) &&
+          copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays() + 90) {
+          throw new Error([
+            '\'deleteAfter\' must at least 90 days later than corresponding \'moveToColdStorageAfter\'',
+            `received 'deleteAfter: ${copyAction.deleteAfter.toDays()}' and 'moveToColdStorageAfter: ${copyAction.moveToColdStorageAfter.toDays()}'`,
+          ].join('\n'));
+        }
+      });
     }
 
     this.props = {

@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "integ-user-pool-identity-provider-saml-test/DefaultTest": {
+      "stacks": [
+        "integ-user-pool-identity-provider-saml-stack"
+      ],
+      "assertionStack": "integ-user-pool-identity-provider-saml-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolidentityprovidersamltestDefaultTestDeployAssert97F09C26"
+    }
+  }
+}

@@ -113,7 +113,7 @@ describe('tests', () => {
       defaultAction: elbv2.ListenerAction.authenticateOidc({
         authorizationEndpoint: 'A',
         clientId: 'B',
-        clientSecret: cdk.SecretValue.plainText('C'),
+        clientSecret: cdk.SecretValue.unsafePlainText('C'),
         issuer: 'D',
         tokenEndpoint: 'E',
         userInfoEndpoint: 'F',

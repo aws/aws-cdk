@@ -1,5 +1,5 @@
-import { Annotations, ConcreteDependable, Stack } from '@aws-cdk/core';
-import { IConstruct, Node } from 'constructs';
+import { Annotations, Stack } from '@aws-cdk/core';
+import { DependencyGroup, IConstruct, Node } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 
@@ -43,7 +43,7 @@ export class UnknownPrincipal implements IPrincipal {
     const repr = JSON.stringify(stack.resolve(statement));
     Annotations.of(this.resource).addWarning(`Add statement to this resource's role: ${repr}`);
     // Pretend we did the work. The human will do it for us, eventually.
-    return { statementAdded: true, policyDependable: new ConcreteDependable() };
+    return { statementAdded: true, policyDependable: new DependencyGroup() };
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

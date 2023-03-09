@@ -46,13 +46,15 @@ export interface IDatabaseCluster extends IResource, IConnectable, ISecretAttach
 export interface DatabaseClusterAttributes {
   /**
    * The database port
+   * @default - none
    */
-  readonly port: number;
+  readonly port?: number;
 
   /**
    * The security group of the database cluster
+   * @default - no security groups
    */
-  readonly securityGroup: ISecurityGroup;
+  readonly securityGroup?: ISecurityGroup;
 
   /**
    * Identifier for the cluster
@@ -61,22 +63,26 @@ export interface DatabaseClusterAttributes {
 
   /**
    * Identifier for the instances
+   * @default - no instance identifiers
    */
-  readonly instanceIdentifiers: string[];
+  readonly instanceIdentifiers?: string[];
   // Actual underlying type: DBInstanceId[], but we have to type it more loosely for Java's benefit.
 
   /**
    * Cluster endpoint address
+   * @default - no cluster endpoint address
    */
-  readonly clusterEndpointAddress: string;
+  readonly clusterEndpointAddress?: string;
 
   /**
    * Reader endpoint address
+   * @default - no reader endpoint address
    */
-  readonly readerEndpointAddress: string;
+  readonly readerEndpointAddress?: string;
 
   /**
    * Endpoint addresses of individual instances
+   * @default - no instance endpoint addresses
    */
-  readonly instanceEndpointAddresses: string[];
+  readonly instanceEndpointAddresses?: string[];
 }

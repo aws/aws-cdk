@@ -1,13 +1,22 @@
 jest.mock('../../lib/api/deploy-stack');
+jest.mock('../../lib/util/asset-publishing');
 
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import { FakeCloudformationStack } from './fake-cloudformation-stack';
+import { DEFAULT_BOOTSTRAP_VARIANT } from '../../lib';
 import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployments';
 import { deployStack } from '../../lib/api/deploy-stack';
-import { ToolkitInfo } from '../../lib/api/toolkit-info';
+import { HotswapMode } from '../../lib/api/hotswap/common';
+import { EcrRepositoryInfo, ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
+import { buildAssets, publishAssets } from '../../lib/util/asset-publishing';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
-import { FakeCloudformationStack } from './fake-cloudformation-stack';
 
 let sdkProvider: MockSdkProvider;
 let deployments: CloudFormationDeployments;
@@ -55,18 +64,49 @@ function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
   mockToolkitInfoLookup.mockResolvedValue(ToolkitInfo.fromStack(fakeStack, sdkProvider.sdk));
 }
 
+test('deployStack builds assets by default for backward compatibility', async () => {
+  const stack = testStackWithAssetManifest();
+
+  // WHEN
+  await deployments.deployStack({
+    stack,
+  });
+
+  // THEN
+  const expectedOptions = expect.objectContaining({
+    buildAssets: true,
+  });
+  expect(publishAssets).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), expectedOptions);
+});
+
+test('deployStack can disable asset building for prebuilds', async () => {
+  const stack = testStackWithAssetManifest();
+
+  // WHEN
+  await deployments.deployStack({
+    stack,
+    buildAssets: false,
+  });
+
+  // THEN
+  const expectedOptions = expect.objectContaining({
+    buildAssets: false,
+  });
+  expect(publishAssets).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), expectedOptions);
+});
+
 test('passes through hotswap=true to deployStack()', async () => {
   // WHEN
   await deployments.deployStack({
     stack: testStack({
       stackName: 'boop',
     }),
-    hotswap: true,
+    hotswap: HotswapMode.FALL_BACK,
   });
 
   // THEN
   expect(deployStack).toHaveBeenCalledWith(expect.objectContaining({
-    hotswap: true,
+    hotswap: HotswapMode.FALL_BACK,
   }));
 });
 
@@ -843,6 +883,32 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   });
 });
 
+test('building assets', async () => {
+  // GIVEN
+  const stack = testStackWithAssetManifest();
+
+  // WHEN
+  await deployments.buildStackAssets({
+    stack,
+  });
+
+  // THEN
+  const expectedAssetManifest = expect.objectContaining({
+    directory: stack.assembly.directory,
+    manifest: expect.objectContaining({
+      files: expect.objectContaining({
+        fake: expect.anything(),
+      }),
+    }),
+  });
+  const expectedEnvironment = expect.objectContaining({
+    account: 'account',
+    name: 'aws://account/region',
+    region: 'region',
+  });
+  expect(buildAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment, undefined);
+});
+
 function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {
   if (!currentCfnStackResources[stackName]) {
     currentCfnStackResources[stackName] = [];
@@ -859,4 +925,81 @@ function stackSummaryOf(logicalId: string, resourceType: string, physicalResourc
     ResourceStatus: 'CREATE_COMPLETE',
     LastUpdatedTimestamp: new Date(),
   };
+}
+
+function testStackWithAssetManifest() {
+  const toolkitInfo = new class extends ToolkitInfo {
+    public found: boolean = true;
+    public bucketUrl: string = 's3://fake/here';
+    public bucketName: string = 'fake';
+    public variant: string = DEFAULT_BOOTSTRAP_VARIANT;
+    public version: number = 1234;
+    public get bootstrapStack(): CloudFormationStack {
+      throw new Error('This should never happen');
+    };
+
+    constructor() {
+      super(sdkProvider.sdk);
+    }
+
+    public validateVersion(): Promise<void> {
+      return Promise.resolve();
+    }
+
+    public prepareEcrRepository(): Promise<EcrRepositoryInfo> {
+      return Promise.resolve({
+        repositoryUri: 'fake',
+      });
+    }
+  };
+
+  ToolkitInfo.lookup = mockToolkitInfoLookup = jest.fn().mockResolvedValue(toolkitInfo);
+
+  const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out.'));
+  fs.writeFileSync(path.join(outDir, 'assets.json'), JSON.stringify({
+    version: '15.0.0',
+    files: {
+      fake: {
+        source: {
+          path: 'fake.json',
+          packaging: 'file',
+        },
+        destinations: {
+          'current_account-current_region': {
+            bucketName: 'fake-bucket',
+            objectKey: 'fake.json',
+            assumeRoleArn: 'arn:fake',
+          },
+        },
+      },
+    },
+    dockerImages: {},
+  }));
+  fs.writeFileSync(path.join(outDir, 'template.json'), JSON.stringify({
+    Resources: {
+      No: { Type: 'Resource' },
+    },
+  }));
+
+  const builder = new cxapi.CloudAssemblyBuilder(outDir);
+
+  builder.addArtifact('assets', {
+    type: cxschema.ArtifactType.ASSET_MANIFEST,
+    properties: {
+      file: 'assets.json',
+    },
+    environment: 'aws://account/region',
+  });
+
+  builder.addArtifact('stack', {
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    properties: {
+      templateFile: 'template.json',
+    },
+    environment: 'aws://account/region',
+    dependencies: ['assets'],
+  });
+
+  const assembly = builder.buildAssembly();
+  return assembly.getStackArtifact('stack');
 }

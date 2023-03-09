@@ -1,10 +1,10 @@
 import { Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IWebSocketApi } from './api';
 import { CfnStage } from '../apigatewayv2.generated';
 import { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
-import { IWebSocketApi } from './api';
 
 /**
  * Represents the WebSocketStage
@@ -91,6 +91,10 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       apiId: props.webSocketApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
+      defaultRouteSettings: !props.throttle ? undefined : {
+        throttlingBurstLimit: props.throttle?.burstLimit,
+        throttlingRateLimit: props.throttle?.rateLimit,
+      },
     });
 
     if (props.domainMapping) {

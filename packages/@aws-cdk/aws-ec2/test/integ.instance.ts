@@ -1,6 +1,6 @@
-/// !cdk-integ *
 import { PolicyStatement } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as ec2 from '../lib';
 
 const app = new cdk.App();
@@ -10,11 +10,17 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'VPC');
+    const securityGroup = new ec2.SecurityGroup(this, 'IntegSg', {
+      vpc,
+      allowAllIpv6Outbound: true,
+    });
 
     const instance = new ec2.Instance(this, 'Instance', {
       vpc,
+      securityGroup,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
       machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      detailedMonitoring: true,
     });
 
     instance.addToRolePolicy(new PolicyStatement({
@@ -28,6 +34,8 @@ class TestStack extends cdk.Stack {
   }
 }
 
-new TestStack(app, 'TestStack');
+const testCase = new TestStack(app, 'integ-ec2-instance');
 
-app.synth();
+new IntegTest(app, 'instance-test', {
+  testCases: [testCase],
+});

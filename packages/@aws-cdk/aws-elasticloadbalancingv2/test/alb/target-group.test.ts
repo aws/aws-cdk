@@ -528,6 +528,27 @@ describe('tests', () => {
       }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 2 minutes');
     });
 
+  test('Throws validation error, when `configureHealthCheck()`protocol is undefined and `interval` is smaller than `timeout`', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+    });
+
+    // WHEN
+    tg.configureHealthCheck({
+      interval: cdk.Duration.seconds(60),
+      timeout: cdk.Duration.seconds(120),
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 2 minute');
+  });
+
   test('imported targetGroup has targetGroupName', () => {
     // GIVEN
     const app = new cdk.App();
@@ -540,5 +561,86 @@ describe('tests', () => {
 
     // THEN
     expect(importedTg.targetGroupName).toEqual('myAlbTargetGroup');
+  });
+
+  test('imported targetGroup with imported ARN has targetGroupName', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const importedTgArn = cdk.Fn.importValue('ImportTargetGroupArn');
+    const importedTg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: importedTgArn,
+    });
+    new cdk.CfnOutput(stack, 'TargetGroupOutput', {
+      value: importedTg.targetGroupName,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasOutput('TargetGroupOutput', {
+      Value: {
+        'Fn::Select': [
+          // myAlbTargetGroup
+          1,
+          {
+            'Fn::Split': [
+              // [targetgroup, myAlbTargetGroup, 73e2d6bc24d8a067]
+              '/',
+              {
+                'Fn::Select': [
+                  // targetgroup/myAlbTargetGroup/73e2d6bc24d8a067
+                  5,
+                  {
+                    'Fn::Split': [
+                      // [arn, aws, elasticloadbalancing, us-west-2, 123456789012, targetgroup/myAlbTargetGroup/73e2d6bc24d8a067]
+                      ':',
+                      {
+                        // arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067
+                        'Fn::ImportValue': 'ImportTargetGroupArn',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('imported targetGroup has metrics', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+      loadBalancerArns: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/73e2d6bc24d8a067',
+    });
+
+    const metric = targetGroup.metrics.custom('MetricName');
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/ApplicationELB');
+    expect(stack.resolve(metric.dimensions)).toEqual({
+      LoadBalancer: 'app/my-load-balancer/73e2d6bc24d8a067',
+      TargetGroup: 'targetgroup/my-target-group/50dc6c495c0c9188',
+    });
+  });
+
+  test('imported targetGroup without load balancer cannot have metrics', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+    });
+
+    expect(() => targetGroup.metrics.custom('MetricName')).toThrow();
   });
 });

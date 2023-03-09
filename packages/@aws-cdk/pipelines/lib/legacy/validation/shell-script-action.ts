@@ -4,12 +4,9 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-
+import { Construct } from 'constructs';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../private/default-codebuild-image';
 import { StackOutput } from '../stage';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for ShellScriptAction
@@ -63,7 +60,7 @@ export interface ShellScriptActionProps {
   /**
    * The CodeBuild environment where scripts are executed.
    *
-   * @default LinuxBuildImage.STANDARD_5_0
+   * @default LinuxBuildImage.STANDARD_6_0
    */
   readonly environment?: codebuild.BuildEnvironment
 
@@ -199,7 +196,7 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
     }
 
     this._project = new codebuild.PipelineProject(scope, 'Project', {
-      environment: this.props.environment || { buildImage: codebuild.LinuxBuildImage.STANDARD_5_0 },
+      environment: this.props.environment || { buildImage: CDKP_DEFAULT_CODEBUILD_IMAGE },
       vpc: this.props.vpc,
       securityGroups: this.props.securityGroups,
       subnetSelection: this.props.subnetSelection,

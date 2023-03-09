@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnSourceCredential } from './codebuild.generated';
 
 /**
- * Creation properties for {@link GitHubSourceCredentials}.
+ * Creation properties for `GitHubSourceCredentials`.
  */
 export interface GitHubSourceCredentialsProps {
   /**
@@ -28,13 +28,13 @@ export class GitHubSourceCredentials extends Resource {
     new CfnSourceCredential(this, 'Resource', {
       serverType: 'GITHUB',
       authType: 'PERSONAL_ACCESS_TOKEN',
-      token: props.accessToken.toString(),
+      token: props.accessToken.unsafeUnwrap(), // Safe usage
     });
   }
 }
 
 /**
- * Creation properties for {@link GitHubEnterpriseSourceCredentials}.
+ * Creation properties for `GitHubEnterpriseSourceCredentials`.
  */
 export interface GitHubEnterpriseSourceCredentialsProps {
   /**
@@ -60,13 +60,13 @@ export class GitHubEnterpriseSourceCredentials extends Resource {
     new CfnSourceCredential(this, 'Resource', {
       serverType: 'GITHUB_ENTERPRISE',
       authType: 'PERSONAL_ACCESS_TOKEN',
-      token: props.accessToken.toString(),
+      token: props.accessToken.unsafeUnwrap(), // Safe usage
     });
   }
 }
 
 /**
- * Construction properties of {@link BitBucketSourceCredentials}.
+ * Construction properties of `BitBucketSourceCredentials`.
  */
 export interface BitBucketSourceCredentialsProps {
   /** Your BitBucket username. */
@@ -92,8 +92,8 @@ export class BitBucketSourceCredentials extends Resource {
     new CfnSourceCredential(this, 'Resource', {
       serverType: 'BITBUCKET',
       authType: 'BASIC_AUTH',
-      username: props.username.toString(),
-      token: props.password.toString(),
+      username: props.username.unsafeUnwrap(), // Safe usage
+      token: props.password.unsafeUnwrap(), // Safe usage
     });
   }
 }

@@ -31,7 +31,10 @@ export class CloudWatchSetAlarmStateAction implements iot.IAction {
   ) {
   }
 
-  bind(topicRule: iot.ITopicRule): iot.ActionConfig {
+  /**
+   * @internal
+   */
+  public _bind(topicRule: iot.ITopicRule): iot.ActionConfig {
     const role = this.props.role ?? singletonActionRole(topicRule);
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['cloudwatch:SetAlarmState'],

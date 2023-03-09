@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import '@aws-cdk/assert-internal/jest';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
@@ -77,14 +75,28 @@ export class AppWithOutput extends Stage {
   }
 }
 
+export interface TwoStackAppProps extends StageProps {
+  /**
+   * Create a dependency between the two stacks
+   *
+   * @default true
+   */
+  readonly withDependency?: boolean;
+}
+
 export class TwoStackApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
+  public readonly stack1: Stack;
+  public readonly stack2: Stack;
+
+  constructor(scope: Construct, id: string, props?: TwoStackAppProps) {
     super(scope, id, props);
 
-    const stack2 = new BucketStack(this, 'Stack2');
-    const stack1 = new BucketStack(this, 'Stack1');
+    this.stack2 = new BucketStack(this, 'Stack2');
+    this.stack1 = new BucketStack(this, 'Stack1');
 
-    stack2.addDependency(stack1);
+    if (props?.withDependency ?? true) {
+      this.stack2.addDependency(this.stack1);
+    }
   }
 }
 
@@ -225,4 +237,10 @@ export class PlainStackApp extends Stage {
   }
 }
 
-
+export class MultiStackApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    new BucketStack(this, 'Stack1');
+    new BucketStack(this, 'Stack2');
+  }
+}

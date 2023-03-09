@@ -1,10 +1,7 @@
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 
@@ -84,7 +81,7 @@ export class CrossRegionSupportConstruct extends Construct {
 }
 
 /**
- * Construction properties for {@link CrossRegionSupportStack}.
+ * Construction properties for `CrossRegionSupportStack`.
  * This interface is private to the aws-codepipeline package.
  */
 export interface CrossRegionSupportStackProps {

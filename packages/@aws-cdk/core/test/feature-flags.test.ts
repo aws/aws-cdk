@@ -9,7 +9,6 @@ describe('feature flags', () => {
 
       const actual = FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
       expect(actual).toEqual(true);
-
     });
 
     test('falls back to the default', () => {
@@ -17,14 +16,20 @@ describe('feature flags', () => {
 
       expect(FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)).toEqual(
         cxapi.futureFlagDefault(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT));
-
     });
 
     test('invalid flag', () => {
       const stack = new Stack();
 
       expect(FeatureFlags.of(stack).isEnabled('non-existent-flag')).toEqual(false);
+    });
 
+    test('strings are evaluated as boolean', () => {
+      const stack = new Stack();
+      stack.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, 'true');
+
+      const actual = FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
+      expect(actual).toEqual(true);
     });
   });
 });

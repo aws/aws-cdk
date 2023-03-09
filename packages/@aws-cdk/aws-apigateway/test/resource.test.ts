@@ -199,6 +199,7 @@ describe('resource', () => {
     // WHEN
     const aResource = api.root.addResource('a');
     const cResource = aResource.addResource('b').addResource('c');
+    const colonResource = cResource.addResource('d:e');
 
     // THEN
     expect(stack.resolve(api.urlForPath(aResource.path))).toEqual({
@@ -230,6 +231,22 @@ describe('resource', () => {
           '/',
           { Ref: 'apiDeploymentStageprod896C8101' },
           '/a/b/c',
+        ],
+      ],
+    });
+    expect(stack.resolve(api.urlForPath(colonResource.path))).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          'https://',
+          { Ref: 'apiC8550315' },
+          '.execute-api.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+          '/',
+          { Ref: 'apiDeploymentStageprod896C8101' },
+          '/a/b/c/d:e',
         ],
       ],
     });

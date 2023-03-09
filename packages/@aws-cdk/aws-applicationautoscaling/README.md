@@ -222,7 +222,7 @@ const handler = new lambda.Function(this, 'MyFunction', {
   reservedConcurrentExecutions: 2,
 });
 
-const fnVer = handler.addVersion('CDKLambdaVersion', undefined, 'demo alias', 10);
+const fnVer = handler.currentVersion;
 
 const target = new appscaling.ScalableTarget(this, 'ScalableTarget', {
   serviceNamespace: appscaling.ServiceNamespace.LAMBDA,

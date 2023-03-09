@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { Architecture, Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetHashType, DockerImage } from '@aws-cdk/core';
+import { AssetHashType, BundlingFileAccess, DockerImage } from '@aws-cdk/core';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
 
@@ -332,6 +332,150 @@ test('with command hooks', () => {
         'bash', '-c',
         expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
       ],
+    }),
+  });
+});
+
+test('Custom bundling entrypoint', () => {
+  Bundling.bundle({
+    entry,
+    moduleDir,
+    runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
+    forcedDockerBundling: true,
+    entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
+    }),
+  });
+});
+
+test('Custom bundling volumes', () => {
+  Bundling.bundle({
+    entry,
+    moduleDir,
+    runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
+    forcedDockerBundling: true,
+    volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+    }),
+  });
+});
+
+test('Custom bundling volumesFrom', () => {
+  Bundling.bundle({
+    entry,
+    moduleDir,
+    runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
+    forcedDockerBundling: true,
+    volumesFrom: ['777f7dc92da7'],
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      volumesFrom: ['777f7dc92da7'],
+    }),
+  });
+});
+
+test('Custom bundling workingDirectory', () => {
+  Bundling.bundle({
+    entry,
+    moduleDir,
+    runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
+    forcedDockerBundling: true,
+    workingDirectory: '/working-directory',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      workingDirectory: '/working-directory',
+    }),
+  });
+});
+
+test('Custom bundling user', () => {
+  Bundling.bundle({
+    entry,
+    moduleDir,
+    runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
+    forcedDockerBundling: true,
+    user: 'user:group',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      user: 'user:group',
+    }),
+  });
+});
+
+test('Custom bundling securityOpt', () => {
+  Bundling.bundle({
+    entry,
+    moduleDir,
+    runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
+    forcedDockerBundling: true,
+    securityOpt: 'no-new-privileges',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      securityOpt: 'no-new-privileges',
+    }),
+  });
+});
+
+test('Custom bundling network', () => {
+  Bundling.bundle({
+    entry,
+    moduleDir,
+    runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
+    forcedDockerBundling: true,
+    network: 'host',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      network: 'host',
+    }),
+  });
+});
+
+test('Custom bundling file copy variant', () => {
+  Bundling.bundle({
+    entry,
+    moduleDir,
+    runtime: Runtime.GO_1_X,
+    architecture: Architecture.X86_64,
+    forcedDockerBundling: true,
+    bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
     }),
   });
 });

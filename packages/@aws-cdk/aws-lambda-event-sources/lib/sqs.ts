@@ -1,6 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Duration, Names, Token } from '@aws-cdk/core';
+import { Duration, Names, Token, Annotations } from '@aws-cdk/core';
 
 export interface SqsEventSourceProps {
   /**
@@ -39,6 +39,24 @@ export interface SqsEventSourceProps {
    * @default true
    */
   readonly enabled?: boolean;
+
+  /**
+   * Add filter criteria option
+   *
+   * @default - None
+   */
+  readonly filters?: Array<{[key: string]: any}>;
+
+  /**
+   * The maximum concurrency setting limits the number of concurrent instances of the function that an Amazon SQS event source can invoke.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency
+   *
+   * Valid Range: Minimum value of 2. Maximum value of 1000.
+   *
+   * @default - No specific limit.
+   */
+  readonly maxConcurrency?: number;
 }
 
 /**
@@ -70,13 +88,22 @@ export class SqsEventSource implements lambda.IEventSource {
     const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${Names.nodeUniqueId(this.queue.node)}`, {
       batchSize: this.props.batchSize,
       maxBatchingWindow: this.props.maxBatchingWindow,
+      maxConcurrency: this.props.maxConcurrency,
       reportBatchItemFailures: this.props.reportBatchItemFailures,
       enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,
+      filters: this.props.filters,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 
-    this.queue.grantConsumeMessages(target);
+    // only grant access if the lambda function has an IAM role
+    // otherwise the IAM module will throw an error
+    if (target.role) {
+      this.queue.grantConsumeMessages(target);
+    } else {
+      Annotations.of(target).addWarning(`Function '${target.node.path}' was imported without an IAM role `+
+        `so it was not granted access to consume messages from '${this.queue.node.path}'`);
+    }
   }
 
   /**

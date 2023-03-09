@@ -1,18 +1,16 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { testFixtureNoVpc } from './util';
 import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
-import { testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
 const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
 describe('aws auth', () => {
-
   test('throws when adding a role from a different stack', () => {
-
     const app = new cdk.App();
     const clusterStack = new cdk.Stack(app, 'ClusterStack');
     const roleStack = new cdk.Stack(app, 'RoleStack');
@@ -26,12 +24,9 @@ describe('aws auth', () => {
     }).toThrow(
       'RoleStack/Role should be defined in the scope of the ClusterStack stack to prevent circular dependencies',
     );
-
-
   });
 
   test('throws when adding a user from a different stack', () => {
-
     const app = new cdk.App();
     const clusterStack = new cdk.Stack(app, 'ClusterStack');
     const userStack = new cdk.Stack(app, 'UserStack');
@@ -45,8 +40,6 @@ describe('aws auth', () => {
     }).toThrow(
       'UserStack/User should be defined in the scope of the ClusterStack stack to prevent circular dependencies',
     );
-
-
   });
 
   test('empty aws-auth', () => {
@@ -66,7 +59,6 @@ describe('aws auth', () => {
         data: { mapRoles: '[]', mapUsers: '[]', mapAccounts: '[]' },
       }]),
     });
-
   });
 
   test('addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap', () => {
@@ -159,8 +151,6 @@ describe('aws auth', () => {
         ],
       },
     });
-
-
   });
 
   test('imported users and roles can be also be used', () => {
@@ -222,9 +212,8 @@ describe('aws auth', () => {
         ],
       },
     });
-
-
   });
+
   test('addMastersRole after addNodegroup correctly', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
@@ -283,7 +272,5 @@ describe('aws auth', () => {
         ],
       },
     });
-
-
   });
 });

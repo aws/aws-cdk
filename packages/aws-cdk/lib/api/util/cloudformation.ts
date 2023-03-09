@@ -1,8 +1,8 @@
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import { StackStatus } from './cloudformation/stack-status';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
-import { StackStatus } from './cloudformation/stack-status';
 
 export type Template = {
   Parameters?: Record<string, TemplateParameter>;
@@ -16,6 +16,10 @@ interface TemplateParameter {
   [key: string]: any;
 }
 
+export type ResourceIdentifierProperties = CloudFormation.ResourceIdentifierProperties;
+export type ResourceIdentifierSummaries = CloudFormation.ResourceIdentifierSummaries;
+export type ResourcesToImport = CloudFormation.ResourcesToImport;
+
 /**
  * Represents an (existing) Stack in CloudFormation
  *
@@ -23,10 +27,12 @@ interface TemplateParameter {
  * repeated calls to CloudFormation).
  */
 export class CloudFormationStack {
-  public static async lookup(cfn: CloudFormation, stackName: string): Promise<CloudFormationStack> {
+  public static async lookup(
+    cfn: CloudFormation, stackName: string, retrieveProcessedTemplate: boolean = false,
+  ): Promise<CloudFormationStack> {
     try {
       const response = await cfn.describeStacks({ StackName: stackName }).promise();
-      return new CloudFormationStack(cfn, stackName, response.Stacks && response.Stacks[0]);
+      return new CloudFormationStack(cfn, stackName, response.Stacks && response.Stacks[0], retrieveProcessedTemplate);
     } catch (e) {
       if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
         return new CloudFormationStack(cfn, stackName, undefined);
@@ -53,7 +59,10 @@ export class CloudFormationStack {
 
   private _template: any;
 
-  protected constructor(private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack) {
+  protected constructor(
+    private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack,
+    private readonly retrieveProcessedTemplate: boolean = false,
+  ) {
   }
 
   /**
@@ -68,7 +77,10 @@ export class CloudFormationStack {
     }
 
     if (this._template === undefined) {
-      const response = await this.cfn.getTemplate({ StackName: this.stackName, TemplateStage: 'Original' }).promise();
+      const response = await this.cfn.getTemplate({
+        StackName: this.stackName,
+        TemplateStage: this.retrieveProcessedTemplate ? 'Processed' : 'Original',
+      }).promise();
       this._template = (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
     }
     return this._template;
@@ -166,14 +178,40 @@ export class CloudFormationStack {
 /**
  * Describe a changeset in CloudFormation, regardless of its current state.
  *
- * @param cfn       a CloudFormation client
- * @param stackName   the name of the Stack the ChangeSet belongs to
+ * @param cfn           a CloudFormation client
+ * @param stackName     the name of the Stack the ChangeSet belongs to
  * @param changeSetName the name of the ChangeSet
+ * @param fetchAll      if true, fetches all pages of the change set description.
  *
  * @returns       CloudFormation information about the ChangeSet
  */
-async function describeChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput> {
+async function describeChangeSet(
+  cfn: CloudFormation,
+  stackName: string,
+  changeSetName: string,
+  { fetchAll }: { fetchAll: boolean },
+): Promise<CloudFormation.DescribeChangeSetOutput> {
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
+
+  // If fetchAll is true, traverse all pages from the change set description.
+  while (fetchAll && response.NextToken != null) {
+    const nextPage = await cfn.describeChangeSet({
+      StackName: stackName,
+      ChangeSetName: response.ChangeSetId ?? changeSetName,
+      NextToken: response.NextToken,
+    }).promise();
+
+    // Consolidate the changes
+    if (nextPage.Changes != null) {
+      response.Changes = response.Changes != null
+        ? response.Changes.concat(nextPage.Changes)
+        : nextPage.Changes;
+    }
+
+    // Forward the new NextToken
+    response.NextToken = nextPage.NextToken;
+  }
+
   return response;
 }
 
@@ -203,17 +241,23 @@ async function waitFor<T>(valueProvider: () => Promise<T | null | undefined>, ti
  * Will return a changeset that is either ready to be executed or has no changes.
  * Will throw in other cases.
  *
- * @param cfn       a CloudFormation client
- * @param stackName   the name of the Stack that the ChangeSet belongs to
+ * @param cfn           a CloudFormation client
+ * @param stackName     the name of the Stack that the ChangeSet belongs to
  * @param changeSetName the name of the ChangeSet
+ * @param fetchAll      if true, fetches all pages of the ChangeSet before returning.
  *
  * @returns       the CloudFormation description of the ChangeSet
  */
 // eslint-disable-next-line max-len
-export async function waitForChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput> {
+export async function waitForChangeSet(
+  cfn: CloudFormation,
+  stackName: string,
+  changeSetName: string,
+  { fetchAll }: { fetchAll: boolean },
+): Promise<CloudFormation.DescribeChangeSetOutput> {
   debug('Waiting for changeset %s on stack %s to finish creating...', changeSetName, stackName);
   const ret = await waitFor(async () => {
-    const description = await describeChangeSet(cfn, stackName, changeSetName);
+    const description = await describeChangeSet(cfn, stackName, changeSetName, { fetchAll });
     // The following doesn't use a switch because tsc will not allow fall-through, UNLESS it is allows
     // EVERYWHERE that uses this library directly or indirectly, which is undesirable.
     if (description.Status === 'CREATE_PENDING' || description.Status === 'CREATE_IN_PROGRESS') {
@@ -327,6 +371,14 @@ export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
     if (status.isInProgress) {
       debug('Stack %s has an ongoing operation in progress and is not stable (%s)', stackName, status);
       return undefined;
+    } else if (status.isReviewInProgress) {
+      // This may happen if a stack creation operation is interrupted before the ChangeSet execution starts. Recovering
+      // from this would requiring manual intervention (deleting or executing the pending ChangeSet), and failing to do
+      // so will result in an endless wait here (the ChangeSet wont delete or execute itself). Instead of blocking
+      // "forever" we proceed as if the stack was existing and stable. If there is a concurrent operation that just
+      // hasn't finished proceeding just yet, either this operation or the concurrent one may fail due to the other one
+      // having made progress. Which is fine. I guess.
+      debug('Stack %s is in REVIEW_IN_PROGRESS state. Considering this is a stable status (%s)', stackName, status);
     }
 
     return stack;

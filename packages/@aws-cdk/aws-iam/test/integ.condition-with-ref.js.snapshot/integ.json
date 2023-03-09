@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "iam-test-condition-with-ref/DefaultTest": {
+      "stacks": [
+        "test-condition-with-ref"
+      ],
+      "assertionStack": "iam-test-condition-with-ref/DefaultTest/DeployAssert",
+      "assertionStackName": "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B"
+    }
+  }
+}

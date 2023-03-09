@@ -1,13 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 import { findUp } from './util';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a GolangFunction
@@ -74,6 +71,11 @@ export interface GoFunctionProps extends lambda.FunctionOptions {
  * A Golang Lambda function
  */
 export class GoFunction extends lambda.Function {
+  /**
+   * The address of the Google Go proxy
+   */
+  public static readonly GOOGLE_GOPROXY = 'https://proxy.golang.org';
+
   constructor(scope: Construct, id: string, props: GoFunctionProps) {
     if (props.runtime && (props.runtime.family !== lambda.RuntimeFamily.GO && props.runtime.family != lambda.RuntimeFamily.OTHER)) {
       throw new Error('Only `go` and `provided` runtimes are supported.');

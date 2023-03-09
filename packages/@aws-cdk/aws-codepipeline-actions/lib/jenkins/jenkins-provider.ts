@@ -1,21 +1,16 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 
 /**
  * A Jenkins provider.
  *
  * If you want to create a new Jenkins provider managed alongside your CDK code,
- * instantiate the {@link JenkinsProvider} class directly.
+ * instantiate the `JenkinsProvider` class directly.
  *
  * If you want to reference an already registered provider,
- * use the {@link JenkinsProvider#fromJenkinsProviderAttributes} method.
+ * use the `JenkinsProvider#fromJenkinsProviderAttributes` method.
  */
-export interface IJenkinsProvider extends cdk.IConstruct {
+export interface IJenkinsProvider extends IConstruct {
   readonly providerName: string;
   readonly serverUrl: string;
   readonly version: string;
@@ -23,7 +18,7 @@ export interface IJenkinsProvider extends cdk.IConstruct {
   /**
    * Registers a Jenkins Provider for the build category.
    * This method will be automatically called when creating
-   * a {@link JenkinsAction},
+   * a `JenkinsAction`,
    * so you should never need to call it explicitly.
    *
    * @internal
@@ -33,7 +28,7 @@ export interface IJenkinsProvider extends cdk.IConstruct {
   /**
    * Registers a Jenkins Provider for the test category.
    * This method will be automatically called when creating
-   * a {@link JenkinsTestAction},
+   * a `JenkinsTestAction`,
    * so you should never need to call it explicitly.
    *
    * @internal
@@ -91,7 +86,7 @@ export interface JenkinsProviderProps {
 
   /**
    * Whether to immediately register a Jenkins Provider for the build category.
-   * The Provider will always be registered if you create a {@link JenkinsAction}.
+   * The Provider will always be registered if you create a `JenkinsAction`.
    *
    * @default false
    */
@@ -99,14 +94,14 @@ export interface JenkinsProviderProps {
 
   /**
    * Whether to immediately register a Jenkins Provider for the test category.
-   * The Provider will always be registered if you create a {@link JenkinsTestAction}.
+   * The Provider will always be registered if you create a `JenkinsTestAction`.
    *
    * @default false
    */
   readonly forTest?: boolean;
 }
 
-export abstract class BaseJenkinsProvider extends CoreConstruct implements IJenkinsProvider {
+export abstract class BaseJenkinsProvider extends Construct implements IJenkinsProvider {
   public abstract readonly providerName: string;
   public abstract readonly serverUrl: string;
   public readonly version: string;

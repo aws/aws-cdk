@@ -2,6 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as servicediscovery from '../lib';
+import { DiscoveryType } from '../lib';
 
 describe('service', () => {
   test('Service for HTTP namespace with custom health check', () => {
@@ -401,6 +402,25 @@ describe('service', () => {
 
   });
 
+  test('Throws when specifying discovery type of DNS within a HttpNamespace', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
+      name: 'http',
+    });
+
+    // THEN
+    expect(() => {
+      new servicediscovery.Service(stack, 'Service', {
+        namespace,
+        discoveryType: DiscoveryType.DNS_AND_API,
+      });
+    }).toThrow(/Cannot specify `discoveryType` of DNS_AND_API when using an HTTP namespace./);
+
+
+  });
+
   test('Service for Private DNS namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -447,6 +467,41 @@ describe('service', () => {
       },
     });
 
+
+  });
+
+  test('Service for DNS namespace with API only discovery', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
+      name: 'private',
+      vpc,
+    });
+
+    namespace.createService('MyService', {
+      name: 'service',
+      description: 'service description',
+      discoveryType: DiscoveryType.API,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+      Name: 'private',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
+      Description: 'service description',
+      Name: 'service',
+      NamespaceId: {
+        'Fn::GetAtt': [
+          'MyNamespaceD0BB8558',
+          'Id',
+        ],
+      },
+      Type: 'HTTP',
+    });
 
   });
 });

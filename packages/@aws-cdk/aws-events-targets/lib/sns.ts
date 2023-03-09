@@ -1,11 +1,12 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
+import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
  * Customize the SNS Topic Event Target
  */
-export interface SnsTopicProps {
+export interface SnsTopicProps extends TargetBaseProps {
   /**
    * The message to send to the topic
    *
@@ -38,7 +39,12 @@ export class SnsTopic implements events.IRuleTarget {
     // deduplicated automatically
     this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
 
+    if (this.props.deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
+    }
+
     return {
+      ...bindBaseTargetConfig(this.props),
       arn: this.topic.topicArn,
       input: this.props.message,
       targetResource: this.topic,

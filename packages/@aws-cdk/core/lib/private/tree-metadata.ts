@@ -2,11 +2,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
-import { Annotations } from '../annotations';
-import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
-import { Stack } from '../stack';
-import { IInspectable, TreeInspector } from '../tree';
+import { Construct, IConstruct } from 'constructs';
 import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
+import { Annotations } from '../annotations';
+import { Stack } from '../stack';
+import { ISynthesisSession } from '../stack-synthesizers';
+import { IInspectable, TreeInspector } from '../tree';
 
 const FILE_PATH = 'tree.json';
 

@@ -422,7 +422,7 @@ export function matcherFrom(matcher: any): PropertyMatcher {
  * would show (in traditional JS fashion) something like '[function Function]', or more
  * accurately nothing at all since functions cannot be JSONified.
  *
- * We override to JSON() in order to produce a readadable version of the matcher.
+ * We override to JSON() in order to produce a readable version of the matcher.
  */
 export function annotateMatcher<A extends object>(how: A, matcher: PropertyMatcher): PropertyMatcher {
   (matcher as any).toJSON = () => how;

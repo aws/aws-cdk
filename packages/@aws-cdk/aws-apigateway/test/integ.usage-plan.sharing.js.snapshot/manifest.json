@@ -1,0 +1,69 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "test-apigateway-usageplan-create": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-apigateway-usageplan-create.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-apigateway-usageplan-create/myusageplan/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myusageplan4B391740"
+          }
+        ],
+        "/test-apigateway-usageplan-create/Exports/Output{\"Ref\":\"myusageplan4B391740\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefmyusageplan4B391740F6B819BA"
+          }
+        ]
+      },
+      "displayName": "test-apigateway-usageplan-create"
+    },
+    "test-apigateway-usageplan-import": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-apigateway-usageplan-import.template.json",
+        "validateOnSynth": false
+      },
+      "dependencies": [
+        "test-apigateway-usageplan-create"
+      ],
+      "metadata": {
+        "/test-apigateway-usageplan-import/myusageplan/UsagePlanKeyResource:testapigatewayusageplanimportmyapikey14CF3166": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myusageplanUsagePlanKeyResourcetestapigatewayusageplanimportmyapikey14CF31667CCB4183"
+          }
+        ],
+        "/test-apigateway-usageplan-import/myapikey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapikey5C116C09"
+          }
+        ],
+        "myusageplanUsagePlanKeyResource095B4EA9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myusageplanUsagePlanKeyResource095B4EA9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "test-apigateway-usageplan-import"
+    }
+  }
+}

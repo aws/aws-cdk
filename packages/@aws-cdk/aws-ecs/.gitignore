@@ -18,3 +18,7 @@ nyc.config.js
 
 junit.xml
 !jest.config.js
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
+
+!**/*.snapshot/**/asset.*/**

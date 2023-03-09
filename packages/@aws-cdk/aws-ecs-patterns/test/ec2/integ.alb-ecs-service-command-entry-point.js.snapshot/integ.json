@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb-ec2-cmd-entrypoint"
+      ],
+      "assertionStack": "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest/DeployAssert",
+      "assertionStackName": "AlbEc2ServiceWithCommandAndEntryPointDefaultTestDeployAssert91EF33D6"
+    }
+  }
+}

@@ -1,10 +1,10 @@
-import { IResolvable } from '../resolvable';
-import { TokenizedStringFragments } from '../string-fragments';
-import { isResolvableObject, Token } from '../token';
 import {
   BEGIN_LIST_TOKEN_MARKER, BEGIN_STRING_TOKEN_MARKER, createTokenDouble,
   END_TOKEN_MARKER, extractTokenDouble, TokenString, VALID_KEY_CHARS,
 } from './encoding';
+import { IResolvable } from '../resolvable';
+import { TokenizedStringFragments } from '../string-fragments';
+import { isResolvableObject, Token } from '../token';
 
 const glob = global as any;
 
@@ -177,8 +177,12 @@ export class TokenMap {
 
   private registerNumberKey(token: IResolvable): number {
     const counter = this.tokenCounter++;
+    const dbl = createTokenDouble(counter);
+    // Register in the number map, as well as a string representation of that token
+    // in the string map.
     this.numberTokenMap.set(counter, token);
-    return createTokenDouble(counter);
+    this.stringTokenMap.set(`${dbl}`, token);
+    return dbl;
   }
 }
 

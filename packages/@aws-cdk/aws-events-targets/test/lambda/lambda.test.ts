@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Annotations, Template, Match } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -321,8 +321,13 @@ test('must display a warning when using a Dead Letter Queue from another account
 
   Template.fromStack(stack1).resourceCountIs('AWS::SQS::QueuePolicy', 0);
 
-  let rule = stack1.node.children.find(child => child instanceof events.Rule);
-  expect(rule?.node.metadataEntry[0].data).toMatch(/Cannot add a resource policy to your dead letter queue associated with rule .* because the queue is in a different account\. You must add the resource policy manually to the dead letter queue in account 222222222222\./);
+  Annotations.fromStack(stack1).hasWarning('/Stack1/Rule', Match.objectLike({
+    'Fn::Join': Match.arrayWith([
+      Match.arrayWith([
+        'Cannot add a resource policy to your dead letter queue associated with rule ',
+      ]),
+    ]),
+  }));
 });
 
 
@@ -365,6 +370,49 @@ test('specifying retry policy', () => {
         RetryPolicy: {
           MaximumEventAgeInSeconds: 7200,
           MaximumRetryAttempts: 2,
+        },
+      },
+    ],
+  });
+});
+
+test('specifying retry policy with 0 retryAttempts', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Stack');
+
+  const fn = new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.PYTHON_3_9,
+  });
+
+  // WHEN
+  new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    targets: [new targets.LambdaFunction(fn, {
+      retryAttempts: 0,
+    })],
+  });
+
+  // THEN
+  expect(() => app.synth()).not.toThrow();
+
+  // the Permission resource should be in the event stack
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 minute)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        RetryPolicy: {
+          MaximumRetryAttempts: 0,
         },
       },
     ],

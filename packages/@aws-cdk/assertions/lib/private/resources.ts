@@ -1,7 +1,7 @@
-import { Match, Matcher } from '..';
 import { AbsentMatch } from './matchers/absent';
-import { formatFailure, matchSection } from './section';
+import { formatAllMismatches, matchSection, formatSectionMatchFailure } from './section';
 import { Resource, Template } from './template';
+import { Match, Matcher } from '..';
 
 export function findResources(template: Template, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
   const section = template.Resources ?? {};
@@ -14,6 +14,42 @@ export function findResources(template: Template, type: string, props: any = {})
   return result.matches;
 }
 
+export function allResources(template: Template, type: string, props: any): string | void {
+  const section = template.Resources ?? {};
+  const result = matchSection(filterType(section, type), props);
+  if (result.match) {
+    const matchCount = Object.keys(result.matches).length;
+    if (result.analyzedCount > matchCount) {
+      return [
+        `Template has ${result.analyzedCount} resource(s) with type ${type}, but only ${matchCount} match as expected.`,
+        formatAllMismatches(result.analyzed, result.matches),
+      ].join('\n');
+    }
+  } else {
+    return [
+      `Template has ${result.analyzedCount} resource(s) with type ${type}, but none match as expected.`,
+      formatAllMismatches(result.analyzed),
+    ].join('\n');
+  }
+}
+
+export function allResourcesProperties(template: Template, type: string, props: any): string | void {
+  let amended = template;
+
+  // special case to exclude AbsentMatch because adding an empty Properties object will affect its evaluation.
+  if (!Matcher.isMatcher(props) || !(props instanceof AbsentMatch)) {
+    // amended needs to be a deep copy to avoid modifying the template.
+    amended = JSON.parse(JSON.stringify(template));
+    amended = addEmptyProperties(amended);
+  }
+
+  return allResources(amended, type, Match.objectLike({
+    Properties: props,
+  }));
+
+}
+
+
 export function hasResource(template: Template, type: string, props: any): string | void {
   const section = template.Resources ?? {};
   const result = matchSection(filterType(section, type), props);
@@ -21,22 +57,16 @@ export function hasResource(template: Template, type: string, props: any): strin
     return;
   }
 
-  if (result.closestResult === undefined) {
-    return `No resource with type ${type} found`;
-  }
-
-  return [
-    `Template has ${result.analyzedCount} resources with type ${type}, but none match as expected.`,
-    formatFailure(result.closestResult),
-  ].join('\n');
+  return formatSectionMatchFailure(`resources with type ${type}`, result);
 }
 
 export function hasResourceProperties(template: Template, type: string, props: any): string | void {
-  // amended needs to be a deep copy to avoid modifying the template.
-  let amended = JSON.parse(JSON.stringify(template));
+  let amended = template;
 
   // special case to exclude AbsentMatch because adding an empty Properties object will affect its evaluation.
   if (!Matcher.isMatcher(props) || !(props instanceof AbsentMatch)) {
+    // amended needs to be a deep copy to avoid modifying the template.
+    amended = JSON.parse(JSON.stringify(template));
     amended = addEmptyProperties(amended);
   }
 
@@ -50,6 +80,27 @@ export function countResources(template: Template, type: string): number {
   const types = filterType(section, type);
 
   return Object.entries(types).length;
+}
+
+export function countResourcesProperties(template: Template, type: string, props: any): number {
+  let amended = template;
+
+  // special case to exclude AbsentMatch because adding an empty Properties object will affect its evaluation.
+  if (!Matcher.isMatcher(props) || !(props instanceof AbsentMatch)) {
+    // amended needs to be a deep copy to avoid modifying the template.
+    amended = JSON.parse(JSON.stringify(template));
+    amended = addEmptyProperties(amended);
+  }
+
+  const section = amended.Resources ?? {};
+  const result = matchSection(filterType(section, type), Match.objectLike({
+    Properties: props,
+  }));
+
+  if (result.match) {
+    return Object.keys(result.matches).length;
+  }
+  return 0;
 }
 
 function addEmptyProperties(template: Template): Template {

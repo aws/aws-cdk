@@ -1,10 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App, CfnParameter, CfnResource, Construct as CfnConstruct, Lazy, Stack, TreeInspector } from '../../lib/index';
+import { Construct } from 'constructs';
+import { App, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from '../../lib/index';
 
 abstract class AbstractCfnResource extends CfnResource {
-  constructor(scope: CfnConstruct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id, {
       type: 'CDK::UnitTest::MyCfnResource',
     });
@@ -23,7 +24,7 @@ describe('tree metadata', () => {
     const app = new App();
 
     const stack = new Stack(app, 'mystack');
-    new CfnConstruct(stack, 'myconstruct');
+    new Construct(stack, 'myconstruct');
 
     const assembly = app.synth();
     const treeArtifact = assembly.tree();
@@ -43,6 +44,22 @@ describe('tree metadata', () => {
             id: 'mystack',
             path: 'mystack',
             children: {
+              BootstrapVersion: {
+                constructInfo: {
+                  fqn: '@aws-cdk/core.CfnParameter',
+                  version: expect.any(String),
+                },
+                id: 'BootstrapVersion',
+                path: 'mystack/BootstrapVersion',
+              },
+              CheckBootstrapVersion: {
+                constructInfo: {
+                  fqn: '@aws-cdk/core.CfnRule',
+                  version: expect.any(String),
+                },
+                id: 'CheckBootstrapVersion',
+                path: 'mystack/CheckBootstrapVersion',
+              },
               myconstruct: expect.objectContaining({
                 id: 'myconstruct',
                 path: 'mystack/myconstruct',
@@ -52,7 +69,6 @@ describe('tree metadata', () => {
         },
       }),
     });
-
   });
 
   test('tree metadata for a Cfn resource', () => {
@@ -90,7 +106,7 @@ describe('tree metadata', () => {
           mystack: expect.objectContaining({
             id: 'mystack',
             path: 'mystack',
-            children: {
+            children: expect.objectContaining({
               mycfnresource: expect.objectContaining({
                 id: 'mycfnresource',
                 path: 'mystack/mycfnresource',
@@ -106,7 +122,7 @@ describe('tree metadata', () => {
                   },
                 },
               }),
-            },
+            }),
           }),
         },
       }),
@@ -155,14 +171,14 @@ describe('tree metadata', () => {
               fqn: expect.stringMatching(codeBuild ? /\bStack$/ : /\bStack$|^constructs.Construct$/),
               version: expect.any(String),
             },
-            children: {
+            children: expect.objectContaining({
               myconstruct: expect.objectContaining({
                 constructInfo: {
                   fqn: expect.stringMatching(codeBuild ? /\bCfnResource$/ : /\bCfnResource$|^constructs.Construct$/),
                   version: expect.any(String),
                 },
               }),
-            },
+            }),
           }),
         }),
       }),
@@ -204,7 +220,7 @@ describe('tree metadata', () => {
           mystack: expect.objectContaining({
             id: 'mystack',
             path: 'mystack',
-            children: {
+            children: expect.objectContaining({
               mycfnparam: expect.objectContaining({
                 id: 'mycfnparam',
                 path: 'mystack/mycfnparam',
@@ -220,7 +236,7 @@ describe('tree metadata', () => {
                   },
                 },
               }),
-            },
+            }),
           }),
         },
       }),
@@ -232,7 +248,7 @@ describe('tree metadata', () => {
     class MyFirstResource extends AbstractCfnResource {
       public readonly lazykey: string;
 
-      constructor(scope: CfnConstruct, id: string) {
+      constructor(scope: Construct, id: string) {
         super(scope, id);
         this.lazykey = Lazy.string({ produce: () => 'LazyResolved!' });
       }
@@ -247,7 +263,7 @@ describe('tree metadata', () => {
     class MySecondResource extends AbstractCfnResource {
       public readonly myprop: string;
 
-      constructor(scope: CfnConstruct, id: string, myprop: string) {
+      constructor(scope: Construct, id: string, myprop: string) {
         super(scope, id);
         this.myprop = myprop;
       }
@@ -282,7 +298,7 @@ describe('tree metadata', () => {
           myfirststack: expect.objectContaining({
             id: 'myfirststack',
             path: 'myfirststack',
-            children: {
+            children: expect.objectContaining({
               myfirstresource: expect.objectContaining({
                 id: 'myfirstresource',
                 path: 'myfirststack/myfirstresource',
@@ -293,12 +309,12 @@ describe('tree metadata', () => {
                   },
                 },
               }),
-            },
+            }),
           }),
           mysecondstack: expect.objectContaining({
             id: 'mysecondstack',
             path: 'mysecondstack',
-            children: {
+            children: expect.objectContaining({
               mysecondresource: expect.objectContaining({
                 id: 'mysecondresource',
                 path: 'mysecondstack/mysecondresource',
@@ -309,13 +325,28 @@ describe('tree metadata', () => {
                   },
                 },
               }),
-            },
+            }),
           }),
         },
       }),
     });
+  });
 
+  test('tree metadata can be disabled', () => {
+    // GIVEN
+    const app = new App({
+      treeMetadata: false,
+    });
 
+    // WHEN
+    const stack = new Stack(app, 'mystack');
+    new Construct(stack, 'myconstruct');
+
+    const assembly = app.synth();
+    const treeArtifact = assembly.tree();
+
+    // THEN
+    expect(treeArtifact).not.toBeDefined();
   });
 
   test('failing nodes', () => {
@@ -337,7 +368,7 @@ describe('tree metadata', () => {
 
     const treenode = app.node.findChild('Tree');
 
-    const warn = treenode.node.metadataEntry.find((md) => {
+    const warn = treenode.node.metadata.find((md) => {
       return md.type === cxschema.ArtifactMetadataEntryType.WARN
         && /Forcing an inspect error/.test(md.data as string)
         && /mycfnresource/.test(md.data as string);

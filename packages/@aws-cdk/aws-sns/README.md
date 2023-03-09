@@ -26,11 +26,10 @@ const topic = new sns.Topic(this, 'Topic', {
   contentBasedDeduplication: true,
   displayName: 'Customer subscription topic',
   fifo: true,
-  topicName: 'customerTopic',
 });
 ```
 
-Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically added to the topic name if it is not explicitly provided.
+Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically generated and added to the topic name if it is not explicitly provided.
 
 ## Subscriptions
 
@@ -90,6 +89,31 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
       greaterThan: 300,
     }),
     store: sns.SubscriptionFilter.existsFilter(),
+  },
+}));
+```
+
+#### Payload-based filtering
+
+To filter messages based on the payload or body of the message, use the `filterPolicyWithMessageBody` property. This type of filter policy supports creating filters on nested objects.
+
+Example with a Lambda subscription:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const myTopic = new sns.Topic(this, 'MyTopic');
+declare const fn: lambda.Function;
+
+// Lambda should receive only message matching the following conditions on message body:
+// color: 'red' or 'orange'
+myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
+  filterPolicyWithMessageBody: {
+    background: sns.FilterOrPolicy.policy({
+      color: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
+        allowlist: ['red', 'orange'],
+      })),
+    }),
   },
 }));
 ```

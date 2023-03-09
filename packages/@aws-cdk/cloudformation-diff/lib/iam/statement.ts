@@ -324,5 +324,5 @@ export function renderCondition(condition: any): string {
   // We can make it more compact without losing information by getting rid of the outermost braces
   // and the indentation.
   const lines = jsonRepresentation.split('\n');
-  return lines.slice(1, lines.length - 1).map(s => s.substr(2)).join('\n');
+  return lines.slice(1, lines.length - 1).map(s => s.slice(2)).join('\n');
 }

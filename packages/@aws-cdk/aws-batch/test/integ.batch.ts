@@ -2,11 +2,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as batch from '../lib/';
 
-export const app = new cdk.App();
-
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'batch-stack');
 
 const vpc = new ec2.Vpc(stack, 'vpc');
@@ -65,7 +66,7 @@ new batch.JobQueue(stack, 'batch-job-queue', {
   ],
 });
 
-// Split out into two job queues because each queue
+// Split out into multiple job queues because each queue
 // supports a max of 3 compute environments
 new batch.JobQueue(stack, 'batch-job-fargate-queue', {
   computeEnvironments: [
@@ -92,7 +93,29 @@ new batch.JobQueue(stack, 'batch-job-fargate-queue', {
   ],
 });
 
+new batch.JobQueue(stack, 'batch-with-launch-template-id', {
+  computeEnvironments: [
+    {
+      computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-demand-compute-env-launch-template-2', {
+        managed: true,
+        computeResources: {
+          type: batch.ComputeResourceType.ON_DEMAND,
+          vpc,
+          launchTemplate: {
+            launchTemplateId: launchTemplate.ref as string,
+          },
+          computeResourcesTags: {
+            'compute-env-tag': '123XYZ',
+          },
+        },
+      }),
+      order: 1,
+    },
+  ],
+});
+
 const repo = new ecr.Repository(stack, 'batch-job-repo');
+const secret = new secretsmanager.Secret(stack, 'batch-secret');
 
 new batch.JobDefinition(stack, 'batch-job-def-from-ecr', {
   container: {
@@ -115,5 +138,14 @@ new batch.JobDefinition(stack, 'batch-job-def-fargate', {
   container: {
     image: ecs.ContainerImage.fromRegistry('docker/whalesay'),
     executionRole,
+    secrets: {
+      SECRET: ecs.Secret.fromSecretsManager(secret),
+    },
   },
 });
+
+new integ.IntegTest(app, 'batch-tests', {
+  testCases: [stack],
+});
+
+app.synth();

@@ -24,7 +24,103 @@ AWS IoT Events can trigger actions when it detects a specified event or transiti
 
 Currently supported are:
 
+- Use timer
+- Set variable to detector instance
 - Invoke a Lambda function
+
+## Use timer
+
+The code snippet below creates an Action that creates the timer with duration in seconds.
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+import * as actions from '@aws-cdk/aws-iotevents-actions';
+
+declare const input: iotevents.IInput;
+
+const state = new iotevents.State({
+  stateName: 'MyState',
+  onEnter: [{
+    eventName: 'test-event',
+    condition: iotevents.Expression.currentInput(input),
+    actions: [
+      new actions.SetTimerAction('MyTimer', {
+        duration: cdk.Duration.seconds(60),
+      }),
+    ],
+  }],
+});
+```
+
+Setting duration by [IoT Events Expression](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html):
+
+```ts
+new actions.SetTimerAction('MyTimer', {
+  durationExpression: iotevents.Expression.inputAttribute(input, 'payload.durationSeconds'),
+})
+```
+
+And the timer can be reset and cleared. Below is an example of general
+[Device HeartBeat](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-examples-dhb.html)
+Detector Model:
+
+```ts
+const online = new iotevents.State({
+  stateName: 'Online',
+  onEnter: [{
+    eventName: 'enter-event',
+    condition: iotevents.Expression.currentInput(input),
+    actions: [
+      new actions.SetTimerAction('MyTimer', {
+        duration: cdk.Duration.seconds(60),
+      }),
+    ],
+  }],
+  onInput: [{
+    eventName: 'input-event',
+    condition: iotevents.Expression.currentInput(input),
+    actions: [
+      new actions.ResetTimerAction('MyTimer'),
+    ],
+  }],
+  onExit: [{
+    eventName: 'exit-event',
+    actions: [
+      new actions.ClearTimerAction('MyTimer'),
+    ],
+  }],
+});
+const offline = new iotevents.State({ stateName: 'Offline' });
+
+online.transitionTo(offline, { when: iotevents.Expression.timeout('MyTimer') });
+offline.transitionTo(online, { when: iotevents.Expression.currentInput(input) });
+```
+
+## Set variable to detector instance
+
+The code snippet below creates an Action that set variable to detector instance
+when it is triggered.
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+import * as actions from '@aws-cdk/aws-iotevents-actions';
+
+declare const input: iotevents.IInput;
+
+const state = new iotevents.State({
+  stateName: 'MyState',
+  onEnter: [{
+    eventName: 'test-event',
+    condition: iotevents.Expression.currentInput(input),
+    actions: [
+      new actions.SetVariableAction(
+        'MyVariable',
+        iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+      ),
+    ],
+  }],
+});
+```
 
 ## Invoke a Lambda function
 

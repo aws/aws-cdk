@@ -28,7 +28,7 @@ endpoint or third-party services such as Datadog, Dynatrace, LogicMonitor, Mongo
 Relic, and Sumo Logic.
 
 Kinesis Data Firehose delivery streams are distinguished from Kinesis data streams in
-their models of consumtpion. Whereas consumers read from a data stream by actively pulling
+their models of consumption. Whereas consumers read from a data stream by actively pulling
 data from the stream, a delivery stream pushes data to its destination on a regular
 cadence. This means that data streams are intended to have consumers that do on-demand
 processing, like AWS Lambda or Amazon EC2. On the other hand, delivery streams are
@@ -402,7 +402,7 @@ times by default, but can be configured using `retries` in the processor configu
 // Provide a Lambda function that will transform records before delivery, with custom
 // buffering and retry configuration
 const lambdaFunction = new lambda.Function(this, 'Processor', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'process-records')),
 });

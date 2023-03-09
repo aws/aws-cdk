@@ -1,10 +1,15 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as route53 from '@aws-cdk/aws-route53';
-import { IResource, Token } from '@aws-cdk/core';
+import { IResource, Token, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
 
 /**
  * Represents a certificate in AWS Certificate Manager
@@ -72,6 +77,30 @@ export interface CertificateProps {
    * @default CertificateValidation.fromEmail()
    */
   readonly validation?: CertificateValidation;
+
+  /**
+   * Enable or disable transparency logging for this certificate
+   *
+   * Once a certificate has been logged, it cannot be removed from the log.
+   * Opting out at that point will have no effect. If you opt out of logging
+   * when you request a certificate and then choose later to opt back in,
+   * your certificate will not be logged until it is renewed.
+   * If you want the certificate to be logged immediately, we recommend that you issue a new one.
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency
+   *
+   * @default true
+   */
+  readonly transparencyLoggingEnabled?: boolean;
+
+  /**
+   * The Certifcate name.
+   *
+   * Since the Certifcate resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag
+   *
+   * @default the full, absolute path of this construct
+   */
+  readonly certificateName?: string
 }
 
 /**
@@ -212,14 +241,27 @@ export class Certificate extends CertificateBase implements ICertificate {
       }
     }
 
+    // check if domain name is 64 characters or less
+    if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
+      throw new Error('Domain name must be 64 characters or less');
+    }
+
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
+
+    let certificateTransparencyLoggingPreference: string | undefined;
+    if (props.transparencyLoggingEnabled !== undefined) {
+      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
+    }
 
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: renderDomainValidation(validation, allDomainNames),
       validationMethod: validation.method,
+      certificateTransparencyLoggingPreference,
     });
+
+    Tags.of(cert).add(NAME_TAG, props.certificateName || this.node.path.slice(0, 255));
 
     this.certificateArn = cert.ref;
   }

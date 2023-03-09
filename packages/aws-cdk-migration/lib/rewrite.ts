@@ -126,7 +126,7 @@ export function rewriteImports(
   fileName: string = 'index.ts',
   rewriteConstructsImports: boolean = false,
 ): string {
-  const sourceFile = ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.ES2018, true);
+  const sourceFile = ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.ES2020, true);
   const rewriter = new ImportRewriter(sourceFile, updatedLocation, rewriteConstructsImports);
   ts.transform(sourceFile, [rewriter.rewriteTransformer()]);
   return rewriter.rewriteImports();
@@ -410,7 +410,7 @@ function updatedExternalLocation(
     return customModulePath;
   }
 
-  if (options.rewriteCfnImports && modulePath.endsWith(`${options.packageUnscopedName?.substr('aws-'.length)}.generated`)) {
+  if (options.rewriteCfnImports && modulePath.endsWith(`${options.packageUnscopedName?.slice('aws-'.length)}.generated`)) {
     return `${libName}/${options.packageUnscopedName}`;
   }
 

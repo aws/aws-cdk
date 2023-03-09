@@ -2,8 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-import { DatabaseCluster } from '../lib';
-import { ClusterParameterGroup } from '../lib/parameter-group';
+import { DatabaseCluster, ClusterParameterGroup } from '../lib';
 
 /*
  * Stack verification steps:
@@ -31,9 +30,10 @@ class TestStack extends cdk.Stack {
     });
 
     const cluster = new DatabaseCluster(this, 'Database', {
+      engineVersion: '3.6.0',
       masterUser: {
         username: 'docdb',
-        password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),
+        password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
       },
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
@@ -41,6 +41,7 @@ class TestStack extends cdk.Stack {
       parameterGroup: params,
       kmsKey,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      enablePerformanceInsights: true,
     });
 
     cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

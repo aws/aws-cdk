@@ -2,6 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import { Topic } from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
 import { LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp, stringLike } from '../testhelpers';
 import { behavior } from '../testhelpers/compliance';
 
@@ -40,8 +41,9 @@ behavior('security check option generates lambda/codebuild at pipeline scope', (
   });
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).resourceCountIs('AWS::Lambda::Function', 1);
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::Lambda::Function', {
+    const template = Template.fromStack(pipelineStack);
+    template.resourceCountIs('AWS::Lambda::Function', 1);
+    template.hasResourceProperties('AWS::Lambda::Function', {
       Role: {
         'Fn::GetAtt': [
           stringLike('CdkPipeline*SecurityCheckCDKPipelinesAutoApproveServiceRole*'),
@@ -50,7 +52,17 @@ behavior('security check option generates lambda/codebuild at pipeline scope', (
       },
     });
     // 1 for github build, 1 for synth stage, and 1 for the application security check
-    Template.fromStack(pipelineStack).resourceCountIs('AWS::CodeBuild::Project', 3);
+    template.resourceCountIs('AWS::CodeBuild::Project', 3);
+
+    // No CodeBuild project has a build image that is not the standard iamge
+    const projects = template.findResources('AWS::CodeBuild::Project', {
+      Properties: {
+        Environment: {
+          Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
+        },
+      },
+    });
+    expect(Object.keys(projects).length).toEqual(3);
   }
 });
 
@@ -165,12 +177,28 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                stringLike('*AutoApprove*'),
-                'Arn',
-              ],
-            },
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  stringLike('*AutoApprove*'),
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        stringLike('*AutoApprove*'),
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
           },
         ]),
       },

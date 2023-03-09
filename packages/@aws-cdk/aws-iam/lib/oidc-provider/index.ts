@@ -25,6 +25,9 @@ async function onCreate(event: AWSLambda.CloudFormationCustomResourceCreateEvent
 
   return {
     PhysicalResourceId: resp.OpenIDConnectProviderArn,
+    Data: {
+      Thumbprints: JSON.stringify(thumbprints),
+    },
   };
 }
 
@@ -44,19 +47,15 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceUpdateEvent
 
   const providerArn = event.PhysicalResourceId;
 
-  // if thumbprints changed, we can update in-place, but bear in mind that if the new thumbprint list
-  // is empty, we will grab it from the server like we do in CREATE
-  const oldThumbprints = (event.OldResourceProperties.ThumbprintList || []).sort();
-  if (JSON.stringify(oldThumbprints) !== JSON.stringify(thumbprints)) {
-    const thumbprintList = thumbprints.length > 0 ? thumbprints : [await external.downloadThumbprint(issuerUrl)];
-    external.log('updating thumbprint list from', oldThumbprints, 'to', thumbprints);
-    await external.updateOpenIDConnectProviderThumbprint({
-      OpenIDConnectProviderArn: providerArn,
-      ThumbprintList: thumbprintList,
-    });
-
-    // don't return, we might have more updates...
+  if (thumbprints.length === 0) {
+    thumbprints.push(await external.downloadThumbprint(issuerUrl));
   }
+
+  external.log('updating thumbprint to', thumbprints);
+  await external.updateOpenIDConnectProviderThumbprint({
+    OpenIDConnectProviderArn: providerArn,
+    ThumbprintList: thumbprints,
+  });
 
   // if client ID list has changed, determine "diff" because the API is add/remove
   const oldClients: string[] = (event.OldResourceProperties.ClientIDList || []).sort();
@@ -79,7 +78,11 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceUpdateEvent
     });
   }
 
-  return;
+  return {
+    Data: {
+      Thumbprints: JSON.stringify(thumbprints),
+    },
+  };
 }
 
 async function onDelete(deleteEvent: AWSLambda.CloudFormationCustomResourceDeleteEvent) {

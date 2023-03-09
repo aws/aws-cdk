@@ -1,5 +1,6 @@
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as ecs from '../../lib';
 
 const app = new cdk.App();
@@ -14,12 +15,18 @@ const secret = new secretsmanager.Secret(stack, 'Secret', {
 
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
-taskDefinition.addContainer('web', {
+const container = taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   memoryLimitMiB: 256,
   secrets: {
     PASSWORD: ecs.Secret.fromSecretsManager(secret, 'password'),
   },
+});
+
+container.addSecret('APIKEY', ecs.Secret.fromSecretsManager(secret, 'apikey'));
+
+new integ.IntegTest(app, 'aws-ecs-ec2-integ-secret-json-field', {
+  testCases: [stack],
 });
 
 app.synth();

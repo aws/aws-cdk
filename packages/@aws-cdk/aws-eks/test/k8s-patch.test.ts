@@ -43,10 +43,9 @@ describe('k8s patch', () => {
     });
 
     // also make sure a dependency on the barrier is added to the patch construct.
-    expect(patch.node.dependencies.map(d => Names.nodeUniqueId(d.target.node))).toEqual(['MyClusterKubectlReadyBarrier7547948A']);
-
-
+    expect(patch.node.dependencies.map(d => Names.nodeUniqueId(d.node))).toEqual(['MyClusterKubectlReadyBarrier7547948A']);
   });
+
   test('defaults to "strategic" patch type if no patchType is specified', () => {
     // GIVEN
     const stack = new Stack();
@@ -62,8 +61,8 @@ describe('k8s patch', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       PatchType: 'strategic',
     });
-
   });
+
   test('uses specified to patch type if specified', () => {
     // GIVEN
     const stack = new Stack();
@@ -104,6 +103,5 @@ describe('k8s patch', () => {
       ResourceName: 'strategicPatchResource',
       PatchType: 'strategic',
     });
-
   });
 });

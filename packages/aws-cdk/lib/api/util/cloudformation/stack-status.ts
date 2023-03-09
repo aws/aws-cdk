@@ -26,7 +26,11 @@ export class StackStatus {
   }
 
   get isInProgress(): boolean {
-    return this.name.endsWith('_IN_PROGRESS');
+    return this.name.endsWith('_IN_PROGRESS') && !this.isReviewInProgress;
+  }
+
+  get isReviewInProgress(): boolean {
+    return this.name === 'REVIEW_IN_PROGRESS';
   }
 
   get isNotFound(): boolean {
@@ -34,7 +38,7 @@ export class StackStatus {
   }
 
   get isDeploySuccess(): boolean {
-    return !this.isNotFound && (this.name === 'CREATE_COMPLETE' || this.name === 'UPDATE_COMPLETE');
+    return !this.isNotFound && (this.name === 'CREATE_COMPLETE' || this.name === 'UPDATE_COMPLETE' || this.name === 'IMPORT_COMPLETE');
   }
 
   public toString(): string {

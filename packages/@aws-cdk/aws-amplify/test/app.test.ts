@@ -15,7 +15,7 @@ test('create an app connected to a GitHub repository', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     buildSpec: codebuild.BuildSpec.fromObjectToYaml({
       version: '1.0',
@@ -70,7 +70,7 @@ test('create an app connected to a GitLab repository', () => {
     sourceCodeProvider: new amplify.GitLabSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     buildSpec: codebuild.BuildSpec.fromObject({
       version: '1.0',
@@ -194,9 +194,9 @@ test('with basic auth from credentials', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
-    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.plainText('password')),
+    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.unsafePlainText('password')),
   });
 
   // THEN
@@ -215,7 +215,7 @@ test('with basic auth from generated password', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     basicAuth: amplify.BasicAuth.fromGeneratedPassword('username'),
   });
@@ -254,7 +254,7 @@ test('with env vars', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     environmentVariables: {
       key1: 'value1',
@@ -283,7 +283,7 @@ test('with custom rules', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     customRules: [
       {
@@ -322,7 +322,7 @@ test('with SPA redirect', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     customRules: [amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT],
   });
@@ -345,7 +345,7 @@ test('with auto branch creation', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     autoBranchCreation: {
       environmentVariables: {
@@ -384,7 +384,7 @@ test('with auto branch deletion', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     autoBranchDeletion: true,
   });
@@ -401,7 +401,7 @@ test('with custom headers', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     customResponseHeaders: [
       {
@@ -417,11 +417,28 @@ test('with custom headers', () => {
           'custom-header-name-1': 'custom-header-value-2',
         },
       },
+      {
+        pattern: '/with-tokens/*',
+        headers: {
+          'x-custom': `${'hello'.repeat(10)}${Stack.of(stack).urlSuffix} `,
+        },
+      },
     ],
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
-    CustomHeaders: 'customHeaders:\n  - pattern: "*.json"\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-1\n      - key: custom-header-name-2\n        value: custom-header-value-2\n  - pattern: /path/*\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-2\n',
+    CustomHeaders: {
+      'Fn::Join': [
+        '',
+        [
+          'customHeaders:\n  - pattern: "*.json"\n    headers:\n      - key: "custom-header-name-1"\n        value: "custom-header-value-1"\n      - key: "custom-header-name-2"\n        value: "custom-header-value-2"\n  - pattern: "/path/*"\n    headers:\n      - key: "custom-header-name-1"\n        value: "custom-header-value-2"\n  - pattern: "/with-tokens/*"\n    headers:\n      - key: "x-custom"\n        value: "hellohellohellohellohellohellohellohellohellohello',
+          {
+            Ref: 'AWS::URLSuffix',
+          },
+          ' "\n',
+        ],
+      ],
+    },
   });
 });

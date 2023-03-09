@@ -42,6 +42,182 @@ describe('User Pool Client', () => {
     expect(() => client2.userPoolClientName).toThrow(/available only if specified on the UserPoolClient during initialization/);
   });
 
+  describe('Client with secret', () => {
+
+    test('generate secret', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      const clientWithSecret = new UserPoolClient(stack, 'clientWithSecret', {
+        userPool: pool,
+        generateSecret: true,
+      });
+
+      // THEN
+      expect(clientWithSecret.userPoolClientSecret).toBeDefined();
+
+      // Make sure getter returns the same secret regardless if it's called one or many times
+      expect(clientWithSecret.userPoolClientSecret).toEqual(clientWithSecret.userPoolClientSecret);
+
+      // Make sure the generated template has correct resources
+      Template.fromStack(stack).hasResourceProperties('Custom::DescribeCognitoUserPoolClient', {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
+            'Arn',
+          ],
+        },
+        Create: {
+          'Fn::Join': [
+            '',
+            [
+              '{"region":"',
+              {
+                Ref: 'AWS::Region',
+              },
+              '","service":"CognitoIdentityServiceProvider","action":"describeUserPoolClient","parameters":{"UserPoolId":"',
+              {
+                Ref: 'PoolD3F588B8',
+              },
+              '","ClientId":"',
+              {
+                Ref: 'clientWithSecretD25031A8',
+              },
+              '"},"physicalResourceId":{"id":"',
+              {
+                Ref: 'clientWithSecretD25031A8',
+              },
+              '"}}',
+            ],
+          ],
+        },
+        Update: {
+          'Fn::Join': [
+            '',
+            [
+              '{"region":"',
+              {
+                Ref: 'AWS::Region',
+              },
+              '","service":"CognitoIdentityServiceProvider","action":"describeUserPoolClient","parameters":{"UserPoolId":"',
+              {
+                Ref: 'PoolD3F588B8',
+              },
+              '","ClientId":"',
+              {
+                Ref: 'clientWithSecretD25031A8',
+              },
+              '"},"physicalResourceId":{"id":"',
+              {
+                Ref: 'clientWithSecretD25031A8',
+              },
+              '"}}',
+            ],
+          ],
+        },
+        InstallLatestAwsSdk: false,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [{
+            Action: 'cognito-idp:DescribeUserPoolClient',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'PoolD3F588B8',
+                'Arn',
+              ],
+            },
+          }],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'clientWithSecretDescribeCognitoUserPoolClientCustomResourcePolicyCDE4AB00',
+        Roles: [{ Ref: 'AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2' }],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [{
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          }],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [{
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+            ],
+          ],
+        }],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Role: {
+          'Fn::GetAtt': [
+            'AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2',
+            'Arn',
+          ],
+        },
+        Handler: 'index.handler',
+        Timeout: 120,
+      });
+    });
+
+    test('explicitly disable secret generation', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      const clientWithoutSecret = new UserPoolClient(stack, 'clientWithoutSecret1', {
+        userPool: pool,
+        generateSecret: false,
+      });
+
+      // THEN
+      expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if generateSecret is set to true./);
+
+      // Make sure the generated template does not create resources
+      expect(Template.fromStack(stack).findResources('Custom::DescribeCognitoUserPoolClient')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::IAM::Policy')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::IAM::Role')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::Lambda::Function')).toEqual({});
+    });
+
+    test('lacking secret configuration implicitly disables it', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      const clientWithoutSecret = new UserPoolClient(stack, 'clientWithoutSecret2', {
+        userPool: pool,
+        generateSecret: undefined,
+      });
+
+      // THEN
+      expect(() => clientWithoutSecret.userPoolClientSecret).toThrow(/userPoolClientSecret is available only if generateSecret is set to true./);
+
+      // Make sure the generated template does not create resources
+      expect(Template.fromStack(stack).findResources('Custom::DescribeCognitoUserPoolClient')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::IAM::Policy')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::IAM::Role')).toEqual({});
+      expect(Template.fromStack(stack).findResources('AWS::Lambda::Function')).toEqual({});
+    });
+  });
+
   test('import', () => {
     // GIVEN
     const stack = new Stack();
@@ -90,6 +266,43 @@ describe('User Pool Client', () => {
         'ALLOW_USER_SRP_AUTH',
         'ALLOW_REFRESH_TOKEN_AUTH',
       ],
+    });
+  });
+
+  test('ExplicitAuthFlows makes only refreshToken true when all options are false', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      authFlows: {
+        adminUserPassword: false,
+        custom: false,
+        userPassword: false,
+        userSrp: false,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      ExplicitAuthFlows: [
+        'ALLOW_REFRESH_TOKEN_AUTH',
+      ],
+    });
+  });
+
+  test('ExplicitAuthFlows is absent when authFlows is empty', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      authFlows: {},
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      ExplicitAuthFlows: Match.absent(),
     });
   });
 
@@ -585,6 +798,86 @@ describe('User Pool Client', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       EnableTokenRevocation: true,
+    });
+  });
+
+  describe('auth session validity', () => {
+    test('default', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        authSessionValidity: Duration.minutes(3),
+      });
+      pool.addClient('Client2', {
+        userPoolClientName: 'Client2',
+        authSessionValidity: Duration.minutes(9),
+      });
+      pool.addClient('Client3', {
+        userPoolClientName: 'Client3',
+        authSessionValidity: Duration.minutes(15),
+      });
+      pool.addClient('Client5', {
+        userPoolClientName: 'Client4',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        AuthSessionValidity: 3,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client2',
+        AuthSessionValidity: 9,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client3',
+        AuthSessionValidity: 15,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client4',
+      });
+    });
+
+    test.each([
+      Duration.minutes(0),
+      Duration.minutes(1),
+      Duration.minutes(3).minus(Duration.minutes(1)),
+      Duration.minutes(15).plus(Duration.minutes(1)),
+      Duration.minutes(100),
+    ])('validates authSessionValidity is a duration between 3 and 15 minutes', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      expect(() => {
+        pool.addClient('Client1', {
+          userPoolClientName: 'Client1',
+          authSessionValidity: validity,
+        });
+      }).toThrow(`authSessionValidity: Must be a duration between 3 minutes and 15 minutes (inclusive); received ${validity.toHumanString()}.`);
+    });
+
+    test.each([
+      Duration.minutes(3),
+      Duration.minutes(9),
+      Duration.minutes(15),
+    ])('validates authSessionValidity is a duration between 3 and 15 minutes (valid)', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        authSessionValidity: validity,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        AuthSessionValidity: validity.toMinutes(),
+      });
     });
   });
 

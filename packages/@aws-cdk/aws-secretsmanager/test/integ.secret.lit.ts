@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { SecretValue } from '@aws-cdk/core';
 import * as secretsmanager from '../lib';
 
 class SecretsManagerStack extends cdk.Stack {
@@ -26,14 +27,25 @@ class SecretsManagerStack extends cdk.Stack {
     });
 
     new iam.User(this, 'OtherUser', {
-      userName: templatedSecret.secretValueFromJson('username').toString(),
+      // 'userName' is not actually a secret, so it's okay to use `unsafeUnwrap` to convert
+      // the `SecretValue` into a 'string'.
+      userName: templatedSecret.secretValueFromJson('username').unsafeUnwrap(),
       password: templatedSecret.secretValueFromJson('password'),
     });
 
     // Secret with predefined value
     const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
     new secretsmanager.Secret(this, 'PredefinedSecret', {
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
+      secretStringValue: accessKey.secretAccessKey,
+    });
+
+    // JSON secret
+    new secretsmanager.Secret(this, 'JSONSecret', {
+      secretObjectValue: {
+        username: SecretValue.unsafePlainText(user.userName),
+        database: SecretValue.unsafePlainText('foo'),
+        password: accessKey.secretAccessKey,
+      },
     });
     /// !hide
   }
@@ -41,4 +53,5 @@ class SecretsManagerStack extends cdk.Stack {
 
 const app = new cdk.App();
 new SecretsManagerStack(app, 'Integ-SecretsManager-Secret');
+
 app.synth();

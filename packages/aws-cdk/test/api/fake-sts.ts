@@ -69,7 +69,7 @@ export class FakeSts {
             _attributes: { xmlns: 'https://sts.amazonaws.com/doc/2011-06-15/' },
             Error: {
               Type: 'Sender',
-              Code: 'Error',
+              Code: e.code ?? 'Error',
               Message: e.message,
             },
             RequestId: '1',
@@ -125,12 +125,14 @@ export class FakeSts {
 
   private handleRequest(mockRequest: MockRequest): Record<string, any> {
     const response = (() => {
+      const identity = this.identity(mockRequest);
+
       switch (mockRequest.parsedBody.Action) {
         case 'GetCallerIdentity':
-          return this.handleGetCallerIdentity(mockRequest);
+          return this.handleGetCallerIdentity(identity);
 
         case 'AssumeRole':
-          return this.handleAssumeRole(mockRequest);
+          return this.handleAssumeRole(identity, mockRequest);
       }
 
       throw new Error(`Unrecognized Action in MockAwsHttp: ${mockRequest.parsedBody.Action}`);
@@ -139,8 +141,7 @@ export class FakeSts {
     return response;
   }
 
-  private handleGetCallerIdentity(mockRequest: MockRequest): Record<string, any> {
-    const identity = this.identity(mockRequest);
+  private handleGetCallerIdentity(identity: RegisteredIdentity): Record<string, any> {
     return {
       GetCallerIdentityResponse: {
         _attributes: { xmlns: 'https://sts.amazonaws.com/doc/2011-06-15/' },
@@ -156,8 +157,8 @@ export class FakeSts {
     };
   }
 
-  private handleAssumeRole(mockRequest: MockRequest): Record<string, any> {
-    const identity = this.identity(mockRequest);
+  private handleAssumeRole(identity: RegisteredIdentity, mockRequest: MockRequest): Record<string, any> {
+    this.checkForFailure(mockRequest.parsedBody.RoleArn);
 
     this.assumedRoles.push({
       roleArn: mockRequest.parsedBody.RoleArn,
@@ -206,8 +207,19 @@ export class FakeSts {
     };
   }
 
+  private checkForFailure(s: string) {
+    const failureRequested = s.match(/<FAIL:([^>]+)>/);
+    if (failureRequested) {
+      const err = new Error(`STS failing by user request: ${failureRequested[1]}`);
+      (err as any).code = failureRequested[1];
+      throw err;
+    }
+  }
+
   private identity(mockRequest: MockRequest) {
     const keyId = this.accessKeyId(mockRequest);
+    this.checkForFailure(keyId);
+
     const ret = this.identities[keyId];
     if (!ret) { throw new Error(`Unrecognized access key used: ${keyId}`); }
     return ret;

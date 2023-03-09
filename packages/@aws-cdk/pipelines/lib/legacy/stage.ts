@@ -6,17 +6,13 @@ import * as sns from '@aws-cdk/aws-sns';
 import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
+import { DeployCdkStackAction } from './actions';
+import { CdkPipeline } from './pipeline';
 import { AssetType } from '../blueprint/asset-type';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { pipelineSynth } from '../private/construct-internals';
 import { topologicalSort } from '../private/toposort';
-import { DeployCdkStackAction } from './actions';
-import { CdkPipeline } from './pipeline';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Construction properties for a CdkStage
@@ -75,7 +71,7 @@ export interface CdkStageProps {
  *
  * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
-export class CdkStage extends CoreConstruct {
+export class CdkStage extends Construct {
   private _nextSequentialRunOrder = 1; // Must start at 1 eh
   private _manualApprovalCounter = 1;
   private readonly pipelineStage: codepipeline.IStage;
@@ -445,7 +441,7 @@ export class StackOutput {
 }
 
 function stripPrefix(s: string, prefix: string) {
-  return s.startsWith(prefix) ? s.substr(prefix.length) : s;
+  return s.startsWith(prefix) ? s.slice(prefix.length) : s;
 }
 
 function isAssetManifest(s: cxapi.CloudArtifact): s is cxapi.AssetManifestArtifact {

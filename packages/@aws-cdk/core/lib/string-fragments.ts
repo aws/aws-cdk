@@ -1,5 +1,5 @@
 import { IFragmentConcatenator, IResolvable } from './resolvable';
-import { isResolvableObject } from './token';
+import { isResolvableObject, Token } from './token';
 
 /**
  * Result of the split of a string with Tokens
@@ -71,8 +71,10 @@ export class TokenizedStringFragments {
           const mapped = mapper.mapToken(f.token);
           if (isResolvableObject(mapped)) {
             ret.addToken(mapped);
-          } else {
+          } else if (Token.isUnresolved(mapped)) {
             ret.addIntrinsic(mapped);
+          } else {
+            ret.addLiteral(mapped);
           }
           break;
         case 'intrinsic':

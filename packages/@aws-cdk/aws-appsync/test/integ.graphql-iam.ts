@@ -12,7 +12,7 @@ import {
   UserPoolDefaultAction,
   Values,
   IamResource,
-  Schema,
+  SchemaFile,
 } from '../lib';
 
 /*
@@ -38,7 +38,7 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphqlApi(stack, 'Api', {
   name: 'Integ_Test_IAM',
-  schema: Schema.fromAsset(join(__dirname, 'integ.graphql-iam.graphql')),
+  schema: SchemaFile.fromAsset(join(__dirname, 'integ.graphql-iam.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.USER_POOL,
@@ -66,21 +66,21 @@ const testTable = new Table(stack, 'TestTable', {
 
 const testDS = api.addDynamoDbDataSource('ds', testTable, { name: 'testDataSource' });
 
-testDS.createResolver({
+testDS.createResolver('QueryGetTest', {
   typeName: 'Query',
   fieldName: 'getTest',
   requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
-testDS.createResolver({
+testDS.createResolver('QueryGetTests', {
   typeName: 'Query',
   fieldName: 'getTests',
   requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
-testDS.createResolver({
+testDS.createResolver('MutationAddTest', {
   typeName: 'Mutation',
   fieldName: 'addTest',
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('test')),
@@ -97,14 +97,14 @@ api.grantMutation(lambdaIAM, 'addTest');
 new Function(stack, 'testQuery', {
   code: Code.fromAsset(join(__dirname, 'verify/iam-query')),
   handler: 'iam-query.handler',
-  runtime: Runtime.NODEJS_12_X,
+  runtime: Runtime.NODEJS_14_X,
   environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
   role: lambdaIAM,
 });
 new Function(stack, 'testFail', {
   code: Code.fromAsset(join(__dirname, 'verify/iam-query')),
   handler: 'iam-query.handler',
-  runtime: Runtime.NODEJS_12_X,
+  runtime: Runtime.NODEJS_14_X,
   environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
 });
 

@@ -46,6 +46,41 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+Alternatively you can create an `AutoScalingGroup` from a `LaunchTemplate`:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const launchTemplate: ec2.LaunchTemplate;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  launchTemplate: launchTemplate
+});
+```
+
+To launch a mixture of Spot and on-demand instances, and/or with multiple instance types, you can create an `AutoScalingGroup` from a MixedInstancesPolicy:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const launchTemplate1: ec2.LaunchTemplate;
+declare const launchTemplate2: ec2.LaunchTemplate;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  mixedInstancesPolicy: {
+    instancesDistribution: {
+      onDemandPercentageAboveBaseCapacity: 50, // Mix Spot and On-Demand instances
+    },
+    launchTemplate: launchTemplate1,
+    launchTemplateOverrides: [ // Mix multiple instance types
+      { instanceType: new ec2.InstanceType('t3.micro') },
+      { instanceType: new ec2.InstanceType('t3a.micro') },
+      { instanceType: new ec2.InstanceType('t4g.micro'), launchTemplate: launchTemplate2 },
+    ],
+  }
+});
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
@@ -240,6 +275,36 @@ autoScalingGroup.scaleOnSchedule('PrescaleInTheMorning', {
 autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
   schedule: autoscaling.Schedule.cron({ hour: '20', minute: '0' }),
   minCapacity: 1
+});
+```
+
+### Block Devices
+
+This type specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+
+#### GP3 Volumes
+
+You can only specify the `throughput` on GP3 volumes.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+  blockDevices: [
+    {
+        deviceName: 'gp3-volume',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+          throughput: 125,
+        }),
+      },
+  ],
+  // ...
 });
 ```
 
@@ -453,6 +518,26 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+## Configuring Capacity Rebalancing
+
+Indicates whether Capacity Rebalancing is enabled. Otherwise, Capacity Rebalancing is disabled. When you turn on Capacity Rebalancing, Amazon EC2 Auto Scaling attempts to launch a Spot Instance whenever Amazon EC2 notifies that a Spot Instance is at an elevated risk of interruption. After launching a new instance, it then terminates an old instance. For more information, see [Use Capacity Rebalancing to handle Amazon EC2 Spot Interruptions](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-capacity-rebalancing.html) in the in the Amazon EC2 Auto Scaling User Guide.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  capacityRebalance: true,
+});
+```
+
 ## Configuring Instance Metadata Service (IMDS)
 
 ### Toggling IMDSv1
@@ -486,6 +571,56 @@ The example below demonstrates the `AutoScalingGroupRequireImdsv2Aspect` being u
 const aspect = new autoscaling.AutoScalingGroupRequireImdsv2Aspect();
 
 Aspects.of(this).add(aspect);
+```
+
+## Warm Pool
+
+Auto Scaling offers [a warm pool](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html) which gives an ability to decrease latency for applications that have exceptionally long boot times. You can create a warm pool with default parameters as below:
+
+```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
+autoScalingGroup.addWarmPool();
+```
+
+You can also customize a warm pool by configuring parameters:
+
+```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
+autoScalingGroup.addWarmPool({
+  minSize: 1,
+  reuseOnScaleIn: true,
+});
+```
+
+### Default Instance Warming
+
+You can use the default instance warmup feature to improve the Amazon CloudWatch metrics used for dynamic scaling. 
+When default instance warmup is not enabled, each instance starts contributing usage data to the aggregated metrics 
+as soon as the instance reaches the InService state. However, if you enable default instance warmup, this lets 
+your instances finish warming up before they contribute the usage data.
+
+To optimize the performance of scaling policies that scale continuously, such as target tracking and step scaling 
+policies, we strongly recommend that you enable the default instance warmup, even if its value is set to 0 seconds. 
+
+To set up Default Instance Warming for an autoscaling group, simply pass it in as a prop
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  defaultInstanceWarmup: Duration.seconds(5),
+});
 ```
 
 ## Future work

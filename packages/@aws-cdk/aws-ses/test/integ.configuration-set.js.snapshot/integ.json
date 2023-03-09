@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "ConfigurationSetInteg/DefaultTest": {
+      "stacks": [
+        "cdk-ses-configuration-set-integ"
+      ],
+      "assertionStack": "ConfigurationSetInteg/DefaultTest/DeployAssert"
+    }
+  }
+}

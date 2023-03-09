@@ -104,7 +104,7 @@ export class StepOutput implements IResolvable {
 
   public resolve(_context: IResolveContext) {
     if (this.resolution === undefined) {
-      throw new Error(`Output for step ${this.step} not configured. Either the step is not in the pipeline, or this engine does not support Outputs for this step.`);
+      throw new Error(`Output for step ${this.step} not configured. Either the step is not in the pipeline, the step implementation did not call 'this.discoverReferencedOutputs()', or this engine does not support Outputs for this step.`);
     }
     return this.resolution;
   }

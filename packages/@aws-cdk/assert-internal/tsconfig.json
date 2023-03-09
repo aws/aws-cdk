@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "target":"es2018",
-        "lib": ["es2016", "es2017.object", "es2017.string"],
+        "target":"es2020",
+        "lib": ["es2020"],
         "module": "commonjs",
         "composite": true,
         "declaration": true,

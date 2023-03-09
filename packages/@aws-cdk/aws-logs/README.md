@@ -48,6 +48,8 @@ By default, the log group will be created in the same region as the stack. The `
 log groups in other regions. This is typically useful when controlling retention for log groups auto-created by global services that
 publish their log group to a specific region, such as AWS Chatbot creating a log group in `us-east-1`.
 
+By default, the log group created by LogRetention will be retained after the stack is deleted. If the RemovalPolicy is set to DESTROY, then the log group will be deleted when the stack is deleted.
+
 ## Resource Policy
 
 CloudWatch Resource Policies allow other AWS services or IAM Principals to put log events into the log groups.
@@ -68,6 +70,17 @@ Or more conveniently, write permissions to the log group can be granted as follo
 const logGroup = new logs.LogGroup(this, 'LogGroup');
 logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
+
+Similarily, read permissions can be granted to the log group as follows.
+
+```ts
+const logGroup = new logs.LogGroup(this, 'LogGroup');
+logGroup.grantRead(new iam.ServicePrincipal('es.amazonaws.com'));
+```
+
+Be aware that any ARNs or tokenized values passed to the resource policy will be converted into AWS Account IDs.
+This is because CloudWatch Logs Resource Policies do not accept ARNs as principals, but they do accept
+Account ID strings. Non-ARN principals, like Service principals or Any principals, are accepted by CloudWatch.
 
 ## Encrypting Log Groups
 
@@ -140,7 +153,7 @@ declare const logGroup: logs.LogGroup;
 logGroup.extractMetric('$.jsonField', 'Namespace', 'MetricName');
 ```
 
-Will extract the value of `jsonField` wherever it occurs in JSON-structed
+Will extract the value of `jsonField` wherever it occurs in JSON-structured
 log records in the LogGroup, and emit them to CloudWatch Metrics under
 the name `Namespace/MetricName`.
 
@@ -157,6 +170,10 @@ const mf = new logs.MetricFilter(this, 'MetricFilter', {
   metricName: 'Latency',
   filterPattern: logs.FilterPattern.exists('$.latency'),
   metricValue: '$.latency',
+  dimensions: {
+    ErrorCode: '$.errorCode',
+  },
+  unit: Unit.MILLISECONDS,
 });
 
 //expose a metric from the metric filter
@@ -300,6 +317,31 @@ Example:
 const pattern = logs.FilterPattern.spaceDelimited('time', 'component', '...', 'result_code', 'latency')
   .whereString('component', '=', 'HttpServer')
   .whereNumber('result_code', '!=', 200);
+```
+
+## Logs Insights Query Definition
+
+Creates a query definition for CloudWatch Logs Insights.
+
+Example:
+
+```ts
+new logs.QueryDefinition(this, 'QueryDefinition', {
+  queryDefinitionName: 'MyQuery',
+  queryString: new logs.QueryString({
+    fields: ['@timestamp', '@message'],
+    parseStatements: [
+      '@message "[*] *" as loggingType, loggingMessage',
+      '@message "<*>: *" as differentLoggingType, differentLoggingMessage',
+    ],
+    filterStatements: [
+      'loggingType = "ERROR"',
+      'loggingMessage = "A very strange error occurred!"',
+    ],
+    sort: '@timestamp desc',
+    limit: 20,
+  }),
+});
 ```
 
 ## Notes

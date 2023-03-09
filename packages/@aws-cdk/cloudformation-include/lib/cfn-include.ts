@@ -1,15 +1,11 @@
 import * as core from '@aws-cdk/core';
-import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
+import * as cfn_parse from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
- * Construction properties of {@link CfnInclude}.
+ * Construction properties of `CfnInclude`.
  */
 export interface CfnIncludeProps {
   /**
@@ -26,7 +22,7 @@ export interface CfnIncludeProps {
    * make sure to pass this as `false`.
    *
    * **Note**: regardless of whether this option is true or false,
-   * the {@link CfnInclude.getResource} and related methods always uses the original logical ID of the resource/element,
+   * the `CfnInclude.getResource` and related methods always uses the original logical ID of the resource/element,
    * as specified in the template file.
    *
    * @default true
@@ -37,8 +33,8 @@ export interface CfnIncludeProps {
    * Specifies the template files that define nested stacks that should be included.
    *
    * If your template specifies a stack that isn't included here, it won't be created as a NestedStack
-   * resource, and it won't be accessible from the {@link CfnInclude.getNestedStack} method
-   * (but will still be accessible from the {@link CfnInclude.getResource} method).
+   * resource, and it won't be accessible from the `CfnInclude.getNestedStack` method
+   * (but will still be accessible from the `CfnInclude.getResource` method).
    *
    * If you include a stack here with an ID that isn't in the template,
    * or is in the template but is not a nested stack,
@@ -54,13 +50,26 @@ export interface CfnIncludeProps {
    * If you include a parameter here with an ID that isn't in the template,
    * template creation will fail and an error will be thrown.
    *
-   * @default - no parameters will be replaced
+   * If you are importing a parameter from a live stack, we cannot know the value of that
+   * parameter. You will need to supply a value for your parameters, else the default
+   * value will be used.
+   *
+   * @default - parameters will retain their original definitions
    */
   readonly parameters?: { [parameterName: string]: any };
+
+  /**
+   * Specifies whether to allow cyclical references, effectively disregarding safeguards meant to avoid undeployable
+   * templates. This should only be set to true in the case of templates utilizing cloud transforms (e.g. SAM) that
+   * after processing the transform will no longer contain any circular references.
+   *
+   * @default - will throw an error on detecting any cyclical references
+   */
+  readonly allowCyclicalReferences?: boolean;
 }
 
 /**
- * The type returned from {@link CfnInclude.getNestedStack}.
+ * The type returned from `CfnInclude.getNestedStack`.
  * Contains both the NestedStack object and
  * CfnInclude representations of the child stack.
  */
@@ -79,7 +88,7 @@ export interface IncludedNestedStack {
 
 /**
  * Construct to import an existing CloudFormation template file into a CDK application.
- * All resources defined in the template file can be retrieved by calling the {@link getResource} method.
+ * All resources defined in the template file can be retrieved by calling the `getResource` method.
  * Any modifications made on the returned resource objects will be reflected in the resulting CDK template.
  */
 export class CfnInclude extends core.CfnElement {
@@ -99,9 +108,15 @@ export class CfnInclude extends core.CfnElement {
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
+  private readonly allowCyclicalReferences: boolean;
+  private logicalIdToPlaceholderMap: Map<string, string>;
 
   constructor(scope: Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
+
+    this.allowCyclicalReferences = props.allowCyclicalReferences ?? false;
+
+    this.logicalIdToPlaceholderMap = new Map<string, string>();
 
     this.parametersToReplace = props.parameters || {};
 
@@ -118,7 +133,7 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the Mappings
-    this.mappingsScope = new CoreConstruct(this, '$Mappings');
+    this.mappingsScope = new Construct(this, '$Mappings');
     for (const mappingName of Object.keys(this.template.Mappings || {})) {
       this.createMapping(mappingName);
     }
@@ -129,13 +144,13 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the conditions
-    this.conditionsScope = new CoreConstruct(this, '$Conditions');
+    this.conditionsScope = new Construct(this, '$Conditions');
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
       this.getOrCreateCondition(conditionName);
     }
 
     // instantiate the rules
-    this.rulesScope = new CoreConstruct(this, '$Rules');
+    this.rulesScope = new Construct(this, '$Rules');
     for (const ruleName of Object.keys(this.template.Rules || {})) {
       this.createRule(ruleName);
     }
@@ -153,12 +168,12 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the Hooks
-    this.hooksScope = new CoreConstruct(this, '$Hooks');
+    this.hooksScope = new Construct(this, '$Hooks');
     for (const hookName of Object.keys(this.template.Hooks || {})) {
       this.createHook(hookName);
     }
 
-    const outputScope = new CoreConstruct(this, '$Ouputs');
+    const outputScope = new Construct(this, '$Ouputs');
     for (const logicalId of Object.keys(this.template.Outputs || {})) {
       this.createOutput(logicalId, outputScope);
     }
@@ -298,8 +313,8 @@ export class CfnInclude extends core.CfnElement {
   /**
    * Returns a loaded NestedStack with name logicalId.
    * For a nested stack to be returned by this method,
-   * it must be specified either in the {@link CfnIncludeProps.loadNestedStacks} property,
-   * or through the {@link loadNestedStack} method.
+   * it must be specified either in the `CfnIncludeProps.loadNestedStacks` property,
+   * or through the `loadNestedStack` method.
    *
    * @param logicalId the ID of the stack to retrieve, as it appears in the template
    */
@@ -321,12 +336,12 @@ export class CfnInclude extends core.CfnElement {
    * Includes a template for a child stack inside of this parent template.
    * A child with this logical ID must exist in the template,
    * and be of type AWS::CloudFormation::Stack.
-   * This is equivalent to specifying the value in the {@link CfnIncludeProps.loadNestedStacks}
+   * This is equivalent to specifying the value in the `CfnIncludeProps.loadNestedStacks`
    * property on object construction.
    *
    * @param logicalId the ID of the stack to retrieve, as it appears in the template
    * @param nestedStackProps the properties of the included child Stack
-   * @returns the same {@link IncludedNestedStack} object that {@link getNestedStack} returns for this logical ID
+   * @returns the same `IncludedNestedStack` object that `getNestedStack` returns for this logical ID
    */
   public loadNestedStack(logicalId: string, nestedStackProps: CfnIncludeProps): IncludedNestedStack {
     if (logicalId in this.nestedStacks) {
@@ -584,24 +599,36 @@ export class CfnInclude extends core.CfnElement {
     return cfnCondition;
   }
 
-  private getOrCreateResource(logicalId: string): core.CfnResource {
+  private getPlaceholderID(): string {
+    return `Placeholder${this.logicalIdToPlaceholderMap.size}`;
+  }
+
+  private getOrCreateResource(logicalId: string, cycleChain: string[] = []): core.CfnResource {
+    cycleChain = cycleChain.concat([logicalId]);
+    if (cycleChain.length !== new Set(cycleChain).size) {
+      if (!this.allowCyclicalReferences) {
+        throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
+      }
+      //only allow one placeholder per logical id
+      if (this.logicalIdToPlaceholderMap.get(logicalId)) {
+        return this.resources[this.logicalIdToPlaceholderMap.get(logicalId)!];
+      }
+      let placeholderResourceAttributes: any = this.template.Resources[logicalId];
+      let placeholderId: string = this.getPlaceholderID();
+      this.logicalIdToPlaceholderMap.set(logicalId, placeholderId);
+      let placeholderInstance = new core.CfnResource(this, placeholderId, {
+        type: placeholderResourceAttributes.Type,
+        properties: {},
+      });
+      placeholderInstance.overrideLogicalId(placeholderId);
+      this.resources[placeholderId] = placeholderInstance;
+
+      return placeholderInstance;
+    }
+
     const ret = this.resources[logicalId];
     if (ret) {
       return ret;
-    }
-
-    const resourceAttributes: any = this.template.Resources[logicalId];
-
-    // fail early for resource attributes we don't support yet
-    const knownAttributes = [
-      'Condition', 'DependsOn', 'Description', 'Metadata', 'Properties', 'Type', 'Version',
-      'CreationPolicy', 'DeletionPolicy', 'UpdatePolicy', 'UpdateReplacePolicy',
-    ];
-    for (const attribute of Object.keys(resourceAttributes)) {
-      if (!knownAttributes.includes(attribute)) {
-        throw new Error(`The '${attribute}' resource attribute is not supported by cloudformation-include yet. ` +
-          'Either remove it from the template, or use the CdkInclude class from the core package instead.');
-      }
     }
 
     const self = this;
@@ -618,7 +645,7 @@ export class CfnInclude extends core.CfnElement {
         if (!(lId in (self.template.Resources || {}))) {
           return undefined;
         }
-        return self.getOrCreateResource(lId);
+        return self.getOrCreateResource(lId, cycleChain);
       },
 
       findRefTarget(elementName: string): core.CfnElement | undefined {
@@ -634,6 +661,7 @@ export class CfnInclude extends core.CfnElement {
       parameters: this.parametersToReplace,
     });
 
+    const resourceAttributes: any = this.template.Resources[logicalId];
     let l1Instance: core.CfnResource;
     if (this.nestedStacksToInclude[logicalId]) {
       l1Instance = this.createNestedStack(logicalId, cfnParser);
@@ -660,8 +688,31 @@ export class CfnInclude extends core.CfnElement {
       }
     }
 
+    /*
+    1. remove placeholder version of object created for cycle breaking
+    2. override logical id before deletion so references to the placeholder instead reference the original
+     */
+    if (this.logicalIdToPlaceholderMap.get(logicalId)) {
+      let placeholderId: string = this.logicalIdToPlaceholderMap.get(logicalId)!;
+      this.resources[placeholderId].overrideLogicalId(logicalId);
+      this.node.tryRemoveChild(placeholderId);
+      delete this.resources[placeholderId];
+    }
+
     this.overrideLogicalIdIfNeeded(l1Instance, logicalId);
     this.resources[logicalId] = l1Instance;
+
+    // handle any unknown attributes using overrides
+    const knownAttributes = [
+      'Condition', 'DependsOn', 'Description', 'Metadata', 'Properties', 'Type', 'Version',
+      'CreationPolicy', 'DeletionPolicy', 'UpdatePolicy', 'UpdateReplacePolicy',
+    ];
+    for (const [attrName, attrValue] of Object.entries(resourceAttributes)) {
+      if (!knownAttributes.includes(attrName)) {
+        l1Instance.addOverride(attrName, cfnParser.parseValue(attrValue));
+      }
+    }
+
     return l1Instance;
   }
 

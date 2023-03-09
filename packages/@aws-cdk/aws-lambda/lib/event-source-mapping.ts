@@ -41,6 +41,11 @@ export class SourceAccessConfigurationType {
    */
   public static readonly CLIENT_CERTIFICATE_TLS_AUTH = new SourceAccessConfigurationType('CLIENT_CERTIFICATE_TLS_AUTH');
 
+  /**
+   * The Secrets Manager ARN of your secret key containing the root CA certificate (X.509 PEM) used for TLS encryption of your Apache Kafka brokers.
+   */
+  public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType('SERVER_ROOT_CA_CERTIFICATE');
+
   /** A custom source access configuration property */
   public static of(name: string): SourceAccessConfigurationType {
     return new SourceAccessConfigurationType(name);
@@ -122,9 +127,16 @@ export interface EventSourceMappingOptions {
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
    *
-   * @default - Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.
+   * @default - no starting position
    */
   readonly startingPosition?: StartingPosition;
+
+  /**
+   * The time from which to start reading, in Unix time seconds.
+   *
+   * @default - no timestamp
+   */
+  readonly startingPositionTimestamp?: number;
 
   /**
    * Allow functions to return partially successful responses for a batch of records.
@@ -142,6 +154,17 @@ export interface EventSourceMappingOptions {
    * @default Duration.seconds(0)
    */
   readonly maxBatchingWindow?: cdk.Duration;
+
+  /**
+   * The maximum concurrency setting limits the number of concurrent instances of the function that an Amazon SQS event source can invoke.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency
+   *
+   * Valid Range: Minimum value of 2. Maximum value of 1000.
+   *
+   * @default - No specific limit.
+   */
+  readonly maxConcurrency?: number;
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.
@@ -204,12 +227,30 @@ export interface EventSourceMappingOptions {
   readonly kafkaBootstrapServers?: string[]
 
   /**
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value. The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'. For more information, see [Customizable consumer group ID](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id).
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-amazonmanagedkafkaeventsourceconfig.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
+   *
+   * @default - none
+   */
+  readonly kafkaConsumerGroupId?: string
+
+
+  /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html
    *
    * @default - none
    */
   readonly sourceAccessConfigurations?: SourceAccessConfiguration[]
+
+  /**
+   * Add filter criteria to Event Source
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   *
+   * @default - none
+   */
+  readonly filters?: Array<{[key: string]: any}>
 }
 
 /**
@@ -279,6 +320,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
+    if (props.maxConcurrency && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
+      throw new Error('maxConcurrency must be between 2 and 1000 concurrent instances');
+    }
+
     if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
       throw new Error('maxRecordAge must be between 60 seconds and 7 days inclusive');
     }
@@ -299,6 +344,17 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`);
     }
 
+    if (props.startingPosition === StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
+      throw new Error('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+    }
+
+    if (props.startingPosition !== StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
+      throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    }
+
+    if (props.kafkaConsumerGroupId) {
+      this.validateKafkaConsumerGroupIdOrThrow(props.kafkaConsumerGroupId);
+    }
 
     let destinationConfig;
 
@@ -313,6 +369,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
+    let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;
+
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       bisectBatchOnFunctionError: props.bisectBatchOnError,
@@ -321,6 +379,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
+      startingPositionTimestamp: props.startingPositionTimestamp,
       functionResponseTypes: props.reportBatchItemFailures ? ['ReportBatchItemFailures'] : undefined,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
@@ -328,10 +387,30 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
+      scalingConfig: props.maxConcurrency ? { maximumConcurrency: props.maxConcurrency } : undefined,
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
+      filterCriteria: props.filters ? { filters: props.filters }: undefined,
+      selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
+      amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
+  }
+
+  private validateKafkaConsumerGroupIdOrThrow(kafkaConsumerGroupId: string) {
+    if (cdk.Token.isUnresolved(kafkaConsumerGroupId)) {
+      return;
+    }
+
+    if (kafkaConsumerGroupId.length > 200 ||kafkaConsumerGroupId.length < 1) {
+      throw new Error('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
+    }
+
+    const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
+    const patternMatch = regex.exec(kafkaConsumerGroupId);
+    if (patternMatch === null || patternMatch[0] !== kafkaConsumerGroupId) {
+      throw new Error('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+    }
   }
 }
 
@@ -351,4 +430,11 @@ export enum StartingPosition {
    * always read the most recent data in the shard
    */
   LATEST = 'LATEST',
+
+  /**
+   * Start reading from a position defined by a time stamp.
+   * Only supported for Amazon Kinesis streams, otherwise an error will occur.
+   * If supplied, `startingPositionTimestamp` must also be set.
+   */
+  AT_TIMESTAMP = 'AT_TIMESTAMP',
 }

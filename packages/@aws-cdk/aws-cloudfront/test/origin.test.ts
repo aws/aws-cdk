@@ -13,16 +13,25 @@ beforeEach(() => {
 
 test.each([
   Duration.seconds(0),
-  Duration.seconds(0.5),
-  Duration.seconds(10.5),
   Duration.seconds(11),
   Duration.minutes(5),
-])('validates connectionTimeout is an int between 1 and 10 seconds', (connectionTimeout) => {
+])('validates connectionTimeout is an int between 1 and 10 seconds - out of bounds', (connectionTimeout) => {
   expect(() => {
     new TestOrigin('www.example.com', {
       connectionTimeout,
     });
   }).toThrow(`connectionTimeout: Must be an int between 1 and 10 seconds (inclusive); received ${connectionTimeout.toSeconds()}.`);
+});
+
+test.each([
+  Duration.seconds(0.5),
+  Duration.seconds(10.5),
+])('validates connectionTimeout is an int between 1 and 10 seconds - not an int', (connectionTimeout) => {
+  expect(() => {
+    new TestOrigin('www.example.com', {
+      connectionTimeout,
+    });
+  }).toThrow(/must be a whole number of/);
 });
 
 test.each([-0.5, 0.5, 1.5, 4])
@@ -57,6 +66,29 @@ test.each(['us-east-1', 'ap-southeast-2', 'eu-west-3', 'me-south-1'])
     originShieldRegion,
   });
 });
+
+
+test('ensures originShield doesnt return false if undefined', () => {
+  const origin = new TestOrigin('www.example.com', {
+
+  });
+  const originBindConfig = origin.bind(stack, { originId: '0' });
+
+  expect(originBindConfig.originProperty?.originShield).toBeUndefined();
+});
+
+
+test('ensures originShield is disabled if originShieldEnabled equals false', () => {
+  const origin = new TestOrigin('www.example.com', {
+    originShieldEnabled: false,
+  });
+  const originBindConfig = origin.bind(stack, { originId: '0' });
+
+  expect(originBindConfig.originProperty?.originShield).toEqual({
+    enabled: false,
+  });
+});
+
 
 test('throw an error if Custom Headers keys are not permitted', () => {
   // case sensitive

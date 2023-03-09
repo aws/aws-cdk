@@ -1,6 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { IBucket } from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 import { MessageLanguage } from './common';
 import {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions,
@@ -12,10 +14,6 @@ import { InputValidator } from './private/validation';
 import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from 'constructs';
 
 /**
  * Options for portfolio share.
@@ -108,7 +106,7 @@ export interface IPortfolio extends cdk.IResource {
    * @param product A service catalog product.
    * @param options options for the constraint.
    */
-  constrainCloudFormationParameters(product:IProduct, options: CloudFormationRuleConstraintOptions): void;
+  constrainCloudFormationParameters(product: IProduct, options: CloudFormationRuleConstraintOptions): void;
 
   /**
    * Force users to assume a certain role when launching a product.
@@ -158,6 +156,8 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   public abstract readonly portfolioArn: string;
   public abstract readonly portfolioId: string;
   private readonly associatedPrincipals: Set<string> = new Set();
+  private readonly assetBuckets: Set<IBucket> = new Set<IBucket>();
+  private readonly sharedAccounts: string[] = [];
 
   public giveAccessToRole(role: iam.IRole): void {
     this.associatePrincipal(role.roleArn, role.node.addr);
@@ -172,11 +172,17 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   }
 
   public addProduct(product: IProduct): void {
+    if (product.assetBuckets) {
+      for (const bucket of product.assetBuckets) {
+        this.assetBuckets.add(bucket);
+      }
+    }
     AssociationManager.associateProductWithPortfolio(this, product, undefined);
   }
 
   public shareWithAccount(accountId: string, options: PortfolioShareOptions = {}): void {
     const hashId = this.generateUniqueHash(accountId);
+    this.sharedAccounts.push(accountId);
     new CfnPortfolioShare(this, `PortfolioShare${hashId}`, {
       portfolioId: this.portfolioId,
       accountId: accountId,
@@ -236,6 +242,19 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
         principalType: 'IAM',
       });
       this.associatedPrincipals.add(principalArn);
+    }
+  }
+
+  /**
+   * Gives access to Asset Buckets to Shared Accounts.
+   *
+   */
+  protected addBucketPermissionsToSharedAccounts() {
+    if (this.sharedAccounts.length > 0) {
+      for (const bucket of this.assetBuckets) {
+        bucket.grantRead(new iam.CompositePrincipal(...this.sharedAccounts.map(account => new iam.AccountPrincipal(account))),
+        );
+      }
     }
   }
 
@@ -332,13 +351,22 @@ export class Portfolio extends PortfolioBase {
     });
     this.portfolioId = this.portfolio.ref;
     this.portfolioArn = cdk.Stack.of(this).formatArn({
-      service: 'servicecatalog',
+      service: 'catalog',
       resource: 'portfolio',
       resourceName: this.portfolioId,
     });
     if (props.tagOptions !== undefined) {
       this.associateTagOptions(props.tagOptions);
     }
+
+    const portfolioNodeId = this.node.id;
+    cdk.Aspects.of(this).add({
+      visit(c: IConstruct) {
+        if (c.node.id === portfolioNodeId) {
+          (c as Portfolio).addBucketPermissionsToSharedAccounts();
+        };
+      },
+    });
   }
 
   protected generateUniqueHash(value: string): string {

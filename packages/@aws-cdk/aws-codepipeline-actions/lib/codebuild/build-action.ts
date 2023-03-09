@@ -2,13 +2,10 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CodeStarConnectionsSourceAction } from '..';
 import { Action } from '../action';
 import { CodeCommitSourceAction } from '../codecommit/source-action';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The type of the CodeBuild action that determines its CodePipeline Category -
@@ -29,7 +26,7 @@ export enum CodeBuildActionType {
 }
 
 /**
- * Construction properties of the {@link CodeBuildAction CodeBuild build CodePipeline action}.
+ * Construction properties of the `CodeBuildAction CodeBuild build CodePipeline action`.
  */
 export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps {
   /**
@@ -43,7 +40,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * The directories the additional inputs will be available at are available
    * during the project's build in the CODEBUILD_SRC_DIR_<artifact-name> environment variables.
    * The project's build always starts in the directory with the primary input artifact checked out,
-   * the one pointed to by the {@link input} property.
+   * the one pointed to by the `input` property.
    * For more information,
    * see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html .
    */

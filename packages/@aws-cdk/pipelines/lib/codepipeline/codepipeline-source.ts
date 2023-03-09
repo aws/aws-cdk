@@ -8,9 +8,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
 import { Fn, SecretValue, Token } from '@aws-cdk/core';
 import { Node } from 'constructs';
-import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 import { makeCodePipelineOutput } from './private/outputs';
+import { FileSet, Step } from '../blueprint';
 
 /**
  * Factory for CodePipeline source steps
@@ -34,10 +34,16 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Authentication will be done by a secret called `github-token` in AWS
    * Secrets Manager (unless specified otherwise).
    *
+   * If you rotate the value in the Secret, you must also change at least one property
+   * on the Pipeline, to force CloudFormation to re-read the secret.
+   *
    * The token should have these permissions:
    *
    * * **repo** - to read the repository
    * * **admin:repo_hook** - if you plan to use webhooks (true by default)
+   *
+   * If you need access to symlinks or the repository history, use a source of type
+   * `connection` instead.
    */
   public static gitHub(repoString: string, branch: string, props: GitHubSourceOptions = {}): CodePipelineSource {
     return new GitHubSource(repoString, branch, props);
@@ -92,6 +98,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * });
    * ```
    *
+   * If you need access to symlinks or the repository history, be sure to set
+   * `codeBuildCloneOutput`.
+   *
    * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo').
    * @param branch The branch to use.
    * @param props The source properties, including the connection ARN.
@@ -104,6 +113,10 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
 
   /**
    * Returns a CodeCommit source.
+   *
+   * If you need access to symlinks or the repository history, be sure to set
+   * `codeBuildCloneOutput`.
+   *
    *
    * @param repository The CodeCommit repository.
    * @param branch The branch to use.
@@ -136,6 +149,10 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * These values can be passed into the environment variables of pipeline steps,
    * so your steps can access information about the source revision.
    *
+   * Pipeline synth step has some source attributes predefined in the environment.
+   * If these suffice, you don't need to use this method for the synth step.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
+   *
    * What attributes are available depends on the type of source. These attributes
    * are supported:
    *
@@ -162,6 +179,19 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    *   - `RegistryId`
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html#reference-variables-list
+   * @example
+   * // Access the CommitId of a GitHub source in the synth
+   * const source = pipelines.CodePipelineSource.gitHub('owner/repo', 'main');
+   *
+   * const pipeline = new pipelines.CodePipeline(scope, 'MyPipeline', {
+   *   synth: new pipelines.ShellStep('Synth', {
+   *     input: source,
+   *     commands: [],
+   *     env: {
+   *       'COMMIT_ID': source.sourceAttribute('CommitId'),
+   *     }
+   *   })
+   * });
    */
   public sourceAttribute(name: string): string {
     return makeCodePipelineOutput(this, name);
@@ -206,6 +236,12 @@ export interface GitHubSourceOptions {
    */
   readonly trigger?: GitHubTrigger;
 
+  /**
+   * The action name used for this source in the CodePipeline
+   *
+   * @default - The repository string
+   */
+  readonly actionName?: string;
 }
 
 /**
@@ -232,7 +268,7 @@ class GitHubSource extends CodePipelineSource {
   protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.GitHubSourceAction({
       output,
-      actionName,
+      actionName: this.props.actionName ?? actionName,
       runOrder,
       oauthToken: this.authentication,
       owner: this.owner,
@@ -264,6 +300,14 @@ export interface S3SourceOptions {
    * @default - The bucket name
    */
   readonly actionName?: string;
+
+  /**
+   * The role that will be assumed by the pipeline prior to executing
+   * the `S3Source` action.
+   *
+   * @default - a new role will be generated
+   */
+  readonly role?: iam.IRole;
 }
 
 class S3Source extends CodePipelineSource {
@@ -282,6 +326,7 @@ class S3Source extends CodePipelineSource {
       bucketKey: this.objectKey,
       trigger: this.props.trigger,
       bucket: this.bucket,
+      role: this.props.role,
       variablesNamespace,
     });
   }
@@ -340,15 +385,14 @@ export interface ConnectionSourceOptions {
    */
   readonly connectionArn: string;
 
-
   // long URL in @see
   /**
-   * Whether the output should be the contents of the repository
-   * (which is the default),
-   * or a link that allows CodeBuild to clone the repository before building.
+   * If this is set, the next CodeBuild job clones the repository (instead of CodePipeline downloading the files).
    *
-   * **Note**: if this option is true,
-   * then only CodeBuild actions can use the resulting {@link output}.
+   * This provides access to repository history, and retains symlinks (symlinks would otherwise be
+   * removed by CodePipeline).
+   *
+   * **Note**: if this option is true, only CodeBuild jobs can use the output artifact.
    *
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#action-reference-CodestarConnectionSource-config
@@ -364,6 +408,13 @@ export interface ConnectionSourceOptions {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html
    */
   readonly triggerOnPush?: boolean;
+
+  /**
+   * The action name used for this source in the CodePipeline
+   *
+   * @default - The repository string
+   */
+  readonly actionName?: string;
 }
 
 class CodeStarConnectionSource extends CodePipelineSource {
@@ -385,7 +436,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
   protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.CodeStarConnectionsSourceAction({
       output,
-      actionName,
+      actionName: this.props.actionName ?? actionName,
       runOrder,
       connectionArn: this.props.connectionArn,
       owner: this.owner,
@@ -418,17 +469,24 @@ export interface CodeCommitSourceOptions {
   readonly eventRole?: iam.IRole;
 
   /**
-   * Whether the output should be the contents of the repository
-   * (which is the default),
-   * or a link that allows CodeBuild to clone the repository before building.
+   * If this is set, the next CodeBuild job clones the repository (instead of CodePipeline downloading the files).
    *
-   * **Note**: if this option is true,
-   * then only CodeBuild actions can use the resulting {@link output}.
+   * This provides access to repository history, and retains symlinks (symlinks would otherwise be
+   * removed by CodePipeline).
+   *
+   * **Note**: if this option is true, only CodeBuild jobs can use the output artifact.
    *
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
    */
   readonly codeBuildCloneOutput?: boolean;
+
+  /**
+   * The action name used for this source in the CodePipeline
+   *
+   * @default - The repository name
+   */
+  readonly actionName?: string;
 }
 
 class CodeCommitSource extends CodePipelineSource {
@@ -444,7 +502,7 @@ class CodeCommitSource extends CodePipelineSource {
     return new cp_actions.CodeCommitSourceAction({
       output,
       // Guaranteed to be okay as action name
-      actionName: this.repository.repositoryName,
+      actionName: this.props.actionName ?? this.repository.repositoryName,
       runOrder,
       branch: this.branch,
       trigger: this.props.trigger,

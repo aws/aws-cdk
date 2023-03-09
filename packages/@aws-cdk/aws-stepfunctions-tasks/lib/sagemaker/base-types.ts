@@ -353,10 +353,10 @@ export abstract class DockerImage {
    * Reference a Docker image stored in an ECR repository.
    *
    * @param repository the ECR repository where the image is hosted.
-   * @param tag an optional `tag`
+   * @param tagOrDigest an optional tag or digest (digests must start with `sha256:`)
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): DockerImage {
-    return new StandardDockerImage({ repository, imageUri: repository.repositoryUriForTag(tag) });
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): DockerImage {
+    return new StandardDockerImage({ repository, imageUri: repository.repositoryUriForTagOrDigest(tagOrDigest) });
   }
 
   /**

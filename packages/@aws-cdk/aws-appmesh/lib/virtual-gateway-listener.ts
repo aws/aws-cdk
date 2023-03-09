@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
 import { ListenerTlsOptions } from './listener-tls-options';
@@ -8,10 +9,6 @@ import {
   HttpConnectionPool,
   Protocol,
 } from './shared-interfaces';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Represents the properties needed to define a Listeners for a VirtualGateway

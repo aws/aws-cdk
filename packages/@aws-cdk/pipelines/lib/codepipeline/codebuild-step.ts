@@ -2,9 +2,9 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
-import { ShellStep, ShellStepProps } from '../blueprint';
 import { mergeBuildSpecs } from './private/buildspecs';
 import { makeCodePipelineOutput } from './private/outputs';
+import { ShellStep, ShellStepProps } from '../blueprint';
 
 /**
  * Construction props for a CodeBuildStep
@@ -51,6 +51,13 @@ export interface CodeBuildStepProps extends ShellStepProps {
   readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
+   * Caching strategy to use.
+   *
+   * @default - No cache
+   */
+  readonly cache?: codebuild.Cache;
+
+  /**
    * Policy statements to add to role used during the synth
    *
    * Can be used to add acces to a CodeArtifact repository etc.
@@ -65,6 +72,13 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default - A role is automatically created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Custom execution role to be used for the Code Build Action
+   *
+   * @default - A role is automatically created
+   */
+  readonly actionRole?: iam.IRole;
 
   /**
    * Changes to environment
@@ -133,6 +147,13 @@ export class CodeBuildStep extends ShellStep {
   public readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
+   * Caching strategy to use.
+   *
+   * @default - No cache
+   */
+  public readonly cache?: codebuild.Cache;
+
+  /**
    * Policy statements to add to role used during the synth
    *
    * @default - No value specified at construction time, use defaults
@@ -145,6 +166,13 @@ export class CodeBuildStep extends ShellStep {
    * @default - No value specified at construction time, use defaults
    */
   public readonly role?: iam.IRole;
+
+  /**
+   * Custom execution role to be used for the Code Build Action
+   *
+   * @default - A role is automatically created
+   */
+  readonly actionRole?: iam.IRole;
 
   /**
    * Build environment
@@ -182,7 +210,9 @@ export class CodeBuildStep extends ShellStep {
     this._partialBuildSpec = props.partialBuildSpec;
     this.vpc = props.vpc;
     this.subnetSelection = props.subnetSelection;
+    this.cache = props.cache;
     this.role = props.role;
+    this.actionRole = props.actionRole;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
     this.timeout = props.timeout;
@@ -234,6 +264,20 @@ export class CodeBuildStep extends ShellStep {
    * it finishes its `post_build` phase.
    *
    * @param variableName the name of the variable for reference.
+   * @example
+   * // Access the output of one CodeBuildStep in another CodeBuildStep
+   * declare const pipeline: pipelines.CodePipeline;
+   *
+   * const step1 = new pipelines.CodeBuildStep('Step1', {
+   *   commands: ['export MY_VAR=hello'],
+   * });
+   *
+   * const step2 = new pipelines.CodeBuildStep('Step2', {
+   *   env: {
+   *     IMPORTED_VAR: step1.exportedVariable('MY_VAR'),
+   *   },
+   *   commands: ['echo $IMPORTED_VAR'],
+   * });
    */
   public exportedVariable(variableName: string): string {
     if (this.exportedVarsRendered && !this.exportedVariables.has(variableName)) {

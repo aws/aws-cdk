@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
+import { StateType } from './private/state-type';
+import { renderJsonPath, State } from './state';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
-import { StateType } from './private/state-type';
-import { renderJsonPath, State } from './state';
 
 /**
  * Properties for defining a Parallel state
@@ -151,7 +151,7 @@ export class Parallel extends State implements INextable {
   /**
    * Validate this state
    */
-  protected validate(): string[] {
+  protected validateState(): string[] {
     if (this.branches.length === 0) {
       return ['Parallel must have at least one branch'];
     }

@@ -1,7 +1,7 @@
-import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 
 import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
@@ -245,6 +245,15 @@ export interface InstanceProps {
    * @default - false
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+   * Whether "Detailed Monitoring" is enabled for this instance
+   * Keep in mind that Detailed Monitoring results in extra charges
+   *
+   * @see http://aws.amazon.com/cloudwatch/pricing/
+   * @default - false
+   */
+  readonly detailedMonitoring?: boolean;
 }
 
 /**
@@ -381,6 +390,7 @@ export class Instance extends Resource implements IInstance {
       blockDeviceMappings: props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
+      monitoring: props.detailedMonitoring,
     });
     this.instance.node.addDependency(this.role);
 
@@ -413,14 +423,14 @@ export class Instance extends Resource implements IInstance {
         if (recursing) { return originalLogicalId; }
         if (!(props.userDataCausesReplacement ?? props.initOptions)) { return originalLogicalId; }
 
-        const md5 = crypto.createHash('md5');
+        const fragments = new Array<string>();
         recursing = true;
         try {
-          md5.update(JSON.stringify(context.resolve(this.userData.render())));
+          fragments.push(JSON.stringify(context.resolve(this.userData.render())));
         } finally {
           recursing = false;
         }
-        const digest = md5.digest('hex').substr(0, 16);
+        const digest = md5hash(fragments.join('')).slice(0, 16);
         return `${originalLogicalId}${digest}`;
       },
     }));

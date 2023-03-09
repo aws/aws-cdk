@@ -10,3 +10,5 @@ dist
 
 test/
 jest.config.js
+**/*.snapshot
+coverage/

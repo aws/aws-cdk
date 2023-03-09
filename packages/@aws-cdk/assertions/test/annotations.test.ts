@@ -46,7 +46,18 @@ describe('Messages', () => {
 
     test('no match', () => {
       expect(() => annotations.hasError('/Default/Fred', Match.anyValue()))
-        .toThrowError(/Stack has 1 messages, but none match as expected./);
+        .toThrowError(/Stack has 1 messages.*but none match as expected./);
+    });
+  });
+
+  describe('hasNoError', () => {
+    test('match', () => {
+      annotations.hasNoError('/Default/Fred', Match.anyValue());
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoError('/Default/Foo', 'this is an error'))
+        .toThrowError(/Expected no matches, but stack has 1 messages as follows:/);
     });
   });
 
@@ -68,7 +79,18 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasWarning('/Default/Foo', Match.anyValue())).toThrowError(/Stack has 1 messages, but none match as expected./);
+      expect(() => annotations.hasWarning('/Default/Foo', Match.anyValue())).toThrowError(/Stack has 1 messages.*but none match as expected./);
+    });
+  });
+
+  describe('hasNoWarning', () => {
+    test('match', () => {
+      annotations.hasNoWarning('/Default/Foo', Match.anyValue());
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoWarning('/Default/Fred', 'this is a warning'))
+        .toThrowError(/Expected no matches, but stack has 1 messages as follows:/);
     });
   });
 
@@ -90,7 +112,18 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasInfo('/Default/Qux', 'this info is incorrect')).toThrowError(/Stack has 1 messages, but none match as expected./);
+      expect(() => annotations.hasInfo('/Default/Qux', 'this info is incorrect')).toThrowError(/Stack has 1 messages.*but none match as expected./);
+    });
+  });
+
+  describe('hasNoInfo', () => {
+    test('match', () => {
+      annotations.hasNoInfo('/Default/Qux', 'this info is incorrect');
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoInfo('/Default/Qux', 'this is an info'))
+        .toThrowError(/Expected no matches, but stack has 1 messages as follows:/);
     });
   });
 
@@ -114,7 +147,7 @@ describe('Messages', () => {
 
     test('not', () => {
       expect(() => annotations.hasError('/Default/Foo', Match.not('this is an error')))
-        .toThrowError(/Found unexpected match: "this is an error" at \/entry\/data/);
+        .toThrowError(/Found unexpected match: "this is an error"/);
     });
 
     test('stringLikeRegEx', () => {

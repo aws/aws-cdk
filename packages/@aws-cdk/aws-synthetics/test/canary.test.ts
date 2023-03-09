@@ -1,4 +1,5 @@
 import { Match, Template } from '@aws-cdk/assertions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
@@ -19,7 +20,7 @@ test('Basic canary properties work', () => {
     failureRetentionPeriod: Duration.days(10),
     startAfterCreation: false,
     timeToLive: Duration.minutes(30),
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -29,7 +30,27 @@ test('Basic canary properties work', () => {
     FailureRetentionPeriod: 10,
     StartCanaryAfterCreation: false,
     Schedule: Match.objectLike({ DurationInSeconds: '1800' }),
-    RuntimeVersion: 'syn-1.0',
+    RuntimeVersion: 'syn-nodejs-puppeteer-3.8',
+  });
+});
+
+test('Can set `DeleteLambdaResourceOnCanaryDeletion`', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code'),
+    }),
+    enableAutoDeleteLambdas: true,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    DeleteLambdaResourcesOnCanaryDeletion: true,
   });
 });
 
@@ -43,7 +64,7 @@ test('Canary can have generated name', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -63,7 +84,7 @@ test('Name validation does not fail when using Tokens', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN: no exception
@@ -81,7 +102,7 @@ test('Throws when name is specified incorrectly', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   }))
     .toThrowError('Canary name must be lowercase, numbers, hyphens, or underscores (got "My Canary")');
 });
@@ -97,7 +118,7 @@ test('Throws when name has more than 21 characters', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   }))
     .toThrowError(`Canary name is too large, must be between 1 and 21 characters, but is 22 (got "${'a'.repeat(22)}")`);
 });
@@ -119,7 +140,7 @@ test('An existing role can be specified instead of auto-created', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -141,7 +162,7 @@ test('An existing bucket and prefix can be specified instead of auto-created', (
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -156,7 +177,7 @@ test('Runtime can be specified', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
@@ -165,7 +186,7 @@ test('Runtime can be specified', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RuntimeVersion: 'syn-1.0',
+    RuntimeVersion: 'syn-nodejs-puppeteer-3.8',
   });
 });
 
@@ -175,7 +196,7 @@ test('Python runtime can be specified', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_3,
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('# Synthetics handler code'),
@@ -184,7 +205,7 @@ test('Python runtime can be specified', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RuntimeVersion: 'syn-python-selenium-1.0',
+    RuntimeVersion: 'syn-python-selenium-1.3',
   });
 });
 
@@ -198,7 +219,7 @@ test('environment variables can be specified', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
@@ -220,7 +241,7 @@ test('environment variables are skipped if not provided', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
@@ -263,7 +284,7 @@ test('Schedule can be set with Rate', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -283,7 +304,7 @@ test('Schedule can be set to 1 minute', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -303,7 +324,7 @@ test('Schedule can be set with Cron', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -324,7 +345,7 @@ test('Schedule can be set with Expression', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -344,7 +365,7 @@ test('Schedule can be set to run once', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -364,7 +385,7 @@ test('Throws when rate above 60 minutes', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   }))
     .toThrowError('Schedule duration must be between 1 and 60 minutes');
 });
@@ -380,7 +401,7 @@ test('Throws when rate above is not a whole number of minutes', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   }))
     .toThrowError('\'59 seconds\' cannot be converted into a whole number of minutes.');
 });
@@ -396,7 +417,7 @@ test('Can share artifacts bucket between canaries', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   const canary2 = new synthetics.Canary(stack, 'Canary2', {
@@ -406,7 +427,7 @@ test('Can share artifacts bucket between canaries', () => {
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
     artifactsBucketLocation: { bucket: canary1.artifactsBucket },
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -426,7 +447,7 @@ test('can specify custom test', () => {
           console.log(\'hello world\');
         };`),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
@@ -441,6 +462,124 @@ test('can specify custom test', () => {
   });
 });
 
+describe('canary in a vpc', () => {
+  test('can specify vpc', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Code: {
+        Handler: 'index.handler',
+        Script: `
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`,
+      },
+      VPCConfig: {
+        VpcId: {
+          Ref: Match.anyValue(),
+        },
+      },
+    });
+  });
+
+  test('default security group and subnets', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Code: {
+        Handler: 'index.handler',
+        Script: `
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`,
+      },
+      VPCConfig: {
+        VpcId: {
+          Ref: Match.anyValue(),
+        },
+        SecurityGroupIds: Match.anyValue(),
+        SubnetIds: [...vpc.privateSubnets.map(subnet => ({ Ref: Match.stringLikeRegexp(subnet.node.id) }))],
+      },
+    });
+  });
+
+  test('provided security group', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+    const sg = new ec2.SecurityGroup(stack, 'Sg', { vpc });
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      vpc,
+      securityGroups: [sg],
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    const sgTemplate = template.findResources('AWS::EC2::SecurityGroup');
+    const sgIds = Object.keys(sgTemplate);
+
+    expect(sgIds).toHaveLength(1);
+
+    template.hasResourceProperties('AWS::Synthetics::Canary', {
+      Code: {
+        Handler: 'index.handler',
+        Script: `
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`,
+      },
+      VPCConfig: {
+        VpcId: {
+          Ref: Match.anyValue(),
+        },
+        SecurityGroupIds: [{ 'Fn::GetAtt': [sgIds[0], 'GroupId'] }],
+      },
+    });
+  });
+});
+
 test('Role policy generated as expected', () => {
   // GIVEN
   const stack = new Stack();
@@ -451,7 +590,7 @@ test('Role policy generated as expected', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN

@@ -1,8 +1,8 @@
 /**
  * A library for nested graphs
  */
-import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 import { topoSort } from './toposort';
+import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 
 export interface GraphNodeProps<A> {
   readonly data?: A;
@@ -73,6 +73,14 @@ export class GraphNode<A> {
     return x;
   }
 
+  public get rootGraph(): Graph<A> {
+    const root = this.root;
+    if (!(root instanceof Graph)) {
+      throw new Error(`Expecting a graph as root, got: ${root}`);
+    }
+    return root;
+  }
+
   public get parentGraph() {
     return this._parentGraph;
   }
@@ -93,48 +101,101 @@ export class GraphNode<A> {
 }
 
 /**
- * A dependency set that can be constructed partially and later finished
+ * A dependency set that is constructed over time
  *
  * It doesn't matter in what order sources and targets for the dependency
  * relationship(s) get added. This class can serve as a synchronization
  * point if the order in which graph nodes get added to the graph is not
  * well-defined.
  *
- * Useful utility during graph building.
+ * You can think of a DependencyBuilder as a vertex that doesn't actually exist in the tree:
+ *
+ *     ┌────┐               ┌────┐
+ *     │ P1 │◀─┐         ┌──│ S1 │
+ *     └────┘  │   .─.   │  └────┘
+ *             ├──( B )◀─┤
+ *     ┌────┐  │   `─'   │  ┌────┐
+ *     │ P2 │◀─┘         └──│ S2 │
+ *     └────┘               └────┘
+ *
+ * Ultimately leads to: { S1 -> P1, S1 -> P2, S2 -> P1, S2 -> P2 }.
  */
 export class DependencyBuilder<A> {
-  private readonly targets: GraphNode<A>[] = [];
-  private readonly sources: GraphNode<A>[] = [];
+  private readonly _producers: GraphNode<A>[] = [];
+  private readonly _consumers: GraphNode<A>[] = [];
 
+  /**
+   * Add a producer: make all nodes added by 'dependBy' depend on these
+   */
   public dependOn(...targets: GraphNode<A>[]) {
     for (const target of targets) {
-      for (const source of this.sources) {
+      for (const source of this._consumers) {
         source.dependOn(target);
       }
-      this.targets.push(target);
+      this._producers.push(target);
     }
     return this;
   }
 
+  /**
+   * Add a consumer: make these nodes depend on all nodes added by 'dependOn'.
+   */
   public dependBy(...sources: GraphNode<A>[]) {
     for (const source of sources) {
-      for (const target of this.targets) {
+      for (const target of this._producers) {
         source.dependOn(target);
       }
-      this.sources.push(source);
+      this._consumers.push(source);
     }
     return this;
+  }
+
+  /**
+   * Whether there are any consumers (nodes added by 'dependBy') but no producers (nodes added by 'dependOn')
+   */
+  public get hasUnsatisfiedConsumers() {
+    return this._consumers.length > 0 && this._producers.length === 0;
+  }
+
+  public get consumers(): ReadonlyArray<GraphNode<A>> {
+    return this._consumers;
+  }
+
+  public consumersAsString() {
+    return this.consumers.map(c => `${c}`).join(',');
   }
 }
 
-export class DependencyBuilders<K, A> {
+/**
+ * A set of dependency builders identified by a given key.
+ */
+export class DependencyBuilders<K, A=any> {
   private readonly builders = new Map<K, DependencyBuilder<A>>();
 
-  public get(key: K) {
+  public for(key: K) {
     const b = this.builders.get(key);
     if (b) { return b; }
     const ret = new DependencyBuilder<A>();
     this.builders.set(key, ret);
+    return ret;
+  }
+
+  /**
+   * @deprecated Use 'for'
+   */
+  public get(key: K) {
+    return this.for(key);
+  }
+
+  public unsatisfiedBuilders() {
+    const ret = new Array<[K, DependencyBuilder<A>]>();
+
+    for (const [k, builder] of this.builders.entries()) {
+      if (builder.hasUnsatisfiedConsumers) {
+        ret.push([k, builder]);
+      }
+    }
+
     return ret;
   }
 }
@@ -190,7 +251,7 @@ export class Graph<A> extends GraphNode<A> {
   /**
    * Return topologically sorted tranches of nodes at this graph level
    */
-  public sortedChildren(): GraphNode<A>[][] {
+  public sortedChildren(fail=true): GraphNode<A>[][] {
     // Project dependencies to current children
     const nodes = this.nodes;
     const projectedDependencies = projectDependencies(this.deepDependencies(), (node) => {
@@ -200,7 +261,7 @@ export class Graph<A> extends GraphNode<A> {
       return nodes.has(node) ? [node] : [];
     });
 
-    return topoSort(nodes, projectedDependencies);
+    return topoSort(nodes, projectedDependencies, fail);
   }
 
   /**
@@ -230,13 +291,21 @@ export class Graph<A> extends GraphNode<A> {
     return topoSort(new Set(projectedDependencies.keys()), projectedDependencies);
   }
 
-  public consoleLog(indent: number = 0) {
-    process.stdout.write(' '.repeat(indent) + this + depString(this) + '\n');
-    for (const node of this.nodes) {
-      if (node instanceof Graph) {
-        node.consoleLog(indent + 2);
-      } else {
-        process.stdout.write(' '.repeat(indent + 2) + node + depString(node) + '\n');
+  public render() {
+    const lines = new Array<string>();
+    recurse(this, '', true);
+    return lines.join('\n');
+
+    function recurse(x: GraphNode<A>, indent: string, last: boolean) {
+      const bullet = last ? '└─' : '├─';
+      const follow = last ? '  ' : '│ ';
+      lines.push(`${indent} ${bullet} ${x}${depString(x)}`);
+      if (x instanceof Graph) {
+        let i = 0;
+        const sortedNodes = Array.prototype.concat.call([], ...x.sortedChildren(false));
+        for (const child of sortedNodes) {
+          recurse(child, `${indent} ${follow} `, i++ == x.nodes.size - 1);
+        }
       }
     }
 
@@ -246,6 +315,79 @@ export class Graph<A> extends GraphNode<A> {
       }
       return '';
     }
+  }
+
+  public renderDot() {
+    const lines = new Array<string>();
+
+    lines.push('digraph G {');
+    lines.push('  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen');
+    lines.push('  # because the layout looks more natural that way.');
+    lines.push('  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.');
+    lines.push('  # To render: `dot -Tsvg input.dot > graph.svg`, open in a browser.');
+    lines.push('  node [shape="box"];');
+    for (const child of this.nodes) {
+      recurse(child);
+    }
+    lines.push('}');
+
+    return lines.join('\n');
+
+    function recurse(node: GraphNode<A>) {
+      let dependencySource;
+
+      if (node instanceof Graph) {
+        lines.push(`${graphBegin(node)} [shape="cds", style="filled", fillcolor="#b7deff"];`);
+        lines.push(`${graphEnd(node)} [shape="cds", style="filled", fillcolor="#b7deff"];`);
+        dependencySource = graphBegin(node);
+      } else {
+        dependencySource = nodeLabel(node);
+        lines.push(`${nodeLabel(node)};`);
+      }
+
+      for (const dep of node.dependencies) {
+        const dst = dep instanceof Graph ? graphEnd(dep) : nodeLabel(dep);
+        lines.push(`${dst} -> ${dependencySource};`);
+      }
+
+      if (node instanceof Graph && node.nodes.size > 0) {
+        for (const child of node.nodes) {
+          recurse(child);
+        }
+
+        // Add dependency arrows between the "subgraph begin" and the first rank of
+        // the children, and the last rank of the children and "subgraph end" nodes.
+        const sortedChildren = node.sortedChildren(false);
+        for (const first of sortedChildren[0]) {
+          const src = first instanceof Graph ? graphBegin(first) : nodeLabel(first);
+          lines.push(`${graphBegin(node)} -> ${src};`);
+        }
+        for (const last of sortedChildren[sortedChildren.length - 1]) {
+          const dst = last instanceof Graph ? graphEnd(last) : nodeLabel(last);
+          lines.push(`${dst} -> ${graphEnd(node)};`);
+        }
+      }
+    }
+
+    function id(node: GraphNode<A>) {
+      return node.rootPath().slice(1).map(n => n.id).join('.');
+    }
+
+    function nodeLabel(node: GraphNode<A>) {
+      return `"${id(node)}"`;
+    }
+
+    function graphBegin(node: Graph<A>) {
+      return `"BEGIN ${id(node)}"`;
+    }
+
+    function graphEnd(node: Graph<A>) {
+      return `"END ${id(node)}"`;
+    }
+  }
+
+  public consoleLog(_indent: number = 0) {
+    process.stdout.write(this.render() + '\n');
   }
 
   /**
@@ -304,10 +446,30 @@ export class GraphNodeCollection<A> {
     this.nodes = Array.from(nodes);
   }
 
+  /**
+   * Add one or more dependencies to all nodes in the collection
+   */
   public dependOn(...dependencies: Array<GraphNode<A> | undefined>) {
     for (const node of this.nodes) {
       node.dependOn(...dependencies.filter(isDefined));
     }
+  }
+
+  /**
+   * Return the topographically first node in the collection
+   */
+  public first() {
+    const nodes = new Set(this.nodes);
+    const sorted = this.nodes[0].rootGraph.sortedLeaves();
+    for (const tranche of sorted) {
+      for (const node of tranche) {
+        if (nodes.has(node)) {
+          return node;
+        }
+      }
+    }
+
+    throw new Error(`Could not calculate first node between ${this}`);
   }
 
   /**
@@ -350,6 +512,10 @@ export class GraphNodeCollection<A> {
     }
 
     return paths[0][0];
+  }
+
+  public toString() {
+    return this.nodes.map(n => `${n}`).join(', ');
   }
 }
 

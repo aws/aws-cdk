@@ -1,6 +1,6 @@
 import * as reflect from 'jsii-reflect';
-import { Linter, MethodSignatureParameterExpectation } from '../linter';
 import { CoreTypes } from './core-types';
+import { Linter, MethodSignatureParameterExpectation } from '../linter';
 
 export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.classes
   .filter(t => CoreTypes.isConstructClass(t))
@@ -27,7 +27,7 @@ export class ConstructReflection {
   /**
    * @deprecated - use `CoreTypes.constructClass()` or `CoreTypes.baseConstructClass()` as appropriate
    */
-  public readonly ROOT_CLASS: reflect.ClassType; // cdk.Construct
+  public readonly ROOT_CLASS: reflect.ClassType; // constructs.Construct
 
   public readonly fqn: string;
   public readonly interfaceFqn: string;

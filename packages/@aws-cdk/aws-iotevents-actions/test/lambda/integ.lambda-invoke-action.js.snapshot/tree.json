@@ -1,0 +1,309 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "lambda-invoke-action-test-stack": {
+        "id": "lambda-invoke-action-test-stack",
+        "path": "lambda-invoke-action-test-stack",
+        "children": {
+          "MyInput": {
+            "id": "MyInput",
+            "path": "lambda-invoke-action-test-stack/MyInput",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-invoke-action-test-stack/MyInput/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoTEvents::Input",
+                  "aws:cdk:cloudformation:props": {
+                    "inputDefinition": {
+                      "attributes": [
+                        {
+                          "jsonPath": "payload.deviceId"
+                        }
+                      ]
+                    },
+                    "inputName": "test_input"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iotevents.CfnInput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iotevents.Input",
+              "version": "0.0.0"
+            }
+          },
+          "MyFunction": {
+            "id": "MyFunction",
+            "path": "lambda-invoke-action-test-stack/MyFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "lambda-invoke-action-test-stack/MyFunction/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-invoke-action-test-stack/MyFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-invoke-action-test-stack/MyFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "\n        exports.handler = (event) => {\n          console.log(\"It is test for lambda action of AWS IoT Rule.\", event);\n        };"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunctionServiceRole3C357FF2",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "MyDetectorModel": {
+            "id": "MyDetectorModel",
+            "path": "lambda-invoke-action-test-stack/MyDetectorModel",
+            "children": {
+              "DetectorModelRole": {
+                "id": "DetectorModelRole",
+                "path": "lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "iotevents.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:InvokeFunction",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MyFunction3BAA72D1",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "MyFunction3BAA72D1",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyDetectorModelDetectorModelRoleDefaultPolicy82887422",
+                            "roles": [
+                              {
+                                "Ref": "MyDetectorModelDetectorModelRoleF2FB4D88"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-invoke-action-test-stack/MyDetectorModel/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoTEvents::DetectorModel",
+                  "aws:cdk:cloudformation:props": {
+                    "detectorModelDefinition": {
+                      "initialStateName": "MyState",
+                      "states": [
+                        {
+                          "stateName": "MyState",
+                          "onEnter": {
+                            "events": [
+                              {
+                                "eventName": "test-event",
+                                "condition": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "currentInput(\"",
+                                      {
+                                        "Ref": "MyInput08947B23"
+                                      },
+                                      "\")"
+                                    ]
+                                  ]
+                                },
+                                "actions": [
+                                  {
+                                    "lambda": {
+                                      "functionArn": {
+                                        "Fn::GetAtt": [
+                                          "MyFunction3BAA72D1",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "MyDetectorModelDetectorModelRoleF2FB4D88",
+                        "Arn"
+                      ]
+                    },
+                    "key": "payload.deviceId"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iotevents.CfnDetectorModel",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iotevents.DetectorModel",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

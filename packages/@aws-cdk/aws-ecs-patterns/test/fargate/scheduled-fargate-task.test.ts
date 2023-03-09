@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
@@ -288,6 +288,30 @@ test('Scheduled Fargate Task - with subnetSelection defined', () => {
   });
 });
 
+test('Scheduled Fargate Task - can take 8 vCpu and 60GB memory sizes', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 61440,
+      cpu: 8192,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', Match.objectLike({
+    Cpu: '8192',
+    Memory: '61440',
+  }),
+  );
+});
+
 test('Scheduled Fargate Task - with platformVersion defined', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -409,4 +433,42 @@ test('Scheduled Fargate Task - exposes ECS Task', () => {
 
   // THEN
   expect(scheduledFargateTask.task).toBeDefined();
+});
+
+test('Scheduled Fargate Task shows warning when minute is not defined in cron', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.cron({}),
+  });
+
+  // THEN
+  Annotations.fromStack(stack).hasWarning('/Default', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+});
+
+test('Scheduled Fargate Task shows no warning when minute is * in cron', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.cron({ minute: '*' }),
+  });
+
+  // THEN
+  Annotations.fromStack(stack).hasNoWarning('/Default', Match.anyValue());
 });

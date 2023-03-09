@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "lambda-python-38/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-python-38"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-38/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapython38DefaultTestDeployAssertDDBFEEAF"
+    }
+  }
+}

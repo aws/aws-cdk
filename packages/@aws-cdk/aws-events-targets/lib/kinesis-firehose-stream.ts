@@ -31,14 +31,16 @@ export class KinesisFirehoseStream implements events.IRuleTarget {
    * result from a Event Bridge event.
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    const policyStatements = [new iam.PolicyStatement({
+    const role = singletonEventRole(this.stream);
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
       resources: [this.stream.attrArn],
-    })];
+    }));
+
 
     return {
       arn: this.stream.attrArn,
-      role: singletonEventRole(this.stream, policyStatements),
+      role,
       input: this.props.message,
       targetResource: this.stream,
     };

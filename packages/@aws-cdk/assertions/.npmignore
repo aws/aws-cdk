@@ -23,3 +23,4 @@ test/
 !.jsii
 !*.js
 !*.lit.ts
+**/*.snapshot

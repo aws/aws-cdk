@@ -1,0 +1,13 @@
+{
+  "enableLookups": true,
+  "version": "22.0.0",
+  "testCases": {
+    "integ-product/DefaultTest": {
+      "stacks": [
+        "integ-servicecatalog-product"
+      ],
+      "assertionStack": "integ-product/DefaultTest/DeployAssert",
+      "assertionStackName": "integproductDefaultTestDeployAssertEB23E2A9"
+    }
+  }
+}

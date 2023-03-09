@@ -1,0 +1,13 @@
+{
+  "version": "v1.0.0",
+  "testCases": {
+    "xxxxx.test-with-new-assets": {
+      "stacks": ["test-stack"],
+      "stackUpdateWorkflow": false,
+      "diffAssets": false,
+      "allowDestroy": [
+        "AWS::IAM::Role"
+      ]
+    }
+  }
+}

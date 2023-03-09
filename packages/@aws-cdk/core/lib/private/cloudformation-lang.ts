@@ -1,9 +1,10 @@
+import { CfnUtils } from './cfn-utils-provider';
+import { INTRINSIC_KEY_PREFIX, resolvedTypeHint } from './resolve';
 import { Lazy } from '../lazy';
 import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { CfnUtils } from './cfn-utils-provider';
-import { INTRINSIC_KEY_PREFIX, ResolutionTypeHint, resolvedTypeHint } from './resolve';
+import { ResolutionTypeHint } from '../type-hints';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -43,8 +44,8 @@ export class CloudFormationLang {
 
     // Some case analysis to produce minimal expressions
     if (parts.length === 1) { return parts[0]; }
-    if (parts.length === 2 && typeof parts[0] === 'string' && typeof parts[1] === 'string') {
-      return parts[0] + parts[1];
+    if (parts.length === 2 && isConcatable(parts[0]) && isConcatable(parts[1])) {
+      return `${parts[0]}${parts[1]}`;
     }
 
     // Otherwise return a Join intrinsic (already in the target document language to avoid taking
@@ -216,7 +217,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         pushLiteral('"');
         return;
 
-      case ResolutionTypeHint.LIST:
+      case ResolutionTypeHint.STRING_LIST:
         // We need this to look like:
         //
         //    '{"listValue":' ++ STRINGIFY(CFN_EVAL({ Ref: MyList })) ++ '}'
@@ -323,8 +324,8 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
     const el = values[i];
     if (isSplicableFnJoinIntrinsic(el)) {
       values.splice(i, 1, ...el['Fn::Join'][1]);
-    } else if (i > 0 && isPlainString(values[i - 1]) && isPlainString(values[i])) {
-      values[i - 1] += delimiter + values[i];
+    } else if (i > 0 && isConcatable(values[i - 1]) && isConcatable(values[i])) {
+      values[i - 1] = `${values[i-1]}${delimiter}${values[i]}`;
       values.splice(i, 1);
     } else {
       i += 1;
@@ -332,10 +333,6 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
   }
 
   return values;
-
-  function isPlainString(obj: any): boolean {
-    return typeof obj === 'string' && !Token.isUnresolved(obj);
-  }
 
   function isSplicableFnJoinIntrinsic(obj: any): boolean {
     if (!isIntrinsic(obj)) { return false; }
@@ -350,6 +347,11 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
     return true;
   }
 }
+
+function isConcatable(obj: any): boolean {
+  return ['string', 'number'].includes(typeof obj) && !Token.isUnresolved(obj);
+}
+
 
 /**
  * Return whether the given value represents a CloudFormation intrinsic

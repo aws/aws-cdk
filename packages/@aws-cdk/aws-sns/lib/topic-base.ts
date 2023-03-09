@@ -1,14 +1,11 @@
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, ResourceProps, Token } from '@aws-cdk/core';
 import * as constructs from 'constructs';
+import { Construct } from 'constructs';
 import { TopicPolicy } from './policy';
 import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Represents an SNS topic
@@ -38,7 +35,7 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   /**
    * Subscribe some endpoint to this topic
    */
-  addSubscription(subscription: ITopicSubscription): void;
+  addSubscription(subscription: ITopicSubscription): Subscription;
 
   /**
    * Adds a statement to the IAM resource policy associated with this topic.
@@ -74,11 +71,17 @@ export abstract class TopicBase extends Resource implements ITopic {
 
   private policy?: TopicPolicy;
 
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
+
   /**
    * Subscribe some endpoint to this topic
    */
-  public addSubscription(subscription: ITopicSubscription) {
-    const subscriptionConfig = subscription.bind(this);
+  public addSubscription(topicSubscription: ITopicSubscription): Subscription {
+    const subscriptionConfig = topicSubscription.bind(this);
 
     const scope = subscriptionConfig.subscriberScope || this;
     let id = subscriptionConfig.subscriberId;
@@ -92,10 +95,18 @@ export abstract class TopicBase extends Resource implements ITopic {
       throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`);
     }
 
-    new Subscription(scope, id, {
+    const subscription = new Subscription(scope, id, {
       topic: this,
       ...subscriptionConfig,
     });
+
+    // Add dependency for the subscription, for example for SQS subscription
+    // the queue policy has to deploy before the subscription is created
+    if (subscriptionConfig.subscriptionDependency) {
+      subscription.node.addDependency(subscriptionConfig.subscriptionDependency);
+    }
+
+    return subscription;
   }
 
   /**
@@ -115,12 +126,6 @@ export abstract class TopicBase extends Resource implements ITopic {
       return { statementAdded: true, policyDependable: this.policy };
     }
     return { statementAdded: false };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**

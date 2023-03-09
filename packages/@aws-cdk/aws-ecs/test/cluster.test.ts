@@ -7,9 +7,42 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
 
 describe('cluster', () => {
+  describe('isCluster() returns', () => {
+    test('true if given cluster instance', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      // WHEN
+      const createdCluster = new ecs.Cluster(stack, 'EcsCluster');
+      // THEN
+      expect(ecs.Cluster.isCluster(createdCluster)).toBe(true);
+    });
+
+    test('false if given imported cluster instance', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const importedSg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG1', 'sg-1', { allowAllOutbound: false });
+      // WHEN
+      const importedCluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+        clusterName: 'cluster-name',
+        securityGroups: [importedSg],
+        vpc,
+      });
+      // THEN
+      expect(ecs.Cluster.isCluster(importedCluster)).toBe(false);
+    });
+
+    test('false if given undefined', () => {
+      // THEN
+      expect(ecs.Cluster.isCluster(undefined)).toBe(false);
+    });
+  });
+
   describe('When creating an ECS Cluster', () => {
     testDeprecated('with no properties set, it correctly sets default properties', () => {
       // GIVEN
@@ -118,7 +151,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: { 'Fn::Join': ['', ['ec2.', { Ref: 'AWS::URLSuffix' }]] },
+                Service: 'ec2.amazonaws.com',
               },
             },
           ],
@@ -175,8 +208,6 @@ describe('cluster', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     testDeprecated('with only vpc set, it correctly sets default properties', () => {
@@ -289,7 +320,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: { 'Fn::Join': ['', ['ec2.', { Ref: 'AWS::URLSuffix' }]] },
+                Service: 'ec2.amazonaws.com',
               },
             },
           ],
@@ -653,7 +684,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: { 'Fn::Join': ['', ['ec2.', { Ref: 'AWS::URLSuffix' }]] },
+                Service: 'ec2.amazonaws.com',
               },
             },
           ],
@@ -810,7 +841,7 @@ describe('cluster', () => {
    */
   testDeprecated('allows specifying special HW AMI Type', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -864,7 +895,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying windows image', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1008,13 +1039,44 @@ describe('cluster', () => {
 
   });
 
+  test('allows setting cluster ServiceConnectDefaults.Namespace property when useAsServiceConnectDefault is true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: 'foo.com',
+      useForServiceConnect: true,
+    });
+
+    // THEN
+    expect((cluster as any)._cfnCluster.serviceConnectDefaults.namespace).toBe('foo.com');
+  });
+
+  test('allows setting cluster _defaultCloudMapNamespace for HTTP namespace', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    // WHEN
+    const namespace = cluster.addDefaultCloudMapNamespace({
+      name: 'foo',
+      type: cloudmap.NamespaceType.HTTP,
+    });
+    // THEN
+    expect(namespace.namespaceName).toBe('foo');
+  });
+
   /*
    * TODO:v2.0.0 END OF OBSOLETE BLOCK
    */
 
   testDeprecated('allows specifying special HW AMI Type v2', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1045,7 +1107,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying Amazon Linux v1 AMI', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1076,7 +1138,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying windows image v2', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1278,6 +1340,7 @@ describe('cluster', () => {
 
 
   });
+
 
   test('export/import of a cluster with a namespace', () => {
     // GIVEN
@@ -1620,17 +1683,7 @@ describe('cluster', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'ec2.',
-                    {
-                      Ref: 'AWS::URLSuffix',
-                    },
-                  ],
-                ],
-              },
+              Service: 'ec2.amazonaws.com',
             },
           },
         ],
@@ -1669,7 +1722,6 @@ describe('cluster', () => {
         },
       ],
     });
-
   });
 
   testDeprecated('correct bottlerocket AMI for ARM64 architecture', () => {
@@ -1690,15 +1742,10 @@ describe('cluster', () => {
       },
     });
 
-    const assembly = app.synth();
-    const template = assembly.getStackByName(stack.stackName).template;
-    expect(template.Parameters).toEqual({
-      SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
-        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
-      },
+    Template.fromStack(stack).hasParameter('SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
     });
-
   });
 
   testDeprecated('throws when machineImage and machineImageType both specified', () => {
@@ -1730,6 +1777,143 @@ describe('cluster', () => {
       },
     });
 
+  });
+
+  testDeprecated('updatePolicy set when passed without updateType', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+      updatePolicy: autoscaling.UpdatePolicy.replacingUpdate(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      UpdatePolicy: {
+        AutoScalingReplacingUpdate: {
+          WillReplace: true,
+        },
+      },
+    });
+  });
+
+  testDeprecated('undefined updateType & updatePolicy replaced by default updatePolicy', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      UpdatePolicy: {
+        AutoScalingReplacingUpdate: {
+          WillReplace: true,
+        },
+      },
+    });
+  });
+
+  testDeprecated('updateType.NONE replaced by updatePolicy equivalent', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+      updateType: autoscaling.UpdateType.NONE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      UpdatePolicy: {
+        AutoScalingScheduledAction: {
+          IgnoreUnmodifiedGroupSizeProperties: true,
+        },
+      },
+    });
+  });
+
+  testDeprecated('updateType.REPLACING_UPDATE replaced by updatePolicy equivalent', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+      updateType: autoscaling.UpdateType.REPLACING_UPDATE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      UpdatePolicy: {
+        AutoScalingReplacingUpdate: {
+          WillReplace: true,
+        },
+      },
+    });
+  });
+
+  testDeprecated('updateType.ROLLING_UPDATE replaced by updatePolicy equivalent', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+      updateType: autoscaling.UpdateType.ROLLING_UPDATE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      UpdatePolicy: {
+        AutoScalingRollingUpdate: {
+          WaitOnResourceSignals: false,
+          PauseTime: 'PT0S',
+          SuspendProcesses: [
+            'HealthCheck',
+            'ReplaceUnhealthy',
+            'AZRebalance',
+            'AlarmNotification',
+            'ScheduledActions',
+          ],
+        },
+        AutoScalingScheduledAction: {
+          IgnoreUnmodifiedGroupSizeProperties: true,
+        },
+      },
+    });
+  });
+
+  testDeprecated('throws when updatePolicy and updateType both specified', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    expect(() => {
+      cluster.addCapacity('bottlerocket-asg', {
+        instanceType: new ec2.InstanceType('c5.large'),
+        machineImage: new ecs.BottleRocketImage(),
+        updatePolicy: autoscaling.UpdatePolicy.replacingUpdate(),
+        updateType: autoscaling.UpdateType.REPLACING_UPDATE,
+      });
+    }).toThrow("Cannot set 'signals'/'updatePolicy' and 'updateType' together. Prefer 'signals'/'updatePolicy'");
   });
 
   testDeprecated('allows specifying capacityProviders (deprecated)', () => {
@@ -1885,7 +2069,7 @@ describe('cluster', () => {
 
   });
 
-  test('can disable managed scaling for ASG capacity provider', () => {
+  test('can disable Managed Scaling and Managed Termination Protection for ASG capacity provider', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1900,6 +2084,7 @@ describe('cluster', () => {
     new ecs.AsgCapacityProvider(stack, 'provider', {
       autoScalingGroup,
       enableManagedScaling: false,
+      enableManagedTerminationProtection: false,
     });
 
     // THEN
@@ -1909,10 +2094,82 @@ describe('cluster', () => {
           Ref: 'asgASG4D014670',
         },
         ManagedScaling: Match.absent(),
-        ManagedTerminationProtection: 'ENABLED',
+        ManagedTerminationProtection: 'DISABLED',
       },
     });
+  });
 
+  test('can disable Managed Termination Protection for ASG capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+      AutoScalingGroupProvider: {
+        AutoScalingGroupArn: {
+          Ref: 'asgASG4D014670',
+        },
+        ManagedScaling: {
+          Status: 'ENABLED',
+          TargetCapacity: 100,
+        },
+        ManagedTerminationProtection: 'DISABLED',
+      },
+    });
+  });
+
+  test('throws error, when ASG capacity provider has Managed Scaling disabled and Managed Termination Protection is undefined (defaults to true)', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // THEN
+    expect(() => {
+      new ecs.AsgCapacityProvider(stack, 'provider', {
+        autoScalingGroup,
+        enableManagedScaling: false,
+      });
+    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+  });
+
+  test('throws error, when Managed Scaling is disabled and Managed Termination Protection is enabled.', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // THEN
+    expect(() => {
+      new ecs.AsgCapacityProvider(stack, 'provider', {
+        autoScalingGroup,
+        enableManagedScaling: false,
+        enableManagedTerminationProtection: true,
+      });
+    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
   });
 
   test('capacity provider enables ASG new instance scale-in protection by default', () => {
@@ -2001,6 +2258,191 @@ describe('cluster', () => {
       DefaultCapacityProviderStrategy: [],
     });
 
+  });
+
+  test('should throw an error if capacity provider with default strategy is not present in capacity providers', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: true,
+      }).addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
+      ]);
+    }).toThrow('Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.');
+  });
+
+  test('should throw an error when capacity providers is length 0 and default capacity provider startegy specified', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: false,
+      }).addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
+      ]);
+    }).toThrow('Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.');
+  });
+
+  test('should throw an error when more than 1 default capacity provider have base specified', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: true,
+      }).addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT', base: 10, weight: 50 },
+      ]);
+    }).toThrow(/Only 1 capacity provider in a capacity provider strategy can have a nonzero base./);
+  });
+
+  test('should throw an error when a capacity provider strategy contains a mix of Auto Scaling groups and Fargate providers', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+      enableFargateCapacityProviders: true,
+    });
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // THEN
+    expect(() => {
+      cluster.addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT' },
+        { capacityProvider: capacityProvider.capacityProviderName },
+      ]);
+    }).toThrow(/A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again./);
+  });
+
+  test('should throw an error if addDefaultCapacityProviderStrategy is called more than once', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: true,
+      });
+      cluster.addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT' },
+      ]);
+      cluster.addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT' },
+      ]);
+    }).toThrow(/Cluster default capacity provider strategy is already set./);
+  });
+
+  test('can add ASG capacity via Capacity Provider with default capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+      enableFargateCapacityProviders: true,
+    });
+
+    cluster.addDefaultCapacityProviderStrategy([
+      { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+      { capacityProvider: 'FARGATE_SPOT' },
+    ]);
+
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
+      Cluster: {
+        Ref: 'EcsCluster97242B84',
+      },
+      CapacityProviders: [
+        'FARGATE',
+        'FARGATE_SPOT',
+        {
+          Ref: 'providerD3FF4D3A',
+        },
+      ],
+      DefaultCapacityProviderStrategy: [
+        { CapacityProvider: 'FARGATE', Base: 10, Weight: 50 },
+        { CapacityProvider: 'FARGATE_SPOT' },
+      ],
+    });
+  });
+
+  test('can add ASG default capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    cluster.addDefaultCapacityProviderStrategy([
+      { capacityProvider: capacityProvider.capacityProviderName },
+    ]);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
+      Cluster: {
+        Ref: 'EcsCluster97242B84',
+      },
+      CapacityProviders: [
+        {
+          Ref: 'providerD3FF4D3A',
+        },
+      ],
+      DefaultCapacityProviderStrategy: [
+        {
+          CapacityProvider: {
+            Ref: 'providerD3FF4D3A',
+          },
+        },
+      ],
+    });
   });
 
   test('correctly sets log configuration for execute command', () => {
@@ -2305,4 +2747,145 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+});
+
+describe('Accessing container instance role', function () {
+
+  const addUserDataMock = jest.fn();
+  const autoScalingGroup: autoscaling.AutoScalingGroup = {
+    addUserData: addUserDataMock,
+    addToRolePolicy: jest.fn(),
+    protectNewInstancesFromScaleIn: jest.fn(),
+  } as unknown as autoscaling.AutoScalingGroup;
+
+  afterEach(() => {
+    addUserDataMock.mockClear();
+  });
+
+  test('block ecs from accessing metadata service when canContainersAccessInstanceRole not set', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // THEN
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on addAsgCapacityProvider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on AsgCapacityProvider instantiation', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: true,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on constructor and method', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: true,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('block ecs from accessing metadata service when canContainersAccessInstanceRole set on constructor and not set on method', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: true,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: false,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+
+  test('allow ecs accessing metadata service when canContainersAccessInstanceRole is not set on constructor and set on method', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: autoScalingGroup,
+      canContainersAccessInstanceRole: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider, {
+      canContainersAccessInstanceRole: true,
+    });
+
+    // THEN
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
 });

@@ -1,0 +1,18 @@
+{
+  "name": "DockerImageFunctionConstruct",
+  "description": "testing docker lambda function ",
+  "version": "0.1.0",
+  "bin": {
+    "randomColors": "bin/app.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "unique-names-generator": "^4.6.0"
+  }
+}

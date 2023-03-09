@@ -1,0 +1,1391 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.108"
+        }
+      },
+      "integ-apigw-domain-name-mapping": {
+        "id": "integ-apigw-domain-name-mapping",
+        "path": "integ-apigw-domain-name-mapping",
+        "children": {
+          "Cert": {
+            "id": "Cert",
+            "path": "integ-apigw-domain-name-mapping/Cert",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "IntegApi1": {
+            "id": "IntegApi1",
+            "path": "integ-apigw-domain-name-mapping/IntegApi1",
+            "children": {
+              "IntegApi201": {
+                "id": "IntegApi201",
+                "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                      "aws:cdk:cloudformation:props": {
+                        "endpointConfiguration": {
+                          "types": [
+                            "REGIONAL"
+                          ]
+                        },
+                        "name": "IntegApi201"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Deployment": {
+                    "id": "Deployment",
+                    "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Deployment",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Deployment/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                          "aws:cdk:cloudformation:props": {
+                            "restApiId": {
+                              "Ref": "IntegApi1IntegApi2018FAD77E9"
+                            },
+                            "description": "Automatically created by the RestApi construct"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DeploymentStage.prod": {
+                    "id": "DeploymentStage.prod",
+                    "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/DeploymentStage.prod",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/DeploymentStage.prod/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                          "aws:cdk:cloudformation:props": {
+                            "restApiId": {
+                              "Ref": "IntegApi1IntegApi2018FAD77E9"
+                            },
+                            "deploymentId": {
+                              "Ref": "IntegApi1IntegApi201DeploymentF1012E35e3d8f8929b682e11ef294dd954cc0999"
+                            },
+                            "stageName": "prod"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Stage",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Endpoint": {
+                    "id": "Endpoint",
+                    "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Endpoint",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnOutput",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default",
+                    "children": {
+                      "items": {
+                        "id": "items",
+                        "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                              "aws:cdk:cloudformation:props": {
+                                "parentId": {
+                                  "Fn::GetAtt": [
+                                    "IntegApi1IntegApi2018FAD77E9",
+                                    "RootResourceId"
+                                  ]
+                                },
+                                "pathPart": "items",
+                                "restApiId": {
+                                  "Ref": "IntegApi1IntegApi2018FAD77E9"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "GET": {
+                            "id": "GET",
+                            "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/GET",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/GET/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "GET",
+                                    "resourceId": {
+                                      "Ref": "IntegApi1IntegApi201itemsE127EEB1"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "IntegApi1IntegApi2018FAD77E9"
+                                    },
+                                    "authorizationType": "NONE",
+                                    "integration": {
+                                      "type": "MOCK",
+                                      "requestTemplates": {
+                                        "application/json": "{ statusCode: 201 }"
+                                      },
+                                      "integrationResponses": [
+                                        {
+                                          "statusCode": "201",
+                                          "responseTemplates": {
+                                            "application/json": "{\"message\":\"Hello, world\"}"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "methodResponses": [
+                                      {
+                                        "statusCode": "201"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "GET": {
+                        "id": "GET",
+                        "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/GET",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/GET/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "httpMethod": "GET",
+                                "resourceId": {
+                                  "Fn::GetAtt": [
+                                    "IntegApi1IntegApi2018FAD77E9",
+                                    "RootResourceId"
+                                  ]
+                                },
+                                "restApiId": {
+                                  "Ref": "IntegApi1IntegApi2018FAD77E9"
+                                },
+                                "authorizationType": "NONE",
+                                "integration": {
+                                  "type": "MOCK",
+                                  "requestTemplates": {
+                                    "application/json": "{ statusCode: 201 }"
+                                  },
+                                  "integrationResponses": [
+                                    {
+                                      "statusCode": "201",
+                                      "responseTemplates": {
+                                        "application/json": "{\"message\":\"Hello, world\"}"
+                                      }
+                                    }
+                                  ]
+                                },
+                                "methodResponses": [
+                                  {
+                                    "statusCode": "201"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Method",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.RestApi",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.108"
+            }
+          },
+          "IntegDomain": {
+            "id": "IntegDomain",
+            "path": "integ-apigw-domain-name-mapping/IntegDomain",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apigw-domain-name-mapping/IntegDomain/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::DomainName",
+                  "aws:cdk:cloudformation:props": {
+                    "domainName": "*.example.com",
+                    "endpointConfiguration": {
+                      "types": [
+                        "REGIONAL"
+                      ]
+                    },
+                    "regionalCertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
+                    "securityPolicy": "TLS_1_2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnDomainName",
+                  "version": "0.0.0"
+                }
+              },
+              "Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": {
+                "id": "Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E",
+                "path": "integ-apigw-domain-name-mapping/IntegDomain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apigw-domain-name-mapping/IntegDomain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::BasePathMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "domainName": {
+                          "Ref": "IntegDomain624DF323"
+                        },
+                        "restApiId": {
+                          "Ref": "IntegApi1IntegApi2018FAD77E9"
+                        },
+                        "stage": {
+                          "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnBasePathMapping",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.BasePathMapping",
+                  "version": "0.0.0"
+                }
+              },
+              "Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": {
+                "id": "Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E",
+                "path": "integ-apigw-domain-name-mapping/IntegDomain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apigw-domain-name-mapping/IntegDomain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::BasePathMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "domainName": {
+                          "Ref": "IntegDomain624DF323"
+                        },
+                        "basePath": "orders",
+                        "restApiId": {
+                          "Ref": "IntegApi1IntegApi2018FAD77E9"
+                        },
+                        "stage": {
+                          "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnBasePathMapping",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.BasePathMapping",
+                  "version": "0.0.0"
+                }
+              },
+              "Map:orders--v2=>integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE": {
+                "id": "Map:orders--v2=>integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE",
+                "path": "integ-apigw-domain-name-mapping/IntegDomain/Map:orders--v2=>integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::ApiMapping",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "IntegApi2IntegApi202F39817F4"
+                    },
+                    "domainName": {
+                      "Ref": "IntegDomain624DF323"
+                    },
+                    "stage": {
+                      "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
+                    },
+                    "apiMappingKey": "orders/v2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApiMapping",
+                  "version": "0.0.0"
+                }
+              },
+              "Map:orders--v1=>integapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D5976": {
+                "id": "Map:orders--v1=>integapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D5976",
+                "path": "integ-apigw-domain-name-mapping/IntegDomain/Map:orders--v1=>integapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D5976",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::ApiMapping",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "IntegApi1IntegApi2018FAD77E9"
+                    },
+                    "domainName": {
+                      "Ref": "IntegDomain624DF323"
+                    },
+                    "stage": {
+                      "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+                    },
+                    "apiMappingKey": "orders/v1"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApiMapping",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.DomainName",
+              "version": "0.0.0"
+            }
+          },
+          "Integ2Domain": {
+            "id": "Integ2Domain",
+            "path": "integ-apigw-domain-name-mapping/Integ2Domain",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apigw-domain-name-mapping/Integ2Domain/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::DomainName",
+                  "aws:cdk:cloudformation:props": {
+                    "domainName": "another-*.example.com",
+                    "endpointConfiguration": {
+                      "types": [
+                        "REGIONAL"
+                      ]
+                    },
+                    "regionalCertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
+                    "securityPolicy": "TLS_1_2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnDomainName",
+                  "version": "0.0.0"
+                }
+              },
+              "Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": {
+                "id": "Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E",
+                "path": "integ-apigw-domain-name-mapping/Integ2Domain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apigw-domain-name-mapping/Integ2Domain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::BasePathMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "domainName": {
+                          "Ref": "Integ2Domain70CCEA68"
+                        },
+                        "basePath": "orders",
+                        "restApiId": {
+                          "Ref": "IntegApi1IntegApi2018FAD77E9"
+                        },
+                        "stage": {
+                          "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnBasePathMapping",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.BasePathMapping",
+                  "version": "0.0.0"
+                }
+              },
+              "Map:orders--v2=>integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE": {
+                "id": "Map:orders--v2=>integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE",
+                "path": "integ-apigw-domain-name-mapping/Integ2Domain/Map:orders--v2=>integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::ApiMapping",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "IntegApi2IntegApi202F39817F4"
+                    },
+                    "domainName": {
+                      "Ref": "Integ2Domain70CCEA68"
+                    },
+                    "stage": {
+                      "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
+                    },
+                    "apiMappingKey": "orders/v2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApiMapping",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.DomainName",
+              "version": "0.0.0"
+            }
+          },
+          "Integ3Domain": {
+            "id": "Integ3Domain",
+            "path": "integ-apigw-domain-name-mapping/Integ3Domain",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apigw-domain-name-mapping/Integ3Domain/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::DomainName",
+                  "aws:cdk:cloudformation:props": {
+                    "domainName": "yet-another-*.example.com",
+                    "endpointConfiguration": {
+                      "types": [
+                        "REGIONAL"
+                      ]
+                    },
+                    "regionalCertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
+                    "securityPolicy": "TLS_1_2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnDomainName",
+                  "version": "0.0.0"
+                }
+              },
+              "Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": {
+                "id": "Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E",
+                "path": "integ-apigw-domain-name-mapping/Integ3Domain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apigw-domain-name-mapping/Integ3Domain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::BasePathMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "domainName": {
+                          "Ref": "Integ3DomainE531FBAB"
+                        },
+                        "restApiId": {
+                          "Ref": "IntegApi1IntegApi2018FAD77E9"
+                        },
+                        "stage": {
+                          "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnBasePathMapping",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.BasePathMapping",
+                  "version": "0.0.0"
+                }
+              },
+              "Map:v2=>integapigwdomainnamemappingIntegApi2IntegApi20289438F2B": {
+                "id": "Map:v2=>integapigwdomainnamemappingIntegApi2IntegApi20289438F2B",
+                "path": "integ-apigw-domain-name-mapping/Integ3Domain/Map:v2=>integapigwdomainnamemappingIntegApi2IntegApi20289438F2B",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apigw-domain-name-mapping/Integ3Domain/Map:v2=>integapigwdomainnamemappingIntegApi2IntegApi20289438F2B/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::BasePathMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "domainName": {
+                          "Ref": "Integ3DomainE531FBAB"
+                        },
+                        "basePath": "v2",
+                        "restApiId": {
+                          "Ref": "IntegApi2IntegApi202F39817F4"
+                        },
+                        "stage": {
+                          "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnBasePathMapping",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.BasePathMapping",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.DomainName",
+              "version": "0.0.0"
+            }
+          },
+          "IntegDomainRecord": {
+            "id": "IntegDomainRecord",
+            "path": "integ-apigw-domain-name-mapping/IntegDomainRecord",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+              "aws:cdk:cloudformation:props": {
+                "name": "*.example.com",
+                "type": "A",
+                "aliasTarget": {
+                  "hostedZoneId": {
+                    "Fn::GetAtt": [
+                      "IntegDomain624DF323",
+                      "RegionalHostedZoneId"
+                    ]
+                  },
+                  "dnsName": {
+                    "Fn::GetAtt": [
+                      "IntegDomain624DF323",
+                      "RegionalDomainName"
+                    ]
+                  }
+                },
+                "hostedZoneId": "Z23ABC4XYZL05B"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+              "version": "0.0.0"
+            }
+          },
+          "Integ2DomainRecord": {
+            "id": "Integ2DomainRecord",
+            "path": "integ-apigw-domain-name-mapping/Integ2DomainRecord",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+              "aws:cdk:cloudformation:props": {
+                "name": "another-*.example.com",
+                "type": "A",
+                "aliasTarget": {
+                  "hostedZoneId": {
+                    "Fn::GetAtt": [
+                      "Integ2Domain70CCEA68",
+                      "RegionalHostedZoneId"
+                    ]
+                  },
+                  "dnsName": {
+                    "Fn::GetAtt": [
+                      "Integ2Domain70CCEA68",
+                      "RegionalDomainName"
+                    ]
+                  }
+                },
+                "hostedZoneId": "Z23ABC4XYZL05B"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+              "version": "0.0.0"
+            }
+          },
+          "Integ3DomainRecord": {
+            "id": "Integ3DomainRecord",
+            "path": "integ-apigw-domain-name-mapping/Integ3DomainRecord",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+              "aws:cdk:cloudformation:props": {
+                "name": "yet-another-*.example.com",
+                "type": "A",
+                "aliasTarget": {
+                  "hostedZoneId": {
+                    "Fn::GetAtt": [
+                      "Integ3DomainE531FBAB",
+                      "RegionalHostedZoneId"
+                    ]
+                  },
+                  "dnsName": {
+                    "Fn::GetAtt": [
+                      "Integ3DomainE531FBAB",
+                      "RegionalDomainName"
+                    ]
+                  }
+                },
+                "hostedZoneId": "Z23ABC4XYZL05B"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+              "version": "0.0.0"
+            }
+          },
+          "IntegApi2": {
+            "id": "IntegApi2",
+            "path": "integ-apigw-domain-name-mapping/IntegApi2",
+            "children": {
+              "IntegApi202": {
+                "id": "IntegApi202",
+                "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                      "aws:cdk:cloudformation:props": {
+                        "endpointConfiguration": {
+                          "types": [
+                            "REGIONAL"
+                          ]
+                        },
+                        "name": "IntegApi202"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Deployment": {
+                    "id": "Deployment",
+                    "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Deployment",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Deployment/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                          "aws:cdk:cloudformation:props": {
+                            "restApiId": {
+                              "Ref": "IntegApi2IntegApi202F39817F4"
+                            },
+                            "description": "Automatically created by the RestApi construct"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DeploymentStage.prod": {
+                    "id": "DeploymentStage.prod",
+                    "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/DeploymentStage.prod",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/DeploymentStage.prod/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                          "aws:cdk:cloudformation:props": {
+                            "restApiId": {
+                              "Ref": "IntegApi2IntegApi202F39817F4"
+                            },
+                            "deploymentId": {
+                              "Ref": "IntegApi2IntegApi202Deployment16A1A56Af8137e7222475e5a9ac210201aa96737"
+                            },
+                            "stageName": "prod"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Stage",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Endpoint": {
+                    "id": "Endpoint",
+                    "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Endpoint",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnOutput",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default",
+                    "children": {
+                      "items": {
+                        "id": "items",
+                        "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                              "aws:cdk:cloudformation:props": {
+                                "parentId": {
+                                  "Fn::GetAtt": [
+                                    "IntegApi2IntegApi202F39817F4",
+                                    "RootResourceId"
+                                  ]
+                                },
+                                "pathPart": "items",
+                                "restApiId": {
+                                  "Ref": "IntegApi2IntegApi202F39817F4"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "GET": {
+                            "id": "GET",
+                            "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/GET",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/GET/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "GET",
+                                    "resourceId": {
+                                      "Ref": "IntegApi2IntegApi202items6625F7BA"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "IntegApi2IntegApi202F39817F4"
+                                    },
+                                    "authorizationType": "NONE",
+                                    "integration": {
+                                      "type": "MOCK",
+                                      "requestTemplates": {
+                                        "application/json": "{ statusCode: 202 }"
+                                      },
+                                      "integrationResponses": [
+                                        {
+                                          "statusCode": "202",
+                                          "responseTemplates": {
+                                            "application/json": "{\"message\":\"Hello, world\"}"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "methodResponses": [
+                                      {
+                                        "statusCode": "202"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "GET": {
+                        "id": "GET",
+                        "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/GET",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/GET/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "httpMethod": "GET",
+                                "resourceId": {
+                                  "Fn::GetAtt": [
+                                    "IntegApi2IntegApi202F39817F4",
+                                    "RootResourceId"
+                                  ]
+                                },
+                                "restApiId": {
+                                  "Ref": "IntegApi2IntegApi202F39817F4"
+                                },
+                                "authorizationType": "NONE",
+                                "integration": {
+                                  "type": "MOCK",
+                                  "requestTemplates": {
+                                    "application/json": "{ statusCode: 202 }"
+                                  },
+                                  "integrationResponses": [
+                                    {
+                                      "statusCode": "202",
+                                      "responseTemplates": {
+                                        "application/json": "{\"message\":\"Hello, world\"}"
+                                      }
+                                    }
+                                  ]
+                                },
+                                "methodResponses": [
+                                  {
+                                    "statusCode": "202"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Method",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.RestApi",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.108"
+            }
+          },
+          "InvokeApi": {
+            "id": "InvokeApi",
+            "path": "integ-apigw-domain-name-mapping/InvokeApi",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "integ-apigw-domain-name-mapping/InvokeApi/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apigw-domain-name-mapping/InvokeApi/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apigw-domain-name-mapping/InvokeApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "\nconst https = require('https');\nexports.handler = async function(event) {\n  console.log(event);\n  const options = {\n    hostname: event.hostname,\n    path: event.path,\n  };\n  let dataString = '';\n  const response = await new Promise((resolve, reject) => {\n    const req = https.get(options, (res) => {\n      res.on('data', data => {\n        dataString += data;\n      })\n      res.on('end', () => {\n        resolve({\n          statusCode: res.statusCode,\n          body: dataString,\n        });\n      })\n    });\n    req.on('error', err => {\n      reject({\n        statusCode: 500,\n        body: JSON.stringify({\n          cause: 'Something went wrong',\n          error: err,\n        })\n      });\n    });\n    req.end();\n  });\n  return response;\n}\n\n"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "InvokeApiServiceRoleFB17CD97",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs16.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "integ-apigw-domain-name-mapping/Exports",
+            "children": {
+              "Output{\"Ref\":\"InvokeApi313C8B49\"}": {
+                "id": "Output{\"Ref\":\"InvokeApi313C8B49\"}",
+                "path": "integ-apigw-domain-name-mapping/Exports/Output{\"Ref\":\"InvokeApi313C8B49\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"IntegDomain624DF323\"}": {
+                "id": "Output{\"Ref\":\"IntegDomain624DF323\"}",
+                "path": "integ-apigw-domain-name-mapping/Exports/Output{\"Ref\":\"IntegDomain624DF323\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"Integ2Domain70CCEA68\"}": {
+                "id": "Output{\"Ref\":\"Integ2Domain70CCEA68\"}",
+                "path": "integ-apigw-domain-name-mapping/Exports/Output{\"Ref\":\"Integ2Domain70CCEA68\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.108"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "domain-name-mapping-test": {
+        "id": "domain-name-mapping-test",
+        "path": "domain-name-mapping-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "domain-name-mapping-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "domain-name-mapping-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.108"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "domain-name-mapping-test/DefaultTest/DeployAssert",
+                "children": {
+                  "LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a": {
+                    "id": "LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a",
+                    "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.108"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "domain-name-mapping-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.108"
+                    }
+                  },
+                  "LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320": {
+                    "id": "LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320",
+                    "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.108"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LambdaInvokef718aff12f12e7e6e6dd823f91dfce23": {
+                    "id": "LambdaInvokef718aff12f12e7e6e6dd823f91dfce23",
+                    "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvokef718aff12f12e7e6e6dd823f91dfce23",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvokef718aff12f12e7e6e6dd823f91dfce23/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvokef718aff12f12e7e6e6dd823f91dfce23/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.108"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvokef718aff12f12e7e6e6dd823f91dfce23/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvokef718aff12f12e7e6e6dd823f91dfce23/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvokef718aff12f12e7e6e6dd823f91dfce23/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvokef718aff12f12e7e6e6dd823f91dfce23/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LambdaInvoke2025c0c4c97e10064ec08312531cb316": {
+                    "id": "LambdaInvoke2025c0c4c97e10064ec08312531cb316",
+                    "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke2025c0c4c97e10064ec08312531cb316",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke2025c0c4c97e10064ec08312531cb316/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke2025c0c4c97e10064ec08312531cb316/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.108"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke2025c0c4c97e10064ec08312531cb316/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke2025c0c4c97e10064ec08312531cb316/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke2025c0c4c97e10064ec08312531cb316/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke2025c0c4c97e10064ec08312531cb316/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

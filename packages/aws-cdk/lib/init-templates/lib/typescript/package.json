@@ -1,0 +1,24 @@
+{
+  "name": "%name%",
+  "version": "0.1.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "@types/node": "18.14.6",
+    "aws-cdk-lib": "%cdk-version%",
+    "constructs": "%constructs-version%",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.0.5",
+    "typescript": "~4.9.5"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "%cdk-version%",
+    "constructs": "%constructs-version%"
+  }
+}

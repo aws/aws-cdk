@@ -2,16 +2,13 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Names, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
 /**
  * How should the S3 Action detect changes.
- * This is the type of the {@link S3SourceAction.trigger} property.
+ * This is the type of the `S3SourceAction.trigger` property.
  */
 export enum S3Trigger {
   /**
@@ -46,7 +43,7 @@ export interface S3SourceVariables {
 }
 
 /**
- * Construction properties of the {@link S3SourceAction S3 source Action}.
+ * Construction properties of the `S3SourceAction S3 source Action`.
  */
 export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
@@ -121,6 +118,7 @@ export class S3SourceAction extends Action {
       this.props.bucket.onCloudTrailWriteObject(id, {
         target: new targets.CodePipeline(stage.pipeline),
         paths: [this.props.bucketKey],
+        crossStackScope: stage.pipeline as unknown as Construct,
       });
     }
 

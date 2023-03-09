@@ -2,12 +2,9 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Duration } from '@aws-cdk/core';
 import { kebab as toKebabCase } from 'case';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 // Class copied verbatim from the aws-s3-deployment module.
 // Yes, it sucks that we didn't abstract this properly in a common class,
@@ -16,7 +13,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Used for HTTP cache-control header, which influences downstream caches.
  * Use the provided static factory methods to construct instances of this class.
- * Used in the {@link S3DeployActionProps.cacheControl} property.
+ * Used in the `S3DeployActionProps.cacheControl` property.
  *
  * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
  */
@@ -48,7 +45,7 @@ export class CacheControl {
 }
 
 /**
- * Construction properties of the {@link S3DeployAction S3 deploy Action}.
+ * Construction properties of the `S3DeployAction S3 deploy Action`.
  */
 export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
   /**

@@ -1,10 +1,7 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { createRole } from './common';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
+import { createRole } from './common';
 
 /**
  * Use an SQS queue as a hook target

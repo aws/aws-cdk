@@ -20,7 +20,7 @@ There are two main things to understand about the files in this module:
 
 - [`lib/schema`](./schema/)
 
-  This directory contains the generated json [schema](./schema/cloud-assembly.schema.json) from the aformentioned 
+  This directory contains the generated json [schema](./schema/cloud-assembly.schema.json) from the aforementioned 
   typescript code. It also contains a [version](./schema/cloud-assembly.version.json) file that holds the current version
   of the schema. These files are **not** intended for manual editing. Keep reading to understand how they change and when.
 
@@ -31,7 +31,7 @@ an updated json schema to [`cloud-assembly.schema.json`](./schema/cloud-assembly
 In addition, this command also performs a `major` version bump on the [version](./schema/cloud-assembly.version.json) file.
 
 Note that it is not generated as part of the build, this is to ensure developers will be intentional when making 
-changes to the schema. If changes to the code are perfomed, without generating a new schema, the tests will fail:
+changes to the schema. If changes to the code are performed, without generating a new schema, the tests will fail:
 
 ```console
 $ yarn test
@@ -58,7 +58,7 @@ This means that breaking changes will be rejected. These include:
 - Adding a required property. (same as changing from *optional* to *required*)
 - Changing the type of the property.
 
-In addition, the interfaces defined here are programatically exposed to users, via the `manifest` 
+In addition, the interfaces defined here are programmatically exposed to users, via the `manifest` 
 property of the [`CloudAssembly`](../cx-api/lib/cloud-assembly.ts) class. This means that the following are 
 also considered breaking changes:
 

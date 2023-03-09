@@ -5,6 +5,7 @@
 // library support.
 
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as cloudwatch from '../lib';
 
 const app = new cdk.App();
@@ -44,6 +45,10 @@ dashboard.addWidgets(
 dashboard.addWidgets(new cloudwatch.AlarmWidget({
   title: 'Messages in queue',
   alarm,
+}));
+dashboard.addWidgets(new cloudwatch.AlarmStatusWidget({
+  title: 'Firing alarms',
+  alarms: [alarm],
 }));
 dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: 'More messages in queue with alarm annotation',
@@ -98,5 +103,11 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   metrics: [sentMessageSizeMetric],
   fullPrecision: true,
 }));
+dashboard.addWidgets(new cloudwatch.CustomWidget({
+  title: 'My custom alarm',
+  functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+}));
 
-app.synth();
+new IntegTest(app, 'cdk-cloudwatch-alarms-integ-test', {
+  testCases: [stack],
+});

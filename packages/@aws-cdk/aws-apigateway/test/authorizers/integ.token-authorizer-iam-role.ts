@@ -1,8 +1,8 @@
-/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { AuthorizationType, MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer } from '../../lib';
 
 /*
@@ -30,7 +30,7 @@ const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
   assumeRole: role,
 });
 
-const restapi = new RestApi(stack, 'MyRestApi');
+const restapi = new RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 
 restapi.root.addMethod('ANY', new MockIntegration({
   integrationResponses: [
@@ -46,4 +46,8 @@ restapi.root.addMethod('ANY', new MockIntegration({
   ],
   authorizer,
   authorizationType: AuthorizationType.CUSTOM,
+});
+
+new IntegTest(app, 'iam-token-authorizer', {
+  testCases: [stack],
 });

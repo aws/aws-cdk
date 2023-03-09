@@ -1,8 +1,8 @@
 #!/bin/bash
 # --------------------------------------------------------------------------------------------------
 #
-# This script is intended to be used in our master pipeline as a way of incrementing the version number
-# so that it doesnt colide with any published version. This is needed because our integration tests launch
+# This script is intended to be used in our main pipeline as a way of incrementing the version number
+# so that it doesn't collide with any published version. This is needed because our integration tests launch
 # a verdaccio instance that serves local tarballs, and if those tarballs have the same version as
 # already published modules, it messes things up.
 #

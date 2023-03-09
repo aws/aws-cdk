@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "vpc-nat-instances/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpc-nat-instances"
+      ],
+      "assertionStack": "vpc-nat-instances/DefaultTest/DeployAssert"
+    }
+  }
+}

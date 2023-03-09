@@ -1,5 +1,5 @@
 import { Duration, Stack } from '@aws-cdk/core';
-import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget, GaugeWidget } from '../lib';
 
 describe('Graphs', () => {
   test('add stacked property to graphs', () => {
@@ -348,6 +348,71 @@ describe('Graphs', () => {
 
   });
 
+  test('custom widget basic', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const widget = new CustomWidget({
+      functionArn: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
+      title: 'CustomWidget',
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'custom',
+      width: 6,
+      height: 6,
+      properties: {
+        title: 'CustomWidget',
+        endpoint: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
+        updateOn: {
+          refresh: true,
+          resize: true,
+          timeRange: true,
+        },
+      },
+    }]);
+  });
+
+  test('custom widget full config', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const widget = new CustomWidget({
+      functionArn: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
+      title: 'CustomWidget',
+      height: 1,
+      width: 1,
+      params: {
+        any: 'param',
+      },
+      updateOnRefresh: false,
+      updateOnResize: false,
+      updateOnTimeRangeChange: false,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'custom',
+      width: 1,
+      height: 1,
+      properties: {
+        title: 'CustomWidget',
+        endpoint: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
+        params: {
+          any: 'param',
+        },
+        updateOn: {
+          refresh: false,
+          resize: false,
+          timeRange: false,
+        },
+      },
+    }]);
+  });
+
   test('add annotations to graph', () => {
     // WHEN
     const stack = new Stack();
@@ -556,6 +621,53 @@ describe('Graphs', () => {
 
   });
 
+  test('add sparkline to singleValueWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new SingleValueWidget({
+      metrics: [metric],
+      sparkline: true,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        sparkline: true,
+      },
+    }]);
+
+
+  });
+
+  test('throws if setPeriodToTimeRange and sparkline is set on singleValueWidget', () => {
+    // GIVEN
+    new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const toThrow = () => {
+      new SingleValueWidget({
+        metrics: [metric],
+        setPeriodToTimeRange: true,
+        sparkline: true,
+      });
+    };
+
+    // THEN
+    expect(() => toThrow()).toThrow(/You cannot use setPeriodToTimeRange with sparkline/);
+  });
+
   test('add singleValueFullPrecision to singleValueWidget', () => {
     // GIVEN
     const stack = new Stack();
@@ -681,8 +793,34 @@ describe('Graphs', () => {
         setPeriodToTimeRange: true,
       },
     }]);
+  });
 
+  test('add GaugeWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GaugeWidget({
+      metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+    });
 
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'gauge',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {
+          left: {
+            min: 0,
+            max: 100,
+          },
+        },
+      },
+    }]);
   });
 
   test('GraphWidget supports stat and period', () => {
@@ -710,7 +848,5 @@ describe('Graphs', () => {
         period: 172800,
       },
     }]);
-
-
   });
 });

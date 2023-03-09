@@ -10,6 +10,17 @@ import { Token } from './token';
  */
 export class Size {
   /**
+   * Create a Storage representing an amount bytes.
+   *
+   * @param amount the amount of bytes to be represented
+   *
+   * @returns a new `Size` instance
+   */
+  public static bytes(amount: number): Size {
+    return new Size(amount, StorageUnit.Bytes);
+  }
+
+  /**
    * Create a Storage representing an amount kibibytes.
    * 1 KiB = 1024 bytes
    *
@@ -91,6 +102,17 @@ export class Size {
   }
 
   /**
+   * Return this storage as a total number of bytes.
+   *
+   * @param opts the conversion options
+   *
+   * @returns the quantity expressed in bytes
+   */
+  public toBytes(opts: SizeConversionOptions = {}): number {
+    return convert(this.amount, this.unit, StorageUnit.Bytes, opts);
+  }
+
+  /**
    * Return this storage as a total number of kibibytes.
    *
    * @param opts the conversion options
@@ -144,6 +166,13 @@ export class Size {
   public toPebibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Pebibytes, opts);
   }
+
+  /**
+   * Checks if size is a token or a resolvable object
+   */
+  public isUnresolved() {
+    return Token.isUnresolved(this.amount);
+  }
 }
 
 /**
@@ -170,13 +199,14 @@ export interface SizeConversionOptions {
 }
 
 class StorageUnit {
-  public static readonly Kibibytes = new StorageUnit('kibibytes', 1);
-  public static readonly Mebibytes = new StorageUnit('mebibytes', 1024);
-  public static readonly Gibibytes = new StorageUnit('gibibytes', 1024 * 1024);
-  public static readonly Tebibytes = new StorageUnit('tebibytes', 1024 * 1024 * 1024);
-  public static readonly Pebibytes = new StorageUnit('pebibytes', 1024 * 1024 * 1024 * 1024);
+  public static readonly Bytes = new StorageUnit('bytes', 1);
+  public static readonly Kibibytes = new StorageUnit('kibibytes', 1024);
+  public static readonly Mebibytes = new StorageUnit('mebibytes', 1024 * 1024);
+  public static readonly Gibibytes = new StorageUnit('gibibytes', 1024 * 1024 * 1024);
+  public static readonly Tebibytes = new StorageUnit('tebibytes', 1024 * 1024 * 1024 * 1024);
+  public static readonly Pebibytes = new StorageUnit('pebibytes', 1024 * 1024 * 1024 * 1024 * 1024);
 
-  private constructor(public readonly label: string, public readonly inKibiBytes: number) {
+  private constructor(public readonly label: string, public readonly inBytes: number) {
     // MAX_SAFE_INTEGER is 2^53, so by representing storage in kibibytes,
     // the highest storage we can represent is 8 exbibytes.
   }
@@ -188,12 +218,12 @@ class StorageUnit {
 
 function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, options: SizeConversionOptions = {}) {
   const rounding = options.rounding ?? SizeRoundingBehavior.FAIL;
-  if (fromUnit.inKibiBytes === toUnit.inKibiBytes) { return amount; }
+  if (fromUnit.inBytes === toUnit.inBytes) { return amount; }
   if (Token.isUnresolved(amount)) {
-    throw new Error(`Unable to perform time unit conversion on un-resolved token ${amount}.`);
+    throw new Error(`Size must be specified as 'Size.${toUnit}()' here since its value comes from a token and cannot be converted (got Size.${fromUnit})`);
   }
 
-  const multiplier = fromUnit.inKibiBytes / toUnit.inKibiBytes;
+  const multiplier = fromUnit.inBytes / toUnit.inBytes;
   const value = amount * multiplier;
   switch (rounding) {
     case SizeRoundingBehavior.NONE:

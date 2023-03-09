@@ -1,4 +1,4 @@
-import * as path from 'path';
+import { ASSET_FILE, LAYER_SOURCE_DIR } from '@aws-cdk/asset-awscli-v1';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { FileSystem } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -9,9 +9,9 @@ import { Construct } from 'constructs';
 export class AwsCliLayer extends lambda.LayerVersion {
   constructor(scope: Construct, id: string) {
     super(scope, id, {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'layer.zip'), {
+      code: lambda.Code.fromAsset(ASSET_FILE, {
         // we hash the layer directory (it contains the tools versions and Dockerfile) because hashing the zip is non-deterministic
-        assetHash: FileSystem.fingerprint(path.join(__dirname, '../layer')),
+        assetHash: FileSystem.fingerprint(LAYER_SOURCE_DIR),
       }),
       description: '/opt/awscli/aws',
     });

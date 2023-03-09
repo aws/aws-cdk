@@ -4,6 +4,7 @@ import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { SecretValue } from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -112,14 +113,14 @@ describe('tests', () => {
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
-    lb.addListener('Listener', {
+    const listener = lb.addListener('Listener', {
       port: 443,
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
     // THEN
-    const errors = cdk.ConstructNode.validate(stack.node);
-    expect(errors.map(e => e.message)).toEqual(['HTTPS Listener needs at least one certificate (call addCertificates)']);
+    const errors = listener.node.validate();
+    expect(errors).toEqual(['HTTPS Listener needs at least one certificate (call addCertificates)']);
   });
 
   test('HTTPS listener can add certificate after construction', () => {
@@ -258,6 +259,53 @@ describe('tests', () => {
           Type: 'forward',
         },
       ],
+    });
+  });
+
+  test('bind is called for all next targets', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+    const fake = new FakeSelfRegisteringTarget(stack, 'FakeTG', vpc);
+    const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      port: 80,
+      targets: [fake],
+    });
+
+    // WHEN
+    listener.addAction('first-action', {
+      action: elbv2.ListenerAction.authenticateOidc({
+        next: elbv2.ListenerAction.forward([group]),
+        issuer: 'dummy',
+        clientId: 'dummy',
+        clientSecret: SecretValue.unsafePlainText('dummy'),
+        tokenEndpoint: 'dummy',
+        userInfoEndpoint: 'dummy',
+        authorizationEndpoint: 'dummy',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: 'tcp',
+      Description: 'Load balancer to target',
+      FromPort: 80,
+      ToPort: 80,
+      GroupId: {
+        'Fn::GetAtt': [
+          'FakeTGSG50E257DF',
+          'GroupId',
+        ],
+      },
+      SourceSecurityGroupId: {
+        'Fn::GetAtt': [
+          'LBSecurityGroup8A41EA2B',
+          'GroupId',
+        ],
+      },
     });
   });
 
@@ -474,7 +522,7 @@ describe('tests', () => {
     });
 
     // THEN
-    const validationErrors: string[] = (group as any).validate();
+    const validationErrors: string[] = group.node.validate();
     expect(validationErrors).toEqual(["Health check protocol 'TCP' is not supported. Must be one of [HTTP, HTTPS]"]);
   });
 
@@ -597,14 +645,14 @@ describe('tests', () => {
 
     // WHEN
     const metrics = new Array<Metric>();
-    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
-    metrics.push(group.metricIpv6RequestCount());
-    metrics.push(group.metricUnhealthyHostCount());
-    metrics.push(group.metricUnhealthyHostCount());
-    metrics.push(group.metricRequestCount());
-    metrics.push(group.metricTargetConnectionErrorCount());
-    metrics.push(group.metricTargetResponseTime());
-    metrics.push(group.metricTargetTLSNegotiationErrorCount());
+    metrics.push(group.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
+    metrics.push(group.metrics.ipv6RequestCount());
+    metrics.push(group.metrics.unhealthyHostCount());
+    metrics.push(group.metrics.unhealthyHostCount());
+    metrics.push(group.metrics.requestCount());
+    metrics.push(group.metrics.targetConnectionErrorCount());
+    metrics.push(group.metrics.targetResponseTime());
+    metrics.push(group.metrics.targetTLSNegotiationErrorCount());
 
     for (const metric of metrics) {
       expect(metric.namespace).toEqual('AWS/ApplicationELB');
@@ -705,6 +753,116 @@ describe('tests', () => {
         },
       ],
     });
+  });
+
+  test('imported listener only need securityGroup and listenerArn as attributes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const importedListener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack, 'listener', {
+      listenerArn: 'listener-arn',
+      defaultPort: 443,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'security-group-id', {
+        allowAllOutbound: false,
+      }),
+    });
+    importedListener.addAction('Hello', {
+      action: elbv2.ListenerAction.fixedResponse(503),
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+      priority: 10,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      ListenerArn: 'listener-arn',
+      Priority: 10,
+      Actions: [
+        {
+          FixedResponseConfig: {
+            StatusCode: '503',
+          },
+          Type: 'fixed-response',
+        },
+      ],
+    });
+  });
+
+  test('Can add actions to an imported listener', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stack2 = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc,
+    });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+    });
+
+    // WHEN
+    listener.addAction('Default', {
+      action: elbv2.ListenerAction.fixedResponse(404, {
+        contentType: 'text/plain',
+        messageBody: 'Not Found',
+      }),
+    });
+
+    const importedListener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'listener', {
+      listenerArn: 'listener-arn',
+      defaultPort: 443,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack2, 'SG', 'security-group-id', {
+        allowAllOutbound: false,
+      }),
+    });
+    importedListener.addAction('Hello', {
+      action: elbv2.ListenerAction.fixedResponse(503),
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+      priority: 10,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          FixedResponseConfig: {
+            ContentType: 'text/plain',
+            MessageBody: 'Not Found',
+            StatusCode: '404',
+          },
+          Type: 'fixed-response',
+        },
+      ],
+    });
+
+    Template.fromStack(stack2).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      ListenerArn: 'listener-arn',
+      Priority: 10,
+      Actions: [
+        {
+          FixedResponseConfig: {
+            StatusCode: '503',
+          },
+          Type: 'fixed-response',
+        },
+      ],
+    });
+  });
+
+  test('actions added to an imported listener must have a priority', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const importedListener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack, 'listener', {
+      listenerArn: 'listener-arn',
+      defaultPort: 443,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'security-group-id', {
+        allowAllOutbound: false,
+      }),
+    });
+    expect(() => {
+      importedListener.addAction('Hello', {
+        action: elbv2.ListenerAction.fixedResponse(503),
+      });
+    }).toThrow(/priority must be set for actions added to an imported listener/);
   });
 
   testDeprecated('Can add redirect responses', () => {
@@ -1561,7 +1719,7 @@ describe('tests', () => {
       // THEN
       Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 0);
       expect(listener.listenerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/application/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2');
-      expect(listener.connections.securityGroups[0].securityGroupId).toEqual('sg-12345');
+      expect(listener.connections.securityGroups[0].securityGroupId).toEqual('sg-12345678');
     });
 
     test('Can add rules to a looked-up ApplicationListener', () => {

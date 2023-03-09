@@ -84,7 +84,7 @@ export class DefaultAwsClient implements IAws {
       const sts = new this.AWS.STS();
       const response = await sts.getCallerIdentity().promise();
       if (!response.Account || !response.Arn) {
-        throw new Error(`Unrecognized reponse from STS: '${JSON.stringify(response)}'`);
+        throw new Error(`Unrecognized response from STS: '${JSON.stringify(response)}'`);
       }
       this.account = {
         accountId: response.Account!,
@@ -99,7 +99,7 @@ export class DefaultAwsClient implements IAws {
     const sts = new this.AWS.STS(await this.awsOptions(options));
     const response = await sts.getCallerIdentity().promise();
     if (!response.Account || !response.Arn) {
-      throw new Error(`Unrecognized reponse from STS: '${JSON.stringify(response)}'`);
+      throw new Error(`Unrecognized response from STS: '${JSON.stringify(response)}'`);
     }
     return {
       accountId: response.Account!,
@@ -150,6 +150,10 @@ export class DefaultAwsClient implements IAws {
  * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
  */
 function safeUsername() {
-  return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
+  try {
+    return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
+  } catch (e) {
+    return 'noname';
+  }
 }
 

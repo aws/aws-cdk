@@ -1,0 +1,185 @@
+{
+ "Resources": {
+  "MyInput08947B23": {
+   "Type": "AWS::IoTEvents::Input",
+   "Properties": {
+    "InputDefinition": {
+     "Attributes": [
+      {
+       "JsonPath": "payload.deviceId"
+      }
+     ]
+    },
+    "InputName": "test_input"
+   }
+  },
+  "MyDetectorModelDetectorModelRoleF2FB4D88": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "iotevents.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyDetectorModel559C0B0E": {
+   "Type": "AWS::IoTEvents::DetectorModel",
+   "Properties": {
+    "DetectorModelDefinition": {
+     "InitialStateName": "Online",
+     "States": [
+      {
+       "OnEnter": {
+        "Events": [
+         {
+          "Actions": [
+           {
+            "SetTimer": {
+             "DurationExpression": "60",
+             "TimerName": "MyTimer"
+            }
+           }
+          ],
+          "Condition": {
+           "Fn::Join": [
+            "",
+            [
+             "currentInput(\"",
+             {
+              "Ref": "MyInput08947B23"
+             },
+             "\")"
+            ]
+           ]
+          },
+          "EventName": "enter-event"
+         }
+        ]
+       },
+       "OnExit": {
+        "Events": [
+         {
+          "Actions": [
+           {
+            "ClearTimer": {
+             "TimerName": "MyTimer"
+            }
+           }
+          ],
+          "EventName": "exit-event"
+         }
+        ]
+       },
+       "OnInput": {
+        "Events": [
+         {
+          "Actions": [
+           {
+            "ResetTimer": {
+             "TimerName": "MyTimer"
+            }
+           }
+          ],
+          "Condition": {
+           "Fn::Join": [
+            "",
+            [
+             "currentInput(\"",
+             {
+              "Ref": "MyInput08947B23"
+             },
+             "\")"
+            ]
+           ]
+          },
+          "EventName": "input-event"
+         }
+        ],
+        "TransitionEvents": [
+         {
+          "Condition": "timeout(\"MyTimer\")",
+          "EventName": "Online_to_Offline",
+          "NextState": "Offline"
+         }
+        ]
+       },
+       "StateName": "Online"
+      },
+      {
+       "OnInput": {
+        "TransitionEvents": [
+         {
+          "Condition": {
+           "Fn::Join": [
+            "",
+            [
+             "currentInput(\"",
+             {
+              "Ref": "MyInput08947B23"
+             },
+             "\")"
+            ]
+           ]
+          },
+          "EventName": "Offline_to_Online",
+          "NextState": "Online"
+         }
+        ]
+       },
+       "StateName": "Offline"
+      }
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "MyDetectorModelDetectorModelRoleF2FB4D88",
+      "Arn"
+     ]
+    },
+    "Key": "payload.deviceId"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

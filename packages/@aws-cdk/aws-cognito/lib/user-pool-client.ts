@@ -1,4 +1,5 @@
-import { IResource, Resource, Duration } from '@aws-cdk/core';
+import { IResource, Resource, Duration, Stack, SecretValue } from '@aws-cdk/core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
@@ -239,6 +240,15 @@ export interface UserPoolClientOptions {
   readonly oAuth?: OAuthSettings;
 
   /**
+   * Cognito creates a session token for each API request in an authentication flow.
+   * AuthSessionValidity is the duration, in minutes, of that session token.
+   * see defaults in `AuthSessionValidity`. Valid duration is from 3 to 15 minutes.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-authsessionvalidity
+   * @default - Duration.minutes(3)
+   */
+  readonly authSessionValidity?: Duration;
+
+  /**
    * Whether Cognito returns a UserNotFoundException exception when the
    * user does not exist in the user pool (false), or whether it returns
    * another type of error that doesn't reveal the user's absence.
@@ -321,24 +331,39 @@ export interface IUserPoolClient extends IResource {
    * @attribute
    */
   readonly userPoolClientId: string;
+
+  /**
+   * The generated client secret. Only available if the "generateSecret" props is set to true
+   * @attribute
+   */
+  readonly userPoolClientSecret: SecretValue;
 }
 
 /**
  * Define a UserPool App Client
  */
 export class UserPoolClient extends Resource implements IUserPoolClient {
+
   /**
    * Import a user pool client given its id.
    */
   public static fromUserPoolClientId(scope: Construct, id: string, userPoolClientId: string): IUserPoolClient {
     class Import extends Resource implements IUserPoolClient {
       public readonly userPoolClientId = userPoolClientId;
+      get userPoolClientSecret(): SecretValue {
+        throw new Error('UserPool Client Secret is not available for imported Clients');
+      }
     }
 
     return new Import(scope, id);
   }
 
   public readonly userPoolClientId: string;
+
+  private _generateSecret?: boolean;
+  private readonly userPool: IUserPool;
+  private _userPoolClientSecret?: SecretValue;
+
   /**
    * The OAuth flows enabled for this client.
    */
@@ -374,6 +399,9 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       }
     }
 
+    this._generateSecret = props.generateSecret;
+    this.userPool = props.userPool;
+
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
       generateSecret: props.generateSecret,
@@ -390,6 +418,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
     });
+    this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
 
     this.userPoolClientId = resource.ref;
@@ -407,8 +436,45 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     return this._userPoolClientName;
   }
 
+  public get userPoolClientSecret(): SecretValue {
+    if (!this._generateSecret) {
+      throw new Error(
+        'userPoolClientSecret is available only if generateSecret is set to true.',
+      );
+    }
+
+    // Create the Custom Resource that assists in resolving the User Pool Client secret
+    // just once, no matter how many times this method is called
+    if (!this._userPoolClientSecret) {
+      this._userPoolClientSecret = SecretValue.resourceAttribute(new AwsCustomResource(
+        this,
+        'DescribeCognitoUserPoolClient',
+        {
+          resourceType: 'Custom::DescribeCognitoUserPoolClient',
+          onUpdate: {
+            region: Stack.of(this).region,
+            service: 'CognitoIdentityServiceProvider',
+            action: 'describeUserPoolClient',
+            parameters: {
+              UserPoolId: this.userPool.userPoolId,
+              ClientId: this.userPoolClientId,
+            },
+            physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
+          },
+          policy: AwsCustomResourcePolicy.fromSdkCalls({
+            resources: [this.userPool.userPoolArn],
+          }),
+          // APIs are available in 2.1055.0
+          installLatestAwsSdk: false,
+        },
+      ).getResponseField('UserPoolClient.ClientSecret'));
+    }
+
+    return this._userPoolClientSecret;
+  }
+
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
-    if (!props.authFlows) return undefined;
+    if (!props.authFlows || Object.keys(props.authFlows).length === 0) return undefined;
 
     const authFlows: string[] = [];
     if (props.authFlows.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
@@ -417,13 +483,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
 
     // refreshToken should always be allowed if authFlows are present
-    if (authFlows.length > 0) {
-      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
-    }
+    authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
 
-    if (authFlows.length === 0) {
-      return undefined;
-    }
     return authFlows;
   }
 
@@ -471,6 +532,11 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     }
     if (providers.length === 0) { return undefined; }
     return Array.from(providers);
+  }
+
+  private configureAuthSessionValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {
+    this.validateDuration('authSessionValidity', Duration.minutes(3), Duration.minutes(15), props.authSessionValidity);
+    resource.authSessionValidity = props.authSessionValidity ? props.authSessionValidity.toMinutes() : undefined;
   }
 
   private configureTokenValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {

@@ -2,12 +2,9 @@ import { Match, Template } from '@aws-cdk/assertions';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as elbv2 from '../../lib';
 
-const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('tests', () => {
   test('Trivial construction: internet facing', () => {
@@ -47,7 +44,9 @@ describe('tests', () => {
     Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       DependsOn: [
         'StackPublicSubnet1DefaultRoute16154E3D',
+        'StackPublicSubnet1RouteTableAssociation74F1C1B6',
         'StackPublicSubnet2DefaultRoute0319539B',
+        'StackPublicSubnet2RouteTableAssociation5E8F73F1',
       ],
     });
   });
@@ -82,6 +81,7 @@ describe('tests', () => {
       deletionProtection: true,
       http2Enabled: false,
       idleTimeout: cdk.Duration.seconds(1000),
+      dropInvalidHeaderFields: true,
     });
 
     // THEN
@@ -99,7 +99,89 @@ describe('tests', () => {
           Key: 'idle_timeout.timeout_seconds',
           Value: '1000',
         },
+        {
+          Key: 'routing.http.drop_invalid_header_fields.enabled',
+          Value: 'true',
+        },
       ],
+    });
+  });
+
+  describe('Desync mitigation mode', () => {
+    test('Defensive', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'routing.http.desync_mitigation_mode',
+            Value: 'defensive',
+          },
+        ],
+      });
+    });
+    test('Monitor', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        desyncMitigationMode: elbv2.DesyncMitigationMode.MONITOR,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'routing.http.desync_mitigation_mode',
+            Value: 'monitor',
+          },
+        ],
+      });
+    });
+    test('Strictest', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        desyncMitigationMode: elbv2.DesyncMitigationMode.STRICTEST,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'routing.http.desync_mitigation_mode',
+            Value: 'strictest',
+          },
+        ],
+      });
     });
   });
 
@@ -148,7 +230,8 @@ describe('tests', () => {
 
   describe('logAccessLogs', () => {
 
-    function loggingSetup(app: cdk.App): { stack: cdk.Stack, bucket: s3.Bucket, lb: elbv2.ApplicationLoadBalancer } {
+    function loggingSetup(): { stack: cdk.Stack, bucket: s3.Bucket, lb: elbv2.ApplicationLoadBalancer } {
+      const app = new cdk.App();
       const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
       const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
@@ -158,8 +241,7 @@ describe('tests', () => {
 
     test('sets load balancer attributes', () => {
       // GIVEN
-      const app = new cdk.App();
-      const { stack, bucket, lb } = loggingSetup(app);
+      const { stack, bucket, lb } = loggingSetup();
 
       // WHEN
       lb.logAccessLogs(bucket);
@@ -185,8 +267,7 @@ describe('tests', () => {
 
     test('adds a dependency on the bucket', () => {
       // GIVEN
-      const app = new cdk.App();
-      const { stack, bucket, lb } = loggingSetup(app);
+      const { stack, bucket, lb } = loggingSetup();
 
       // WHEN
       lb.logAccessLogs(bucket);
@@ -198,53 +279,9 @@ describe('tests', () => {
       });
     });
 
-    testLegacyBehavior('legacy bucket permissions', cdk.App, (app) => {
-      const { stack, bucket, lb } = loggingSetup(app);
-
-      // WHEN
-      lb.logAccessLogs(bucket);
-
-      // THEN
-      // verify the bucket policy allows the ALB to put objects in the bucket
-      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Action: ['s3:PutObject*', 's3:Abort*'],
-              Effect: 'Allow',
-              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
-              Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
-              },
-            },
-            {
-              Action: 's3:PutObject',
-              Effect: 'Allow',
-              Principal: { Service: 'delivery.logs.amazonaws.com' },
-              Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
-              },
-              Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
-            },
-            {
-              Action: 's3:GetBucketAcl',
-              Effect: 'Allow',
-              Principal: { Service: 'delivery.logs.amazonaws.com' },
-              Resource: {
-                'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
-              },
-            },
-          ],
-        },
-      });
-    });
-
-    testFutureBehavior('logging bucket permissions', s3GrantWriteCtx, cdk.App, (app) => {
+    test('logging bucket permissions', () => {
       // GIVEN
-      const { stack, bucket, lb } = loggingSetup(app);
+      const { stack, bucket, lb } = loggingSetup();
 
       // WHEN
       lb.logAccessLogs(bucket);
@@ -294,9 +331,9 @@ describe('tests', () => {
       });
     });
 
-    testFutureBehavior('access logging with prefix', s3GrantWriteCtx, cdk.App, (app) => {
+    test('access logging with prefix', () => {
       // GIVEN
-      const { stack, bucket, lb } = loggingSetup(app);
+      const { stack, bucket, lb } = loggingSetup();
 
       // WHEN
       lb.logAccessLogs(bucket, 'prefix-of-access-logs');
@@ -373,28 +410,28 @@ describe('tests', () => {
 
     // WHEN
     const metrics = new Array<Metric>();
-    metrics.push(lb.metricActiveConnectionCount());
-    metrics.push(lb.metricClientTlsNegotiationErrorCount());
-    metrics.push(lb.metricConsumedLCUs());
-    metrics.push(lb.metricElbAuthError());
-    metrics.push(lb.metricElbAuthFailure());
-    metrics.push(lb.metricElbAuthLatency());
-    metrics.push(lb.metricElbAuthSuccess());
-    metrics.push(lb.metricHttpCodeElb(elbv2.HttpCodeElb.ELB_3XX_COUNT));
-    metrics.push(lb.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
-    metrics.push(lb.metricHttpFixedResponseCount());
-    metrics.push(lb.metricHttpRedirectCount());
-    metrics.push(lb.metricHttpRedirectUrlLimitExceededCount());
-    metrics.push(lb.metricIpv6ProcessedBytes());
-    metrics.push(lb.metricIpv6RequestCount());
-    metrics.push(lb.metricNewConnectionCount());
-    metrics.push(lb.metricProcessedBytes());
-    metrics.push(lb.metricRejectedConnectionCount());
-    metrics.push(lb.metricRequestCount());
-    metrics.push(lb.metricRuleEvaluations());
-    metrics.push(lb.metricTargetConnectionErrorCount());
-    metrics.push(lb.metricTargetResponseTime());
-    metrics.push(lb.metricTargetTLSNegotiationErrorCount());
+    metrics.push(lb.metrics.activeConnectionCount());
+    metrics.push(lb.metrics.clientTlsNegotiationErrorCount());
+    metrics.push(lb.metrics.consumedLCUs());
+    metrics.push(lb.metrics.elbAuthError());
+    metrics.push(lb.metrics.elbAuthFailure());
+    metrics.push(lb.metrics.elbAuthLatency());
+    metrics.push(lb.metrics.elbAuthSuccess());
+    metrics.push(lb.metrics.httpCodeElb(elbv2.HttpCodeElb.ELB_3XX_COUNT));
+    metrics.push(lb.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
+    metrics.push(lb.metrics.httpFixedResponseCount());
+    metrics.push(lb.metrics.httpRedirectCount());
+    metrics.push(lb.metrics.httpRedirectUrlLimitExceededCount());
+    metrics.push(lb.metrics.ipv6ProcessedBytes());
+    metrics.push(lb.metrics.ipv6RequestCount());
+    metrics.push(lb.metrics.newConnectionCount());
+    metrics.push(lb.metrics.processedBytes());
+    metrics.push(lb.metrics.rejectedConnectionCount());
+    metrics.push(lb.metrics.requestCount());
+    metrics.push(lb.metrics.ruleEvaluations());
+    metrics.push(lb.metrics.targetConnectionErrorCount());
+    metrics.push(lb.metrics.targetResponseTime());
+    metrics.push(lb.metrics.targetTLSNegotiationErrorCount());
 
     for (const metric of metrics) {
       expect(metric.namespace).toEqual('AWS/ApplicationELB');
@@ -498,6 +535,25 @@ describe('tests', () => {
     expect(alb.env.region).toEqual('us-west-2');
   });
 
+  test('imported load balancer can produce metrics', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+      loadBalancerArn: albArn,
+      securityGroupId: 'sg-1234',
+    });
+
+    // THEN
+    const metric = alb.metrics.activeConnectionCount();
+    expect(metric.namespace).toEqual('AWS/ApplicationELB');
+    expect(stack.resolve(metric.dimensions)).toEqual({
+      LoadBalancer: 'app/my-load-balancer/50dc6c495c0c9188',
+    });
+    expect(alb.env.region).toEqual('us-west-2');
+  });
+
   test('can add secondary security groups', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -542,7 +598,7 @@ describe('tests', () => {
       expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
       expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
       expect(loadBalancer.ipAddressType).toEqual(elbv2.IpAddressType.DUAL_STACK);
-      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-12345');
+      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-12345678');
       expect(loadBalancer.env.region).toEqual('us-west-2');
     });
 
@@ -573,5 +629,30 @@ describe('tests', () => {
       expect(() => loadBalancer.listeners).toThrow();
     });
 
+    test('Can create metrics for a looked-up ApplicationLoadBalancer', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      const metric = loadBalancer.metrics.activeConnectionCount();
+
+      // THEN
+      expect(metric.namespace).toEqual('AWS/ApplicationELB');
+      expect(stack.resolve(metric.dimensions)).toEqual({
+        LoadBalancer: 'application/my-load-balancer/50dc6c495c0c9188',
+      });
+    });
   });
 });

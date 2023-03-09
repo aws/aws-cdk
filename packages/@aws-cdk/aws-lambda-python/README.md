@@ -25,7 +25,7 @@ To use this module, you will need to have Docker installed.
 Define a `PythonFunction`:
 
 ```ts
-new lambda.PythonFunction(this, 'MyFunction', {
+new python.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function', // required
   runtime: Runtime.PYTHON_3_8, // required
   index: 'my_index.py', // optional, defaults to 'index.py'
@@ -33,7 +33,7 @@ new lambda.PythonFunction(this, 'MyFunction', {
 });
 ```
 
-All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
+All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda).
 
 ## Python Layer
 
@@ -44,7 +44,7 @@ layer.
 Define a `PythonLayerVersion`:
 
 ```ts
-new lambda.PythonLayerVersion(this, 'MyLayer', {
+new python.PythonLayerVersion(this, 'MyLayer', {
   entry: '/path/to/my/layer', // point this to your library's directory
 })
 ```
@@ -52,11 +52,11 @@ new lambda.PythonLayerVersion(this, 'MyLayer', {
 A layer can also be used as a part of a `PythonFunction`:
 
 ```ts
-new lambda.PythonFunction(this, 'MyFunction', {
+new python.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function',
   runtime: Runtime.PYTHON_3_8,
   layers: [
-    new lambda.PythonLayerVersion(this, 'MyLayer', {
+    new python.PythonLayerVersion(this, 'MyLayer', {
       entry: '/path/to/my/layer', // point this to your library's directory
     }),
   ],
@@ -109,6 +109,22 @@ Packaging is executed using the `Packaging` class, which:
 ├── poetry.lock # your poetry lock file has to be present at the entry path
 ```
 
+**Excluding source files**
+
+You can exclude files from being copied using the optional bundling string array parameter `assetExcludes`
+
+```ts
+new python.PythonFunction(this, 'function', {
+  entry: '/path/to/poetry-function',
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    // translates to `rsync --exclude='.venv'`
+    assetExcludes: ['.venv'],
+  },
+});
+```
+
+
 ## Custom Bundling
 
 Custom bundling can be performed by passing in additional build arguments that point to index URLs to private repos, or by using an entirely custom Docker images for bundling dependencies. The build args currently supported are:
@@ -123,7 +139,7 @@ Additional build args for bundling that refer to PyPI indexes can be specified a
 const entry = '/path/to/function';
 const image = DockerImage.fromBuild(entry);
 
-new lambda.PythonFunction(this, 'function', {
+new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
@@ -138,10 +154,28 @@ If using a custom Docker image for bundling, the dependencies are installed with
 const entry = '/path/to/function';
 const image = DockerImage.fromBuild(entry);
 
-new lambda.PythonFunction(this, 'function', {
+new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: { image },
+});
+```
+
+You can set additional Docker options to configure the build environment:
+
+ ```ts
+const entry = '/path/to/function';
+
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+      network: 'host',
+      securityOpt: 'no-new-privileges',
+      user: 'user:group',
+      volumesFrom: ['777f7dc92da7'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+   },
 });
 ```
 
@@ -163,7 +197,7 @@ const codeArtifactAuthToken = execSync(`aws codeartifact get-authorization-token
 
 const indexUrl = `https://aws:${codeArtifactAuthToken}@${domain}-${domainOwner}.d.codeartifact.${region}.amazonaws.com/pypi/${repoName}/simple/`;
 
-new lambda.PythonFunction(this, 'function', {
+new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
@@ -190,11 +224,64 @@ const codeArtifactAuthToken = execSync(`aws codeartifact get-authorization-token
 
 const indexUrl = `https://aws:${codeArtifactAuthToken}@${domain}-${domainOwner}.d.codeartifact.${region}.amazonaws.com/pypi/${repoName}/simple/`;
 
-new lambda.PythonFunction(this, 'function', {
+new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
     buildArgs: { PIP_INDEX_URL: indexUrl },
+  },
+});
+```
+
+## Command hooks
+
+It is  possible to run additional commands by specifying the `commandHooks` prop:
+
+```ts
+const entry = '/path/to/function';
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    commandHooks: {
+      // run tests
+      beforeBundling(inputDir: string): string[] {
+        return ['pytest'];
+      },
+      afterBundling(inputDir: string): string[] {
+        return ['pylint'];
+      },
+      // ...
+    },
+  },
+});
+```
+
+The following hooks are available:
+
+- `beforeBundling`: runs before all bundling commands
+- `afterBundling`: runs after all bundling commands
+
+They all receive the directory containing the dependencies file (`inputDir`) and the
+directory where the bundled asset will be output (`outputDir`). They must return
+an array of commands to run. Commands are chained with `&&`.
+
+The commands will run in the environment in which bundling occurs: inside the
+container for Docker bundling or on the host OS for local bundling.
+
+## Docker based bundling in complex Docker configurations
+
+By default the input and output of Docker based bundling is handled via bind mounts.
+In situtations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
+
+```ts
+const entry = '/path/to/function';
+
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
   },
 });
 ```

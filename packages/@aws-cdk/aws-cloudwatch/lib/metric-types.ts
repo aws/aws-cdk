@@ -5,6 +5,15 @@ import { Duration } from '@aws-cdk/core';
  */
 export interface IMetric {
   /**
+   * Any warnings related to this metric
+   *
+   * Should be attached to the consuming construct.
+   *
+   * @default - None
+   */
+  readonly warnings?: string[];
+
+  /**
    * Inspect the details of the metric object
    */
   toMetricConfig(): MetricConfig;
@@ -28,7 +37,6 @@ export interface IMetric {
  * Metric dimension
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html
- *
  */
 export interface Dimension {
   /**
@@ -44,6 +52,9 @@ export interface Dimension {
 
 /**
  * Statistic to use over the aggregation period
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html
+ * @deprecated Use one of the factory methods on `Stats` to produce statistics strings
  */
 export enum Statistic {
   /**
@@ -69,7 +80,7 @@ export enum Statistic {
    * The highest value observed during the specified period.
    * You can use this value to determine high volumes of activity for your application.
    */
-  MAXIMUM = 'Maximum'
+  MAXIMUM = 'Maximum',
 }
 
 /**
@@ -207,9 +218,9 @@ export enum Unit {
   COUNT_PER_SECOND = 'Count/Second',
 
   /**
-   * No unit
+   * None
    */
-  NONE = 'None'
+  NONE = 'None',
 }
 
 /**

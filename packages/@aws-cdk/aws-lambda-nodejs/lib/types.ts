@@ -1,9 +1,9 @@
-import { DockerImage } from '@aws-cdk/core';
+import { BundlingFileAccess, DockerImage, DockerRunOptions } from '@aws-cdk/core';
 
 /**
  * Bundling options
  */
-export interface BundlingOptions {
+export interface BundlingOptions extends DockerRunOptions {
   /**
    * Whether to minify files when bundling.
    *
@@ -50,9 +50,9 @@ export interface BundlingOptions {
    * Configuring a loader for a given file type lets you load that file type with
    * an `import` statement or a `require` call.
    *
-   * @see https://esbuild.github.io/api/#loader
-   *
    * For example, `{ '.png': 'dataurl' }`.
+   *
+   * @see https://esbuild.github.io/api/#loader
    *
    * @default - use esbuild default loaders
    */
@@ -162,13 +162,6 @@ export interface BundlingOptions {
   readonly charset?: Charset;
 
   /**
-   * Environment variables defined when bundling runs.
-   *
-   * @default - no environment variables are defined.
-   */
-  readonly environment?: { [key: string]: string; };
-
-  /**
    * Replace global identifiers with constant expressions.
    *
    * For example, `{ 'process.env.DEBUG': 'true' }`.
@@ -183,7 +176,7 @@ export interface BundlingOptions {
    * A list of modules that should be considered as externals (already available
    * in the runtime).
    *
-   * @default ['aws-sdk']
+   * @default - ['aws-sdk'] if the runtime is < Node.js 18.x, ['@aws-sdk/*'] otherwise.
    */
   readonly externalModules?: string[];
 
@@ -204,11 +197,31 @@ export interface BundlingOptions {
   readonly esbuildVersion?: string;
 
   /**
+   * Build arguments to pass into esbuild.
+   *
+   * For example, to add the [--log-limit](https://esbuild.github.io/api/#log-limit) flag:
+   *
+   * ```text
+   * new NodejsFunction(scope, id, {
+   *   ...
+   *   bundling: {
+   *     esbuildArgs: {
+   *       "--log-limit": "0",
+   *     }
+   *   }
+   * });
+   * ```
+   *
+   * @default - no additional esbuild arguments are passed
+   */
+  readonly esbuildArgs?: { [key: string]: string | boolean };
+
+  /**
    * Build arguments to pass when building the bundling image.
    *
    * @default - no build arguments are passed
    */
-  readonly buildArgs?: { [key:string] : string };
+  readonly buildArgs?: { [key: string]: string };
 
   /**
    * Force bundling in a Docker container even if local bundling is
@@ -234,9 +247,9 @@ export interface BundlingOptions {
    * A custom bundling Docker image.
    *
    * This image should have esbuild installed globally. If you plan to use `nodeModules`
-   * it should also have `npm` or `yarn` depending on the lock file you're using.
+   * it should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
    *
-   * See https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile
+   * See https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile
    * for the default image provided by @aws-cdk/aws-lambda-nodejs.
    *
    * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
@@ -276,7 +289,7 @@ export interface BundlingOptions {
    * How to determine the entry point for modules.
    * Try ['module', 'main'] to default to ES module versions.
    *
-   * @default ['main', 'module']
+   * @default []
    */
   readonly mainFields?: string[];
 
@@ -288,6 +301,12 @@ export interface BundlingOptions {
    * @default - no code is injected
    */
   readonly inject?: string[]
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: BundlingFileAccess;
 }
 
 /**

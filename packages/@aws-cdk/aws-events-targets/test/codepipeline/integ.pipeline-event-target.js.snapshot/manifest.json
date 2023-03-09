@@ -1,0 +1,142 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "pipeline-events.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "pipeline-events.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "pipeline-events": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "pipeline-events.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2ca80925e40dda38f0c067566a2deab95aa4081eb4e48b53dfc2a33851b7eafe.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "pipeline-events.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "pipeline-events.assets"
+      ],
+      "metadata": {
+        "/pipeline-events/Repo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Repo02AC86CF"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/ArtifactsBucketEncryptionKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/ArtifactsBucketEncryptionKeyAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DArtifactsBucketEncryptionKeyAlias9530209A"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DArtifactsBucketC1799DCD"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DArtifactsBucketPolicy269103C2"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DRole58B7B05E"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DRoleDefaultPolicyCDEE9D19"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DEB5D089B"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/Source/CodeCommit/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DSourceCodeCommitCodePipelineActionRoleE54633E5"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/Build/Hello/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DEventsRole048D7F59"
+          }
+        ],
+        "/pipeline-events/pipelinePipeline22F2A91D/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pipelinePipeline22F2A91DEventsRoleDefaultPolicyEED1010F"
+          }
+        ],
+        "/pipeline-events/dlq/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dlq09C78ACC"
+          }
+        ],
+        "/pipeline-events/rule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ruleF2C1DCDC"
+          }
+        ],
+        "/pipeline-events/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/pipeline-events/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "pipeline-events"
+    }
+  }
+}

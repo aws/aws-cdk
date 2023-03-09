@@ -1,6 +1,6 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
+import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import {
   AclCidr,
   AclTraffic,
@@ -26,10 +26,115 @@ import {
   SubnetType,
   TrafficDirection,
   Vpc,
+  IpAddresses,
+  InterfaceVpcEndpointAwsService,
 } from '../lib';
 
 describe('vpc', () => {
   describe('When creating a VPC', () => {
+
+    testDeprecated('SubnetType.PRIVATE_WITH_NAT is equivalent to SubnetType.PRIVATE_WITH_EGRESS', () => {
+
+      const stack1 = getTestStack();
+      const stack2 = getTestStack();
+      new Vpc(stack1, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            name: 'subnet',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+          },
+        ],
+      });
+
+      new Vpc(stack2, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+            name: 'subnet',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+          },
+        ],
+      });
+
+      const t1 = Template.fromStack(stack1);
+      const t2 = Template.fromStack(stack2);
+
+      expect(t1.toJSON()).toEqual(t2.toJSON());
+
+    });
+
+    testDeprecated('SubnetType.PRIVATE is equivalent to SubnetType.PRIVATE_WITH_NAT', () => {
+
+      const stack1 = getTestStack();
+      const stack2 = getTestStack();
+      new Vpc(stack1, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE,
+            name: 'subnet',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+          },
+        ],
+      });
+
+      new Vpc(stack2, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            name: 'subnet',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+          },
+        ],
+      });
+
+      const t1 = Template.fromStack(stack1);
+      const t2 = Template.fromStack(stack2);
+
+      expect(t1.toJSON()).toEqual(t2.toJSON());
+
+    });
+
+    testDeprecated('SubnetType.ISOLATED is equivalent to SubnetType.PRIVATE_ISOLATED', () => {
+
+      const stack1 = getTestStack();
+      const stack2 = getTestStack();
+      new Vpc(stack1, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.ISOLATED,
+            name: 'subnet',
+          },
+        ],
+      });
+
+      new Vpc(stack2, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_ISOLATED,
+            name: 'subnet',
+          },
+        ],
+      });
+      const t1 = Template.fromStack(stack1);
+      const t2 = Template.fromStack(stack2);
+
+      expect(t1.toJSON()).toEqual(t2.toJSON());
+
+    });
+
     describe('with the default CIDR range', () => {
 
       test('vpc.vpcId returns a token to the VPC ID', () => {
@@ -71,7 +176,7 @@ describe('vpc', () => {
     test('with all of the properties set, it successfully sets the correct VPC properties', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
-        cidr: '192.168.0.0/16',
+        ipAddresses: IpAddresses.cidr('192.168.0.0/16'),
         enableDnsHostnames: false,
         enableDnsSupport: false,
         defaultInstanceTenancy: DefaultInstanceTenancy.DEDICATED,
@@ -102,7 +207,7 @@ describe('vpc', () => {
 
           const stack = getTestStack();
           const vpc = new Vpc(stack, 'TheVPC', {
-            cidr: '192.168.0.0/16',
+            ipAddresses: IpAddresses.cidr('192.168.0.0/16'),
             enableDnsHostnames: input.dnsHostnames,
             enableDnsSupport: input.dnsSupport,
             defaultInstanceTenancy: DefaultInstanceTenancy.DEDICATED,
@@ -187,7 +292,7 @@ describe('vpc', () => {
             name: 'Public',
           },
           {
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
             name: 'private',
           },
         ],
@@ -195,7 +300,7 @@ describe('vpc', () => {
 
       const nacl1 = new NetworkAcl(stack, 'myNACL1', {
         vpc,
-        subnetSelection: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+        subnetSelection: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       });
 
       new NetworkAclEntry(stack, 'AllowDNSEgress', {
@@ -259,7 +364,7 @@ describe('vpc', () => {
     test('with subnets and reserved subnets defined, VPC subnet count should not contain reserved subnets ', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -269,7 +374,7 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'reserved',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
             reserved: true,
           },
           {
@@ -286,7 +391,7 @@ describe('vpc', () => {
     test('with reserved subnets, any other subnets should not have cidrBlock from within reserved space', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -296,30 +401,33 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'reserved',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
             reserved: true,
           },
           {
             cidrMask: 24,
             name: 'rds',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
         ],
         maxAzs: 3,
       });
+
+      const template = Template.fromStack(stack);
+
       for (let i = 0; i < 3; i++) {
-        Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        template.hasResourceProperties('AWS::EC2::Subnet', {
           CidrBlock: `10.0.${i}.0/24`,
         });
       }
       for (let i = 3; i < 6; i++) {
-        const matchingSubnets = Template.fromStack(stack).findResources('AWS::EC2::Subnet', {
+        const matchingSubnets = template.findResources('AWS::EC2::Subnet', {
           CidrBlock: `10.0.${i}.0/24`,
         });
         expect(Object.keys(matchingSubnets).length).toBe(0);
       }
       for (let i = 6; i < 9; i++) {
-        Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        template.hasResourceProperties('AWS::EC2::Subnet', {
           CidrBlock: `10.0.${i}.0/24`,
         });
       }
@@ -329,7 +437,7 @@ describe('vpc', () => {
       const stack = getTestStack();
       const zones = stack.availabilityZones.length;
       new Vpc(stack, 'TheVPC', {
-        cidr: '10.0.0.0/21',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/21'),
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -339,7 +447,7 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
           {
             cidrMask: 28,
@@ -367,7 +475,7 @@ describe('vpc', () => {
     test('with custom subnets and natGateways = 2 there should be only two NATGW', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
-        cidr: '10.0.0.0/21',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/21'),
         natGateways: 2,
         subnetConfiguration: [
           {
@@ -378,7 +486,7 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
           {
             cidrMask: 28,
@@ -481,7 +589,7 @@ describe('vpc', () => {
             },
             {
               name: 'private',
-              subnetType: SubnetType.PRIVATE_WITH_NAT,
+              subnetType: SubnetType.PRIVATE_WITH_EGRESS,
               mapPublicIpOnLaunch: true,
             },
           ],
@@ -520,7 +628,7 @@ describe('vpc', () => {
           },
           {
             name: 'private',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
         ],
       });
@@ -544,7 +652,7 @@ describe('vpc', () => {
           },
           {
             name: 'private',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
         ],
         vpcName: 'CustomVPCName',
@@ -588,6 +696,38 @@ describe('vpc', () => {
       });
 
     });
+
+    test('throws error when both availabilityZones and maxAzs are set', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          availabilityZones: stack.availabilityZones,
+          maxAzs: 1,
+        });
+      }).toThrow(/Vpc supports 'availabilityZones' or 'maxAzs', but not both./);
+    });
+
+    test('with availabilityZones set correctly', () => {
+      const stack = getTestStack();
+      const specificAz = stack.availabilityZones[1]; // not the first item
+      new Vpc(stack, 'VPC', {
+        availabilityZones: [specificAz],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        AvailabilityZone: specificAz,
+      });
+    });
+
+    test('with availabilityZones set to zones different from stack', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          availabilityZones: [stack.availabilityZones[0] + 'invalid'],
+        });
+      }).toThrow(/must be a subset of the stack/);
+    });
+
     test('with natGateway set to 1', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
@@ -619,7 +759,7 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'private',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
         ],
         natGatewaySubnets: {
@@ -639,7 +779,7 @@ describe('vpc', () => {
 
     });
 
-    test('natGateways = 0 throws if no PRIVATE subnets configured', () => {
+    testDeprecated('natGateways = 0 throws if PRIVATE_WITH_NAT subnets configured', () => {
       const stack = getTestStack();
       expect(() => {
         new Vpc(stack, 'VPC', {
@@ -655,8 +795,30 @@ describe('vpc', () => {
             },
           ],
         });
-      }).toThrow(/make sure you don't configure any PRIVATE subnets/);
+      }).toThrow(/make sure you don't configure any PRIVATE/);
 
+
+    });
+
+    test('natGateways = 0 succeeds if PRIVATE_WITH_EGRESS subnets configured', () => {
+      const stack = getTestStack();
+
+      new Vpc(stack, 'VPC', {
+        natGateways: 0,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::InternetGateway', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
 
     });
 
@@ -685,7 +847,7 @@ describe('vpc', () => {
     test('natGateways = 0 allows RESERVED PRIVATE subnets', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         subnetConfiguration: [
           {
             name: 'ingress',
@@ -693,7 +855,7 @@ describe('vpc', () => {
           },
           {
             name: 'private',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
             reserved: true,
           },
         ],
@@ -709,7 +871,7 @@ describe('vpc', () => {
     test('EIP passed with NAT gateway does not create duplicate EIP', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -719,7 +881,7 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
         ],
         natGatewayProvider: NatProvider.gateway({ eipAllocationIds: ['b'] }),
@@ -743,7 +905,7 @@ describe('vpc', () => {
           {
             cidrMask: 24,
             name: 'private',
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
         ],
         natGatewaySubnets: {
@@ -831,13 +993,13 @@ describe('vpc', () => {
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'Public' },
-          { subnetType: SubnetType.PRIVATE_WITH_NAT, name: 'Private' },
+          { subnetType: SubnetType.PRIVATE_WITH_EGRESS, name: 'Private' },
           { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'Isolated' },
         ],
         vpnGateway: true,
         vpnRoutePropagation: [
           {
-            subnetType: SubnetType.PRIVATE_WITH_NAT,
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           },
           {
             subnetType: SubnetType.PRIVATE_ISOLATED,
@@ -971,7 +1133,7 @@ describe('vpc', () => {
       const stack = new Stack();
       expect(() => {
         new Vpc(stack, 'Vpc', {
-          cidr: Lazy.string({ produce: () => 'abc' }),
+          ipAddresses: IpAddresses.cidr(Lazy.string({ produce: () => 'abc' })),
         });
       }).toThrow(/property must be a concrete CIDR string/);
     });
@@ -1060,7 +1222,102 @@ describe('vpc', () => {
         NetworkInterfaceId: 'router-1',
       });
 
+    });
+  });
 
+  describe('fromVpcAttributes', () => {
+    test('passes region correctly', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      const vpcId = Fn.importValue('myVpcId');
+
+      // WHEN
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId,
+        availabilityZones: ['region-12345a', 'region-12345b', 'region-12345c'],
+        region: 'region-12345',
+      });
+
+      // THEN
+      expect(vpc.env.region).toEqual('region-12345');
+    });
+
+    test('passes subnet IPv4 CIDR blocks correctly', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+        publicSubnetIpv4CidrBlocks: ['10.0.0.0/18', '10.0.64.0/18', '10.0.128.0/18'],
+        privateSubnetIds: ['pri-1', 'pri-2', 'pri-3'],
+        privateSubnetIpv4CidrBlocks: ['10.10.0.0/18', '10.10.64.0/18', '10.10.128.0/18'],
+        isolatedSubnetIds: ['iso-1', 'iso-2', 'iso-3'],
+        isolatedSubnetIpv4CidrBlocks: ['10.20.0.0/18', '10.20.64.0/18', '10.20.128.0/18'],
+      });
+
+      // WHEN
+      const public1 = vpc.publicSubnets.find(({ subnetId }) => subnetId === 'pub-1');
+      const public2 = vpc.publicSubnets.find(({ subnetId }) => subnetId === 'pub-2');
+      const public3 = vpc.publicSubnets.find(({ subnetId }) => subnetId === 'pub-3');
+      const private1 = vpc.privateSubnets.find(({ subnetId }) => subnetId === 'pri-1');
+      const private2 = vpc.privateSubnets.find(({ subnetId }) => subnetId === 'pri-2');
+      const private3 = vpc.privateSubnets.find(({ subnetId }) => subnetId === 'pri-3');
+      const isolated1 = vpc.isolatedSubnets.find(({ subnetId }) => subnetId === 'iso-1');
+      const isolated2 = vpc.isolatedSubnets.find(({ subnetId }) => subnetId === 'iso-2');
+      const isolated3 = vpc.isolatedSubnets.find(({ subnetId }) => subnetId === 'iso-3');
+
+      // THEN
+      expect(public1?.ipv4CidrBlock).toEqual('10.0.0.0/18');
+      expect(public2?.ipv4CidrBlock).toEqual('10.0.64.0/18');
+      expect(public3?.ipv4CidrBlock).toEqual('10.0.128.0/18');
+      expect(private1?.ipv4CidrBlock).toEqual('10.10.0.0/18');
+      expect(private2?.ipv4CidrBlock).toEqual('10.10.64.0/18');
+      expect(private3?.ipv4CidrBlock).toEqual('10.10.128.0/18');
+      expect(isolated1?.ipv4CidrBlock).toEqual('10.20.0.0/18');
+      expect(isolated2?.ipv4CidrBlock).toEqual('10.20.64.0/18');
+      expect(isolated3?.ipv4CidrBlock).toEqual('10.20.128.0/18');
+
+    });
+
+    test('throws on incorrect number of subnet names', () => {
+      const stack = new Stack();
+
+      expect(() =>
+        Vpc.fromVpcAttributes(stack, 'VPC', {
+          vpcId: 'vpc-1234',
+          availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+          publicSubnetIds: ['s-12345', 's-34567', 's-56789'],
+          publicSubnetNames: ['Public 1', 'Public 2'],
+        }),
+      ).toThrow(/publicSubnetNames must have an entry for every corresponding subnet group/);
+    });
+
+    test('throws on incorrect number of route table ids', () => {
+      const stack = new Stack();
+
+      expect(() =>
+        Vpc.fromVpcAttributes(stack, 'VPC', {
+          vpcId: 'vpc-1234',
+          availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+          publicSubnetIds: ['s-12345', 's-34567', 's-56789'],
+          publicSubnetRouteTableIds: ['rt-12345'],
+        }),
+      ).toThrow('Number of publicSubnetRouteTableIds (1) must be equal to the amount of publicSubnetIds (3).');
+    });
+
+    test('throws on incorrect number of subnet IPv4 CIDR blocks', () => {
+      const stack = new Stack();
+
+      expect(() =>
+        Vpc.fromVpcAttributes(stack, 'VPC', {
+          vpcId: 'vpc-1234',
+          availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+          publicSubnetIds: ['s-12345', 's-34567', 's-56789'],
+          publicSubnetIpv4CidrBlocks: ['10.0.0.0/18', '10.0.64.0/18'],
+        }),
+      ).toThrow('Number of publicSubnetIpv4CidrBlocks (2) must be equal to the amount of publicSubnetIds (3).');
     });
   });
 
@@ -1276,7 +1533,7 @@ describe('vpc', () => {
       const stack = getTestStack();
 
       // WHEN
-      const vpc = new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
+      const vpc = new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
       new CfnOutput(stack, 'Output', {
         value: (vpc.publicSubnets[0] as Subnet).subnetNetworkAclAssociationId,
       });
@@ -1293,7 +1550,7 @@ describe('vpc', () => {
     test('if ACL is replaced new ACL reference is returned', () => {
       // GIVEN
       const stack = getTestStack();
-      const vpc = new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
+      const vpc = new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
 
       // WHEN
       new CfnOutput(stack, 'Output', {
@@ -1317,7 +1574,7 @@ describe('vpc', () => {
   describe('When creating a VPC with a custom CIDR range', () => {
     test('vpc.vpcCidrBlock is the correct network range', () => {
       const stack = getTestStack();
-      new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
+      new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
         CidrBlock: '192.168.0.0/16',
       });
@@ -1429,7 +1686,7 @@ describe('vpc', () => {
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'BlaBla' },
-          { subnetType: SubnetType.PRIVATE_WITH_NAT, name: 'DontTalkToMe' },
+          { subnetType: SubnetType.PRIVATE_WITH_EGRESS, name: 'DontTalkToMe' },
           { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'DontTalkAtAll' },
         ],
       });
@@ -1448,7 +1705,7 @@ describe('vpc', () => {
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'BlaBla' },
-          { subnetType: SubnetType.PRIVATE_WITH_NAT, name: 'DontTalkToMe' },
+          { subnetType: SubnetType.PRIVATE_WITH_EGRESS, name: 'DontTalkToMe' },
           { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'DontTalkAtAll' },
         ],
       });
@@ -1516,8 +1773,8 @@ describe('vpc', () => {
         maxAzs: 1,
         subnetConfiguration: [
           { name: 'lb', subnetType: SubnetType.PUBLIC },
-          { name: 'app', subnetType: SubnetType.PRIVATE_WITH_NAT },
-          { name: 'db', subnetType: SubnetType.PRIVATE_WITH_NAT },
+          { name: 'app', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+          { name: 'db', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
         ],
       });
 
@@ -1557,11 +1814,7 @@ describe('vpc', () => {
         subnetIds: { 'Fn::Split': [',', { 'Fn::ImportValue': 'myPublicSubnetIds' }] },
       });
 
-      expect(vpc.node.metadataEntry).toContainEqual({
-        data: expect.stringContaining("fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead."),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
+      Annotations.fromStack(stack).hasWarning('/TestStack/VPC', "fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.");
     });
 
     test('fromVpcAttributes using fixed-length list tokens', () => {
@@ -1688,7 +1941,7 @@ describe('vpc', () => {
         privateDnsEnabled: false,
         service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
         subnets: {
-          subnetType: SubnetType.PRIVATE_WITH_NAT,
+          subnetType: SubnetType.PRIVATE_WITH_EGRESS,
           availabilityZones: ['dummy1a', 'dummy1c'],
         },
       });
@@ -1760,7 +2013,7 @@ describe('vpc', () => {
 
       // IP space is split into 6 pieces, one public/one private per AZ
       const vpc = new Vpc(stack, 'VPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         maxAzs: 3,
       });
 
@@ -1791,7 +2044,7 @@ describe('vpc', () => {
 
       // IP space is split into 6 pieces, one public/one private per AZ
       const vpc = new Vpc(stack, 'VPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         maxAzs: 3,
       });
 
@@ -1872,6 +2125,133 @@ describe('vpc', () => {
       const expected = vpc.publicSubnets.filter(s => s.ipv4CidrBlock.endsWith('/20'));
       expect(subnetIds).toEqual(expected.map(s => s.subnetId));
 
+    });
+
+    test('tests router types', () => {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'Vpc');
+
+      // WHEN
+      (vpc.publicSubnets[0] as Subnet).addRoute('TransitRoute', {
+        routerType: RouterType.TRANSIT_GATEWAY,
+        routerId: 'transit-id',
+      });
+      (vpc.publicSubnets[0] as Subnet).addRoute('CarrierRoute', {
+        routerType: RouterType.CARRIER_GATEWAY,
+        routerId: 'carrier-gateway-id',
+      });
+      (vpc.publicSubnets[0] as Subnet).addRoute('LocalGatewayRoute', {
+        routerType: RouterType.LOCAL_GATEWAY,
+        routerId: 'local-gateway-id',
+      });
+      (vpc.publicSubnets[0] as Subnet).addRoute('VpcEndpointRoute', {
+        routerType: RouterType.VPC_ENDPOINT,
+        routerId: 'vpc-endpoint-id',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        TransitGatewayId: 'transit-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        LocalGatewayId: 'local-gateway-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        CarrierGatewayId: 'carrier-gateway-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        VpcEndpointId: 'vpc-endpoint-id',
+      });
+    });
+  });
+
+  describe('Using reserved azs', () => {
+    test.each([
+      [{ maxAzs: 2, reservedAzs: 1 }, { maxAzs: 3 }],
+      [{ maxAzs: 2, reservedAzs: 2 }, { maxAzs: 3, reservedAzs: 1 }],
+      [{ maxAzs: 2, reservedAzs: 1, subnetConfiguration: [{ cidrMask: 22, name: 'Public', subnetType: SubnetType.PUBLIC }, { cidrMask: 23, name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS }] },
+        { maxAzs: 3, subnetConfiguration: [{ cidrMask: 22, name: 'Public', subnetType: SubnetType.PUBLIC }, { cidrMask: 23, name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS }] }],
+      [{ maxAzs: 2, reservedAzs: 1, subnetConfiguration: [{ cidrMask: 22, name: 'Public', subnetType: SubnetType.PUBLIC }, { cidrMask: 23, name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS, reserved: true }] },
+        { maxAzs: 3, subnetConfiguration: [{ cidrMask: 22, name: 'Public', subnetType: SubnetType.PUBLIC }, { cidrMask: 23, name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS, reserved: true }] }],
+      [{ maxAzs: 2, reservedAzs: 1, ipAddresses: IpAddresses.cidr('192.168.0.0/16') }, { maxAzs: 3, ipAddresses: IpAddresses.cidr('192.168.0.0/16') }],
+      [{ availabilityZones: ['dummy1a', 'dummy1b'], reservedAzs: 1 }, { availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'] }],
+    ])('subnets should remain the same going from %p to %p', (propsWithReservedAz, propsWithUsedReservedAz) => {
+      const stackWithReservedAz = getTestStack();
+      const stackWithUsedReservedAz = getTestStack();
+
+      new Vpc(stackWithReservedAz, 'Vpc', propsWithReservedAz);
+      new Vpc(stackWithUsedReservedAz, 'Vpc', propsWithUsedReservedAz);
+
+      const templateWithReservedAz = Template.fromStack(stackWithReservedAz);
+      const templateWithUsedReservedAz = Template.fromStack(stackWithUsedReservedAz);
+
+      const subnetsOfTemplateWithReservedAz = templateWithReservedAz.findResources('AWS::EC2::Subnet');
+      const subnetsOfTemplateWithUsedReservedAz = templateWithUsedReservedAz.findResources('AWS::EC2::Subnet');
+      for (const [logicalId, subnetOfTemplateWithReservedAz] of Object.entries(subnetsOfTemplateWithReservedAz)) {
+        const subnetOfTemplateWithUsedReservedAz = subnetsOfTemplateWithUsedReservedAz[logicalId];
+        expect(subnetOfTemplateWithUsedReservedAz).toEqual(subnetOfTemplateWithReservedAz);
+      }
+    });
+  });
+
+  describe('can reference vpcEndpointDnsEntries across stacks', () => {
+    test('can reference an actual string list across stacks', () => {
+      const app = new App();
+      const stack1 = new Stack(app, 'Stack1');
+      const vpc = new Vpc(stack1, 'Vpc');
+      const endpoint = new InterfaceVpcEndpoint(stack1, 'interfaceVpcEndpoint', {
+        vpc,
+        service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      });
+
+      const stack2 = new Stack(app, 'Stack2');
+      new CfnOutput(stack2, 'endpoint', {
+        value: Fn.select(0, endpoint.vpcEndpointDnsEntries),
+      });
+
+      const assembly = app.synth();
+      const template1 = assembly.getStackByName(stack1.stackName).template;
+      const template2 = assembly.getStackByName(stack2.stackName).template;
+
+      // THEN
+      expect(template1).toMatchObject({
+        Outputs: {
+          ExportsOutputFnGetAttinterfaceVpcEndpoint89C99945DnsEntriesB1872F7A: {
+            Value: {
+              'Fn::Join': [
+                '||', {
+                  'Fn::GetAtt': [
+                    'interfaceVpcEndpoint89C99945',
+                    'DnsEntries',
+                  ],
+                },
+              ],
+            },
+            Export: { Name: 'Stack1:ExportsOutputFnGetAttinterfaceVpcEndpoint89C99945DnsEntriesB1872F7A' },
+          },
+        },
+      });
+
+      expect(template2).toMatchObject({
+        Outputs: {
+          endpoint: {
+            Value: {
+              'Fn::Select': [
+                0,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttinterfaceVpcEndpoint89C99945DnsEntriesB1872F7A',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      });
     });
   });
 });

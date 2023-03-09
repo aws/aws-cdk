@@ -21,8 +21,12 @@ tsconfig.json
 .eslintrc.js
 jest.config.js
 
+docs/
+
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
 test/
 !*.lit.ts
+
+**/*.snapshot

@@ -4,10 +4,6 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Options for `ServiceAccount`
  */
@@ -29,6 +25,20 @@ export interface ServiceAccountOptions {
    * @default "default"
    */
   readonly namespace?: string;
+
+  /**
+   * Additional annotations of the service account.
+   *
+   * @default - no additional annotations
+   */
+  readonly annotations?: {[key:string]: string};
+
+  /**
+   * Additional labels of the service account.
+   *
+   * @default - no additional labels
+   */
+  readonly labels?: {[key:string]: string};
 }
 
 /**
@@ -44,7 +54,7 @@ export interface ServiceAccountProps extends ServiceAccountOptions {
 /**
  * Service Account
  */
-export class ServiceAccount extends CoreConstruct implements IPrincipal {
+export class ServiceAccount extends Construct implements IPrincipal {
   /**
    * The role which is linked to the service account.
    */
@@ -113,9 +123,11 @@ export class ServiceAccount extends CoreConstruct implements IPrincipal {
           namespace: this.serviceAccountNamespace,
           labels: {
             'app.kubernetes.io/name': this.serviceAccountName,
+            ...props.labels,
           },
           annotations: {
             'eks.amazonaws.com/role-arn': this.role.roleArn,
+            ...props.annotations,
           },
         },
       }],

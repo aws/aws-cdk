@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-ecs-fargate-integ-secret/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-secret"
+      ],
+      "assertionStack": "aws-ecs-fargate-integ-secret/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsfargateintegsecretDefaultTestDeployAssert3A9C52E8"
+    }
+  }
+}

@@ -35,7 +35,7 @@ export class InvokeFunction implements sfn.IStepFunctionsTask {
     return {
       resourceArn: this.lambdaFunction.functionArn,
       policyStatements: [new iam.PolicyStatement({
-        resources: [this.lambdaFunction.functionArn],
+        resources: this.lambdaFunction.resourceArnsForGrantInvoke,
         actions: ['lambda:InvokeFunction'],
       })],
       metricPrefixSingular: 'LambdaFunction',

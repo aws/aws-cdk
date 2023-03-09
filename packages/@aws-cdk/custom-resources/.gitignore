@@ -20,3 +20,7 @@ lib/aws-custom-resource/sdk-api-metadata.json
 !jest.config.js
 
 junit.xml
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
+
+!**/*.snapshot/**/asset.*/**

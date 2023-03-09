@@ -1,10 +1,7 @@
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { SecretValue } from '@aws-cdk/core';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties for a BasicAuth
@@ -82,7 +79,7 @@ export class BasicAuth {
   /**
    * Binds this Basic Auth configuration to an App
    */
-  public bind(scope: CoreConstruct, id: string): BasicAuthConfig {
+  public bind(scope: Construct, id: string): BasicAuthConfig {
     const config = {
       enableBasicAuth: true,
       username: this.props.username,
@@ -91,7 +88,7 @@ export class BasicAuth {
     if (this.props.password) {
       return {
         ...config,
-        password: this.props.password.toString(),
+        password: this.props.password.unsafeUnwrap(), // Safe usage
       };
     }
 
@@ -103,7 +100,7 @@ export class BasicAuth {
     });
     return {
       ...config,
-      password: secret.secretValueFromJson('password').toString(),
+      password: secret.secretValueFromJson('password').unsafeUnwrap(),
     };
   }
 }

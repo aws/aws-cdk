@@ -2,6 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -172,19 +173,20 @@ describe('singleton lambda', () => {
 
     // WHEN
     const invokeResult = singleton.grantInvoke(new iam.ServicePrincipal('events.amazonaws.com'));
-    const statement = stack.resolve(invokeResult.resourceStatement);
+    const statement = stack.resolve(invokeResult.resourceStatement?.toJSON());
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       Principal: 'events.amazonaws.com',
     });
-    expect(statement.action).toEqual(['lambda:InvokeFunction']);
-    expect(statement.principal).toEqual({ Service: ['events.amazonaws.com'] });
-    expect(statement.effect).toEqual('Allow');
-    expect(statement.resource).toEqual([{
-      'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'],
-    }]);
+    expect(statement.Action).toEqual('lambda:InvokeFunction');
+    expect(statement.Principal).toEqual({ Service: 'events.amazonaws.com' });
+    expect(statement.Effect).toEqual('Allow');
+    expect(statement.Resource).toEqual([
+      { 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'] },
+      { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'] }, ':*']] },
+    ]);
   });
 
   test('check edge compatibility', () => {
@@ -240,13 +242,13 @@ describe('singleton lambda', () => {
     expect(singleton.runtime).toStrictEqual(lambda.Runtime.PYTHON_3_9);
   });
 
-  test('current version of a singleton function', () => {
+  testDeprecated('current version of a singleton function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
 
@@ -274,7 +276,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       securityGroups: [securityGroup],
       vpc: vpc,

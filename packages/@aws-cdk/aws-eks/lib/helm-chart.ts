@@ -4,10 +4,6 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Helm Chart options.
  */
@@ -34,7 +30,7 @@ export interface HelmChartOptions {
   readonly version?: string;
 
   /**
-   * The repository which contains the chart. For example: https://kubernetes-charts.storage.googleapis.com/
+   * The repository which contains the chart. For example: https://charts.helm.sh/stable/
    * @default - No repository will be used, which means that the chart needs to be an absolute URL.
    */
   readonly repository?: string;
@@ -55,6 +51,11 @@ export interface HelmChartOptions {
 
   /**
    * The values to be used by the chart.
+   * For nested values use a nested dictionary. For example:
+   * values: {
+   *  installationCRDs: true,
+   *  webhook: { port: 9443 }
+   * }
    * @default - No values are provided to the chart.
    */
   readonly values?: {[key: string]: any};
@@ -77,6 +78,12 @@ export interface HelmChartOptions {
    * @default true
    */
   readonly createNamespace?: boolean;
+
+  /**
+   * if set, no CRDs will be installed
+   * @default - CRDs are installed if not already present
+   */
+  readonly skipCrds?: boolean;
 }
 
 /**
@@ -96,7 +103,7 @@ export interface HelmChartProps extends HelmChartOptions {
  *
  * Applies/deletes the resources using `kubectl` in sync with the resource.
  */
-export class HelmChart extends CoreConstruct {
+export class HelmChart extends Construct {
   /**
    * The CloudFormation resource type.
    */
@@ -128,6 +135,8 @@ export class HelmChart extends CoreConstruct {
     const wait = props.wait ?? false;
     // default to create new namespace
     const createNamespace = props.createNamespace ?? true;
+    // default to not skip crd installation
+    const skipCrds = props.skipCrds ?? false;
 
     props.chartAsset?.grantRead(provider.handlerRole);
 
@@ -147,6 +156,7 @@ export class HelmChart extends CoreConstruct {
         Namespace: props.namespace ?? 'default',
         Repository: props.repository,
         CreateNamespace: createNamespace || undefined,
+        SkipCrds: skipCrds || undefined,
       },
     });
   }

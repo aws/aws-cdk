@@ -1,8 +1,8 @@
 import * as camelcase from 'camelcase';
 import * as reflect from 'jsii-reflect';
-import { Linter } from '../linter';
 import { CoreTypes } from './core-types';
 import { ResourceReflection } from './resource';
+import { Linter } from '../linter';
 
 // this linter verifies that we have L2 coverage. it finds all "Cfn" classes and verifies
 // that we have a corresponding L1 class for it that's identified as a resource.
@@ -52,7 +52,7 @@ export class CfnResourceReflection {
   constructor(cls: reflect.ClassType) {
     this.classType = cls;
 
-    this.basename = cls.name.substr('Cfn'.length);
+    this.basename = cls.name.slice('Cfn'.length);
 
     // HACK: extract full CFN name from initializer docs
     const initializerDoc = (cls.initializer && cls.initializer.docs.docs.summary) || '';

@@ -140,6 +140,135 @@ export enum GraphWidgetView {
 }
 
 /**
+ * Properties for a GaugeWidget
+ */
+export interface GaugeWidgetProps extends MetricWidgetProps {
+  /**
+   * Metrics to display on left Y axis
+   *
+   * @default - No metrics
+   */
+  readonly metrics?: IMetric[];
+
+  /**
+   * Annotations for the left Y axis
+   *
+   * @default - No annotations
+   */
+  readonly annotations?: HorizontalAnnotation[];
+
+  /**
+   * Left Y axis
+   *
+   * @default - None
+   */
+  readonly leftYAxis?: YAxisProps;
+
+  /**
+   * Position of the legend
+   *
+   * @default - bottom
+   */
+  readonly legendPosition?: LegendPosition;
+
+  /**
+   * Whether the graph should show live data
+   *
+   * @default false
+   */
+  readonly liveData?: boolean;
+
+  /**
+   * Whether to show the value from the entire time range. Only applicable for Bar and Pie charts.
+   *
+   * If false, values will be from the most recent period of your chosen time range;
+   * if true, shows the value from the entire time range.
+   *
+   * @default false
+   */
+  readonly setPeriodToTimeRange?: boolean;
+
+  /**
+   * The default period for all metrics in this widget.
+   * The period is the length of time represented by one data point on the graph.
+   * This default can be overridden within each metric definition.
+   *
+   * @default cdk.Duration.seconds(300)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * The default statistic to be displayed for each metric.
+   * This default can be overridden within the definition of each individual metric
+   *
+   * @default - The statistic for each metric is used
+   */
+  readonly statistic?: string;
+}
+
+/**
+ * A dashboard gauge widget that displays metrics
+ */
+export class GaugeWidget extends ConcreteWidget {
+
+  private readonly props: GaugeWidgetProps;
+
+  private readonly metrics: IMetric[];
+
+  constructor(props: GaugeWidgetProps) {
+    super(props.width || 6, props.height || 6);
+    this.props = props;
+    this.metrics = props.metrics ?? [];
+    this.copyMetricWarnings(...this.metrics);
+  }
+
+  /**
+   * Add another metric to the left Y axis of the GaugeWidget
+   *
+   * @param metric the metric to add
+   */
+  public addMetric(metric: IMetric) {
+    this.metrics.push(metric);
+    this.copyMetricWarnings(metric);
+  }
+
+  public toJson(): any[] {
+    const horizontalAnnotations = [
+      ...(this.props.annotations || []).map(mapAnnotation('annotations')),
+    ];
+
+    const metrics = allMetricsGraphJson(this.metrics, []);
+    const leftYAxis = {
+      ...this.props.leftYAxis,
+      min: this.props.leftYAxis?.min ?? 0,
+      max: this.props.leftYAxis?.max ?? 100,
+    };
+    return [{
+      type: 'metric',
+      width: this.width,
+      height: this.height,
+      x: this.x,
+      y: this.y,
+      properties: {
+        view: 'gauge',
+        title: this.props.title,
+        region: this.props.region || cdk.Aws.REGION,
+        metrics: metrics.length > 0 ? metrics : undefined,
+        annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
+        yAxis: {
+          left: leftYAxis ?? undefined,
+        },
+        legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
+        liveData: this.props.liveData,
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+        period: this.props.period?.toSeconds(),
+        stat: this.props.statistic,
+      },
+    }];
+  }
+}
+
+/**
  * Properties for a GraphWidget
  */
 export interface GraphWidgetProps extends MetricWidgetProps {
@@ -256,6 +385,7 @@ export class GraphWidget extends ConcreteWidget {
     this.props = props;
     this.leftMetrics = props.left ?? [];
     this.rightMetrics = props.right ?? [];
+    this.copyMetricWarnings(...this.leftMetrics, ...this.rightMetrics);
   }
 
   /**
@@ -265,6 +395,7 @@ export class GraphWidget extends ConcreteWidget {
    */
   public addLeftMetric(metric: IMetric) {
     this.leftMetrics.push(metric);
+    this.copyMetricWarnings(metric);
   }
 
   /**
@@ -274,6 +405,7 @@ export class GraphWidget extends ConcreteWidget {
    */
   public addRightMetric(metric: IMetric) {
     this.rightMetrics.push(metric);
+    this.copyMetricWarnings(metric);
   }
 
   public toJson(): any[] {
@@ -332,6 +464,14 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    * @default false
    */
   readonly fullPrecision?: boolean;
+
+  /**
+   * Whether to show a graph below the value illustrating the value for the whole time range.
+   * Cannot be used in combination with `setPeriodToTimeRange`
+   *
+   * @default false
+   */
+  readonly sparkline?: boolean;
 }
 
 /**
@@ -343,6 +483,11 @@ export class SingleValueWidget extends ConcreteWidget {
   constructor(props: SingleValueWidgetProps) {
     super(props.width || 6, props.height || 3);
     this.props = props;
+    this.copyMetricWarnings(...props.metrics);
+
+    if (props.setPeriodToTimeRange && props.sparkline) {
+      throw new Error('You cannot use setPeriodToTimeRange with sparkline');
+    }
   }
 
   public toJson(): any[] {
@@ -356,9 +501,101 @@ export class SingleValueWidget extends ConcreteWidget {
         view: 'singleValue',
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
+        sparkline: this.props.sparkline,
         metrics: allMetricsGraphJson(this.props.metrics, []),
         setPeriodToTimeRange: this.props.setPeriodToTimeRange,
         singleValueFullPrecision: this.props.fullPrecision,
+      },
+    }];
+  }
+}
+
+/**
+ * The properties for a CustomWidget
+ */
+export interface CustomWidgetProps {
+  /**
+   * The Arn of the AWS Lambda function that returns HTML or JSON that will be displayed in the widget
+   */
+  readonly functionArn: string;
+
+  /**
+   * Width of the widget, in a grid of 24 units wide
+   *
+   * @default 6
+   */
+  readonly width?: number;
+
+  /**
+   * Height of the widget
+   *
+   * @default - 6 for Alarm and Graph widgets.
+   *   3 for single value widgets where most recent value of a metric is displayed.
+   */
+  readonly height?: number;
+
+  /**
+   * The title of the widget
+   */
+  readonly title: string;
+
+  /**
+   * Update the widget on refresh
+   *
+   * @default true
+   */
+  readonly updateOnRefresh?: boolean;
+
+  /**
+   * Update the widget on resize
+   *
+   * @default true
+   */
+  readonly updateOnResize?: boolean;
+
+  /**
+   * Update the widget on time range change
+   *
+   * @default true
+   */
+  readonly updateOnTimeRangeChange?: boolean;
+
+  /**
+   * Parameters passed to the lambda function
+   *
+   * @default - no parameters are passed to the lambda function
+   */
+  readonly params?: any;
+}
+
+/**
+ * A CustomWidget shows the result of a AWS lambda function
+ */
+export class CustomWidget extends ConcreteWidget {
+
+  private readonly props: CustomWidgetProps;
+
+  public constructor(props: CustomWidgetProps) {
+    super(props.width ?? 6, props.height ?? 6);
+    this.props = props;
+  }
+
+  public toJson(): any[] {
+    return [{
+      type: 'custom',
+      width: this.width,
+      height: this.height,
+      x: this.x,
+      y: this.y,
+      properties: {
+        endpoint: this.props.functionArn,
+        params: this.props.params,
+        title: this.props.title,
+        updateOn: {
+          refresh: this.props.updateOnRefresh ?? true,
+          resize: this.props.updateOnResize ?? true,
+          timeRange: this.props.updateOnTimeRangeChange ?? true,
+        },
       },
     }];
   }
@@ -450,6 +687,8 @@ export class Color {
 
   /** red - hex #d62728 */
   public static readonly RED = '#d62728';
+
+  private constructor() {}
 }
 
 /**

@@ -1,0 +1,100 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "Integ-SecretsManager-ParsedSecretName.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Integ-SecretsManager-ParsedSecretName.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "Integ-SecretsManager-ParsedSecretName": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Integ-SecretsManager-ParsedSecretName.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4c572ece1d7e4cc8d2eb55701e841603cbe785b8050ce922eacca96963f4528.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Integ-SecretsManager-ParsedSecretName.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Integ-SecretsManager-ParsedSecretName.assets"
+      ],
+      "metadata": {
+        "/Integ-SecretsManager-ParsedSecretName/DefaultSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultSecret67034726"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/NamedSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedSecret7CD5422D"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/NamedSecretWithHyphen/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedSecretWithHyphen6DC9716A"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/AReallyLongLogicalIThatWillBeTrimmedBeforeItsUsedInTheName/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AReallyLongLogicalIThatWillBeTrimmedBeforeItsUsedInTheName83476586"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomIntegVerificationSecretNameMatchesCustomResourceProviderRole4A6F8B2A"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomIntegVerificationSecretNameMatchesCustomResourceProviderHandler2A57F6AE"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/SecretNameVerification/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretNameVerification"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Integ-SecretsManager-ParsedSecretName/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Integ-SecretsManager-ParsedSecretName"
+    }
+  }
+}

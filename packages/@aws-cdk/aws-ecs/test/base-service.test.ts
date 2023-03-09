@@ -1,13 +1,16 @@
+import { Template, Match } from '@aws-cdk/assertions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import * as ecs from '../lib';
 
-let stack: cdk.Stack;
-
-beforeEach(() => {
-  stack = new cdk.Stack();
-});
-
 describe('When import an ECS Service', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
   test('with serviceArnWithCluster', () => {
     // GIVEN
     const clusterName = 'cluster-name';
@@ -40,5 +43,42 @@ describe('When import an ECS Service', () => {
     expect(() => {
       ecs.BaseService.fromServiceArnWithCluster(stack, 'Service', 'arn:aws:ecs:service-region:service-account:service/my-http-service');
     }).toThrowError(/is not using the ARN cluster format/);
+  });
+});
+
+test.each([
+  /* breaker, flag => controller in template */
+  /* Flag off => value present if circuitbreaker */
+  [false, false, false],
+  [true, false, true],
+  /* Flag on => value never present */
+  [false, true, false],
+  [true, true, false],
+])('circuitbreaker is %p /\\ flag is %p => DeploymentController in output: %p', (circuitBreaker, flagValue, controllerInTemplate) => {
+  // GIVEN
+  const app = new App({
+    context: {
+      '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker': flagValue,
+    },
+  });
+  const stack = new Stack(app, 'Stack');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+  taskDefinition.addContainer('web', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  });
+
+  // WHEN
+  new ecs.FargateService(stack, 'FargateService', {
+    cluster,
+    taskDefinition,
+    circuitBreaker: circuitBreaker ? { } : undefined,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::ECS::Service', {
+    DeploymentController: controllerInTemplate ? { Type: 'ECS' } : Match.absent(),
   });
 });

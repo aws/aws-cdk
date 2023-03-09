@@ -1,4 +1,4 @@
-import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
@@ -120,7 +120,7 @@ export interface AccessPointProps extends AccessPointOptions {
 export interface AccessPointAttributes {
   /**
    * The ID of the AccessPoint
-   * One of this, or {@link accessPointArn} is required
+   * One of this, or `accessPointArn` is required
    *
    * @default - determined based on accessPointArn
    */
@@ -128,7 +128,7 @@ export interface AccessPointAttributes {
 
   /**
    * The ARN of the AccessPoint
-   * One of this, or {@link accessPointId} is required
+   * One of this, or `accessPointId` is required
    *
    * @default - determined based on accessPointId
    */
@@ -217,6 +217,8 @@ export class AccessPoint extends AccessPointBase {
         secondaryGids: props.posixUser.secondaryGids,
       } : undefined,
     });
+
+    Tags.of(this).add('Name', this.node.path);
 
     this.accessPointId = resource.ref;
     this.accessPointArn = Stack.of(scope).formatArn({

@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as iotevents from '../lib';
 
 class TestStack extends cdk.Stack {
@@ -21,6 +22,20 @@ class TestStack extends cdk.Stack {
             iotevents.Expression.inputAttribute(input, 'payload.temperature'),
             iotevents.Expression.fromString('31.5'),
           ),
+        ),
+      }],
+      onInput: [{
+        eventName: 'test-input-event',
+        condition: iotevents.Expression.eq(
+          iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+          iotevents.Expression.fromString('31.6'),
+        ),
+      }],
+      onExit: [{
+        eventName: 'test-exit-event',
+        condition: iotevents.Expression.eq(
+          iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+          iotevents.Expression.fromString('31.7'),
         ),
       }],
     });
@@ -54,5 +69,6 @@ class TestStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new TestStack(app, 'detector-model-test-stack');
-app.synth();
+new IntegTest(app, 'cdk-integ-detector-model-test-stack', {
+  testCases: [new TestStack(app, 'detector-model-test-stack')],
+});

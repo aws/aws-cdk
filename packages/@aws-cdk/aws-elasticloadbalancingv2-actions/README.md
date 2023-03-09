@@ -19,8 +19,58 @@ read [Prepare to use Amazon
 Cognito](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html#cognito-requirements).
 Here's an example:
 
-[Example of using AuthenticateCognitoAction](test/integ.cognito.lit.ts)
+```ts
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true,
+});
 
-> NOTE: this example seems incomplete, I was not able to get the redirect back to the
-Load Balancer after authentication working. Would love some pointers on what a full working
-setup actually looks like!
+const userPool = new cognito.UserPool(this, 'UserPool');
+const userPoolClient = new cognito.UserPoolClient(this, 'Client', {
+  userPool,
+
+  // Required minimal configuration for use with an ELB
+  generateSecret: true,
+  authFlows: {
+    userPassword: true,
+  },
+  oAuth: {
+    flows: {
+      authorizationCodeGrant: true,
+    },
+    scopes: [cognito.OAuthScope.EMAIL],
+    callbackUrls: [
+      `https://${lb.loadBalancerDnsName}/oauth2/idpresponse`,
+    ],
+  },
+});
+const cfnClient = userPoolClient.node.defaultChild as cognito.CfnUserPoolClient;
+cfnClient.addPropertyOverride('RefreshTokenValidity', 1);
+cfnClient.addPropertyOverride('SupportedIdentityProviders', ['COGNITO']);
+
+const userPoolDomain = new cognito.UserPoolDomain(this, 'Domain', {
+  userPool,
+  cognitoDomain: {
+    domainPrefix: 'test-cdk-prefix',
+  },
+});
+
+lb.addListener('Listener', {
+  port: 443,
+  certificates: [certificate],
+  defaultAction: new actions.AuthenticateCognitoAction({
+    userPool,
+    userPoolClient,
+    userPoolDomain,
+    next: elbv2.ListenerAction.fixedResponse(200, {
+      contentType: 'text/plain',
+      messageBody: 'Authenticated',
+    }),
+  }),
+});
+
+new CfnOutput(this, 'DNS', {
+  value: lb.loadBalancerDnsName,
+});
+
+```
