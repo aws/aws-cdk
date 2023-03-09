@@ -1,9 +1,9 @@
-import {Match, Template} from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
-import {describeDeprecated} from '@aws-cdk/cdk-build-tools';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as kms from '../lib';
-import {KeySpec, KeyUsage} from '../lib';
+import { KeySpec, KeyUsage } from '../lib';
 
 const ADMIN_ACTIONS: string[] = [
   'kms:Create*',
