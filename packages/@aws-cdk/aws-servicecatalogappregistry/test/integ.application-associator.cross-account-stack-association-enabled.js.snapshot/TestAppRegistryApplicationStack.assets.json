@@ -1,17 +1,16 @@
 {
-  "version": "30.1.0",
+  "version": "31.0.0",
   "files": {
-    "c4d674e9642d6dbbd0df5c93890473101fc95bbc70de7e28d79ba771b5284de8": {
+    "1db9045d198a45233cf79d4f87770e1d94d5efd69f70a11d40e3a6310ba3b26c": {
       "source": {
         "path": "TestAppRegistryApplicationStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "689943422764-us-east-1": {
-          "bucketName": "cdk-hnb659fds-assets-689943422764-us-east-1",
-          "objectKey": "c4d674e9642d6dbbd0df5c93890473101fc95bbc70de7e28d79ba771b5284de8.json",
-          "region": "us-east-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::689943422764:role/cdk-hnb659fds-file-publishing-role-689943422764-us-east-1"
+        "${AWS::AccountId}-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1db9045d198a45233cf79d4f87770e1d94d5efd69f70a11d40e3a6310ba3b26c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     }

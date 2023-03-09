@@ -11,6 +11,27 @@
     }
    }
   },
+  "DefaultCdkApplicationRAMShare60b7c88c45feCE472D79": {
+   "Type": "AWS::RAM::ResourceShare",
+   "Properties": {
+    "Name": "RAMShare60b7c88c45fe",
+    "AllowExternalPrincipals": false,
+    "PermissionArns": [
+     "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation"
+    ],
+    "Principals": [
+     "${AWS::AccountId}"
+    ],
+    "ResourceArns": [
+     {
+      "Fn::GetAtt": [
+       "DefaultCdkApplication4573D5A3",
+       "Arn"
+      ]
+     }
+    ]
+   }
+  },
   "AppRegistryAssociation": {
    "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
    "Properties": {
@@ -29,8 +50,19 @@
  },
  "Outputs": {
   "DefaultCdkApplicationApplicationManagerUrl27C138EF": {
-   "Description": "Application manager url for the application created.",
-   "Value": "https://us-east-1.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-AppRegistryAssociatedApplication"
+   "Description": "System Manager Application Manager URL for the application created.",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-AppRegistryAssociatedApplication"
+     ]
+    ]
+   }
   }
  },
  "Parameters": {

@@ -4,13 +4,13 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-servicecatalogappregistry-first-resource": {
-        "id": "integ-servicecatalogappregistry-first-resource",
-        "path": "integ-servicecatalogappregistry-first-resource",
+      "integ-servicecatalogappregistry-local-resource": {
+        "id": "integ-servicecatalogappregistry-local-resource",
+        "path": "integ-servicecatalogappregistry-local-resource",
         "children": {
           "AppRegistryAssociation": {
             "id": "AppRegistryAssociation",
-            "path": "integ-servicecatalogappregistry-first-resource/AppRegistryAssociation",
+            "path": "integ-servicecatalogappregistry-local-resource/AppRegistryAssociation",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
               "aws:cdk:cloudformation:props": {
@@ -28,7 +28,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-servicecatalogappregistry-first-resource/BootstrapVersion",
+            "path": "integ-servicecatalogappregistry-local-resource/BootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
@@ -36,7 +36,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-servicecatalogappregistry-first-resource/CheckBootstrapVersion",
+            "path": "integ-servicecatalogappregistry-local-resource/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
@@ -87,6 +87,35 @@
                 "path": "TestAppRegistryApplicationStack/DefaultCdkApplication/ApplicationManagerUrl",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "RAMShare60b7c88c45fe": {
+                "id": "RAMShare60b7c88c45fe",
+                "path": "TestAppRegistryApplicationStack/DefaultCdkApplication/RAMShare60b7c88c45fe",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "RAMShare60b7c88c45fe",
+                    "allowExternalPrincipals": false,
+                    "permissionArns": [
+                      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation"
+                    ],
+                    "principals": [
+                      "${AWS::AccountId}"
+                    ],
+                    "resourceArns": [
+                      {
+                        "Fn::GetAtt": [
+                          "DefaultCdkApplication4573D5A3",
+                          "Arn"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ram.CfnResourceShare",
                   "version": "0.0.0"
                 }
               }
@@ -141,13 +170,13 @@
           "version": "0.0.0"
         }
       },
-      "integ-servicecatalogappregistry-second-resource": {
-        "id": "integ-servicecatalogappregistry-second-resource",
-        "path": "integ-servicecatalogappregistry-second-resource",
+      "integ-servicecatalogappregistry-cross-account-resource": {
+        "id": "integ-servicecatalogappregistry-cross-account-resource",
+        "path": "integ-servicecatalogappregistry-cross-account-resource",
         "children": {
           "AppRegistryAssociation": {
             "id": "AppRegistryAssociation",
-            "path": "integ-servicecatalogappregistry-second-resource/AppRegistryAssociation",
+            "path": "integ-servicecatalogappregistry-cross-account-resource/AppRegistryAssociation",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
               "aws:cdk:cloudformation:props": {
@@ -165,7 +194,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-servicecatalogappregistry-second-resource/BootstrapVersion",
+            "path": "integ-servicecatalogappregistry-cross-account-resource/BootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
@@ -173,7 +202,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-servicecatalogappregistry-second-resource/CheckBootstrapVersion",
+            "path": "integ-servicecatalogappregistry-cross-account-resource/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
