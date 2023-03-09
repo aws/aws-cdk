@@ -48,8 +48,8 @@ Flags come in three types:
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
 | [@aws-cdk/aws-ec2:launchTemplateDefaultUserData](#aws-cdkaws-ec2launchtemplatedefaultuserdata) | Define user data for a launch template by default when a machine image is provided. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
-| [@aws-cdk/aws-ecs:addSecurityGroupToAsgCapacityProviders](#aws-cdkaws-ecsaddsecuritygrouptoasgcapacityproviders) | Add security group through "configureAutoScalingGroup" | V2NEXT | (default) |
-| [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | V2NEXT | (fix) |
+| [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | 2.68.0 | (fix) |
+| [@aws-cdk/aws-ecs-patterns:addSecurityGroupToAsgCapacityProviders](#aws-cdkaws-ecs-patternsaddsecuritygrouptoasgcapacityproviders) | Add security group through "configureAutoScalingGroup" | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -132,7 +132,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId](#aws-cdkaws-apigatewayusageplankeyorderinsensitiveid) | Allow adding/removing multiple UsagePlanKeys independently | (fix) | 1.98.0 | `false` | `true` |
 | [@aws-cdk/aws-lambda:recognizeVersionProps](#aws-cdkaws-lambdarecognizeversionprops) | Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`. | (fix) | 1.106.0 | `false` | `true` |
 | [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2021](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2021) | Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default. | (fix) | 1.117.0 | `false` | `true` |
-| [@aws-cdk/aws-ecs:addSecurityGroupToAsgCapacityProviders](#aws-cdkaws-ecsaddsecuritygrouptoasgcapacityproviders) | Add security group through "configureAutoScalingGroup" | (default) |  | `false` | `true` |
+| [@aws-cdk/aws-ecs-patterns:addSecurityGroupToAsgCapacityProviders](#aws-cdkaws-ecs-patternsaddsecuritygrouptoasgcapacityproviders) | Add security group through "configureAutoScalingGroup" | (default) |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -148,7 +148,7 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
     "@aws-cdk/aws-lambda:recognizeVersionProps": false,
     "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false,
-    "@aws-cdk/aws-ecs:addSecurityGroupToAsgCapacityProviders": false
+    "@aws-cdk/aws-ecs-patterns:addSecurityGroupToAsgCapacityProviders": false
   }
 }
 ```
@@ -880,26 +880,6 @@ Then you can re-add the permissions and deploy again.
 | 2.67.0 | `false` | `true` |
 
 
-### @aws-cdk/aws-ecs:addSecurityGroupToAsgCapacityProviders
-
-*Add security group through "configureAutoScalingGroup"* (default)
-
-ConfigureAutoScalingGroup currently does not connect the ASG security group to the cluster's security group.
-The result of this is that on new deployments, EC2 instances which have been autoscaled can have their security groups
-reconfigured and lose connectivity to the ECS cluster. This feature flag enables the correct behavior. 
-
-If this flag is not set, cluster.addAsgCapacityProvider() does not correctly configure the autoscaling group's
-Security Groups to work with the ECS cluster. If the flag is set, the ASG is correctly configured.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `true` | `true` |
-
-**Compatibility with old behavior:** You can use `configureAutoScalingGroup()`, to add secuirty group.
-
-
 ### @aws-cdk/aws-redshift:columnId
 
 *Whether to use an ID to track Redshift column changes* (fix)
@@ -921,6 +901,26 @@ of the `id`s, the `name`s of the columns can be changed without data loss.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.68.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ecs-patterns:addSecurityGroupToAsgCapacityProviders
+
+*Add security group through "configureAutoScalingGroup"* (default)
+
+ConfigureAutoScalingGroup currently does not connect the ASG security group to the cluster's security group.
+The result of this is that on new deployments, EC2 instances which have been autoscaled can have their security groups
+reconfigured and lose connectivity to the ECS cluster. This feature flag enables the correct behavior. 
+
+If this flag is not set, cluster.addAsgCapacityProvider() does not correctly configure the autoscaling group's
+Security Groups to work with the ECS cluster. If the flag is set, the ASG is correctly configured.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `true` | `true` |
+
+**Compatibility with old behavior:** You can use `configureAutoScalingGroup()`, to add secuirty group.
 
 
 <!-- END details -->
