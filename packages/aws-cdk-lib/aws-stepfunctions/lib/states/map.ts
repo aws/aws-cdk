@@ -275,13 +275,13 @@ export class Map extends State implements INextable {
 
     var iterator = this.renderIterator();
 
-    return FieldUtils.renderObject({
+    return {
       ItemProcessor: {
         ProcessorConfig: {
           Mode: this.mode,
         },
         ...iterator.Iterator,
       },
-    });
+    };
   }
 }

@@ -85,7 +85,7 @@ describe('Distributed Map State', () => {
       },
       resultPath: stepfunctions.JsonPath.DISCARD,
     });
-    map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+    map.iterator(new stepfunctions.Pass(stack, 'Pass State', { resultPath: stepfunctions.JsonPath.DISCARD }));
 
     // THEN
     expect(render(map)).toStrictEqual({
@@ -108,6 +108,7 @@ describe('Distributed Map State', () => {
               'Pass State': {
                 Type: 'Pass',
                 End: true,
+                ResultPath: null,
               },
             },
           },

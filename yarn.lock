@@ -40,6 +40,11 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-2.2.177.tgz#c2e29a97b06c9c4a15a56ea228799ad12aac5097"
   integrity sha512-jNskqpWyDbTeWnIsyMwrtanz/MltBm1gMHOHiFS/4CBBHYfDT3h7Go5uruNSW32W1gWDej58PGJ+26E4g1gLhA==
 
+"@aws-cdk/asset-awscli-v1@^2.2.97":
+  version "2.2.98"
+  resolved "https://registry.npmjs.org/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-2.2.98.tgz#74fa0bf8593e9cfbdc68e8eb64977e0adb21cb38"
+  integrity sha512-SRJeHb08wW5FVZN7OrbzHzyxW9HuRek2irRCUc+6YBgIRM1JYlyUSd+vcaPThTllNl7rUf4oNvmyK0/3tWLKDg==
+
 "@aws-cdk/asset-kubectl-v20@^2.1.1":
   version "2.1.1"
   resolved "https://registry.npmjs.org/@aws-cdk/asset-kubectl-v20/-/asset-kubectl-v20-2.1.1.tgz#d01c1efb867fb7f2cfd8c8b230b8eae16447e156"
