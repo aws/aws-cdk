@@ -25,6 +25,9 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   /**
    * The name of the exported handler in the entry file.
    *
+   * The handler is prefixed with `index.` unless the specified handler value contains a `.`,
+   * in which case it is used as-is.
+   *
    * @default handler
    */
   readonly handler?: string;
@@ -108,7 +111,7 @@ export class NodejsFunction extends lambda.Function {
         depsLockFilePath,
         projectRoot,
       }),
-      handler: `index.${handler}`,
+      handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
     });
 
     // Enable connection reuse for aws-sdk
