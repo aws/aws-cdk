@@ -175,6 +175,26 @@ describe('S3 Deploy Action', () => {
       ],
     });
   });
+
+  test('kmsEncryptionKeyArn value', () => {
+    const stack = new Stack();
+    minimalPipeline(stack);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        {},
+        {
+          'Actions': [
+            {
+              'Configuration': {
+                'KMSEncryptionKeyARN': 'aws::arn::your-arn-here',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
 });
 
 interface MinimalPipelineOptions {
@@ -215,6 +235,7 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
         extract: options.extract,
         input: sourceOutput,
         objectKey: options.objectKey,
+        kmsEncryptionKeyArn: 'aws::arn::your-arn-here',
       }),
     ],
   });

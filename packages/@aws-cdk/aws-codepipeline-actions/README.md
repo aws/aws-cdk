@@ -873,6 +873,7 @@ const deployAction = new codepipeline_actions.S3DeployAction({
   actionName: 'S3Deploy',
   bucket: targetBucket,
   input: sourceOutput,
+  kmsEncryptionKeyArn: 'aws::arn::your-arn-here',
 });
 const deployStage = pipeline.addStage({
   stageName: 'Deploy',
