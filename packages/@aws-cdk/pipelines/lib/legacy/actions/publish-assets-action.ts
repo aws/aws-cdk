@@ -9,6 +9,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { ISynthesisSession, Lazy, Stack, attachCustomSynthesis } from '@aws-cdk/core';
 import { IDependable, Construct } from 'constructs';
 import { AssetType } from '../../blueprint/asset-type';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../private/default-codebuild-image';
 import { toPosixPath } from '../../private/fs';
 
 /**
@@ -140,7 +141,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
     const project = new codebuild.PipelineProject(this, 'Default', {
       projectName: this.props.projectName,
       environment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+        buildImage: CDKP_DEFAULT_CODEBUILD_IMAGE,
         privileged: (props.assetType === AssetType.DOCKER_IMAGE) ? true : undefined,
       },
       vpc: props.vpc,

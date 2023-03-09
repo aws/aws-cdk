@@ -1,5 +1,5 @@
-import { ClusterResourceHandler } from '../lib/cluster-resource-handler/cluster';
 import * as mocks from './cluster-resource-handler-mocks';
+import { ClusterResourceHandler } from '../lib/cluster-resource-handler/cluster';
 
 describe('cluster resource provider', () => {
   beforeEach(() => {
@@ -278,6 +278,25 @@ describe('cluster resource provider', () => {
             securityGroupIds: ['sg1'],
           },
         });
+      });
+
+      test('change subnets or security groups order should not trigger an update', async () => {
+        const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+          ...mocks.MOCK_PROPS,
+          resourcesVpcConfig: {
+            subnetIds: ['subnet1', 'subnet2'],
+            securityGroupIds: ['sg1', 'sg2'],
+          },
+        }, {
+          ...mocks.MOCK_PROPS,
+          resourcesVpcConfig: {
+            subnetIds: ['subnet2', 'subnet1'],
+            securityGroupIds: ['sg2', 'sg1'],
+          },
+        }));
+        const resp = await handler.onEvent();
+
+        expect(resp).toEqual(undefined);
       });
 
       test('"roleArn" requires a replacement', async () => {

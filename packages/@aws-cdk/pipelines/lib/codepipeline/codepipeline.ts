@@ -8,6 +8,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { ArtifactMap } from './artifact-map';
+import { CodeBuildStep } from './codebuild-step';
+import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
+import { namespaceStepOutputs } from './private/outputs';
+import { StackOutputsMap } from './stack-outputs-map';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
@@ -16,16 +22,11 @@ import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { CachedFnSub } from '../private/cached-fnsub';
 import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../private/default-codebuild-image';
 import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { ArtifactMap } from './artifact-map';
-import { CodeBuildStep } from './codebuild-step';
-import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
-import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
-import { namespaceStepOutputs } from './private/outputs';
-import { StackOutputsMap } from './stack-outputs-map';
 
 
 /**
@@ -145,7 +146,7 @@ export interface CodePipelineProps {
   /**
    * Customize the CodeBuild projects created for this pipeline
    *
-   * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
+   * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_6_0
    */
   readonly codeBuildDefaults?: CodeBuildOptions;
 
@@ -245,7 +246,7 @@ export interface CodeBuildOptions {
   /**
    * Partial build environment, will be combined with other build environments that apply
    *
-   * @default - Non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
+   * @default - Non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_6_0
    */
   readonly buildEnvironment?: cb.BuildEnvironment;
 
@@ -833,7 +834,7 @@ export class CodePipeline extends PipelineBase {
   private codeBuildDefaultsFor(nodeType: CodeBuildProjectType): CodeBuildOptions | undefined {
     const defaultOptions: CodeBuildOptions = {
       buildEnvironment: {
-        buildImage: cb.LinuxBuildImage.STANDARD_5_0,
+        buildImage: CDKP_DEFAULT_CODEBUILD_IMAGE,
         computeType: cb.ComputeType.SMALL,
       },
     };

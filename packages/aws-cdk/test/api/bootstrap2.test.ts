@@ -12,9 +12,15 @@ import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 let bootstrapper: Bootstrapper;
 let mockGetPolicyIamCode: (params: IAM.Types.GetPolicyRequest) => IAM.Types.GetPolicyResponse;
 let mockCreatePolicyIamCode: (params: IAM.Types.CreatePolicyRequest) => IAM.Types.CreatePolicyResponse;
+let stderrMock: jest.SpyInstance;
 
 beforeEach(() => {
   bootstrapper = new Bootstrapper({ source: 'default' });
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+});
+
+afterEach(() => {
+  stderrMock.mockRestore();
 });
 
 function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
@@ -114,6 +120,14 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passes value to PermissionsBoundary', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: 'existing-pb',
+        },
+      ],
+    });
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
         customPermissionsBoundary: 'permissions-boundary-name',
@@ -125,6 +139,71 @@ describe('Bootstrapping v2', () => {
         InputPermissionsBoundary: 'permissions-boundary-name',
       }),
     }));
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Changing permissions boundary from existing-pb to permissions-boundary-name/),
+      ]),
+    ]));
+  });
+
+  test('permission boundary switch message does not appear', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: '',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk);
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.not.arrayContaining([
+        expect.stringMatching(/Changing permissions boundary/),
+      ]),
+    ]));
+  });
+
+  test('adding new permissions boundary', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: '',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        customPermissionsBoundary: 'permissions-boundary-name',
+      },
+    });
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Adding new permissions boundary permissions-boundary-name/),
+      ]),
+    ]));
+  });
+
+  test('removing existing permissions boundary', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: 'permissions-boundary-name',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {},
+    });
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Removing existing permissions boundary permissions-boundary-name/),
+      ]),
+    ]));
   });
 
   test('passing trusted accounts without CFN managed policies results in an error', async () => {
@@ -217,6 +296,21 @@ describe('Bootstrapping v2', () => {
       parameters: {
         cloudFormationExecutionPolicies: ['arn:policy'],
       },
+    })).resolves.toEqual(expect.objectContaining({ noOp: true }));
+  });
+
+  test('Do not allow overwriting bootstrap stack from a different vendor', async () => {
+    // GIVEN
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'BootstrapVariant',
+          ParameterValue: 'JoeSchmoe',
+        },
+      ],
+    });
+
+    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
     })).resolves.toEqual(expect.objectContaining({ noOp: true }));
   });
 

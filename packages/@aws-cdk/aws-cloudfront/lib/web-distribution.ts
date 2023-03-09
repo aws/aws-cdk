@@ -1053,7 +1053,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
       // allow edgelambda.amazonaws.com to assume the functions' execution role.
       for (const a of input.lambdaFunctionAssociations) {
-        if (a.lambdaFunction.role && a.lambdaFunction.role instanceof iam.Role && a.lambdaFunction.role.assumeRolePolicy) {
+        if (a.lambdaFunction.role && iam.Role.isRole(a.lambdaFunction.role) && a.lambdaFunction.role.assumeRolePolicy) {
           a.lambdaFunction.role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
             actions: ['sts:AssumeRole'],
             principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],

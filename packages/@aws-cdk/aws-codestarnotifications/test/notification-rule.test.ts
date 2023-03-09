@@ -1,6 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import * as notifications from '../lib';
 import {
   FakeCodeBuild,
   FakeCodePipeline,
@@ -8,6 +7,7 @@ import {
   FakeSlackTarget,
   FakeSnsTopicTarget,
 } from './helpers';
+import * as notifications from '../lib';
 
 describe('NotificationRule', () => {
   let stack: cdk.Stack;
