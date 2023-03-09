@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App, Stack, CfnResource, FileAssetPackaging } from '@aws-cdk/core';
+import { App, Stack, CfnResource, FileAssetPackaging, Aws } from '@aws-cdk/core';
 import { evaluateCFN } from '@aws-cdk/core/test/evaluate-cfn';
 import * as cxapi from '@aws-cdk/cx-api';
 import { AppScopedStagingSynthesizer } from '../lib';
@@ -19,7 +19,12 @@ describe(AppScopedStagingSynthesizer, () => {
     app = new App({
       defaultStackSynthesizer: new AppScopedStagingSynthesizer(),
     });
-    stack = new Stack(app, 'Stack');
+    stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
   });
 
   test('stack template is in asset manifest', () => {
@@ -47,10 +52,11 @@ describe(AppScopedStagingSynthesizer, () => {
     expect(firstFile).toEqual({
       source: { path: 'Stack.template.json', packaging: 'file' },
       destinations: {
-        'current_account-current_region': {
+        '000000000000-us-east-1': {
           bucketName: 'default-bucket',
           objectKey: templateObjectKey,
-          assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}',
+          region: 'us-east-1',
+          assumeRoleArn: 'arn:' + Aws.PARTITION + ':iam:us-east-1:000000000000:role:cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}',
         },
       },
     });
@@ -66,7 +72,7 @@ describe(AppScopedStagingSynthesizer, () => {
 
     // THEN - we have a fixed asset location
     expect(evalCFN(location.bucketName)).toEqual('default-bucket');
-    expect(evalCFN(location.httpUrl)).toEqual('https://s3.the_region.domain.aws/default-bucket/abcdef.js');
+    expect(evalCFN(location.httpUrl)).toEqual('https://s3.us-east-1.domain.aws/default-bucket/abcdef.js');
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
@@ -83,7 +89,7 @@ describe(AppScopedStagingSynthesizer, () => {
     // THEN - we have a fixed asset location
     const repo = 'abcdefrepo';
     expect(evalCFN(location.repositoryName)).toEqual(repo);
-    expect(evalCFN(location.imageUri)).toEqual(`the_account.dkr.ecr.the_region.domain.aws/${repo}:abcdef`);
+    expect(evalCFN(location.imageUri)).toEqual(`000000000000.dkr.ecr.us-east-1.domain.aws/${repo}:abcdef`);
   });
 
   test('throws with docker image asset without uniqueId', () => {
