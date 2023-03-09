@@ -86,6 +86,14 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
    * @default - none, decided by the HTTP client
    */
   readonly cacheControl?: CacheControl[];
+
+  /**
+   * The ARN of the AWS KMS encryption key for the host bucket.
+   * The KMSEncryptionKeyARN parameter encrypts uploaded artifacts with the provided AWS KMS key.
+   * For a KMS key, you can use the key ID, the key ARN, or the alias ARN.
+   * @default - none
+   */
+  readonly kmsEncryptionKeyArn?: string;
 }
 
 /**
@@ -129,6 +137,7 @@ export class S3DeployAction extends Action {
         ObjectKey: this.props.objectKey,
         CannedACL: acl ? toKebabCase(acl.toString()) : undefined,
         CacheControl: this.props.cacheControl && this.props.cacheControl.map(ac => ac.value).join(', '),
+        KMSEncryptionKeyARN: this.props.kmsEncryptionKeyArn,
       },
     };
   }
