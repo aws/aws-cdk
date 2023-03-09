@@ -20,8 +20,10 @@ export interface ValidationViolationConstructAware extends report.ValidationViol
 export interface ValidationViolatingConstruct extends report.ValidationViolatingResource {
   /**
    * The construct path as defined in the application.
+   *
+   * @default - construct path will be empty if the cli is not run with `--debug`
    */
-  readonly constructPath: string;
+  readonly constructPath?: string;
 
   /**
    * A stack of constructs that lead to the violation.
@@ -126,7 +128,7 @@ export class ValidationReportFormatter {
         output.push('  Occurrences:');
         for (const construct of constructs) {
           output.push('');
-          output.push(`    - Construct Path: ${construct.constructPath}`);
+          output.push(`    - Construct Path: ${construct.constructPath ?? 'N/A'}`);
           output.push(`    - Template Path: ${construct.templatePath}`);
           output.push(`    - Creation Stack:\n\t${this.reportTrace.formatPrettyPrinted(construct.constructPath)}`);
           output.push(`    - Resource ID: ${construct.resourceLogicalId}`);
@@ -168,7 +170,7 @@ export class ValidationReportFormatter {
               const constructPath = this.tree.getConstructByLogicalId(resource.resourceLogicalId)?.node.path;
               return {
                 constructStack: this.reportTrace.formatJson(constructPath),
-                constructPath: constructPath ?? 'N/A',
+                constructPath: constructPath,
                 locations: resource.locations,
                 resourceLogicalId: resource.resourceLogicalId,
                 templatePath: resource.templatePath,
