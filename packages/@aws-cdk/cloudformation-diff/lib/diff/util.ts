@@ -27,6 +27,13 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
       safeParseFloat(lvalue) === safeParseFloat(rvalue)) {
     return true;
   }
+  // GetStackTemplate flattens any codepoint greater than "\u7f" to "?". This
+  // is true even for codepoints in the supplemental planes which are
+  // represented in JS as surrogate pairs, all the way up to "\u{10ffff}".
+  if (typeof lvalue === 'string' && typeof rvalue === 'string' &&
+      lvalue === rvalue.replace(/[\u{80}-\u{10ffff}]/gu, '?')) {
+    return true;
+  }
   if (typeof lvalue !== typeof rvalue) { return false; }
   if (Array.isArray(lvalue) !== Array.isArray(rvalue)) { return false; }
   if (Array.isArray(lvalue) /* && Array.isArray(rvalue) */) {
