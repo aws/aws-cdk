@@ -140,9 +140,9 @@ export class ValidationReportFormatter {
           }
         }
         output.push('');
-        output.push(`  Description: ${plugin.violations[0].description }`);
-        if (plugin.violations[0].fix) {
-          output.push(`  How to fix: ${plugin.violations[0].fix}`);
+        output.push(`  Description: ${violation.description }`);
+        if (violation.fix) {
+          output.push(`  How to fix: ${violation.fix}`);
         }
       });
 
