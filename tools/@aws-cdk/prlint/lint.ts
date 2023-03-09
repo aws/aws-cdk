@@ -1,7 +1,7 @@
 import * as path from 'path';
-import * as GitHub from 'github-api';
 import { breakingModules } from './parser';
 import { findModulePath, moduleStability } from './module';
+import { Octokit } from '@octokit/rest';
 
 const OWNER = 'aws';
 const REPO = 'aws-cdk';
@@ -25,7 +25,7 @@ function createGitHubClient() {
     console.log("Creating un-authenticated GitHub Client");
   }
 
-  return new GitHub({'token': token});
+  return new Octokit({ auth: token });
 }
 
 function isPkgCfnspec(issue: any) {
@@ -138,15 +138,12 @@ export async function validatePr(number: number) {
   }
 
   const gh = createGitHubClient();
-  
-  const issues = gh.getIssues(OWNER, REPO);
-  const repo = gh.getRepo(OWNER, REPO);
-  
+    
   console.log(`⌛  Fetching PR number ${number}`);
-  const issue = (await issues.getIssue(number)).data;
+  const issue = (await gh.pulls.get({owner: OWNER, repo: REPO, pull_number: number})).data;
   
   console.log(`⌛  Fetching files for PR number ${number}`);
-  const files = (await repo.listPullRequestFiles(number)).data;
+  const files = await gh.paginate(gh.pulls.listFiles, {owner: OWNER, repo: REPO, pull_number: number});
   
   console.log("⌛  Validating...");
   
@@ -169,11 +166,11 @@ export async function validatePr(number: number) {
     featureContainsIntegTest(issue, files);
   }
  
-  validateBreakingChangeFormat(issue.title, issue.body);
+  validateBreakingChangeFormat(issue.title, issue.body!);
   if (shouldExemptBreakingChange(issue)) {
     console.log(`Not validating breaking changes since the PR is labeled with '${EXEMPT_BREAKING_CHANGE}'`);
   } else {
-    assertStability(issue.title, issue.body);
+    assertStability(issue.title, issue.body!);
   }
 
   console.log("✅  Success");
