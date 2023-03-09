@@ -339,7 +339,7 @@ export class Table extends TableBase {
         columnIds.add(column.id);
       } else {
         if (columnIds.has(column.name)) {
-          throw new Error(`Column name '${column.name}' is not unique.`);
+          throw new Error(`Column name '${column.name}' is not unique amongst the column ids.`);
         }
         this.tableColumns[i] = {
           ...column,
