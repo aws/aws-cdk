@@ -1,5 +1,5 @@
 import {
-  Connections, IConnectable, Instance, ISecurityGroup, IVpc, Peer, Port,
+  Connections, IConnectable, IInstance, Instance, ISecurityGroup, IVpc, Peer, Port,
   SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
 } from '@aws-cdk/aws-ec2';
 import { Duration, Lazy, Resource } from '@aws-cdk/core';
@@ -248,6 +248,7 @@ export class LoadBalancer extends Resource implements IConnectable {
   private readonly elb: CfnLoadBalancer;
   private readonly securityGroup: SecurityGroup;
   private readonly listeners: CfnLoadBalancer.ListenersProperty[] = [];
+  private readonly instances: IInstance[] = [];
 
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
@@ -265,7 +266,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
       listeners: Lazy.any({ produce: () => this.listeners }),
-      instances: Lazy.list({ produce: () => this.instanceIds.length == 0 ? undefined : this.instanceIds }),
+      instances: Lazy.list({ produce: () => this.instanceIds.length === 0 ? undefined : this.instanceIds }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
       crossZone: props.crossZone ?? true,
@@ -319,6 +320,8 @@ export class LoadBalancer extends Resource implements IConnectable {
     // Keep track using array so user can get to them even if they were all supplied in the constructor
     this.listenerPorts.push(port);
 
+    // Allow connection to all instances to new listener.
+    this.instances.forEach(i => i.connections.allowFrom(this.connections, Port.tcp(Number(instancePort))));
     return port;
   }
 
@@ -401,11 +404,21 @@ export class LoadBalancer extends Resource implements IConnectable {
   }
 
   /**
-   * add instance to the load balancer.
-   * @internal
-   * @param instanceId
+   * Allow connection to all listeners to new instance port.
    */
-  public _addInstanceId(instanceId: string) { this.instanceIds.push(instanceId); }
+  private allowInstanceConnection(instance: IConnectable) {
+    this.listeners.forEach(l => instance.connections.allowFrom(this.connections, Port.tcp(Number(l.instancePort))));
+  }
+
+  /**
+   * Add instance to the load balancer.
+   * @internal
+   */
+  public _addInstance(instance: IInstance) {
+    this.instances.push(instance);
+    this.instanceIds.push(instance.instanceId);
+    this.allowInstanceConnection(instance);
+  }
 }
 
 /**
@@ -418,14 +431,12 @@ export class InstanceTarget implements ILoadBalancerTarget {
    * Create a new Instance target.
    *
    * @param instance Instance to register to.
-   * @param port Override the default port for the target.
    */
-  constructor(public readonly instance: Instance, public readonly port: number) {
+  constructor(public readonly instance: Instance) {
     this.connections = instance.connections;
   }
   public attachToClassicLB(loadBalancer: LoadBalancer): void {
-    loadBalancer._addInstanceId(this.instance.instanceId);
-    this.connections.allowFrom(loadBalancer.connections, Port.tcp(this.port));
+    loadBalancer._addInstance(this.instance);
   }
 }
 
