@@ -252,7 +252,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     If this flag is not set, cluster.addAsgCapacityProvider() does not correctly configure the autoscaling group's
     Security Groups to work with the ECS cluster. If the flag is set, the ASG is correctly configured.`,
     introducedIn: { v2: 'V2NEXT' },
-    defaults: { v2: true },
+    defaults: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'You can use `configureAutoScalingGroup()`, to add secuirty group.',
   },
