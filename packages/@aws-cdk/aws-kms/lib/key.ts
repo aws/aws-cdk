@@ -197,6 +197,9 @@ abstract class KeyBase extends Resource implements IKey {
    * Grant permissions to generating MACs to the given principal
    */
   public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
+    if (!(this.node.defaultChild as CfnKey).keySpec?.startsWith('HMAC')) {
+      throw new Error('grantGenerateMac can only be used with HMAC keys');
+    }
     return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
   }
 
@@ -204,6 +207,11 @@ abstract class KeyBase extends Resource implements IKey {
    * Grant permissions to verifying MACs to the given principal
    */
   public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
+    // eslint-disable-next-line no-console
+    console.log(this.node.defaultChild);
+    if (!(this.node.defaultChild as CfnKey).keySpec?.startsWith('HMAC')) {
+      throw new Error('grantVerifyMac can only be used with HMAC keys');
+    }
     return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
   }
 

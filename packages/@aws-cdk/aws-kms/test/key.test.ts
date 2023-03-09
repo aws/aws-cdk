@@ -1,9 +1,9 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import {Match, Template} from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
+import {describeDeprecated} from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as kms from '../lib';
-import { KeySpec, KeyUsage } from '../lib';
+import {KeySpec, KeyUsage} from '../lib';
 
 const ADMIN_ACTIONS: string[] = [
   'kms:Create*',
@@ -1138,6 +1138,25 @@ describe('HMAC', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('throws error if grantGenerateMac is called on a key with incorrect usage', () => {
+    const key = new kms.Key(stack, 'Key', {
+      keySpec: KeySpec.RSA_4096,
+    });
+    const user = new iam.User(stack, 'User');
+
+    expect(() => key.grantGenerateMac(user)).toThrow('grantGenerateMac can only be used with HMAC keys');
+  });
+
+  test('throws error if grantVerifyMac is called on a key with incorrect usage', () => {
+    const key = new kms.Key(stack, 'Key', {
+      keySpec: KeySpec.ECC_NIST_P384,
+      keyUsage: KeyUsage.SIGN_VERIFY,
+    });
+    const user = new iam.User(stack, 'User');
+
+    expect(() => key.grantVerifyMac(user)).toThrow('grantVerifyMac can only be used with HMAC keys');
   });
 });
 
