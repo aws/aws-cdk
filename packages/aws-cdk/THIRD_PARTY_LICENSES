@@ -1,6 +1,6 @@
 The aws-cdk package includes the following third-party software/licensing:
 
-** @jsii/check-node@1.74.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.74.0 | Apache-2.0
+** @jsii/check-node@1.77.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.77.0 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -268,7 +268,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1313.0 - https://www.npmjs.com/package/aws-sdk/v/2.1313.0 | Apache-2.0
+** aws-sdk@2.1329.0 - https://www.npmjs.com/package/aws-sdk/v/2.1329.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -2475,7 +2475,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** raw-body@2.5.1 - https://www.npmjs.com/package/raw-body/v/2.5.1 | MIT
+** raw-body@2.5.2 - https://www.npmjs.com/package/raw-body/v/2.5.2 | MIT
 The MIT License (MIT)
 
 Copyright (c) 2013-2014 Jonathan Ong <me@jongleberry.com>
@@ -2545,7 +2545,7 @@ IN THE SOFTWARE.
 
 ----------------
 
-** readable-stream@2.3.7 - https://www.npmjs.com/package/readable-stream/v/2.3.7 | MIT
+** readable-stream@2.3.8 - https://www.npmjs.com/package/readable-stream/v/2.3.8 | MIT
 Node.js is licensed for use as follows:
 
 """
@@ -2597,7 +2597,7 @@ IN THE SOFTWARE.
 
 ----------------
 
-** readable-stream@3.6.0 - https://www.npmjs.com/package/readable-stream/v/3.6.0 | MIT
+** readable-stream@3.6.1 - https://www.npmjs.com/package/readable-stream/v/3.6.1 | MIT
 Node.js is licensed for use as follows:
 
 """

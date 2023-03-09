@@ -1,6 +1,7 @@
 import * as zlib from 'zlib';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { Construct } from 'constructs';
+import { ConstructInfo, constructInfoFromStack } from './runtime-info';
 import { CfnCondition } from '../cfn-condition';
 import { Fn } from '../cfn-fn';
 import { Aws } from '../cfn-pseudo';
@@ -8,7 +9,6 @@ import { CfnResource } from '../cfn-resource';
 import { Lazy } from '../lazy';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { ConstructInfo, constructInfoFromStack } from './runtime-info';
 
 /**
  * Construct that will render the metadata resource

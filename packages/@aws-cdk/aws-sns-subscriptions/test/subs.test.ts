@@ -1194,13 +1194,13 @@ describe('Restrict sqs decryption feature flag', () => {
 });
 
 test('lambda subscription', () => {
-  const fction = new lambda.Function(stack, 'MyFunc', {
+  const func = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
 
-  topic.addSubscription(new subs.LambdaSubscription(fction));
+  topic.addSubscription(new subs.LambdaSubscription(func));
 
   Template.fromStack(stack).templateMatches({
     'Resources': {
@@ -1305,13 +1305,13 @@ test('lambda subscription, cross region env agnostic', () => {
     topicName: 'topicName',
     displayName: 'displayName',
   });
-  const fction = new lambda.Function(lambdaStack, 'MyFunc', {
+  const func = new lambda.Function(lambdaStack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
 
-  topic1.addSubscription(new subs.LambdaSubscription(fction));
+  topic1.addSubscription(new subs.LambdaSubscription(func));
 
   Template.fromStack(lambdaStack).templateMatches({
     'Resources': {
@@ -1419,13 +1419,13 @@ test('lambda subscription, cross region', () => {
     topicName: 'topicName',
     displayName: 'displayName',
   });
-  const fction = new lambda.Function(lambdaStack, 'MyFunc', {
+  const func = new lambda.Function(lambdaStack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
 
-  topic1.addSubscription(new subs.LambdaSubscription(fction));
+  topic1.addSubscription(new subs.LambdaSubscription(func));
 
   Template.fromStack(lambdaStack).templateMatches({
     'Resources': {
@@ -1873,13 +1873,13 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
 });
 
 test('with filter policy', () => {
-  const fction = new lambda.Function(stack, 'MyFunc', {
+  const func = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
 
-  topic.addSubscription(new subs.LambdaSubscription(fction, {
+  topic.addSubscription(new subs.LambdaSubscription(func, {
     filterPolicy: {
       color: sns.SubscriptionFilter.stringFilter({
         allowlist: ['red'],
@@ -1924,6 +1924,53 @@ test('with filter policy', () => {
         },
       ],
     },
+  });
+});
+
+test('with filter policy scope MessageBody', () => {
+  const func = new lambda.Function(stack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_14_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+
+  topic.addSubscription(new subs.LambdaSubscription(func, {
+    filterPolicyWithMessageBody: {
+      color: sns.FilterOrPolicy.policy({
+        background: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
+          allowlist: ['red'],
+          matchPrefixes: ['bl', 'ye'],
+        })),
+      }),
+      size: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
+        denylist: ['small', 'medium'],
+      })),
+    },
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+    'FilterPolicy': {
+      'color': {
+        'background': [
+          'red',
+          {
+            'prefix': 'bl',
+          },
+          {
+            'prefix': 'ye',
+          },
+        ],
+      },
+      'size': [
+        {
+          'anything-but': [
+            'small',
+            'medium',
+          ],
+        },
+      ],
+    },
+    FilterPolicyScope: 'MessageBody',
   });
 });
 

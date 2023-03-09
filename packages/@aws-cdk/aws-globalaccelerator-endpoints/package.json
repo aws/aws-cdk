@@ -81,7 +81,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "aws-sdk": "^2.1211.0",
+    "aws-sdk": "^2.1329.0",
     "aws-sdk-mock": "5.6.0",
     "jest": "^27.5.1"
   },

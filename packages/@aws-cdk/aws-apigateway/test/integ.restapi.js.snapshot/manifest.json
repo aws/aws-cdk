@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "30.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "test-apigateway-restapi.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/527feb6f65d1f41404abb6acfb6504a918e1d7489665b74acb9fa0ca23f34049.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94f416193221135915e06201345d08e3db001c8bbf22b073f16ec02d3b8fba4b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -60,7 +54,7 @@
         "/test-apigateway-restapi/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiDeployment92F2CB4996088bac04ec19d9db88f146f3d88bca"
+            "data": "myapiDeployment92F2CB496a6dee9579dae89ab3a0b094b4d193eb"
           }
         ],
         "/test-apigateway-restapi/my-api/DeploymentStage.beta/Resource": [
@@ -204,7 +198,7 @@
         "/test-apigateway-restapi/TestDeployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d"
+            "data": "TestDeploymentD77B56860a9c34c1bc306bfbc7d318827eacd1e1"
           }
         ],
         "/test-apigateway-restapi/TestStage/Resource": [
@@ -231,28 +225,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5": [
+        "myapiDeployment92F2CB4996088bac04ec19d9db88f146f3d88bca": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5",
+            "data": "myapiDeployment92F2CB4996088bac04ec19d9db88f146f3d88bca",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "myapiv1appliances507FEFF4": [
+        "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiv1appliances507FEFF4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "myapiv1appliancesGET8FE872EC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiv1appliancesGET8FE872EC",
+            "data": "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -307,6 +292,12 @@
         ]
       },
       "displayName": "apigateway-restapi/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
