@@ -7,6 +7,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../../docker-credentials';
 import { embeddedAsmPath } from '../../private/construct-internals';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../private/default-codebuild-image';
 
 /**
  * Props for the UpdatePipelineAction
@@ -109,7 +110,7 @@ export class UpdatePipelineAction extends Construct implements codepipeline.IAct
     const selfMutationProject = new codebuild.PipelineProject(this, 'SelfMutation', {
       projectName: props.projectName,
       environment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+        buildImage: CDKP_DEFAULT_CODEBUILD_IMAGE,
         privileged: props.privileged ?? false,
       },
       buildSpec: props.buildSpec ? codebuild.mergeBuildSpecs(props.buildSpec, buildSpec) : buildSpec,

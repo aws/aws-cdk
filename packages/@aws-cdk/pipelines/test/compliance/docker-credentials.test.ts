@@ -5,6 +5,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodeBuildStep } from '../../lib';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
 import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, DockerAssetApp, stringLike } from '../testhelpers';
 
 const secretSynthArn = 'arn:aws:secretsmanager:eu-west-1:0123456789012:secret:synth-012345';
@@ -51,7 +52,7 @@ behavior('synth action receives install commands and access to relevant credenti
     });
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-      Environment: { Image: 'aws/codebuild/standard:5.0' },
+      Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
@@ -164,7 +165,7 @@ behavior('self-update receives install commands and access to relevant credentia
     });
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-      Environment: { Image: 'aws/codebuild/standard:5.0' },
+      Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
@@ -220,7 +221,7 @@ behavior('asset publishing receives install commands and access to relevant cred
     });
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-      Environment: { Image: 'aws/codebuild/standard:5.0' },
+      Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {

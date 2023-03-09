@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.92"
-        }
-      },
       "PipelineStack": {
         "id": "PipelineStack",
         "path": "PipelineStack",
@@ -91,8 +83,8 @@
                     "id": "Acl",
                     "path": "PipelineStack/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +250,8 @@
                     "id": "Acl",
                     "path": "PipelineStack/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +417,8 @@
                     "id": "Acl",
                     "path": "PipelineStack/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +536,8 @@
                     "id": "Acl",
                     "path": "PipelineStack/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "RouteTable": {
@@ -829,6 +821,14 @@
                     "id": "Role",
                     "path": "PipelineStack/Pipeline/Pipeline/Role",
                     "children": {
+                      "ImportRole": {
+                        "id": "ImportRole",
+                        "path": "PipelineStack/Pipeline/Pipeline/Role/ImportRole",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.264"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "PipelineStack/Pipeline/Pipeline/Role/Resource",
@@ -1031,7 +1031,7 @@
                                   "ProjectName": {
                                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"00ebacfb32b1bde8d3638577308e7b7144dfa3b0a58a83bc6ff38a3b1f26951c\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"09deb76d97fe89f2ccd364ad1eedc7ebc7c010be6bf79da68c34f358446cd134\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
@@ -1063,7 +1063,7 @@
                                   "ProjectName": {
                                     "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"c0779bd925c3a7f19be75a4973c668d10d00ce3552b882c7d2ba3fa3cee6d976\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"ceff66d3191e2ca3ec1a2711dae97a4541cbf7254c7dcca9acf21e0d12ce37a2\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
@@ -1298,13 +1298,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.92"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.92"
+                      "version": "10.1.264"
                     }
                   },
                   "Build": {
@@ -1323,6 +1323,14 @@
                                 "id": "Role",
                                 "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role",
                                 "children": {
+                                  "ImportRole": {
+                                    "id": "ImportRole",
+                                    "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/ImportRole",
+                                    "constructInfo": {
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.264"
+                                    }
+                                  },
                                   "Resource": {
                                     "id": "Resource",
                                     "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource",
@@ -1638,7 +1646,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:5.0",
+                                      "image": "aws/codebuild/standard:6.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -1742,13 +1750,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.92"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.92"
+                      "version": "10.1.264"
                     }
                   },
                   "UpdatePipeline": {
@@ -1760,13 +1768,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.92"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.92"
+                      "version": "10.1.264"
                     }
                   },
                   "Assets": {
@@ -1778,7 +1786,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.92"
+                          "version": "10.1.264"
                         }
                       },
                       "FileAsset2": {
@@ -1786,13 +1794,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.92"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.92"
+                      "version": "10.1.264"
                     }
                   },
                   "Beta": {
@@ -1804,7 +1812,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Beta/Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.92"
+                          "version": "10.1.264"
                         }
                       },
                       "Deploy": {
@@ -1812,21 +1820,21 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Beta/Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.92"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.92"
+                      "version": "10.1.264"
                     }
                   },
                   "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
                     "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineStack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
@@ -1838,29 +1846,29 @@
                         "path": "PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.92"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                     "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineStack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                     "id": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
@@ -1873,6 +1881,14 @@
                 "id": "CodeBuildActionRole",
                 "path": "PipelineStack/Pipeline/CodeBuildActionRole",
                 "children": {
+                  "ImportCodeBuildActionRole": {
+                    "id": "ImportCodeBuildActionRole",
+                    "path": "PipelineStack/Pipeline/CodeBuildActionRole/ImportCodeBuildActionRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "PipelineStack/Pipeline/CodeBuildActionRole/Resource",
@@ -2004,6 +2020,14 @@
                         "id": "Role",
                         "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.264"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/Resource",
@@ -2345,7 +2369,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:5.0",
+                              "image": "aws/codebuild/standard:6.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
@@ -2449,7 +2473,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.92"
+                  "version": "10.1.264"
                 }
               },
               "Assets": {
@@ -2460,6 +2484,14 @@
                     "id": "FileRole",
                     "path": "PipelineStack/Pipeline/Assets/FileRole",
                     "children": {
+                      "ImportFileRole": {
+                        "id": "ImportFileRole",
+                        "path": "PipelineStack/Pipeline/Assets/FileRole/ImportFileRole",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.264"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "PipelineStack/Pipeline/Assets/FileRole/Resource",
@@ -2771,7 +2803,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:5.0",
+                              "image": "aws/codebuild/standard:6.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
@@ -2921,7 +2953,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:5.0",
+                              "image": "aws/codebuild/standard:6.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
@@ -2978,7 +3010,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.92"
+                  "version": "10.1.264"
                 }
               }
             },
@@ -3003,8 +3035,8 @@
                         "id": "Stage",
                         "path": "PipelineStack/Beta/Stack1/Asset/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.264"
                         }
                       },
                       "AssetBucket": {
@@ -3029,8 +3061,8 @@
                         "id": "Stage",
                         "path": "PipelineStack/Beta/Stack1/Asset2/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.264"
                         }
                       },
                       "AssetBucket": {
@@ -3073,40 +3105,64 @@
                     "id": "BootstrapVersion",
                     "path": "PipelineStack/Beta/Stack1/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "PipelineStack/Beta/Stack1/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Stage",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "PipelineStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "PipelineStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.264"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.264"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.264"
     }
   }
 }

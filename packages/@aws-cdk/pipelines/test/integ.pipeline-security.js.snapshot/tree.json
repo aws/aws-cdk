@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.65"
-        }
-      },
       "PipelineSecurityStack": {
         "id": "PipelineSecurityStack",
         "path": "PipelineSecurityStack",
@@ -116,14 +108,14 @@
                     "id": "Default",
                     "path": "PipelineSecurityStack/SourceBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
@@ -140,30 +132,30 @@
                 "id": "Staging",
                 "path": "PipelineSecurityStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "PipelineSecurityStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "PipelineSecurityStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
             }
           },
           "TestPipeline": {
@@ -456,6 +448,14 @@
                     "id": "Role",
                     "path": "PipelineSecurityStack/TestPipeline/Pipeline/Role",
                     "children": {
+                      "ImportRole": {
+                        "id": "ImportRole",
+                        "path": "PipelineSecurityStack/TestPipeline/Pipeline/Role/ImportRole",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.264"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/Role/Resource",
@@ -733,7 +733,7 @@
                                   "ProjectName": {
                                     "Ref": "TestPipelineBuildSynthCdkBuildProject755D4B01"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"fade37e243023bb2c0d6730c10a2c61567fbe168675a7c5e26a8810aadc7e513\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"55237dcb0df011e1efdb5ff9053063140a7b6d053626aea9bbb4ea1f6ea0a07e\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
@@ -1664,6 +1664,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "PipelineSecurityStack/TestPipeline/Pipeline/Source/S3/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "PipelineSecurityStack/TestPipeline/Pipeline/Source/S3/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/Source/S3/CodePipelineActionRole/Resource",
@@ -1826,13 +1834,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.65"
+                      "version": "10.1.264"
                     }
                   },
                   "Build": {
@@ -1847,6 +1855,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "PipelineSecurityStack/TestPipeline/Pipeline/Build/Synth/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "PipelineSecurityStack/TestPipeline/Pipeline/Build/Synth/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/Build/Synth/CodePipelineActionRole/Resource",
@@ -1949,6 +1965,14 @@
                                 "id": "Role",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/Build/Synth/CdkBuildProject/Role",
                                 "children": {
+                                  "ImportRole": {
+                                    "id": "ImportRole",
+                                    "path": "PipelineSecurityStack/TestPipeline/Pipeline/Build/Synth/CdkBuildProject/Role/ImportRole",
+                                    "constructInfo": {
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.264"
+                                    }
+                                  },
                                   "Resource": {
                                     "id": "Resource",
                                     "path": "PipelineSecurityStack/TestPipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource",
@@ -2169,7 +2193,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:5.0",
+                                      "image": "aws/codebuild/standard:6.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL",
@@ -2216,13 +2240,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.65"
+                      "version": "10.1.264"
                     }
                   },
                   "UnattachedStage": {
@@ -2237,6 +2261,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "PipelineSecurityStack/TestPipeline/Pipeline/UnattachedStage/SingleStageSecurityCheck/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "PipelineSecurityStack/TestPipeline/Pipeline/UnattachedStage/SingleStageSecurityCheck/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/UnattachedStage/SingleStageSecurityCheck/CodePipelineActionRole/Resource",
@@ -2334,7 +2366,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "SingleStageManualApproval": {
@@ -2345,6 +2377,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "PipelineSecurityStack/TestPipeline/Pipeline/UnattachedStage/SingleStageManualApproval/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "PipelineSecurityStack/TestPipeline/Pipeline/UnattachedStage/SingleStageManualApproval/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/UnattachedStage/SingleStageManualApproval/CodePipelineActionRole/Resource",
@@ -2394,7 +2434,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "SingleStage-MyStack.Deploy": {
@@ -2402,7 +2442,7 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/UnattachedStage/SingleStage-MyStack.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "SingleStage-MyStack.Prepare": {
@@ -2410,13 +2450,13 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/UnattachedStage/SingleStage-MyStack.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.65"
+                      "version": "10.1.264"
                     }
                   },
                   "PreProduction": {
@@ -2431,6 +2471,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/PreProductionSecurityCheck/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/PreProductionSecurityCheck/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/PreProductionSecurityCheck/CodePipelineActionRole/Resource",
@@ -2528,7 +2576,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "PreProductionManualApproval": {
@@ -2539,6 +2587,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/PreProductionManualApproval/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/PreProductionManualApproval/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/PreProductionManualApproval/CodePipelineActionRole/Resource",
@@ -2588,7 +2644,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "SafeProductionSecurityCheck": {
@@ -2599,6 +2655,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/SafeProductionSecurityCheck/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/SafeProductionSecurityCheck/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/SafeProductionSecurityCheck/CodePipelineActionRole/Resource",
@@ -2696,7 +2760,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "SafeProductionManualApproval": {
@@ -2707,6 +2771,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/SafeProductionManualApproval/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/SafeProductionManualApproval/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/SafeProductionManualApproval/CodePipelineActionRole/Resource",
@@ -2756,7 +2828,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "MyStack.Deploy": {
@@ -2764,7 +2836,7 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/MyStack.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "MyStack.Prepare": {
@@ -2772,7 +2844,7 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/MyStack.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "SafeProduction-MySafeStack.Deploy": {
@@ -2780,7 +2852,7 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/SafeProduction-MySafeStack.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "SafeProduction-MySafeStack.Prepare": {
@@ -2788,7 +2860,7 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/SafeProduction-MySafeStack.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "DisableSecurityCheck-MySafeStack.Deploy": {
@@ -2796,7 +2868,7 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/DisableSecurityCheck-MySafeStack.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "DisableSecurityCheck-MySafeStack.Prepare": {
@@ -2804,13 +2876,13 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/PreProduction/DisableSecurityCheck-MySafeStack.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.65"
+                      "version": "10.1.264"
                     }
                   },
                   "NoSecurityCheck": {
@@ -2825,6 +2897,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "PipelineSecurityStack/TestPipeline/Pipeline/NoSecurityCheck/EnableSecurityCheckSecurityCheck/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "PipelineSecurityStack/TestPipeline/Pipeline/NoSecurityCheck/EnableSecurityCheckSecurityCheck/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/NoSecurityCheck/EnableSecurityCheckSecurityCheck/CodePipelineActionRole/Resource",
@@ -2922,7 +3002,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "EnableSecurityCheckManualApproval": {
@@ -2933,6 +3013,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "PipelineSecurityStack/TestPipeline/Pipeline/NoSecurityCheck/EnableSecurityCheckManualApproval/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "PipelineSecurityStack/TestPipeline/Pipeline/NoSecurityCheck/EnableSecurityCheckManualApproval/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "PipelineSecurityStack/TestPipeline/Pipeline/NoSecurityCheck/EnableSecurityCheckManualApproval/CodePipelineActionRole/Resource",
@@ -2982,7 +3070,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "MyStack.Deploy": {
@@ -2990,7 +3078,7 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/NoSecurityCheck/MyStack.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "MyStack.Prepare": {
@@ -2998,7 +3086,7 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/NoSecurityCheck/MyStack.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "EnableSecurityCheck-MyStack.Deploy": {
@@ -3006,7 +3094,7 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/NoSecurityCheck/EnableSecurityCheck-MyStack.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       },
                       "EnableSecurityCheck-MyStack.Prepare": {
@@ -3014,13 +3102,13 @@
                         "path": "PipelineSecurityStack/TestPipeline/Pipeline/NoSecurityCheck/EnableSecurityCheck-MyStack.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.65"
+                      "version": "10.1.264"
                     }
                   }
                 },
@@ -3034,7 +3122,7 @@
                 "path": "PipelineSecurityStack/TestPipeline/Assets",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.264"
                 }
               },
               "PreProduction": {
@@ -3045,8 +3133,8 @@
                     "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineSecurityStack/TestPipeline/PreProduction/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
@@ -3058,29 +3146,29 @@
                         "path": "PipelineSecurityStack/TestPipeline/PreProduction/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                     "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineSecurityStack/TestPipeline/PreProduction/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                     "id": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineSecurityStack/TestPipeline/PreProduction/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
@@ -3101,6 +3189,14 @@
                         "id": "ServiceRole",
                         "path": "PipelineSecurityStack/TestPipeline/PipelineApplicationSecurityCheck/CDKPipelinesAutoApprove/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "PipelineSecurityStack/TestPipeline/PipelineApplicationSecurityCheck/CDKPipelinesAutoApprove/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.264"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "PipelineSecurityStack/TestPipeline/PipelineApplicationSecurityCheck/CDKPipelinesAutoApprove/ServiceRole/Resource",
@@ -3201,8 +3297,8 @@
                             "id": "Stage",
                             "path": "PipelineSecurityStack/TestPipeline/PipelineApplicationSecurityCheck/CDKPipelinesAutoApprove/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.264"
                             }
                           },
                           "AssetBucket": {
@@ -3261,6 +3357,14 @@
                         "id": "Role",
                         "path": "PipelineSecurityStack/TestPipeline/PipelineApplicationSecurityCheck/CDKSecurityCheck/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "PipelineSecurityStack/TestPipeline/PipelineApplicationSecurityCheck/CDKSecurityCheck/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.264"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "PipelineSecurityStack/TestPipeline/PipelineApplicationSecurityCheck/CDKSecurityCheck/Role/Resource",
@@ -3519,7 +3623,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:5.0",
+                              "image": "aws/codebuild/standard:6.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
@@ -3570,7 +3674,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.264"
                 }
               },
               "NoSecurityCheck": {
@@ -3581,8 +3685,8 @@
                     "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineSecurityStack/TestPipeline/NoSecurityCheck/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
@@ -3594,29 +3698,29 @@
                         "path": "PipelineSecurityStack/TestPipeline/NoSecurityCheck/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.65"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                     "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineSecurityStack/TestPipeline/NoSecurityCheck/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                     "id": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineSecurityStack/TestPipeline/NoSecurityCheck/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
@@ -3647,6 +3751,14 @@
                         "id": "ServiceRole",
                         "path": "PipelineSecurityStack/UnattachedStage/StageApplicationSecurityCheck/CDKPipelinesAutoApprove/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "PipelineSecurityStack/UnattachedStage/StageApplicationSecurityCheck/CDKPipelinesAutoApprove/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.264"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "PipelineSecurityStack/UnattachedStage/StageApplicationSecurityCheck/CDKPipelinesAutoApprove/ServiceRole/Resource",
@@ -3747,8 +3859,8 @@
                             "id": "Stage",
                             "path": "PipelineSecurityStack/UnattachedStage/StageApplicationSecurityCheck/CDKPipelinesAutoApprove/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.264"
                             }
                           },
                           "AssetBucket": {
@@ -3807,6 +3919,14 @@
                         "id": "Role",
                         "path": "PipelineSecurityStack/UnattachedStage/StageApplicationSecurityCheck/CDKSecurityCheck/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "PipelineSecurityStack/UnattachedStage/StageApplicationSecurityCheck/CDKSecurityCheck/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.264"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "PipelineSecurityStack/UnattachedStage/StageApplicationSecurityCheck/CDKSecurityCheck/Role/Resource",
@@ -4065,7 +4185,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:5.0",
+                              "image": "aws/codebuild/standard:6.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
@@ -4116,15 +4236,15 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.264"
                 }
               },
               "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
                 "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                 "path": "PipelineSecurityStack/UnattachedStage/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               },
               "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
@@ -4136,29 +4256,29 @@
                     "path": "PipelineSecurityStack/UnattachedStage/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.65"
+                      "version": "10.1.264"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               },
               "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                 "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                 "path": "PipelineSecurityStack/UnattachedStage/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               },
               "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                 "id": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                 "path": "PipelineSecurityStack/UnattachedStage/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
@@ -4310,28 +4430,28 @@
                     "id": "BootstrapVersion",
                     "path": "PipelineSecurityStack/SingleStage/MyStack/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "PipelineSecurityStack/SingleStage/MyStack/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Stage",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
             }
           },
           "PreProduction": {
@@ -4427,28 +4547,28 @@
                     "id": "BootstrapVersion",
                     "path": "PipelineSecurityStack/PreProduction/MyStack/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "PipelineSecurityStack/PreProduction/MyStack/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Stage",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
             }
           },
           "SafeProduction": {
@@ -4485,28 +4605,28 @@
                     "id": "BootstrapVersion",
                     "path": "PipelineSecurityStack/SafeProduction/MySafeStack/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "PipelineSecurityStack/SafeProduction/MySafeStack/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Stage",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
             }
           },
           "DisableSecurityCheck": {
@@ -4543,28 +4663,28 @@
                     "id": "BootstrapVersion",
                     "path": "PipelineSecurityStack/DisableSecurityCheck/MySafeStack/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "PipelineSecurityStack/DisableSecurityCheck/MySafeStack/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Stage",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
             }
           },
           "NoSecurityCheck": {
@@ -4660,28 +4780,28 @@
                     "id": "BootstrapVersion",
                     "path": "PipelineSecurityStack/NoSecurityCheck/MyStack/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "PipelineSecurityStack/NoSecurityCheck/MyStack/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Stage",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
             }
           },
           "EnableSecurityCheck": {
@@ -4777,34 +4897,50 @@
                     "id": "BootstrapVersion",
                     "path": "PipelineSecurityStack/EnableSecurityCheck/MyStack/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "PipelineSecurityStack/EnableSecurityCheck/MyStack/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Stage",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "PipelineSecurityStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "PipelineSecurityStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.264"
         }
       },
       "PipelineSecurityTest": {
@@ -4820,15 +4956,33 @@
                 "path": "PipelineSecurityTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.65"
+                  "version": "10.1.264"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "PipelineSecurityTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "PipelineSecurityTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "PipelineSecurityTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
+                    }
+                  }
+                },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
@@ -4842,11 +4996,19 @@
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.264"
+        }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.264"
     }
   }
 }

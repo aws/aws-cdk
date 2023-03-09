@@ -4,6 +4,7 @@ import { Capture, Match, Template } from '@aws-cdk/assertions';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack, Stage } from '@aws-cdk/core';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
 import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, FileAssetApp, MegaAssetsApp, TwoFileAssetsApp, DockerAssetApp, PlainStackApp, stringLike } from '../testhelpers';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
@@ -187,7 +188,7 @@ describe('basic pipeline', () => {
     function THEN_codePipelineExpectation() {
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
-          Image: 'aws/codebuild/standard:5.0',
+          Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         },
         Source: {
           BuildSpec: Match.serializedJson(Match.objectLike({
@@ -288,7 +289,7 @@ describe('basic pipeline', () => {
         },
         Environment: Match.objectLike({
           PrivilegedMode: false,
-          Image: 'aws/codebuild/standard:5.0',
+          Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         }),
       });
     }
@@ -321,7 +322,7 @@ describe('basic pipeline', () => {
           })),
         },
         Environment: Match.objectLike({
-          Image: 'aws/codebuild/standard:5.0',
+          Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
           PrivilegedMode: true,
         }),
       });
@@ -350,7 +351,7 @@ describe('basic pipeline', () => {
     function THEN_codePipelineExpectation() {
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
-          Image: 'aws/codebuild/standard:5.0',
+          Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         },
         Source: {
           BuildSpec: Match.serializedJson(Match.objectLike({
@@ -593,7 +594,7 @@ behavior('can supply pre-install scripts to asset upload', (suite) => {
   function THEN_codePipelineExpectation() {
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -770,7 +771,7 @@ describe('pipeline with single asset publisher', () => {
       });
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
-          Image: 'aws/codebuild/standard:5.0',
+          Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         },
         Source: {
           BuildSpec: buildSpecName,
@@ -898,7 +899,7 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
       });
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
-          Image: 'aws/codebuild/standard:5.0',
+          Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         },
         Source: {
           BuildSpec: buildSpecName,

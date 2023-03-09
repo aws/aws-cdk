@@ -8,6 +8,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { CodePipelineSource, ShellStep } from '../../lib';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
 import { AppWithOutput, behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortByRunOrder, StageWithStackOutput, stringNoLongerThan, TestApp, TwoStackApp } from '../testhelpers';
 
 let app: TestApp;
@@ -130,7 +131,7 @@ behavior('script validation steps can use stack outputs as environment variables
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -307,7 +308,7 @@ behavior('validation step can run from scripts in source', (suite) => {
     });
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -390,7 +391,7 @@ behavior('can use additional output artifacts from build', (suite) => {
     });
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -563,7 +564,7 @@ behavior('can run shell script actions in a VPC', (suite) => {
   function THEN_codePipelineExpectation() {
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       VpcConfig: {
         Subnets: [

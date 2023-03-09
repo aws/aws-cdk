@@ -8,6 +8,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { CodeBuildStep } from '../../lib';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
 import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps, OneStackApp } from '../testhelpers';
 
 let app: TestApp;
@@ -65,7 +66,7 @@ behavior('synth takes arrays of commands', (suite) => {
     // THEN
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -113,7 +114,7 @@ behavior('synth sets artifact base-directory to cdk.out', (suite) => {
     // THEN
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -155,7 +156,7 @@ behavior('synth supports setting subdirectory', (suite) => {
     // THEN
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -226,7 +227,7 @@ behavior('synth assumes a JavaScript project by default (no build, yes synth)', 
     // THEN
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -414,7 +415,7 @@ behavior('install command can be overridden/specified', (suite) => {
     // THEN
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -446,7 +447,7 @@ behavior('synth can have its test commands set', (suite) => {
     // THEN
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -507,7 +508,7 @@ behavior('Synth can output additional artifacts', (suite) => {
     // THEN
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({

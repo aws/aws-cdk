@@ -3,6 +3,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Stack, Stage } from '@aws-cdk/core';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
 import { behavior, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';
 
 let app: TestApp;
@@ -46,7 +47,7 @@ behavior('CodePipeline has self-mutation stage', (suite) => {
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -85,7 +86,7 @@ behavior('selfmutation stage correctly identifies nested assembly of pipeline st
   function THEN_codePipelineExpectation(nestedPipelineStack: Stack) {
     Template.fromStack(nestedPipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -281,7 +282,7 @@ behavior('self-mutation stage can be customized with BuildSpec', (suite) => {
   function THEN_codePipelineExpectation() {
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:5.0',
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         PrivilegedMode: false,
       },
       Source: {
