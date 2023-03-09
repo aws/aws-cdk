@@ -242,7 +242,6 @@ export class Table extends TableBase {
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
-    this.addColumnIds(props.tableColumns);
     this.validateDistKeyColumns(props.tableColumns);
     if (props.distStyle) {
       this.validateDistStyle(props.distStyle, props.tableColumns);
@@ -252,6 +251,8 @@ export class Table extends TableBase {
     }
 
     this.tableColumns = props.tableColumns;
+    this.addColumnIds(props.tableColumns);
+
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
 
@@ -329,12 +330,22 @@ export class Table extends TableBase {
 
   private addColumnIds(columns: Column[]): void {
     const columnIds = new Set<string>();
-    for (const column of columns) {
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
       if (column.id) {
         if (columnIds.has(column.id)) {
           throw new Error(`Column id '${column.id}' is not unique.`);
         }
         columnIds.add(column.id);
+      } else {
+        if (columnIds.has(column.name)) {
+          throw new Error(`Column name '${column.name}' is not unique.`);
+        }
+        this.tableColumns[i] = {
+          ...column,
+          id: column.name,
+        };
+        columnIds.add(column.name);
       }
     }
   }

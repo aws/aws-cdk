@@ -141,18 +141,39 @@ describe('cluster table', () => {
     });
   });
 
-  it('throws if column ids are similar', async () => {
-    const updatedTableColumns: redshift.Column[] = [
-      { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
-      { id: 'col1', name: 'col2', dataType: 'float' },
-    ];
+  describe('columnId', () => {
+    it('throws if column ids are similar', async () => {
+      const updatedTableColumns: redshift.Column[] = [
+        { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+        { id: 'col1', name: 'col2', dataType: 'float' },
+      ];
 
-    expect(
-      () => new redshift.Table(stack, 'Table', {
+      expect(
+        () => new redshift.Table(stack, 'Table', {
+          ...databaseOptions,
+          tableColumns: updatedTableColumns,
+        }),
+      ).toThrow("Column id 'col1' is not unique.");
+    });
+
+    it('populates column id if no id provided', () => {
+      const updatedTableColumns: redshift.Column[] = [
+        { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+        { name: 'col2', dataType: 'float' },
+      ];
+
+      new redshift.Table(stack, 'Table', {
         ...databaseOptions,
         tableColumns: updatedTableColumns,
-      }),
-    ).toThrow("Column id 'col1' is not unique.");
+      });
+
+      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        tableColumns: [
+          { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+          { id: 'col2', name: 'col2', dataType: 'float' },
+        ],
+      });
+    });
   });
 
   describe('@aws-cdk/aws-redshift:columnId', () => {
