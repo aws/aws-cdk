@@ -52,7 +52,7 @@ async function createTable(
   tableAndClusterProps: TableAndClusterProps,
 ): Promise<string> {
   const tableName = tableNamePrefix + tableNameSuffix;
-  const tableColumnsString = tableColumns.map(column => `${column.name} ${column.dataType}`).join();
+  const tableColumnsString = tableColumns.map(column => `${column.name} ${column.dataType}${getEncodingColumnString(column)}`).join();
 
   let statement = `CREATE TABLE ${tableName} (${tableColumnsString})`;
 
@@ -73,6 +73,11 @@ async function createTable(
 
   await executeStatement(statement, tableAndClusterProps);
 
+  for (const column of tableColumns) {
+    if (column.comment) {
+      await executeStatement(`COMMENT ON COLUMN ${tableName}.${column.name} IS '${column.comment}'`, tableAndClusterProps);
+    }
+  }
   if (tableAndClusterProps.tableComment) {
     await executeStatement(`COMMENT ON TABLE ${tableName} IS '${tableAndClusterProps.tableComment}'`, tableAndClusterProps);
   }
@@ -123,6 +128,20 @@ async function updateTable(
   }).map(column => `ADD ${column.name} ${column.dataType}`);
   if (columnAdditions.length > 0) {
     alterationStatements.push(...columnAdditions.map(addition => `ALTER TABLE ${tableName} ${addition}`));
+  }
+
+  const columnEncoding = tableColumns.filter(column => {
+    return oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.encoding !== oldColumn.encoding);
+  }).map(column => `ALTER COLUMN ${column.name} ENCODE ${column.encoding || 'AUTO'}`);
+  if (columnEncoding.length > 0) {
+    alterationStatements.push(`ALTER TABLE ${tableName} ${columnEncoding.join(', ')}`);
+  }
+
+  const columnComments = tableColumns.filter(column => {
+    return oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.comment !== oldColumn.comment);
+  }).map(column => `COMMENT ON COLUMN ${tableName}.${column.name} IS ${column.comment ? `'${column.comment}'` : 'NULL'}`);
+  if (columnComments.length > 0) {
+    alterationStatements.push(...columnComments);
   }
 
   if (useColumnIds) {
@@ -200,4 +219,11 @@ async function updateTable(
 
 function getSortKeyColumnsString(sortKeyColumns: Column[]) {
   return sortKeyColumns.map(column => column.name).join();
+}
+
+function getEncodingColumnString(column: Column): string {
+  if (column.encoding) {
+    return ` ENCODE ${column.encoding}`;
+  }
+  return '';
 }
