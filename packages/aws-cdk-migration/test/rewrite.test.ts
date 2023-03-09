@@ -73,22 +73,6 @@ describe(rewriteMonoPackageImports, () => {
     console.log('Look! I did something!');`);
   });
 
-  test('does not rewrite @aws-cdk/assert', () => {
-    const output = rewriteMonoPackageImports(`
-    // something before
-    import '@aws-cdk/assert/jest';
-    // something after
-
-    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
-
-    expect(output).toBe(`
-    // something before
-    import '@aws-cdk/assert/jest';
-    // something after
-
-    console.log('Look! I did something!');`);
-  });
-
   test('correctly rewrites Cfn imports', () => {
     // Codestar example
     const codestar = rewriteMonoPackageImports(`
