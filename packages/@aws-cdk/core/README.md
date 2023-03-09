@@ -1340,6 +1340,12 @@ validate all the templates generated in the scope you defined. In particular, if
 you register the templates in the `App` object, all templates will be subject to
 validation.
 
+> **Warning**
+> Other than modifying the cloud assembly, plugins can do anything that your CDK
+> application can. They can read data from the filesystem, access the network
+> etc. It's your responsibility as the consumer of a plugin to verify that it is
+> secure to use.
+
 By default, the report will be printed in a human readable format. If you want a
 report in JSON format, use the `synth()` method:
 
@@ -1353,32 +1359,14 @@ app.synth({
 
 The communication protocol between the CDK core module and your policy tool is
 defined by the `IValidationPlugin` interface. To create a new plugin you must
-write a class that implements this interface. There are three things you need to
-implement: the plugin name (by overriding the `name` property), and the two
-methods `isReady()` and `validate()`.
+write a class that implements this interface. There are two things you need to
+implement: the plugin name (by overriding the `name` property), and the
+`validate()` method.
 
-The method `isReady()` is called first in the workflow, to make sure that the
-plugin is in a valid state and can be used. For example, most plugins will have
-an external dependency, such as a CLI, which must be installed for the plugin to
-work. To signal to the framework that it can go ahead and use the plugin, you
-can check whether the CLI is installed by checking the version:
-
-```ts
-declare function invokeCliVersionCommand(): number;
-
-isReady(): boolean {
-  const status = invokeCliVersionCommand();
-
-  // exit status of the CLI command
-  return status === 0;
-}
-```
-
-If the plugin is ready, the framework will call `validate()`, passing a
-`ValidationContext` object. The location of the templates to be validated is given
-by `templatePaths`. The plugin should return an instance of `ValidationReport`.
-This object represents the report that the user wil receive at the end of the
-synthesis.
+The framework will call `validate()`, passing an `IValidationContext` object.
+The location of the templates to be validated is given by `templatePaths`. The
+plugin should return an instance of `ValidationPluginReport`. This object
+represents the report that the user wil receive at the end of the synthesis.
 
 ```ts
 validate(context: ValidationContext): ValidationReport {
@@ -1387,7 +1375,6 @@ validate(context: ValidationContext): ValidationReport {
   // ...then perform the validation, and then compose and return the report.
   // Using hard-coded values here for better clarity:
   return {
-    pluginName: 'MyCheckovPlugin',
     success: false,
     violations: [{
       ruleName: 'CKV_AWS_117',
