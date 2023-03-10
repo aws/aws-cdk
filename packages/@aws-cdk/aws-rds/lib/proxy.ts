@@ -6,7 +6,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
 import { IEngine } from './engine';
-import { IDatabaseInstance } from './instance';
+import { DatabaseInstanceReadReplica, IDatabaseInstance } from './instance';
 import { engineDescription } from './private/util';
 import { CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
 
@@ -83,6 +83,12 @@ export class ProxyTarget {
     const engineFamily = engine.engineFamily;
     if (!engineFamily) {
       throw new Error(`Engine '${engineDescription(engine)}' does not support proxies`);
+    }
+
+    const isReadReplica = this.dbInstance instanceof DatabaseInstanceReadReplica;
+    if (isReadReplica) {
+      throw new Error(`DB Instance ${this.dbInstance?.node.path} is in an unsupported state - ` +
+        'Instance should not be a read replica');
     }
 
     // allow connecting to the Cluster/Instance from the Proxy

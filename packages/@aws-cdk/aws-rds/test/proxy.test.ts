@@ -234,6 +234,30 @@ describe('proxy', () => {
     });
   });
 
+  test('proxy for read replica fails early', () => {
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 });
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    const replica = new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      parameterGroup,
+      instanceType,
+      vpc,
+    });
+
+    expect(() => new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(replica),
+      secrets: [new secretsmanager.Secret(stack, 'Secret')],
+      vpc,
+    })).toThrow(/DB Instance Default\/Replica is in an unsupported state - Instance should not be a read replica/);
+  });
+
   describe('imported Proxies', () => {
     beforeEach(() => {
       importedDbProxy = rds.DatabaseProxy.fromDatabaseProxyAttributes(stack, 'Proxy', {
