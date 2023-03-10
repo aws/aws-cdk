@@ -1,5 +1,5 @@
 import {
-  Connections, IConnectable, IInstance, Instance, ISecurityGroup, IVpc, Peer, Port,
+  Connections, IConnectable, Instance, ISecurityGroup, IVpc, Peer, Port,
   SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
 } from '@aws-cdk/aws-ec2';
 import { Duration, Lazy, Resource } from '@aws-cdk/core';
@@ -248,7 +248,6 @@ export class LoadBalancer extends Resource implements IConnectable {
   private readonly elb: CfnLoadBalancer;
   private readonly securityGroup: SecurityGroup;
   private readonly listeners: CfnLoadBalancer.ListenersProperty[] = [];
-  private readonly instances: IInstance[] = [];
 
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
@@ -320,8 +319,6 @@ export class LoadBalancer extends Resource implements IConnectable {
     // Keep track using array so user can get to them even if they were all supplied in the constructor
     this.listenerPorts.push(port);
 
-    // Allow connection to all instances to new listener.
-    this.instances.forEach(i => i.connections.allowFrom(this.connections, Port.tcp(Number(instancePort))));
     return port;
   }
 
@@ -404,20 +401,11 @@ export class LoadBalancer extends Resource implements IConnectable {
   }
 
   /**
-   * Allow connection to all listeners to new instance port.
-   */
-  private allowInstanceConnection(instance: IConnectable) {
-    this.listeners.forEach(l => instance.connections.allowFrom(this.connections, Port.tcp(Number(l.instancePort))));
-  }
-
-  /**
    * Add instance to the load balancer.
    * @internal
    */
-  public _addInstance(instance: IInstance) {
-    this.instances.push(instance);
-    this.instanceIds.push(instance.instanceId);
-    this.allowInstanceConnection(instance);
+  public _addInstanceId(instanceId: string) {
+    this.instanceIds.push(instanceId);
   }
 }
 
@@ -436,7 +424,7 @@ export class InstanceTarget implements ILoadBalancerTarget {
     this.connections = instance.connections;
   }
   public attachToClassicLB(loadBalancer: LoadBalancer): void {
-    loadBalancer._addInstance(this.instance);
+    loadBalancer._addInstanceId(this.instance.instanceId);
   }
 }
 

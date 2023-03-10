@@ -121,15 +121,23 @@ describe('tests', () => {
       ],
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
-      SecurityGroupIngress: [
-        {
-          CidrIp: '0.0.0.0/0',
-          FromPort: 80,
-          IpProtocol: 'tcp',
-          ToPort: 80,
-        },
-      ],
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
+      Description: 'Port 8080 LB to fleet',
+      FromPort: 8080,
+      IpProtocol: 'tcp',
+      ToPort: 8080,
+      GroupId: {
+        'Fn::GetAtt': [
+          'LBSecurityGroup8A41EA2B',
+          'GroupId',
+        ],
+      },
+      DestinationSecurityGroupId: {
+        'Fn::GetAtt': [
+          'targetInstanceInstanceSecurityGroupF268BD07',
+          'GroupId',
+        ],
+      },
     });
   });
 

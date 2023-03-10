@@ -51,7 +51,7 @@ lb.addListener({
 
 ### Adding Ec2 Instance as a target for the load balancer
 
-EC2 instaces can be added as the target for the load balancer via `addTarget()` method using `InstanceTarget` class by providing ec2 `instance` as a target.
+You can add an EC2 instance to the load balancer by calling using `new InstanceTarget` as the argument to `addTarget()`:
 
 ```ts
 const lb = new elb.LoadBalancer(this, 'LB', {
@@ -63,5 +63,5 @@ const instance = new Instance(stack, 'targetInstance', {
   instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.MICRO),
   machineImage: new AmazonLinuxImage(),
 });
-lb.addTarget(elb.InstanceTarget(instance))
+lb.addTarget(elb.InstanceTarget(instance));
 ```
