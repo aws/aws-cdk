@@ -138,6 +138,9 @@ const asset = new Asset(this, 'BundledAsset', {
 Use `BundlingOutput.ARCHIVED` if the bundling output contains a single archive file and
 you don't want it to be zipped.
 
+Use `BundlingOutput.FILE` if the bundling output contains a single non archive file such as `.js` and you don't want it to be zipped.
+Single files will be archived if the `BundlingOutput.AUTO_DISCOVER` option is active.
+
 ### Docker options
 
 Depending on your build environment, you may need to pass certain docker options to the `docker run` command that bundles assets. 

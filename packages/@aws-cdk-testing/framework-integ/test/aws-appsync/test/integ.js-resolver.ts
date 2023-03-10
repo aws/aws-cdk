@@ -35,8 +35,14 @@ const addTestFunc = dataSource.createFunction('AddTestFunction', {
   code: appsync.Code.fromAsset(path.join(
     __dirname,
     'integ-assets',
-    'appsync-js-resolver.js',
-  )),
+    'appsync-js-resolver',
+  ), {
+    bundling: {
+      image: lambda.Runtime.NODEJS_18_X.bundlingImage,
+      command: ['cp', '-a', '/asset-input/.', '/asset-output/'],
+      outputType: cdk.BundlingOutput.FILE,
+    },
+  }),
 });
 
 new appsync.Resolver(stack, 'AddTestResolver', {
