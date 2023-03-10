@@ -2,6 +2,7 @@ import { createHash, Hash } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
+import { CloudAssembly } from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
@@ -57,7 +58,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 
   const assembly = builder.buildAssembly();
 
-  invokeValidationPlugins(root, builder.outdir, options.validationReportFormat);
+  invokeValidationPlugins(root, builder.outdir, assembly, options.validationReportFormat);
 
   return assembly;
 }
@@ -75,7 +76,7 @@ class LazyHash {
   }
 }
 
-function invokeValidationPlugins(root: IConstruct, outdir: string, validationReportFormat?: ValidationReportFormat) {
+function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly, validationReportFormat?: ValidationReportFormat) {
   const lazyHash = new LazyHash(outdir);
 
   const templatePathsByPlugin: Map<IValidationPlugin, string[]> = new Map();
@@ -85,7 +86,11 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, validationRep
         if (!templatePathsByPlugin.has(plugin)) {
           templatePathsByPlugin.set(plugin, []);
         }
-        templatePathsByPlugin.get(plugin)!.push(...templatePaths(construct.outdir));
+        if (App.isApp(construct)) {
+          templatePathsByPlugin.get(plugin)!.push(...assembly.stacks.map(stack => stack.templateFullPath));
+        } else {
+          templatePathsByPlugin.get(plugin)!.push(...assembly.getNestedAssembly(construct.artifactId).stacks.map(stack => stack.templateFullPath));
+        }
       }
     }
   });
@@ -124,13 +129,6 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, validationRep
     console.error(output);
     throw new Error('Validation failed. See the validation report above for details');
   }
-}
-
-function templatePaths(stagePath: string): string[] {
-  return fs
-    .readdirSync(stagePath)
-    .filter(f => f.endsWith('.template.json'))
-    .map(f => path.join(stagePath, f));
 }
 
 function computeChecksumOfFolder(folder: string, inputHash: Hash | undefined = undefined): string {
