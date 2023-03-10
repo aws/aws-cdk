@@ -1,6 +1,43 @@
-import { App, AssetManifestBuilder, DockerImageAssetLocation, DockerImageAssetSource, Environment, FileAssetLocation, FileAssetSource, IBoundStackSynthesizer, IReusableStackSynthesizer, ISynthesisSession, Stack, StackSynthesizer, Stage, Token } from '@aws-cdk/core';
+import {
+  App,
+  Arn,
+  AssetManifestBuilder,
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  Environment,
+  FileAssetLocation,
+  FileAssetSource,
+  IBoundStackSynthesizer,
+  IReusableStackSynthesizer,
+  ISynthesisSession,
+  Stack,
+  StackSynthesizer,
+  Stage,
+  Token,
+} from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IStagingStack, DefaultStagingStack } from './staging-stack';
+
+export class BootstrapRole {
+  public static default() {
+    return new BootstrapRole('default');
+  }
+
+  public static fromRoleArn(arn: string) {
+    return new BootstrapRole(arn);
+  }
+
+  public static fromRoleName(name: string) {
+    const arn = Arn.format({
+      resource: 'role',
+      service: 'iam',
+      resourceName: name,
+    });
+    return new BootstrapRole(arn);
+  }
+
+  private constructor(public readonly roleArn: string) {}
+}
 
 /**
  * New stack synthesizer properties
@@ -18,7 +55,7 @@ export interface StagingStackSynthesizerProps {
    *
    * @default - default role
    */
-  readonly lookupRoleArn?: string;
+  readonly lookupRoleArn?: BootstrapRole;
 }
 
 /**
