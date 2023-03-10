@@ -108,14 +108,26 @@ describe('tests', () => {
     });
 
     // WHEN
-    elb.addTarget(new InstanceTarget(instance, 80));
+    elb.addListener({ externalPort: 80, internalPort: 8080 });
+    elb.addTarget(new InstanceTarget(instance));
 
-    // THEN: at the very least it added a security group rule for the backend
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       CrossZone: true,
       Instances: [
         {
           Ref: 'targetInstance603C5817',
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
         },
       ],
     });

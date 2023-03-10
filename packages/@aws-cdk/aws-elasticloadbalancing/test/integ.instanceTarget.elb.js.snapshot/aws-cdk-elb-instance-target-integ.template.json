@@ -236,12 +236,12 @@
     }
    }
   },
-  "targetInstanceInstanceSecurityGroupfromawscdkelbinstancetargetintegLBSecurityGroup395870CC80E053AA6C": {
+  "targetInstanceInstanceSecurityGroupfromawscdkelbinstancetargetintegLBSecurityGroup395870CC8080DF6C0658": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "IpProtocol": "tcp",
-    "Description": "from awscdkelbinstancetargetintegLBSecurityGroup395870CC:80",
-    "FromPort": 80,
+    "Description": "Port 8080 LB to fleet",
+    "FromPort": 8080,
     "GroupId": {
      "Fn::GetAtt": [
       "targetInstanceInstanceSecurityGroupF268BD07",
@@ -254,7 +254,7 @@
       "GroupId"
      ]
     },
-    "ToPort": 80
+    "ToPort": 8080
    }
   },
   "targetInstanceInstanceRole3F8EC526": {
@@ -351,7 +351,7 @@
     }
    }
   },
-  "LBSecurityGrouptoawscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E80A95A3BE8": {
+  "LBSecurityGrouptoawscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E8080E1991644": {
    "Type": "AWS::EC2::SecurityGroupEgress",
    "Properties": {
     "GroupId": {
@@ -361,15 +361,15 @@
      ]
     },
     "IpProtocol": "tcp",
-    "Description": "to awscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E:80",
+    "Description": "Port 8080 LB to fleet",
     "DestinationSecurityGroupId": {
      "Fn::GetAtt": [
       "targetInstanceInstanceSecurityGroupF268BD07",
       "GroupId"
      ]
     },
-    "FromPort": 80,
-    "ToPort": 80
+    "FromPort": 8080,
+    "ToPort": 8080
    }
   },
   "LB8A12904C": {
@@ -377,7 +377,7 @@
    "Properties": {
     "Listeners": [
      {
-      "InstancePort": "80",
+      "InstancePort": "8080",
       "InstanceProtocol": "http",
       "LoadBalancerPort": "80",
       "Protocol": "http"

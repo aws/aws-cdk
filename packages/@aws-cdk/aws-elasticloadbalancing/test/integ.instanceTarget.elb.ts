@@ -24,13 +24,10 @@ const instance = new ec2.Instance(stack, 'targetInstance', {
 
 const elbalancer = new elb.LoadBalancer(stack, 'LB', {
   vpc,
-  listeners: [{
-    externalPort: 80,
-    allowConnectionsFrom: [ec2.Peer.anyIpv4()],
-  }],
 });
 
-elbalancer.addTarget(new elb.InstanceTarget(instance, 80));
+elbalancer.addTarget(new elb.InstanceTarget(instance));
+elbalancer.addListener({ externalPort: 80, internalPort: 8080 });
 
 new integ.IntegTest(app, 'InstanceTargetTest', {
   testCases: [stack],

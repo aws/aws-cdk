@@ -403,15 +403,15 @@
                       "version": "0.0.0"
                     }
                   },
-                  "from awscdkelbinstancetargetintegLBSecurityGroup395870CC:80": {
-                    "id": "from awscdkelbinstancetargetintegLBSecurityGroup395870CC:80",
-                    "path": "aws-cdk-elb-instance-target-integ/targetInstance/InstanceSecurityGroup/from awscdkelbinstancetargetintegLBSecurityGroup395870CC:80",
+                  "from awscdkelbinstancetargetintegLBSecurityGroup395870CC:8080": {
+                    "id": "from awscdkelbinstancetargetintegLBSecurityGroup395870CC:8080",
+                    "path": "aws-cdk-elb-instance-target-integ/targetInstance/InstanceSecurityGroup/from awscdkelbinstancetargetintegLBSecurityGroup395870CC:8080",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
                         "ipProtocol": "tcp",
-                        "description": "from awscdkelbinstancetargetintegLBSecurityGroup395870CC:80",
-                        "fromPort": 80,
+                        "description": "Port 8080 LB to fleet",
+                        "fromPort": 8080,
                         "groupId": {
                           "Fn::GetAtt": [
                             "targetInstanceInstanceSecurityGroupF268BD07",
@@ -424,7 +424,7 @@
                             "GroupId"
                           ]
                         },
-                        "toPort": 80
+                        "toPort": 8080
                       }
                     },
                     "constructInfo": {
@@ -609,9 +609,9 @@
                       "version": "0.0.0"
                     }
                   },
-                  "to awscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E:80": {
-                    "id": "to awscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E:80",
-                    "path": "aws-cdk-elb-instance-target-integ/LB/SecurityGroup/to awscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E:80",
+                  "to awscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E:8080": {
+                    "id": "to awscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E:8080",
+                    "path": "aws-cdk-elb-instance-target-integ/LB/SecurityGroup/to awscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E:8080",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupEgress",
                       "aws:cdk:cloudformation:props": {
@@ -622,15 +622,15 @@
                           ]
                         },
                         "ipProtocol": "tcp",
-                        "description": "to awscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E:80",
+                        "description": "Port 8080 LB to fleet",
                         "destinationSecurityGroupId": {
                           "Fn::GetAtt": [
                             "targetInstanceInstanceSecurityGroupF268BD07",
                             "GroupId"
                           ]
                         },
-                        "fromPort": 80,
-                        "toPort": 80
+                        "fromPort": 8080,
+                        "toPort": 8080
                       }
                     },
                     "constructInfo": {
@@ -654,7 +654,7 @@
                       {
                         "loadBalancerPort": "80",
                         "protocol": "http",
-                        "instancePort": "80",
+                        "instancePort": "8080",
                         "instanceProtocol": "http"
                       }
                     ],
