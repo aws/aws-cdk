@@ -87,41 +87,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3BucketE1837AB5"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3VersionKey71C8FED0"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3VersionKey71C8FED0"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aa.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -215,41 +183,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "e1c44c46b1daa364ad4e38dbc77e6fe7714ea5fbf40251a924e8c34281aa2eda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -294,6 +230,24 @@
    "DependsOn": [
     "file1F37B880C"
    ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "file3Utf8D94A4CAC": {
+   "Type": "Custom::S3File",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "comamazonawscdkcustomresourcess3fileproviderframeworkonEvent34F66A68",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "MyBucketF68F3FF0"
+    },
+    "Contents": "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!\"#¤%&/()=?`´^*+~_-.,:;<>|",
+    "ObjectKey": "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!\"#¤%&/()=?`´^*+~_-.,:;<>|"
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -356,41 +310,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -466,41 +388,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -621,41 +511,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "e1c44c46b1daa364ad4e38dbc77e6fe7714ea5fbf40251a924e8c34281aa2eda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -790,41 +648,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "e1c44c46b1daa364ad4e38dbc77e6fe7714ea5fbf40251a924e8c34281aa2eda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -956,41 +782,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "e1c44c46b1daa364ad4e38dbc77e6fe7714ea5fbf40251a924e8c34281aa2eda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1033,15 +827,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": {
-         "Fn::FindInMap": [
-          "ServiceprincipalMap",
-          {
-           "Ref": "AWS::Region"
-          },
-          "states"
-         ]
-        }
+        "Service": "states.amazonaws.com"
        }
       }
      ],
@@ -1149,44 +935,6 @@
    ]
   }
  },
- "Parameters": {
-  "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3BucketE1837AB5": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aa\""
-  },
-  "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3VersionKey71C8FED0": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aa\""
-  },
-  "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaArtifactHash1429BA0D": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aa\""
-  },
-  "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9\""
-  },
-  "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9\""
-  },
-  "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9\""
-  },
-  "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8\""
-  },
-  "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8\""
-  },
-  "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8ArtifactHash6C17CFC2": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8\""
-  }
- },
  "Outputs": {
   "file1url": {
    "Value": {
@@ -1203,100 +951,48 @@
      "URL"
     ]
    }
+  },
+  "file3url": {
+   "Value": {
+    "Fn::GetAtt": [
+     "file3Utf8D94A4CAC",
+     "URL"
+    ]
+   }
   }
  },
- "Mappings": {
-  "ServiceprincipalMap": {
-   "af-south-1": {
-    "states": "states.af-south-1.amazonaws.com"
-   },
-   "ap-east-1": {
-    "states": "states.ap-east-1.amazonaws.com"
-   },
-   "ap-northeast-1": {
-    "states": "states.ap-northeast-1.amazonaws.com"
-   },
-   "ap-northeast-2": {
-    "states": "states.ap-northeast-2.amazonaws.com"
-   },
-   "ap-northeast-3": {
-    "states": "states.ap-northeast-3.amazonaws.com"
-   },
-   "ap-south-1": {
-    "states": "states.ap-south-1.amazonaws.com"
-   },
-   "ap-southeast-1": {
-    "states": "states.ap-southeast-1.amazonaws.com"
-   },
-   "ap-southeast-2": {
-    "states": "states.ap-southeast-2.amazonaws.com"
-   },
-   "ap-southeast-3": {
-    "states": "states.ap-southeast-3.amazonaws.com"
-   },
-   "ca-central-1": {
-    "states": "states.ca-central-1.amazonaws.com"
-   },
-   "cn-north-1": {
-    "states": "states.cn-north-1.amazonaws.com"
-   },
-   "cn-northwest-1": {
-    "states": "states.cn-northwest-1.amazonaws.com"
-   },
-   "eu-central-1": {
-    "states": "states.eu-central-1.amazonaws.com"
-   },
-   "eu-north-1": {
-    "states": "states.eu-north-1.amazonaws.com"
-   },
-   "eu-south-1": {
-    "states": "states.eu-south-1.amazonaws.com"
-   },
-   "eu-south-2": {
-    "states": "states.eu-south-2.amazonaws.com"
-   },
-   "eu-west-1": {
-    "states": "states.eu-west-1.amazonaws.com"
-   },
-   "eu-west-2": {
-    "states": "states.eu-west-2.amazonaws.com"
-   },
-   "eu-west-3": {
-    "states": "states.eu-west-3.amazonaws.com"
-   },
-   "me-south-1": {
-    "states": "states.me-south-1.amazonaws.com"
-   },
-   "sa-east-1": {
-    "states": "states.sa-east-1.amazonaws.com"
-   },
-   "us-east-1": {
-    "states": "states.us-east-1.amazonaws.com"
-   },
-   "us-east-2": {
-    "states": "states.us-east-2.amazonaws.com"
-   },
-   "us-gov-east-1": {
-    "states": "states.us-gov-east-1.amazonaws.com"
-   },
-   "us-gov-west-1": {
-    "states": "states.us-gov-west-1.amazonaws.com"
-   },
-   "us-iso-east-1": {
-    "states": "states.amazonaws.com"
-   },
-   "us-iso-west-1": {
-    "states": "states.amazonaws.com"
-   },
-   "us-isob-east-1": {
-    "states": "states.amazonaws.com"
-   },
-   "us-west-1": {
-    "states": "states.us-west-1.amazonaws.com"
-   },
-   "us-west-2": {
-    "states": "states.us-west-2.amazonaws.com"
-   }
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }
