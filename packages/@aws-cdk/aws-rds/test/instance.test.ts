@@ -6,6 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as rds from '../lib';
 
@@ -1664,6 +1665,44 @@ describe('instance', () => {
       DBParameterGroupName: {
         Ref: 'ParameterGroup5E32DECB',
       },
+    });
+  });
+
+  test('can create proxy for read replica', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 });
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    // WHEN
+    const replica = new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      parameterGroup,
+      instanceType,
+      vpc,
+    });
+
+    new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(replica),
+      secrets: [new secretsmanager.Secret(stack, 'Secret')],
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+      EngineFamily: 'POSTGRESQL',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
+      DBInstanceIdentifiers: [
+        {
+          Ref: 'ReplicaDDFB2A87',
+        },
+      ],
     });
   });
 
