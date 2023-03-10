@@ -2394,7 +2394,8 @@
       "description": "The connector-specific profile properties required when using Salesforce.",
       "properties": {
         "InstanceUrl": "The location of the Salesforce resource.",
-        "isSandboxEnvironment": "Indicates whether the connector profile applies to a sandbox or production environment."
+        "isSandboxEnvironment": "Indicates whether the connector profile applies to a sandbox or production environment.",
+        "usePrivateLinkForMetadataAndAuthorization": ""
       }
     },
     "AWS::AppFlow::ConnectorProfile.ServiceNowConnectorProfileCredentials": {
@@ -2905,6 +2906,7 @@
       "attributes": {},
       "description": "The trigger settings that determine how and when Amazon AppFlow runs the specified flow.",
       "properties": {
+        "ActivateFlowOnCreate": "",
         "TriggerProperties": "Specifies the configuration details of a schedule-triggered flow as defined by the user. Currently, these settings only apply to the `Scheduled` trigger type.",
         "TriggerType": "Specifies the type of flow trigger. This can be `OnDemand` , `Scheduled` , or `Event` ."
       }
@@ -2982,7 +2984,6 @@
     },
     "AWS::AppIntegrations::EventIntegration": {
       "attributes": {
-        "Associations": "The association status of the event integration, returned as an array of EventIntegrationAssociation objects.",
         "EventIntegrationArn": "The Amazon Resource Name (ARN) of the event integration.",
         "Ref": "`Ref` returns the EventIntegration name. For example:\n\n`{ \"Ref\": \"myEventIntegrationName\" }`"
       },
@@ -3000,25 +3001,6 @@
       "description": "The event integration filter.",
       "properties": {
         "Source": "The source of the events."
-      }
-    },
-    "AWS::AppIntegrations::EventIntegration.EventIntegrationAssociation": {
-      "attributes": {},
-      "description": "The event integration association.",
-      "properties": {
-        "ClientAssociationMetadata": "The metadata associated with the client.",
-        "ClientId": "The identifier for the client that is associated with the event integration.",
-        "EventBridgeRuleName": "The name of the EventBridge rule.",
-        "EventIntegrationAssociationArn": "The Amazon Resource Name (ARN) for the event integration association.",
-        "EventIntegrationAssociationId": "The identifier for the event integration association."
-      }
-    },
-    "AWS::AppIntegrations::EventIntegration.Metadata": {
-      "attributes": {},
-      "description": "The metadata associated with the client.",
-      "properties": {
-        "Key": "The key name.",
-        "Value": "The value."
       }
     },
     "AWS::AppMesh::GatewayRoute": {
@@ -8644,7 +8626,7 @@
         "CloudWatchLogsLogGroupArn": "Specifies a log group name using an Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs are delivered. You must use a log group that exists in your account.\n\nNot required unless you specify `CloudWatchLogsRoleArn` .",
         "CloudWatchLogsRoleArn": "Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group. You must use a role that exists in your account.",
         "EnableLogFileValidation": "Specifies whether log file validation is enabled. The default is false.\n\n> When you disable log file integrity validation, the chain of digest files is broken after one hour. CloudTrail does not create digest files for log files that were delivered during a period in which log file integrity validation was disabled. For example, if you enable log file integrity validation at noon on January 1, disable it at noon on January 2, and re-enable it at noon on January 10, digest files will not be created for the log files delivered from noon on January 2 to noon on January 10. The same applies whenever you stop CloudTrail logging or delete a trail.",
-        "EventSelectors": "Use event selectors to further specify the management and data event settings for your trail. By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.",
+        "EventSelectors": "Use event selectors to further specify the management and data event settings for your trail. By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.\n\nFor more information about how to configure event selectors, see [Examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#aws-resource-cloudtrail-trail--examples) and [Configuring event selectors](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-additional-cli-commands.html#configuring-event-selector-examples) in the *AWS CloudTrail User Guide* .",
         "IncludeGlobalServiceEvents": "Specifies whether the trail is publishing events from global services such as IAM to the log files.",
         "InsightSelectors": "A JSON string that contains the insight types you want to log on a trail. `ApiCallRateInsight` and `ApiErrorRateInsight` are valid Insight types.\n\nThe `ApiCallRateInsight` Insights type analyzes write-only management API calls that are aggregated per minute against a baseline API call volume.\n\nThe `ApiErrorRateInsight` Insights type analyzes management API calls that result in error codes. The error is shown if the API call is unsuccessful.",
         "IsLogging": "Whether the CloudTrail trail is currently logging AWS API calls.",
@@ -8670,7 +8652,7 @@
       "attributes": {},
       "description": "Use event selectors to further specify the management and data event settings for your trail. By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.\n\nYou cannot apply both event selectors and advanced event selectors to a trail.",
       "properties": {
-        "DataResources": "In AWS CloudFormation , CloudTrail supports data event logging for Amazon S3 objects, Amazon DynamoDB tables, and AWS Lambda functions. Currently, advanced event selectors for data events are not supported in AWS CloudFormation templates. You can specify up to 250 resources for an individual event selector, but the total number of data resources cannot exceed 250 across all event selectors in a trail. This limit does not apply if you configure resource logging for all data events.\n\nFor more information, see [Logging data events for trails](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html) and [Limits in AWS CloudTrail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) in the *AWS CloudTrail User Guide* .",
+        "DataResources": "In AWS CloudFormation , CloudTrail supports data event logging for Amazon S3 objects, Amazon DynamoDB tables, and AWS Lambda functions. Currently, advanced event selectors for data events are not supported in AWS CloudFormation templates. You can specify up to 250 resources for an individual event selector, but the total number of data resources cannot exceed 250 across all event selectors in a trail. This limit does not apply if you configure resource logging for all data events.\n\nFor more information, see [Logging data events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html) and [Limits in AWS CloudTrail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) in the *AWS CloudTrail User Guide* .",
         "ExcludeManagementEventSources": "An optional list of service event sources from which you do not want management events to be logged on your trail. In this release, the list can be empty (disables the filter), or it can filter out AWS Key Management Service or Amazon RDS Data API events by containing `kms.amazonaws.com` or `rdsdata.amazonaws.com` . By default, `ExcludeManagementEventSources` is empty, and AWS KMS and Amazon RDS Data API events are logged to your trail. You can exclude management event sources only in regions that support the event source.",
         "IncludeManagementEvents": "Specify if you want your event selector to include management events for your trail.\n\nFor more information, see [Management Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html) in the *AWS CloudTrail User Guide* .\n\nBy default, the value is `true` .\n\nThe first copy of management events is free. You are charged for additional copies of management events that you are logging on any subsequent trail in the same region. For more information about CloudTrail pricing, see [AWS CloudTrail Pricing](https://docs.aws.amazon.com/cloudtrail/pricing/) .",
         "ReadWriteType": "Specify if you want your trail to log read-only events, write-only events, or all. For example, the EC2 `GetConsoleOutput` is a read-only API operation and `RunInstances` is a write-only API operation.\n\nBy default, the value is `All` ."
@@ -9972,7 +9954,7 @@
         "AdminCreateUserConfig": "The configuration for creating a new user profile.",
         "AliasAttributes": "Attributes supported as an alias for this user pool. Possible values: *phone_number* , *email* , or *preferred_username* .\n\n> This user pool property cannot be updated.",
         "AutoVerifiedAttributes": "The attributes to be auto-verified. Possible values: *email* , *phone_number* .",
-        "DeletionProtection": "",
+        "DeletionProtection": "When active, `DeletionProtection` prevents accidental deletion of your user pool. Before you can delete a user pool that you have protected against deletion, you must deactivate this feature.\n\nWhen you try to delete a protected user pool in a `DeleteUserPool` API request, Amazon Cognito returns an `InvalidParameterException` error. To delete a protected user pool, send a new `DeleteUserPool` request after you deactivate deletion protection in an `UpdateUserPool` API request.",
         "DeviceConfiguration": "The device-remembering configuration for a user pool. A null value indicates that you have deactivated device remembering in your user pool.\n\n> When you provide a value for any `DeviceConfiguration` field, you activate the Amazon Cognito device-remembering feature.",
         "EmailConfiguration": "The email configuration of your user pool. The email configuration type sets your preferred sending method, AWS Region, and sender for messages from your user pool.",
         "EmailVerificationMessage": "This parameter is no longer used. See [VerificationMessageTemplateType](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_VerificationMessageTemplateType.html) .",
@@ -13666,6 +13648,7 @@
       "description": "Defines settings specific to a single replica of a global table.",
       "properties": {
         "ContributorInsightsSpecification": "The settings used to enable or disable CloudWatch Contributor Insights for the specified replica. When not specified, defaults to contributor insights disabled for the replica.",
+        "DeletionProtectionEnabled": "",
         "GlobalSecondaryIndexes": "Defines additional settings for the global secondary indexes of this replica.",
         "KinesisStreamSpecification": "Defines the Kinesis Data Streams configuration for the specified replica.",
         "PointInTimeRecoverySpecification": "The settings used to enable point in time recovery. When not specified, defaults to point in time recovery disabled for the replica.",
@@ -13727,8 +13710,9 @@
         "AttributeDefinitions": "A list of attributes that describe the key schema for the table and indexes.\n\nThis property is required to create a DynamoDB table.\n\nUpdate requires: [Some interruptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-some-interrupt) . Replacement if you edit an existing AttributeDefinition.",
         "BillingMode": "Specify how you are charged for read and write throughput and how you manage capacity.\n\nValid values include:\n\n- `PROVISIONED` - We recommend using `PROVISIONED` for predictable workloads. `PROVISIONED` sets the billing mode to [Provisioned Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.ProvisionedThroughput.Manual) .\n- `PAY_PER_REQUEST` - We recommend using `PAY_PER_REQUEST` for unpredictable workloads. `PAY_PER_REQUEST` sets the billing mode to [On-Demand Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.OnDemand) .\n\nIf not specified, the default is `PROVISIONED` .",
         "ContributorInsightsSpecification": "The settings used to enable or disable CloudWatch Contributor Insights for the specified table.",
+        "DeletionProtectionEnabled": "Determines if a table is protected from deletion. When enabled, the table cannot be deleted by any user or process. This setting is disabled by default.",
         "GlobalSecondaryIndexes": "Global secondary indexes to be created on the table. You can create up to 20 global secondary indexes.\n\n> If you update a table to include a new global secondary index, AWS CloudFormation initiates the index creation and then proceeds with the stack update. AWS CloudFormation doesn't wait for the index to complete creation because the backfilling phase can take a long time, depending on the size of the table. You can't use the index or update the table until the index's status is `ACTIVE` . You can track its status by using the DynamoDB [DescribeTable](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/describe-table.html) command.\n> \n> If you add or delete an index during an update, we recommend that you don't update any other resources. If your stack fails to update and is rolled back while adding a new index, you must manually delete the index.\n> \n> Updates are not supported. The following are exceptions:\n> \n> - If you update either the contributor insights specification or the provisioned throughput values of global secondary indexes, you can update the table without interruption.\n> - You can delete or add one global secondary index without interruption. If you do both in the same update (for example, by changing the index's logical ID), the update fails.",
-        "ImportSourceSpecification": "Specifies the properties of data being imported from the S3 bucket source to the table.\n\n> If you specify the `ImportSourceSpecification` property, and also specify either the `StreamSpecification` or `TableClass` property, the IAM entity creating/updating stack must have `UpdateTable` permission.",
+        "ImportSourceSpecification": "Specifies the properties of data being imported from the S3 bucket source to the table.\n\n> If you specify the `ImportSourceSpecification` property, and also specify either the `StreamSpecification` , the `TableClass` property, or the `DeletionProtectionEnabled` property, the IAM entity creating/updating stack must have `UpdateTable` permission.",
         "KeySchema": "Specifies the attributes that make up the primary key for the table. The attributes in the `KeySchema` property must also be defined in the `AttributeDefinitions` property.",
         "KinesisStreamSpecification": "The Kinesis Data Streams configuration for the specified table.",
         "LocalSecondaryIndexes": "Local secondary indexes to be created on the table. You can create up to 5 local secondary indexes. Each index is scoped to a given hash key value. The size of each hash key can be up to 10 gigabytes.",
@@ -14185,7 +14169,7 @@
         "InstanceRequirements": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with those attributes.\n\n> If you specify `InstanceRequirements` , you can't specify `InstanceType` .",
         "InstanceType": "The instance type.\n\n`mac1.metal` is not supported as a launch template override.\n\n> If you specify `InstanceType` , you can't specify `InstanceRequirements` .",
         "MaxPrice": "The maximum price per unit hour that you are willing to pay for a Spot Instance. We do not recommend using this parameter because it can lead to increased interruptions. If you do not specify this parameter, you will pay the current Spot price.\n\n> If you specify a maximum price, your instances will be interrupted more frequently than if you do not specify this parameter.",
-        "Placement": "The location where the instance launched, if applicable.",
+        "Placement": "The location where the instance launched, if applicable.\n\nSupported only for fleets of type `instant` .",
         "Priority": "The priority for the launch template override. The highest priority is launched first.\n\nIf the On-Demand `AllocationStrategy` is set to `prioritized` , EC2 Fleet uses priority to determine which launch template override to use first in fulfilling On-Demand capacity.\n\nIf the Spot `AllocationStrategy` is set to `capacity-optimized-prioritized` , EC2 Fleet uses priority on a best-effort basis to determine which launch template override to use in fulfilling Spot capacity, but optimizes for capacity first.\n\nValid values are whole numbers starting at `0` . The lower the number, the higher the priority. If no number is set, the launch template override has the lowest priority. You can set the same priority for different launch template overrides.",
         "SubnetId": "The IDs of the subnets in which to launch the instances. Separate multiple subnet IDs using commas (for example, `subnet-1234abcdeexample1, subnet-0987cdef6example2` ). A request of type `instant` can have only one subnet ID.",
         "WeightedCapacity": "The number of units provided by the specified instance type."
@@ -18989,6 +18973,7 @@
         "Engine": "The current supported value is redis.",
         "NoPasswordRequired": "Indicates a password is not required for this user.",
         "Passwords": "Passwords used for this user. You can create up to two passwords for each user.",
+        "Tags": "",
         "UserId": "The ID of the user.",
         "UserName": "The username of the user."
       }
@@ -19010,6 +18995,7 @@
       "description": "For Redis engine version 6.0 onwards: Creates a Redis user group. For more information, see [Using Role Based Access Control (RBAC)](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Clusters.RBAC.html)",
       "properties": {
         "Engine": "The current supported value is redis.",
+        "Tags": "",
         "UserGroupId": "The ID of the user group.",
         "UserIds": "The list of user IDs that belong to the user group. A user named `default` must be included."
       }
@@ -21426,7 +21412,7 @@
       "description": "The `AWS::GameLift::Build` resource creates a game server build that is installed and run on instances in an Amazon GameLift fleet. This resource points to an Amazon S3 location that contains a zip file with all of the components of the game server build.",
       "properties": {
         "Name": "A descriptive label that is associated with a build. Build names do not need to be unique.",
-        "OperatingSystem": "The operating system that you built the game server binaries to run on. This value determines the type of fleet resources that you can use for this build. If your game build contains multiple executables, they all must run on the same operating system. If an operating system is not specified when creating a build, GameLift uses the default value (WINDOWS_2012). This value cannot be changed later.",
+        "OperatingSystem": "The operating system that you built the game server binaries to run on. This value determines the type of fleet resources that you can use for this build. If your game build contains multiple executables, they all must run on the same operating system. If an operating system is not specified when creating a build, Amazon GameLift uses the default value (WINDOWS_2012). This value cannot be changed later.",
         "StorageLocation": "Information indicating where your game build files are stored. Use this parameter only when creating a build with files stored in an Amazon S3 bucket that you own. The storage location must specify an Amazon S3 bucket name and key. The location must also specify a role ARN that you set up to allow Amazon GameLift to access your Amazon S3 bucket. The S3 bucket and your new build must be in the same Region.\n\nIf a `StorageLocation` is specified, the size of your file can be found in your Amazon S3 bucket. Amazon GameLift will report a `SizeOnDisk` of 0.",
         "Version": "Version information that is associated with this build. Version strings do not need to be unique."
       }
@@ -21450,32 +21436,32 @@
       "properties": {
         "AnywhereConfiguration": "",
         "BuildId": "A unique identifier for a build to be deployed on the new fleet. If you are deploying the fleet with a custom game build, you must specify this property. The build must have been successfully uploaded to Amazon GameLift and be in a `READY` status. This fleet setting cannot be changed once the fleet is created.",
-        "CertificateConfiguration": "Prompts GameLift to generate a TLS/SSL certificate for the fleet. GameLift uses the certificates to encrypt traffic between game clients and the game servers running on GameLift. By default, the `CertificateConfiguration` is `DISABLED` . You can't change this property after you create the fleet.\n\nAWS Certificate Manager (ACM) certificates expire after 13 months. Certificate expiration can cause fleets to fail, preventing players from connecting to instances in the fleet. We recommend you replace fleets before 13 months, consider using fleet aliases for a smooth transition.\n\n> ACM isn't available in all AWS regions. A fleet creation request with certificate generation enabled in an unsupported Region, fails with a 4xx error. For more information about the supported Regions, see [Supported Regions](https://docs.aws.amazon.com/acm/latest/userguide/acm-regions.html) in the *AWS Certificate Manager User Guide* .",
-        "ComputeType": "The type of compute resource used to host your game servers. You can use your own compute resources with GameLift Anywhere or use Amazon EC2 instances with managed GameLift.",
+        "CertificateConfiguration": "Prompts Amazon GameLift to generate a TLS/SSL certificate for the fleet. Amazon GameLift uses the certificates to encrypt traffic between game clients and the game servers running on Amazon GameLift. By default, the `CertificateConfiguration` is `DISABLED` . You can't change this property after you create the fleet.\n\nAWS Certificate Manager (ACM) certificates expire after 13 months. Certificate expiration can cause fleets to fail, preventing players from connecting to instances in the fleet. We recommend you replace fleets before 13 months, consider using fleet aliases for a smooth transition.\n\n> ACM isn't available in all AWS regions. A fleet creation request with certificate generation enabled in an unsupported Region, fails with a 4xx error. For more information about the supported Regions, see [Supported Regions](https://docs.aws.amazon.com/acm/latest/userguide/acm-regions.html) in the *AWS Certificate Manager User Guide* .",
+        "ComputeType": "The type of compute resource used to host your game servers. You can use your own compute resources with Amazon GameLift Anywhere or use Amazon EC2 instances with managed Amazon GameLift.",
         "Description": "A description for the fleet.",
         "DesiredEC2Instances": "The number of EC2 instances that you want this fleet to host. When creating a new fleet, GameLift automatically sets this value to \"1\" and initiates a single instance. Once the fleet is active, update this value to trigger GameLift to add or remove instances from the fleet.",
-        "EC2InboundPermissions": "The allowed IP address ranges and port settings that allow inbound traffic to access game sessions on this fleet. If the fleet is hosting a custom game build, this property must be set before players can connect to game sessions. For Realtime Servers fleets, GameLift automatically sets TCP and UDP ranges.",
-        "EC2InstanceType": "The GameLift-supported Amazon EC2 instance type to use for all fleet instances. Instance type determines the computing resources that will be used to host your game servers, including CPU, memory, storage, and networking capacity. See [Amazon Elastic Compute Cloud Instance Types](https://docs.aws.amazon.com/ec2/instance-types/) for detailed descriptions of Amazon EC2 instance types.",
+        "EC2InboundPermissions": "The allowed IP address ranges and port settings that allow inbound traffic to access game sessions on this fleet. If the fleet is hosting a custom game build, this property must be set before players can connect to game sessions. For Realtime Servers fleets, Amazon GameLift automatically sets TCP and UDP ranges.",
+        "EC2InstanceType": "The Amazon GameLift-supported Amazon EC2 instance type to use for all fleet instances. Instance type determines the computing resources that will be used to host your game servers, including CPU, memory, storage, and networking capacity. See [Amazon Elastic Compute Cloud Instance Types](https://docs.aws.amazon.com/ec2/instance-types/) for detailed descriptions of Amazon EC2 instance types.",
         "FleetType": "Indicates whether to use On-Demand or Spot instances for this fleet. By default, this property is set to `ON_DEMAND` . Learn more about when to use [On-Demand versus Spot Instances](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-ec2-instances.html#gamelift-ec2-instances-spot) . This property cannot be changed after the fleet is created.",
         "InstanceRoleARN": "A unique identifier for an IAM role that manages access to your AWS services. With an instance role ARN set, any application that runs on an instance in this fleet can assume the role, including install scripts, server processes, and daemons (background processes). Create a role or look up a role's ARN by using the [IAM dashboard](https://docs.aws.amazon.com/iam/) in the AWS Management Console . Learn more about using on-box credentials for your game servers at [Access external resources from a game server](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-server-resources.html) . This property cannot be changed after the fleet is created.",
-        "Locations": "A set of remote locations to deploy additional instances to and manage as part of the fleet. This parameter can only be used when creating fleets in AWS Regions that support multiple locations. You can add any GameLift-supported AWS Region as a remote location, in the form of an AWS Region code such as `us-west-2` . To create a fleet with instances in the home Region only, omit this parameter.",
+        "Locations": "A set of remote locations to deploy additional instances to and manage as part of the fleet. This parameter can only be used when creating fleets in AWS Regions that support multiple locations. You can add any Amazon GameLift-supported AWS Region as a remote location, in the form of an AWS Region code such as `us-west-2` . To create a fleet with instances in the home Region only, omit this parameter.",
         "MaxSize": "The maximum number of instances that are allowed in the specified fleet location. If this parameter is not set, the default is 1.",
         "MetricGroups": "The name of an AWS CloudWatch metric group to add this fleet to. A metric group is used to aggregate the metrics for multiple fleets. You can specify an existing metric group name or set a new name to create a new metric group. A fleet can be included in only one metric group at a time.",
         "MinSize": "The minimum number of instances that are allowed in the specified fleet location. If this parameter is not set, the default is 0.",
         "Name": "A descriptive label that is associated with a fleet. Fleet names do not need to be unique.",
         "NewGameSessionProtectionPolicy": "The status of termination protection for active game sessions on the fleet. By default, this property is set to `NoProtection` .\n\n- *NoProtection* - Game sessions can be terminated during active gameplay as a result of a scale-down event.\n- *FullProtection* - Game sessions in `ACTIVE` status cannot be terminated during a scale-down event.",
-        "PeerVpcAwsAccountId": "Used when peering your GameLift fleet with a VPC, the unique identifier for the AWS account that owns the VPC. You can find your account ID in the AWS Management Console under account settings.",
-        "PeerVpcId": "A unique identifier for a VPC with resources to be accessed by your GameLift fleet. The VPC must be in the same Region as your fleet. To look up a VPC ID, use the [VPC Dashboard](https://docs.aws.amazon.com/vpc/) in the AWS Management Console . Learn more about VPC peering in [VPC Peering with GameLift Fleets](https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html) .",
+        "PeerVpcAwsAccountId": "Used when peering your Amazon GameLift fleet with a VPC, the unique identifier for the AWS account that owns the VPC. You can find your account ID in the AWS Management Console under account settings.",
+        "PeerVpcId": "A unique identifier for a VPC with resources to be accessed by your Amazon GameLift fleet. The VPC must be in the same Region as your fleet. To look up a VPC ID, use the [VPC Dashboard](https://docs.aws.amazon.com/vpc/) in the AWS Management Console . Learn more about VPC peering in [VPC Peering with Amazon GameLift Fleets](https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html) .",
         "ResourceCreationLimitPolicy": "A policy that limits the number of game sessions that an individual player can create on instances in this fleet within a specified span of time.",
         "RuntimeConfiguration": "Instructions for how to launch and maintain server processes on instances in the fleet. The runtime configuration defines one or more server process configurations, each identifying a build executable or Realtime script file and the number of processes of that type to run concurrently.\n\n> The `RuntimeConfiguration` parameter is required unless the fleet is being configured using the older parameters `ServerLaunchPath` and `ServerLaunchParameters` , which are still supported for backward compatibility.",
-        "ScriptId": "The unique identifier for a Realtime configuration script to be deployed on fleet instances. You can use either the script ID or ARN. Scripts must be uploaded to GameLift prior to creating the fleet. This fleet property cannot be changed later.\n\n> You can't use the `!Ref` command to reference a script created with a CloudFormation template for the fleet property `ScriptId` . Instead, use `Fn::GetAtt Script.Arn` or `Fn::GetAtt Script.Id` to retrieve either of these properties as input for `ScriptId` . Alternatively, enter a `ScriptId` string manually."
+        "ScriptId": "The unique identifier for a Realtime configuration script to be deployed on fleet instances. You can use either the script ID or ARN. Scripts must be uploaded to Amazon GameLift prior to creating the fleet. This fleet property cannot be changed later.\n\n> You can't use the `!Ref` command to reference a script created with a CloudFormation template for the fleet property `ScriptId` . Instead, use `Fn::GetAtt Script.Arn` or `Fn::GetAtt Script.Id` to retrieve either of these properties as input for `ScriptId` . Alternatively, enter a `ScriptId` string manually."
       }
     },
     "AWS::GameLift::Fleet.AnywhereConfiguration": {
       "attributes": {},
-      "description": "GameLift Anywhere configuration options for your Anywhere fleets.",
+      "description": "Amazon GameLift Anywhere configuration options for your Anywhere fleets.",
       "properties": {
-        "Cost": "The cost to run your fleet per hour. GameLift uses the provided cost of your fleet to balance usage in queues. For more information about queues, see [Setting up queues](https://docs.aws.amazon.com/gamelift/latest/developerguide/queues-intro.html) in the *Amazon GameLift Developer Guide* ."
+        "Cost": "The cost to run your fleet per hour. Amazon GameLift uses the provided cost of your fleet to balance usage in queues. For more information about queues, see [Setting up queues](https://docs.aws.amazon.com/gamelift/latest/developerguide/queues-intro.html) in the *Amazon GameLift Developer Guide* ."
       }
     },
     "AWS::GameLift::Fleet.CertificateConfiguration": {
@@ -21516,7 +21502,7 @@
       "attributes": {},
       "description": "A policy that limits the number of game sessions a player can create on the same fleet. This optional policy gives game owners control over how players can consume available game server resources. A resource creation policy makes the following statement: \"An individual player can create a maximum number of new game sessions within a specified time period\".\n\nThe policy is evaluated when a player tries to create a new game session. For example, assume you have a policy of 10 new game sessions and a time period of 60 minutes. On receiving a `CreateGameSession` request, Amazon GameLift checks that the player (identified by `CreatorId` ) has created fewer than 10 game sessions in the past 60 minutes.",
       "properties": {
-        "NewGameSessionsPerCreator": "A policy that puts limits on the number of game sessions that a player can create within a specified span of time. With this policy, you can control players' ability to consume available resources.\n\nThe policy is evaluated when a player tries to create a new game session. On receiving a `CreateGameSession` request, GameLift checks that the player (identified by `CreatorId` ) has created fewer than game session limit in the specified time period.",
+        "NewGameSessionsPerCreator": "A policy that puts limits on the number of game sessions that a player can create within a specified span of time. With this policy, you can control players' ability to consume available resources.\n\nThe policy is evaluated when a player tries to create a new game session. On receiving a `CreateGameSession` request, Amazon GameLift checks that the player (identified by `CreatorId` ) has created fewer than game session limit in the specified time period.",
         "PolicyPeriodInMinutes": "The time span used in evaluating the resource creation limit policy."
       }
     },
@@ -21547,24 +21533,24 @@
       "description": "*This operation is used with the Amazon GameLift FleetIQ solution and game server groups.*\n\nCreates a GameLift FleetIQ game server group for managing game hosting on a collection of Amazon EC2 instances for game hosting. This operation creates the game server group, creates an Auto Scaling group in your AWS account , and establishes a link between the two groups. You can view the status of your game server groups in the GameLift console. Game server group metrics and events are emitted to Amazon CloudWatch.\n\nBefore creating a new game server group, you must have the following:\n\n- An Amazon EC2 launch template that specifies how to launch Amazon EC2 instances with your game server build. For more information, see [Launching an Instance from a Launch Template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) in the *Amazon EC2 User Guide* .\n- An IAM role that extends limited access to your AWS account to allow GameLift FleetIQ to create and interact with the Auto Scaling group. For more information, see [Create IAM roles for cross-service interaction](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-iam-permissions-roles.html) in the *GameLift FleetIQ Developer Guide* .\n\nTo create a new game server group, specify a unique group name, IAM role and Amazon EC2 launch template, and provide a list of instance types that can be used in the group. You must also set initial maximum and minimum limits on the group's instance count. You can optionally set an Auto Scaling policy with target tracking based on a GameLift FleetIQ metric.\n\nOnce the game server group and corresponding Auto Scaling group are created, you have full access to change the Auto Scaling group's configuration as needed. Several properties that are set when creating a game server group, including maximum/minimum size and auto-scaling policy settings, must be updated directly in the Auto Scaling group. Keep in mind that some Auto Scaling group properties are periodically updated by GameLift FleetIQ as part of its balancing activities to optimize for availability and cost.\n\n*Learn more*\n\n[GameLift FleetIQ Guide](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-intro.html)",
       "properties": {
         "AutoScalingPolicy": "Configuration settings to define a scaling policy for the Auto Scaling group that is optimized for game hosting. The scaling policy uses the metric `\"PercentUtilizedGameServers\"` to maintain a buffer of idle game servers that can immediately accommodate new games and players. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
-        "BalancingStrategy": "Indicates how GameLift FleetIQ balances the use of Spot Instances and On-Demand Instances in the game server group. Method options include the following:\n\n- `SPOT_ONLY` - Only Spot Instances are used in the game server group. If Spot Instances are unavailable or not viable for game hosting, the game server group provides no hosting capacity until Spot Instances can again be used. Until then, no new instances are started, and the existing nonviable Spot Instances are terminated (after current gameplay ends) and are not replaced.\n- `SPOT_PREFERRED` - (default value) Spot Instances are used whenever available in the game server group. If Spot Instances are unavailable, the game server group continues to provide hosting capacity by falling back to On-Demand Instances. Existing nonviable Spot Instances are terminated (after current gameplay ends) and are replaced with new On-Demand Instances.\n- `ON_DEMAND_ONLY` - Only On-Demand Instances are used in the game server group. No Spot Instances are used, even when available, while this balancing strategy is in force.",
+        "BalancingStrategy": "Indicates how Amazon GameLift FleetIQ balances the use of Spot Instances and On-Demand Instances in the game server group. Method options include the following:\n\n- `SPOT_ONLY` - Only Spot Instances are used in the game server group. If Spot Instances are unavailable or not viable for game hosting, the game server group provides no hosting capacity until Spot Instances can again be used. Until then, no new instances are started, and the existing nonviable Spot Instances are terminated (after current gameplay ends) and are not replaced.\n- `SPOT_PREFERRED` - (default value) Spot Instances are used whenever available in the game server group. If Spot Instances are unavailable, the game server group continues to provide hosting capacity by falling back to On-Demand Instances. Existing nonviable Spot Instances are terminated (after current gameplay ends) and are replaced with new On-Demand Instances.\n- `ON_DEMAND_ONLY` - Only On-Demand Instances are used in the game server group. No Spot Instances are used, even when available, while this balancing strategy is in force.",
         "DeleteOption": "The type of delete to perform. To delete a game server group, specify the `DeleteOption` . Options include the following:\n\n- `SAFE_DELETE` \u2013 (default) Terminates the game server group and Amazon EC2 Auto Scaling group only when it has no game servers that are in `UTILIZED` status.\n- `FORCE_DELETE` \u2013 Terminates the game server group, including all active game servers regardless of their utilization status, and the Amazon EC2 Auto Scaling group.\n- `RETAIN` \u2013 Does a safe delete of the game server group but retains the Amazon EC2 Auto Scaling group as is.",
         "GameServerGroupName": "A developer-defined identifier for the game server group. The name is unique for each Region in each AWS account.",
         "GameServerProtectionPolicy": "A flag that indicates whether instances in the game server group are protected from early termination. Unprotected instances that have active game servers running might be terminated during a scale-down event, causing players to be dropped from the game. Protected instances cannot be terminated while there are active game servers running except in the event of a forced game server group deletion (see ). An exception to this is with Spot Instances, which can be terminated by AWS regardless of protection status.",
-        "InstanceDefinitions": "The set of Amazon EC2 instance types that GameLift FleetIQ can use when balancing and automatically scaling instances in the corresponding Auto Scaling group.",
-        "LaunchTemplate": "The Amazon EC2 launch template that contains configuration settings and game server code to be deployed to all instances in the game server group. You can specify the template using either the template name or ID. For help with creating a launch template, see [Creating a Launch Template for an Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-launch-template.html) in the *Amazon Elastic Compute Cloud Auto Scaling User Guide* . After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.\n\n> If you specify network interfaces in your launch template, you must explicitly set the property `AssociatePublicIpAddress` to \"true\". If no network interface is specified in the launch template, GameLift FleetIQ uses your account's default VPC.",
-        "MaxSize": "The maximum number of instances allowed in the Amazon EC2 Auto Scaling group. During automatic scaling events, GameLift FleetIQ and EC2 do not scale up the group above this maximum. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
-        "MinSize": "The minimum number of instances allowed in the Amazon EC2 Auto Scaling group. During automatic scaling events, GameLift FleetIQ and Amazon EC2 do not scale down the group below this minimum. In production, this value should be set to at least 1. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
+        "InstanceDefinitions": "The set of Amazon EC2 instance types that Amazon GameLift FleetIQ can use when balancing and automatically scaling instances in the corresponding Auto Scaling group.",
+        "LaunchTemplate": "The Amazon EC2 launch template that contains configuration settings and game server code to be deployed to all instances in the game server group. You can specify the template using either the template name or ID. For help with creating a launch template, see [Creating a Launch Template for an Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-launch-template.html) in the *Amazon Elastic Compute Cloud Auto Scaling User Guide* . After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.\n\n> If you specify network interfaces in your launch template, you must explicitly set the property `AssociatePublicIpAddress` to \"true\". If no network interface is specified in the launch template, Amazon GameLift FleetIQ uses your account's default VPC.",
+        "MaxSize": "The maximum number of instances allowed in the Amazon EC2 Auto Scaling group. During automatic scaling events, Amazon GameLift FleetIQ and EC2 do not scale up the group above this maximum. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
+        "MinSize": "The minimum number of instances allowed in the Amazon EC2 Auto Scaling group. During automatic scaling events, Amazon GameLift FleetIQ and Amazon EC2 do not scale down the group below this minimum. In production, this value should be set to at least 1. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
         "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access your Amazon EC2 Auto Scaling groups.",
         "Tags": "A list of labels to assign to the new game server group resource. Tags are developer-defined key-value pairs. Tagging AWS resources is useful for resource management, access management, and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use TagResource, UntagResource, and ListTagsForResource to add, remove, and view tags, respectively. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits.",
-        "VpcSubnets": "A list of virtual private cloud (VPC) subnets to use with instances in the game server group. By default, all GameLift FleetIQ-supported Availability Zones are used. You can use this parameter to specify VPCs that you've set up. This property cannot be updated after the game server group is created, and the corresponding Auto Scaling group will always use the property value that is set with this request, even if the Auto Scaling group is updated directly."
+        "VpcSubnets": "A list of virtual private cloud (VPC) subnets to use with instances in the game server group. By default, all Amazon GameLift FleetIQ-supported Availability Zones are used. You can use this parameter to specify VPCs that you've set up. This property cannot be updated after the game server group is created, and the corresponding Auto Scaling group will always use the property value that is set with this request, even if the Auto Scaling group is updated directly."
       }
     },
     "AWS::GameLift::GameServerGroup.AutoScalingPolicy": {
       "attributes": {},
       "description": "*This data type is used with the GameLift FleetIQ and game server groups.*\n\nConfiguration settings for intelligent automatic scaling that uses target tracking. After the Auto Scaling group is created, all updates to Auto Scaling policies, including changing this policy and adding or removing other policies, is done directly on the Auto Scaling group.",
       "properties": {
-        "EstimatedInstanceWarmup": "Length of time, in seconds, it takes for a new instance to start new game server processes and register with GameLift FleetIQ. Specifying a warm-up time can be useful, particularly with game servers that take a long time to start up, because it avoids prematurely starting new instances.",
+        "EstimatedInstanceWarmup": "Length of time, in seconds, it takes for a new instance to start new game server processes and register with Amazon GameLift FleetIQ. Specifying a warm-up time can be useful, particularly with game servers that take a long time to start up, because it avoids prematurely starting new instances.",
         "TargetTrackingConfiguration": "Settings for a target-based scaling policy applied to Auto Scaling group. These settings are used to create a target-based policy that tracks the GameLift FleetIQ metric `PercentUtilizedGameServers` and specifies a target value for the metric. As player usage changes, the policy triggers to adjust the game server group capacity so that the metric returns to the target value."
       }
     },
@@ -21573,7 +21559,7 @@
       "description": "*This data type is used with the Amazon GameLift FleetIQ and game server groups.*\n\nAn allowed instance type for a `GameServerGroup` . All game server groups must have at least two instance types defined for it. GameLift FleetIQ periodically evaluates each defined instance type for viability. It then updates the Auto Scaling group with the list of viable instance types.",
       "properties": {
         "InstanceType": "An Amazon EC2 instance type designation.",
-        "WeightedCapacity": "Instance weighting that indicates how much this instance type contributes to the total capacity of a game server group. Instance weights are used by GameLift FleetIQ to calculate the instance type's cost per unit hour and better identify the most cost-effective options. For detailed information on weighting instance capacity, see [Instance Weighting](https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-weighting.html) in the *Amazon Elastic Compute Cloud Auto Scaling User Guide* . Default value is \"1\"."
+        "WeightedCapacity": "Instance weighting that indicates how much this instance type contributes to the total capacity of a game server group. Instance weights are used by Amazon GameLift FleetIQ to calculate the instance type's cost per unit hour and better identify the most cost-effective options. For detailed information on weighting instance capacity, see [Instance Weighting](https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-weighting.html) in the *Amazon Elastic Compute Cloud Auto Scaling User Guide* . Default value is \"1\"."
       }
     },
     "AWS::GameLift::GameServerGroup.LaunchTemplate": {
@@ -21666,10 +21652,10 @@
         "BackfillMode": "The method used to backfill game sessions that are created with this matchmaking configuration. Specify `MANUAL` when your game manages backfill requests manually or does not use the match backfill feature. Specify `AUTOMATIC` to have GameLift create a `StartMatchBackfill` request whenever a game session has one or more open slots. Learn more about manual and automatic backfill in [Backfill Existing Games with FlexMatch](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-backfill.html) . Automatic backfill is not available when `FlexMatchMode` is set to `STANDALONE` .",
         "CustomEventData": "Information to add to all events related to the matchmaking configuration.",
         "Description": "A description for the matchmaking configuration.",
-        "FlexMatchMode": "Indicates whether this matchmaking configuration is being used with GameLift hosting or as a standalone matchmaking solution.\n\n- *STANDALONE* - FlexMatch forms matches and returns match information, including players and team assignments, in a [MatchmakingSucceeded](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-events.html#match-events-matchmakingsucceeded) event.\n- *WITH_QUEUE* - FlexMatch forms matches and uses the specified GameLift queue to start a game session for the match.",
+        "FlexMatchMode": "Indicates whether this matchmaking configuration is being used with Amazon GameLift hosting or as a standalone matchmaking solution.\n\n- *STANDALONE* - FlexMatch forms matches and returns match information, including players and team assignments, in a [MatchmakingSucceeded](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-events.html#match-events-matchmakingsucceeded) event.\n- *WITH_QUEUE* - FlexMatch forms matches and uses the specified Amazon GameLift queue to start a game session for the match.",
         "GameProperties": "A set of custom properties for a game session, formatted as key-value pairs. These properties are passed to a game server process with a request to start a new game session. See [Start a Game Session](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-server-api.html#gamelift-sdk-server-startsession) . This parameter is not used if `FlexMatchMode` is set to `STANDALONE` .",
         "GameSessionData": "A set of custom game session properties, formatted as a single string value. This data is passed to a game server process with a request to start a new game session. See [Start a Game Session](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-server-api.html#gamelift-sdk-server-startsession) . This parameter is not used if `FlexMatchMode` is set to `STANDALONE` .",
-        "GameSessionQueueArns": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) that is assigned to a GameLift game session queue resource and uniquely identifies it. ARNs are unique across all Regions. Format is `arn:aws:gamelift:<region>::gamesessionqueue/<queue name>` . Queues can be located in any Region. Queues are used to start new GameLift-hosted game sessions for matches that are created with this matchmaking configuration. If `FlexMatchMode` is set to `STANDALONE` , do not set this parameter.",
+        "GameSessionQueueArns": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) that is assigned to a Amazon GameLift game session queue resource and uniquely identifies it. ARNs are unique across all Regions. Format is `arn:aws:gamelift:<region>::gamesessionqueue/<queue name>` . Queues can be located in any Region. Queues are used to start new Amazon GameLift-hosted game sessions for matches that are created with this matchmaking configuration. If `FlexMatchMode` is set to `STANDALONE` , do not set this parameter.",
         "Name": "A unique identifier for the matchmaking configuration. This name is used to identify the configuration associated with a matchmaking request or ticket.",
         "NotificationTarget": "An SNS topic ARN that is set up to receive matchmaking notifications. See [Setting up notifications for matchmaking](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-notification.html) for more information.",
         "RequestTimeoutSeconds": "The maximum duration, in seconds, that a matchmaking ticket can remain in process before timing out. Requests that fail due to timing out can be resubmitted as needed.",
@@ -21679,7 +21665,7 @@
     },
     "AWS::GameLift::MatchmakingConfiguration.GameProperty": {
       "attributes": {},
-      "description": "Set of key-value pairs that contain information about a game session. When included in a game session request, these properties communicate details to be used when setting up the new game session. For example, a game property might specify a game mode, level, or map. Game properties are passed to the game server process when initiating a new game session. For more information, see the [GameLift Developer Guide](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-client-api.html#gamelift-sdk-client-api-create) .",
+      "description": "Set of key-value pairs that contain information about a game session. When included in a game session request, these properties communicate details to be used when setting up the new game session. For example, a game property might specify a game mode, level, or map. Game properties are passed to the game server process when initiating a new game session. For more information, see the [Amazon GameLift Developer Guide](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-client-api.html#gamelift-sdk-client-api-create) .",
       "properties": {
         "Key": "The game property identifier.",
         "Value": "The game property value."
@@ -21716,7 +21702,7 @@
       "attributes": {},
       "description": "The location in Amazon S3 where build or script files can be stored for access by Amazon GameLift.",
       "properties": {
-        "Bucket": "An Amazon S3 bucket identifier. Thename of the S3 bucket.\n\n> GameLift doesn't support uploading from Amazon S3 buckets with names that contain a dot (.).",
+        "Bucket": "An Amazon S3 bucket identifier. Thename of the S3 bucket.\n\n> Amazon GameLift doesn't support uploading from Amazon S3 buckets with names that contain a dot (.).",
         "Key": "The name of the zip file that contains the build files or script files.",
         "ObjectVersion": "The version of the file, if object versioning is turned on for the bucket. Amazon GameLift uses this information when retrieving files from an S3 bucket that you own. Use this parameter to specify a specific version of the file. If not set, the latest version of the file is retrieved.",
         "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access the S3 bucket."
@@ -23463,6 +23449,7 @@
         "DeploymentName": "The name of the deployment.",
         "DeploymentPolicies": "The deployment policies for the deployment. These policies define how the deployment updates components and handles failure.",
         "IotJobConfiguration": "The job configuration for the deployment configuration. The job configuration specifies the rollout, timeout, and stop configurations for the deployment configuration.",
+        "ParentTargetArn": "The parent deployment's [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) for a subdeployment.",
         "Tags": "Application-specific metadata to attach to the deployment. You can use tags in IAM policies to control access to AWS IoT Greengrass resources. You can also use tags to categorize your resources. For more information, see [Tag your AWS IoT Greengrass Version 2 resources](https://docs.aws.amazon.com/greengrass/v2/developerguide/tag-resources.html) in the *AWS IoT Greengrass V2 Developer Guide* .\n\nThis `Json` property type is processed as a map of key-value pairs. It uses the following format, which is different from most `Tags` implementations in AWS CloudFormation templates.\n\n```json\n\"Tags\": { \"KeyName0\": \"value\", \"KeyName1\": \"value\", \"KeyName2\": \"value\"\n}\n```",
         "TargetArn": "The ARN of the target AWS IoT thing or thing group."
       }
@@ -25240,6 +25227,7 @@
         "JobExecutionsRetryConfig": "Allows you to create the criteria to retry a job.",
         "JobExecutionsRolloutConfig": "Allows you to create a staged rollout of a job.",
         "JobTemplateId": "A unique identifier for the job template. We recommend using a UUID. Alpha-numeric characters, \"-\", and \"_\" are valid for use here.",
+        "MaintenanceWindows": "An optional configuration within the SchedulingConfig to setup a recurring maintenance window with a predetermined start time and duration for the rollout of a job document to all devices in a target group for a job.",
         "PresignedUrlConfig": "Configuration for pre-signed S3 URLs.",
         "Tags": "Metadata that can be used to manage the job template.",
         "TimeoutConfig": "Specifies the amount of time each device has to finish its execution of the job. A timer is started when the job execution status is set to `IN_PROGRESS` . If the job execution status is not set to another terminal state before the timer expires, it will be automatically set to `TIMED_OUT` ."
@@ -25275,15 +25263,23 @@
       "attributes": {},
       "description": "The configuration that determines how many retries are allowed for each failure type for a job.",
       "properties": {
-        "RetryCriteriaList": "The list of criteria that determines how many retries are allowed for each failure type for a job."
+        "RetryCriteriaList": ""
       }
     },
     "AWS::IoT::JobTemplate.JobExecutionsRolloutConfig": {
       "attributes": {},
       "description": "Allows you to create a staged rollout of a job.",
       "properties": {
-        "ExponentialRolloutRate": "Allows you to create an exponential rate of rollout for a job.",
+        "ExponentialRolloutRate": "",
         "MaximumPerMinute": "The maximum number of things that will be notified of a pending job, per minute. This parameter allows you to create a staged rollout."
+      }
+    },
+    "AWS::IoT::JobTemplate.MaintenanceWindow": {
+      "attributes": {},
+      "description": "An optional configuration within the `SchedulingConfig` to setup a recurring maintenance window with a predetermined start time and duration for the rollout of a job document to all devices in a target group for a job.",
+      "properties": {
+        "DurationInMinutes": "Displays the duration of the next maintenance window.",
+        "StartTime": "Displays the start time of the next maintenance window."
       }
     },
     "AWS::IoT::JobTemplate.PresignedUrlConfig": {
@@ -25681,7 +25677,7 @@
       "attributes": {},
       "description": "Describes an action that updates a CloudWatch log.",
       "properties": {
-        "BatchMode": "Indicates whether batches of log records will be extracted and uploaded into CloudWatch.",
+        "BatchMode": "",
         "LogGroupName": "The CloudWatch log name.",
         "RoleArn": "The IAM role that allows access to the CloudWatch log."
       }
@@ -31279,6 +31275,7 @@
       "attributes": {},
       "description": "Specifies an entry in a custom vocabulary.",
       "properties": {
+        "DisplayAs": "The DisplayAs value for the custom vocabulary item from the custom vocabulary list.",
         "Phrase": "Specifies 1 - 4 words that should be recognized.",
         "Weight": "Specifies the degree to which the phrase recognition is boosted. The default value is 1."
       }
@@ -35642,11 +35639,11 @@
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) for the asset. You can get this from the response to any request to the asset.",
         "CreatedAt": "The time that the asset was initially submitted for ingest.",
-        "EgressEndpoints": "",
         "Ref": ""
       },
       "description": "Creates an asset to ingest VOD content.\n\nAfter it's created, the asset starts ingesting content and generates playback URLs for the packaging configurations associated with it. When ingest is complete, downstream devices use the appropriate URL to request VOD content from AWS Elemental MediaPackage .",
       "properties": {
+        "EgressEndpoints": "List of playback endpoints that are available for this asset.",
         "Id": "Unique identifier that you assign to the asset.",
         "PackagingGroupId": "The ID of the packaging group associated with this asset.",
         "ResourceId": "Unique identifier for this asset, as it's configured in the key provider service.",
@@ -35788,10 +35785,7 @@
     "AWS::MediaPackage::OriginEndpoint.EncryptionContractConfiguration": {
       "attributes": {},
       "description": "Use `encryptionContractConfiguration` to configure one or more content encryption keys for your endpoints that use SPEKE Version 2.0. The encryption contract defines the content keys used to encrypt the audio and video tracks in your stream. To configure the encryption contract, specify which audio and video encryption presets to use. For more information about these presets, see [SPEKE Version 2.0 Presets](https://docs.aws.amazon.com/mediapackage/latest/ug/drm-content-speke-v2-presets.html) .\n\nNote the following considerations when using `encryptionContractConfiguration` :\n\n- You can use `encryptionContractConfiguration` for DASH endpoints that use SPEKE Version 2.0. SPEKE Version 2.0 relies on the CPIX Version 2.3 specification.\n- You cannot combine an `UNENCRYPTED` preset with `UNENCRYPTED` or `SHARED` presets across `presetSpeke20Audio` and `presetSpeke20Video` .\n- When you use a `SHARED` preset, you must use it for both `presetSpeke20Audio` and `presetSpeke20Video` .",
-      "properties": {
-        "PresetSpeke20Audio": "A collection of audio encryption presets.\n\nValue description:\n\n- `PRESET-AUDIO-1` - Use one content key to encrypt all of the audio tracks in your stream.\n- `PRESET-AUDIO-2` - Use one content key to encrypt all of the stereo audio tracks and one content key to encrypt all of the multichannel audio tracks.\n- `PRESET-AUDIO-3` - Use one content key to encrypt all of the stereo audio tracks, one content key to encrypt all of the multichannel audio tracks with 3 to 6 channels, and one content key to encrypt all of the multichannel audio tracks with more than 6 channels.\n- `SHARED` - Use the same content key for all of the audio and video tracks in your stream.\n- `UNENCRYPTED` - Don't encrypt any of the audio tracks in your stream.",
-        "PresetSpeke20Video": "A collection of video encryption presets.\n\nValue description:\n\n- `PRESET-VIDEO-1` - Use one content key to encrypt all of the video tracks in your stream.\n- `PRESET-VIDEO-2` - Use one content key to encrypt all of the SD video tracks and one content key for all HD and higher resolutions video tracks.\n- `PRESET-VIDEO-3` - Use one content key to encrypt all of the SD video tracks, one content key for HD video tracks and one content key for all UHD video tracks.\n- `PRESET-VIDEO-4` - Use one content key to encrypt all of the SD video tracks, one content key for HD video tracks, one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.\n- `PRESET-VIDEO-5` - Use one content key to encrypt all of the SD video tracks, one content key for HD1 video tracks, one content key for HD2 video tracks, one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.\n- `PRESET-VIDEO-6` - Use one content key to encrypt all of the SD video tracks, one content key for HD1 video tracks, one content key for HD2 video tracks and one content key for all UHD video tracks.\n- `PRESET-VIDEO-7` - Use one content key to encrypt all of the SD+HD1 video tracks, one content key for HD2 video tracks and one content key for all UHD video tracks.\n- `PRESET-VIDEO-8` - Use one content key to encrypt all of the SD+HD1 video tracks, one content key for HD2 video tracks, one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.\n- `SHARED` - Use the same content key for all of the video and audio tracks in your stream.\n- `UNENCRYPTED` - Don't encrypt any of the video tracks in your stream."
-      }
+      "properties": {}
     },
     "AWS::MediaPackage::OriginEndpoint.HlsEncryption": {
       "attributes": {},
@@ -38202,7 +38196,7 @@
       },
       "description": "Creates a policy of a specified type that you can attach to a root, an organizational unit (OU), or an individual AWS account .\n\nFor more information about policies and their use, see [Managing Organization Policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies.html) .\n\nIf the request includes tags, then the requester must have the `organizations:TagResource` permission.\n\nThis operation can be called only from the organization's management account.\n\n> Before you can create a policy of a given type, you must first [enable that policy type](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_enable-disable.html) in your organization.",
       "properties": {
-        "Content": "The policy text content. The text that you supply must adhere to the rules of the policy type you specify in the `Type` parameter. The following AWS Organizations quotas are enforced for the maximum size of a policy document:\n\n- Service control policies: 5,120 bytes *(not characters)*\n- AI services opt-out policies: 2,500 characters\n- Backup policies: 10,000 characters\n- Tag policies: 10,000 characters\n\nFor more information about Organizations service quotas, see [Quotas for AWS Organizations](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html) in the *AWS Organizations User Guide* .",
+        "Content": "The policy text content. You can specify the policy content as a JSON object or a JSON string.\n\n> When you specify the policy content as a JSON string, you can't perform drift detection on the CloudFormation stack. For this reason, we recommend specifying the policy content as a JSON object instead. \n\nThe text that you supply must adhere to the rules of the policy type you specify in the `Type` parameter. The following AWS Organizations quotas are enforced for the maximum size of a policy document:\n\n- Service control policies: 5,120 bytes *(not characters)*\n- AI services opt-out policies: 2,500 characters\n- Backup policies: 10,000 characters\n- Tag policies: 10,000 characters\n\nFor more information about Organizations service quotas, see [Quotas for AWS Organizations](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html) in the *AWS Organizations User Guide* .",
         "Description": "Human readable description of the policy.",
         "Name": "Name of the policy.\n\nThe [regex pattern](https://docs.aws.amazon.com/http://wikipedia.org/wiki/regex) that is used to validate this parameter is a string of any of the characters in the ASCII character range.",
         "Tags": "A list of tags that you want to attach to the newly created policy. For each tag in the list, you must specify both a tag key and a value. You can set the value to an empty string, but you can't set it to `null` . For more information about tagging, see [Tagging AWS Organizations resources](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_tagging.html) in the AWS Organizations User Guide.\n\n> If any one of the tags is not valid or if you exceed the allowed number of tags for a policy, then the entire request fails and the policy is not created.",
@@ -38584,7 +38578,7 @@
       "properties": {
         "Daily": "The maximum number of messages that a campaign can send to a single endpoint during a 24-hour period. The maximum value is 100.",
         "MaximumDuration": "The maximum amount of time, in seconds, that a campaign can attempt to deliver a message after the scheduled start time for the campaign. The minimum value is 60 seconds.",
-        "MessagesPerSecond": "The maximum number of messages that a campaign can send each second. The minimum value is 50. The maximum value is 20,000.",
+        "MessagesPerSecond": "The maximum number of messages that a campaign can send each second. The minimum value is 1. The maximum value is 20,000.",
         "Total": "The maximum number of messages that a campaign can send to a single endpoint during the course of the campaign. The maximum value is 100."
       }
     },
@@ -38774,7 +38768,7 @@
       "properties": {
         "Daily": "The maximum number of messages that a campaign can send to a single endpoint during a 24-hour period. The maximum value is 100.",
         "MaximumDuration": "The maximum amount of time, in seconds, that a campaign can attempt to deliver a message after the scheduled start time for the campaign. The minimum value is 60 seconds.",
-        "MessagesPerSecond": "The maximum number of messages that a campaign can send each second. The minimum value is 50. The maximum value is 20,000.",
+        "MessagesPerSecond": "The maximum number of messages that a campaign can send each second. The minimum value is 1. The maximum value is 20,000.",
         "Session": "",
         "Total": "The maximum number of messages that a campaign can send to a single endpoint during the course of the campaign. The maximum value is 100."
       }
@@ -41351,7 +41345,6 @@
         "Endpoint": "The custom endpoint for the RDS DB instance or Aurora DB cluster.",
         "IsDefault": "A value that indicates whether this endpoint is the default endpoint for the associated DB proxy. Default DB proxy endpoints always have read/write capability. Other endpoints that you associate with the DB proxy can be either read/write or read-only.",
         "Ref": "`Ref` returns the name of the DB proxy endpoint.",
-        "TargetRole": "A value that indicates whether the DB proxy endpoint can be used for read/write or read-only operations.",
         "VpcId": "The VPC ID of the DB proxy endpoint."
       },
       "description": "The `AWS::RDS::DBProxyEndpoint` resource creates or updates a DB proxy endpoint. You can use custom proxy endpoints to access a proxy through a different VPC than the proxy's default VPC.\n\nFor more information about RDS Proxy, see [AWS::RDS::DBProxy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxy.html) .",
@@ -41359,6 +41352,7 @@
         "DBProxyEndpointName": "The name of the DB proxy endpoint to create.",
         "DBProxyName": "The name of the DB proxy associated with the DB proxy endpoint that you create.",
         "Tags": "An optional set of key-value pairs to associate arbitrary data of your choosing with the proxy.",
+        "TargetRole": "A value that indicates whether the DB proxy endpoint can be used for read/write or read-only operations.\n\nValid Values: `READ_WRITE | READ_ONLY`",
         "VpcSecurityGroupIds": "The VPC security group IDs for the DB proxy endpoint that you create. You can specify a different set of security group IDs than for the original DB proxy. The default is the default security group for the VPC.",
         "VpcSubnetIds": "The VPC subnet IDs for the DB proxy endpoint that you create. You can specify a different set of subnet IDs than for the original DB proxy."
       }
@@ -41508,6 +41502,7 @@
     },
     "AWS::RUM::AppMonitor": {
       "attributes": {
+        "Id": "",
         "Ref": "`Ref` returns the name of the app monitor."
       },
       "description": "Creates a CloudWatch RUM app monitor, which you can use to collect telemetry data from your application and send it to CloudWatch RUM. The data includes performance and reliability information such as page load time, client-side errors, and user behavior.\n\nAfter you create an app monitor, sign in to the CloudWatch RUM console to get the JavaScript code snippet to add to your web application. For more information, see [How do I find a code snippet that I've already generated?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-find-code-snippet.html)",
@@ -42806,7 +42801,7 @@
         "Ref": "`Ref` returns the `ClusterArn` object.",
         "Status": "The deployment status of the cluster. Status can be one of the following: PENDING, DEPLOYED, PENDING_DELETION."
       },
-      "description": "Creates a cluster in an account. A cluster is a set of redundant Regional endpoints that you can run Route 53 ARC API calls against to update or get the state of one or more routing controls.",
+      "description": "Creates a cluster in Amazon Route 53 Application Recovery Controller. A cluster is a set of redundant Regional endpoints that you can run Route 53 ARC API calls against to update or get the state of one or more routing controls.",
       "properties": {
         "Name": "Name of the cluster. You can use any non-white space character in the name except the following: & > < ' (single quote) \" (double quote) ; (semicolon).",
         "Tags": "The value for a tag."
@@ -42828,7 +42823,7 @@
         "RoutingControlCount": "The number of routing controls in the control panel.",
         "Status": "The deployment status of control panel. Status can be one of the following: PENDING, DEPLOYED, PENDING_DELETION."
       },
-      "description": "Creates a new control panel. A control panel represents a group of routing controls that can be changed together in a single transaction. You can use a control panel to centrally view the operational status of applications across your organization, and trigger multi-app failovers in a single transaction, for example, to fail over from one AWS Region (cell) to another.",
+      "description": "Creates a new control panel in Amazon Route 53 Application Recovery Controller. A control panel represents a group of routing controls that can be changed together in a single transaction. You can use a control panel to centrally view the operational status of applications across your organization, and trigger multi-app failovers in a single transaction, for example, to fail over from one AWS Region (cell) to another.",
       "properties": {
         "ClusterArn": "The Amazon Resource Name (ARN) of the cluster for the control panel.",
         "Name": "The name of the control panel. You can use any non-white space character in the name.",
@@ -42841,7 +42836,7 @@
         "RoutingControlArn": "The Amazon Resource Name (ARN) of the routing control.",
         "Status": "The deployment status of the routing control. Status can be one of the following: PENDING, DEPLOYED, PENDING_DELETION."
       },
-      "description": "Defines a routing control. Routing control states are maintained on the highly reliable Amazon Route 53 Application Recovery Controller cluster data plane.\n\nTo get or update the state of the routing control, you must specify a cluster endpoint, which consists of an endpoint URL and an AWS Region. For more information, see [Code examples](https://docs.aws.amazon.com/r53recovery/latest/dg/service_code_examples.html) in the Amazon Route 53 Application Recovery Controller Developer Guide.",
+      "description": "Creates a routing control in Amazon Route 53 Application Recovery Controller. Routing control states are maintained on the highly reliable cluster data plane.\n\nTo get or update the state of the routing control, you must specify a cluster endpoint, which is an endpoint URL and an AWS Region. For more information, see [Code examples](https://docs.aws.amazon.com/r53recovery/latest/dg/service_code_examples.html) in the Amazon Route 53 Application Recovery Controller Developer Guide.",
       "properties": {
         "ClusterArn": "The Amazon Resource Name (ARN) of the cluster that hosts the routing control.",
         "ControlPanelArn": "The Amazon Resource Name (ARN) of the control panel that includes the routing control.",
@@ -42854,7 +42849,7 @@
         "SafetyRuleArn": "The Amazon Resource Name (ARN) of the safety rule.",
         "Status": "The deployment status of the safety rule. Status can be one of the following: PENDING, DEPLOYED, PENDING_DELETION."
       },
-      "description": "Create a safety rule in a control panel. Safety rules in Amazon Route 53 Application Recovery Controller let you add safeguards around changing routing control states, and enabling and disabling routing controls, to help prevent unwanted outcomes. Note that the name of a safety rule must be unique within a control panel.\n\nThere are two types of safety rules in Route 53 ARC: assertion rules and gating rules.\n\nAssertion rule: An assertion rule enforces that, when you change a routing control state, certain criteria are met. For example, the criteria might be that at least one routing control state is `On` after the transaction completes so that traffic continues to be directed to at least one cell for the application. This prevents a fail-open scenario.\n\nGating rule: A gating rule lets you configure a gating routing control as an overall on-off switch for a group of routing controls. Or, you can configure more complex gating scenarios, for example, by configuring multiple gating routing controls.\n\nFor more information, see [Safety rules](https://docs.aws.amazon.com/r53recovery/latest/dg/routing-control.safety-rules.html) in the Amazon Route 53 Application Recovery Controller Developer Guide.",
+      "description": "Creates a safety rule in a control panel in Amazon Route 53 Application Recovery Controller. Safety rules in Amazon Route 53 Application Recovery Controller let you add safeguards around changing routing control states, and enabling and disabling routing controls, to help prevent unwanted outcomes. Note that the name of a safety rule must be unique within a control panel.\n\nThere are two types of safety rules in Route 53 ARC: assertion rules and gating rules.\n\nAssertion rule: An assertion rule enforces that, when you change a routing control state, certain criteria are met. For example, the criteria might be that at least one routing control state is `On` after the transaction completes so that traffic continues to be directed to at least one cell for the application. This prevents a fail-open scenario.\n\nGating rule: A gating rule lets you configure a gating routing control as an overall on-off switch for a group of routing controls. Or, you can configure more complex gating scenarios, for example, by configuring multiple gating routing controls.\n\nFor more information, see [Safety rules](https://docs.aws.amazon.com/r53recovery/latest/dg/routing-control.safety-rules.html) in the Amazon Route 53 Application Recovery Controller Developer Guide.",
       "properties": {
         "AssertionRule": "An assertion rule enforces that, when you change a routing control state, that the criteria that you set in the rule configuration is met. Otherwise, the change to the routing control is not accepted. For example, the criteria might be that at least one routing control state is `On` after the transaction so that traffic continues to flow to at least one cell for the application. This ensures that you avoid a fail-open scenario.",
         "ControlPanelArn": "The Amazon Resource Name (ARN) for the control panel.",
@@ -42869,7 +42864,7 @@
       "description": "An assertion rule enforces that, when you change a routing control state, that the criteria that you set in the rule configuration is met. Otherwise, the change to the routing control is not accepted. For example, the criteria might be that at least one routing control state is `On` after the transaction so that traffic continues to flow to at least one cell for the application. This ensures that you avoid a fail-open scenario.",
       "properties": {
         "AssertedControls": "The routing controls that are part of transactions that are evaluated to determine if a request to change a routing control state is allowed. For example, you might include three routing controls, one for each of three AWS Regions.",
-        "WaitPeriodMs": "An evaluation period, in milliseconds (ms), during which any request against the target routing controls will fail. This helps prevent \"flapping\" of state. The wait period is 5000 ms by default, but you can choose a custom value."
+        "WaitPeriodMs": "An evaluation period, in milliseconds (ms), during which any request against the target routing controls will fail. This helps prevent flapping of state. The wait period is 5000 ms by default, but you can choose a custom value."
       }
     },
     "AWS::Route53RecoveryControl::SafetyRule.GatingRule": {
@@ -42878,7 +42873,7 @@
       "properties": {
         "GatingControls": "An array of gating routing control Amazon Resource Names (ARNs). For a simple on-off switch, specify the ARN for one routing control. The gating routing controls are evaluated by the rule configuration that you specify to determine if the target routing control states can be changed.",
         "TargetControls": "An array of target routing control Amazon Resource Names (ARNs) for which the states can only be updated if the rule configuration that you specify evaluates to true for the gating routing control. As a simple example, if you have a single gating control, it acts as an overall on-off switch for a set of target routing controls. You can use this to manually override automated failover, for example.",
-        "WaitPeriodMs": "An evaluation period, in milliseconds (ms), during which any request against the target routing controls will fail. This helps prevent \"flapping\" of state. The wait period is 5000 ms by default, but you can choose a custom value."
+        "WaitPeriodMs": "An evaluation period, in milliseconds (ms), during which any request against the target routing controls will fail. This helps prevent flapping of state. The wait period is 5000 ms by default, but you can choose a custom value."
       }
     },
     "AWS::Route53RecoveryControl::SafetyRule.RuleConfig": {
@@ -46018,14 +46013,14 @@
       "attributes": {},
       "description": "The security configuration for `OnlineStore` .",
       "properties": {
-        "KmsKeyId": "The ID of the AWS Key Management Service ( AWS KMS) key that SageMaker Feature Store uses to encrypt the Amazon S3 objects at rest using Amazon S3 server-side encryption.\n\nThe caller (either IAM user or IAM role) of `CreateFeatureGroup` must have below permissions to the `OnlineStore` `KmsKeyId` :\n\n- `\"kms:Encrypt\"`\n- `\"kms:Decrypt\"`\n- `\"kms:DescribeKey\"`\n- `\"kms:CreateGrant\"`\n- `\"kms:RetireGrant\"`\n- `\"kms:ReEncryptFrom\"`\n- `\"kms:ReEncryptTo\"`\n- `\"kms:GenerateDataKey\"`\n- `\"kms:ListAliases\"`\n- `\"kms:ListGrants\"`\n- `\"kms:RevokeGrant\"`\n\nThe caller (either user or IAM role) to all DataPlane operations ( `PutRecord` , `GetRecord` , `DeleteRecord` ) must have the following permissions to the `KmsKeyId` :\n\n- `\"kms:Decrypt\"`"
+        "KmsKeyId": "The AWS Key Management Service (KMS) key ARN that SageMaker Feature Store uses to encrypt the Amazon S3 objects at rest using Amazon S3 server-side encryption.\n\nThe caller (either IAM user or IAM role) of `CreateFeatureGroup` must have below permissions to the `OnlineStore` `KmsKeyId` :\n\n- `\"kms:Encrypt\"`\n- `\"kms:Decrypt\"`\n- `\"kms:DescribeKey\"`\n- `\"kms:CreateGrant\"`\n- `\"kms:RetireGrant\"`\n- `\"kms:ReEncryptFrom\"`\n- `\"kms:ReEncryptTo\"`\n- `\"kms:GenerateDataKey\"`\n- `\"kms:ListAliases\"`\n- `\"kms:ListGrants\"`\n- `\"kms:RevokeGrant\"`\n\nThe caller (either user or IAM role) to all DataPlane operations ( `PutRecord` , `GetRecord` , `DeleteRecord` ) must have the following permissions to the `KmsKeyId` :\n\n- `\"kms:Decrypt\"`"
       }
     },
     "AWS::SageMaker::FeatureGroup.S3StorageConfig": {
       "attributes": {},
       "description": "The Amazon Simple Storage (Amazon S3) location and and security configuration for `OfflineStore` .",
       "properties": {
-        "KmsKeyId": "The AWS Key Management Service (KMS) key ID of the key used to encrypt any objects written into the `OfflineStore` S3 location.\n\nThe IAM `roleARN` that is passed as a parameter to `CreateFeatureGroup` must have below permissions to the `KmsKeyId` :\n\n- `\"kms:GenerateDataKey\"`",
+        "KmsKeyId": "The AWS Key Management Service (KMS) key ARN of the key used to encrypt any objects written into the `OfflineStore` S3 location.\n\nThe IAM `roleARN` that is passed as a parameter to `CreateFeatureGroup` must have below permissions to the `KmsKeyId` :\n\n- `\"kms:GenerateDataKey\"`",
         "S3Uri": "The S3 URI, or location in Amazon S3, of `OfflineStore` .\n\nS3 URIs have a format similar to the following: `s3://example-bucket/prefix/` ."
       }
     },
@@ -48018,10 +48013,28 @@
         "Owner": "The owner of the product.",
         "ProvisioningArtifactParameters": "The configuration of the provisioning artifact (also known as a version).",
         "ReplaceProvisioningArtifacts": "This property is turned off by default. If turned off, you can update provisioning artifacts or product attributes (such as description, distributor, name, owner, and more) and the associated provisioning artifacts will retain the same unique identifier. Provisioning artifacts are matched within the CloudFormationProduct resource, and only those that have been updated will be changed. Provisioning artifacts are matched by a combinaton of provisioning artifact template URL and name.\n\nIf turned on, provisioning artifacts will be given a new unique identifier when you update the product or provisioning artifacts.",
+        "SourceConnection": "A top level `ProductViewDetail` response containing details about the product\u2019s connection. AWS Service Catalog returns this field for the `CreateProduct` , `UpdateProduct` , `DescribeProductAsAdmin` , and `SearchProductAsAdmin` APIs. This response contains the same fields as the `ConnectionParameters` request, with the addition of the `LastSync` response.",
         "SupportDescription": "The support information about the product.",
         "SupportEmail": "The contact email for product support.",
         "SupportUrl": "The contact URL for product support.\n\n`^https?:\\/\\//` / is the pattern used to validate SupportUrl.",
         "Tags": "One or more tags."
+      }
+    },
+    "AWS::ServiceCatalog::CloudFormationProduct.CodeStarParameters": {
+      "attributes": {},
+      "description": "The subtype containing details about the Codestar connection `Type` .",
+      "properties": {
+        "ArtifactPath": "The absolute path wehre the artifact resides within the repo and branch, formatted as \"folder/file.json.\"",
+        "Branch": "The specific branch where the artifact resides.",
+        "ConnectionArn": "The CodeStar ARN, which is the connection between AWS Service Catalog and the external repository.",
+        "Repository": "The specific repository where the product\u2019s artifact-to-be-synced resides, formatted as \"Account/Repo.\""
+      }
+    },
+    "AWS::ServiceCatalog::CloudFormationProduct.ConnectionParameters": {
+      "attributes": {},
+      "description": "Provides connection details.",
+      "properties": {
+        "CodeStar": "Provides `ConnectionType` details."
       }
     },
     "AWS::ServiceCatalog::CloudFormationProduct.ProvisioningArtifactProperties": {
@@ -48032,6 +48045,14 @@
         "DisableTemplateValidation": "If set to true, AWS Service Catalog stops validating the specified provisioning artifact even if it is invalid.",
         "Info": "Specify the template source with one of the following options, but not both. Keys accepted: [ `LoadTemplateFromURL` , `ImportFromPhysicalId` ]\n\nThe URL of the AWS CloudFormation template in Amazon S3 in JSON format. Specify the URL in JSON format as follows:\n\n`\"LoadTemplateFromURL\": \"https://s3.amazonaws.com/cf-templates-ozkq9d3hgiq2-us-east-1/...\"`\n\n`ImportFromPhysicalId` : The physical id of the resource that contains the template. Currently only supports AWS CloudFormation stack arn. Specify the physical id in JSON format as follows: `ImportFromPhysicalId: \u201carn:aws:cloudformation:[us-east-1]:[accountId]:stack/[StackName]/[resourceId]`",
         "Name": "The name of the provisioning artifact (for example, v1 v2beta). No spaces are allowed."
+      }
+    },
+    "AWS::ServiceCatalog::CloudFormationProduct.SourceConnection": {
+      "attributes": {},
+      "description": "A top level `ProductViewDetail` response containing details about the product\u2019s connection. AWS Service Catalog returns this field for the `CreateProduct` , `UpdateProduct` , `DescribeProductAsAdmin` , and `SearchProductAsAdmin` APIs. This response contains the same fields as the `ConnectionParameters` request, with the addition of the `LastSync` response.",
+      "properties": {
+        "ConnectionParameters": "The connection details based on the connection `Type` .",
+        "Type": "The only supported `SourceConnection` type is Codestar."
       }
     },
     "AWS::ServiceCatalog::CloudFormationProvisionedProduct": {
@@ -48255,9 +48276,9 @@
     },
     "AWS::ServiceCatalogAppRegistry::Application": {
       "attributes": {
-        "Arn": "The Arn for the application.",
-        "Id": "The application Id in the respective resource.",
-        "Ref": ""
+        "Arn": "The Amazon resource name (ARN) that specifies the application across services.",
+        "Id": "The identifier of the application.",
+        "Ref": "`Ref` returns the Id."
       },
       "description": "Represents a AWS Service Catalog AppRegistry application that is the top-level node in a hierarchy of related cloud resource abstractions.",
       "properties": {
@@ -48268,13 +48289,13 @@
     },
     "AWS::ServiceCatalogAppRegistry::AttributeGroup": {
       "attributes": {
-        "Arn": "The Arn for the attribute group.",
-        "Id": "The attribute group Id in the respective resource.",
-        "Ref": ""
+        "Arn": "The Amazon resource name (ARN) that specifies the attribute group across services.",
+        "Id": "The globally unique attribute group identifier of the attribute group.",
+        "Ref": "`Ref` returns the id."
       },
       "description": "Creates a new attribute group as a container for user-defined attributes. This feature enables users to have full control over their cloud application's metadata in a rich machine-readable format to facilitate integration with automated workflows and third-party tools.",
       "properties": {
-        "Attributes": "A JSON string in the form of nested key-value pairs that represent the attributes in the group and describes an application and its components.",
+        "Attributes": "A nested object in a JSON or YAML template that supports arbitrary definitions. Represents the attributes in an attribute group that describes an application and its components.",
         "Description": "The description of the attribute group that the user provides.",
         "Name": "The name of the attribute group.",
         "Tags": "Key-value pairs you can use to associate with the attribute group."
@@ -48282,12 +48303,12 @@
     },
     "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation": {
       "attributes": {
-        "ApplicationArn": "",
-        "AttributeGroupArn": "",
+        "ApplicationArn": "The Amazon resource name (ARN) of the application that was augmented with attributes.",
+        "AttributeGroupArn": "The Amazon resource name (ARN) of the attribute group that contains the application's new attributes.",
         "Id": "The Id of the Association.",
-        "Ref": ""
+        "Ref": "`Ref` returns the Id."
       },
-      "description": "The `AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation` resource for `ServiceCatalogAppRegistry` .",
+      "description": "Associates an attribute group with an application to augment the application's metadata with the group's attributes. This feature enables applications to be described with user-defined details that are machine-readable, such as third-party integrations.",
       "properties": {
         "Application": "The name or ID of the application.",
         "AttributeGroup": "The name or ID of the attribute group that holds the attributes to describe the application."
@@ -48295,16 +48316,16 @@
     },
     "AWS::ServiceCatalogAppRegistry::ResourceAssociation": {
       "attributes": {
-        "ApplicationArn": "",
+        "ApplicationArn": "The Amazon resource name (ARN) that specifies the application.",
         "Id": "The Id of the Association.",
-        "Ref": "",
-        "ResourceArn": ""
+        "Ref": "`Ref` returns the id.",
+        "ResourceArn": "The Amazon resource name (ARN) that specifies the resource."
       },
-      "description": "The `AWS::ServiceCatalogAppRegistry::ResourceAssociation` resource for `ServiceCatalogAppRegistry` .",
+      "description": "Associates a resource with an application. Both the resource and the application can be specified either by ID or name.",
       "properties": {
         "Application": "The name or ID of the application.",
         "Resource": "The name or ID of the resource of which the application will be associated.",
-        "ResourceType": "The type of resource of which the application will be associated. Possible values: CFN_STACK."
+        "ResourceType": "The type of resource of which the application will be associated."
       }
     },
     "AWS::ServiceDiscovery::HttpNamespace": {
