@@ -250,9 +250,7 @@ export class Table extends TableBase {
       this.validateSortStyle(props.sortStyle, props.tableColumns);
     }
 
-    this.tableColumns = props.tableColumns;
     this.addColumnIds(props.tableColumns);
-
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
 
@@ -329,6 +327,7 @@ export class Table extends TableBase {
   }
 
   private addColumnIds(columns: Column[]): void {
+    this.tableColumns = props.tableColumns;
     const columnIds = new Set<string>();
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
