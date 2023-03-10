@@ -4,26 +4,6 @@
    "Type": "AWS::ECR::Repository",
    "Properties": {
     "RepositoryName": "delete-even-if-containing-images",
-    "RepositoryPolicyText": {
-     "Statement": [
-      {
-       "Action": [
-        "ecr:BatchDeleteImage",
-        "ecr:ListImages"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
-          "Arn"
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-images",
@@ -72,6 +52,36 @@
      {
       "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
      }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ecr:BatchDeleteImage",
+          "ecr:ListImages"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ecr:DescribeRepositories",
+          "ecr:ListTagsForResource"
+         ],
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
     ]
    }
   },
@@ -82,7 +92,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0229a1c26dd814c519801273acd6652a34bb1e80a37af75e678f0c1d4e50457c.zip"
+     "S3Key": "9631303d93bca290c0dc23afdd33080f3c5f2fa03ebf3dd73a028853023cf12e.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

@@ -770,36 +770,31 @@ export class Repository extends RepositoryBase {
   }
 
   private enableAutoDeleteImages() {
+    // Use a iam policy to allow the custom resource to list & delete
+    // images in the repository and the ability to get all repositories to find the arn needed on delete.
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
+      policyStatements: [
+        {
+          Effect: 'Allow',
+          Action: [
+            'ecr:BatchDeleteImage',
+            'ecr:ListImages',
+          ],
+          Resource: ['*'], // TODO?
+        },
+        {
+          Effect: 'Allow',
+          Action: [
+            'ecr:DescribeRepositories',
+            'ecr:ListTagsForResource',
+          ],
+          Resource: ['*'],
+        },
+      ],
     });
-
-    // Use a iam policy to allow the custom resource to list & delete
-    // images in the repository
-    this.addToResourcePolicy(new iam.PolicyStatement({
-      actions: [
-        'ecr:BatchDeleteImage',
-        'ecr:ListImages',
-      ],
-      resources: [
-        this.repositoryArn,
-      ],
-      principals: [new iam.ArnPrincipal(provider.roleArn)],
-    }));
-
-    // This is scoped to * in the case that the repository name is changed during an update
-    // it can be retrieved from the DescribeRepositories call to ECR
-    this.addToResourcePolicy(new iam.PolicyStatement({
-      actions: [
-        'ecr:DescribeRepositories',
-      ],
-      resources: [
-        '*',
-      ],
-      principals: [new iam.ArnPrincipal(provider.roleArn)],
-    }));
 
     const customResource = new CustomResource(this, 'AutoDeleteImagesCustomResource', {
       resourceType: AUTO_DELETE_IMAGES_RESOURCE_TYPE,
