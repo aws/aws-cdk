@@ -142,7 +142,7 @@ describe('cluster table', () => {
   });
 
   describe('columnId', () => {
-    it('throws if column ids are similar', async () => {
+    it('throws if column ids are not unique', async () => {
       const updatedTableColumns: redshift.Column[] = [
         { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
         { id: 'col1', name: 'col2', dataType: 'float' },
