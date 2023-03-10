@@ -233,7 +233,7 @@ export class Table extends TableBase {
   }
 
   readonly tableName: string;
-  readonly tableColumns: Column[];
+  readonly tableColumns: Column[] = [];
   readonly cluster: ICluster;
   readonly databaseName: string;
 
@@ -327,9 +327,9 @@ export class Table extends TableBase {
   }
 
   private addColumnIds(columns: Column[]): void {
-    this.tableColumns = props.tableColumns;
     const columnIds = new Set<string>();
     for (let i = 0; i < columns.length; i++) {
+      this.tableColumns.push(columns[i]);
       const column = columns[i];
       if (column.id) {
         if (columnIds.has(column.id)) {
