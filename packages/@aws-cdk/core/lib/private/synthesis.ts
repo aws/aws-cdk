@@ -86,11 +86,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
         if (!templatePathsByPlugin.has(plugin)) {
           templatePathsByPlugin.set(plugin, []);
         }
-        if (App.isApp(construct)) {
-          templatePathsByPlugin.get(plugin)!.push(...assembly.stacks.map(stack => stack.templateFullPath));
-        } else {
-          templatePathsByPlugin.get(plugin)!.push(...assembly.getNestedAssembly(construct.artifactId).stacks.map(stack => stack.templateFullPath));
-        }
+        templatePathsByPlugin.get(plugin)!.push(...assembly.stacks.map(stack => stack.templateFullPath));
       }
     }
   });
