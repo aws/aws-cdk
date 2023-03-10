@@ -101,9 +101,11 @@ new glue.Table(stack, 'MyPartitionFilteredTable', {
   dataFormat: glue.DataFormat.JSON,
   enablePartitionFiltering: true,
   storageParameters: {
-    'separatorChar': ',',
-    'skip.header.line.count': 2,
-    'foo': 'bar',
+    [glue.StorageParameters.custom('separatorChar')]: ',',
+    [glue.StorageParameters.SKIP_HEADER_LINE_COUNT]: '1',
+    [glue.StorageParameters.COMPRESSION_TYPE]: glue.StorageParameters.CompressionType.GZIP,
+    [glue.StorageParameters.INVALID_CHAR_HANDLING]: glue.StorageParameters.InvalidCharHandlingAction.DISABLED,
+    [glue.StorageParameters.custom('foo')]: 'bar',
   },
 });
 

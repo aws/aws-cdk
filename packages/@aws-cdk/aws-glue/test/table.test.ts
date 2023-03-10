@@ -4,7 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as glue from '../lib';
-import { PartitionIndex } from '../lib';
+import { PartitionIndex, StorageParameters } from '../lib';
 import { CfnTable } from '../lib/glue.generated';
 
 test('unpartitioned JSON table', () => {
@@ -1612,8 +1612,8 @@ test('storage descriptor parameters', () => {
     }],
     dataFormat: glue.DataFormat.JSON,
     storageParameters: {
-      'skip.header.line.count': 2,
-      'separatorChar': ',',
+      [StorageParameters.SKIP_HEADER_LINE_COUNT]: '2',
+      // [StorageParameters.custom('separatorChar')]: ',',
     },
   });
 
