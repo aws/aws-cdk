@@ -1,14 +1,12 @@
 {
-  "version": "22.0.0",
+  "version": "30.1.0",
   "testCases": {
-    "integ.aws-custom-resource": {
+    "AwsCustomResourceTest/DefaultTest": {
       "stacks": [
         "aws-cdk-sdk-js"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "AwsCustomResourceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
