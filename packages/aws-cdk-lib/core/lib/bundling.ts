@@ -141,6 +141,13 @@ export interface BundlingOptions {
  */
 export enum BundlingOutput {
   /**
+   * The bundling output directory includes a single file which
+   * will be used as the final bundle. If the output directory does not
+   * include exactly a single file, bundling will fail.
+   */
+  FILE = 'file',
+
+  /**
    * The bundling output directory includes a single .zip or .jar file which
    * will be used as the final bundle. If the output directory does not
    * include exactly a single archive, bundling will fail.

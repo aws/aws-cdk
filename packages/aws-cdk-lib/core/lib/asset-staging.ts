@@ -353,7 +353,7 @@ export class AssetStaging extends Construct {
       assetHash,
       stagedPath,
       packaging: bundledAsset.packaging,
-      isArchive: true, // bundling always produces an archive
+      isArchive: bundling.outputType !== BundlingOutput.FILE,
     };
   }
 
@@ -579,6 +579,30 @@ function singleArchiveFile(directory: string): string | undefined {
   return undefined;
 }
 
+/**
+ * Returns the single file of a directory or undefined
+ */
+function singleFile(directory: string): string | undefined {
+  if (!fs.existsSync(directory)) {
+    throw new Error(`Directory ${directory} does not exist.`);
+  }
+
+  if (!fs.statSync(directory).isDirectory()) {
+    throw new Error(`${directory} is not a directory.`);
+  }
+
+  const content = fs.readdirSync(directory);
+  if (content.length === 1) {
+    const file = path.join(directory, content[0]);
+    const extension = getExtension(content[0]).toLowerCase();
+    if (fs.statSync(file).isFile() && !ARCHIVE_EXTENSIONS.includes(extension)) {
+      return file;
+    }
+  }
+
+  return undefined;
+}
+
 interface BundledAsset {
   path: string,
   packaging: FileAssetPackaging,
@@ -591,6 +615,7 @@ interface BundledAsset {
  */
 function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): BundledAsset {
   const archiveFile = singleArchiveFile(bundleDir);
+  const file = singleFile(bundleDir);
 
   // auto-discover means that if there is an archive file, we take it as the
   // bundle, otherwise, we will archive here.
@@ -606,6 +631,11 @@ function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): B
         throw new Error('Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`');
       }
       return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: getExtension(archiveFile) };
+    case BundlingOutput.FILE:
+      if (!file) {
+        throw new Error('Bundling output directory is expected to include only a single non archive file when `output` is set to `FILE`');
+      }
+      return { path: file, packaging: FileAssetPackaging.FILE, extension: getExtension(file) };
   }
 }
 

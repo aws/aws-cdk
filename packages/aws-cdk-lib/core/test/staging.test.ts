@@ -1260,6 +1260,53 @@ describe('staging', () => {
       },
     })).toThrow(/Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`/);
   });
+
+  test('bundling that produces a single non archive file with FILE', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const staging =new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        outputType: BundlingOutput.FILE,
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    expect(fs.readdirSync(assembly.directory)).toEqual([
+      'asset.f5160e037189d688a526fefb9c0ef62e8638115ba7ccc90011e6e0aecb05f39d',
+      'asset.f5160e037189d688a526fefb9c0ef62e8638115ba7ccc90011e6e0aecb05f39d.txt',
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+    expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(staging.isArchive).toEqual(false);
+  });
+
+  test('throws with FILE and bundling that produces a single archive file', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    expect(() => new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SINGLE_ARCHIVE],
+        outputType: BundlingOutput.FILE,
+      },
+    })).toThrow(/Bundling output directory is expected to include only a single non archive file when `output` is set to `FILE`/);
+  });
 });
 
 describe('staging with docker cp', () => {
