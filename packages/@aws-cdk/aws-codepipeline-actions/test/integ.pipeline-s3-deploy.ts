@@ -10,10 +10,15 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-s3-deploy');
 
+const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
+  description: 'sample key',
+});
+
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
+  encryptionKey: key,
 });
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({
@@ -31,10 +36,6 @@ const deployBucket = new s3.Bucket(stack, 'DeployBucket', {
 const otherDeployBucket = new s3.Bucket(stack, 'OtherDeployBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
-});
-
-const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
-  description: 'sample key',
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -102,7 +103,6 @@ integ.assertions.awsApiCall('S3', 'putObject', {
     integ.assertions.awsApiCall('S3', 'getObject', {
       Bucket: deployBucket.bucketName,
       Key: 'key',
-      KMSEncryptionKeyARN: key?.keyArn,
     }),
   ),
 );
