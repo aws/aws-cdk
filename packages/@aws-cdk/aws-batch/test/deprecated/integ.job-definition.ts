@@ -2,7 +2,7 @@
 import { ContainerImage } from "@aws-cdk/aws-ecs";
 import { App, Stack } from "@aws-cdk/core";
 import { ExpectedResult, IntegTest } from "@aws-cdk/integ-tests";
-import { JobDefinition } from "../lib";
+import { JobDefinition } from "../../lib/deprecated";
 
 const app = new App();
 

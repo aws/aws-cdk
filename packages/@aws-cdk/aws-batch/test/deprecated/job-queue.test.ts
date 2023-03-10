@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import * as batch from '../lib';
+import * as batch from '../../lib/deprecated';
 
 describe('Batch Job Queue', () => {
   let stack: cdk.Stack;

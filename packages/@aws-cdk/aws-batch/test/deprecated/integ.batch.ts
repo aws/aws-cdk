@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
-import * as batch from '../lib/';
+import * as batch from '../../lib/deprecated';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'batch-stack');

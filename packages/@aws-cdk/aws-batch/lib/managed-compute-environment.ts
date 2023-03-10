@@ -3,10 +3,11 @@ import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 
 
-interface IManagedComputeEnvironment extends IComputeEnvironment {
+export interface IManagedComputeEnvironment extends IComputeEnvironment {
   /**
    * The maximum vCpus this `ManagedComputeEnvironment` can scale up to.
    *
@@ -96,14 +97,17 @@ interface IManagedComputeEnvironment extends IComputeEnvironment {
   readonly updateToLatestImageVersion?: boolean;
 }
 
-interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps {
+export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps {
   /**
   * The maximum vCpus this `ManagedComputeEnvironment` can scale up to.
+  * Each vCPU is equivalent to 1024 CPU shares.
   *
   * *Note*: if this Compute Environment uses EC2 resources (not Fargate) with either `AllocationStrategy.BEST_FIT_PROGRESSIVE` or
   * `AllocationStrategy.SPOT_CAPACITY_OPTIMIZED`, or `AllocationStrategy.BEST_FIT` with Spot instances,
   * The scheduler may exceed this number by at most one of the instances specified in `instanceTypes`
   * or `instanceClasses`.
+  *
+  * @default 256
   */
   readonly maxvCpus?: number;
 
@@ -162,16 +166,22 @@ interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps {
   * retried.
   *
   * @see https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html
+  *
+  * @default true
   */
   readonly terminateOnUpdate?: boolean;
 
   /**
   * The security groups this Compute Environment will launch instances in.
+  *
+  * @default new security groups will be created
   */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
   * The VPC Subnets this Compute Environment will launch instances in.
+  *
+  * @default new subnets will be created
   */
   readonly subnets?: ec2.ISubnet[];
 
@@ -186,7 +196,7 @@ interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps {
   readonly updateToLatestImageVersion?: boolean;
 }
 
-abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBase implements IManagedComputeEnvironment {
+export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBase implements IManagedComputeEnvironment {
   /**
   * The maximum vCpus this `ManagedComputeEnvironment` can scale up to.
   *
@@ -194,6 +204,8 @@ abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBase impl
   * `AllocationStrategy.SPOT_CAPACITY_OPTIMIZED`, or `AllocationStrategy.BEST_FIT` with Spot instances,
   * The scheduler may exceed this number by at most one of the instances specified in `instanceTypes`
   * or `instanceClasses`.
+  *
+  * @default 256
   */
   readonly maxvCpus?: number;
 
@@ -289,21 +301,27 @@ abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBase impl
   */
   readonly updateToLatestImageVersion?: boolean;
 
-  constructor(scope: Construct, id: string, props: ManagedComputeEnvironmentProps) {
+  constructor(scope: Construct, id: string, props?: ManagedComputeEnvironmentProps) {
     super(scope, id, props);
 
-    this.maxvCpus = props.maxvCpus;
-    this.replaceComputeEnvironment = props.replaceComputeEnvironment;
-    this.spot = props.spot;
-    this.updateTimeout = props.updateTimeout;
-    this.terminateOnUpdate = props.terminateOnUpdate;
-    this.securityGroups = props.securityGroups;
-    this.subnets = props.subnets;
-    this.updateToLatestImageVersion = props.updateToLatestImageVersion;
+    this.maxvCpus = props?.maxvCpus ?? 256;
+    this.replaceComputeEnvironment = props?.replaceComputeEnvironment;
+    this.spot = props?.spot;
+    this.updateTimeout = props?.updateTimeout;
+    this.terminateOnUpdate = props?.terminateOnUpdate;
+    this.securityGroups = props?.securityGroups;
+    this.subnets = props?.subnets;
+    this.updateToLatestImageVersion = props?.updateToLatestImageVersion;
+
+    /*const computeResources: CfnComputeEnvironment.ComputeResourcesProperty = {
+      maxvCpus: this.maxvCpus,
+      subnets: ['TODO!'],
+      type: 'foo',
+    }*/
   }
 }
 
-interface IManagedEc2ComputeEnvironment extends IManagedComputeEnvironment {
+export interface IManagedEc2ComputeEnvironment extends IManagedComputeEnvironment {
   /**
    * Configure which AMIs this Compute Environment can launch.
    * @default
@@ -393,31 +411,29 @@ interface IManagedEc2ComputeEnvironment extends IManagedComputeEnvironment {
   readonly placementGroup?: ec2.IPlacementGroup;
 }
 
-interface IBatchMachineImage {
-
+export interface IBatchMachineImage {
   image: ec2.IMachineImage;
   imageType: BatchMachineImageType;
   imageKubernetesVersion?: string;
 }
 
-enum BatchMachineImageType {
+export enum BatchMachineImageType {
   ECS_AL2 = 'ECS_AL2',
   ECS_AL2_NVIDIA = 'ECS_AL2_NVIDIA',
   EKS_AL2 = 'EKS_AL2',
   EKS_AL2_NVIDIA = 'EKS_AL2_NVIDIA',
 }
 
-enum AllocationStrategy {
+export enum AllocationStrategy {
   BEST_FIT = 'BEST_FIT',
   BEST_FIT_PROGRESSIVE = 'BEST_FIT_PROGRESSIVE',
   SPOT_CAPACITY_OPTIMIZED = 'SPOT_CAPACITY_OPTIMIZED',
 }
 
-interface ManagedEc2ComputeEnvironmentProps extends ComputeEnvironmentProps {
+export interface ManagedEc2ComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
   readonly images?: IBatchMachineImage[];
   readonly allocationStrategy?: AllocationStrategy;
   readonly spotBidPercentage?: number;
-  readonly spot?: boolean;
   readonly desiredvCpus?: number;
   readonly instanceTypes?: ec2.InstanceType[];
   readonly instanceClasses?: ec2.InstanceClass[];
@@ -482,7 +498,6 @@ export class ManagedEc2ComputeEnvironment extends ManagedComputeEnvironmentBase 
     */
   readonly instanceClasses?: ec2.InstanceClass[];
 
-
   /**
     * The execution Role that instances launched by this Compute Environment will use.
     */
@@ -518,24 +533,23 @@ export class ManagedEc2ComputeEnvironment extends ManagedComputeEnvironmentBase 
     */
   readonly placementGroup?: ec2.IPlacementGroup;
 
-  constructor(scope: Construct, id: string, readonly props: ManagedEc2ComputeEnvironmentProps) {
+  constructor(scope: Construct, id: string, props?: ManagedEc2ComputeEnvironmentProps) {
     super(scope, id, props);
 
-    this.images = props.images;
-    this.allocationStrategy = props.allocationStrategy;
-    this.spotBidPercentage = props.spotBidPercentage;
-    this.instanceTypes = props.instanceTypes;
-    this.instanceClasses = props.instanceClasses;
+    this.images = props?.images;
+    this.allocationStrategy = props?.allocationStrategy;
+    this.spotBidPercentage = props?.spotBidPercentage;
+    this.instanceTypes = props?.instanceTypes;
+    this.instanceClasses = props?.instanceClasses;
     // TODO: useOptimalInstanceClasses needs to be used when setting instance types
-    this.instanceRole = props.instanceRole;
-    this.launchTemplate = props.launchTemplate;
-    this.minvCpus = props.minvCpus;
-    this.placementGroup = props.placementGroup;
+    this.instanceRole = props?.instanceRole;
+    this.launchTemplate = props?.launchTemplate;
+    this.minvCpus = props?.minvCpus;
+    this.placementGroup = props?.placementGroup;
   }
   public addInstanceType() {}
   public addInstanceClass() {}
 }
-
 
 interface IEksComputeEnvironment extends IManagedEc2ComputeEnvironment {
   /**
@@ -554,7 +568,7 @@ interface IEksComputeEnvironment extends IManagedEc2ComputeEnvironment {
   readonly eksCluster?: eks.ICluster;
 }
 
-interface EksComputeEnvironmentProps extends ManagedEc2ComputeEnvironmentProps {
+export interface EksComputeEnvironmentProps extends ManagedEc2ComputeEnvironmentProps {
   /**
    * The namespace of the Cluster
    *
@@ -587,20 +601,29 @@ export class EksComputeEnvironment extends ManagedEc2ComputeEnvironment implemen
    */
   readonly eksCluster?: eks.ICluster;
 
-  constructor(scope: Construct, id: string, readonly props: EksComputeEnvironmentProps) {
+  constructor(scope: Construct, id: string, props?: EksComputeEnvironmentProps) {
     super(scope, id, props);
 
-    this.kubernetesNamespace = props.kubernetesNamespace;
-    this.eksCluster = props.eksCluster;
+    this.kubernetesNamespace = props?.kubernetesNamespace ?? 'default';
+    this.eksCluster = props?.eksCluster ?? new eks.Cluster(this, 'EKSCluster', {
+      version: eks.KubernetesVersion.V1_24,
+    });
+
+    const resource = super.node.tryFindChild('Resource') as CfnComputeEnvironment;
+
+    resource.eksConfiguration = {
+      eksClusterArn: this.eksCluster.clusterArn,
+      kubernetesNamespace: this.kubernetesNamespace,
+    };
   }
 }
 
-interface IFargateComputeEnvironment extends IManagedComputeEnvironment {}
+export interface IFargateComputeEnvironment extends IManagedComputeEnvironment {}
 
-interface FargateComputeEnvironmentProps extends ComputeEnvironmentProps {}
+export interface FargateComputeEnvironmentProps extends ComputeEnvironmentProps {}
 
 export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
-  constructor(scope: Construct, id: string, readonly props: FargateComputeEnvironmentProps) {
+  constructor(scope: Construct, id: string, props?: FargateComputeEnvironmentProps) {
     super(scope, id, props);
   }
 }

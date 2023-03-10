@@ -1,8 +1,9 @@
-import { IResource, ITaggable, Resource, ResourceProps, TagManager } from '@aws-cdk/core';
+import { IResource, Resource, ResourceProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
 
-export interface IJobQueue extends IResource, ITaggable {
+export interface IJobQueue extends IResource {
   /**
    * The set of compute environments mapped to a job queue and their order relative to each other.
    * The job scheduler uses this parameter to determine which compute environment runs a specific job.
@@ -138,8 +139,6 @@ export class JobQueue extends Resource implements IJobQueue {
    */
   schedulingPolicy?: ISchedulingPolicy
 
-  tags: TagManager;
-
   constructor(scope: Construct, id: string, props: JobQueueProps) {
     super(scope, id, props);
 
@@ -150,5 +149,5 @@ export class JobQueue extends Resource implements IJobQueue {
     this.schedulingPolicy = props.schedulingPolicy;
   }
 
-  addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number)
+  //addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number)
 }

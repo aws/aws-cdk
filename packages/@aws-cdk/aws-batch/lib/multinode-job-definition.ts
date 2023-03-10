@@ -102,5 +102,5 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     this.instanceType = props.instanceType;
   }
 
-  public addContainer(...containers: MultiNodeContainer[]) {}
+  //public addContainer(...containers: MultiNodeContainer[]) {}
 }

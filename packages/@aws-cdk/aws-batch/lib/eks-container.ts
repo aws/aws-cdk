@@ -20,7 +20,7 @@ export interface IEksContainerDefinition {
    * @see: https://docs.docker.com/engine/reference/builder/#cmd
    * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    */
-  args?: string[];
+  readonly args?: string[];
 
   /**
    * The entrypoint for the container. This isn't run within a shell.
@@ -32,59 +32,59 @@ export interface IEksContainerDefinition {
    * For example, `$$(VAR_NAME)` will be passed as `$(VAR_NAME)` whether or not the `VAR_NAME` environment variable exists.
 
    * The entrypoint can't be updated. // ?????? TODO
-   * 
+   *
    * @see: https://docs.docker.com/engine/reference/builder/#entrypoint
    * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    * @see: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#entrypoint
    */
-  command?: string[];
+  readonly command?: string[];
 
   /**
    * The environment variables to pass to this container.
-   * 
+   *
    * *Note*: Environment variables cannot start with "AWS_BATCH".
    * This naming convention is reserved for variables that AWS Batch sets.
    */
-  env?: { [key:string]: string };
+  readonly env?: { [key:string]: string };
 
   /**
    * The image pull policy for this container
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/containers/images/#updating-images
-   * 
+   *
    * @default -  `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
    */
-  imagePullPolicy?: ImagePullPolicy;
+  readonly imagePullPolicy?: ImagePullPolicy;
 
   /**
    * The name of this container
-   * 
+   *
    * @default: `'Default'`
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The amount (in MiB) of memory to present to the container.
    * If your container attempts to exceed the allocated memory, it will be terminated.
-   * 
+   *
    * Must be larger that 4 MiB
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required
-   * 
+   *
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    * @see: https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
    *
    * @default - No memory limit
    */
-  memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
    * Your container will be given at least this much memory, but may consume more.
-   * 
+   *
    * Must be larger that 4 MiB
    *
    * When system memory is under heavy contention, Docker attempts to keep the
@@ -95,10 +95,10 @@ export interface IEksContainerDefinition {
    *
    * At least one of `memoryLimitMiB` and `memoryReservationMiB` is required.
    * If both are specified, then `memoryLimitMib` must be equal to `memoryReservationMiB`
-   * 
+   *
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    * @see: https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
    *
@@ -109,17 +109,17 @@ export interface IEksContainerDefinition {
   /**
    * The hard limit of CPUs to present to this container.
    * Must be an even multiple of 0.25
-   * 
+   *
    * If your container attempts to exceed this limit, it will be terminated.
-   * 
+   *
    * At least one of `cpuReservation` and `cpuLimit` is required.
    * If both are specified, then `cpuLimit` must be at least as large as `cpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No CPU limit
    */
-  cpuLimit?: number;
+  readonly cpuLimit?: number;
 
   /**
    * The soft limit of CPUs to reserve for the container
@@ -129,7 +129,7 @@ export interface IEksContainerDefinition {
    *
    * At least one of `cpuReservation` and `cpuLimit` is required.
    * If both are specified, then `cpuLimit` must be at least as large as `cpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No CPUs reserved
@@ -138,16 +138,16 @@ export interface IEksContainerDefinition {
 
   /**
    * The hard limit of GPUs to present to this container.
-   * 
+   *
    * If your container attempts to exceed this limit, it will be terminated.
-   * 
+   *
    * If both `gpuReservation` and `gpuLimit` are specified, then `gpuLimit` must be equal to `gpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No GPU limit
    */
-  gpuLimit?: number;
+  readonly gpuLimit?: number;
 
   /**
    * The soft limit of CPUs to reserve for the container
@@ -156,7 +156,7 @@ export interface IEksContainerDefinition {
    * The container will given at least this many CPUs, but may consume more.
    *
    * If both `gpuReservation` and `gpuLimit` are specified, then `gpuLimit` must be equal to `gpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No GPUs reserved
@@ -170,70 +170,70 @@ export interface IEksContainerDefinition {
    * This parameter maps to `privileged` policy in the Privileged pod security policies in the Kubernetes documentation.
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
-   * 
+   *
    * @default false
    */
-  priveleged?: boolean;
+  readonly priveleged?: boolean;
 
   /**
    * If specified, gives this container readonly access to its root file system.
-   * 
+   *
    * This parameter maps to `ReadOnlyRootFilesystem` policy in the Volumes and file systems pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
-   * 
+   *
    * @default false
    */
-  readonlyFileSystem?: boolean;
+  readonly readonlyFileSystem?: boolean;
 
   /**
    * If specified, the container is run as the specified group ID (`gid`).
    * If this parameter isn't specified, the default is the group that's specified in the image metadata.
    * This parameter maps to `RunAsGroup` and `MustRunAs` policy in the Users and groups pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
-   * 
+   *
    * @default none
    */
-  runAsGroup?: number;
+  readonly runAsGroup?: number;
 
   /**
    * If specified, the container is run as a user with a `uid` other than 0. Otherwise, no such rule is enforced.
    * This parameter maps to `RunAsUser` and `MustRunAsNonRoot` policy in the Users and groups pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
-   * 
+   *
    * @default - the container is *not* required to run as a non-root user
    */
-  runAsRoot?: boolean;
+  readonly runAsRoot?: boolean;
 
   /**
    * If specified, this container is run as the specified user ID (`uid`).
    * This parameter maps to `RunAsUser` and `MustRunAs` policy in the Users and groups pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
-   * 
-   * @default - the user that is specified in the image metadata. 
+   *
+   * @default - the user that is specified in the image metadata.
    */
-  runAsUser?: number;
+  readonly runAsUser?: number;
 
   /**
    * The Volumes to mount to this container.
    * Automatically added to the Pod.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/storage/volumes/
    */
-  volumes?: EksVolume[];
+  readonly volumes?: EksVolume[];
 }
 
 export enum ImagePullPolicy {
@@ -243,7 +243,7 @@ export enum ImagePullPolicy {
    * If the kubelet has a container image with that exact digest cached locally,
    * the kubelet uses its cached image; otherwise, the kubelet pulls the image with the resolved digest,
    * and uses that image to launch the container.
-   * 
+   *
    * @see: https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier
    */
   ALWAYS = 'Always',
@@ -258,7 +258,7 @@ export enum ImagePullPolicy {
    * If the image is somehow already present locally,
    * the kubelet attempts to start the container; otherwise, startup fails.
    * See pre-pulled images for more details.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
    */
   NEVER = 'Never',
@@ -268,7 +268,7 @@ export interface EksContainerProps {
   /**
    * The image that this container will run
    */
-  image: ecs.ContainerImage;
+  readonly image: ecs.ContainerImage;
 
   /**
    * An array of arguments to the entrypoint.
@@ -283,7 +283,7 @@ export interface EksContainerProps {
    * @see: https://docs.docker.com/engine/reference/builder/#cmd
    * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    */
-  args?: string[];
+  readonly args?: string[];
 
   /**
    * The entrypoint for the container. This isn't run within a shell.
@@ -295,59 +295,59 @@ export interface EksContainerProps {
    * For example, `$$(VAR_NAME)` will be passed as `$(VAR_NAME)` whether or not the `VAR_NAME` environment variable exists.
 
    * The entrypoint can't be updated. // ?????? TODO
-   * 
+   *
    * @see: https://docs.docker.com/engine/reference/builder/#entrypoint
    * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    * @see: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#entrypoint
    */
-  command?: string[];
+  readonly command?: string[];
 
   /**
    * The environment variables to pass to this container.
-   * 
+   *
    * *Note*: Environment variables cannot start with "AWS_BATCH".
    * This naming convention is reserved for variables that AWS Batch sets.
    */
-  env?: { [key:string]: string };
+  readonly env?: { [key:string]: string };
 
   /**
    * The image pull policy for this container
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/containers/images/#updating-images
-   * 
+   *
    * @default -  `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
    */
-  imagePullPolicy?: ImagePullPolicy;
+  readonly imagePullPolicy?: ImagePullPolicy;
 
   /**
    * The name of this container
-   * 
+   *
    * @default: `'Default'`
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The amount (in MiB) of memory to present to the container.
    * If your container attempts to exceed the allocated memory, it will be terminated.
-   * 
+   *
    * Must be larger that 4 MiB
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required
-   * 
+   *
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    * @see: https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
    *
    * @default - No memory limit
    */
-  memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
    * Your container will be given at least this much memory, but may consume more.
-   * 
+   *
    * Must be larger that 4 MiB
    *
    * When system memory is under heavy contention, Docker attempts to keep the
@@ -358,10 +358,10 @@ export interface EksContainerProps {
    *
    * At least one of `memoryLimitMiB` and `memoryReservationMiB` is required.
    * If both are specified, then `memoryLimitMib` must be equal to `memoryReservationMiB`
-   * 
+   *
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    * @see: https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
    *
@@ -372,17 +372,17 @@ export interface EksContainerProps {
   /**
    * The hard limit of CPUs to present to this container.
    * Must be an even multiple of 0.25
-   * 
+   *
    * If your container attempts to exceed this limit, it will be terminated.
-   * 
+   *
    * At least one of `cpuReservation` and `cpuLimit` is required.
    * If both are specified, then `cpuLimit` must be at least as large as `cpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No CPU limit
    */
-  cpuLimit?: number;
+  readonly cpuLimit?: number;
 
   /**
    * The soft limit of CPUs to reserve for the container
@@ -392,7 +392,7 @@ export interface EksContainerProps {
    *
    * At least one of `cpuReservation` and `cpuLimit` is required.
    * If both are specified, then `cpuLimit` must be at least as large as `cpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No CPUs reserved
@@ -401,16 +401,16 @@ export interface EksContainerProps {
 
   /**
    * The hard limit of GPUs to present to this container.
-   * 
+   *
    * If your container attempts to exceed this limit, it will be terminated.
-   * 
+   *
    * If both `gpuReservation` and `gpuLimit` are specified, then `gpuLimit` must be equal to `gpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No GPU limit
    */
-  gpuLimit?: number;
+  readonly gpuLimit?: number;
 
   /**
    * The soft limit of CPUs to reserve for the container
@@ -419,7 +419,7 @@ export interface EksContainerProps {
    * The container will given at least this many CPUs, but may consume more.
    *
    * If both `gpuReservation` and `gpuLimit` are specified, then `gpuLimit` must be equal to `gpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No GPUs reserved
@@ -433,70 +433,70 @@ export interface EksContainerProps {
    * This parameter maps to `privileged` policy in the Privileged pod security policies in the Kubernetes documentation.
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
-   * 
+   *
    * @default false
    */
-  priveleged?: boolean;
+  readonly priveleged?: boolean;
 
   /**
    * If specified, gives this container readonly access to its root file system.
-   * 
+   *
    * This parameter maps to `ReadOnlyRootFilesystem` policy in the Volumes and file systems pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
-   * 
+   *
    * @default false
    */
-  readonlyFileSystem?: boolean;
+  readonly readonlyFileSystem?: boolean;
 
   /**
    * If specified, the container is run as the specified group ID (`gid`).
    * If this parameter isn't specified, the default is the group that's specified in the image metadata.
    * This parameter maps to `RunAsGroup` and `MustRunAs` policy in the Users and groups pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
-   * 
+   *
    * @default none
    */
-  runAsGroup?: number;
+  readonly runAsGroup?: number;
 
   /**
    * If specified, the container is run as a user with a `uid` other than 0. Otherwise, no such rule is enforced.
    * This parameter maps to `RunAsUser` and `MustRunAsNonRoot` policy in the Users and groups pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
-   * 
+   *
    * @default - the container is *not* required to run as a non-root user
    */
-  runAsRoot?: boolean;
+  readonly runAsRoot?: boolean;
 
   /**
    * If specified, this container is run as the specified user ID (`uid`).
    * This parameter maps to `RunAsUser` and `MustRunAs` policy in the Users and groups pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
-   * 
-   * @default - the user that is specified in the image metadata. 
+   *
+   * @default - the user that is specified in the image metadata.
    */
-  runAsUser?: number;
+  readonly runAsUser?: number;
 
   /**
    * The Volumes to mount to this container.
    * Automatically added to the Pod.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/storage/volumes/
    */
-  volumes?: EksVolume[]; 
+  readonly volumes?: EksVolume[];
 }
 
 export class EksContainerDefinition extends Construct {
@@ -518,7 +518,7 @@ export class EksContainerDefinition extends Construct {
    * @see: https://docs.docker.com/engine/reference/builder/#cmd
    * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    */
-  args?: string[];
+  readonly args?: string[];
 
   /**
    * The entrypoint for the container. This isn't run within a shell.
@@ -530,59 +530,59 @@ export class EksContainerDefinition extends Construct {
    * For example, `$$(VAR_NAME)` will be passed as `$(VAR_NAME)` whether or not the `VAR_NAME` environment variable exists.
 
    * The entrypoint can't be updated. // ?????? TODO
-   * 
+   *
    * @see: https://docs.docker.com/engine/reference/builder/#entrypoint
    * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    * @see: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#entrypoint
    */
-  command?: string[];
+  readonly command?: string[];
 
   /**
    * The environment variables to pass to this container.
-   * 
+   *
    * *Note*: Environment variables cannot start with "AWS_BATCH".
    * This naming convention is reserved for variables that AWS Batch sets.
    */
-  env?: { [key:string]: string };
+  readonly env?: { [key:string]: string };
 
   /**
    * The image pull policy for this container
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/containers/images/#updating-images
-   * 
+   *
    * @default -  `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
    */
-  imagePullPolicy?: ImagePullPolicy;
+  readonly imagePullPolicy?: ImagePullPolicy;
 
   /**
    * The name of this container
-   * 
+   *
    * @default: `'Default'`
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The amount (in MiB) of memory to present to the container.
    * If your container attempts to exceed the allocated memory, it will be terminated.
-   * 
+   *
    * Must be larger that 4 MiB
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required
-   * 
+   *
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    * @see: https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
    *
    * @default - No memory limit
    */
-  memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
    * Your container will be given at least this much memory, but may consume more.
-   * 
+   *
    * Must be larger that 4 MiB
    *
    * When system memory is under heavy contention, Docker attempts to keep the
@@ -593,10 +593,10 @@ export class EksContainerDefinition extends Construct {
    *
    * At least one of `memoryLimitMiB` and `memoryReservationMiB` is required.
    * If both are specified, then `memoryLimitMib` must be equal to `memoryReservationMiB`
-   * 
+   *
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    * @see: https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
    *
@@ -607,17 +607,17 @@ export class EksContainerDefinition extends Construct {
   /**
    * The hard limit of CPUs to present to this container.
    * Must be an even multiple of 0.25
-   * 
+   *
    * If your container attempts to exceed this limit, it will be terminated.
-   * 
+   *
    * At least one of `cpuReservation` and `cpuLimit` is required.
    * If both are specified, then `cpuLimit` must be at least as large as `cpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No CPU limit
    */
-  cpuLimit?: number;
+  readonly cpuLimit?: number;
 
   /**
    * The soft limit of CPUs to reserve for the container
@@ -627,7 +627,7 @@ export class EksContainerDefinition extends Construct {
    *
    * At least one of `cpuReservation` and `cpuLimit` is required.
    * If both are specified, then `cpuLimit` must be at least as large as `cpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No CPUs reserved
@@ -636,16 +636,16 @@ export class EksContainerDefinition extends Construct {
 
   /**
    * The hard limit of GPUs to present to this container.
-   * 
+   *
    * If your container attempts to exceed this limit, it will be terminated.
-   * 
+   *
    * If both `gpuReservation` and `gpuLimit` are specified, then `gpuLimit` must be equal to `gpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No GPU limit
    */
-  gpuLimit?: number;
+  readonly gpuLimit?: number;
 
   /**
    * The soft limit of CPUs to reserve for the container
@@ -654,7 +654,7 @@ export class EksContainerDefinition extends Construct {
    * The container will given at least this many CPUs, but may consume more.
    *
    * If both `gpuReservation` and `gpuLimit` are specified, then `gpuLimit` must be equal to `gpuReservation`.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No GPUs reserved
@@ -668,70 +668,70 @@ export class EksContainerDefinition extends Construct {
    * This parameter maps to `privileged` policy in the Privileged pod security policies in the Kubernetes documentation.
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
-   * 
+   *
    * @default false
    */
-  priveleged?: boolean;
+  readonly priveleged?: boolean;
 
   /**
    * If specified, gives this container readonly access to its root file system.
-   * 
+   *
    * This parameter maps to `ReadOnlyRootFilesystem` policy in the Volumes and file systems pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
-   * 
+   *
    * @default false
    */
-  readonlyFileSystem?: boolean;
+  readonly readonlyFileSystem?: boolean;
 
   /**
    * If specified, the container is run as the specified group ID (`gid`).
    * If this parameter isn't specified, the default is the group that's specified in the image metadata.
    * This parameter maps to `RunAsGroup` and `MustRunAs` policy in the Users and groups pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
-   * 
+   *
    * @default none
    */
-  runAsGroup?: number;
+  readonly runAsGroup?: number;
 
   /**
    * If specified, the container is run as a user with a `uid` other than 0. Otherwise, no such rule is enforced.
    * This parameter maps to `RunAsUser` and `MustRunAsNonRoot` policy in the Users and groups pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
-   * 
+   *
    * @default - the container is *not* required to run as a non-root user
    */
-  runAsRoot?: boolean;
+  readonly runAsRoot?: boolean;
 
   /**
    * If specified, this container is run as the specified user ID (`uid`).
    * This parameter maps to `RunAsUser` and `MustRunAs` policy in the Users and groups pod security policies in the Kubernetes documentation.
-   * 
+   *
    * *Note*: this is only compatible with Kubernetes < v1.25
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
-   * 
-   * @default - the user that is specified in the image metadata. 
+   *
+   * @default - the user that is specified in the image metadata.
    */
-  runAsUser?: number;
+  readonly runAsUser?: number;
 
   /**
    * The Volumes to mount to this container.
    * Automatically added to the Pod.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/storage/volumes/
    */
-  volumes?: EksVolume[]; 
+  readonly volumes?: EksVolume[];
 
   constructor(scope: Construct, id: string, props: EksContainerProps) {
     super(scope, id);
@@ -744,7 +744,7 @@ export class EksContainerDefinition extends Construct {
     this.name = props.name;
     this.memoryLimitMiB = props.memoryLimitMiB;
     this.memoryReservationMiB = props.memoryReservationMiB;
-    this.cpuLimit = props.cpuLimit
+    this.cpuLimit = props.cpuLimit;
     this.cpuReservation = props.cpuReservation;
     this.gpuLimit = props.gpuLimit;
     this.gpuReservation = props.gpuReservation;
@@ -756,35 +756,35 @@ export class EksContainerDefinition extends Construct {
     this.volumes = props.volumes;
   }
 
-  addVolume(...EksVolume[]) {}
+  //addVolume(...EksVolume[]) {}
 }
 
-interface EksVolumeOptions {
+export interface EksVolumeOptions {
   /**
    * The name of this volume.
    * The name must be a valid DNS subdomain name.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The path on the container where the container is mounted.
-   * 
+   *
    * @default - the container is not mounted
    */
-  mountPath?: string;
+  readonly mountPath?: string;
 
   /**
    * If specified, the container has readonly access to the volume.
    * Otherwise, the container has read/write access.
-   * 
+   *
    * @default false
    */
-  readonly?: boolean;
+  readonly readonly?: boolean;
 }
 
-abstract class EksVolume {
+export abstract class EksVolume {
   static emptyDir(options: EmptyDirVolumeOptions) {
     return new EmptyDirVolume(options);
   }
@@ -798,25 +798,25 @@ abstract class EksVolume {
   /**
    * The name of this volume.
    * The name must be a valid DNS subdomain name.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The path on the container where the container is mounted.
-   * 
+   *
    * @default - the container is not mounted
    */
-  mountPath?: string;
+  readonly mountPath?: string;
 
   /**
    * If specified, the container has readonly access to the volume.
    * Otherwise, the container has read/write access.
-   * 
+   *
    * @default false
    */
-  readonly?: boolean;
+  readonly readonly?: boolean;
 
   constructor(options: EksVolumeOptions) {
     this.name = options.name;
@@ -828,17 +828,17 @@ abstract class EksVolume {
 export interface EmptyDirVolumeOptions extends EksVolumeOptions {
   /**
    * The storage type to use for this Volume.
-   * 
+   *
    * @default `EmptyDirMediumType.DISK`
    */
-  medium?: EmptyDirMediumType;
+  readonly medium?: EmptyDirMediumType;
 
   /**
    * The maximum size for this Volume
-   * 
+   *
    * @default - no size limit
    */
-  sizeLimit?: number;
+  readonly sizeLimit?: number;
 }
 
 export enum EmptyDirMediumType {
@@ -858,20 +858,20 @@ export enum EmptyDirMediumType {
 /**
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
  */
-class EmptyDirVolume extends EksVolume {
+export class EmptyDirVolume extends EksVolume {
   /**
    * The storage type to use for this Volume.
-   * 
+   *
    * @default `EmptyDirMediumType.DISK`
    */
-  medium?: EmptyDirMediumType;
+  readonly medium?: EmptyDirMediumType;
 
   /**
    * The maximum size for this Volume
-   * 
+   *
    * @default - no size limit
    */
-  sizeLimit?: number;
+  readonly sizeLimit?: number;
 
   constructor(options: EmptyDirVolumeOptions) {
     super(options);
@@ -883,23 +883,23 @@ class EmptyDirVolume extends EksVolume {
 export interface HostPathVolumeOptions extends EksVolumeOptions {
   /**
    * The path of the file or directory on the host to mount into containers on the pod.
-   * 
+   *
    * *Note*: HothPath Volumes present many security risks, and should be avoided when possible.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
    */
-  path: string;
+  readonly path: string;
 }
 
 /**
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
  */
-class HostPathVolume extends EksVolume {
+export class HostPathVolume extends EksVolume {
   /**
    * The path of the file or directory on the host to mount into containers on the pod.
-   * 
+   *
    * *Note*: HothPath Volumes present many security risks, and should be avoided when possible.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
    */
   path: string;
@@ -914,39 +914,39 @@ export interface SecretPathVolumeOptions extends EksVolumeOptions {
   /**
    * The name of the secret.
    * Must be a valid DNS subdomain name.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
    */
-  secretName: string;
+  readonly secretName: string;
 
   /**
    * Specifies whether the secret or the secret's keys must be defined
-   * 
+   *
    * @default true
    */
-  optional?: boolean;
+  readonly optional?: boolean;
 }
 
 /**
  * Specifies the configuration of a Kubernetes secret volume
- * 
+ *
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#secret
  */
-class SecretPathVolume extends EksVolume {
+export class SecretPathVolume extends EksVolume {
   /**
    * The name of the secret.
    * Must be a valid DNS subdomain name.
-   * 
+   *
    * @see: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
    */
-  secretName: string;
+  readonly secretName: string;
 
   /**
    * Specifies whether the secret or the secret's keys must be defined
-   * 
+   *
    * @default true
    */
-  optional?: boolean;
+  readonly optional?: boolean;
 
   constructor(options: SecretPathVolumeOptions) {
     super(options);

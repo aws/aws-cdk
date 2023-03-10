@@ -1,8 +1,8 @@
-import { Duration, IResource, ITaggable, Resource, ResourceProps, TagManager } from '@aws-cdk/core';
+import { Duration, IResource, Resource, ResourceProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 
-export interface ISchedulingPolicy extends IResource, ITaggable {
+export interface ISchedulingPolicy extends IResource {
   name?: string
 }
 
@@ -18,7 +18,6 @@ class SchedulingPolicyBase extends Resource implements ISchedulingPolicy {
 
     this.name = props?.name;
   }
-  tags: TagManager;
 }
 
 export interface Share {

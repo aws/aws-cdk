@@ -1,9 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, ITaggable, Resource, TagManager } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { CfnComputeEnvironment } from './batch.generated';
 
 
-export interface IComputeEnvironment extends IResource, iam.IGrantable, ITaggable {
+export interface IComputeEnvironment extends IResource {
   /**
    * The name of the ComputeEnvironment
    *
@@ -68,16 +69,22 @@ export interface ComputeEnvironmentProps {
 }
 
 export abstract class ComputeEnvironmentBase extends Resource implements IComputeEnvironment {
-  name?: string | undefined;
-  serviceRole?: iam.IRole | undefined;
-  enabled?: boolean | undefined;
-  grantPrincipal: iam.IPrincipal;
-  tags: TagManager;
+  readonly name?: string | undefined;
+  readonly serviceRole?: iam.IRole | undefined;
+  readonly enabled?: boolean | undefined;
 
-  constructor(scope: Construct, id: string, props: ComputeEnvironmentProps) {
+  protected readonly resource: CfnComputeEnvironment;
+
+  constructor(scope: Construct, id: string, props?: ComputeEnvironmentProps) {
     super(scope, id);
 
-    this.name = props.name;
-    this.serviceRole = props.serviceRole;
+    this.name = props?.name;
+    this.serviceRole = props?.serviceRole;
+
+    this.resource = new CfnComputeEnvironment(this, 'Resource', {
+      type: 'replaceme',
+      computeEnvironmentName: this.name,
+      serviceRole: this.serviceRole?.roleArn,
+    });
   }
 }

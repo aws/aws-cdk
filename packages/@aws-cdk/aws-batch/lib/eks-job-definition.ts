@@ -6,14 +6,14 @@ export interface IEksJobDefinition extends IJobDefinition {
   /**
    * The container this Job Definition will run
    */
-  container: EksContainerDefinition;
+  readonly container: EksContainerDefinition;
 
   /**
    * The DNS Policy of the pod used by this Job Definition
    *
    * @see https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
    */
-  dnsPolicy?: DnsPolicy;
+  readonly dnsPolicy?: DnsPolicy;
 
   /**
    * If specified, the Pod used by this Job Definition will use the host's network IP address.
@@ -25,7 +25,7 @@ export interface IEksJobDefinition extends IJobDefinition {
    * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#host-namespaces
    * @see https://kubernetes.io/docs/concepts/workloads/pods/#pod-networking
    */
-  useHostNetwork?: boolean;
+  readonly useHostNetwork?: boolean;
 
   /**
    * The name of the service account that's used to run the container.
@@ -36,21 +36,21 @@ export interface IEksJobDefinition extends IJobDefinition {
    * @see https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
    * @see https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html
    */
-  serviceAccount?: string;
+  readonly serviceAccount?: string;
 }
 
 export interface EksJobDefinitionProps extends JobDefinitionProps {
   /**
    * The container this Job Definition will run
    */
-  container: EksContainerDefinition;
+  readonly container: EksContainerDefinition;
 
   /**
    * The DNS Policy of the pod used by this Job Definition
    *
    * @see https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
    */
-  dnsPolicy?: DnsPolicy;
+  readonly dnsPolicy?: DnsPolicy;
 
   /**
    * If specified, the Pod used by this Job Definition will use the host's network IP address.
@@ -62,7 +62,7 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
    * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#host-namespaces
    * @see https://kubernetes.io/docs/concepts/workloads/pods/#pod-networking
    */
-  useHostNetwork?: boolean;
+  readonly useHostNetwork?: boolean;
 
   /**
    * The name of the service account that's used to run the container.
@@ -73,7 +73,7 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
    * @see https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
    * @see https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html
    */
-  serviceAccount?: string;
+  readonly serviceAccount?: string;
 }
 
 /**
@@ -105,14 +105,14 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
   /**
    * The container this Job Definition will run
    */
-  container: EksContainerDefinition;
+  readonly container: EksContainerDefinition;
 
   /**
    * The DNS Policy of the pod used by this Job Definition
    *
    * @see https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
    */
-  dnsPolicy?: DnsPolicy;
+  readonly dnsPolicy?: DnsPolicy;
 
   /**
    * If specified, the Pod used by this Job Definition will use the host's network IP address.
@@ -124,7 +124,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
    * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#host-namespaces
    * @see https://kubernetes.io/docs/concepts/workloads/pods/#pod-networking
    */
-  useHostNetwork?: boolean;
+  readonly useHostNetwork?: boolean;
 
   /**
    * The name of the service account that's used to run the container.
@@ -135,7 +135,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
    * @see https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
    * @see https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html
    */
-  serviceAccount?: string;
+  readonly serviceAccount?: string;
 
   constructor(scope: Construct, id: string, props: EksJobDefinitionProps) {
     super(scope, id, props);

@@ -1,8 +1,8 @@
-import { IResource, ITaggable } from '@aws-cdk/core';
+import { IResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnPlacementGroup } from './ec2.generated';
 
-export interface IPlacementGroup extends IResource, ITaggable {
+export interface IPlacementGroup extends IResource {
   /**
    * The number of partitions. Valid only when Strategy is set to partition.
    */
@@ -23,17 +23,17 @@ export interface PlacementGroupProps {
   /**
    * The number of partitions. Valid only when Strategy is set to partition.
    */
-  partitions?: number;
+  readonly partitions?: number;
 
   /**
    * Determines how this placement group spreads instances
    */
-  spreadLevel?: PlacementGroupSpreadLevel;
+  readonly spreadLevel?: PlacementGroupSpreadLevel;
 
   /**
    * Determines how this placement group launches instances
    */
-  strategy?: PlacementGroupStrategy;
+  readonly strategy?: PlacementGroupStrategy;
 }
 
 export enum PlacementGroupSpreadLevel {

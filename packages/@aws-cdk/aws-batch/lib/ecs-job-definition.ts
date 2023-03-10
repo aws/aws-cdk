@@ -6,69 +6,69 @@ interface IEcsJobDefinition extends IJobDefinition {
   /**
    * The container that this job will run
    */
-  containerDefinition: ecs.ContainerDefinition
+  readonly containerDefinition: ecs.ContainerDefinition
 
   /**
    * Which version of Fargate to use when running this container
    *
    * @default LATEST
    */
-  fargatePlatformVersion?: ecs.FargatePlatformVersion;
+  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 
   /**
    * Which platforms this Job requires
    *
    * @default Compatibility.EC2
    */
-  compatibility?: Compatibility;
+  readonly compatibility?: Compatibility;
 }
 
-enum Compatibility {
+export enum Compatibility {
   EC2 = 'EC2',
   FARGATE = 'FARGATE',
   EC2_AND_FARGATE = 'EC2+FARGATE',
 }
 
-interface EcsJobDefinitionProps extends JobDefinitionProps {
+export interface EcsJobDefinitionProps extends JobDefinitionProps {
   /**
    * The container that this job will run
    */
-  containerDefinition: ecs.ContainerDefinition
+  readonly containerDefinition: ecs.ContainerDefinition
 
   /**
    * Which version of Fargate to use when running this container
    *
    * @default LATEST
    */
-  fargatePlatformVersion?: ecs.FargatePlatformVersion;
+  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 
   /**
    * Which platforms this Job requires
    *
    * @default Compatibility.EC2
    */
-  compatibility?: Compatibility;
+  readonly compatibility?: Compatibility;
 }
 
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
   /**
    * The container that this job will run
    */
-  containerDefinition: ecs.ContainerDefinition
+  readonly containerDefinition: ecs.ContainerDefinition
 
   /**
    * Which version of Fargate to use when running this container
    *
    * @default LATEST
    */
-  fargatePlatformVersion?: ecs.FargatePlatformVersion;
+  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 
   /**
    * Which platforms this Job requires
    *
    * @default Compatibility.EC2
    */
-  compatibility?: Compatibility;
+  readonly compatibility?: Compatibility;
 
   constructor(scope: Construct, id: string, props: EcsJobDefinitionProps) {
     super(scope, id, props);

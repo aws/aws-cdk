@@ -7,8 +7,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
-import * as batch from '../lib';
-import { PlatformCapabilities } from '../lib';
+import * as batch from '../../lib/deprecated';
+import { PlatformCapabilities } from '../../lib/deprecated';
 
 describe('Batch Job Definition', () => {
   let stack: cdk.Stack;
