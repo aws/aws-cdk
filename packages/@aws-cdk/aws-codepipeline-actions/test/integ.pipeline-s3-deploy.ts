@@ -1,4 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Duration } from '@aws-cdk/core';
@@ -32,6 +33,10 @@ const otherDeployBucket = new s3.Bucket(stack, 'OtherDeployBucket', {
   autoDeleteObjects: true,
 });
 
+const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
+  description: 'sample key',
+});
+
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
   stages: [
@@ -53,6 +58,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
             cpactions.CacheControl.setPublic(),
             cpactions.CacheControl.maxAge(cdk.Duration.hours(12)),
           ],
+          encryptionKey: key,
         }),
       ],
     },
@@ -96,6 +102,7 @@ integ.assertions.awsApiCall('S3', 'putObject', {
     integ.assertions.awsApiCall('S3', 'getObject', {
       Bucket: deployBucket.bucketName,
       Key: 'key',
+      KMSEncryptionKeyARN: key?.keyArn,
     }),
   ),
 );
