@@ -20,7 +20,7 @@
      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation"
     ],
     "Principals": [
-     "${AWS::AccountId}"
+     "111111111111"
     ],
     "ResourceArns": [
      {
