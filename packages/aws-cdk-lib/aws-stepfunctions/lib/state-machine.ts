@@ -429,8 +429,6 @@ export class StateMachine extends StateMachineBase {
       this.addToRolePolicy(statement);
     }
 
-    graph.bind(this);
-
     this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
       service: 'states',
@@ -438,6 +436,8 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    graph.bind(this);
   }
 
   /**

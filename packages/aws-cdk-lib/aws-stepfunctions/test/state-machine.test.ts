@@ -77,32 +77,14 @@ describe('State Machine', () => {
     });
 
     // THEN
+    stack;
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'states:StartExecution',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':stateMachine:*',
-                ],
-              ],
-            },
+            Resource: { Ref: 'MyStateMachine6C968CA5' },
           },
           {
             Action: [
@@ -111,30 +93,13 @@ describe('State Machine', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:*:*',
-                ],
-              ],
+              'Fn::Join': ['', [{ Ref: 'MyStateMachine6C968CA5' }, ':*']],
             },
           },
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
+      PolicyName: 'MyStateMachineDistributedMapPolicy11E47E72',
       Roles: [
         {
           Ref: 'MyStateMachineRoleD59FFEBC',

@@ -18,7 +18,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1677514680853"
+    "salt": "1678488315373"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -130,7 +130,7 @@
      "Body": "a,b,c\n1,2,3\n4,5,6"
     },
     "flattenResponse": "false",
-    "salt": "1677514680853"
+    "salt": "1678488315374"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -152,7 +152,7 @@
      }
     },
     "flattenResponse": "true",
-    "salt": "1677514680853"
+    "salt": "1678488315374"
    },
    "DependsOn": [
     "AwsApiCallS3putObject"
@@ -181,7 +181,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1677514680853"
+    "salt": "1678488315374"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecution"

@@ -108,14 +108,14 @@
                     "id": "Default",
                     "path": "aws-stepfunctions-map-integ/Bucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
@@ -132,30 +132,30 @@
                 "id": "Staging",
                 "path": "aws-stepfunctions-map-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "aws-stepfunctions-map-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "aws-stepfunctions-map-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "DistributedMap": {
@@ -186,8 +186,8 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-map-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Resource": {
@@ -244,57 +244,6 @@
                                           "Ref": "Bucket83908E77"
                                         },
                                         "/*"
-                                      ]
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "states:StartExecution",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":states:",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":stateMachine:*"
-                                      ]
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": [
-                                    "states:DescribeExecution",
-                                    "states:StopExecution"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":states:",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":execution:*:*"
                                       ]
                                     ]
                                   }
@@ -361,6 +310,65 @@
                   "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
                   "version": "0.0.0"
                 }
+              },
+              "DistributedMapPolicy": {
+                "id": "DistributedMapPolicy",
+                "path": "aws-stepfunctions-map-integ/StateMachine/DistributedMapPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-map-integ/StateMachine/DistributedMapPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "states:StartExecution",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "StateMachine2E01A3A5"
+                              }
+                            },
+                            {
+                              "Action": [
+                                "states:DescribeExecution",
+                                "states:StopExecution"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Ref": "StateMachine2E01A3A5"
+                                    },
+                                    ":*"
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "StateMachineDistributedMapPolicy57C9D8C2",
+                        "roles": [
+                          {
+                            "Ref": "StateMachineRoleB840431D"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -376,44 +384,44 @@
                 "id": "Output{\"Ref\":\"StateMachine2E01A3A5\"}",
                 "path": "aws-stepfunctions-map-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Output{\"Ref\":\"Bucket83908E77\"}": {
                 "id": "Output{\"Ref\":\"Bucket83908E77\"}",
                 "path": "aws-stepfunctions-map-integ/Exports/Output{\"Ref\":\"Bucket83908E77\"}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.252"
+              "version": "10.1.270"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-map-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-map-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       },
       "DistributedMap": {
@@ -429,7 +437,7 @@
                 "path": "DistributedMap/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.252"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -449,7 +457,7 @@
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.252"
+                              "version": "10.1.270"
                             }
                           }
                         },
@@ -466,22 +474,22 @@
                             "id": "Default",
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/AssertionResults",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnOutput",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
@@ -498,30 +506,30 @@
                         "id": "Staging",
                         "path": "DistributedMap/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "DistributedMap/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "DistributedMap/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.252"
+                      "version": "10.1.270"
                     }
                   },
                   "AwsApiCallS3putObject": {
@@ -537,7 +545,7 @@
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallS3putObject/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.252"
+                              "version": "10.1.270"
                             }
                           }
                         },
@@ -554,14 +562,14 @@
                             "id": "Default",
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallS3putObject/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
@@ -583,7 +591,7 @@
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.252"
+                              "version": "10.1.270"
                             }
                           }
                         },
@@ -600,14 +608,14 @@
                             "id": "Default",
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
@@ -629,7 +637,7 @@
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.252"
+                              "version": "10.1.270"
                             }
                           }
                         },
@@ -646,22 +654,22 @@
                             "id": "Default",
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/AssertionResults",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnOutput",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
@@ -674,22 +682,22 @@
                     "id": "BootstrapVersion",
                     "path": "DistributedMap/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "DistributedMap/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
@@ -709,13 +717,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.252"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.270"
     }
   }
 }

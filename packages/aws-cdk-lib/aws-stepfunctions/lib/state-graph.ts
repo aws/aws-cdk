@@ -2,7 +2,7 @@ import { StateMachine } from './state-machine';
 import { DistributedMap } from './states/distributed-map';
 import { State } from './states/state';
 import * as iam from '../../aws-iam';
-import { ArnFormat, Duration } from '../../core';
+import { Duration } from '../../core';
 
 /**
  * A collection of connected states
@@ -168,24 +168,20 @@ export class StateGraph {
 
     for (const state of this.allStates) {
       if (DistributedMap.isDistributedMap(state)) {
-        stateMachine.addToRolePolicy(new iam.PolicyStatement({
-          actions: ['states:StartExecution'],
-          resources: [stateMachine.stack.formatArn({
-            service: 'states',
-            resource: 'stateMachine',
-            resourceName: '*',
-            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-          })],
-        }));
 
-        stateMachine.addToRolePolicy(new iam.PolicyStatement({
-          actions: ['states:DescribeExecution', 'states:StopExecution'],
-          resources: [`${stateMachine.stack.formatArn({
-            service: 'states',
-            resource: 'execution',
-            resourceName: '*',
-            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-          })}:*`],
+        stateMachine.role.attachInlinePolicy(new iam.Policy(stateMachine, 'DistributedMapPolicy', {
+          document: new iam.PolicyDocument({
+            statements: [
+              new iam.PolicyStatement({
+                actions: ['states:StartExecution'],
+                resources: [stateMachine.stateMachineArn],
+              }),
+              new iam.PolicyStatement({
+                actions: ['states:DescribeExecution', 'states:StopExecution'],
+                resources: [`${stateMachine.stateMachineArn}:*`],
+              }),
+            ],
+          }),
         }));
 
         break;

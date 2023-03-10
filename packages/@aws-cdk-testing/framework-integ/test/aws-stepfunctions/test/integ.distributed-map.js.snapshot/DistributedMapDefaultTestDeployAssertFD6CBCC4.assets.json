@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "31.0.0",
   "files": {
     "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "43412bd350603caceb6e29558811ab44eb1744fd389313afa70564a44a89c1db": {
+    "1c0b2a06624c7c053d3b773d83f48ea93e0101f51c7e97e6a64596184f13d22a": {
       "source": {
         "path": "DistributedMapDefaultTestDeployAssertFD6CBCC4.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "43412bd350603caceb6e29558811ab44eb1744fd389313afa70564a44a89c1db.json",
+          "objectKey": "1c0b2a06624c7c053d3b773d83f48ea93e0101f51c7e97e6a64596184f13d22a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
