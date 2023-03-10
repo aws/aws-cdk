@@ -202,7 +202,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "a268caa53756f51bda8ad5f499be4ed8484a81b314811806fbb66f874837c476.zip"
+                      "s3Key": "8c980c60f4c1c0edebd987e6043e356b8d439b2d731c5af3329df082ca5a6a79.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -301,18 +301,18 @@
               "version": "0.0.0"
             }
           },
-          "DummyParameter": {
-            "id": "DummyParameter",
-            "path": "aws-cdk-sdk-js/DummyParameter",
+          "Utf8Parameter": {
+            "id": "Utf8Parameter",
+            "path": "aws-cdk-sdk-js/Utf8Parameter",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-sdk-js/DummyParameter/Resource",
+                "path": "aws-cdk-sdk-js/Utf8Parameter/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
                   "aws:cdk:cloudformation:props": {
                     "type": "String",
-                    "value": "1337"
+                    "value": "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!\"#¤%&/()=?`´^*+~_-.,:;<>|"
                   }
                 },
                 "constructInfo": {
@@ -573,12 +573,66 @@
           "version": "0.0.0"
         }
       },
+      "AwsCustomResourceTest": {
+        "id": "AwsCustomResourceTest",
+        "path": "AwsCustomResourceTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "AwsCustomResourceTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "AwsCustomResourceTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "AwsCustomResourceTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "AwsCustomResourceTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "AwsCustomResourceTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.264"
         }
       }
     },
