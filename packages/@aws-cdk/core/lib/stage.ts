@@ -3,7 +3,7 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
-import { IValidationPlugin, ValidationReportFormat } from './validation';
+import { IValidationPlugin } from './validation';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -217,7 +217,6 @@ export class Stage extends Construct {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
-        validationReportFormat: options.validationReportFormat,
       });
     }
 
@@ -263,11 +262,4 @@ export interface StageSynthesisOptions {
    * @default false
    */
   readonly force?: boolean;
-
-  /**
-   * The format of the validation report to be printed to the console.
-   *
-   * @default - ValidationReportFormat.PRETTY_PRINTED
-   */
-  readonly validationReportFormat?: ValidationReportFormat;
 }

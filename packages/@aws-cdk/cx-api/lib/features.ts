@@ -84,6 +84,7 @@ export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-
 export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
 export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
 export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
+export const VALIDATION_REPORT_JSON = '@aws-cdk/core:validationReportJson';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -727,6 +728,18 @@ export const FLAGS: Record<string, FlagInfo> = {
       **however** do not change the \`names\`s of the columns. If the \`name\`s of the columns are changed during
       initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
       of the \`id\`s, the \`name\`s of the columns can be changed without data loss.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [VALIDATION_REPORT_JSON]: {
+    type: FlagType.VisibleContext,
+    summary: 'Whether to display validation report in JSON format',
+    detailsMd: `
+      Validation reports may be displayed in a human-readable format or in JSON format.
+      This flag enables the JSON format.
       `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

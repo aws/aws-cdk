@@ -1347,11 +1347,12 @@ validation.
 > secure to use.
 
 By default, the report will be printed in a human readable format. If you want a
-report in JSON format, use the `synth()` method:
+report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
+via the CLI or passing it directly to the application:
 
 ```ts
-app.synth({
-  validationReportFormat: ValidationFormat.JSON
+const app = new App({ 
+  context: { '@aws-cdk/core:validationReportJson': true }, 
 });
 ```
 

@@ -75,22 +75,6 @@ export enum ValidationReportStatus {
   FAILURE = 'failure',
 }
 
-
-/**
- * How the report should be formatted.
- */
-export enum ValidationReportFormat {
-  /**
-   * JSON format
-   */
-  JSON = 'json',
-
-  /**
-   * Human readable format
-   */
-  PRETTY_PRINTED = 'pretty_printed',
-}
-
 /**
  * The report emitted by the plugin after evaluation.
  */

@@ -10,10 +10,11 @@ import { TreeMetadata } from './tree-metadata';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { Aspects, IAspect } from '../aspect';
+import { FeatureFlags } from '../feature-flags';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
-import { IValidationPlugin, NamedValidationPluginReport, ValidationReportFormat } from '../validation';
+import { IValidationPlugin, NamedValidationPluginReport } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { ValidationReportFormatter } from '../validation/private/report';
 
@@ -58,7 +59,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 
   const assembly = builder.buildAssembly();
 
-  invokeValidationPlugins(root, builder.outdir, assembly, options.validationReportFormat);
+  invokeValidationPlugins(root, builder.outdir, assembly);
 
   return assembly;
 }
@@ -76,7 +77,7 @@ class LazyHash {
   }
 }
 
-function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly, validationReportFormat?: ValidationReportFormat) {
+function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly) {
   const lazyHash = new LazyHash(outdir);
 
   const templatePathsByPlugin: Map<IValidationPlugin, string[]> = new Map();
@@ -117,12 +118,19 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
   if (failed) {
     const tree = new ConstructTree(root);
     const formatter = new ValidationReportFormatter(tree);
-    const output = validationReportFormat === ValidationReportFormat.JSON
+    const formatJson = FeatureFlags.of(root).isEnabled(cxapi.VALIDATION_REPORT_JSON) ?? false;
+    const output = formatJson
       ? formatter.formatJson(reports)
       : formatter.formatPrettyPrinted(reports);
 
-    // eslint-disable-next-line no-console
-    console.error(output);
+    if (formatJson) {
+      // eslint-disable-next-line no-console
+      console.log(output);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(output);
+    }
+
     throw new Error('Validation failed. See the validation report above for details');
   }
 }

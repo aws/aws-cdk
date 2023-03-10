@@ -5,13 +5,16 @@ import * as core from '../../lib';
 import { ValidationPluginReport, ValidationViolationResourceAware } from '../../lib';
 
 
-let logMock: jest.SpyInstance;
+let consoleErrorMock: jest.SpyInstance;
+let consoleLogMock: jest.SpyInstance;
 beforeEach(() => {
-  logMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
+  consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
+  consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => { return true; });
 });
 
 afterEach(() => {
-  logMock.mockRestore();
+  consoleErrorMock.mockRestore();
+  consoleLogMock.mockRestore();
 });
 
 describe('validations', () => {
@@ -40,7 +43,7 @@ describe('validations', () => {
       app.synth();
     }).toThrow(/Validation failed/);
 
-    expect(logMock.mock.calls[0][0]).toEqual(validationReport({
+    expect(consoleErrorMock.mock.calls[0][0]).toEqual(validationReport({
       templatePath: '/path/to/stack.template.json',
       constructPath: 'Default/Fake',
       title: 'test-rule',
@@ -106,7 +109,7 @@ describe('validations', () => {
       app.synth();
     }).toThrow(/Validation failed/);
 
-    const report = logMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[0][0];
     // Assuming the rest of the report's content is checked by another test
     expect(report).toContain('- Template Path: /path/to/stack1.template.json');
     expect(report).not.toContain('- Template Path: /path/to/stack2.template.json');
@@ -133,7 +136,7 @@ describe('validations', () => {
       app.synth();
     }).toThrow(/Validation failed/);
 
-    const report = logMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[0][0];
     // Assuming the rest of the report's content is checked by another test
     expect(report).toContain('- Construct Path: Default/SomeResource');
     expect(report).not.toContain('- Construct Path: Default/AnotherResource');
@@ -173,7 +176,7 @@ describe('validations', () => {
       app.synth();
     }).toThrow(/Validation failed/);
 
-    const report = logMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[0][0];
     expect(report).toEqual(`Validation Report
 -----------------
 
@@ -273,7 +276,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
       app.synth();
     }).toThrow(/Validation failed/);
 
-    const report = logMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[0][0];
     expect(report).toContain('║ error  │ Validation plugin \'broken-plugin\' failed: Something went wrong ║');
     expect(report).toContain('║ Plugin │ test-plugin ║');
   });
@@ -309,6 +312,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
           }],
         }]),
       ],
+      context: { '@aws-cdk/core:validationReportJson': true },
     });
     const stack = new core.Stack(app);
     new core.CfnResource(stack, 'Fake', {
@@ -318,12 +322,10 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
       },
     });
     expect(() => {
-      app.synth({
-        validationReportFormat: core.ValidationReportFormat.JSON,
-      });
+      app.synth();
     }).toThrow(/Validation failed/);
 
-    const report = logMock.mock.calls[0][0];
+    const report = consoleLogMock.mock.calls[0][0];
     expect(report).toEqual({
       title: 'Validation Report',
       pluginReports: [
