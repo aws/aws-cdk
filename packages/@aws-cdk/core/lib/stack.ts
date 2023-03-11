@@ -546,6 +546,13 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Convert an object, potentially containing tokens, to a YAML string
+   */
+  public toYamlString(obj: any): string {
+    return CloudFormationLang.toYAML(obj).toString();
+  }
+
+  /**
    * DEPRECATED
    * @deprecated use `reportMissingContextKey()`
    */
