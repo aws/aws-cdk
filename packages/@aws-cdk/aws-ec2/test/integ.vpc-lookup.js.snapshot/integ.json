@@ -6,10 +6,18 @@
       "stacks": [
         "StackUnderTest"
       ],
+      "hooks": {
+        "preDeploy": [
+          "yarn cdk deploy --app \"node ./test/integ.vpc-lookup.js\" StackUnderTest"
+        ],
+        "postDestroy": [
+          "yarn cdk destroy --app \"node ./test/integ.vpc-lookup.js\" StackUnderTest"
+        ]
+      },
       "diffAssets": false,
       "stackUpdateWorkflow": false,
-      "assertionStack": "StackUnderTest",
-      "assertionStackName": "StackUnderTest"
+      "assertionStack": "ArchiveTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ArchiveTestDefaultTestDeployAssert3405726A"
     }
   }
 }

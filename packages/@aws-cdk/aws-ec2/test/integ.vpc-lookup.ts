@@ -31,10 +31,17 @@ new cdk.CfnOutput(stackLookup, 'SuccessfulLookup', { value: `Lookup pending: ${v
 
 const testCase = new IntegTest(app, 'ArchiveTest', {
   testCases: [stackLookup],
-  assertionStack: stackLookup,
   enableLookups: true,
   stackUpdateWorkflow: false,
   diffAssets: false,
+  hooks: {
+    preDeploy: [
+      'yarn cdk deploy --app "node ./test/integ.vpc-lookup.js" StackUnderTest',
+    ],
+    postDestroy: [
+      'yarn cdk destroy --app "node ./test/integ.vpc-lookup.js" StackUnderTest',
+    ],
+  },
 });
 
 const getParameter = testCase.assertions.awsApiCall('SSM', 'getParameter', {
@@ -45,3 +52,7 @@ getParameter.expect(ExpectedResult.objectLike({
     Value: 'Region fromLookup: eu-west-1',
   },
 }));
+
+app.synth();
+
+
