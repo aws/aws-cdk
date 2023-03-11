@@ -8,8 +8,8 @@
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": false,
-      "assertionStack": "ArchiveTest/DefaultTest/DeployAssert",
-      "assertionStackName": "ArchiveTestDefaultTestDeployAssert3405726A"
+      "assertionStack": "StackUnderTest",
+      "assertionStackName": "StackUnderTest"
     }
   }
 }

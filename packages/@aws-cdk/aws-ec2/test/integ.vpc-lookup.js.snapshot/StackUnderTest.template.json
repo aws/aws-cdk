@@ -1,10 +1,109 @@
 {
- "Outputs": {
-  "OutputFromVpcAttributes": {
-   "Value": "Region fromVpcAttributes: eu-west-1"
+ "Resources": {
+  "StringParameter472EED0E": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": "Region fromLookup: us-east-1",
+    "Description": "Region of the looked up vpc",
+    "Name": "lookup-region"
+   }
   },
+  "AwsApiCallSSMgetParameter": {
+   "Type": "Custom::DeployAssert@SdkCallSSMgetParameter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SSM",
+    "api": "getParameter",
+    "expected": "{\"$ObjectLike\":{\"Parameter\":{\"Value\":\"Region fromLookup: eu-west-1\"}}}",
+    "parameters": {
+     "Name": "lookup-region"
+    },
+    "flattenResponse": "false",
+    "salt": "1678529987238"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "ssm:GetParameter"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-1",
+     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
   "OutputFromLookup": {
-   "Value": "Region fromLookup: eu-west-1"
+   "Value": "Region fromLookup: us-east-1"
+  },
+  "SuccessfulLookup": {
+   "Value": "Lookup pending: true"
+  },
+  "AssertionResultsAwsApiCallSSMgetParameter": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSSMgetParameter",
+     "assertion"
+    ]
+   }
   }
  },
  "Parameters": {

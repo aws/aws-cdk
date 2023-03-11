@@ -1,7 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Aws, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { VpcContextResponse } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
 
@@ -295,27 +294,6 @@ describe('vpc from lookup', () => {
       expect(vpc.vpcArn).toEqual(`arn:${Aws.PARTITION}:ec2:region-1234:1234:vpc/vpc-12345`);
       restoreContextProvider(previous);
     });
-
-    test('handles region correct when context provider will return dummy value', () => {
-      const previous = mockVpcContextProviderResponseValue(undefined);
-
-      const app = new App();
-      const stack = new Stack(app, 'Stack', {
-        env: {
-          account: '1234',
-          region: 'eu-west-1',
-        },
-      });
-      const vpc = Vpc.fromLookup(stack, 'Vpc', {
-        vpcId: 'vpc-12345',
-        region: 'region-1234',
-      });
-
-      expect(vpc.env.region).toEqual('region-1234');
-      expect(vpc.vpcArn).toEqual(`arn:${Aws.PARTITION}:ec2:region-1234:1234:vpc/vpc-12345`);
-
-      restoreContextProvider(previous);
-    });
   });
 });
 
@@ -352,21 +330,6 @@ function mockVpcContextProviderWith(
         publicSubnetRouteTableIds: undefined,
         ...response,
       } as cxapi.VpcContextResponse,
-    };
-  };
-  return previous;
-}
-
-function mockVpcContextProviderResponseValue(
-  response: VpcContextResponse | undefined) {
-  const previous = ContextProvider.getValue;
-  ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
-    // do some basic sanity checks
-    expect(options.provider).toEqual(cxschema.ContextProvider.VPC_PROVIDER);
-    expect((options.props || {}).returnAsymmetricSubnets).toEqual(true);
-
-    return {
-      value: response,
     };
   };
   return previous;

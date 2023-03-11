@@ -150,6 +150,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       publicSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.subnets.map(s => s.routeTableId))),
       vpnGatewayId,
       subnetGroups: assymetricSubnetGroups,
+      region: args.region,
     };
   }
 }
