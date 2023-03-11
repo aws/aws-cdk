@@ -1,11 +1,12 @@
 import { Template } from '@aws-cdk/assertions';
+import { Vpc } from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
 import * as batch from '../lib';
 import { AllocationStrategy } from '../lib';
 import { CfnComputeEnvironmentProps } from '../lib/batch.generated';
 
-describe('ManagedEc2ComputeEnvironment', () => {
+describe('ManagedEc2EcsComputeEnvironment', () => {
   const defaultProps: CfnComputeEnvironmentProps = {
     type: 'managed',
     computeEnvironmentName: undefined,
@@ -42,9 +43,12 @@ describe('ManagedEc2ComputeEnvironment', () => {
   test('default props', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // WHEN
-    new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE');
+    new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      vpc,
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
@@ -55,10 +59,12 @@ describe('ManagedEc2ComputeEnvironment', () => {
   test('can specify maxvCpus', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // WHEN
-    new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE', {
+    new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
       maxvCpus: 512,
+      vpc,
     });
 
     // THEN
@@ -74,10 +80,12 @@ describe('ManagedEc2ComputeEnvironment', () => {
   test('can specify maxvCpus', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // WHEN
-    new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE', {
+    new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
       maxvCpus: 512,
+      vpc,
     });
 
     // THEN
@@ -93,10 +101,12 @@ describe('ManagedEc2ComputeEnvironment', () => {
   test('can specify minvCpus', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // WHEN
-    new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE', {
+    new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
       minvCpus: 0,
+      vpc,
     });
 
     // THEN
@@ -113,10 +123,12 @@ describe('ManagedEc2ComputeEnvironment', () => {
   test('can be disabled', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // WHEN
-    new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE', {
+    new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
       enabled: false,
+      vpc,
     });
 
     // THEN
@@ -129,10 +141,12 @@ describe('ManagedEc2ComputeEnvironment', () => {
   test('can use non-default allocation strategy', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // WHEN
-    new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE', {
+    new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
       allocationStrategy: AllocationStrategy.BEST_FIT,
+      vpc,
     });
 
     // THEN
@@ -148,10 +162,12 @@ describe('ManagedEc2ComputeEnvironment', () => {
   test('spot => AllocationStrategy.SPOT_CAPACITY_OPTIMIZED and a default spot fleet role is created', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // WHEN
-    new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE', {
+    new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
       spot: true,
+      vpc,
     });
 
     // THEN
@@ -168,10 +184,12 @@ describe('ManagedEc2ComputeEnvironment', () => {
   test('throws error when AllocationStrategy.SPOT_CAPACITY_OPTIMIZED is used without specfiying spot', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // THEN
-    expect(new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE', {
+    expect(new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
       allocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
+      vpc,
     })).toThrowError(/errorrrrr/);
 
     // THEN
@@ -188,11 +206,13 @@ describe('ManagedEc2ComputeEnvironment', () => {
   test('throws error when minvCpus > maxvCpus', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // THEN
-    expect(new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE', {
+    expect(new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
       maxvCpus: 512,
       minvCpus: 1024,
+      vpc,
     })).toThrowError(/errorrrrr/);
 
     // THEN
@@ -209,20 +229,24 @@ describe('ManagedEc2ComputeEnvironment', () => {
   test('throws error when minvCpus specified without specifying maxvCpus', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // THEN
-    expect(new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE', {
+    expect(new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
       minvCpus: 512,
+      vpc,
     })).toThrowError(/errorrrrr/);
   });
 
   test('throws error when maxvCpus specified without specifying minvCpus', () => {
     // GIVEN
     stack = new Stack();
+    const vpc = new Vpc(stack, 'vpc');
 
     // THEN
-    expect(new batch.ManagedEc2ComputeEnvironment(stack, 'MyCE', {
+    expect(new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
       maxvCpus: 512,
+      vpc,
     })).toThrowError(/errorrrrr/);
   });
 
