@@ -47,6 +47,7 @@ def helm_handler(event, context):
     repository       = props.get('Repository', None)
     values_text      = props.get('Values', None)
     skip_crds        = props.get('SkipCrds', False)
+    atomic           = props.get('Atomic', False)
 
     # "log in" to the cluster
     subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
@@ -147,7 +148,7 @@ def get_chart_from_oci(tmpdir, repository = None, version = None):
     raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
 
 
-def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None, skip_crds = False):
+def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, atomic = False, timeout = None, create_namespace = None, skip_crds = False):
     import subprocess
 
     cmnd = ['helm', verb, release]
@@ -167,6 +168,8 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
         cmnd.extend(['--namespace', namespace])
     if wait:
         cmnd.append('--wait')
+    if atomic:
+        cmnd.append("--atomic")
     if skip_crds:
         cmnd.append('--skip-crds')
     if not timeout is None:

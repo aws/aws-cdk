@@ -84,6 +84,13 @@ export interface HelmChartOptions {
    * @default - CRDs are installed if not already present
    */
   readonly skipCrds?: boolean;
+
+  /**
+   * Whether or not Helm should treat this operation as atomic; if set, upgrade process rolls back changes
+   * made in case of failed upgrade. The --wait flag will be set automatically if --atomic is used.
+   * @default false;
+  */
+  readonly atomic?: boolean;
 }
 
 /**
@@ -137,6 +144,8 @@ export class HelmChart extends Construct {
     const createNamespace = props.createNamespace ?? true;
     // default to not skip crd installation
     const skipCrds = props.skipCrds ?? false;
+    // default to not use atomic operations
+    const atomic = props.atomic ?? false;
 
     props.chartAsset?.grantRead(provider.handlerRole);
 
@@ -157,6 +166,7 @@ export class HelmChart extends Construct {
         Repository: props.repository,
         CreateNamespace: createNamespace || undefined,
         SkipCrds: skipCrds || undefined,
+        Atomic: atomic || undefined,
       },
     });
   }
