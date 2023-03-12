@@ -1787,6 +1787,27 @@ describe('vpc', () => {
 
     });
 
+    test('can filter subnets when there are no PRIVATE_WITH_EGRESS type subnets', () => {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.PUBLIC, name: 'BlaBla' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'DontTalkAtAll' },
+        ],
+      });
+      const a_subnet = vpc.selectSubnets().subnetIds[0]
+
+      // WHEN
+      const subnets = vpc.selectSubnets({
+        subnetFilters: [ SubnetFilter.byIds([a_subnet])]
+      });
+
+      // THEN
+      expect(subnets.subnetIds.length).toEqual(1);
+
+    });
+
     test('fromVpcAttributes using unknown-length list tokens', () => {
       // GIVEN
       const stack = getTestStack();
