@@ -162,6 +162,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         subnetSelection: step.subnetSelection,
         cache: step.cache,
         timeout: step.timeout,
+        fileSystemLocations: step.fileSystemLocations,
       }),
     });
 
@@ -302,6 +303,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       buildSpec: projectBuildSpec,
       role: this.props.role,
       timeout: projectOptions.timeout,
+      fileSystemLocations: projectOptions.fileSystemLocations,
     });
 
     if (this.props.additionalDependable) {
@@ -430,6 +432,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
       timeout: b.timeout ?? a.timeout,
       cache: b.cache ?? a.cache,
+      fileSystemLocations: definedArray([...a.fileSystemLocations ?? [], ...b.fileSystemLocations ?? []]),
     };
   }
 }

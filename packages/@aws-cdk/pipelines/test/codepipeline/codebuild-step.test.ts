@@ -126,6 +126,40 @@ test('timeout from defaults can be overridden', () => {
   });
 });
 
+test('fileSystemLocations can be configured as part of defaults', () => {
+  // WHEN
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      commands: ['/bin/true'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+      additionalInputs: {
+        'some/deep/directory': cdkp.CodePipelineSource.gitHub('test2/test2', 'main'),
+      },
+    }),
+    codeBuildDefaults: {
+      fileSystemLocations: [codebuild.FileSystemLocation.efs({
+        identifier: 'myidentifier2',
+        location: 'myclodation.mydnsroot.com:/loc',
+        mountPoint: '/media',
+        mountOptions: 'opts',
+      })],
+    },
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    FileSystemLocations: [
+      {
+        Identifier: 'myidentifier2',
+        MountPoint: '/media',
+        MountOptions: 'opts',
+        Location: 'myclodation.mydnsroot.com:/loc',
+        Type: 'EFS',
+      },
+    ],
+  });
+});
+
 test('envFromOutputs works even with very long stage and stack names', () => {
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
