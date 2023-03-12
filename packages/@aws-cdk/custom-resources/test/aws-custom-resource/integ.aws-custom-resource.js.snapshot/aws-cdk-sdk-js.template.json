@@ -44,7 +44,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "PublishCustomResourcePolicyDF696FCA"
@@ -111,7 +111,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a268caa53756f51bda8ad5f499be4ed8484a81b314811806fbb66f874837c476.zip"
+     "S3Key": "8c980c60f4c1c0edebd987e6043e356b8d439b2d731c5af3329df082ca5a6a79.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -138,7 +138,7 @@
     },
     "Create": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
     "Update": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "ListTopicsCustomResourcePolicy31A8396A",
@@ -171,11 +171,11 @@
     "TopicBFC7AF6E"
    ]
   },
-  "DummyParameter53662B67": {
+  "Utf8Parameter6C885A19": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Value": "1337"
+    "Value": "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!\"#¤%&/()=?`´^*+~_-.,:;<>|"
    }
   },
   "GetParameter42B0A00E": {
@@ -193,7 +193,7 @@
       [
        "{\"service\":\"SSM\",\"action\":\"getParameter\",\"parameters\":{\"Name\":\"",
        {
-        "Ref": "DummyParameter53662B67"
+        "Ref": "Utf8Parameter6C885A19"
        },
        "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
       ]
@@ -205,13 +205,13 @@
       [
        "{\"service\":\"SSM\",\"action\":\"getParameter\",\"parameters\":{\"Name\":\"",
        {
-        "Ref": "DummyParameter53662B67"
+        "Ref": "Utf8Parameter6C885A19"
        },
        "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "GetParameterCustomResourcePolicyD8E5D455"
@@ -293,7 +293,7 @@
       [
        "{\"service\":\"SSM\",\"action\":\"getParameter\",\"parameters\":{\"Name\":\"",
        {
-        "Ref": "DummyParameter53662B67"
+        "Ref": "Utf8Parameter6C885A19"
        },
        "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
       ]
@@ -305,13 +305,13 @@
       [
        "{\"service\":\"SSM\",\"action\":\"getParameter\",\"parameters\":{\"Name\":\"",
        {
-        "Ref": "DummyParameter53662B67"
+        "Ref": "Utf8Parameter6C885A19"
        },
        "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
