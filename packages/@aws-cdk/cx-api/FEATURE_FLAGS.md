@@ -901,27 +901,6 @@ of the `id`s, the `name`s of the columns can be changed without data loss.
 | (not in v1) |  |  |
 | 2.68.0 | `false` | `true` |
 
-
-### @aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2
-
-*Enable AmazonEMRServicePolicy_v2 managed policies* (fix)
-
-If this flag is not set, the default behavior for `EmrCreateCluster` is
-to use `AmazonElasticMapReduceRole` managed policies.
-
-If this flag is set, the default behavior is to use the new `AmazonEMRServicePolicy_v2`
-managed policies.
-
-This is a feature flag as the old behavior will be deprecated, but some resources may require manual
-intervention since they don't automatically have the appropriate tags propagated.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.68.0 | `false` | `true` |
-
-
 ### @aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2
 
 *Enable AmazonEMRServicePolicy_v2 managed policies* (fix)
