@@ -1787,7 +1787,7 @@ describe('vpc', () => {
 
     });
 
-    test('can filter subnets when there are no PRIVATE_WITH_EGRESS type subnets', () => {
+    test('can filter againt all subnets, not only againt PRIVATE_WITH_EGRESS when SubnetType and SubnetGroupName are not specified', () => {
       // GIVEN
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'VPC', {
