@@ -812,7 +812,10 @@ export class CodePipeline extends PipelineBase {
       ],
       input: this._cloudAssemblyFileSet,
       buildEnvironment: {
-        privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
+        privileged: (
+          assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE) ||
+          this.props.codeBuildDefaults?.buildEnvironment?.privileged
+        ),
       },
       role,
     });
