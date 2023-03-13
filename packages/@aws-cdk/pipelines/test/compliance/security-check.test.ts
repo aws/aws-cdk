@@ -2,6 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import { Topic } from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
 import { LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp, stringLike } from '../testhelpers';
 import { behavior } from '../testhelpers/compliance';
 
@@ -53,11 +54,11 @@ behavior('security check option generates lambda/codebuild at pipeline scope', (
     // 1 for github build, 1 for synth stage, and 1 for the application security check
     template.resourceCountIs('AWS::CodeBuild::Project', 3);
 
-    // No CodeBuild project has a build image that is not standard:5.0
+    // No CodeBuild project has a build image that is not the standard iamge
     const projects = template.findResources('AWS::CodeBuild::Project', {
       Properties: {
         Environment: {
-          Image: 'aws/codebuild/standard:5.0',
+          Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         },
       },
     });

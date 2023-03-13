@@ -2,8 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-import { DatabaseCluster } from '../lib';
-import { ClusterParameterGroup } from '../lib/parameter-group';
+import { DatabaseCluster, ClusterParameterGroup } from '../lib';
 
 /*
  * Stack verification steps:
@@ -42,6 +41,7 @@ class TestStack extends cdk.Stack {
       parameterGroup: params,
       kmsKey,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      enablePerformanceInsights: true,
     });
 
     cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
