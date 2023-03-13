@@ -458,7 +458,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   readonly images?: EcsMachineImage[];
   readonly allocationStrategy?: AllocationStrategy;
   readonly spotBidPercentage?: number;
-  readonly spotIamFleetRole?: iam.IRole | undefined;
+  readonly spotFleetRole?: iam.IRole | undefined;
   readonly instanceTypes?: ec2.InstanceType[];
   readonly instanceClasses?: ec2.InstanceClass[];
   readonly instanceRole?: iam.IRole;
@@ -493,12 +493,11 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       roles: [this.instanceRole.roleName],
     });
 
-    /*if (this.spot) {
-      this.spotIamFleetRole = new iam.Role(this, 'SpotFleetRole', {
-
-      })
+    if (this.spot) {
+      this.spotFleetRole = new iam.Role(this, 'SpotFleetRole', {
+        assumedBy: new iam.ServicePrincipal('spotfleet.amazonaws.com'),
+      });
     }
-    */
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? 0;
@@ -512,6 +511,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         instanceRole: iamProfile.attrArn,
         instanceTypes: instances,
         type: this.spot ? 'SPOT' : 'EC2',
+        spotIamFleetRole: this.spotFleetRole?.roleArn,
         allocationStrategy: this.allocationStrategy,
         bidPercentage: this.spotBidPercentage,
         launchTemplate: this.launchTemplate,
