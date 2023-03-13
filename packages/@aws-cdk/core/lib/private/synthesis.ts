@@ -125,7 +125,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
 
     if (formatJson) {
       // eslint-disable-next-line no-console
-      console.log(JSON.stringify(output, undefined, 2)); 
+      console.log(JSON.stringify(output, undefined, 2));
     } else {
       // eslint-disable-next-line no-console
       console.error(output);
