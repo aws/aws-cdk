@@ -468,8 +468,8 @@ Resources:
                     - kms:GenerateDataKey*
 
                   # SecurityHub's rule KMS.2 complains if we put a '*' here, so instead we'll
-                  # turn the list of trusted accountIds ['111', '222', '333'] into a list of
-                  # wildcard ARNS: ['arn:kms:1111:*', 'arn:kms:2222:*', 'arn:kms:3333:*'].
+                  # turn the list of trusted accountIds ['111', '222', ...] into a list of
+                  # wildcard ARNS: ['arn:aws:kms:*:1111:*', 'arn:aws:kms:*:2222:*', ...].
                   Resource:
                     Fn::Split:
                       - "|"
