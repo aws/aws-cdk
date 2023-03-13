@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AndAssertion = void 0;
+const assertion_1 = require("../assertion");
+class AndAssertion extends assertion_1.Assertion {
+    constructor(first, second) {
+        super();
+        this.first = first;
+        this.second = second;
+        this.description = 'Combined assertion';
+    }
+    assertUsing(_inspector) {
+        throw new Error('This is never called');
+    }
+    assertOrThrow(inspector) {
+        this.first.assertOrThrow(inspector);
+        this.second.assertOrThrow(inspector);
+    }
+}
+exports.AndAssertion = AndAssertion;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYW5kLWFzc2VydGlvbi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImFuZC1hc3NlcnRpb24udHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQUEsNENBQXlDO0FBR3pDLE1BQWEsWUFBK0MsU0FBUSxxQkFBeUI7SUFHM0YsWUFBNkIsS0FBZ0MsRUFBbUIsTUFBaUM7UUFDL0csS0FBSyxFQUFFLENBQUM7UUFEbUIsVUFBSyxHQUFMLEtBQUssQ0FBMkI7UUFBbUIsV0FBTSxHQUFOLE1BQU0sQ0FBMkI7UUFGMUcsZ0JBQVcsR0FBVyxvQkFBb0IsQ0FBQztJQUlsRCxDQUFDO0lBRU0sV0FBVyxDQUFDLFVBQTBCO1FBQzNDLE1BQU0sSUFBSSxLQUFLLENBQUMsc0JBQXNCLENBQUMsQ0FBQztJQUMxQyxDQUFDO0lBRU0sYUFBYSxDQUFDLFNBQXlCO1FBQzVDLElBQUksQ0FBQyxLQUFLLENBQUMsYUFBYSxDQUFDLFNBQVMsQ0FBQyxDQUFDO1FBQ3BDLElBQUksQ0FBQyxNQUFNLENBQUMsYUFBYSxDQUFDLFNBQVMsQ0FBQyxDQUFDO0lBQ3ZDLENBQUM7Q0FDRjtBQWZELG9DQWVDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQXNzZXJ0aW9uIH0gZnJvbSAnLi4vYXNzZXJ0aW9uJztcbmltcG9ydCB7IEluc3BlY3RvciB9IGZyb20gJy4uL2luc3BlY3Rvcic7XG5cbmV4cG9ydCBjbGFzcyBBbmRBc3NlcnRpb248SW5zcGVjdG9yQ2xhc3MgZXh0ZW5kcyBJbnNwZWN0b3I+IGV4dGVuZHMgQXNzZXJ0aW9uPEluc3BlY3RvckNsYXNzPiB7XG4gIHB1YmxpYyBkZXNjcmlwdGlvbjogc3RyaW5nID0gJ0NvbWJpbmVkIGFzc2VydGlvbic7XG5cbiAgY29uc3RydWN0b3IocHJpdmF0ZSByZWFkb25seSBmaXJzdDogQXNzZXJ0aW9uPEluc3BlY3RvckNsYXNzPiwgcHJpdmF0ZSByZWFkb25seSBzZWNvbmQ6IEFzc2VydGlvbjxJbnNwZWN0b3JDbGFzcz4pIHtcbiAgICBzdXBlcigpO1xuICB9XG5cbiAgcHVibGljIGFzc2VydFVzaW5nKF9pbnNwZWN0b3I6IEluc3BlY3RvckNsYXNzKTogYm9vbGVhbiB7XG4gICAgdGhyb3cgbmV3IEVycm9yKCdUaGlzIGlzIG5ldmVyIGNhbGxlZCcpO1xuICB9XG5cbiAgcHVibGljIGFzc2VydE9yVGhyb3coaW5zcGVjdG9yOiBJbnNwZWN0b3JDbGFzcykge1xuICAgIHRoaXMuZmlyc3QuYXNzZXJ0T3JUaHJvdyhpbnNwZWN0b3IpO1xuICAgIHRoaXMuc2Vjb25kLmFzc2VydE9yVGhyb3coaW5zcGVjdG9yKTtcbiAgfVxufVxuIl19

@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = require("@aws-cdk/core");
+const lib_1 = require("../lib");
+test('SynthUtils.synthesize() is always executed against the root of the tree', () => {
+    // GIVEN
+    const root = new core_1.App();
+    const stack1 = new core_1.Stack(root, 'stack1');
+    const stack2 = new core_1.Stack(root, 'stack2');
+    stack2.addDependency(stack1);
+    // THEN
+    // this would have failed if we didn't synthesize at the root because 'stack1' would not be emitted
+    expect(() => lib_1.SynthUtils.synthesize(stack2)).not.toThrowError();
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3ludGgtdXRpbHMudGVzdC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInN5bnRoLXV0aWxzLnRlc3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSx3Q0FBMkM7QUFDM0MsZ0NBQW9DO0FBRXBDLElBQUksQ0FBQyx5RUFBeUUsRUFBRSxHQUFHLEVBQUU7SUFDbkYsUUFBUTtJQUNSLE1BQU0sSUFBSSxHQUFHLElBQUksVUFBRyxFQUFFLENBQUM7SUFDdkIsTUFBTSxNQUFNLEdBQUcsSUFBSSxZQUFLLENBQUMsSUFBSSxFQUFFLFFBQVEsQ0FBQyxDQUFDO0lBQ3pDLE1BQU0sTUFBTSxHQUFHLElBQUksWUFBSyxDQUFDLElBQUksRUFBRSxRQUFRLENBQUMsQ0FBQztJQUN6QyxNQUFNLENBQUMsYUFBYSxDQUFDLE1BQU0sQ0FBQyxDQUFDO0lBRTdCLE9BQU87SUFDUCxtR0FBbUc7SUFDbkcsTUFBTSxDQUFDLEdBQUcsRUFBRSxDQUFDLGdCQUFVLENBQUMsVUFBVSxDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUMsR0FBRyxDQUFDLFlBQVksRUFBRSxDQUFDO0FBQ2pFLENBQUMsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQXBwLCBTdGFjayB9IGZyb20gJ0Bhd3MtY2RrL2NvcmUnO1xuaW1wb3J0IHsgU3ludGhVdGlscyB9IGZyb20gJy4uL2xpYic7XG5cbnRlc3QoJ1N5bnRoVXRpbHMuc3ludGhlc2l6ZSgpIGlzIGFsd2F5cyBleGVjdXRlZCBhZ2FpbnN0IHRoZSByb290IG9mIHRoZSB0cmVlJywgKCkgPT4ge1xuICAvLyBHSVZFTlxuICBjb25zdCByb290ID0gbmV3IEFwcCgpO1xuICBjb25zdCBzdGFjazEgPSBuZXcgU3RhY2socm9vdCwgJ3N0YWNrMScpO1xuICBjb25zdCBzdGFjazIgPSBuZXcgU3RhY2socm9vdCwgJ3N0YWNrMicpO1xuICBzdGFjazIuYWRkRGVwZW5kZW5jeShzdGFjazEpO1xuXG4gIC8vIFRIRU5cbiAgLy8gdGhpcyB3b3VsZCBoYXZlIGZhaWxlZCBpZiB3ZSBkaWRuJ3Qgc3ludGhlc2l6ZSBhdCB0aGUgcm9vdCBiZWNhdXNlICdzdGFjazEnIHdvdWxkIG5vdCBiZSBlbWl0dGVkXG4gIGV4cGVjdCgoKSA9PiBTeW50aFV0aWxzLnN5bnRoZXNpemUoc3RhY2syKSkubm90LnRvVGhyb3dFcnJvcigpO1xufSk7XG4iXX0=

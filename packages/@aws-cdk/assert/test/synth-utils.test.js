@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const lib_1 = require("../lib");
+test('SynthUtils.synthesize() is always executed against the root of the tree', () => {
+    // GIVEN
+    const root = new aws_cdk_lib_1.App();
+    const stack1 = new aws_cdk_lib_1.Stack(root, 'stack1');
+    const stack2 = new aws_cdk_lib_1.Stack(root, 'stack2');
+    stack2.addDependency(stack1);
+    // THEN
+    // this would have failed if we didn't synthesize at the root because 'stack1' would not be emitted
+    expect(() => lib_1.SynthUtils.synthesize(stack2)).not.toThrowError();
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3ludGgtdXRpbHMudGVzdC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInN5bnRoLXV0aWxzLnRlc3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSw2Q0FBeUM7QUFDekMsZ0NBQW9DO0FBRXBDLElBQUksQ0FBQyx5RUFBeUUsRUFBRSxHQUFHLEVBQUU7SUFDbkYsUUFBUTtJQUNSLE1BQU0sSUFBSSxHQUFHLElBQUksaUJBQUcsRUFBRSxDQUFDO0lBQ3ZCLE1BQU0sTUFBTSxHQUFHLElBQUksbUJBQUssQ0FBQyxJQUFJLEVBQUUsUUFBUSxDQUFDLENBQUM7SUFDekMsTUFBTSxNQUFNLEdBQUcsSUFBSSxtQkFBSyxDQUFDLElBQUksRUFBRSxRQUFRLENBQUMsQ0FBQztJQUN6QyxNQUFNLENBQUMsYUFBYSxDQUFDLE1BQU0sQ0FBQyxDQUFDO0lBRTdCLE9BQU87SUFDUCxtR0FBbUc7SUFDbkcsTUFBTSxDQUFDLEdBQUcsRUFBRSxDQUFDLGdCQUFVLENBQUMsVUFBVSxDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUMsR0FBRyxDQUFDLFlBQVksRUFBRSxDQUFDO0FBQ2pFLENBQUMsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQXBwLCBTdGFjayB9IGZyb20gJ2F3cy1jZGstbGliJztcbmltcG9ydCB7IFN5bnRoVXRpbHMgfSBmcm9tICcuLi9saWInO1xuXG50ZXN0KCdTeW50aFV0aWxzLnN5bnRoZXNpemUoKSBpcyBhbHdheXMgZXhlY3V0ZWQgYWdhaW5zdCB0aGUgcm9vdCBvZiB0aGUgdHJlZScsICgpID0+IHtcbiAgLy8gR0lWRU5cbiAgY29uc3Qgcm9vdCA9IG5ldyBBcHAoKTtcbiAgY29uc3Qgc3RhY2sxID0gbmV3IFN0YWNrKHJvb3QsICdzdGFjazEnKTtcbiAgY29uc3Qgc3RhY2syID0gbmV3IFN0YWNrKHJvb3QsICdzdGFjazInKTtcbiAgc3RhY2syLmFkZERlcGVuZGVuY3koc3RhY2sxKTtcblxuICAvLyBUSEVOXG4gIC8vIHRoaXMgd291bGQgaGF2ZSBmYWlsZWQgaWYgd2UgZGlkbid0IHN5bnRoZXNpemUgYXQgdGhlIHJvb3QgYmVjYXVzZSAnc3RhY2sxJyB3b3VsZCBub3QgYmUgZW1pdHRlZFxuICBleHBlY3QoKCkgPT4gU3ludGhVdGlscy5zeW50aGVzaXplKHN0YWNrMikpLm5vdC50b1Rocm93RXJyb3IoKTtcbn0pO1xuIl19
