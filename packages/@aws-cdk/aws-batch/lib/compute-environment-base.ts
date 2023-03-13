@@ -33,7 +33,7 @@ export interface IComputeEnvironment extends IResource {
    *
    * To ensure you aren't billed for unused capacity, remove the ComputeEnvironment from your stack.
    */
-  readonly enabled?: boolean;
+  readonly enabled: boolean;
 }
 
 export interface ComputeEnvironmentProps {
@@ -72,7 +72,7 @@ export interface ComputeEnvironmentProps {
 export abstract class ComputeEnvironmentBase extends Resource implements IComputeEnvironment {
   readonly name?: string | undefined;
   readonly serviceRole?: iam.IRole | undefined;
-  readonly enabled?: boolean | undefined;
+  readonly enabled: boolean;
 
   protected resourceProps: CfnComputeEnvironmentProps;
 
@@ -81,10 +81,12 @@ export abstract class ComputeEnvironmentBase extends Resource implements IComput
 
     this.name = props?.name;
     this.serviceRole = props?.serviceRole;
+    this.enabled = props?.enabled || props?.enabled === undefined ? true : false;
 
     this.resourceProps = {
       computeEnvironmentName: this.name,
       serviceRole: this.serviceRole?.roleArn,
+      state: this.enabled ? 'ENABLED' : 'DISABLED',
       type: 'dummy',
     };
   }

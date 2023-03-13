@@ -16,7 +16,7 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    * The scheduler may exceed this number by at most one of the instances specified in `instanceTypes`
    * or `instanceClasses`.
    */
-  readonly maxvCpus?: number;
+  readonly maxvCpus: number;
 
   /**
    * Specifies whether this Compute Environment is replaced if an update is made that requires
@@ -182,7 +182,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
 }
 
 export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBase implements IManagedComputeEnvironment {
-  readonly maxvCpus?: number;
+  readonly maxvCpus: number;
   readonly replaceComputeEnvironment?: boolean;
   readonly spot?: boolean;
   readonly updateTimeout?: Duration;
@@ -202,7 +202,7 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
     this.updateTimeout = props.updateTimeout;
     this.terminateOnUpdate = props.terminateOnUpdate;
     this.subnets = props.subnets;
-    this.updateToLatestImageVersion = props.updateToLatestImageVersion;
+    this.updateToLatestImageVersion = props.updateToLatestImageVersion ?? true;
     this.securityGroups = props.securityGroups ?? [
       new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
@@ -219,7 +219,7 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
         maxvCpus: this.maxvCpus,
         type: 'dummy',
         updateToLatestImageVersion: this.updateToLatestImageVersion,
-        securityGroupIds: this.securityGroups.map((securityGroup) => securityGroup.uniqueId),
+        securityGroupIds: this.securityGroups.map((securityGroup) => securityGroup.securityGroupId),
         subnets: subnetIds,
       },
       updatePolicy: {
@@ -332,11 +332,11 @@ interface MachineImage {
 }
 
 export interface EcsMachineImage extends MachineImage {
-  readonly imageType: EcsMachineImageType;
+  readonly imageType?: EcsMachineImageType;
 }
 
 export interface EksMachineImage extends MachineImage{
-  readonly imageType: EksMachineImageType;
+  readonly imageType?: EksMachineImageType;
 }
 
 export enum EcsMachineImageType {
@@ -470,7 +470,6 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     super(scope, id, props);
 
     this.images = props.images;
-    this.allocationStrategy = props.allocationStrategy;
     this.spotBidPercentage = props.spotBidPercentage;
     this.instanceTypes = props.instanceTypes;
     this.instanceClasses = props.instanceClasses;
@@ -493,14 +492,30 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       roles: [this.instanceRole.roleName],
     });
 
+    this.allocationStrategy = props.allocationStrategy;
     if (this.spot) {
       this.spotFleetRole = new iam.Role(this, 'SpotFleetRole', {
         assumedBy: new iam.ServicePrincipal('spotfleet.amazonaws.com'),
       });
+      if (!this.allocationStrategy) {
+        this.allocationStrategy = AllocationStrategy.SPOT_CAPACITY_OPTIMIZED;
+      }
+    }
+
+    if (!this.allocationStrategy) {
+      this.allocationStrategy = AllocationStrategy.BEST_FIT_PROGRESSIVE;
+    } else if (this.allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED && !this.spot) {
+      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances`);
     }
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? 0;
+    if (this.minvCpus < 0) {
+      throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${this.minvCpus} < 0; 'minvCpus' cannot be less than zero`);
+    }
+    if (this.minvCpus > this.maxvCpus) {
+      throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${this.minvCpus} > 'maxvCpus' = ${this.maxvCpus}; 'minvCpus' cannot be greater than 'maxvCpus'`);
+    }
     this.placementGroup = props.placementGroup;
 
     new CfnComputeEnvironment(this, 'Resource', {
@@ -518,7 +533,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         ec2Configuration: this.images?.map((image) => {
           return {
             imageIdOverride: image.image?.getImage(this).imageId,
-            imageType: image.imageType,
+            imageType: image.imageType ?? 'ECS_AL2',
           };
         }),
       },

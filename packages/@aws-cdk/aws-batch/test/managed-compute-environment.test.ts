@@ -13,19 +13,20 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
     serviceRole: undefined,
     state: 'ENABLED',
     computeResources: {
-      allocationStrategy: undefined,
+      allocationStrategy: AllocationStrategy.BEST_FIT_PROGRESSIVE,
       bidPercentage: undefined,
       desiredvCpus: undefined,
-      ec2Configuration: [{
-        imageType: 'ECS_AL2',
-      }],
       maxvCpus: 256,
       type: 'EC2',
+      ec2Configuration: undefined,
       minvCpus: 0,
-      subnets: ['TODO'],
+      subnets: [
+        { Ref: 'vpcPrivateSubnet1Subnet934893E8' } as any,
+        { Ref: 'vpcPrivateSubnet2Subnet7031C2BA' } as any,
+      ],
       ec2KeyPair: undefined,
       imageId: undefined,
-      instanceRole: 'some-arn',
+      instanceRole: { 'Fn::GetAtt': ['MyCEInstanceProfile6D69963F', 'Arn'] } as any,
       instanceTypes: ['optimal'],
       launchTemplate: undefined,
       placementGroup: undefined,
@@ -77,27 +78,6 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
     });
   });
 
-  test('can specify maxvCpus', () => {
-    // GIVEN
-    stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
-
-    // WHEN
-    new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
-      maxvCpus: 512,
-      vpc,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
-      ComputeResources: {
-        ...DefaultComputeResources,
-        MaxvCpus: 512,
-      },
-    });
-  });
-
   test('can specify minvCpus', () => {
     // GIVEN
     stack = new Stack();
@@ -105,7 +85,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
 
     // WHEN
     new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
-      minvCpus: 0,
+      minvCpus: 8,
       vpc,
     });
 
@@ -114,7 +94,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
       ...PascalCaseProps,
       ComputeResources: {
         ...DefaultComputeResources,
-        MinxvCpus: 0,
+        MinvCpus: 8,
       },
     });
   });
@@ -175,8 +155,9 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
       ...PascalCaseProps,
       ComputeResources: {
         ...DefaultComputeResources,
+        Type: 'SPOT',
         AllocationStrategy: 'SPOT_CAPACITY_OPTIMIZED',
-        SpotIamFleetRole: 'some-role-arn',
+        SpotIamFleetRole: { 'Fn::GetAtt': ['MyCESpotFleetRole70BE30A0', 'Arn'] },
       },
     });
   });
@@ -187,20 +168,12 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
     const vpc = new Vpc(stack, 'vpc');
 
     // THEN
-    expect(new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
-      allocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
-      vpc,
-    })).toThrowError(/errorrrrr/);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
-      ComputeResources: {
-        ...DefaultComputeResources,
-        AllocationStrategy: 'SPOT_CAPACITY_OPTIMIZED',
-        SpotIamFleetRole: 'some-role-arn',
-      },
-    });
+    expect(() => {
+      new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+        allocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
+        vpc,
+      });
+    }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances/);
   });
 
   test('throws error when minvCpus > maxvCpus', () => {
@@ -209,46 +182,26 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
     const vpc = new Vpc(stack, 'vpc');
 
     // THEN
-    expect(new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
-      maxvCpus: 512,
-      minvCpus: 1024,
-      vpc,
-    })).toThrowError(/errorrrrr/);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
-      ComputeResources: {
-        ...DefaultComputeResources,
-        AllocationStrategy: 'SPOT_CAPACITY_OPTIMIZED',
-        SpotIamFleetRole: 'some-role-arn',
-      },
-    });
+    expect(() => {
+      new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+        vpc,
+        maxvCpus: 512,
+        minvCpus: 1024,
+      });
+    }).toThrow(/Managed ComputeEnvironment 'MyCE' has 'minvCpus' = 1024 > 'maxvCpus' = 512; 'minvCpus' cannot be greater than 'maxvCpus'/);
   });
 
-  test('throws error when minvCpus specified without specifying maxvCpus', () => {
+  test('throws error when minvCpus < 0', () => {
     // GIVEN
     stack = new Stack();
     const vpc = new Vpc(stack, 'vpc');
 
     // THEN
-    expect(new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
-      minvCpus: 512,
-      vpc,
-    })).toThrowError(/errorrrrr/);
+    expect(() => {
+      new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+        minvCpus: -256,
+        vpc,
+      });
+    }).toThrowError(/Managed ComputeEnvironment 'MyCE' has 'minvCpus' = -256 < 0; 'minvCpus' cannot be less than zero/);
   });
-
-  test('throws error when maxvCpus specified without specifying minvCpus', () => {
-    // GIVEN
-    stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
-
-    // THEN
-    expect(new batch.ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
-      maxvCpus: 512,
-      vpc,
-    })).toThrowError(/errorrrrr/);
-  });
-
-
 });
