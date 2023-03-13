@@ -36,9 +36,6 @@
           "strict": false
         }
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

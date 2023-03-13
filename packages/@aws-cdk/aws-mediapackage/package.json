@@ -36,9 +36,6 @@
         "distName": "aws-cdk.aws-mediapackage",
         "module": "aws_cdk.aws_mediapackage"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

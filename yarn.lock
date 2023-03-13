@@ -795,10 +795,25 @@
     chalk "^4.1.2"
     semver "^7.3.8"
 
+"@jsii/check-node@1.77.0":
+  version "1.77.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.77.0.tgz#46e0e4201f5006cef0c5d11a1ce4b00b6ce27801"
+  integrity sha512-kgq4h5SrpIuM9CZ6uZVZ9KrJCPSn6zwz4y60ZEIFMA5aqkBN1n7MhTJglG6I8IaL2uYm7P5kZf6+eGNI+n3tig==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.3.8"
+
 "@jsii/spec@1.76.0", "@jsii/spec@^1.76.0":
   version "1.76.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.76.0.tgz#9323aec77f4e0a3ec7c68a5c257b0841f5ad0731"
   integrity sha512-7L8KeG44ECq0ulKYWaOr0FQvnFW7RavjxEGvMAdKfIOXb5mZyGERnj5pKl5kmq2m1lWE2VBZELoTfM7dDlAPtg==
+  dependencies:
+    ajv "^8.12.0"
+
+"@jsii/spec@^1.77.0":
+  version "1.77.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.77.0.tgz#2ee31c32e26d61880e422a546a62296c6543bff9"
+  integrity sha512-QmwXRREX8W1YOdKHbfu+Tw0rygdCJ2AYcKt7iu56Is2giQ9doyRLKvzywXoKxJjZtj9E7Sp0GdDob8pl8cwmlg==
   dependencies:
     ajv "^8.12.0"
 
@@ -7129,17 +7144,17 @@ jsii@1.76.0, jsii@^1.76.0:
     yargs "^16.2.0"
 
 jsii@v4.9-next:
-  version "4.9.0-dev.2"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-4.9.0-dev.2.tgz#6b193a8a1ce6078741ce4f40bf1b5cf01c9a6f41"
-  integrity sha512-5VIj4HVTYuXJwv+UnEG9KIZ1Kwx4S7fws0y6XwMf6U7Qr4QbOwW59HM7mn28B0GJgj83y/CezcJTTqpuEES+5Q==
+  version "4.9.0-dev.3"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-4.9.0-dev.3.tgz#955e66f53285912abf81657e9a002ea70b6ea9d1"
+  integrity sha512-rV98zVVjIzvZxlgRN/5Z4J4KKT2IqU+9cSkCTkcYdzgWzlMY8lga9fNNfzShZapVHoIsy4bSIEhXRXf2ZHG5Vw==
   dependencies:
-    "@jsii/check-node" "1.76.0"
-    "@jsii/spec" "^1.76.0"
+    "@jsii/check-node" "1.77.0"
+    "@jsii/spec" "^1.77.0"
     case "^1.6.3"
     chalk "^4"
     downlevel-dts "^0.11.0"
     fast-deep-equal "^3.1.3"
-    log4js "^6.8.0"
+    log4js "^6.9.1"
     semver "^7.3.8"
     semver-intersect "^1.4.0"
     sort-json "^2.0.1"
@@ -7713,10 +7728,21 @@ log-symbols@^4.1.0:
     chalk "^4.1.0"
     is-unicode-supported "^0.1.0"
 
-log4js@^6.7.1, log4js@^6.8.0:
+log4js@^6.7.1:
   version "6.8.0"
   resolved "https://registry.npmjs.org/log4js/-/log4js-6.8.0.tgz#f0fe9b2b82725aaf97f20692e23381a5c5722448"
   integrity sha512-g+V8gZyurIexrOvWQ+AcZsIvuK/lBnx2argejZxL4gVZ4Hq02kUYH6WZOnqxgBml+zzQZYdaEoTN84B6Hzm8Fg==
+  dependencies:
+    date-format "^4.0.14"
+    debug "^4.3.4"
+    flatted "^3.2.7"
+    rfdc "^1.3.0"
+    streamroller "^3.1.5"
+
+log4js@^6.9.1:
+  version "6.9.1"
+  resolved "https://registry.npmjs.org/log4js/-/log4js-6.9.1.tgz#aba5a3ff4e7872ae34f8b4c533706753709e38b6"
+  integrity sha512-1somDdy9sChrr9/f4UlzhdaGfDR2c/SaD2a4T7qEkG4jTS57/B3qmnjLYePwQ8cqWnUHZI0iAKxMBpCZICiZ2g==
   dependencies:
     date-format "^4.0.14"
     debug "^4.3.4"
@@ -11217,9 +11243,9 @@ typescript@^4.5.5, typescript@~4.9.5:
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
 
 typescript@next:
-  version "5.1.0-dev.20230301"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-5.1.0-dev.20230301.tgz#3250b647dfd19942326bf904211350cdbbfdfe79"
-  integrity sha512-aJ0PIgQ00zlf9npD2tri7MWDAooMoh3iIn4v0hAMSRCSKqJjTzt7fVopvdtbvWPKripipxeXnX5mhkBZcGrEKQ==
+  version "5.1.0-dev.20230313"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-5.1.0-dev.20230313.tgz#393282026171897a71398b9f4b2a7a527729fd5f"
+  integrity sha512-vveGdy/uNUyKJ/JbXsJTSP8Z8gfCRsiXdHBMbvJ2XzuzHsDQC3mR+ZPvIGrXoTWMn5XNbyJ8ufYuqGiCGTi6tg==
 
 typescript@~4.8.2:
   version "4.8.4"

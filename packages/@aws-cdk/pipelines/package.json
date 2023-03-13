@@ -149,9 +149,6 @@
           "strict": true
         }
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "awscdkio": {

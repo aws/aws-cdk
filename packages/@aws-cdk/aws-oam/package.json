@@ -38,14 +38,7 @@
           "strict": true
         }
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws/aws-cdk.git",
+    }type": "git","url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-oam"
   },
   "homepage": "https://github.com/aws/aws-cdk",

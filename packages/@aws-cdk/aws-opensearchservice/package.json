@@ -44,9 +44,6 @@
         "distName": "aws-cdk.aws-opensearchservice",
         "module": "aws_cdk.aws_opensearchservice"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

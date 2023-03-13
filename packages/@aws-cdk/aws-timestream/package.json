@@ -36,9 +36,6 @@
         "distName": "aws-cdk.aws-timestream",
         "module": "aws_cdk.aws_timestream"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

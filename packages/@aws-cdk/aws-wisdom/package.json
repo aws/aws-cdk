@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-wisdom",
         "module": "aws_cdk.aws_wisdom"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

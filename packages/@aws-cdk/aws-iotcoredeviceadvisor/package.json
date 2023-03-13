@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-iotcoredeviceadvisor",
         "module": "aws_cdk.aws_iotcoredeviceadvisor"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

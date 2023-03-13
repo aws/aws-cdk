@@ -28,10 +28,7 @@
         ]
       }
     },
-    "projectReferences": true,
-    "tsc": {
-      "noImplicitOverride": true
-    }
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

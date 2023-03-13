@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-lightsail",
         "module": "aws_cdk.aws_lightsail"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

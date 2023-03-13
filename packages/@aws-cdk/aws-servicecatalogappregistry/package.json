@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-servicecatalogappregistry",
         "module": "aws_cdk.aws_servicecatalogappregistry"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

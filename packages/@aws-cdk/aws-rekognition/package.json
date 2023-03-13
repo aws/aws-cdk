@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-rekognition",
         "module": "aws_cdk.aws_rekognition"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

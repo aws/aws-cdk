@@ -36,9 +36,6 @@
           "Framework :: AWS CDK :: 2"
         ]
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

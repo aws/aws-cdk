@@ -670,26 +670,6 @@ export class JSIIProjectReferences extends ValidationRule {
   }
 }
 
-/**
- * Requires noImplicitOverride to be set in the jsii configuration.
- */
-export class JSIINoImplicitOverride extends ValidationRule {
-  public readonly name = 'jsii/noImplicitOverride';
-
-  public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) {
-      return;
-    }
-
-    expectJSON(
-      this.name,
-      pkg,
-      'jsii.tsc.noImplicitOverride',
-      true,
-    );
-  }
-}
-
 export class NoPeerDependenciesAwsCdkLib extends ValidationRule {
   public readonly name = 'aws-cdk-lib/no-peer';
   private readonly allowedPeer = ['constructs'];

@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-xray",
         "module": "aws_cdk.aws_xray"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

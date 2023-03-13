@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-customerprofiles",
         "module": "aws_cdk.aws_customerprofiles"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

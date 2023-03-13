@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-apprunner",
         "module": "aws_cdk.aws_apprunner"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

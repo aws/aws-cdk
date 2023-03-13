@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-ssmcontacts",
         "module": "aws_cdk.aws_ssmcontacts"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

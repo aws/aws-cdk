@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-ssmincidents",
         "module": "aws_cdk.aws_ssmincidents"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

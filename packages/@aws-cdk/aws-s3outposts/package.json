@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-s3outposts",
         "module": "aws_cdk.aws_s3outposts"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {

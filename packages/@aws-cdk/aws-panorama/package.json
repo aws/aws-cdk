@@ -37,9 +37,6 @@
         "distName": "aws-cdk.aws-panorama",
         "module": "aws_cdk.aws_panorama"
       }
-    },
-    "tsc": {
-      "noImplicitOverride": true
     }
   },
   "repository": {
