@@ -3811,7 +3811,7 @@
       "properties": {
         "Attributes": "A string map that contains attributes with values that you can use to filter instances by any custom attribute that you specified when you registered the instance. Only instances that match all of the specified key/value pairs will be returned.",
         "IpPreference": "The preferred IP version that this virtual node uses. Setting the IP preference on the virtual node only overrides the IP preference set for the mesh on this specific node.",
-        "NamespaceName": "The name of the AWS Cloud Map namespace to use.",
+        "NamespaceName": "The HTTP name of the AWS Cloud Map namespace to use.",
         "ServiceName": "The name of the AWS Cloud Map service to use."
       }
     },
@@ -14169,7 +14169,7 @@
         "InstanceRequirements": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with those attributes.\n\n> If you specify `InstanceRequirements` , you can't specify `InstanceType` .",
         "InstanceType": "The instance type.\n\n`mac1.metal` is not supported as a launch template override.\n\n> If you specify `InstanceType` , you can't specify `InstanceRequirements` .",
         "MaxPrice": "The maximum price per unit hour that you are willing to pay for a Spot Instance. We do not recommend using this parameter because it can lead to increased interruptions. If you do not specify this parameter, you will pay the current Spot price.\n\n> If you specify a maximum price, your instances will be interrupted more frequently than if you do not specify this parameter.",
-        "Placement": "The location where the instance launched, if applicable.\n\nSupported only for fleets of type `instant` .",
+        "Placement": "The location where the instance launched, if applicable.",
         "Priority": "The priority for the launch template override. The highest priority is launched first.\n\nIf the On-Demand `AllocationStrategy` is set to `prioritized` , EC2 Fleet uses priority to determine which launch template override to use first in fulfilling On-Demand capacity.\n\nIf the Spot `AllocationStrategy` is set to `capacity-optimized-prioritized` , EC2 Fleet uses priority on a best-effort basis to determine which launch template override to use in fulfilling Spot capacity, but optimizes for capacity first.\n\nValid values are whole numbers starting at `0` . The lower the number, the higher the priority. If no number is set, the launch template override has the lowest priority. You can set the same priority for different launch template overrides.",
         "SubnetId": "The IDs of the subnets in which to launch the instances. Separate multiple subnet IDs using commas (for example, `subnet-1234abcdeexample1, subnet-0987cdef6example2` ). A request of type `instant` can have only one subnet ID.",
         "WeightedCapacity": "The number of units provided by the specified instance type."
@@ -43101,7 +43101,7 @@
         "Name": "A friendly name that lets you easily find a configuration in the Resolver dashboard in the Route 53 console.",
         "OutpostArn": "",
         "PreferredInstanceType": "",
-        "ResolverEndpointType": "",
+        "ResolverEndpointType": "The Resolver endpoint IP address type.",
         "SecurityGroupIds": "The ID of one or more security groups that control access to this VPC. The security group must include one or more inbound rules (for inbound endpoints) or outbound rules (for outbound endpoints). Inbound and outbound rules must allow TCP and UDP access. For inbound access, open port 53. For outbound access, open the port that you're using for DNS queries on your network.",
         "Tags": "Route 53 Resolver doesn't support updating tags through CloudFormation."
       }
@@ -43110,8 +43110,8 @@
       "attributes": {},
       "description": "In a [CreateResolverEndpoint](https://docs.aws.amazon.com/Route53/latest/APIReference/API_route53resolver_CreateResolverEndpoint.html) request, the IP address that DNS queries originate from (for outbound endpoints) or that you forward DNS queries to (for inbound endpoints). `IpAddressRequest` also includes the ID of the subnet that contains the IP address.",
       "properties": {
-        "Ip": "The IP address that you want to use for DNS queries.",
-        "Ipv6": "",
+        "Ip": "The IPv4 address that you want to use for DNS queries.",
+        "Ipv6": "The IPv6 address that you want to use for DNS queries.",
         "SubnetId": "The ID of the subnet that contains the IP address."
       }
     },
@@ -43165,15 +43165,15 @@
         "ResolverEndpointId": "The ID of the endpoint that the rule is associated with.",
         "RuleType": "When you want to forward DNS queries for specified domain name to resolvers on your network, specify `FORWARD` .\n\nWhen you have a forwarding rule to forward DNS queries for a domain to your network and you want Resolver to process queries for a subdomain of that domain, specify `SYSTEM` .\n\nFor example, to forward DNS queries for example.com to resolvers on your network, you create a rule and specify `FORWARD` for `RuleType` . To then have Resolver process queries for apex.example.com, you create a rule and specify `SYSTEM` for `RuleType` .\n\nCurrently, only Resolver can create rules that have a value of `RECURSIVE` for `RuleType` .",
         "Tags": "Route 53 Resolver doesn't support updating tags through CloudFormation.",
-        "TargetIps": "An array that contains the IP addresses and ports that an outbound endpoint forwards DNS queries to. Typically, these are the IP addresses of DNS resolvers on your network. Specify IPv4 addresses. IPv6 is not supported."
+        "TargetIps": "An array that contains the IP addresses and ports that an outbound endpoint forwards DNS queries to. Typically, these are the IP addresses of DNS resolvers on your network."
       }
     },
     "AWS::Route53Resolver::ResolverRule.TargetAddress": {
       "attributes": {},
       "description": "In a [CreateResolverRule](https://docs.aws.amazon.com/Route53/latest/APIReference/API_route53resolver_CreateResolverRule.html) request, an array of the IPs that you want to forward DNS queries to.",
       "properties": {
-        "Ip": "One IP address that you want to forward DNS queries to. You can specify only IPv4 addresses.",
-        "Ipv6": "",
+        "Ip": "One IPv4 address that you want to forward DNS queries to.",
+        "Ipv6": "One IPv6 address that you want to forward DNS queries to.",
         "Port": "The port at `Ip` that you want to forward DNS queries to."
       }
     },
