@@ -141,6 +141,58 @@ describe('tests', () => {
     });
   });
 
+  test('order test for addTarget and addListener', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+    const instance = new Instance(stack, 'targetInstance', {
+      vpc: vpc,
+      instanceType: InstanceType.of( // t2.micro has free tier usage in aws
+        InstanceClass.T2,
+        InstanceSize.MICRO,
+      ),
+      machineImage: MachineImage.latestAmazonLinux({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+      }),
+    });
+    const elb = new LoadBalancer(stack, 'LB', {
+      vpc,
+    });
+
+    // WHEN
+    elb.addTarget(new InstanceTarget(instance));
+    elb.addListener({ externalPort: 80, internalPort: 8080 });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
+      CrossZone: true,
+      Instances: [
+        {
+          Ref: 'targetInstance603C5817',
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
+      Description: 'Port 8080 LB to fleet',
+      FromPort: 8080,
+      IpProtocol: 'tcp',
+      ToPort: 8080,
+      GroupId: {
+        'Fn::GetAtt': [
+          'LBSecurityGroup8A41EA2B',
+          'GroupId',
+        ],
+      },
+      DestinationSecurityGroupId: {
+        'Fn::GetAtt': [
+          'targetInstanceInstanceSecurityGroupF268BD07',
+          'GroupId',
+        ],
+      },
+    });
+  });
+
   test('enable cross zone load balancing', () => {
     // GIVEN
     const stack = new Stack();
