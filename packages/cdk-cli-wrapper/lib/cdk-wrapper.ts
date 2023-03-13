@@ -70,6 +70,8 @@ export interface SynthFastOptions {
 }
 
 /**
+ * Additional environment variables to set in the execution environment
+ *
  * @deprecated Use raw property bags instead (object literals, `Map<String,Object>`, etc... )
  */
 export interface Environment {
