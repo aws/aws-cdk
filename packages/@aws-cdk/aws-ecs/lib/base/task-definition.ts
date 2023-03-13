@@ -712,7 +712,8 @@ export class TaskDefinition extends TaskDefinitionBase {
   private validateTaskDefinition(): string[] {
     const ret = new Array<string>();
 
-    if (isEc2Compatible(this.compatibility)) {
+    // Skip memory config check for windows instance
+    if (!isWindowsInstance(this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily) && isEc2Compatible(this.compatibility)) {
       // EC2 mode validations
 
       // Container sizes
@@ -1205,4 +1206,11 @@ export function isFargateCompatible(compatibility: Compatibility): boolean {
  */
 export function isExternalCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.EXTERNAL].includes(compatibility);
+}
+
+/**
+ * Return true for windows instance
+ */
+export function isWindowsInstance(operatingSystemFamily?: string): boolean | undefined {
+  return operatingSystemFamily?.startsWith('WINDOWS_SERVER_');
 }

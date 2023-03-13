@@ -200,6 +200,36 @@ describe('task definition', () => {
       });
     });
 
+    test('A task definition for non windows instance with no memory config throws an error', () =>{
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
+        runtimePlatform: {
+          operatingSystemFamily: {
+            _operatingSystemFamily: 'LINUX',
+          },
+        },
+        compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+        cpu: '512',
+        memoryMiB: '512',
+      });
+
+      new ecs.ContainerDefinition(stack, 'Container', {
+        containerName: 'LINUX Machine',
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        portMappings: [{
+          containerPort: 80,
+          name: 'api',
+        }],
+      });
+
+      // THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/ECS Container LINUX Machine must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified/);
+    });
+
     test('A task definition where multiple containers have a port mapping with the same name throws an error', () =>{
       // GIVEN
       const stack = new cdk.Stack();
