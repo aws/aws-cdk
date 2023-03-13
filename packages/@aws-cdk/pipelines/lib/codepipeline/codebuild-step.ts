@@ -206,6 +206,15 @@ export class CodeBuildStep extends ShellStep {
    * @default Duration.hours(1)
    */
   readonly timeout?: Duration;
+
+  /**
+   * ProjectFileSystemLocation objects for CodeBuild build projects.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   *
+   * @default - no file system locations
+   */
   readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
 
   private _project?: codebuild.IProject;
