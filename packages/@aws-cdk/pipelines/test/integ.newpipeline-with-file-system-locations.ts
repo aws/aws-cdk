@@ -1,5 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-/// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
