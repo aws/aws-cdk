@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import * as sqs from '@aws-cdk/aws-sqs';
-import { App, Stack, StackProps, Stage, StageProps, Aws } from '@aws-cdk/core';
+import { App, Stack, StackProps, Stage, StageProps, Aws, RemovalPolicy, DefaultStackSynthesizer } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as pipelines from '../lib';
@@ -12,9 +12,11 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'Vpc', {
-      maxAzs: 1,
-      natGateways: 1,
+    const vpc = new ec2.Vpc(this, 'Vpc');
+
+    const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
     });
 
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
@@ -31,13 +33,11 @@ class TestStack extends Stack {
         },
       },
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub('aws/aws-cdk', 'v2-main'),
-        commands: [
-          'npm ci',
-          'npm run build',
-          'npx cdk synth',
-        ],
+        input: pipelines.CodePipelineSource.s3(sourceBucket, 'key'),
+        commands: ['mkdir cdk.out', 'touch cdk.out/dummy'],
       }),
+      selfMutation: false,
+      useChangeSets: false,
     });
 
     pipeline.addStage(new AppStage(this, 'Beta'));
@@ -48,15 +48,12 @@ class AppStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
-    const stack = new Stack(this, 'Stack1');
+    const stack = new Stack(this, 'Stack1', {
+      synthesizer: new DefaultStackSynthesizer(),
+    });
     new s3_assets.Asset(stack, 'Asset', {
       path: path.join(__dirname, 'testhelpers/assets/test-file-asset.txt'),
     });
-    new s3_assets.Asset(stack, 'Asset2', {
-      path: path.join(__dirname, 'testhelpers/assets/test-file-asset-two.txt'),
-    });
-
-    new sqs.Queue(stack, 'OtherQueue');
   }
 }
 
@@ -71,3 +68,5 @@ const stack = new TestStack(app, 'PipelinesFileSystemLocations');
 new IntegTest(app, 'cdk-integ-codepipeline-with-file-system-locations', {
   testCases: [stack],
 });
+
+app.synth();
