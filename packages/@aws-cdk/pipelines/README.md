@@ -751,6 +751,14 @@ new pipelines.CodeBuildStep('Synth', {
     computeType: codebuild.ComputeType.LARGE,
   },
   timeout: Duration.minutes(90),
+  fileSystemLocations: [
+    codebuild.FileSystemLocation.efs({
+      identifier: "myidentifier2",
+      location: "myclodation.mydnsroot.com:/loc",
+      mountPoint: "/media",
+      mountOptions: "opts"
+    })
+  ],
 
   // Control Elastic Network Interface creation
   vpc: vpc,
