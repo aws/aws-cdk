@@ -26,7 +26,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
         profile: request.profile,
         env: {
           AWS_REGION: request.region,
-          CDK_DOCKER: process.env.CDK_DOCKER,
+          CDK_DOCKER: process.env.CDK_DOCKER ?? 'docker',
         },
         showOutput: verbosity >= 2,
       }, testInfo.destructiveChanges);
