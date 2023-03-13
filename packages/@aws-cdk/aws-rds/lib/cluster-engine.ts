@@ -177,7 +177,7 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
     this.combineImportAndExportRoles = props.combineImportAndExportRoles;
   }
 
-  public override bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole
       ? new ParameterGroup(scope, 'ClusterParameterGroup', {
@@ -784,7 +784,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
     });
   }
 
-  public override bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     // skip validation for unversioned as it might be supported/unsupported. we cannot reliably tell at compile-time
     if (this.engineVersion?.fullVersion) {

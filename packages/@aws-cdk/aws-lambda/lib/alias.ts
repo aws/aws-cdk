@@ -201,7 +201,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     return this.version.role;
   }
 
-  public override metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
+  public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
     // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
       dimensionsMap: {

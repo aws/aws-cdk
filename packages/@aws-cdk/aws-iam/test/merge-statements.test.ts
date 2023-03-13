@@ -527,7 +527,7 @@ class LazyStatement extends iam.PolicyStatement {
     super();
   }
 
-  public override freeze() {
+  public freeze() {
     this.modifyMe(this);
     return super.freeze();
   }

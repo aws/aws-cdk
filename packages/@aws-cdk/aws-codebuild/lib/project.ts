@@ -1182,7 +1182,7 @@ export class Project extends ProjectBase {
     this.node.addValidation({ validate: () => this.validateProject() });
   }
 
-  public override enableBatchBuilds(): BatchBuildConfig | undefined {
+  public enableBatchBuilds(): BatchBuildConfig | undefined {
     if (!this._batchServiceRole) {
       this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
         assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),

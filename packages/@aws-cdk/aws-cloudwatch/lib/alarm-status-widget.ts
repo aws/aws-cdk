@@ -85,7 +85,7 @@ export class AlarmStatusWidget extends ConcreteWidget {
     this.props = props;
   }
 
-  public override position(x: number, y: number): void {
+  public position(x: number, y: number): void {
     this.x = x;
     this.y = y;
   }

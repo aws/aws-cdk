@@ -403,7 +403,7 @@ export class SecurityGroup extends SecurityGroupBase {
       public allowAllOutbound = options.allowAllOutbound ?? true;
       public allowAllIpv6Outbound = options.allowAllIpv6Outbound ?? false;
 
-      public override addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
+      public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
         // Only if allowAllOutbound has been disabled
         if (options.allowAllOutbound === false) {
           super.addEgressRule(peer, connection, description, remoteRule);
@@ -416,11 +416,11 @@ export class SecurityGroup extends SecurityGroupBase {
       public allowAllOutbound = options.allowAllOutbound ?? true;
       public allowAllIpv6Outbound = options.allowAllIpv6Outbound ?? false;
 
-      public override addEgressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
+      public addEgressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
         // do nothing
       }
 
-      public override addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
+      public addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
         // do nothing
       }
     }
@@ -528,7 +528,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.addDefaultIpv6EgressRule();
   }
 
-  public override addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
+  public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (!peer.canInlineRule || !connection.canInlineRule || this.disableInlineRules) {
       super.addIngressRule(peer, connection, description, remoteRule);
       return;
@@ -545,7 +545,7 @@ export class SecurityGroup extends SecurityGroupBase {
     });
   }
 
-  public override addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
+  public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     const isIpv6 = peer.toEgressRuleConfig().hasOwnProperty('cidrIpv6');
 
     if (!isIpv6 && this.allowAllOutbound) {

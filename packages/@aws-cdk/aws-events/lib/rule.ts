@@ -475,7 +475,7 @@ class MirrorRule extends Rule {
     super(scope, id, props);
   }
 
-  public override _renderEventPattern(): any {
+  public _renderEventPattern(): any {
     return this.source._renderEventPattern();
   }
 
@@ -486,7 +486,7 @@ class MirrorRule extends Rule {
    *
    * Instead, we mirror the other rule at render time.
    */
-  protected override validateRule(): string[] {
+  protected validateRule(): string[] {
     return [];
   }
 }

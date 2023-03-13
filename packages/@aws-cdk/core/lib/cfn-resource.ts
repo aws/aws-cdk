@@ -370,7 +370,7 @@ export class CfnResource extends CfnRefElement {
   /**
    * @returns a string representation of this resource
    */
-  public override toString() {
+  public toString() {
     return `${super.toString()} [${this.cfnResourceType}]`;
   }
 

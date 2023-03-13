@@ -11,7 +11,7 @@ const REQUIRED_ALIAS_PREFIX = 'alias/';
  * Limits the length of the alias' auto-generated name to 50 characters.
  */
 class AliasWithShorterGeneratedName extends kms.Alias {
-  protected override generatePhysicalName(): string {
+  protected generatePhysicalName(): string {
     let baseName = super.generatePhysicalName();
     if (baseName.startsWith(REQUIRED_ALIAS_PREFIX)) {
       // remove the prefix, because we're taking the last characters of the name below

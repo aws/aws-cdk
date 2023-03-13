@@ -699,7 +699,7 @@ describe('Graphs', () => {
 
   test('allows overriding custom values of dashboard widgets', () => {
     class HiddenMetric extends Metric {
-      public override toMetricConfig() {
+      public toMetricConfig() {
         const ret = super.toMetricConfig();
         // @ts-ignore
         ret.renderingProperties.visible = false;

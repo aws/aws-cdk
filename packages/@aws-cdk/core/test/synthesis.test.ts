@@ -229,7 +229,7 @@ describe('synthesis', () => {
     const calls = new Array<string>();
 
     class SynthesizeMe extends cdk.Stack {
-      public override readonly templateFile = 'hey.json';
+      public readonly templateFile = 'hey.json';
 
       constructor() {
         super(undefined as any, 'hey', {
@@ -243,7 +243,7 @@ describe('synthesis', () => {
         });
       }
 
-      public override _synthesizeTemplate(session: cdk.ISynthesisSession) {
+      public _synthesizeTemplate(session: cdk.ISynthesisSession) {
         calls.push('synthesize');
 
         session.assembly.addArtifact('art', {

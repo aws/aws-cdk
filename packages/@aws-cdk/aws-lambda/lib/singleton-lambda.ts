@@ -80,14 +80,14 @@ export class SingletonFunction extends FunctionBase {
   /**
    * @inheritdoc
    */
-  public override get isBoundToVpc(): boolean {
+  public get isBoundToVpc(): boolean {
     return this.lambdaFunction.isBoundToVpc;
   }
 
   /**
    * @inheritdoc
    */
-  public override get connections(): ec2.Connections {
+  public get connections(): ec2.Connections {
     return this.lambdaFunction.connections;
   }
 
@@ -143,7 +143,7 @@ export class SingletonFunction extends FunctionBase {
     return this.lambdaFunction.addLayers(...layers);
   }
 
-  public override addPermission(name: string, permission: Permission) {
+  public addPermission(name: string, permission: Permission) {
     return this.lambdaFunction.addPermission(name, permission);
   }
 
@@ -172,7 +172,7 @@ export class SingletonFunction extends FunctionBase {
    * Returns the construct tree node that corresponds to the lambda function.
    * @internal
    */
-  protected override _functionNode(): Node {
+  protected _functionNode(): Node {
     return this.lambdaFunction.node;
   }
 

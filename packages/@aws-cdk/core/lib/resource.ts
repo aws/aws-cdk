@@ -321,7 +321,7 @@ function mimicReference(refSource: any, producer: IStringProducer): string {
   }
 
   return Token.asString(new class extends Reference {
-    public override resolve(context: IResolveContext) {
+    public resolve(context: IResolveContext) {
       return producer.produce(context);
     }
   }(reference, reference.target, reference.displayName));

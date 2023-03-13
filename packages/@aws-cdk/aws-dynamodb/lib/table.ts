@@ -1892,7 +1892,7 @@ class SourceTableAttachedPrincipal extends iam.PrincipalBase {
     return this.role.policyFragment;
   }
 
-  public override addToPrincipalPolicy(statement: iam.PolicyStatement): iam.AddToPrincipalPolicyResult {
+  public addToPrincipalPolicy(statement: iam.PolicyStatement): iam.AddToPrincipalPolicyResult {
     this.policy.addStatements(statement);
     return {
       policyDependable: this.policy,

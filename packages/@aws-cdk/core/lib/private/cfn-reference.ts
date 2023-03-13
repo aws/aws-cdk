@@ -118,7 +118,7 @@ export class CfnReference extends Reference {
   private readonly replacementTokens: Map<Stack, IResolvable>;
   private readonly targetStack: Stack;
 
-  protected constructor(value: any, displayName: string, public override readonly target: IConstruct, typeHint?: ResolutionTypeHint) {
+  protected constructor(value: any, displayName: string, public readonly target: IConstruct, typeHint?: ResolutionTypeHint) {
     // prepend scope path to display name
     super(value, target, displayName, typeHint);
 
@@ -128,7 +128,7 @@ export class CfnReference extends Reference {
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
   }
 
-  public override resolve(context: IResolveContext): any {
+  public resolve(context: IResolveContext): any {
     // If we have a special token for this consuming stack, resolve that. Otherwise resolve as if
     // we are in the same stack.
     const consumingStack = Stack.of(context.scope);
@@ -168,7 +168,7 @@ export class CfnReference extends Reference {
   /**
    * Implementation of toString() that will use the display name
    */
-  public override toString(): string {
+  public toString(): string {
     return Token.asString(this, {
       displayHint: `${this.target.node.id}.${this.displayName}`,
     });

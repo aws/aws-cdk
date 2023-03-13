@@ -379,7 +379,7 @@ class LazyList extends LazyBase<Array<string>> {
     super(producer, cache);
   }
 
-  public override resolve(context: IResolveContext) {
+  public resolve(context: IResolveContext) {
     const resolved = super.resolve(context);
     if (resolved?.length === 0 && this.options.omitEmpty) {
       return undefined;
@@ -393,7 +393,7 @@ class LazyAny extends LazyBase<any> {
     super(producer, cache);
   }
 
-  public override resolve(context: IResolveContext) {
+  public resolve(context: IResolveContext) {
     const resolved = super.resolve(context);
     if (Array.isArray(resolved) && resolved.length === 0 && this.options.omitEmptyArray) {
       return undefined;

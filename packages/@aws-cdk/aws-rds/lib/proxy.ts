@@ -503,7 +503,7 @@ export class DatabaseProxy extends DatabaseProxyBase
     };
   }
 
-  public override grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
+  public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
       if (this.secrets.length > 1) {
         throw new Error('When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect()');

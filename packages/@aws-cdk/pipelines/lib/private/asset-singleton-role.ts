@@ -56,7 +56,7 @@ export class AssetSingletonRole extends iam.Role {
     this._rejectDuplicates = true;
   }
 
-  public override addToPrincipalPolicy(statement: PolicyStatement): iam.AddToPrincipalPolicyResult {
+  public addToPrincipalPolicy(statement: PolicyStatement): iam.AddToPrincipalPolicyResult {
     const json = statement.toStatementJson();
     const acts = JSON.stringify(json.Action);
 

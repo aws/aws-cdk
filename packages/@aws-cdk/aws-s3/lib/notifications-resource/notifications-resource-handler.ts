@@ -75,7 +75,7 @@ export class NotificationsResourceHandler extends Construct {
     class InLineLambda extends cdk.CfnResource {
       public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.STANDARD, resourceType);
 
-      protected override renderProperties(properties: any): { [key: string]: any } {
+      protected renderProperties(properties: any): { [key: string]: any } {
         properties.Tags = cdk.listMapper(cdk.cfnTagToCloudFormation)(this.tags.renderTags());
         delete properties.tags;
         return properties;

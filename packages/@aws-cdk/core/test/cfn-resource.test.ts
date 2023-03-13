@@ -243,7 +243,7 @@ describe('cfn resource', () => {
       const stack = new core.Stack(app, 'TestStack');
 
       class NoSynthResource extends core.CfnResource {
-        protected override shouldSynthesize(): boolean {
+        protected shouldSynthesize(): boolean {
           return false;
         }
       }
@@ -346,7 +346,7 @@ describe('cfn resource', () => {
   test('subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included', () => {
     // GIVEN
     class HiddenCfnResource extends core.CfnResource {
-      protected override shouldSynthesize() {
+      protected shouldSynthesize() {
         return false;
       }
     }

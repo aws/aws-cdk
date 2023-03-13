@@ -55,7 +55,7 @@ export class LambdaIntegration extends AwsIntegration {
     this.enableTest = options.allowTestInvoke ?? true;
   }
 
-  public override bind(method: Method): IntegrationConfig {
+  public bind(method: Method): IntegrationConfig {
     const bindResult = super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 

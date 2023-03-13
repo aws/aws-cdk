@@ -160,7 +160,7 @@ class FieldAwareEventInput extends RuleTargetInput {
         super(new StringConcat());
       }
 
-      public override resolveToken(t: Token, _context: IResolveContext) {
+      public resolveToken(t: Token, _context: IResolveContext) {
         if (!isEventField(t)) { return Token.asString(t); }
 
         const key = keyForField(t);

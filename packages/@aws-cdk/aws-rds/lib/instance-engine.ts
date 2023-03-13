@@ -409,7 +409,7 @@ export interface MariaDbInstanceEngineProps {
 }
 
 class MariaDbInstanceEngine extends InstanceEngineBase {
-  public override readonly supportsReadReplicaBackups = true;
+  public readonly supportsReadReplicaBackups = true;
 
   constructor(version?: MariaDbEngineVersion) {
     super({
@@ -425,7 +425,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
     });
   }
 
-  public override bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.domain) {
       throw new Error(`domain property cannot be configured for ${this.engineType}`);
     }
@@ -648,7 +648,7 @@ export interface MySqlInstanceEngineProps {
 }
 
 class MySqlInstanceEngine extends InstanceEngineBase {
-  public override readonly supportsReadReplicaBackups = true;
+  public readonly supportsReadReplicaBackups = true;
 
   constructor(version?: MysqlEngineVersion) {
     super({
@@ -1412,7 +1412,7 @@ abstract class OracleInstanceEngineBase extends InstanceEngineBase {
     });
   }
 
-  public override bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     const config = super.bindToInstance(scope, options);
 
     let optionGroup = options.optionGroup;
@@ -1762,7 +1762,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     });
   }
 
-  public override bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     const config = super.bindToInstance(scope, options);
 
     let optionGroup = options.optionGroup;
@@ -1791,7 +1791,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     };
   }
 
-  protected override get supportsTimezone() { return true; }
+  protected get supportsTimezone() { return true; }
 }
 
 /**

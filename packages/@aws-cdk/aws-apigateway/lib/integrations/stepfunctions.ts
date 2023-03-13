@@ -127,7 +127,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
     this.stateMachine = stateMachine;
   }
 
-  public override bind(method: Method): IntegrationConfig {
+  public bind(method: Method): IntegrationConfig {
     const bindResult = super.bind(method);
 
     const credentialsRole = bindResult.options?.credentialsRole ?? new iam.Role(method, 'StartSyncExecutionRole', {

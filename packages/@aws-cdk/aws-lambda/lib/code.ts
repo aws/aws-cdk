@@ -296,7 +296,7 @@ export class AssetCode extends Code {
     };
   }
 
-  public override bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
+  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
       throw new Error('bindToResource() must be called after bind()');
     }
@@ -546,7 +546,7 @@ export class AssetImageCode extends Code {
     };
   }
 
-  public override bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
+  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
       throw new Error('bindToResource() must be called after bind()');
     }

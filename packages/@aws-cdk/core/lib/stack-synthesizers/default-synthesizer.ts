@@ -339,11 +339,11 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   /**
    * The qualifier used to bootstrap this stack
    */
-  public override get bootstrapQualifier(): string | undefined {
+  public get bootstrapQualifier(): string | undefined {
     return this.qualifier;
   }
 
-  public override bind(stack: Stack): void {
+  public bind(stack: Stack): void {
     super.bind(stack);
 
     const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
@@ -396,7 +396,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   /**
    * Synthesize the stack template to the given session, passing the configured lookup role ARN
    */
-  protected override synthesizeStackTemplate(stack: Stack, session: ISynthesisSession) {
+  protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession) {
     stack._synthesizeTemplate(session, this.lookupRoleArn);
   }
 

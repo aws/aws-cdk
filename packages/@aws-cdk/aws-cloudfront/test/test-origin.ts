@@ -4,7 +4,7 @@ import { CfnDistribution, IOrigin, OriginBase, OriginBindConfig, OriginBindOptio
 /** Used for testing common Origin functionality */
 export class TestOrigin extends OriginBase {
   constructor(domainName: string, props: OriginProps = {}) { super(domainName, props); }
-  protected override renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
+  protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
     return { originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY };
   }
 }

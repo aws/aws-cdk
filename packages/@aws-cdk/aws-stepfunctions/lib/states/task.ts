@@ -266,7 +266,7 @@ export class Task extends State implements INextable {
     return this.taskMetric(this.taskProps.metricPrefixPlural, 'HeartbeatTimedOut', props);
   }
 
-  protected override whenBoundToGraph(graph: StateGraph) {
+  protected whenBoundToGraph(graph: StateGraph) {
     super.whenBoundToGraph(graph);
     for (const policyStatement of this.taskProps.policyStatements || []) {
       graph.registerPolicyStatement(policyStatement);

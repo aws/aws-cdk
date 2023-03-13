@@ -1495,7 +1495,7 @@ describe('stack', () => {
 
     // WHEN
     class CfnTest extends CfnResource {
-      public override _toCloudFormation() {
+      public _toCloudFormation() {
         return new PostResolveToken({
           xoo: 1234,
         }, props => {
@@ -2237,7 +2237,7 @@ class StackWithPostProcessor extends Stack {
 
   // ...
 
-  public override _toCloudFormation() {
+  public _toCloudFormation() {
     const template = super._toCloudFormation();
 
     // manipulate template (e.g. rename "Key" to "key")

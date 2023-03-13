@@ -62,7 +62,7 @@ export class PrecreatedRole extends Resource implements IRole {
   public readonly principalAccount?: string;
   public readonly roleArn: string;
   public readonly roleName: string;
-  public override readonly stack: Stack;
+  public readonly stack: Stack;
 
   private readonly policySynthesizer: PolicySynthesizer;
   private readonly policyStatements: string[] = [];

@@ -696,7 +696,7 @@ export class InitPackage extends InitElement {
   public static msi(location: string, options: LocationPackageOptions = {}): InitPackage {
     // The MSI package version must be a string, not an array.
     return new class extends InitPackage {
-      protected override renderPackageVersions() { return location; }
+      protected renderPackageVersions() { return location; }
     }('msi', [location], options.key, options.serviceRestartHandles);
   }
 

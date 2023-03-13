@@ -630,7 +630,7 @@ export class GraphqlApi extends GraphqlApiBase {
    *
    * @param construct the dependee
    */
-  public override addSchemaDependency(construct: CfnResource): boolean {
+  public addSchemaDependency(construct: CfnResource): boolean {
     construct.addDependency(this.schemaResource);
     return true;
   }

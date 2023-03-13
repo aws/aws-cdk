@@ -66,7 +66,7 @@ class AvailabilityZoneSubnetFilter extends SubnetFilter {
   /**
    * Executes the subnet filtering logic.
    */
-  public override selectSubnets(subnets: ISubnet[]): ISubnet[] {
+  public selectSubnets(subnets: ISubnet[]): ISubnet[] {
     return subnets.filter(s => this.availabilityZones.includes(s.availabilityZone));
   }
 }
@@ -83,7 +83,7 @@ class OnePerAZSubnetFilter extends SubnetFilter {
   /**
    * Executes the subnet filtering logic.
    */
-  public override selectSubnets(subnets: ISubnet[]): ISubnet[] {
+  public selectSubnets(subnets: ISubnet[]): ISubnet[] {
     return this.retainOnePerAz(subnets);
   }
 
@@ -112,7 +112,7 @@ class ContainsIpAddressesSubnetFilter extends SubnetFilter {
   /**
    * Executes the subnet filtering logic.
    */
-  public override selectSubnets(subnets: ISubnet[]): ISubnet[] {
+  public selectSubnets(subnets: ISubnet[]): ISubnet[] {
     return this.retainByIp(subnets, this.ipAddresses);
   }
 
@@ -143,7 +143,7 @@ class SubnetIdSubnetFilter extends SubnetFilter {
   /**
    * Executes the subnet filtering logic.
    */
-  public override selectSubnets(subnets: ISubnet[]): ISubnet[] {
+  public selectSubnets(subnets: ISubnet[]): ISubnet[] {
     return subnets.filter(subnet => this.subnetIds.includes(subnet.subnetId));
   }
 }
@@ -162,7 +162,7 @@ class CidrMaskSubnetFilter extends SubnetFilter {
   /**
    * Executes the subnet filtering logic.
    */
-  public override selectSubnets(subnets: ISubnet[]): ISubnet[] {
+  public selectSubnets(subnets: ISubnet[]): ISubnet[] {
     return subnets.filter(subnet => {
       const subnetCidr = new CidrBlock(subnet.ipv4CidrBlock);
       return subnetCidr.mask === this.mask;

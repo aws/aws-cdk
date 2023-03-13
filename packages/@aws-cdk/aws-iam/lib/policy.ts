@@ -145,7 +145,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
        * the cloudformation template unless `force` is `true`, if the policy
        * document is empty, the resource will not be included.
        */
-      protected override shouldSynthesize() {
+      protected shouldSynthesize() {
         return self.force || self.referenceTaken || (!self.document.isEmpty && self.isAttached);
       }
     }

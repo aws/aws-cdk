@@ -131,7 +131,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   }
 
   // tells `PipelineGraph` to hoist a "Source" step
-  public override readonly isSource = true;
+  public readonly isSource = true;
 
   public produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const output = options.artifacts.toCodePipeline(this.primaryOutput!);

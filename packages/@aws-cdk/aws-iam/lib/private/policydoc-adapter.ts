@@ -9,7 +9,7 @@ export class MutatingPolicyDocumentAdapter extends PolicyDocument {
     super();
   }
 
-  public override addStatements(...statements: PolicyStatement[]): void {
+  public addStatements(...statements: PolicyStatement[]): void {
     for (const st of statements) {
       this.wrapped.addStatements(this.mutator(st));
     }

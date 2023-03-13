@@ -65,7 +65,7 @@ export class BucketPolicy extends Resource {
     }
 
     const ret = new class extends BucketPolicy {
-      public override readonly document = PolicyDocument.fromJson(cfnBucketPolicy.policyDocument);
+      public readonly document = PolicyDocument.fromJson(cfnBucketPolicy.policyDocument);
     }(cfnBucketPolicy, id, {
       bucket,
     });
@@ -105,7 +105,7 @@ export class BucketPolicy extends Resource {
    * Sets the removal policy for the BucketPolicy.
    * @param removalPolicy the RemovalPolicy to set.
    */
-  public override applyRemovalPolicy(removalPolicy: RemovalPolicy) {
+  public applyRemovalPolicy(removalPolicy: RemovalPolicy) {
     this.resource.applyRemovalPolicy(removalPolicy);
   }
 }

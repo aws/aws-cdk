@@ -140,7 +140,7 @@ class S3Artifacts extends Artifacts {
     super(props);
   }
 
-  public override bind(_scope: Construct, project: IProject): ArtifactsConfig {
+  public bind(_scope: Construct, project: IProject): ArtifactsConfig {
     this.props.bucket.grantReadWrite(project);
     const superConfig = super.bind(_scope, project);
     return {

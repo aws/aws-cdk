@@ -131,7 +131,7 @@ class SomeToken {
 }
 
 class Nested extends Stack {
-  public override readonly nestedStackResource?: CfnResource;
+  public readonly nestedStackResource?: CfnResource;
   constructor(scope: Construct, id: string) {
     const resource = new CfnResource(scope, `${id}+NestedStackResource`, { type: 'AWS::CloudFormation::Stack' });
     super(scope, id);

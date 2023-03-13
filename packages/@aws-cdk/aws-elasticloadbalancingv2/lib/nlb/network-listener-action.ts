@@ -148,7 +148,7 @@ class TargetGroupListenerAction extends NetworkListenerAction {
     super(actionJson);
   }
 
-  public override bind(_scope: Construct, listener: INetworkListener) {
+  public bind(_scope: Construct, listener: INetworkListener) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener);
     }

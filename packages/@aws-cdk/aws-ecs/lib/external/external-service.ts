@@ -141,21 +141,21 @@ export class ExternalService extends BaseService implements IExternalService {
   /**
    * Overriden method to throw error as `attachToApplicationTargetGroup` is not supported for external service
    */
-  public override attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     throw new Error ('Application load balancer cannot be attached to an external service');
   }
 
   /**
    * Overriden method to throw error as `loadBalancerTarget` is not supported for external service
    */
-  public override loadBalancerTarget(_options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
+  public loadBalancerTarget(_options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
     throw new Error ('External service cannot be attached as load balancer targets');
   }
 
   /**
    * Overriden method to throw error as `registerLoadBalancerTargets` is not supported for external service
    */
-  public override registerLoadBalancerTargets(..._targets: EcsTarget[]) {
+  public registerLoadBalancerTargets(..._targets: EcsTarget[]) {
     throw new Error ('External service cannot be registered as load balancer targets');
   }
 
@@ -163,28 +163,28 @@ export class ExternalService extends BaseService implements IExternalService {
    * Overriden method to throw error as `configureAwsVpcNetworkingWithSecurityGroups` is not supported for external service
    */
   // eslint-disable-next-line max-len, no-unused-vars
-  protected override configureAwsVpcNetworkingWithSecurityGroups(_vpc: ec2.IVpc, _assignPublicIp?: boolean, _vpcSubnets?: ec2.SubnetSelection, _securityGroups?: ec2.ISecurityGroup[]) {
+  protected configureAwsVpcNetworkingWithSecurityGroups(_vpc: ec2.IVpc, _assignPublicIp?: boolean, _vpcSubnets?: ec2.SubnetSelection, _securityGroups?: ec2.ISecurityGroup[]) {
     throw new Error ('Only Bridge network mode is supported for external service');
   }
 
   /**
    * Overriden method to throw error as `autoScaleTaskCount` is not supported for external service
    */
-  public override autoScaleTaskCount(_props: appscaling.EnableScalingProps): ScalableTaskCount {
+  public autoScaleTaskCount(_props: appscaling.EnableScalingProps): ScalableTaskCount {
     throw new Error ('Autoscaling not supported for external service');
   }
 
   /**
    * Overriden method to throw error as `enableCloudMap` is not supported for external service
    */
-  public override enableCloudMap(_options: CloudMapOptions): cloudmap.Service {
+  public enableCloudMap(_options: CloudMapOptions): cloudmap.Service {
     throw new Error ('Cloud map integration not supported for an external service');
   }
 
   /**
    * Overriden method to throw error as `associateCloudMapService` is not supported for external service
    */
-  public override associateCloudMapService(_options: AssociateCloudMapServiceOptions): void {
+  public associateCloudMapService(_options: AssociateCloudMapServiceOptions): void {
     throw new Error ('Cloud map service association is not supported for an external service');
   }
 }

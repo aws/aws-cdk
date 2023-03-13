@@ -208,7 +208,7 @@ describe('logical id', () => {
 
   test('customize logical id allocation behavior by overriding `Stack.allocateLogicalId`', () => {
     class MyStack extends Stack {
-      protected override allocateLogicalId(element: CfnElement): string {
+      protected allocateLogicalId(element: CfnElement): string {
         if (element.node.id === 'A') { return 'LogicalIdOfA'; }
         if (element.node.id === 'B') { return 'LogicalIdOfB'; }
         throw new Error('Invalid element ID');

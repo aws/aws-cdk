@@ -692,7 +692,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
    */
   protected abstract readonly qualifier: string;
 
-  public override get latestVersion() {
+  public get latestVersion() {
     return this.lambda.latestVersion;
   }
 
@@ -700,7 +700,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     return [this.functionArn];
   }
 
-  public override configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+  public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
     if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
       throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`);
     }
@@ -712,7 +712,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     });
   }
 
-  public override considerWarningOnInvokeFunctionPermissions(_scope: Construct, _action: string): void {
+  public considerWarningOnInvokeFunctionPermissions(_scope: Construct, _action: string): void {
     // noOp
     return;
   }
@@ -749,7 +749,7 @@ class LatestVersion extends FunctionBase implements IVersion {
     return this.lambda.grantPrincipal;
   }
 
-  public override get latestVersion() {
+  public get latestVersion() {
     return this;
   }
 

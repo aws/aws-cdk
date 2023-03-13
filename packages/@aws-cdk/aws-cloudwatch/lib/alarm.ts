@@ -234,7 +234,7 @@ export class Alarm extends AlarmBase {
    *
    * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
    */
-  public override addAlarmAction(...actions: IAlarmAction[]) {
+  public addAlarmAction(...actions: IAlarmAction[]) {
     if (this.alarmActionArns === undefined) {
       this.alarmActionArns = [];
     }

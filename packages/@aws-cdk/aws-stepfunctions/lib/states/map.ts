@@ -184,7 +184,7 @@ export class Map extends State implements INextable {
   /**
    * Validate this state
    */
-  protected override validateState(): string[] {
+  protected validateState(): string[] {
     const errors: string[] = [];
 
     if (this.iteration === undefined) {

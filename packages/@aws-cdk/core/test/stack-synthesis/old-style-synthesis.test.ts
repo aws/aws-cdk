@@ -5,7 +5,7 @@ test('overridden method on stack gets called', () => {
   let called = false;
 
   class MyStack extends Stack {
-    public override addFileAsset(asset: FileAssetSource) {
+    public addFileAsset(asset: FileAssetSource) {
       called = true;
       return super.addFileAsset(asset);
     }

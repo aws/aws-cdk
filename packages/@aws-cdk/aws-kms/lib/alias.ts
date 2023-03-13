@@ -207,7 +207,7 @@ export class Alias extends AliasBase {
     }
   }
 
-  protected override generatePhysicalName(): string {
+  protected generatePhysicalName(): string {
     return REQUIRED_ALIAS_PREFIX + super.generatePhysicalName();
   }
 }

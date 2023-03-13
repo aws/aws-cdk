@@ -325,7 +325,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     }
   }
 
-  public override addVpc(_vpc: ec2.IVpc) {
+  public addVpc(_vpc: ec2.IVpc) {
     throw new Error('Cannot associate public hosted zones with a VPC');
   }
 

@@ -553,7 +553,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     return this.metrics.targetTLSNegotiationErrorCount(props);
   }
 
-  protected override validateTargetGroup(): string[] {
+  protected validateTargetGroup(): string[] {
     const ret = super.validateTargetGroup();
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA

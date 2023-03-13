@@ -217,7 +217,7 @@ export class SecretValue extends Intrinsic {
    * If the feature flag is not set, resolve as normal. Otherwise, throw a descriptive
    * error that the usage guard is missing.
    */
-  public override resolve(context: IResolveContext) {
+  public resolve(context: IResolveContext) {
     if (FeatureFlags.of(context.scope).isEnabled(CHECK_SECRET_USAGE)) {
       throw new Error(
         `Synthing a secret value to ${context.documentPath.join('/')}. Using a SecretValue here risks exposing your secret. Only pass SecretValues to constructs that accept a SecretValue property, or call AWS Secrets Manager directly in your runtime code. Call 'secretValue.unsafeUnwrap()' if you understand and accept the risks.`,

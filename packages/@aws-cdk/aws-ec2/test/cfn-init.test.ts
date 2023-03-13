@@ -669,7 +669,7 @@ function escapeRegex(s: string) {
 
 /** Creates file assets that have a hard-coded asset url, rather than the default based on asset hash */
 class SingletonLocationSythesizer extends DefaultStackSynthesizer {
-  public override addFileAsset(_asset: FileAssetSource): FileAssetLocation {
+  public addFileAsset(_asset: FileAssetSource): FileAssetLocation {
     const httpUrl = 'https://MyBucket.s3.amazonaws.com/MyAsset';
     return {
       bucketName: 'myassetbucket',

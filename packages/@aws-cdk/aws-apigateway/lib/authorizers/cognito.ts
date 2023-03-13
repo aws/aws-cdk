@@ -61,7 +61,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
   /**
    * The authorization type of this authorizer.
    */
-  public override readonly authorizationType?: AuthorizationType;
+  public readonly authorizationType?: AuthorizationType;
 
   private restApiId?: string;
 

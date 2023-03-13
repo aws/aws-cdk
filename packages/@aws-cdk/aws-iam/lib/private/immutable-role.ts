@@ -27,7 +27,7 @@ export class ImmutableRole extends Resource implements IRole {
   public readonly principalAccount = this.role.principalAccount;
   public readonly roleArn = this.role.roleArn;
   public readonly roleName = this.role.roleName;
-  public override readonly stack = this.role.stack;
+  public readonly stack = this.role.stack;
 
   constructor(scope: Construct, id: string, private readonly role: IRole, private readonly addGrantsToResources: boolean) {
     super(scope, id, {

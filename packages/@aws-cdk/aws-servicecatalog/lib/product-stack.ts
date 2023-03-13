@@ -28,7 +28,7 @@ export interface ProductStackProps {
  *
  */
 export class ProductStack extends cdk.Stack {
-  public override readonly templateFile: string;
+  public readonly templateFile: string;
   private _parentProductStackHistory?: ProductStackHistory;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
@@ -92,7 +92,7 @@ export class ProductStack extends cdk.Stack {
    *
    * @internal
    */
-  public override _synthesizeTemplate(session: cdk.ISynthesisSession): void {
+  public _synthesizeTemplate(session: cdk.ISynthesisSession): void {
     const cfn = JSON.stringify(this._toCloudFormation(), undefined, 2);
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 

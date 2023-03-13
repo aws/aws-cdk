@@ -120,11 +120,11 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer implements 
   /**
    * The qualifier used to bootstrap this stack
    */
-  public override get bootstrapQualifier(): string | undefined {
+  public get bootstrapQualifier(): string | undefined {
     return this.qualifier;
   }
 
-  public override bind(stack: Stack): void {
+  public bind(stack: Stack): void {
     super.bind(stack);
 
     const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;

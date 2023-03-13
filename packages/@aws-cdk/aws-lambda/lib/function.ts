@@ -514,7 +514,7 @@ export class Function extends FunctionBase {
       public readonly resourceArnsForGrantInvoke = [this.functionArn, `${this.functionArn}:*`];
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
-      protected override readonly _skipPermissions = attrs.skipPermissions ?? false;
+      protected readonly _skipPermissions = attrs.skipPermissions ?? false;
 
       constructor(s: Construct, i: string) {
         super(s, i, {

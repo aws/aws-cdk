@@ -359,7 +359,7 @@ export class DockerImage extends BundlingDockerImage {
   }
 
   /** The Docker image */
-  public override readonly image: string;
+  public readonly image: string;
 
   constructor(image: string, _imageHash?: string) {
     // It is preferrable for the deprecated class to inherit a non-deprecated class.
@@ -378,7 +378,7 @@ export class DockerImage extends BundlingDockerImage {
    *
    * @return The overridden image name if set or image hash name in that order
    */
-  public override toJSON() {
+  public toJSON() {
     // It is preferrable for the deprecated class to inherit a non-deprecated class.
     // However, in this case, the opposite has occurred which is incompatible with
     // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
@@ -393,7 +393,7 @@ export class DockerImage extends BundlingDockerImage {
   /**
    * Runs a Docker image
    */
-  public override run(options: DockerRunOptions = {}) {
+  public run(options: DockerRunOptions = {}) {
     // It is preferrable for the deprecated class to inherit a non-deprecated class.
     // However, in this case, the opposite has occurred which is incompatible with
     // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
@@ -414,7 +414,7 @@ export class DockerImage extends BundlingDockerImage {
    * @param outputPath the destination path for the copy operation
    * @returns the destination path
    */
-  public override cp(imagePath: string, outputPath?: string): string {
+  public cp(imagePath: string, outputPath?: string): string {
     // It is preferrable for the deprecated class to inherit a non-deprecated class.
     // However, in this case, the opposite has occurred which is incompatible with
     // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
