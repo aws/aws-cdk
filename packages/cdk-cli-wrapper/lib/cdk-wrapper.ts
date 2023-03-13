@@ -70,6 +70,18 @@ export interface SynthFastOptions {
 }
 
 /**
+ * @deprecated Use raw property bags instead (object literals, `Map<String,Object>`, etc... )
+ */
+export interface Environment {
+  /**
+   * This index signature is not usable in non-TypeScript/JavaScript languages.
+   *
+   * @jsii ignore
+   */
+  [key: string]: string | undefined
+}
+
+/**
  * AWS CDK client that provides an API to programatically execute the CDK CLI
  * by wrapping calls to exec the CLI
  */

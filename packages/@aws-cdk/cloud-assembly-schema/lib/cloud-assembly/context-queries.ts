@@ -491,9 +491,11 @@ export interface PluginContextQuery {
   readonly pluginName: string;
 
   /**
-   * Arbitrary other arguments for the plugin
+   * Arbitrary other arguments for the plugin.
    *
-   * @internal
+   * This index signature is not usable in non-TypeScript/JavaScript languages.
+   *
+   * @jsii ignore
    */
   [key: string]: any;
 }

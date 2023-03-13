@@ -33,6 +33,21 @@ export enum MetricsLevel {
 }
 
 /**
+ * Interface for building AWS::KinesisAnalyticsV2::Application PropertyGroup
+ * configuration.
+ *
+ * @deprecated Use raw property bags instead (object literals, `Map<String,Object>`, etc... )
+ */
+export interface PropertyGroups {
+  /**
+   * This index signature is not usable in non-TypeScript/JavaScript languages.
+   *
+   * @jsii ignore
+   */
+  readonly [propertyId: string]: { [mapKey: string]: string };
+}
+
+/**
  * Available Flink runtimes for Kinesis Analytics.
  */
 export class Runtime {

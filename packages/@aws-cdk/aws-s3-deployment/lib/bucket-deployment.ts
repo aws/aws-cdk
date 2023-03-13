@@ -755,3 +755,22 @@ export class Expires {
     public readonly value: any,
   ) { }
 }
+
+/**
+ * Custom user defined metadata.
+ *
+ * @deprecated Use raw property bags instead (object literals, `Map<String,Object>`, etc... )
+ */
+export interface UserDefinedObjectMetadata {
+  /**
+   * Arbitrary metadata key-values
+   * The `x-amz-meta-` prefix will automatically be added to keys.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
+   *
+   * This index signature is not usable in non-TypeScript/JavaScript languages.
+   *
+   * @jsii ignore
+   */
+  readonly [key: string]: string;
+}

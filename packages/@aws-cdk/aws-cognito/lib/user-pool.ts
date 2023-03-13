@@ -173,9 +173,11 @@ export interface UserPoolTriggers {
   readonly customSmsSender?: lambda.IFunction
 
   /**
-   * Index signature
+   * Index signature.
    *
-   * @internal
+   * This index signature is not usable in non-TypeScript/JavaScript languages.
+   *
+   * @jsii ignore
    */
   [trigger: string]: lambda.IFunction | undefined;
 }
