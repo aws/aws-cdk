@@ -115,7 +115,8 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kinesisanalytics-flink.ApplicationProps"
+      "props-physical-name:@aws-cdk/aws-kinesisanalytics-flink.ApplicationProps",
+      "no-unused-type:@aws-cdk/aws-kinesisanalytics-flink.PropertyGroups"
     ]
   },
   "stability": "experimental",
