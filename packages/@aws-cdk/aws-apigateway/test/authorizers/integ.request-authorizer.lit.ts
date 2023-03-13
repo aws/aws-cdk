@@ -1,9 +1,7 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-import { MockIntegration, PassthroughBehavior, RestApi } from '../../lib';
-import { RequestAuthorizer } from '../../lib/authorizers';
-import { IdentitySource } from '../../lib/authorizers/identity-source';
+import { MockIntegration, PassthroughBehavior, RestApi, RequestAuthorizer, IdentitySource } from '../../lib';
 
 // Against the RestApi endpoint from the stack output, run
 // `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401

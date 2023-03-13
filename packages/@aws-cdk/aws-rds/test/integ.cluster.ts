@@ -1,4 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Credentials, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
@@ -31,5 +32,21 @@ const cluster = new DatabaseCluster(stack, 'Database', {
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+
+const role = new iam.Role(stack, 'ClusterIamAccess', {
+  assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+});
+const clusterIamAuthArn = stack.formatArn({
+  service: 'rds-db',
+  resource: `dbuser:${cluster.clusterResourceIdentifier}`,
+  resourceName: 'db_user',
+});
+role.addToPolicy(
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    actions: ['rds-db:connect'],
+    resources: [clusterIamAuthArn],
+  }),
+);
 
 app.synth();

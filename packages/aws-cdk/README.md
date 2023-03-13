@@ -757,8 +757,11 @@ Some of the interesting keys that can be used in the JSON configuration files:
         "key": "value"
     },
     "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
-    "toolkitBucketName": "fooBucket", // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
-    "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
+    "toolkitBucket": {
+        "bucketName": "fooBucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
+        "kmsKeyId": "fooKMSKey"       // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
+    },
+    "versionReporting": false,        // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
 
