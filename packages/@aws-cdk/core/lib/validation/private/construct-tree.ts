@@ -18,7 +18,7 @@ export interface ConstructTrace {
   readonly path: string;
   /**
    * The construct trace for the next construct
-   * in the tree
+   * in the trace tree
    *
    * @default - undefined if this is the last construct in the tree
    */

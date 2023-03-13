@@ -1,4 +1,5 @@
 import { ConstructTree, ConstructTrace } from './construct-tree';
+import { CfnResource } from '../../cfn-resource';
 import { Node } from '../../private/tree-metadata';
 
 const STARTER_LINE = '└── ';
@@ -71,12 +72,21 @@ export class ReportTrace {
    * but the stack trace will have entries for all types of parent construct
    * scopes
    */
-  private getTraceMetadata(node?: Node): string[] {
+  private getTraceMetadata(size: number, node?: Node): string[] {
     if (node) {
       const construct = this.tree.getConstructByPath(node.path);
       if (construct) {
-        const trace = construct.node.defaultChild?.node.metadata.find(meta => !!meta.trace)?.trace ?? [];
-        return Object.create(trace);
+        let trace;
+        if (CfnResource.isCfnResource(construct)) {
+          trace = construct.node.metadata.find(meta => !!meta.trace)?.trace ?? [];
+        } else {
+          trace = construct.node.defaultChild?.node.metadata.find(meta => !!meta.trace)?.trace ?? [];
+        }
+        // the top item is never pointing to anything relevant
+        trace.shift();
+        // take just the items we need and reverse it since we are
+        // displaying to trace bottom up
+        return Object.create(trace.slice(0, size).reverse());
       }
     }
     return [];
@@ -93,18 +103,20 @@ export class ReportTrace {
     }
 
     const size = this.nodeSize(node);
-    const metadata = (locations ?? this.getTraceMetadata(node)).slice(0, size-1);
-
+    const metadata = (locations ?? this.getTraceMetadata(size, node));
     const thisLocation = metadata.pop();
+
     const constructTrace: ConstructTrace = {
       id: node.id,
       path: node.path,
-      child: node.children
-        ? this.getConstructTrace(this.getChild(node.children), metadata)
+      // the "child" trace will be the "parent" node
+      // since we are going bottom up
+      child: node.parent
+        ? this.getConstructTrace(node.parent, metadata)
         : undefined,
       library: node.constructInfo?.fqn,
       libraryVersion: node.constructInfo?.version,
-      location: thisLocation,
+      location: thisLocation ?? "Run with '--debug' to include location info",
     };
     this.tree.setTraceCache(constructTrace.path, constructTrace);
     return constructTrace;
@@ -115,21 +127,17 @@ export class ReportTrace {
    */
   private nodeSize(node: Node): number {
     let size = 1;
-    if (!node.children) {
+    if (!node.parent) {
       return size;
     }
-    let children: Node | undefined = this.getChild(node.children!);
+    let parent: Node | undefined = node.parent;
     do {
       size++;
-      children = children.children
-        ? this.getChild(children.children!)
+      parent = parent?.parent
+        ? parent.parent
         : undefined;
-    } while (children);
+    } while (parent);
 
     return size;
-  }
-
-  private getChild(children: { [key: string]: Node }): Node {
-    return Object.values(children)[0];
   }
 }
