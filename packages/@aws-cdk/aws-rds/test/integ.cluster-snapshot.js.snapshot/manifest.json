@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "cdk-integ-cluster-snapshot.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/58fc394d5f5f45f41e0b793cb553bcba2bb2899eec75a6b2e00e1df08ad19eff.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f52756563b89062acac165275c62a93cfda25f7fa3aed987a65809db27bc37a5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -363,10 +363,10 @@
             "data": "FromSnapshotSnapshotSecretAttachmentRotationSchedule102BDEB3"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/Policy/Resource": [
+        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSnapshotSecretAttachmentPolicy3136FEC0"
+            "data": "FromSnapshotSnapshotSecretPolicyA5C332BE"
           }
         ],
         "/cdk-integ-cluster-snapshot/FromSnapshot/Resource": [
@@ -415,6 +415,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "FromSnapshotSnapshotSecretAttachmentPolicy3136FEC0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSnapshotSecretAttachmentPolicy3136FEC0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

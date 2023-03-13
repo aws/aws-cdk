@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "test-apigateway-spec-restapi": {
         "id": "test-apigateway-spec-restapi",
         "path": "test-apigateway-spec-restapi",
@@ -59,6 +51,7 @@
                       "key": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml"
                     },
                     "disableExecuteApiEndpoint": true,
+                    "minimumCompressionSize": 1024,
                     "name": "my-api"
                   }
                 },
@@ -763,6 +756,14 @@
                 "id": "CloudWatchRole",
                 "path": "test-apigateway-spec-restapi/my-api/CloudWatchRole",
                 "children": {
+                  "ImportCloudWatchRole": {
+                    "id": "ImportCloudWatchRole",
+                    "path": "test-apigateway-spec-restapi/my-api/CloudWatchRole/ImportCloudWatchRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "test-apigateway-spec-restapi/my-api/CloudWatchRole/Resource",
@@ -870,7 +871,7 @@
                         "cacheClusterEnabled": true,
                         "cacheClusterSize": "0.5",
                         "deploymentId": {
-                          "Ref": "myapiDeployment92F2CB49e2ce3595b92ff44fad021c2e55149db1"
+                          "Ref": "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0"
                         },
                         "description": "beta stage",
                         "methodSettings": [
@@ -1025,6 +1026,14 @@
                 "id": "ServiceRole",
                 "path": "test-apigateway-spec-restapi/MyHandler/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "test-apigateway-spec-restapi/MyHandler/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "test-apigateway-spec-restapi/MyHandler/ServiceRole/Resource",
@@ -1099,6 +1108,22 @@
               "fqn": "@aws-cdk/aws-lambda.Function",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "test-apigateway-spec-restapi/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "test-apigateway-spec-restapi/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -1119,12 +1144,30 @@
                 "path": "apigateway-spec-restapi/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.249"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "apigateway-spec-restapi/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "apigateway-spec-restapi/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "apigateway-spec-restapi/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -1140,6 +1183,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.249"
         }
       }
     },

@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "30.1.0",
   "testCases": {
-    "integ.bucket-grantdelete-kms": {
+    "cdk-integ-s3-grant-delete-kms/DefaultTest": {
       "stacks": [
         "aws-cdk-s3"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-integ-s3-grant-delete-kms/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegs3grantdeletekmsDefaultTestDeployAssertEC0923BA"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
