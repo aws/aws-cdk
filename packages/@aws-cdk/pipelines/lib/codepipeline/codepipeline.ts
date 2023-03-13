@@ -313,6 +313,7 @@ export interface CodeBuildOptions {
    *
    * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
    * and type of a file system created using Amazon Elastic File System.
+   * Requires a vpc to be set and privileged to be set to true.
    *
    * @default - no file system locations
    */
