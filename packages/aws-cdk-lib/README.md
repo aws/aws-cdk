@@ -1314,6 +1314,10 @@ generated CloudFormation template against your policies immediately after
 synthesis. If there are any violations, the synthesis will fail and a report
 will be printed to the console.
 
+> **Note**
+> This feature is considered experimental, and both the plugin API and the
+> format of the validation report are subject to change in the future.
+
 ### For application developers
 
 To use one or more validation plugins in your application, use the
@@ -1347,11 +1351,12 @@ validation.
 > secure to use.
 
 By default, the report will be printed in a human readable format. If you want a
-report in JSON format, use the `synth()` method:
+report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
+via the CLI or passing it directly to the application:
 
 ```ts
-app.synth({
-  validationReportFormat: ValidationFormat.JSON
+const app = new App({ 
+  context: { '@aws-cdk/core:validationReportJson': true }, 
 });
 ```
 
@@ -1390,9 +1395,8 @@ validate(context: ValidationContext): ValidationReport {
 }
 ```
 
-> **Note**
-> Plugins are not allowed to modify anything in the cloud assembly. Any attempt
-> to do so will result in synthesis failure.
+Note that plugins are not allowed to modify anything in the cloud assembly. Any
+attempt to do so will result in synthesis failure.
 
 If your plugin depends on an external tool, keep in mind that some developers may
 not have that tool installed in their workstations yet. To minimize friction, we
