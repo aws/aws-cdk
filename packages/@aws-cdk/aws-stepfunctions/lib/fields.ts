@@ -1,4 +1,4 @@
-import { Token, IResolvable } from '@aws-cdk/core';
+import { Token, IResolvable, JsonNull } from '@aws-cdk/core';
 import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject, renderInExpression, jsonPathFromAny } from './private/json-path';
 
 /**
@@ -9,9 +9,9 @@ import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject, rende
  */
 export class JsonPath {
   /**
-   * Special string value to discard state input, output or result
+   * Special string value to discard state input, output or result.
    */
-  public static readonly DISCARD = 'DISCARD';
+  public static readonly DISCARD = Token.asString(JsonNull.INSTANCE, { displayHint: 'DISCARD (JSON `null`)' });
 
   /**
    * Instead of using a literal string, get the value from a JSON path
