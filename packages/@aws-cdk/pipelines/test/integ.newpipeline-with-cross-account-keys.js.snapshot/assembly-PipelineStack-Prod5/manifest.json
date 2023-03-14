@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "PipelineStackProd5Stack1E7E4E4C6.assets": {
       "type": "cdk:asset-manifest",
