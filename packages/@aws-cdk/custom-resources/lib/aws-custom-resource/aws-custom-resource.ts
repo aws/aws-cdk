@@ -86,7 +86,8 @@ export interface AwsSdkCall {
 
   /**
    * The physical resource id of the custom resource for this call.
-   * Mandatory for onCreate or onUpdate calls.
+   * Mandatory for onCreate call.
+   * In onUpdate, you can omit this to passthrough it from request.
    *
    * @default - no physical resource id
    */
@@ -384,10 +385,12 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       throw new Error('At least one of `policy` or `role` (or both) must be specified.');
     }
 
-    for (const call of [props.onCreate, props.onUpdate]) {
-      if (call && !call.physicalResourceId) {
-        throw new Error('`physicalResourceId` must be specified for onCreate and onUpdate calls.');
-      }
+    if (props.onCreate && !props.onCreate.physicalResourceId) {
+      throw new Error("'physicalResourceId' must be specified for 'onCreate' call.");
+    }
+
+    if (!props.onCreate && props.onUpdate && !props.onUpdate.physicalResourceId) {
+      throw new Error("'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted.");
     }
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {

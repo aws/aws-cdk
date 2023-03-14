@@ -183,6 +183,13 @@ export interface DatabaseClusterProps {
     * @default - a new role is created.
     */
   readonly cloudWatchLogsRetentionRole?: IRole;
+
+  /**
+   * A value that indicates whether to enable Performance Insights for the instances in the DB Cluster.
+   *
+   * @default - false
+   */
+  readonly enablePerformanceInsights?: boolean;
 }
 
 /**
@@ -509,6 +516,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
         dbInstanceClass: databaseInstanceType(props.instanceType),
+        enablePerformanceInsights: props.enablePerformanceInsights,
       });
 
       instance.applyRemovalPolicy(props.removalPolicy, {

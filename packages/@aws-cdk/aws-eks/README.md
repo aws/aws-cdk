@@ -50,8 +50,8 @@ This example defines an Amazon EKS cluster with the following configuration:
 ```ts
 // provisiong a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_24,
-  kubectlLayer: new KubectlV24Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_25,
+  kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
 });
 
 // apply a kubernetes manifest to the cluster
@@ -684,11 +684,11 @@ Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a differ
 version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV24Layer } from '@aws-cdk/lambda-layer-kubectl-v24';
+import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_24,
-  kubectlLayer: new KubectlV24Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_25,
+  kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
 });
 ```
 

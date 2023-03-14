@@ -706,6 +706,29 @@ describe('DatabaseCluster', () => {
     });
   });
 
+  test('can enable Performance Insights on instances', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      enablePerformanceInsights: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBInstance', {
+      Properties: {
+        EnablePerformanceInsights: true,
+      },
+    });
+  });
+
   test('single user rotation', () => {
     // GIVEN
     const stack = testStack();

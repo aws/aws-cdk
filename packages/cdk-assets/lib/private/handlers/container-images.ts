@@ -173,6 +173,8 @@ class ContainerImageBuilder {
       networkMode: source.networkMode,
       platform: source.platform,
       outputs: source.dockerOutputs,
+      cacheFrom: source.cacheFrom,
+      cacheTo: source.cacheTo,
     });
   }
 

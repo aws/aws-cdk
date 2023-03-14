@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, Stack } from '@aws-cdk/core';
 import { Cluster, ClusterProps, KubernetesVersion } from '../lib';
 
-const CLUSTER_VERSION = KubernetesVersion.V1_16;
+const CLUSTER_VERSION = KubernetesVersion.V1_25;
 
 export function testFixture() {
   const { stack, app } = testFixtureNoVpc();

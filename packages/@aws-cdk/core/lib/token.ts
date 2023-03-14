@@ -233,6 +233,27 @@ export class Tokenization {
 }
 
 /**
+ * An object which serializes to the JSON `null` literal, and which can safely
+ * be passed across languages where `undefined` and `null` are not different.
+ */
+export class JsonNull {
+  /** The canonical instance of `JsonNull`. */
+  public static readonly INSTANCE = new JsonNull();
+
+  private constructor() { }
+
+  /** Obtains the JSON representation of this object (`null`) */
+  public toJSON(): any {
+    return null;
+  }
+
+  /** Obtains the string representation of this object (`'null'`) */
+  public toString(): string {
+    return 'null';
+  }
+}
+
+/**
  * Options for the 'reverse()' operation
  */
 export interface ReverseOptions {

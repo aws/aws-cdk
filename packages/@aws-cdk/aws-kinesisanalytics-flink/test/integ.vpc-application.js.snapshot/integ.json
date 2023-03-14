@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "VpcTest/DefaultTest": {
+      "stacks": [
+        "FlinkAppTest"
+      ],
+      "assertionStack": "VpcTest/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcTestDefaultTestDeployAssert06A9965C"
+    }
+  }
+}

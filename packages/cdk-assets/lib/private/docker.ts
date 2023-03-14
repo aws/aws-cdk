@@ -19,6 +19,8 @@ interface BuildOptions {
   readonly networkMode?: string;
   readonly platform?: string;
   readonly outputs?: string[];
+  readonly cacheFrom?: DockerCacheOption[];
+  readonly cacheTo?: DockerCacheOption;
 }
 
 export interface DockerCredentialsConfig {
@@ -34,6 +36,11 @@ export interface DockerDomainCredentials {
 enum InspectImageErrorCode {
   Docker = 1,
   Podman = 125
+}
+
+export interface DockerCacheOption {
+  readonly type: string;
+  readonly params?: { [key: string]: string };
 }
 
 export class Docker {
@@ -90,6 +97,8 @@ export class Docker {
       ...options.networkMode ? ['--network', options.networkMode] : [],
       ...options.platform ? ['--platform', options.platform] : [],
       ...options.outputs ? options.outputs.map(output => [`--output=${output}`]) : [],
+      ...options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : [],
+      ...options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : [],
       '.',
     ];
     await this.execute(buildCommand, { cwd: options.directory });
@@ -178,6 +187,14 @@ export class Docker {
       }
       throw e;
     }
+  }
+
+  private cacheOptionToFlag(option: DockerCacheOption): string {
+    let flag = `type=${option.type}`;
+    if (option.params) {
+      flag += ',' + Object.entries(option.params).map(([k, v]) => `${k}=${v}`).join(',');
+    }
+    return flag;
   }
 }
 

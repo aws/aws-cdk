@@ -41,6 +41,7 @@ class TestStack extends cdk.Stack {
       parameterGroup: params,
       kmsKey,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      enablePerformanceInsights: true,
     });
 
     cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

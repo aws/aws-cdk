@@ -430,21 +430,6 @@ function updatedExternalLocation(
     return libName;
   }
 
-  // These 2 are unchanged
-  if (modulePath === '@aws-cdk/assert') {
-    return '@aws-cdk/assert';
-  }
-
-  // can't use simple equality here,
-  // because we have imports like "import '@aws-cdk/assert-internal/jest'"
-  if (modulePath.startsWith('@aws-cdk/assert-internal')) {
-    return modulePath.replace(/^@aws-cdk\/assert-internal/, '@aws-cdk/assert');
-  }
-
-  if (modulePath === '@aws-cdk/assert/jest') {
-    return '@aws-cdk/assert/jest';
-  }
-
   return `${libName}/${modulePath.substring('@aws-cdk/'.length)}`;
 }
 

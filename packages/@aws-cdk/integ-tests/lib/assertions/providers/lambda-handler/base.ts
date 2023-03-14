@@ -108,7 +108,10 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
       hostname: parsedUrl.hostname,
       path: parsedUrl.path,
       method: 'PUT',
-      headers: { 'content-type': '', 'content-length': responseBody.length },
+      headers: {
+        'content-type': '',
+        'content-length': Buffer.byteLength(responseBody, 'utf8'),
+      },
     };
 
     return new Promise((resolve, reject) => {

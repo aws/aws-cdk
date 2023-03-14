@@ -1,9 +1,13 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as core from '@aws-cdk/core';
 
 interface ValidatedProps {
   applicationName?: string;
   parallelism?: number;
   parallelismPerKpu?: number;
+  vpc?: ec2.IVpc;
+  vpcSubnets?: ec2.SubnetSelection;
+  securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
@@ -13,6 +17,7 @@ export function validateFlinkApplicationProps(props: ValidatedProps) {
   validateApplicationName(props.applicationName);
   validateParallelism(props.parallelism);
   validateParallelismPerKpu(props.parallelismPerKpu);
+  validateVpcProps(props);
 }
 
 function validateApplicationName(applicationName?: string) {
@@ -50,5 +55,17 @@ function validateParallelismPerKpu(parallelismPerKpu?: number) {
 
   if (parallelismPerKpu < 1) {
     throw new Error('parallelismPerKpu must be at least 1');
+  }
+}
+
+function validateVpcProps({ vpc, securityGroups = [], vpcSubnets }: ValidatedProps) {
+  if (!vpc) {
+    if (vpcSubnets) {
+      throw new Error('vpc prop required when passing vpcSubnets');
+    }
+
+    if (securityGroups.length > 0) {
+      throw new Error('vpc prop required when passing securityGroups');
+    }
   }
 }

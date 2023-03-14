@@ -18,7 +18,7 @@ import { BottleRocketImage } from '../lib/private/bottlerocket';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;
 
 describe('cluster', () => {
   test('can configure and access ALB controller', () => {
@@ -656,7 +656,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.21',
+        version: CLUSTER_VERSION.version,
         resourcesVpcConfig: {
           securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
@@ -1589,7 +1589,7 @@ describe('cluster', () => {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.EksOptimizedImage({ kubernetesVersion: '1.21' }).getImage(stack);
+      new eks.EksOptimizedImage({ kubernetesVersion: CLUSTER_VERSION.version }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1600,7 +1600,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.21/'),
+          (v as any).Default.includes('/1.25/'),
       )).toEqual(true);
     });
 
@@ -1773,7 +1773,7 @@ describe('cluster', () => {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new BottleRocketImage({ kubernetesVersion: '1.21' }).getImage(stack);
+      new BottleRocketImage({ kubernetesVersion: CLUSTER_VERSION.version }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1784,7 +1784,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.21/'),
+          (v as any).Default.includes('/aws-k8s-1.25/'),
       )).toEqual(true);
     });
 
@@ -1804,7 +1804,7 @@ describe('cluster', () => {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: '1.21',
+          version: CLUSTER_VERSION.version,
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },

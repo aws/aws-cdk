@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -76,8 +77,14 @@ describe('Application', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: Match.arrayWith([
+        Statement: Match.arrayEquals([
           { Action: 'cloudwatch:PutMetricData', Effect: 'Allow', Resource: '*' },
+          // Access to read from the code bucket
+          {
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+            Effect: 'Allow',
+            Resource: Match.anyValue(),
+          },
           {
             Action: 'logs:DescribeLogGroups',
             Effect: 'Allow',
@@ -504,6 +511,206 @@ describe('Application', () => {
     });
   });
 
+  test('using a VPC with default vpcSubnets and securityGroups', () => {
+    new flink.Application(stack, 'FlinkApplication', {
+      ...requiredProps,
+      vpc: new ec2.Vpc(stack, 'VPC'),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties(
+      'AWS::KinesisAnalyticsV2::Application',
+      {
+        ApplicationConfiguration: {
+          VpcConfigurations: [
+            {
+              SecurityGroupIds: [
+                {
+                  'Fn::GetAtt': ['FlinkApplicationSecurityGroup1FD816EE', 'GroupId'],
+                },
+              ],
+              SubnetIds: [
+                {
+                  Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+                },
+                {
+                  Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    );
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              'ec2:DescribeVpcs',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeDhcpOptions',
+              'ec2:CreateNetworkInterface',
+              'ec2:CreateNetworkInterfacePermission',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ]),
+      },
+    });
+  });
+
+  test('providing securityGroups', () => {
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    new flink.Application(stack, 'FlinkApplication', {
+      ...requiredProps,
+      vpc,
+      securityGroups: [
+        new ec2.SecurityGroup(stack, 'ProvidedSecurityGroup', { vpc }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::KinesisAnalyticsV2::Application',
+      {
+        ApplicationConfiguration: {
+          VpcConfigurations: [
+            {
+              SecurityGroupIds: [
+                {
+                  'Fn::GetAtt': ['ProvidedSecurityGroup3C7655DD', 'GroupId'],
+                },
+              ],
+            },
+          ],
+        },
+      },
+    );
+  });
+
+  test('providing a subnetSelection', () => {
+    new flink.Application(stack, 'FlinkApplication', {
+      ...requiredProps,
+      vpc: new ec2.Vpc(stack, 'VPC'),
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    });
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::KinesisAnalyticsV2::Application',
+      {
+        ApplicationConfiguration: {
+          VpcConfigurations: [
+            {
+              SubnetIds: [
+                {
+                  Ref: 'VPCPublicSubnet1SubnetB4246D30',
+                },
+                {
+                  Ref: 'VPCPublicSubnet2Subnet74179F39',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    );
+  });
+
+  test('using connections on a created Application', () => {
+    const app = new flink.Application(stack, 'FlinkApplication', {
+      ...requiredProps,
+      vpc: new ec2.Vpc(stack, 'VPC'),
+    });
+
+    app.connections.allowFromAnyIpv4(ec2.Port.tcp(443));
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::EC2::SecurityGroup',
+      {
+        SecurityGroupEgress: [{
+          Description: 'Allow all outbound traffic by default',
+          IpProtocol: '-1',
+        }],
+        SecurityGroupIngress: [{
+          Description: 'from 0.0.0.0/0:443',
+          FromPort: 443,
+          IpProtocol: 'tcp',
+          ToPort: 443,
+        }],
+      },
+    );
+  });
+
+  test('using connections on an imported Application', () => {
+    const app = flink.Application.fromApplicationAttributes(stack, 'FlinkApplication', {
+      applicationArn: 'arn:aws:kinesisanalytics:us-west-2:012345678901:application/my-app',
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'ImportedSG', 'sg-123456789')],
+    });
+
+    app.connections.allowFromAnyIpv4(ec2.Port.tcp(443));
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::EC2::SecurityGroupIngress',
+      {
+        FromPort: 443,
+        GroupId: 'sg-123456789',
+        IpProtocol: 'tcp',
+        ToPort: 443,
+      },
+    );
+  });
+
+  test('validating vpnSubnets prop requires vpc prop', () => {
+    expect(() => {
+      new flink.Application(stack, 'FlinkApplication', {
+        ...requiredProps,
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      });
+    }).toThrow(/vpc prop required when passing vpcSubnets/);
+  });
+
+  test('validating securityGroups prop requires vpc prop', () => {
+    expect(() => {
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+      });
+      new flink.Application(stack, 'Error', {
+        ...requiredProps,
+        securityGroups: [securityGroup],
+      });
+    }).toThrow(/vpc prop required when passing securityGroups/);
+
+    // empty array for securityGroups is treated the same as undefined
+    expect(() => {
+      new flink.Application(stack, 'OK', {
+        ...requiredProps,
+        securityGroups: [],
+      });
+    }).not.toThrow();
+  });
+
+  test('validating vpc provided when using connections for created App', () => {
+    let app = new flink.Application(stack, 'FlinkApplication', {
+      ...requiredProps,
+    });
+    expect(() => {
+      app.connections;
+    }).toThrow(/This Application isn\'t associated with a VPC/);
+  });
+
+  test('validating vpc provided when using connections for imported App', () => {
+    let app = flink.Application.fromApplicationName(stack, 'FlinkApplication', 'Name');
+    expect(() => {
+      app.connections;
+    }).toThrow(/This Application isn\'t associated with a VPC/);
+  });
+
   test('validating applicationName', () => {
     // Expect no error with valid name
     new flink.Application(stack, 'ValidString', {
@@ -606,6 +813,17 @@ describe('Application', () => {
   test('fromFlinkApplicationArn', () => {
     const arn = 'arn:aws:kinesisanalytics:us-west-2:012345678901:application/my-app';
     const flinkApp = flink.Application.fromApplicationArn(stack, 'Imported', arn);
+
+    expect(flinkApp.applicationName).toEqual('my-app');
+    expect(flinkApp.applicationArn).toEqual(arn);
+    expect(flinkApp.addToRolePolicy(new iam.PolicyStatement())).toBe(false);
+  });
+
+  test('fromFlinkApplicationAttributes', () => {
+    const arn = 'arn:aws:kinesisanalytics:us-west-2:012345678901:application/my-app';
+    const flinkApp = flink.Application.fromApplicationAttributes(stack, 'Imported', {
+      applicationArn: arn,
+    });
 
     expect(flinkApp.applicationName).toEqual('my-app');
     expect(flinkApp.applicationArn).toEqual(arn);

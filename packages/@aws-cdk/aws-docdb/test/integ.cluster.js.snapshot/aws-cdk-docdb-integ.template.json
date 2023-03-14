@@ -533,7 +533,8 @@
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
-    "DBInstanceClass": "db.r5.large"
+    "DBInstanceClass": "db.r5.large",
+    "EnablePerformanceInsights": true
    },
    "DependsOn": [
     "VPCPublicSubnet1DefaultRoute91CEF279",

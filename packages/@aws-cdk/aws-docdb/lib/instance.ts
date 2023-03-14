@@ -165,6 +165,13 @@ export interface DatabaseInstanceProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: cdk.RemovalPolicy
+
+  /**
+   * A value that indicates whether to enable Performance Insights for the DB Instance.
+   *
+   * @default - false
+   */
+  readonly enablePerformanceInsights?: boolean;
 }
 
 /**
@@ -208,6 +215,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
       availabilityZone: props.availabilityZone,
       dbInstanceIdentifier: props.dbInstanceName,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+      enablePerformanceInsights: props.enablePerformanceInsights,
     });
 
     this.cluster = props.cluster;

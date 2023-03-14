@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { App, NestedStack, Stack, Stage } from '../lib';
@@ -171,10 +172,22 @@ class TestConstruct extends Construct {
 function localCdkVersion(): string {
   if (!_cdkVersion) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    _cdkVersion = require(path.join('..', 'package.json')).version;
+    const pkgJson = findParentPkgJson(__dirname);
+    _cdkVersion = pkgJson.version;
     if (!_cdkVersion) {
       throw new Error('Unable to determine CDK version');
     }
   }
   return _cdkVersion;
+}
+
+function findParentPkgJson(dir: string, depth: number = 1, limit: number = 5): { version: string; } {
+  const target = path.join(dir, 'package.json');
+  if (fs.existsSync(target)) {
+    return JSON.parse(fs.readFileSync(target, 'utf8'));
+  } else if (depth < limit) {
+    return findParentPkgJson(path.join(dir, '..'), depth + 1, limit);
+  }
+
+  throw new Error(`No \`package.json\` file found within ${depth} parent directories`);
 }

@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "PipelineSecurityStackDisableSecurityCheckMySafeStack7A4F8E95.assets": {
       "type": "cdk:asset-manifest",
