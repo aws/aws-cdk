@@ -1090,6 +1090,88 @@ test('specifying a vpcConnector should assign the service to it and set the egre
   });
 });
 
+test('autoDeploymentsEnabled flag is set true', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const dockerAsset = new ecr_assets.DockerImageAsset(stack, 'Assets', {
+    directory: path.join(__dirname, './docker.assets'),
+  });
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromAsset({
+      imageConfiguration: { port: 8000 },
+      asset: dockerAsset,
+    }),
+    autoDeploymentsEnabled: true,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AutoDeploymentsEnabled: true,
+    },
+  });
+});
+
+test('autoDeploymentsEnabled flag is set false', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromGitHub({
+      repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+      branch: 'main',
+      configurationSource: apprunner.ConfigurationSourceType.REPOSITORY,
+      connection: apprunner.GitHubConnection.fromConnectionArn('MOCK'),
+    }),
+    autoDeploymentsEnabled: false,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AutoDeploymentsEnabled: false,
+    },
+  });
+});
+
+test('autoDeploymentsEnabled flag is NOT set', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+  // THEN
+  Template.fromStack(stack).resourcePropertiesCountIs('AWS::AppRunner::Service',
+    {
+      SourceConfiguration: {
+        AutoDeploymentsEnabled: undefined,
+      },
+    },
+    0,
+  );
+  Template.fromStack(stack).resourcePropertiesCountIs('AWS::AppRunner::Service',
+    {
+      SourceConfiguration: {
+        AutoDeploymentsEnabled: true,
+      },
+    },
+    0,
+  );
+  Template.fromStack(stack).resourcePropertiesCountIs('AWS::AppRunner::Service',
+    {
+      SourceConfiguration: {
+        AutoDeploymentsEnabled: false,
+      },
+    },
+    0,
+  );
+});
+
 testDeprecated('Using both environmentVariables and environment should throw an error', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
