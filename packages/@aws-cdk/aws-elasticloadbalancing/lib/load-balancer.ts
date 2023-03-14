@@ -422,6 +422,7 @@ export class InstanceTarget implements ILoadBalancerTarget {
   constructor(public readonly instance: Instance) {
     this.connections = instance.connections;
   }
+  
   public attachToClassicLB(loadBalancer: LoadBalancer): void {
     loadBalancer._addInstanceId(this.instance.instanceId);
   }
