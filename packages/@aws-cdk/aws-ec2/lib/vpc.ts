@@ -572,11 +572,9 @@ abstract class VpcBase extends Resource implements IVpc {
     if (selection.subnetGroupName !== undefined) { // Select by name
       subnets = this.selectSubnetObjectsByName(selection.subnetGroupName);
 
-    } else if (selection.subnetType !== undefined) { // Or specify by type
-      subnets = this.selectSubnetObjectsByType(selection.subnetType);
-
-    } else { // Else apply filtering on all subnets
-      subnets = this.selectAllSubnetObjects();
+    } else { // Or specify by type
+      const type = selection.subnetType || SubnetType.PRIVATE_WITH_EGRESS;
+      subnets = this.selectSubnetObjectsByType(type);
     }
 
     // Apply all the filters
@@ -592,11 +590,6 @@ abstract class VpcBase extends Resource implements IVpc {
       filtered = filter.selectSubnets(filtered);
     }
     return filtered;
-  }
-
-  private selectAllSubnetObjects() {
-    const allSubnets = [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
-    return allSubnets;
   }
 
   private selectSubnetObjectsByName(groupName: string) {
