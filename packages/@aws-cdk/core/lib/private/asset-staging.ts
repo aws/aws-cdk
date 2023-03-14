@@ -199,6 +199,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
 export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
   const proc = spawnSync(prog, args, options ?? {
+    encoding: 'utf-8',
     stdio: [ // show Docker output
       'ignore', // ignore stdio
       process.stderr, // redirect stdout to stderr
@@ -211,10 +212,25 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   }
 
   if (proc.status !== 0) {
-    if (proc.stdout || proc.stderr) {
-      throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    const reason = proc.signal != null
+      ? `signal ${proc.signal}`
+      : `status ${proc.status}`;
+    const command = [prog, ...args.map((arg) => /[^a-z0-9_-]/i.test(arg) ? JSON.stringify(arg) : arg)].join(' ');
+
+    function prependLines(firstLine: string, text: Buffer | string | undefined): string[] {
+      if (!text || text.length === 0) {
+        return [];
+      }
+      const padding = ' '.repeat(firstLine.length);
+      return text.toString('utf-8').split('\n').map((line, idx) => `${idx === 0 ? firstLine : padding}${line}`);
     }
-    throw new Error(`${prog} exited with status ${proc.status}`);
+
+    throw new Error([
+      `${prog} exited with ${reason}`,
+      ...prependLines('--> STDOUT:  ', proc.stdout ) ?? [],
+      ...prependLines('--> STDERR:  ', proc.stderr ) ?? [],
+      `--> Command: ${command}`,
+    ].join('\n'));
   }
 
   return proc;
