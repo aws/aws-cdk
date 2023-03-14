@@ -176,8 +176,39 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "cacheFrom": {
+                    "description": "Cache from options to pass to the `docker build` command. (Default - no cache from options are passed to the build command)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DockerCacheOption"
+                    }
+                },
+                "cacheTo": {
+                    "description": "Cache to options to pass to the `docker build` command. (Default - no cache to options are passed to the build command)",
+                    "$ref": "#/definitions/DockerCacheOption"
                 }
             }
+        },
+        "DockerCacheOption": {
+            "description": "Options for configuring the Docker cache backend",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of cache to use.\nRefer to https://docs.docker.com/build/cache/backends/ for full list of backends. (Default - unspecified)",
+                    "type": "string"
+                },
+                "params": {
+                    "description": "Any parameters to pass into the docker cache backend configuration.\nRefer to https://docs.docker.com/build/cache/backends/ for cache backend configuration. (Default {} No options provided)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "type"
+            ]
         },
         "DockerImageDestination": {
             "description": "Where to publish docker images",

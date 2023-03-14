@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import { Stack, Tags } from '@aws-cdk/core';
 import * as eks from '../lib';
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;
 
 describe('fargate', () => {
   test('can be added to a cluster', () => {
