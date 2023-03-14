@@ -33,6 +33,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.KMS_DEFAULT_KEY_POLICIES]: true,
     [feats.S3_GRANT_WRITE_WITHOUT_ACL]: true,
     [feats.ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
+    [feats.ECS_ADD_SECURITY_GROUP_TO_ASG_CAPACITY_PROVIDERS]: false,
     [feats.RDS_LOWERCASE_DB_IDENTIFIER]: true,
     [feats.EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
     [feats.LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
