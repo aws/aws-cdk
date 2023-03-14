@@ -411,7 +411,6 @@ export class LoadBalancer extends Resource implements IConnectable {
 
 /**
  * An EC2 instance that is the target for load balancing
- *
  */
 export class InstanceTarget implements ILoadBalancerTarget {
   readonly connections: Connections;
