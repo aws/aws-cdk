@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.69.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.68.0-alpha.0...v2.69.0-alpha.0) (2023-03-14)
+
+
+### Features
+
+* **kinesisanalytics-flink:** VPC support for Flink applications ([#24442](https://github.com/aws/aws-cdk/issues/24442)) ([7c7ad6d](https://github.com/aws/aws-cdk/commit/7c7ad6d18bd0d48a30858c1964d27d8a02b274ae)), closes [40aws-cdk/aws-lambda/lib/function.ts#L170](https://github.com/40aws-cdk/aws-lambda/lib/function.ts/issues/L170) [#21104](https://github.com/aws/aws-cdk/issues/21104)
+
 ## [2.68.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.67.0-alpha.0...v2.68.0-alpha.0) (2023-03-08)
 
 
