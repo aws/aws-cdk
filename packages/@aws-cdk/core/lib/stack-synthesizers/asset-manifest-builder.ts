@@ -71,6 +71,8 @@ export class AssetManifestBuilder {
       networkMode: asset.networkMode,
       platform: asset.platform,
       dockerOutputs: asset.dockerOutputs,
+      cacheFrom: asset.dockerCacheFrom,
+      cacheTo: asset.dockerCacheTo,
     }, {
       repositoryName: target.repositoryName,
       imageTag,
