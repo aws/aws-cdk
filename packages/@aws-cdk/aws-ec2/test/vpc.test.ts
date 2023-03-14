@@ -1787,27 +1787,6 @@ describe('vpc', () => {
 
     });
 
-    test('can filter againt all subnets, not only againt PRIVATE_WITH_EGRESS when SubnetType and SubnetGroupName are not specified', () => {
-      // GIVEN
-      const stack = getTestStack();
-      const vpc = new Vpc(stack, 'VPC', {
-        subnetConfiguration: [
-          { subnetType: SubnetType.PUBLIC, name: 'BlaBla' },
-          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'DontTalkAtAll' },
-        ],
-      });
-      const a_subnet = vpc.selectSubnets().subnetIds[0]
-
-      // WHEN
-      const subnets = vpc.selectSubnets({
-        subnetFilters: [ SubnetFilter.byIds([a_subnet])]
-      });
-
-      // THEN
-      expect(subnets.subnetIds.length).toEqual(1);
-
-    });
-
     test('fromVpcAttributes using unknown-length list tokens', () => {
       // GIVEN
       const stack = getTestStack();
@@ -2121,6 +2100,27 @@ describe('vpc', () => {
         ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
         SubnetIds: ['priv-1', 'priv-2'],
       });
+
+    });
+
+    test('can filter by Subnet Ids via selectSubnets', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        vpcCidrBlock: '192.168.0.0/16',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        privateSubnetIds: ['subnet-1', 'subnet-2', 'subnet-3'],
+      });
+
+      // WHEN
+      const subnets = vpc.selectSubnets({
+        subnetFilters: [SubnetFilter.byIds(['subnet-1'])],
+      });
+
+      // THEN
+      expect(subnets.subnetIds.length).toEqual(1);
 
     });
 

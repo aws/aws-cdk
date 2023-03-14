@@ -1,6 +1,6 @@
+import { Token } from '@aws-cdk/core';
 import { CidrBlock, NetworkUtils } from './network-util';
 import { ISubnet } from './vpc';
-import { Token } from '@aws-cdk/core';
 /**
  * Contains logic which chooses a set of subnets from a larger list, in conjunction
  * with SubnetSelection, to determine where to place AWS resources such as VPC
