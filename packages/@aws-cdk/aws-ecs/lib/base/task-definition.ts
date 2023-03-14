@@ -442,7 +442,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     this.ephemeralStorageGiB = props.ephemeralStorageGiB;
 
     // validate the cpu and memory size for the Windows operation system family.
-    if (props.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily.includes('WINDOWS')) {
+    if (isWindowsOs(props.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily)) {
       // We know that props.cpu and props.memoryMiB are defined because an error would have been thrown previously if they were not.
       // But, typescript is not able to figure this out, so using the `!` operator here to let the type-checker know they are defined.
       this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
@@ -713,12 +713,14 @@ export class TaskDefinition extends TaskDefinitionBase {
     const ret = new Array<string>();
 
     // Skip memory config check for windows instance
-    if (!isWindowsInstance(this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily) && isEc2Compatible(this.compatibility)) {
-
+    if (isEc2Compatible(this.compatibility)) {
+      const isWindowsOS = isWindowsOs(this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily);
       // Container sizes
       for (const container of this.containers) {
-        if (!container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+        if (!isWindowsOS && !container.memoryLimitSpecified) {
+          ret.push(`ECS LINUX Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+        } else if (isWindowsOS && container.memoryLimitMiB === undefined) {
+          ret.push(`ECS Windows Container ${container.containerName} must have 'memoryLimitMiB' specified`);
         }
       }
     }
@@ -1210,6 +1212,6 @@ export function isExternalCompatible(compatibility: Compatibility): boolean {
 /**
  * Return true for windows instance
  */
-export function isWindowsInstance(operatingSystemFamily?: string): boolean | undefined {
+export function isWindowsOs(operatingSystemFamily?: string): boolean | undefined {
   return operatingSystemFamily?.startsWith('WINDOWS_SERVER_');
 }

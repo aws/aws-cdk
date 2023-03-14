@@ -416,6 +416,11 @@ export class ContainerDefinition extends Construct {
   public readonly containerName: string;
 
   /**
+   * Memory limit mib specified in this definition
+   */
+  public readonly memoryLimitMiB?: number;
+
+  /**
    * Whether there was at least one memory limit specified in this definition
    */
   public readonly memoryLimitSpecified: boolean;
@@ -470,6 +475,7 @@ export class ContainerDefinition extends Construct {
     }
     this.essential = props.essential ?? true;
     this.taskDefinition = props.taskDefinition;
+    this.memoryLimitMiB = props.memoryLimitMiB;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
     this.containerName = props.containerName ?? this.node.id;
