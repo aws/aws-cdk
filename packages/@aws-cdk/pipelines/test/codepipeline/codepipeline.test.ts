@@ -8,7 +8,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput, NamedAssetApp } from '../testhelpers';
 
 let app: TestApp;
 
@@ -452,6 +452,29 @@ test('selfMutationProject is undefined if switched off', () => {
 
   // THEN
   expect(() => pipeline.selfMutationProject).toThrow(/No selfMutationProject/);
+});
+
+test('pipeline asset actions can be named after their StackAssets', () => {
+  // GIVEN
+  const assetNames = ['namedFileA', 'File name with Spaces', 'this one will be a very long image name'];
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    selfMutation: false,
+  });
+  pipeline.addStage(new NamedAssetApp(pipelineStack, 'Stage', { fileAsset1: assetNames[0], fileAsset2: assetNames[1], imageAsset: assetNames[2] }));
+
+  // WHEN
+  const template = Template.fromStack(pipelineStack);
+
+  // THEN
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Actions: Match.arrayWith(assetNames.map(((name) => ({
+        Name: name,
+      })))),
+      Name: 'Assets',
+    }]),
+  });
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {

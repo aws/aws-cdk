@@ -230,6 +230,35 @@ export class MegaAssetsApp extends Stage {
   }
 }
 
+export interface NamedAssetAppProps extends StageProps {
+  readonly fileAsset1: string
+  readonly fileAsset2: string
+  readonly imageAsset: string
+}
+
+export class NamedAssetApp extends Stage {
+  constructor(scope: Construct, id: string, props: NamedAssetAppProps) {
+    super(scope, id, props);
+
+    const stack = new Stack(this, 'Stack');
+
+    new s3_assets.Asset(stack, props.fileAsset1, {
+      path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
+      assetHash: 'FileAsset1',
+    });
+
+    new s3_assets.Asset(stack, props.fileAsset2, {
+      path: path.join(__dirname, 'assets', 'test-file-asset-two.txt'),
+      assetHash: 'FileAsset2',
+    });
+
+    new ecr_assets.DockerImageAsset(stack, props.imageAsset, {
+      directory: path.join(__dirname, 'assets', 'test-docker-asset'),
+      extraHash: 'ImageAsset1',
+    });
+  }
+}
+
 export class PlainStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
