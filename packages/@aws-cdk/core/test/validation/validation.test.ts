@@ -50,11 +50,11 @@ describe('validations', () => {
       creationStack: `\t└──  Default (Default)
 \t     │ Library: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
-\t     │ Location: undefined
+\t     │ Location: Run with '--debug' to include location info
 \t     └──  Fake (Default/Fake)
 \t          │ Library: @aws-cdk/core.CfnResource
 \t          │ Library Version: 0.0.0
-\t          │ Location: undefined`,
+\t          │ Location: Run with '--debug' to include location info`,
       resourceLogicalId: 'Fake',
     }));
   });
@@ -201,11 +201,11 @@ ${reset(red(bright('rule-1 (1 occurrences)')))}
 \t└──  Default (Default)
 \t     │ Library: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
-\t     │ Location: undefined
+\t     │ Location: Run with '--debug' to include location info
 \t     └──  Fake (Default/Fake)
 \t          │ Library: @aws-cdk/core.CfnResource
 \t          │ Library Version: 0.0.0
-\t          │ Location: undefined
+\t          │ Location: Run with '--debug' to include location info
     - Resource ID: Fake
     - Locations:
       > test-location
@@ -233,11 +233,11 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
 \t└──  Default (Default)
 \t     │ Library: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
-\t     │ Location: undefined
+\t     │ Location: Run with '--debug' to include location info
 \t     └──  Fake (Default/Fake)
 \t          │ Library: @aws-cdk/core.CfnResource
 \t          │ Library Version: 0.0.0
-\t          │ Location: undefined
+\t          │ Location: Run with '--debug' to include location info
     - Resource ID: Fake
     - Locations:
       > test-location
@@ -326,7 +326,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     }).toThrow(/Validation failed/);
 
     const report = consoleLogMock.mock.calls[0][0];
-    expect(report).toEqual({
+    expect(JSON.parse(report)).toEqual(expect.objectContaining({
       title: 'Validation Report',
       pluginReports: [
         {
@@ -341,19 +341,18 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
               violatingConstructs: [
                 {
                   constructStack: {
-                    'child': {
-                      'child': undefined,
-                      'id': 'Fake',
-                      'library': '@aws-cdk/core.CfnResource',
-                      'libraryVersion': '0.0.0',
-                      'location': undefined,
-                      'path': 'Default/Fake',
-                    },
                     'id': 'Default',
                     'library': '@aws-cdk/core.Stack',
                     'libraryVersion': '0.0.0',
-                    'location': undefined,
+                    'location': "Run with '--debug' to include location info",
                     'path': 'Default',
+                    'child': {
+                      'id': 'Fake',
+                      'library': '@aws-cdk/core.CfnResource',
+                      'libraryVersion': '0.0.0',
+                      'location': "Run with '--debug' to include location info",
+                      'path': 'Default/Fake',
+                    },
                   },
                   constructPath: 'Default/Fake',
                   locations: ['test-location'],
@@ -365,7 +364,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
           ],
         },
       ],
-    });
+    }));
   });
 });
 

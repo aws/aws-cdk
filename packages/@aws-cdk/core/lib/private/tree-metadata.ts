@@ -102,12 +102,19 @@ export class TreeMetadata extends Construct {
       path: tree.path,
       attributes: tree.attributes,
       constructInfo: tree.constructInfo,
-      children: tree.children,
       // need to re-add the parent because the current node
       // won't have the parent's parent
       parent: tree.parent ? this._tree[tree.parent.path] : undefined,
     };
-    return newTree;
+    // need the properties to be mutable
+    let branch = newTree as any;
+    do {
+      branch.parent.children = {
+        [branch.id]: branch,
+      };
+      branch = branch.parent;
+    } while (branch.parent);
+    return branch;
   }
 
   private synthAttributes(construct: IConstruct): { [key: string]: any } | undefined {

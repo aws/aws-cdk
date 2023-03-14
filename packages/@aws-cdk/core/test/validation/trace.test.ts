@@ -20,19 +20,18 @@ describe('ReportTrace', () => {
 
     // THEN
     expect(formatted).toEqual({
+      id: 'MyStack',
+      library: expect.stringMatching(/.*Stack/),
+      libraryVersion: '0.0.0',
+      location: expect.stringMatching(/Object.<anonymous> \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
+      path: 'MyStack',
       child: {
-        child: undefined,
-        id: 'MyStack',
-        library: expect.stringMatching(/.*Stack/),
-        libraryVersion: '0.0.0',
-        location: expect.stringMatching(/Object.<anonymous> \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
-        path: 'MyStack',
+        id: 'MyConstruct',
+        library: 'constructs.Construct',
+        libraryVersion: expect.any(String),
+        location: expect.stringMatching(/new MyStack \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
+        path: 'MyStack/MyConstruct',
       },
-      id: 'MyConstruct',
-      library: 'constructs.Construct',
-      libraryVersion: expect.any(String),
-      location: expect.stringMatching(/new MyStack \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
-      path: 'MyStack/MyConstruct',
     });
     process.env.CDK_DEBUG = '';
   });
@@ -52,19 +51,18 @@ describe('ReportTrace', () => {
 
     // THEN
     expect(formatted).toEqual({
-      child: {
-        child: undefined,
-        id: 'MyStack',
-        library: expect.stringMatching(/.*Stack/),
-        libraryVersion: '0.0.0',
-        location: "Run with '--debug' to include location info",
-        path: 'MyStack',
-      },
-      id: 'MyConstruct',
-      library: 'constructs.Construct',
-      libraryVersion: expect.any(String),
+      id: 'MyStack',
+      library: expect.stringMatching(/.*Stack/),
+      libraryVersion: '0.0.0',
       location: "Run with '--debug' to include location info",
-      path: 'MyStack/MyConstruct',
+      path: 'MyStack',
+      child: {
+        id: 'MyConstruct',
+        library: 'constructs.Construct',
+        libraryVersion: expect.any(String),
+        location: "Run with '--debug' to include location info",
+        path: 'MyStack/MyConstruct',
+      },
     });
     process.env.CDK_DEBUG = '';
   });

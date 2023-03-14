@@ -86,7 +86,7 @@ export class ReportTrace {
         trace.shift();
         // take just the items we need and reverse it since we are
         // displaying to trace bottom up
-        return Object.create(trace.slice(0, size).reverse());
+        return Object.create(trace.slice(0, size));
       }
     }
     return [];
@@ -103,16 +103,30 @@ export class ReportTrace {
     }
 
     const size = this.nodeSize(node);
-    const metadata = (locations ?? this.getTraceMetadata(size, node));
+
+    // the first time through the node will
+    // be the root of the tree. We need to go
+    // down the tree until we get to the bottom which
+    // will be the resource with the violation and it
+    // will contain the trace info
+    let child = node;
+    if (!locations) {
+      do {
+        if (child.children) {
+          child = this.getChild(child.children);
+        }
+      } while (child.children);
+    }
+    const metadata = (locations ?? this.getTraceMetadata(size, child));
     const thisLocation = metadata.pop();
 
-    const constructTrace: ConstructTrace = {
+    let constructTrace: ConstructTrace = {
       id: node.id,
       path: node.path,
       // the "child" trace will be the "parent" node
       // since we are going bottom up
-      child: node.parent
-        ? this.getConstructTrace(node.parent, metadata)
+      child: node.children
+        ? this.getConstructTrace(this.getChild(node.children), metadata)
         : undefined,
       library: node.constructInfo?.fqn,
       libraryVersion: node.constructInfo?.version,
@@ -123,20 +137,28 @@ export class ReportTrace {
   }
 
   /**
+   * Each node will only have a single child so just
+   * return that
+   */
+  private getChild(children: { [key: string]: Node }): Node {
+    return Object.values(children)[0];
+  }
+
+  /**
    * Get the size of a Node
    */
   private nodeSize(node: Node): number {
     let size = 1;
-    if (!node.parent) {
+    if (!node.children) {
       return size;
     }
-    let parent: Node | undefined = node.parent;
+    let children: Node | undefined = this.getChild(node.children);
     do {
       size++;
-      parent = parent?.parent
-        ? parent.parent
+      children = children.children
+        ? this.getChild(children.children)
         : undefined;
-    } while (parent);
+    } while (children);
 
     return size;
   }
