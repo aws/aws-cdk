@@ -335,7 +335,7 @@ export class PipelineGraph {
       assetNode = this.assetNodesByType.get(stackAsset.assetType)!;
     } else {
       // Otherwise add a new one
-      const id = stackAsset.assetType === AssetType.FILE
+      const id = stackAsset.assetName ?? stackAsset.assetType === AssetType.FILE
         ? (this.singlePublisher ? 'FileAsset' : `FileAsset${++this._fileAssetCtr}`)
         : (this.singlePublisher ? 'DockerAsset' : `DockerAsset${++this._dockerAssetCtr}`);
 

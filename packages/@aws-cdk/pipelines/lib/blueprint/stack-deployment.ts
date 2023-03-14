@@ -290,6 +290,13 @@ export interface StackAsset {
    * @default false
    */
   readonly isTemplate: boolean;
+
+  /**
+   * Name to assign this asset in the CodePipeline Action
+   *
+   * @default - Auto-assigned based on the number of assets
+   */
+  readonly assetName?: string;
 }
 
 function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): StackAsset[] {

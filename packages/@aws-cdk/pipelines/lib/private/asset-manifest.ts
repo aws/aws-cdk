@@ -114,13 +114,13 @@ export class AssetManifestReader {
     ];
 
     function makeEntries<A, B, C>(
-      assets: Record<string, { source: A, destinations: Record<string, B> }>,
-      ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
+      assets: Record<string, { source: A, destinations: Record<string, B>, name?: string }>,
+      ctor: new (id: DestinationIdentifier, source: A, destination: B, name?: string) => C): C[] {
 
       const ret = new Array<C>();
       for (const [assetId, asset] of Object.entries(assets)) {
         for (const [destId, destination] of Object.entries(asset.destinations)) {
-          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination));
+          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination, asset.name));
         }
       }
       return ret;
@@ -155,6 +155,11 @@ export interface IManifestEntry {
    * Type-dependent destination data
    */
   readonly destination: AwsDestination;
+
+  /**
+   * Human-readable name of the asset
+   */
+  readonly name?: string;
 }
 
 /**
@@ -171,6 +176,8 @@ export class FileManifestEntry implements IManifestEntry {
     public readonly source: FileSource,
     /** Destination for the file asset */
     public readonly destination: FileDestination,
+    /** Human-readable name of this asset */
+    public readonly name?: string,
   ) {
     this.genericSource = source;
   }
@@ -190,6 +197,8 @@ export class DockerImageManifestEntry implements IManifestEntry {
     public readonly source: DockerImageSource,
     /** Destination for the file asset */
     public readonly destination: DockerImageDestination,
+    /** Human-readable name of this asset */
+    public readonly name?: string,
   ) {
     this.genericSource = source;
   }
