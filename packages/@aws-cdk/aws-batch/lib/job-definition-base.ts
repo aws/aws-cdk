@@ -1,5 +1,6 @@
 import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { CfnJobDefinitionProps } from './batch.generated';
 
 
 export interface IJobDefinition extends IResource {
@@ -27,7 +28,7 @@ export interface IJobDefinition extends IResource {
    *
    * @default false
    */
-  readonly propogateTags?: boolean;
+  readonly propagateTags?: boolean;
 
   /**
    * The number of times to retry a job.
@@ -88,7 +89,7 @@ export interface JobDefinitionProps {
    *
    * @default false
    */
-  readonly propogateTags?: boolean;
+  readonly propagateTags?: boolean;
 
   /**
    * The number of times to retry a job.
@@ -143,12 +144,26 @@ export enum Action {
   RETRY = 'RETRY',
 }
 
-export class Reason {
-  static readonly NON_ZERO_EXIT_CODE = '*';
-  static readonly SPOT_INSTANCE_RECLAIMED = 'Host EC2*'
-  static readonly CANNOT_PULL_CONTAINER = 'CannotPullContainerError:*'
+export interface CustomReason {
+  readonly onExitCode?: string;
+  readonly onStatusReason?: string;
+  readonly onReason?: string;
+}
 
-  //static custom(action?: Action, onExitCode?: string, onStatusReason?: string, onReason?: string) {}
+export class Reason {
+  static readonly NON_ZERO_EXIT_CODE = {
+    onExitCode: '*',
+  };
+  static readonly CANNOT_PULL_CONTAINER = {
+    onReason: 'CannotPullContainerError:*',
+  }
+  static readonly SPOT_INSTANCE_RECLAIMED = {
+    onStatusReason: 'Host EC2*',
+  }
+
+  static custom(customReasonProps: CustomReason) {
+    return customReasonProps;
+  }
 }
 
 export abstract class JobDefinitionBase extends Resource implements IJobDefinition {
@@ -176,7 +191,7 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
    *
    * @default false
    */
-  readonly propogateTags?: boolean;
+  readonly propagateTags?: boolean;
 
   /**
    * The number of times to retry a job.
@@ -211,14 +226,36 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
    */
   readonly timeout?: Duration;
 
+  protected resourceProps: CfnJobDefinitionProps;
+
   constructor(scope: Construct, id: string, props: JobDefinitionProps) {
     super(scope, id);
     this.name = props.name;
     this.parameters = props.parameters;
-    this.propogateTags = props.propogateTags;
+    this.propagateTags = props.propagateTags;
     this.retryAttempts = props.retryAttempts;
     this.retryStrategies = props.retryStrategies;
     this.schedulingPriority = props.schedulingPriority;
     this.timeout = props.timeout;
+
+    this.resourceProps = {
+      jobDefinitionName: this.name,
+      parameters: this.parameters,
+      propagateTags: this.propagateTags,
+      retryStrategy: {
+        attempts: this.retryAttempts,
+        evaluateOnExit: this.retryStrategies?.map((strategy) => {
+          return {
+            action: strategy.action,
+            ...strategy.on,
+          };
+        }),
+      },
+      schedulingPriority: this.schedulingPriority,
+      timeout: {
+        attemptDurationSeconds: this.timeout?.toSeconds(),
+      },
+      type: 'dummy',
+    };
   }
 }
