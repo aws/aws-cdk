@@ -196,7 +196,7 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
   constructor(scope: Construct, id: string, props: ManagedComputeEnvironmentProps) {
     super(scope, id, props);
 
-    this.maxvCpus = props.maxvCpus ?? 256;
+    this.maxvCpus = props.maxvCpus ?? DEFAULT_MAX_VCPUS;
     this.replaceComputeEnvironment = props.replaceComputeEnvironment;
     this.spot = props.spot;
     this.updateTimeout = props.updateTimeout;
@@ -236,8 +236,10 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
   /**
    * Configure which AMIs this Compute Environment can launch.
    *
+   * Leave this `undefined` to allow Batch to choose the latest AMIs it supports for each instance that it launches.
+   *
    * @default
-   * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances
+   * - ECS_AL2 compatible AMI ids for non-GPU instances, ECS_AL2_NVIDIA compatible AMI ids for GPU instances
    */
   readonly images?: EcsMachineImage[];
 
@@ -368,11 +370,13 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
 
   /**
   * Configure which AMIs this Compute Environment can launch.
+  * If you specify this property with only `image` specified, then the
+  * `imageType` will default to `ECS_AL2`. *If your image needs GPU resources,
+  * specify `ECS_AL2_NVIDIA`; otherwise, the instances will not be able to properly
+  * join the ComputeEnvironment*.
+  *
   * @default
-  * If `imageKubernetesVersion` is specified,
-  * - EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances,
-  * Otherwise,
-  * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances,
+  * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances
   */
   readonly images?: EcsMachineImage[];
 
@@ -404,7 +408,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - a new role will be created
    */
-  readonly spotIamFleetRole?: iam.IRole;
+  readonly spotFleetRole?: iam.IRole;
 
   /**
     * The instance types that this Compute Environment can launch.
@@ -466,65 +470,39 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   readonly minvCpus?: number;
   readonly placementGroup?: ec2.IPlacementGroup;
 
+  private readonly instances: string[];
+  private readonly instanceProfile: iam.CfnInstanceProfile;
+
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
     super(scope, id, props);
 
     this.images = props.images;
+    this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
     this.spotBidPercentage = props.spotBidPercentage;
+    this.spotFleetRole = props.spotFleetRole ?? createSpotFleetRole(this);
     this.instanceTypes = props.instanceTypes;
     this.instanceClasses = props.instanceClasses;
 
-    const instances: string[] = [];
-    for (const instanceType of this.instanceTypes ?? []) {
-      instances.push(instanceType.toString());
-    }
-    for (const instanceClass of this.instanceClasses ?? []) {
-      instances.push(instanceClass);
-    }
-    if (props.useOptimalInstanceClasses || props.useOptimalInstanceClasses === undefined) {
-      instances.push('optimal');
-    }
-    this.instanceRole = props.instanceRole ?? new iam.Role(this, 'InstanceProfileRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-    });
-
-    const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [this.instanceRole.roleName],
-    });
-
-    this.allocationStrategy = props.allocationStrategy;
-    if (this.spot) {
-      this.spotFleetRole = new iam.Role(this, 'SpotFleetRole', {
-        assumedBy: new iam.ServicePrincipal('spotfleet.amazonaws.com'),
-      });
-      if (!this.allocationStrategy) {
-        this.allocationStrategy = AllocationStrategy.SPOT_CAPACITY_OPTIMIZED;
-      }
-    }
-
-    if (!this.allocationStrategy) {
-      this.allocationStrategy = AllocationStrategy.BEST_FIT_PROGRESSIVE;
-    } else if (this.allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED && !this.spot) {
-      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances`);
-    }
+    const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
+    this.instanceRole = instanceRole;
+    this.instanceProfile = instanceProfile;
 
     this.launchTemplate = props.launchTemplate;
-    this.minvCpus = props.minvCpus ?? 0;
-    if (this.minvCpus < 0) {
-      throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${this.minvCpus} < 0; 'minvCpus' cannot be less than zero`);
-    }
-    if (this.minvCpus > this.maxvCpus) {
-      throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${this.minvCpus} > 'maxvCpus' = ${this.maxvCpus}; 'minvCpus' cannot be greater than 'maxvCpus'`);
-    }
+    this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
     this.placementGroup = props.placementGroup;
+
+    this.instances = determineInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses);
+
+    validateVCpus(id, this.minvCpus, this.maxvCpus);
+    validateSpotBidPercentage(id, this.spot, this.spotBidPercentage);
 
     new CfnComputeEnvironment(this, 'Resource', {
       ...this.resourceProps,
       computeResources: {
         ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
-        instanceRole: iamProfile.attrArn,
-        instanceTypes: instances,
+        instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
+        instanceTypes: this.instances,
         type: this.spot ? 'SPOT' : 'EC2',
         spotIamFleetRole: this.spotFleetRole?.roleArn,
         allocationStrategy: this.allocationStrategy,
@@ -533,7 +511,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         ec2Configuration: this.images?.map((image) => {
           return {
             imageIdOverride: image.image?.getImage(this).imageId,
-            imageType: image.imageType ?? 'ECS_AL2',
+            imageType: image.imageType ?? EcsMachineImageType.ECS_AL2,
           };
         }),
       },
@@ -643,7 +621,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
   /**
    * The namespace of the Cluster
    *
-   * @default 'default'
+   * @default 'batch-eks-default' + construct id
    */
   readonly kubernetesNamespace?: string;
 
@@ -667,104 +645,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
 
   /**
   * Configure which AMIs this Compute Environment can launch.
-  * @default
-  * If `imageKubernetesVersion` is specified,
-  * - EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances,
-  * Otherwise,
-  * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances,
-  */
-  readonly images?: EcsMachineImage[];
-
-  /**
-    * The allocation strategy to use if not enough instances of
-    * the best fitting instance type can be allocated.
-    *
-    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-    * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
-    */
-  readonly allocationStrategy?: AllocationStrategy;
-
-  /**
-    * The maximum percentage that a Spot Instance price can be when compared with the
-    * On-Demand price for that instance type before instances are launched.
-    * For example, if your maximum percentage is 20%, the Spot price must be
-    * less than 20% of the current On-Demand price for that Instance.
-    * You always pay the lowest market price and never more than your maximum percentage.
-    * For most use cases, Batch recommends leaving this field empty.
-    *
-    * Implies `spot == true` if set
-    *
-    * @default - 100%
-    */
-  readonly spotBidPercentage?: number;
-
-  /**
-    * The instance types that this Compute Environment can launch.
-    * Which one is chosen depends on the `AllocationStrategy` used.
-    */
-  readonly instanceTypes?: ec2.InstanceType[];
-
-  /**
-    * The instance types that this Compute Environment can launch.
-    * Which one is chosen depends on the `AllocationStrategy` used.
-    */
-  readonly instanceClasses?: ec2.InstanceClass[];
-
-  /**
-    * The execution Role that instances launched by this Compute Environment will use.
-    */
-  readonly instanceRole?: iam.IRole;
-
-  /**
-    * The Launch Template that this Compute Environment
-    * will use to provision EC2 Instances.
-    *
-    * *Note*: if `securityGroups` is specified on both your
-    * launch template and this Compute Environment, **the
-    * `securityGroup`s on the Compute Environment override the
-    * ones on the launch template.
-    */
-  readonly launchTemplate?: ec2.ILaunchTemplate;
-
-  /**
-    * The minimum vCPUs that an environment should maintain,
-    * even if the compute environment is DISABLED.
-    *
-    * @default 0
-    */
-  readonly minvCpus?: number;
-
-  /**
-    * The EC2 placement group to associate with your compute resources.
-    * If you intend to submit multi-node parallel jobs to this Compute Environment,
-    * you should consider creating a cluster placement group and associate it with your compute resources.
-    * This keeps your multi-node parallel job on a logical grouping of instances
-    * within a single Availability Zone with high network flow potential.
-    *
-    * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
-    */
-  readonly placementGroup?: ec2.IPlacementGroup;
-
-}
-
-export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EksComputeEnvironment {
-  /**
-   * The namespace of the Cluster
-   *
-   * @default 'default'
-   */
-  readonly kubernetesNamespace?: string;
-
-  /**
-   * The cluster that backs this Compute Environment. Required
-   * for Compute Environments running Kubernetes jobs.
-   *
-   * @default - an EKS Cluster will be created
-   */
-  readonly eksCluster?: eks.ICluster;
-
-  /**
-  * Configure which AMIs this Compute Environment can launch.
+  *
   * @default
   * If `imageKubernetesVersion` is specified,
   * - EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances,
@@ -814,6 +695,13 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   readonly instanceRole?: iam.IRole;
 
   /**
+   * blah
+   *
+   * @default - a new role will be created
+   */
+  readonly spotFleetRole?: iam.IRole;
+
+  /**
     * The Launch Template that this Compute Environment
     * will use to provision EC2 Instances.
     *
@@ -842,22 +730,78 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
     */
   readonly placementGroup?: ec2.IPlacementGroup;
+}
 
+export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EksComputeEnvironment {
+  readonly kubernetesNamespace?: string;
+  readonly eksCluster?: eks.ICluster;
+
+  readonly images?: EksMachineImage[];
+  readonly allocationStrategy?: AllocationStrategy;
+  readonly spotBidPercentage?: number;
+  readonly spotFleetRole?: iam.IRole | undefined;
+  readonly instanceTypes?: ec2.InstanceType[];
+  readonly instanceClasses?: ec2.InstanceClass[];
+  readonly instanceRole?: iam.IRole;
+  readonly launchTemplate?: ec2.ILaunchTemplate;
+  readonly minvCpus?: number;
+  readonly placementGroup?: ec2.IPlacementGroup;
+
+  private readonly instances: string[];
+  private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {
     super(scope, id, props);
 
-    this.kubernetesNamespace = props.kubernetesNamespace ?? 'default';
+    this.kubernetesNamespace = props.kubernetesNamespace ?? 'batch-eks-cluster-' + id;
     this.eksCluster = props.eksCluster ?? new eks.Cluster(this, 'EKSCluster', {
       version: eks.KubernetesVersion.V1_24,
     });
 
-    const resource = super.node.tryFindChild('Resource') as CfnComputeEnvironment;
+    this.images = props.images;
+    this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
+    this.spotBidPercentage = props.spotBidPercentage;
+    this.spotFleetRole = props.spotFleetRole ?? createSpotFleetRole(this);
+    this.instanceTypes = props.instanceTypes;
+    this.instanceClasses = props.instanceClasses;
 
-    resource.eksConfiguration = {
-      eksClusterArn: this.eksCluster.clusterArn,
-      kubernetesNamespace: this.kubernetesNamespace,
-    };
+    const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
+    this.instanceRole = instanceRole;
+    this.instanceProfile = instanceProfile;
+
+    this.launchTemplate = props.launchTemplate;
+    this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
+    this.placementGroup = props.placementGroup;
+
+    this.instances = determineInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses);
+
+    validateVCpus(id, this.minvCpus, this.maxvCpus);
+    validateSpotBidPercentage(id, this.spot, this.spotBidPercentage);
+
+    new CfnComputeEnvironment(this, 'Resource', {
+      ...this.resourceProps,
+      eksConfiguration: {
+        eksClusterArn: this.eksCluster.clusterArn,
+        kubernetesNamespace: this.kubernetesNamespace,
+      },
+      computeResources: {
+        ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
+        minvCpus: this.minvCpus,
+        instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
+        instanceTypes: this.instances,
+        type: this.spot ? 'SPOT' : 'EC2',
+        spotIamFleetRole: this.spotFleetRole?.roleArn,
+        allocationStrategy: this.allocationStrategy,
+        bidPercentage: this.spotBidPercentage,
+        launchTemplate: this.launchTemplate,
+        ec2Configuration: this.images?.map((image) => {
+          return {
+            imageIdOverride: image.image?.getImage(this).imageId,
+            imageType: image.imageType ?? EksMachineImageType.EKS_AL2,
+          };
+        }),
+      },
+    });
   }
 }
 
@@ -870,3 +814,74 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
     super(scope, id, props);
   }
 }
+
+function determineInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
+  const instances = [];
+
+  for (const instanceType of types ?? []) {
+    instances.push(instanceType.toString());
+  }
+  for (const instanceClass of classes ?? []) {
+    instances.push(instanceClass);
+  }
+  if (useOptimalInstanceClasses || useOptimalInstanceClasses === undefined) {
+    instances.push('optimal');
+  }
+
+  return instances;
+}
+
+function createInstanceRoleAndProfile(scope: Construct, instanceRole?: iam.IRole) {
+  const result: any = {};
+
+  result.instanceRole = instanceRole ?? new iam.Role(scope, 'InstanceProfileRole', {
+    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  });
+
+  result.instanceProfile = new iam.CfnInstanceProfile(scope, 'InstanceProfile', {
+    roles: [result.instanceRole.roleName],
+  });
+
+  return result;
+}
+
+function createSpotFleetRole(scope: Construct) {
+  return new iam.Role(scope, 'SpotFleetRole', {
+    assumedBy: new iam.ServicePrincipal('spotfleet.amazonaws.com'),
+  });
+}
+
+function determineAllocationStrategy(id: string, allocationStrategy?: AllocationStrategy, spot?: boolean) {
+  let result = allocationStrategy;
+  if (!allocationStrategy) {
+    result = spot ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED : AllocationStrategy.BEST_FIT_PROGRESSIVE;
+  } else if (allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED && !spot) {
+    throw new Error(`Managed ComputeEnvironment '${id}' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances`);
+  }
+
+  return result;
+}
+
+function validateSpotBidPercentage(id: string, spot?: boolean, spotBidPercentage?: number) {
+  if (spotBidPercentage) {
+    if (!spot) {
+      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' without specifying 'spot'`);
+    } else if (spotBidPercentage > 100) {
+      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' > 100`);
+    } else if (spotBidPercentage < 0) {
+      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' < 0`);
+    }
+  }
+}
+
+function validateVCpus(id: string, minvCpus: number, maxvCpus: number) {
+  if (minvCpus < 0) {
+    throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${minvCpus} < 0; 'minvCpus' cannot be less than zero`);
+  }
+  if (minvCpus > maxvCpus) {
+    throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${minvCpus} > 'maxvCpus' = ${maxvCpus}; 'minvCpus' cannot be greater than 'maxvCpus'`);
+  }
+}
+
+const DEFAULT_MIN_VCPUS = 0;
+const DEFAULT_MAX_VCPUS = 256;
