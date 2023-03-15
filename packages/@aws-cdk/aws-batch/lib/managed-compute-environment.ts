@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
-import { Duration } from '@aws-cdk/core';
+import { Duration, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
@@ -470,7 +470,6 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   readonly minvCpus?: number;
   readonly placementGroup?: ec2.IPlacementGroup;
 
-  private readonly instances: string[];
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
@@ -491,30 +490,33 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
     this.placementGroup = props.placementGroup;
 
-    this.instances = determineInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses);
-
     validateVCpus(id, this.minvCpus, this.maxvCpus);
     validateSpotBidPercentage(id, this.spot, this.spotBidPercentage);
 
     new CfnComputeEnvironment(this, 'Resource', {
       ...this.resourceProps,
-      computeResources: {
-        ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
-        minvCpus: this.minvCpus,
-        instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
-        instanceTypes: this.instances,
-        type: this.spot ? 'SPOT' : 'EC2',
-        spotIamFleetRole: this.spotFleetRole?.roleArn,
-        allocationStrategy: this.allocationStrategy,
-        bidPercentage: this.spotBidPercentage,
-        launchTemplate: this.launchTemplate,
-        ec2Configuration: this.images?.map((image) => {
+      // We need instanceTypes to be Lazy, but it doesn't implement IResolvable
+      computeResources: Lazy.any({
+        produce: () => {
           return {
-            imageIdOverride: image.image?.getImage(this).imageId,
-            imageType: image.imageType ?? EcsMachineImageType.ECS_AL2,
+            ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
+            minvCpus: this.minvCpus,
+            instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
+            instanceTypes: renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
+            type: this.spot ? 'SPOT' : 'EC2',
+            spotIamFleetRole: this.spotFleetRole?.roleArn,
+            allocationStrategy: this.allocationStrategy,
+            bidPercentage: this.spotBidPercentage,
+            launchTemplate: this.launchTemplate,
+            ec2Configuration: this.images?.map((image) => {
+              return {
+                imageIdOverride: image.image?.getImage(this).imageId,
+                imageType: image.imageType ?? EcsMachineImageType.ECS_AL2,
+              };
+            }),
           };
-        }),
-      },
+        },
+      }),
     });
   }
 
@@ -771,7 +773,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
     this.placementGroup = props.placementGroup;
 
-    this.instances = determineInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses);
+    this.instances = renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses);
 
     validateVCpus(id, this.minvCpus, this.maxvCpus);
     validateSpotBidPercentage(id, this.spot, this.spotBidPercentage);
@@ -813,7 +815,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
   }
 }
 
-function determineInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
+function renderInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
   const instances = [];
 
   for (const instanceType of types ?? []) {
