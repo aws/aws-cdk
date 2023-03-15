@@ -144,6 +144,9 @@ export class ValidationReportFormatter {
         if (violation.fix) {
           output.push(`  How to fix: ${violation.fix}`);
         }
+        if (violation.ruleMetadata) {
+          output.push(`  Rule Metadata: \n\t${Object.entries(violation.ruleMetadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`);
+        }
       });
 
     });

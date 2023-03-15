@@ -27,6 +27,15 @@ export interface ValidationViolation {
    * @default - no severity
    */
   readonly severity?: string;
+
+  /**
+   * Additional metadata to include with the rule results.
+   * This can be used to provide additional information that is
+   * plugin specific. The data provided here will be rendered as is.
+   *
+   * @default - no rule metadata
+   */
+  readonly ruleMetadata?: { readonly [key: string]: string }
 }
 
 /**
