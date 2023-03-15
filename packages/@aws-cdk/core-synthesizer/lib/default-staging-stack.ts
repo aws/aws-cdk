@@ -104,7 +104,10 @@ export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
   private dockerAssetPublishingRoleName: string;
 
   constructor(scope: Construct, id: string, props: DefaultStagingStackProps = {}) {
-    super(scope, id, props);
+    super(scope, id, {
+      ...props,
+      // synthesizer: // TODO: need a synthesizer that will not create an asset for the template
+    });
 
     this.dependencyStack = this;
 
@@ -158,7 +161,11 @@ export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
         roleName: roleName,
         assumedBy: new iam.ServicePrincipal('sts.amazonaws.com'), // TODO actually create correct role
       });
-      role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
+      role.addToPolicy(new iam.PolicyStatement({
+        actions: ['s3:GetObject*', 's3:GetBucket*', 's3:GetEncryptionConfiguration', 's3:List*', 's3:DeleteObject*', 's3:PutObject*', 's3:Abort*'],
+        resources: [this.getCreateBucket().bucketArn, `${this.getCreateBucket().bucketArn}/*`],
+        effect: iam.Effect.ALLOW,
+      }));
       return role;
     };
 
@@ -197,15 +204,18 @@ export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
     });
   }
 
-  private getCreateBucket(): string {
+  private getCreateBucket() {
     // Error: Resolution error: ID components may not include unresolved tokens:
     const stagingBucketName = this.stagingBucketName ?? 'cdk-489318732371-us-east-1'; //`cdk-${this.account}-${this.region}`;
-    this.node.tryFindChild(stagingBucketName) as s3.Bucket ?? new s3.Bucket(this, stagingBucketName, {
+    const bucket = this.node.tryFindChild(stagingBucketName) as s3.Bucket ?? new s3.Bucket(this, stagingBucketName, {
       bucketName: stagingBucketName,
       // autoDeleteObjects: true, // this creates a custom resource with an asset
       removalPolicy: RemovalPolicy.DESTROY,
     });
-    return stagingBucketName;
+    return {
+      bucketName: stagingBucketName,
+      bucketArn: bucket.bucketArn,
+    };
   }
 
   /**
@@ -228,7 +238,7 @@ export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
 
   public addFile(_asset: FileAssetSource): FileAssetInfo {
     return {
-      bucketName: this.getCreateBucket(),
+      bucketName: this.getCreateBucket().bucketName,
       assumeRoleArn: this.getCreateFilePublishingRole(),
     };
   }
