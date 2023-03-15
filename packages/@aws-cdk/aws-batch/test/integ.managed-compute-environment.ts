@@ -1,5 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as eks from '@aws-cdk/aws-eks';
 import * as cdk from '@aws-cdk/core';
+
 import { IntegTest } from '@aws-cdk/integ-tests';
 import * as batch from '../lib';
 
@@ -30,6 +32,19 @@ new batch.ManagedEc2EcsComputeEnvironment(stack, 'AnotherCE', {
   useOptimalInstanceClasses: false,
   instanceClasses: [ec2.InstanceClass.R4],
   terminateOnUpdate: false,
+});
+
+new batch.ManagedEc2EksComputeEnvironment(stack, 'eksCE', {
+  vpc,
+  kubernetesNamespace: 'myKubeNamespace',
+});
+
+new batch.ManagedEc2EksComputeEnvironment(stack, 'eksCE', {
+  vpc,
+  kubernetesNamespace: 'myKubeNamespace',
+  eksCluster: new eks.Cluster(stack, 'eksCluster', {
+    version: eks.KubernetesVersion.V1_24,
+  }),
 });
 
 new IntegTest(app, 'ArchiveTest', {

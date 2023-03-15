@@ -54,22 +54,22 @@ export class LinuxParameters extends Construct {
   /**
    * Whether the init process is enabled
    */
-  private readonly initProcessEnabled?: boolean;
+  protected readonly initProcessEnabled?: boolean;
 
   /**
    * The shared memory size (in MiB). Not valid for Fargate launch type
    */
-  private readonly sharedMemorySize?: number;
+  protected readonly sharedMemorySize?: number;
 
   /**
    * The max swap memory
    */
-  private readonly maxSwap?: cdk.Size;
+  protected readonly maxSwap?: cdk.Size;
 
   /**
    * The swappiness behavior
    */
-  private readonly swappiness?: number;
+  protected readonly swappiness?: number;
 
   /**
    * Capabilities to be added
@@ -84,12 +84,12 @@ export class LinuxParameters extends Construct {
   /**
    * Device mounts
    */
-  private readonly devices = new Array<Device>();
+  protected readonly devices = new Array<Device>();
 
   /**
    * TmpFs mounts
    */
-  private readonly tmpfs = new Array<Tmpfs>();
+  protected readonly tmpfs = new Array<Tmpfs>();
 
   /**
    * Constructs a new instance of the LinuxParameters class.
@@ -155,6 +155,22 @@ export class LinuxParameters extends Construct {
     this.tmpfs.push(...tmpfs);
   }
 
+  protected renderTmpfs(tmpfs: Tmpfs): CfnTaskDefinition.TmpfsProperty {
+    return {
+      containerPath: tmpfs.containerPath,
+      size: tmpfs.size,
+      mountOptions: tmpfs.mountOptions,
+    };
+  }
+
+  protected renderDevice(device: Device): CfnTaskDefinition.DeviceProperty {
+    return {
+      containerPath: device.containerPath,
+      hostPath: device.hostPath,
+      permissions: device.permissions,
+    };
+  }
+
   /**
    * Renders the Linux parameters to a CloudFormation object.
    */
@@ -168,8 +184,8 @@ export class LinuxParameters extends Construct {
         add: cdk.Lazy.list({ produce: () => this.capAdd }, { omitEmpty: true }),
         drop: cdk.Lazy.list({ produce: () => this.capDrop }, { omitEmpty: true }),
       },
-      devices: cdk.Lazy.any({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
-      tmpfs: cdk.Lazy.any({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true }),
+      devices: cdk.Lazy.any({ produce: () => this.devices.map(this.renderDevice) }, { omitEmptyArray: true }),
+      tmpfs: cdk.Lazy.any({ produce: () => this.tmpfs.map(this.renderTmpfs) }, { omitEmptyArray: true }),
     };
   }
 }
@@ -199,14 +215,6 @@ export interface Device {
   readonly permissions?: DevicePermission[]
 }
 
-function renderDevice(device: Device): CfnTaskDefinition.DeviceProperty {
-  return {
-    containerPath: device.containerPath,
-    hostPath: device.hostPath,
-    permissions: device.permissions,
-  };
-}
-
 /**
  * The details of a tmpfs mount for a container.
  */
@@ -228,13 +236,6 @@ export interface Tmpfs {
   readonly mountOptions?: TmpfsMountOption[],
 }
 
-function renderTmpfs(tmpfs: Tmpfs): CfnTaskDefinition.TmpfsProperty {
-  return {
-    containerPath: tmpfs.containerPath,
-    size: tmpfs.size,
-    mountOptions: tmpfs.mountOptions,
-  };
-}
 
 /**
  * A Linux capability

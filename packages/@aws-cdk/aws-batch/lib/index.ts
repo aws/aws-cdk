@@ -6,5 +6,5 @@ export * from './compute-environment-base';
 export * from './job-definition-base';
 export * from './ecs-job-definition';
 export * from './eks-job-definition';
-export * from './eks-container';
+export * from './container-definition';
 export * from './eks-container';
