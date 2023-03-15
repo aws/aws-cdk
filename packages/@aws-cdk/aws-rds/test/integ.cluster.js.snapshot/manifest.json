@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-rds-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b11338b1fdbc41b36beb545451369de9d176a04762e559c87a3afbe35c7316d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b62ee60990b0a14a4b10381d4d26d42ce50c164305fa81b2d9729e116480af0f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -225,6 +219,18 @@
             "data": "DatabaseInstance2AA380DEE"
           }
         ],
+        "/aws-cdk-rds-integ/ClusterIamAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterIamAccess93AC3DF3"
+          }
+        ],
+        "/aws-cdk-rds-integ/ClusterIamAccess/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterIamAccessDefaultPolicyA088E4DA"
+          }
+        ],
         "/aws-cdk-rds-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -239,6 +245,12 @@
         ]
       },
       "displayName": "aws-cdk-rds-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

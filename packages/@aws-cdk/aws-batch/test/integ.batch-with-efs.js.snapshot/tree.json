@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "batch-stack": {
         "id": "batch-stack",
         "path": "batch-stack",
@@ -942,6 +934,12 @@
                     "fileSystemId": {
                       "Ref": "EFSF3301CFD"
                     },
+                    "accessPointTags": [
+                      {
+                        "key": "Name",
+                        "value": "batch-stack/EFSAccessPoint"
+                      }
+                    ],
                     "posixUser": {
                       "uid": "1000",
                       "gid": "1000"
@@ -970,6 +968,14 @@
             "id": "DefaultJobRole",
             "path": "batch-stack/DefaultJobRole",
             "children": {
+              "ImportDefaultJobRole": {
+                "id": "ImportDefaultJobRole",
+                "path": "batch-stack/DefaultJobRole/ImportDefaultJobRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "batch-stack/DefaultJobRole/Resource",
@@ -1132,6 +1138,14 @@
                 "id": "Ecs-Instance-Role",
                 "path": "batch-stack/batch-demand-compute-env-launch-template/Ecs-Instance-Role",
                 "children": {
+                  "ImportEcs-Instance-Role": {
+                    "id": "ImportEcs-Instance-Role",
+                    "path": "batch-stack/batch-demand-compute-env-launch-template/Ecs-Instance-Role/ImportEcs-Instance-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "batch-stack/batch-demand-compute-env-launch-template/Ecs-Instance-Role/Resource",
@@ -1199,6 +1213,14 @@
                 "id": "Resource-Service-Instance-Role",
                 "path": "batch-stack/batch-demand-compute-env-launch-template/Resource-Service-Instance-Role",
                 "children": {
+                  "ImportResource-Service-Instance-Role": {
+                    "id": "ImportResource-Service-Instance-Role",
+                    "path": "batch-stack/batch-demand-compute-env-launch-template/Resource-Service-Instance-Role/ImportResource-Service-Instance-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "batch-stack/batch-demand-compute-env-launch-template/Resource-Service-Instance-Role/Resource",
@@ -1358,6 +1380,14 @@
                 "id": "Ecs-Instance-Role",
                 "path": "batch-stack/batch-spot-compute-env/Ecs-Instance-Role",
                 "children": {
+                  "ImportEcs-Instance-Role": {
+                    "id": "ImportEcs-Instance-Role",
+                    "path": "batch-stack/batch-spot-compute-env/Ecs-Instance-Role/ImportEcs-Instance-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "batch-stack/batch-spot-compute-env/Ecs-Instance-Role/Resource",
@@ -1425,6 +1455,14 @@
                 "id": "Resource-Service-Instance-Role",
                 "path": "batch-stack/batch-spot-compute-env/Resource-Service-Instance-Role",
                 "children": {
+                  "ImportResource-Service-Instance-Role": {
+                    "id": "ImportResource-Service-Instance-Role",
+                    "path": "batch-stack/batch-spot-compute-env/Resource-Service-Instance-Role/ImportResource-Service-Instance-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "batch-stack/batch-spot-compute-env/Resource-Service-Instance-Role/Resource",
@@ -1587,6 +1625,14 @@
                 "id": "Ecs-Instance-Role",
                 "path": "batch-stack/batch-demand-compute-env-launch-template-2/Ecs-Instance-Role",
                 "children": {
+                  "ImportEcs-Instance-Role": {
+                    "id": "ImportEcs-Instance-Role",
+                    "path": "batch-stack/batch-demand-compute-env-launch-template-2/Ecs-Instance-Role/ImportEcs-Instance-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "batch-stack/batch-demand-compute-env-launch-template-2/Ecs-Instance-Role/Resource",
@@ -1654,6 +1700,14 @@
                 "id": "Resource-Service-Instance-Role",
                 "path": "batch-stack/batch-demand-compute-env-launch-template-2/Resource-Service-Instance-Role",
                 "children": {
+                  "ImportResource-Service-Instance-Role": {
+                    "id": "ImportResource-Service-Instance-Role",
+                    "path": "batch-stack/batch-demand-compute-env-launch-template-2/Resource-Service-Instance-Role/ImportResource-Service-Instance-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "batch-stack/batch-demand-compute-env-launch-template-2/Resource-Service-Instance-Role/Resource",
@@ -1852,6 +1906,14 @@
                 "id": "Resource-Service-Instance-Role",
                 "path": "batch-stack/batch-fargate-compute-env/Resource-Service-Instance-Role",
                 "children": {
+                  "ImportResource-Service-Instance-Role": {
+                    "id": "ImportResource-Service-Instance-Role",
+                    "path": "batch-stack/batch-fargate-compute-env/Resource-Service-Instance-Role/ImportResource-Service-Instance-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "batch-stack/batch-fargate-compute-env/Resource-Service-Instance-Role/Resource",
@@ -1986,6 +2048,14 @@
                 "id": "Resource-Service-Instance-Role",
                 "path": "batch-stack/batch-fargate-spot-compute-env/Resource-Service-Instance-Role",
                 "children": {
+                  "ImportResource-Service-Instance-Role": {
+                    "id": "ImportResource-Service-Instance-Role",
+                    "path": "batch-stack/batch-fargate-spot-compute-env/Resource-Service-Instance-Role/ImportResource-Service-Instance-Role",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "batch-stack/batch-fargate-spot-compute-env/Resource-Service-Instance-Role/Resource",
@@ -2313,6 +2383,14 @@
             "id": "execution-role",
             "path": "batch-stack/execution-role",
             "children": {
+              "Importexecution-role": {
+                "id": "Importexecution-role",
+                "path": "batch-stack/execution-role/Importexecution-role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "batch-stack/execution-role/Resource",
@@ -2502,6 +2580,22 @@
               "fqn": "@aws-cdk/aws-batch.JobDefinition",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "batch-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "batch-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -2522,12 +2616,30 @@
                 "path": "BatchWithEFSTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.252"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "BatchWithEFSTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "BatchWithEFSTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "BatchWithEFSTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -2543,6 +2655,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.252"
         }
       }
     },
