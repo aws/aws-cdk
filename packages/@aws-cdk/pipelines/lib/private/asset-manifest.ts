@@ -155,6 +155,13 @@ export interface IManifestEntry {
    * Type-dependent destination data
    */
   readonly destination: AwsDestination;
+
+  /**
+   * Optional display name for this asset
+   *
+   * @default - Uses an auto-generated name
+   */
+  readonly name?: string;
 }
 
 /**

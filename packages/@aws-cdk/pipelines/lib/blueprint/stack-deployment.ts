@@ -309,6 +309,7 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
     for (const entry of manifest.entries) {
       let assetType: AssetType;
       let isTemplate = false;
+      let assetName: string | undefined = entry.name;
 
       if (entry instanceof DockerImageManifestEntry) {
         assetType = AssetType.DOCKER_IMAGE;
@@ -325,6 +326,7 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
         assetSelector: entry.id.toString(),
         assetType,
         assetPublishingRoleArn: entry.destination.assumeRoleArn,
+        assetName,
         isTemplate,
       });
     }
