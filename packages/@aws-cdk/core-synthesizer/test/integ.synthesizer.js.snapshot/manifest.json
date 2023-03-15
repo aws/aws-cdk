@@ -1,0 +1,163 @@
+{
+  "version": "30.1.0",
+  "artifacts": {
+    "app-scoped-staging-test.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "app-scoped-staging-test.assets.json"
+      }
+    },
+    "app-scoped-staging-test": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "app-scoped-staging-test.template.json",
+        "validateOnSynth": false,
+        "additionalDependencies": [
+          "app-scoped-staging-test.assets"
+        ],
+        "stackTemplateAssetObjectUrl": "s3://default-bucket/44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a.json"
+      },
+      "dependencies": [
+        "app-scoped-staging-test.assets"
+      ],
+      "displayName": "app-scoped-staging-test"
+    },
+    "StagingStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "StagingStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "StagingStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "StagingStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cf71e98470e9434a04895f1736e006c3de6a6a9d2f563b2cef88849dacc1e1f6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "StagingStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "StagingStack.assets"
+      ],
+      "metadata": {
+        "/StagingStack/default-bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultbucket4957B632"
+          }
+        ],
+        "/StagingStack/default-bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultbucketPolicyC116629D"
+          }
+        ],
+        "/StagingStack/default-bucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultbucketAutoDeleteObjectsCustomResource08E22CE8"
+          }
+        ],
+        "/StagingStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/StagingStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/StagingStack/cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkQualifierfilepublishingroleAWSAccountIdAWSRegionE5E2CED6"
+          }
+        ],
+        "/StagingStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/StagingStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "StagingStack"
+    },
+    "synthesizerintegDefaultTestDeployAssert208D3414.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "synthesizerintegDefaultTestDeployAssert208D3414.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "synthesizerintegDefaultTestDeployAssert208D3414": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "synthesizerintegDefaultTestDeployAssert208D3414.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "synthesizerintegDefaultTestDeployAssert208D3414.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "synthesizerintegDefaultTestDeployAssert208D3414.assets"
+      ],
+      "metadata": {
+        "/synthesizer-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/synthesizer-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "synthesizer-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

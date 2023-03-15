@@ -41,10 +41,28 @@
       "path": "../core"
     },
     {
+      "path": "../cx-api"
+    },
+    {
       "path": "../aws-s3"
     },
     {
       "path": "../aws-ecr"
+    },
+    {
+      "path": "../aws-iam"
+    },
+    {
+      "path": "../cloud-assembly-schema"
+    },
+    {
+      "path": "../integ-runner"
+    },
+    {
+      "path": "../integ-tests"
+    },
+    {
+      "path": "../aws-lambda"
     },
     {
       "path": "../../../tools/@aws-cdk/cdk-build-tools"

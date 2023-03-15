@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "synthesizer-integ/DefaultTest": {
+      "stacks": [
+        "app-scoped-staging-test"
+      ],
+      "assertionStack": "synthesizer-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "synthesizerintegDefaultTestDeployAssert208D3414"
+    }
+  }
+}

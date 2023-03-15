@@ -16,9 +16,12 @@ import {
   Token,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IStagingStack, DefaultStagingStack } from './staging-stack';
+import { IDefaultStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
 
 export class BootstrapRole {
+  // public abstract arn(stack: Stack) {
+  //   // stack.formatArn
+  // }
   public static default() {
     return new BootstrapRole('default');
   }
@@ -28,6 +31,7 @@ export class BootstrapRole {
   }
 
   public static fromRoleName(name: string) {
+    // wont work
     const arn = Arn.format({
       resource: 'role',
       service: 'iam',
@@ -37,6 +41,10 @@ export class BootstrapRole {
   }
 
   private constructor(public readonly roleArn: string) {}
+
+  public get roleName() {
+    return this.roleArn.split('/')[1];
+  }
 }
 
 /**
@@ -55,7 +63,7 @@ export interface StagingStackSynthesizerProps {
    *
    * @default - default role
    */
-  readonly lookupRoleArn?: BootstrapRole;
+  readonly lookupRole?: BootstrapRole;
 }
 
 /**
@@ -130,11 +138,11 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   private assetManifest = new AssetManifestBuilder();
   private lookupRoleArn: string;
 
-  constructor(stack: Stack, props: StagingStackSynthesizerProps = {}) {
+  constructor(private readonly stack: Stack, props: StagingStackSynthesizerProps = {}) {
     super();
     super.bind(stack);
 
-    this.lookupRoleArn = props.lookupRoleArn ?? BoundStagingStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN;
+    this.lookupRoleArn = props.lookupRole?.roleArn ?? BoundStagingStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN;
 
     const app = App.of(stack);
     if (!app) {
@@ -149,10 +157,13 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   private getCreateStagingStack(app: Stage, env: Environment): IStagingStack {
     // TODO: env could be tokens
     const stackName = `StagingStack${app.stageName}`;
-    return app.node.tryFindChild(stackName) as IStagingStack ?? new DefaultStagingStack(app, stackName, {
+    const stagingStack = app.node.tryFindChild(stackName) as DefaultStagingStack ?? new DefaultStagingStack(app, stackName, {
       env,
       stackName,
     });
+    this.stack.addDependency(stagingStack, 'reason');
+
+    return stagingStack;
   }
 
   public synthesize(session: ISynthesisSession): void {
@@ -167,8 +178,7 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
     console.log(templateAsset, assetManifestId);
 
     this.emitArtifact(session, {
-      // TODO: uhh is this right?
-      additionalDependencies: [assetManifestId/*, this.stagingStack.node.id*/],
+      additionalDependencies: [assetManifestId],
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
     });
   }

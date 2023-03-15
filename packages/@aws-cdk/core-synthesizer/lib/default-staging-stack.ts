@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Arn, ArnFormat, Aws, DockerImageAssetSource, FileAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
+import { BootstrapRole } from './synthesizer';
 
 export interface FileAssetInfo {
   readonly bucketName: string;
@@ -16,7 +17,7 @@ export interface DockerAssetInfo {
 /**
  * Information on how a Staging Stack should look.
  */
-export interface IStagingStack extends IConstruct {
+export interface IDefaultStagingStack extends IConstruct {
   /**
    * The app-scoped, environment-keyed bucket created in this staging stack.
    */
@@ -27,6 +28,13 @@ export interface IStagingStack extends IConstruct {
    * A repository is created per image asset family.
    */
   readonly stagingRepos: Record<string, ecr.Repository>;
+
+  /**
+   * Stack others can depend on.
+   *
+   * @default this
+   */
+  readonly dependencyStack: Stack;
 
   /**
    * // TODO
@@ -40,9 +48,9 @@ export interface IStagingStack extends IConstruct {
 }
 
 /**
- * Staging Stack Properties
+ * Default Staging Stack Properties
  */
-export interface StagingStackProps extends StackProps {
+export interface DefaultStagingStackProps extends StackProps {
   /**
    * Explicit name for the staging bucket
    *
@@ -55,7 +63,7 @@ export interface StagingStackProps extends StackProps {
    *
    * @default - a well-known name unique to this app/env.
    */
-  readonly fileAssetPublishingRoleName?: string;
+  readonly fileAssetPublishingRole?: BootstrapRole;
 
   /**
    * Pass in an existing role to be used as the image publishing role.
@@ -68,11 +76,11 @@ export interface StagingStackProps extends StackProps {
 /**
  * A default Staging Stack
  */
-export class DefaultStagingStack extends Stack implements IStagingStack {
+export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
   /**
    * Default asset publishing role name for file (S3) assets.
    */
-  private static readonly DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME = 'cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}';
+  private static readonly DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME = 'cdk-file-publishing-role';
 
   /**
    * Default asset publishing role name for docker (ECR) assets.
@@ -89,15 +97,20 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
    */
   public readonly stagingRepos: Record<string, ecr.Repository>;
 
+  public readonly dependencyStack: Stack;
+
   private readonly stagingBucketName?: string;
-  private fileAssetPublishingRoleName: string;
+  private fileAssetPublishingRole?: BootstrapRole;
   private dockerAssetPublishingRoleName: string;
 
-  constructor(scope: Construct, id: string, props: StagingStackProps = {}) {
+  constructor(scope: Construct, id: string, props: DefaultStagingStackProps = {}) {
     super(scope, id, props);
 
+    this.dependencyStack = this;
+
     this.stagingBucketName = props.stagingBucketName;
-    this.fileAssetPublishingRoleName = props.fileAssetPublishingRoleName ?? DefaultStagingStack.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME;
+    // eslint-disable-next-line max-len
+    this.fileAssetPublishingRole = props.fileAssetPublishingRole;
     this.dockerAssetPublishingRoleName = props.dockerAssetPublishingRoleName ?? DefaultStagingStack.DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_NAME;
     this.stagingRepos = {};
   }
@@ -106,10 +119,54 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
    * Returns the well-known name of the file publishing role
    */
   private getCreateFilePublishingRole() {
-    this.node.tryFindChild(this.fileAssetPublishingRoleName) as iam.Role ?? new iam.Role(this, this.fileAssetPublishingRoleName, {
-      roleName: DefaultStagingStack.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME,
-      assumedBy: new iam.ServicePrincipal('sts.amazonaws.com'), // TODO actually create correct role
-    });
+    // FilePublishingRoleDefaultPolicy:
+    // Type: AWS::IAM::Policy
+    // Properties:
+    //   PolicyDocument:
+    //     Statement:
+    //       - Action:
+    //           - s3:GetObject*
+    //           - s3:GetBucket*
+    //           - s3:GetEncryptionConfiguration
+    //           - s3:List*
+    //           - s3:DeleteObject*
+    //           - s3:PutObject*
+    //           - s3:Abort*
+    //         Resource:
+    //           - Fn::Sub: "${StagingBucket.Arn}"
+    //           - Fn::Sub: "${StagingBucket.Arn}/*"
+    //         Effect: Allow
+    //       - Action:
+    //           - kms:Decrypt
+    //           - kms:DescribeKey
+    //           - kms:Encrypt
+    //           - kms:ReEncrypt*
+    //           - kms:GenerateDataKey*
+    //         Effect: Allow
+    //         Resource:
+    //           Fn::If:
+    //             - CreateNewKey
+    //             - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
+    //             - Fn::Sub: arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${FileAssetsBucketKmsKeyId}
+    //     Version: '2012-10-17'
+    //   Roles:
+    //     - Ref: FilePublishingRole
+    //   PolicyName:
+    //     Fn::Sub: cdk-${Qualifier}-file-publishing-role-default-policy-${AWS::AccountId}-${AWS::Region}
+    const createIamRole = () => {
+      const role = new iam.Role(this, roleName, {
+        roleName: roleName,
+        assumedBy: new iam.ServicePrincipal('sts.amazonaws.com'), // TODO actually create correct role
+      });
+      role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
+      return role;
+    };
+
+    if (this.fileAssetPublishingRole) {
+      return this.fileAssetPublishingRole.roleArn;
+    }
+    const roleName = DefaultStagingStack.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME;
+    this.node.tryFindChild(roleName) as iam.Role ?? createIamRole();
     return Arn.format({
       partition: this.partition ?? Aws.PARTITION,
       account: this.account ?? Aws.ACCOUNT_ID,
@@ -141,10 +198,11 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   }
 
   private getCreateBucket(): string {
-    const stagingBucketName = this.stagingBucketName ?? 'default-bucket'; //`cdk-${this.account}-${this.region}`;
+    // Error: Resolution error: ID components may not include unresolved tokens:
+    const stagingBucketName = this.stagingBucketName ?? 'cdk-489318732371-us-east-1'; //`cdk-${this.account}-${this.region}`;
     this.node.tryFindChild(stagingBucketName) as s3.Bucket ?? new s3.Bucket(this, stagingBucketName, {
       bucketName: stagingBucketName,
-      autoDeleteObjects: true,
+      // autoDeleteObjects: true, // this creates a custom resource with an asset
       removalPolicy: RemovalPolicy.DESTROY,
     });
     return stagingBucketName;
