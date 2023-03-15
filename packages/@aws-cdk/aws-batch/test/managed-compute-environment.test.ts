@@ -263,11 +263,14 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     vpc = new Vpc(stack, 'vpc');
 
     // WHEN
-    new ComputeEnvironment(stack, 'MyCE', {
+    const ce = new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
       vpc,
       instanceTypes: [InstanceType.of(InstanceClass.R4, InstanceSize.LARGE)],
     });
+
+    ce.addInstanceClass(InstanceClass.M4);
+    ce.addInstanceType(InstanceType.of(InstanceClass.C4, InstanceSize.LARGE));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
@@ -276,6 +279,8 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
         ...defaultComputeResources,
         InstanceTypes: [
           'r4.large',
+          'c4.large',
+          'm4',
           'optimal',
         ],
       },

@@ -275,13 +275,13 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * The instance types that this Compute Environment can launch.
    * Which one is chosen depends on the `AllocationStrategy` used.
    */
-  readonly instanceTypes?: ec2.InstanceType[];
+  readonly instanceTypes: ec2.InstanceType[];
 
   /**
    * The instance types that this Compute Environment can launch.
    * Which one is chosen depends on the `AllocationStrategy` used.
    */
-  readonly instanceClasses?: ec2.InstanceClass[];
+  readonly instanceClasses: ec2.InstanceClass[];
 
   /**
    * Whether or not to use batch's optimal instance type.
@@ -463,8 +463,8 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   readonly allocationStrategy?: AllocationStrategy;
   readonly spotBidPercentage?: number;
   readonly spotFleetRole?: iam.IRole | undefined;
-  readonly instanceTypes?: ec2.InstanceType[];
-  readonly instanceClasses?: ec2.InstanceClass[];
+  readonly instanceTypes: ec2.InstanceType[];
+  readonly instanceClasses: ec2.InstanceClass[];
   readonly instanceRole?: iam.IRole;
   readonly launchTemplate?: ec2.ILaunchTemplate;
   readonly minvCpus?: number;
@@ -479,8 +479,8 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
     this.spotBidPercentage = props.spotBidPercentage;
     this.spotFleetRole = props.spotFleetRole ?? createSpotFleetRole(this);
-    this.instanceTypes = props.instanceTypes;
-    this.instanceClasses = props.instanceClasses;
+    this.instanceTypes = props.instanceTypes ?? [];
+    this.instanceClasses = props.instanceClasses ?? [];
 
     const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
     this.instanceRole = instanceRole;
@@ -520,15 +520,22 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     });
   }
 
-  public addInstanceType() {}
-  public addInstanceClass() {}
+  public addInstanceType(instanceType: ec2.InstanceType): void {
+    this.instanceTypes.push(instanceType);
+  }
+
+  public addInstanceClass (instanceClass: ec2.InstanceClass): void {
+    this.instanceClasses.push(instanceClass);
+  }
 }
 
 interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
   /**
    * The namespace of the Cluster
    *
-   * @default 'default'
+   * Cannot be 'default', start with 'kube-', or be longer than 64 characters.
+   *
+   * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
    */
   readonly kubernetesNamespace?: string;
 
@@ -575,13 +582,13 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
     * The instance types that this Compute Environment can launch.
     * Which one is chosen depends on the `AllocationStrategy` used.
     */
-  readonly instanceTypes?: ec2.InstanceType[];
+  readonly instanceTypes: ec2.InstanceType[];
 
   /**
     * The instance types that this Compute Environment can launch.
     * Which one is chosen depends on the `AllocationStrategy` used.
     */
-  readonly instanceClasses?: ec2.InstanceClass[];
+  readonly instanceClasses: ec2.InstanceClass[];
 
   /**
     * The execution Role that instances launched by this Compute Environment will use.
@@ -740,14 +747,13 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   readonly allocationStrategy?: AllocationStrategy;
   readonly spotBidPercentage?: number;
   readonly spotFleetRole?: iam.IRole | undefined;
-  readonly instanceTypes?: ec2.InstanceType[];
-  readonly instanceClasses?: ec2.InstanceClass[];
+  readonly instanceTypes: ec2.InstanceType[];
+  readonly instanceClasses: ec2.InstanceClass[];
   readonly instanceRole?: iam.IRole;
   readonly launchTemplate?: ec2.ILaunchTemplate;
   readonly minvCpus?: number;
   readonly placementGroup?: ec2.IPlacementGroup;
 
-  private readonly instances: string[];
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {
@@ -762,8 +768,8 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
     this.spotBidPercentage = props.spotBidPercentage;
     this.spotFleetRole = props.spotFleetRole ?? createSpotFleetRole(this);
-    this.instanceTypes = props.instanceTypes;
-    this.instanceClasses = props.instanceClasses;
+    this.instanceTypes = props.instanceTypes ?? [];
+    this.instanceClasses = props.instanceClasses ?? [];
 
     const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
     this.instanceRole = instanceRole;
@@ -772,8 +778,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
     this.placementGroup = props.placementGroup;
-
-    this.instances = renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses);
 
     validateVCpus(id, this.minvCpus, this.maxvCpus);
     validateSpotBidPercentage(id, this.spot, this.spotBidPercentage);
@@ -784,24 +788,36 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
         eksClusterArn: this.eksCluster.clusterArn,
         kubernetesNamespace: this.kubernetesNamespace,
       },
-      computeResources: {
-        ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
-        minvCpus: this.minvCpus,
-        instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
-        instanceTypes: this.instances,
-        type: this.spot ? 'SPOT' : 'EC2',
-        spotIamFleetRole: this.spotFleetRole?.roleArn,
-        allocationStrategy: this.allocationStrategy,
-        bidPercentage: this.spotBidPercentage,
-        launchTemplate: this.launchTemplate,
-        ec2Configuration: this.images?.map((image) => {
+      computeResources: Lazy.any({
+        produce: () => {
           return {
-            imageIdOverride: image.image?.getImage(this).imageId,
-            imageType: image.imageType ?? EksMachineImageType.EKS_AL2,
+            ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
+            minvCpus: this.minvCpus,
+            instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
+            instanceTypes: renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
+            type: this.spot ? 'SPOT' : 'EC2',
+            spotIamFleetRole: this.spotFleetRole?.roleArn,
+            allocationStrategy: this.allocationStrategy,
+            bidPercentage: this.spotBidPercentage,
+            launchTemplate: this.launchTemplate,
+            ec2Configuration: this.images?.map((image) => {
+              return {
+                imageIdOverride: image.image?.getImage(this).imageId,
+                imageType: image.imageType ?? EksMachineImageType.EKS_AL2,
+              };
+            }),
           };
-        }),
-      },
+        },
+      }),
     });
+  }
+
+  public addInstanceType(instanceType: ec2.InstanceType): void {
+    this.instanceTypes.push(instanceType);
+  }
+
+  public addInstanceClass (instanceClass: ec2.InstanceClass): void {
+    this.instanceClasses.push(instanceClass);
   }
 }
 
