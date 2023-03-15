@@ -22,4 +22,19 @@ for (const rule of rules) {
   sg.addIngressRule(ec2.Peer.anyIpv4(), rule);
 }
 
+// Test can filter by Subnet Ids via selectSubnets
+const vpcFromVpcAttributes = ec2.Vpc.fromVpcAttributes(stack, 'VpcFromVpcAttributes', {
+  region: stack.region,
+  availabilityZones: vpc.availabilityZones,
+  vpcId: vpc.vpcId,
+});
+
+const subnets = vpc.selectSubnets({
+  subnetFilters: [ec2.SubnetFilter.byIds([vpcFromVpcAttributes.privateSubnets[0].subnetId])]
+});
+
+new cdk.CfnOutput(stack, 'SubnetID', {
+  value: subnets.subnetIds[0],
+});
+
 app.synth();
