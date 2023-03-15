@@ -620,10 +620,8 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
 export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
   /**
    * The namespace of the Cluster
-   *
-   * @default 'batch-eks-default' + construct id
    */
-  readonly kubernetesNamespace?: string;
+  readonly kubernetesNamespace: string;
 
   /**
    * The cluster that backs this Compute Environment. Required

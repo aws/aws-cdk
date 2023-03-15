@@ -3,15 +3,16 @@ import { Vpc, MachineImage, InstanceClass, InstanceType, InstanceSize } from '@a
 import { Stack } from '@aws-cdk/core';
 import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
 import * as batch from '../lib';
-import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment } from '../lib';
+import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps } from '../lib';
 import { CfnComputeEnvironmentProps } from '../lib/batch.generated';
 
 
-const defaultProps: CfnComputeEnvironmentProps = {
+const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
   type: 'managed',
   computeEnvironmentName: undefined,
   serviceRole: undefined,
   state: 'ENABLED',
+  eksConfiguration: undefined,
   computeResources: {
     allocationStrategy: AllocationStrategy.BEST_FIT_PROGRESSIVE,
     bidPercentage: undefined,
@@ -36,44 +37,73 @@ const defaultProps: CfnComputeEnvironmentProps = {
   },
 };
 
-let stack = new Stack();
+const defaultExpectedEksProps: CfnComputeEnvironmentProps = {
+  ...defaultExpectedEcsProps,
+  eksConfiguration: {
+    eksClusterArn: {
+      'Fn::GetAtt': ['MyCEEKSClusterD7B4E278', 'Arn'],
+    } as any,
+    kubernetesNamespace: 'cdk-test-namespace',
+  },
+};
 
-const PascalCaseProps = capitalizePropertyNames(stack, defaultProps);
-const DefaultComputeResources = PascalCaseProps.ComputeResources;
+let stack = new Stack();
+let vpc = new Vpc(stack, 'vpc');
+
+const pascalCaseExpectedEcsProps = capitalizePropertyNames(stack, defaultExpectedEcsProps);
+const pascalCaseExpectedEksProps = capitalizePropertyNames(stack, defaultExpectedEksProps);
+const defaultComputeResources = pascalCaseExpectedEcsProps.ComputeResources;
+
+const defaultEcsProps: ManagedEc2EcsComputeEnvironmentProps = {
+  vpc,
+};
+const defaultEksProps: ManagedEc2EksComputeEnvironmentProps = {
+  vpc,
+  kubernetesNamespace: 'cdk-test-namespace',
+};
 
 describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment])('%p type ComputeEnvironment', (ComputeEnvironment) => {
+  let expectedProps = ComputeEnvironment === ManagedEc2EcsComputeEnvironment
+    ? pascalCaseExpectedEcsProps
+    : pascalCaseExpectedEksProps;
+  let defaultProps: any = ComputeEnvironment === ManagedEc2EcsComputeEnvironment
+    ? defaultEcsProps as ManagedEc2EcsComputeEnvironmentProps
+    : defaultEksProps as ManagedEc2EksComputeEnvironmentProps;
+
   test('default props', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
       vpc,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...expectedProps,
     });
   });
 
   test('can specify maxvCpus', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
-      maxvCpus: 512,
+      ...defaultProps,
       vpc,
+      maxvCpus: 512,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...expectedProps,
       ComputeResources: {
-        ...DefaultComputeResources,
+        ...defaultComputeResources,
         MaxvCpus: 512,
       },
     });
@@ -82,39 +112,40 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('can specify minvCpus', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
-      minvCpus: 8,
+      ...defaultProps,
       vpc,
+      minvCpus: 8,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...expectedProps,
       ComputeResources: {
-        ...DefaultComputeResources,
+        ...defaultComputeResources,
         MinvCpus: 8,
       },
     });
   });
 
-
   test('can be disabled', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
-      enabled: false,
+      ...defaultProps,
       vpc,
+      enabled: false,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...expectedProps,
       State: 'DISABLED',
     });
   });
@@ -122,19 +153,20 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('can use non-default allocation strategy', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
-      allocationStrategy: AllocationStrategy.BEST_FIT,
+      ...defaultProps,
       vpc,
+      allocationStrategy: AllocationStrategy.BEST_FIT,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...expectedProps,
       ComputeResources: {
-        ...DefaultComputeResources,
+        ...defaultComputeResources,
         AllocationStrategy: 'BEST_FIT',
       },
     });
@@ -143,19 +175,20 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('spot => AllocationStrategy.SPOT_CAPACITY_OPTIMIZED and a default spot fleet role is created', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
-      spot: true,
+      ...defaultProps,
       vpc,
+      spot: true,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...expectedProps,
       ComputeResources: {
-        ...DefaultComputeResources,
+        ...defaultComputeResources,
         Type: 'SPOT',
         AllocationStrategy: 'SPOT_CAPACITY_OPTIMIZED',
         SpotIamFleetRole: { 'Fn::GetAtt': ['MyCESpotFleetRole70BE30A0', 'Arn'] },
@@ -166,7 +199,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('images are correctly rendered as EC2ConfigurationObjects', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     const expectedImageType = ComputeEnvironment === ManagedEc2EcsComputeEnvironment
       ? batch.EcsMachineImageType.ECS_AL2
@@ -174,19 +207,20 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
       images: [
         {
           image: MachineImage.latestAmazonLinux(),
         },
       ],
-      vpc,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...expectedProps,
       ComputeResources: {
-        ...DefaultComputeResources,
+        ...defaultComputeResources,
         Ec2Configuration: [
           {
             ImageIdOverride: { Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter' },
@@ -197,23 +231,23 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-
   test('instance classes are correctly rendered', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
-      instanceClasses: [InstanceClass.R4],
+      ...defaultProps,
       vpc,
+      instanceClasses: [InstanceClass.R4],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...expectedProps,
       ComputeResources: {
-        ...DefaultComputeResources,
+        ...defaultComputeResources,
         InstanceTypes: [
           'r4',
           'optimal',
@@ -226,19 +260,20 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('instance types are correctly rendered', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
-      instanceTypes: [InstanceType.of(InstanceClass.R4, InstanceSize.LARGE)],
+      ...defaultProps,
       vpc,
+      instanceTypes: [InstanceType.of(InstanceClass.R4, InstanceSize.LARGE)],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...expectedProps,
       ComputeResources: {
-        ...DefaultComputeResources,
+        ...defaultComputeResources,
         InstanceTypes: [
           'r4.large',
           'optimal',
@@ -250,20 +285,21 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('respects useOptimalInstanceClasses: false', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
       useOptimalInstanceClasses: false,
       instanceClasses: [InstanceClass.R4],
-      vpc,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...expectedProps,
       ComputeResources: {
-        ...DefaultComputeResources,
+        ...defaultComputeResources,
         InstanceTypes: [
           'r4',
         ],
@@ -289,13 +325,14 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('throws error when AllocationStrategy.SPOT_CAPACITY_OPTIMIZED is used without specfiying spot', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // THEN
     expect(() => {
       new ComputeEnvironment(stack, 'MyCE', {
-        allocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
+        ...defaultProps,
         vpc,
+        allocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
       });
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances/);
   });
@@ -303,13 +340,14 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('throws error when spotBidPercentage is specified without spot', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // THEN
     expect(() => {
       new ComputeEnvironment(stack, 'MyCE', {
-        spotBidPercentage: 80,
+        ...defaultProps,
         vpc,
+        spotBidPercentage: 80,
       });
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotBidPercentage' without specifying 'spot'/);
   });
@@ -317,14 +355,15 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('throws error when spotBidPercentage is specified and spot is false', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // THEN
     expect(() => {
       new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
         spotBidPercentage: 80,
         spot: false,
-        vpc,
       });
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotBidPercentage' without specifying 'spot'/);
   });
@@ -332,14 +371,15 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('throws error when spotBidPercentage > 100', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // THEN
     expect(() => {
       new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
         spotBidPercentage: 120,
         spot: true,
-        vpc,
       });
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotBidPercentage' > 100/);
   });
@@ -347,14 +387,15 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('throws error when spotBidPercentage < 0', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // THEN
     expect(() => {
       new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
         spotBidPercentage: -120,
         spot: true,
-        vpc,
       });
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotBidPercentage' < 0/);
   });
@@ -362,11 +403,12 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('throws error when minvCpus > maxvCpus', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // THEN
     expect(() => {
       new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
         vpc,
         maxvCpus: 512,
         minvCpus: 1024,
@@ -377,13 +419,14 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
   test('throws error when minvCpus < 0', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // THEN
     expect(() => {
       new ComputeEnvironment(stack, 'MyCE', {
-        minvCpus: -256,
+        ...defaultProps,
         vpc,
+        minvCpus: -256,
       });
     }).toThrowError(/Managed ComputeEnvironment 'MyCE' has 'minvCpus' = -256 < 0; 'minvCpus' cannot be less than zero/);
   });
@@ -393,23 +436,24 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
   test('image types are correctly rendered as EC2ConfigurationObjects', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      ...defaultEcsProps,
+      vpc,
       images: [
         {
           imageType: batch.EcsMachineImageType.ECS_AL2_NVIDIA,
         },
       ],
-      vpc,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...pascalCaseExpectedEcsProps,
       ComputeResources: {
-        ...DefaultComputeResources,
+        ...defaultComputeResources,
         Ec2Configuration: [
           {
             ImageType: 'ECS_AL2_NVIDIA',
@@ -421,26 +465,47 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
 });
 
 describe('ManagedEc2EksComputeEnvironment', () => {
-  test('image types are correctly rendered as EC2ConfigurationObjects', () => {
+  test('default props', () => {
     // GIVEN
     stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
+    vpc = new Vpc(stack, 'vpc');
 
     // WHEN
     new ManagedEc2EksComputeEnvironment(stack, 'MyCE', {
-      images: [
-        {
-          imageType: batch.EksMachineImageType.EKS_AL2_NVIDIA,
-        },
-      ],
+      ...defaultEksProps,
       vpc,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...PascalCaseProps,
+      ...pascalCaseExpectedEksProps,
       ComputeResources: {
-        ...DefaultComputeResources,
+        ...defaultComputeResources,
+      },
+    });
+  });
+
+  test('image types are correctly rendered as EC2ConfigurationObjects', () => {
+    // GIVEN
+    stack = new Stack();
+    vpc = new Vpc(stack, 'vpc');
+
+    // WHEN
+    new ManagedEc2EksComputeEnvironment(stack, 'MyCE', {
+      ...defaultEksProps,
+      vpc,
+      images: [
+        {
+          imageType: batch.EksMachineImageType.EKS_AL2_NVIDIA,
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEksProps,
+      ComputeResources: {
+        ...defaultComputeResources,
         Ec2Configuration: [
           {
             ImageType: 'EKS_AL2_NVIDIA',
