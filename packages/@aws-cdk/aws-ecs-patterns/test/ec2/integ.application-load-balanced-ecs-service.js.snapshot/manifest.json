@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-integ-alb.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d38bb6fc9cf0c6345f7a5e3e5dcac05d4f588cb242662f664916dedc02051b74.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a219f0cd09a5048d4f2b6265c5d7154509f48a9986c2507619f63813af6f9299.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,6 +189,12 @@
             "data": "FirstAutoScalingGroupInstanceSecurityGroupD970428E"
           }
         ],
+        "/aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbmyServiceLBSecurityGroup609AEDDA:32768-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbmyServiceLBSecurityGroup609AEDDA32768655353F7488CE"
+          }
+        ],
         "/aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -243,6 +243,12 @@
             "data": "SecondAutoScalingGroupInstanceSecurityGroup4660265D"
           }
         ],
+        "/aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbmyServiceLBSecurityGroup609AEDDA:32768-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbmyServiceLBSecurityGroup609AEDDA3276865535632DDF80"
+          }
+        ],
         "/aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -289,6 +295,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceLBSecurityGroupFE0ED608"
+          }
+        ],
+        "/aws-ecs-integ-alb/myService/LB/SecurityGroup/to awsecsintegalbFirstAutoScalingGroupInstanceSecurityGroup1616DBA8:32768-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceLBSecurityGrouptoawsecsintegalbFirstAutoScalingGroupInstanceSecurityGroup1616DBA8327686553530625A6A"
+          }
+        ],
+        "/aws-ecs-integ-alb/myService/LB/SecurityGroup/to awsecsintegalbSecondAutoScalingGroupInstanceSecurityGroup620DB21D:32768-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceLBSecurityGrouptoawsecsintegalbSecondAutoScalingGroupInstanceSecurityGroup620DB21D327686553500B34760"
           }
         ],
         "/aws-ecs-integ-alb/myService/LB/PublicListener/Resource": [
@@ -412,6 +430,12 @@
         ]
       },
       "displayName": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

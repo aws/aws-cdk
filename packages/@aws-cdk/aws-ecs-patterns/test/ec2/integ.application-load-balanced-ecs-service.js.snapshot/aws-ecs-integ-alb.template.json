@@ -433,6 +433,27 @@
     }
    }
   },
+  "FirstAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbmyServiceLBSecurityGroup609AEDDA32768655353F7488CE": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "FromPort": 32768,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "FirstAutoScalingGroupInstanceSecurityGroupD970428E",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "myServiceLBSecurityGroupFE0ED608",
+      "GroupId"
+     ]
+    },
+    "ToPort": 65535
+   }
+  },
   "FirstAutoScalingGroupInstanceRoleC3260EBE": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -629,6 +650,27 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "SecondAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbmyServiceLBSecurityGroup609AEDDA3276865535632DDF80": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "FromPort": 32768,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "SecondAutoScalingGroupInstanceSecurityGroup4660265D",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "myServiceLBSecurityGroupFE0ED608",
+      "GroupId"
+     ]
+    },
+    "ToPort": 65535
    }
   },
   "SecondAutoScalingGroupInstanceRoleB7DE61A1": {
@@ -846,15 +888,6 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatically created Security Group for ELB awsecsintegalbmyServiceLBBBB2F01E",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
-     }
-    ],
     "SecurityGroupIngress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -867,6 +900,48 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "myServiceLBSecurityGrouptoawsecsintegalbFirstAutoScalingGroupInstanceSecurityGroup1616DBA8327686553530625A6A": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "GroupId": {
+     "Fn::GetAtt": [
+      "myServiceLBSecurityGroupFE0ED608",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "FirstAutoScalingGroupInstanceSecurityGroupD970428E",
+      "GroupId"
+     ]
+    },
+    "FromPort": 32768,
+    "ToPort": 65535
+   }
+  },
+  "myServiceLBSecurityGrouptoawsecsintegalbSecondAutoScalingGroupInstanceSecurityGroup620DB21D327686553500B34760": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "GroupId": {
+     "Fn::GetAtt": [
+      "myServiceLBSecurityGroupFE0ED608",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "SecondAutoScalingGroupInstanceSecurityGroup4660265D",
+      "GroupId"
+     ]
+    },
+    "FromPort": 32768,
+    "ToPort": 65535
    }
   },
   "myServiceLBPublicListenerC78AE8A0": {
