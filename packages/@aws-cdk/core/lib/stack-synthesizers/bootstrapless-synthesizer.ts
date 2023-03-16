@@ -41,7 +41,7 @@ export interface BootstraplessSynthesizerProps {
  * synthesizer directly.
  */
 export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
-  constructor(props: BootstraplessSynthesizerProps) {
+  constructor(props: BootstraplessSynthesizerProps = {}) {
     super({
       deployRoleArn: props.deployRoleArn,
       cloudFormationExecutionRole: props.cloudFormationExecutionRoleArn,

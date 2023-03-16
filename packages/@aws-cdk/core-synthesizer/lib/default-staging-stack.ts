@@ -1,7 +1,7 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Arn, ArnFormat, Aws, DockerImageAssetSource, FileAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { Arn, ArnFormat, Aws, BootstraplessSynthesizer, DockerImageAssetSource, FileAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { BootstrapRole } from './synthesizer';
 
@@ -77,6 +77,9 @@ export interface DefaultStagingStackProps extends StackProps {
  * A default Staging Stack
  */
 export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
+  /**
+   * An identifier unique to the App.
+   */
   private get AppId() {
     return `${this.account}-${this.region}-${this.stackName.toLocaleLowerCase()}`;
   }
@@ -114,7 +117,7 @@ export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
   constructor(scope: Construct, id: string, props: DefaultStagingStackProps = {}) {
     super(scope, id, {
       ...props,
-      // synthesizer: // TODO: need a synthesizer that will not create an asset for the template
+      synthesizer: new BootstraplessSynthesizer(),
     });
 
     this.dependencyStack = this;
