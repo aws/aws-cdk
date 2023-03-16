@@ -467,4 +467,42 @@ describe('Bootstrapping v2', () => {
       }));
     });
   });
+
+  test('bootstrap template contains correct cloudformation permissions', async () => {
+    let template: any;
+    mockDeployStack.mockImplementation((args: DeployStackOptions) => {
+      template = args.stack.template;
+    });
+
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        cloudFormationExecutionPolicies: ['arn:policy'],
+      },
+    });
+
+    const cfnPolicy = template.Resources.DeploymentActionRole.Properties.Policies[0];
+    expect(cfnPolicy).toEqual({
+      PolicyDocument: {
+        Statement: expect.arrayContaining([
+          {
+            Sid: 'CloudFormationPermissions',
+            Effect: 'Allow',
+            Action: [
+              'cloudformation:CreateChangeSet',
+              'cloudformation:DeleteChangeSet',
+              'cloudformation:DescribeChangeSet',
+              'cloudformation:DescribeStacks',
+              'cloudformation:ListStacks',
+              'cloudformation:ExecuteChangeSet',
+              'cloudformation:CreateStack',
+              'cloudformation:UpdateStack',
+            ],
+            Resource: '*',
+          },
+        ]),
+        Version: '2012-10-17',
+      },
+      PolicyName: 'default',
+    });
+  });
 });
