@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 //import { CfnJobDefinition } from './batch.generated';
-import { EksContainerDefinition } from './eks-container-definition';
+import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import { IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 
 export interface IEksJobDefinition extends IJobDefinition {
@@ -130,11 +130,35 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
           hostNetwork: this.useHostNetwork,
           serviceAccountName: this.serviceAccount,
           volumes: this.containerDefinition.volumes?.map((volume) => {
-            return {
-              name: volume.name,
-
+            if (EmptyDirVolume.isEmptyDirVolume(volume)) {
+              return {
+                name: volume.name,
+                emptyDir: {
+                  medium: volume.medium,
+                  sizeLimit: volume.sizeLimit ? volume.sizeLimit?.sizeLimit + volume.sizeLimit?.suffix : undefined,
+                },
+              };
+            }
+            if (HostPathVolume.isHostPathVolume(volume)) {
+              return {
+                name: volume.name,
+                hostPath: {
+                  path: volume.path,
+                },
+              };
+            }
+            if (SecretPathVolume.isSecretPathVolume(volume)) {
+              /*return {
+                name: volume.name,
+                secret: {
+                  optional: volume.optional,
+                  secretName: volume.secretName,
+                },
+              };
+              */
             }
 
+            throw new Error('unknown volume type');
           }),
         },
       },

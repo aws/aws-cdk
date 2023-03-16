@@ -2,6 +2,9 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 
+const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/eks-container-definition.EmptyDirVolume');
+const HOST_PATH_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/eks-container-definition.HostPathVolume');
+const SECRET_PATH_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/eks-container-definition.SecretVolume');
 export interface IEksContainerDefinition {
   /**
    * The image that this container will run
@@ -564,12 +567,12 @@ export class EksContainerDefinition extends Construct {
       resources: {
         limits: {
           'cpu': this.cpuLimit,
-          'memory': this.memoryLimitMiB,
+          'memory': this.memoryLimitMiB ? this.memoryLimitMiB + 'Mi' : undefined,
           'nvidia.com/gpu': this.gpuLimit,
         },
         requests: {
           'cpu': this.cpuReservation,
-          'memory': this.memoryReservationMiB,
+          'memory': this.memoryReservationMiB ? this.memoryReservationMiB + 'Mi' : undefined,
           'nvidia.com/gpu': this.gpuReservation,
         },
       },
@@ -670,7 +673,7 @@ export interface EmptyDirVolumeOptions extends EksVolumeOptions {
    *
    * @default - no size limit
    */
-  readonly sizeLimit?: number;
+  readonly sizeLimit?: KubernetesSizeLimit;
 }
 
 export enum EmptyDirMediumType {
@@ -687,10 +690,46 @@ export enum EmptyDirMediumType {
   MEMORY = 'Memory',
 }
 
+export enum KubernetesQuantitySuffix {
+  K = 'k',
+  M = 'M',
+  G = 'G',
+  T = 'T',
+  P = 'P',
+  E = 'E',
+
+  KI = 'Ki',
+  MI = 'Mi',
+  GI = 'Gi',
+  TI = 'Ti',
+  PI = 'Pi',
+  EI = 'Ei',
+}
+
+export class KubernetesSizeLimit {
+  public static of(sizeLimit: number, suffix: KubernetesQuantitySuffix) {
+    return new KubernetesSizeLimit(sizeLimit, suffix);
+  }
+  public readonly sizeLimit: number;
+  /**
+   * @see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#quantity-resource-core
+   */
+  public readonly suffix: KubernetesQuantitySuffix;
+
+  private constructor(sizeLimit: number, suffix: KubernetesQuantitySuffix) {
+    this.sizeLimit = sizeLimit;
+    this.suffix = suffix;
+  }
+}
+
 /**
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
  */
 export class EmptyDirVolume extends EksVolume {
+  public static isEmptyDirVolume(x: any) : x is EmptyDirVolume {
+    return x !== null && typeof(x) === 'object' && EMPTY_DIR_VOLUME_SYMBOL in x;
+  }
+
   /**
    * The storage type to use for this Volume.
    *
@@ -703,7 +742,7 @@ export class EmptyDirVolume extends EksVolume {
    *
    * @default - no size limit
    */
-  readonly sizeLimit?: number;
+  readonly sizeLimit?: KubernetesSizeLimit;
 
   constructor(options: EmptyDirVolumeOptions) {
     super(options);
@@ -711,6 +750,12 @@ export class EmptyDirVolume extends EksVolume {
     this.sizeLimit = options.sizeLimit;
   }
 }
+
+Object.defineProperty(EmptyDirVolume.prototype, EMPTY_DIR_VOLUME_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
 
 export interface HostPathVolumeOptions extends EksVolumeOptions {
   /**
@@ -727,6 +772,10 @@ export interface HostPathVolumeOptions extends EksVolumeOptions {
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
  */
 export class HostPathVolume extends EksVolume {
+  public static isHostPathVolume(x: any) : x is HostPathVolume {
+    return x !== null && typeof(x) === 'object' && HOST_PATH_VOLUME_SYMBOL in x;
+  }
+
   /**
    * The path of the file or directory on the host to mount into containers on the pod.
    *
@@ -741,6 +790,12 @@ export class HostPathVolume extends EksVolume {
     this.path = options.path;
   }
 }
+
+Object.defineProperty(HostPathVolume.prototype, HOST_PATH_VOLUME_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
 
 export interface SecretPathVolumeOptions extends EksVolumeOptions {
   /**
@@ -765,6 +820,10 @@ export interface SecretPathVolumeOptions extends EksVolumeOptions {
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#secret
  */
 export class SecretPathVolume extends EksVolume {
+  public static isSecretPathVolume(x: any) : x is SecretPathVolume {
+    return x !== null && typeof(x) === 'object' && SECRET_PATH_VOLUME_SYMBOL in x;
+  }
+
   /**
    * The name of the secret.
    * Must be a valid DNS subdomain name.
@@ -786,3 +845,9 @@ export class SecretPathVolume extends EksVolume {
     this.optional = options.optional;
   }
 }
+
+Object.defineProperty(SecretPathVolume.prototype, SECRET_PATH_VOLUME_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
