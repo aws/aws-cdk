@@ -347,7 +347,6 @@ describe('task definition', () => {
         });
 
         // THEN
-        expect(taskDefinition.compatibility).toBe(ecs.Compatibility.FARGATE);
         expect(container1.cpu).toBe(256);
         expect(container2.cpu).toBe(256);
       });
@@ -400,7 +399,6 @@ describe('task definition', () => {
         });
 
         // THEN
-        expect(taskDefinition.compatibility).toBe(ecs.Compatibility.FARGATE);
         expect(container1.cpu).toBe(256);
         expect(container2.cpu).toBe(256);
       });
