@@ -1,7 +1,7 @@
 /**
  * Violation produced by the validation plugin.
  */
-export interface ValidationViolation {
+export interface PolicyViolation {
   /**
    * The name of the rule.
    */
@@ -41,7 +41,7 @@ export interface ValidationViolation {
 /**
  * Resource violating a specific rule.
  */
-export interface ValidationViolatingResource {
+export interface PolicyViolatingResource {
   /**
    * The logical ID of the resource in the CloudFormation template.
    */
@@ -61,18 +61,18 @@ export interface ValidationViolatingResource {
 /**
  * Validation produced by the validation plugin, in CFN resource terms
  */
-export interface ValidationViolationResourceAware extends ValidationViolation {
+export interface PolicyViolationResourceAware extends PolicyViolation {
   /**
    * The resources violating this rule.
    */
-  readonly violatingResources: ValidationViolatingResource[];
+  readonly violatingResources: PolicyViolatingResource[];
 }
 
 
 /**
  * The final status of the validation report
  */
-export enum ValidationReportStatus {
+export enum PolicyValidationReportStatus {
   /**
    * No violations were found
    */
@@ -87,11 +87,11 @@ export enum ValidationReportStatus {
 /**
  * The report emitted by the plugin after evaluation.
  */
-export interface ValidationPluginReport {
+export interface PolicyValidationPluginReport {
   /**
    * List of violations in the report.
    */
-  readonly violations: ValidationViolationResourceAware[];
+  readonly violations: PolicyViolationResourceAware[];
 
   /**
    * Whether or not the report was successful.
@@ -109,7 +109,7 @@ export interface ValidationPluginReport {
 /**
  * The report containing the name of the plugin that created it.
  */
-export interface NamedValidationPluginReport extends ValidationPluginReport {
+export interface NamedValidationPluginReport extends PolicyValidationPluginReport {
   /**
    * The name of the plugin that created the report
    */

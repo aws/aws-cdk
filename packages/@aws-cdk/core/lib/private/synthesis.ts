@@ -14,9 +14,9 @@ import { FeatureFlags } from '../feature-flags';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
-import { IValidationPlugin, NamedValidationPluginReport } from '../validation';
+import { IPolicyValidationPlugin, NamedValidationPluginReport } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { ValidationReportFormatter } from '../validation/private/report';
+import { PolicyValidationReportFormatter } from '../validation/private/report';
 
 /**
  * Options for `synthesize()`
@@ -80,7 +80,7 @@ class LazyHash {
 function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly) {
   const lazyHash = new LazyHash(outdir);
 
-  const templatePathsByPlugin: Map<IValidationPlugin, string[]> = new Map();
+  const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visit(root, 'post', construct => {
     if (Stage.isStage(construct)) {
       for (const plugin of construct.validationPlugins) {
@@ -117,7 +117,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
   const failed = reports.some(r => !r.success);
   if (failed) {
     const tree = new ConstructTree(root);
-    const formatter = new ValidationReportFormatter(tree);
+    const formatter = new PolicyValidationReportFormatter(tree);
     const formatJson = FeatureFlags.of(root).isEnabled(cxapi.VALIDATION_REPORT_JSON) ?? false;
     const output = formatJson
       ? formatter.formatJson(reports)

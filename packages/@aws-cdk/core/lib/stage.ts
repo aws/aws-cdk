@@ -3,7 +3,7 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
-import { IValidationPlugin } from './validation';
+import { IPolicyValidationPlugin } from './validation';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -77,7 +77,7 @@ export interface StageProps {
    *
    * @default - no validation plugins are used
    */
-  readonly validationPlugins?: IValidationPlugin[]
+  readonly policyValidation?: IPolicyValidationPlugin[]
 }
 
 /**
@@ -152,7 +152,7 @@ export class Stage extends Construct {
    *
    * @default - no validation plugins are used
    */
-  public readonly validationPlugins: IValidationPlugin[] = [];
+  public readonly validationPlugins: IPolicyValidationPlugin[] = [];
 
 
   constructor(scope: Construct, id: string, props: StageProps = {}) {
@@ -175,8 +175,8 @@ export class Stage extends Construct {
     this._assemblyBuilder = this.createBuilder(props.outdir);
     this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
 
-    if (props.validationPlugins) {
-      this.validationPlugins = props.validationPlugins;
+    if (props.policyValidation) {
+      this.validationPlugins = props.policyValidation;
     }
   }
 

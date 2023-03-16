@@ -1,6 +1,6 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
-import { App, Stack, IValidationPlugin, IValidationContext, Stage, ValidationPluginReport } from '../lib';
+import { App, Stack, IPolicyValidationPlugin, IPolicyValidationContext, Stage, PolicyValidationPluginReport } from '../lib';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
@@ -73,13 +73,13 @@ describe('MetadataResource', () => {
   test('validation plugins included', () => {
     const newApp = new App({
       analyticsReporting: true,
-      validationPlugins: [
+      policyValidation: [
         new ValidationPlugin('plugin1'),
       ],
     });
 
     const stage1 = new Stage(newApp, 'Stage1', {
-      validationPlugins: [
+      policyValidation: [
         new ValidationPlugin('plugin11'),
       ],
     });
@@ -87,7 +87,7 @@ describe('MetadataResource', () => {
     const stack1 = new Stack(stage1, 'Stack1', { stackName: 'stack1' });
 
     const stage2 = new Stage(newApp, 'Stage2', {
-      validationPlugins: [
+      policyValidation: [
         new ValidationPlugin('plugin12'),
       ],
     });
@@ -188,10 +188,10 @@ class TestThirdPartyConstruct extends Construct {
   private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'mycoolthing.TestConstruct', version: '1.2.3' }
 }
 
-class ValidationPlugin implements IValidationPlugin {
+class ValidationPlugin implements IPolicyValidationPlugin {
   constructor(public readonly name: string) {}
 
-  validate(_context: IValidationContext): ValidationPluginReport {
+  validate(_context: IPolicyValidationContext): PolicyValidationPluginReport {
     return {
       success: true,
       violations: [],

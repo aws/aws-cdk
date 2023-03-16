@@ -7,7 +7,7 @@ import * as report from '../report';
 /**
  * Validation produced by the validation plugin, in construct terms.
  */
-export interface ValidationViolationConstructAware extends report.ValidationViolation {
+export interface PolicyViolationConstructAware extends report.PolicyViolation {
   /**
    * The constructs violating this rule.
    */
@@ -17,7 +17,7 @@ export interface ValidationViolationConstructAware extends report.ValidationViol
 /**
  * Construct violating a specific rule.
  */
-export interface ValidationViolatingConstruct extends report.ValidationViolatingResource {
+export interface ValidationViolatingConstruct extends report.PolicyViolatingResource {
   /**
    * The construct path as defined in the application.
    *
@@ -36,7 +36,7 @@ export interface ValidationViolatingConstruct extends report.ValidationViolating
 /**
  * JSON representation of the report.
  */
-export interface ValidationReportJson {
+export interface PolicyValidationReportJson {
   /**
    * Report title.
    */
@@ -56,22 +56,22 @@ export interface PluginReportJson {
   /**
    * List of violations in the report.
    */
-  readonly violations: ValidationViolationConstructAware[];
+  readonly violations: PolicyViolationConstructAware[];
 
   /**
    * Report summary.
    */
-  readonly summary: ValidationReportSummary;
+  readonly summary: PolicyValidationReportSummary;
 }
 
 /**
  * Summary of the report.
  */
-export interface ValidationReportSummary {
+export interface PolicyValidationReportSummary {
   /**
    * The final status of the validation (pass/fail)
    */
-  readonly status: report.ValidationReportStatus;
+  readonly status: report.PolicyValidationReportStatus;
 
   /**
    * The name of the plugin that created the report
@@ -91,7 +91,7 @@ export interface ValidationReportSummary {
 /**
  * The report emitted by the plugin after evaluation.
  */
-export class ValidationReportFormatter {
+export class PolicyValidationReportFormatter {
   private readonly reportTrace: ReportTrace;
   constructor(private readonly tree: ConstructTree) {
     this.reportTrace = new ReportTrace(tree);
@@ -157,7 +157,7 @@ export class ValidationReportFormatter {
     return output.join(os.EOL);
   }
 
-  public formatJson(reps: report.NamedValidationPluginReport[]): ValidationReportJson {
+  public formatJson(reps: report.NamedValidationPluginReport[]): PolicyValidationReportJson {
     return {
       title: 'Validation Report',
       pluginReports: reps
@@ -165,7 +165,7 @@ export class ValidationReportFormatter {
         .map(rep => ({
           summary: {
             pluginName: rep.pluginName,
-            status: rep.success ? report.ValidationReportStatus.SUCCESS : report.ValidationReportStatus.FAILURE,
+            status: rep.success ? report.PolicyValidationReportStatus.SUCCESS : report.PolicyValidationReportStatus.FAILURE,
             metadata: rep.metadata,
           },
           violations: rep.violations.map(violation => ({

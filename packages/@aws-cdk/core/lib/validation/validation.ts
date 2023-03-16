@@ -1,4 +1,4 @@
-import { ValidationPluginReport } from './report';
+import { PolicyValidationPluginReport } from './report';
 
 /**
  * Represents a validation plugin that will be executed during synthesis
@@ -30,7 +30,7 @@ import { ValidationPluginReport } from './report';
  *    }
  * }
  */
-export interface IValidationPlugin {
+export interface IPolicyValidationPlugin {
   /**
    * The name of the plugin that will be displayed in the validation
    * report
@@ -42,13 +42,13 @@ export interface IValidationPlugin {
    * validations. This is where the plugin will evaluate the CloudFormation
    * templates for compliance and report and violations
    */
-  validate(context: IValidationContext): ValidationPluginReport;
+  validate(context: IPolicyValidationContext): PolicyValidationPluginReport;
 }
 
 /**
  * Context available to the validation plugin
  */
-export interface IValidationContext {
+export interface IPolicyValidationContext {
   /**
    * The absolute path of all templates to be processed
    */

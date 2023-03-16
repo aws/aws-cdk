@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
 import * as core from '../../lib';
-import { ValidationPluginReport, ValidationViolationResourceAware } from '../../lib';
+import { PolicyValidationPluginReport, PolicyViolationResourceAware } from '../../lib';
 
 
 let consoleErrorMock: jest.SpyInstance;
@@ -20,7 +20,7 @@ afterEach(() => {
 describe('validations', () => {
   test('validation failure', () => {
     const app = new core.App({
-      validationPlugins: [
+      policyValidation: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
@@ -69,7 +69,7 @@ describe('validations', () => {
 
   test('validation success', () => {
     const app = new core.App({
-      validationPlugins: [
+      policyValidation: [
         new FakePlugin('test-plugin', []),
       ],
     });
@@ -87,7 +87,7 @@ describe('validations', () => {
 
   test('multiple stacks', () => {
     const app = new core.App({
-      validationPlugins: [
+      policyValidation: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
@@ -125,7 +125,7 @@ describe('validations', () => {
 
   test('multiple constructs', () => {
     const app = new core.App({
-      validationPlugins: [
+      policyValidation: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
@@ -152,7 +152,7 @@ describe('validations', () => {
 
   test('multiple plugins', () => {
     const app = new core.App({
-      validationPlugins: [
+      policyValidation: [
         new FakePlugin('plugin1', [{
           description: 'do something',
           ruleName: 'rule-1',
@@ -255,7 +255,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
 
   test('plugin throws an error', () => {
     const app = new core.App({
-      validationPlugins: [
+      policyValidation: [
         // This plugin will throw an error
         new BrokenPlugin(),
 
@@ -291,7 +291,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
 
   test('plugin tries to modify a template', () => {
     const app = new core.App({
-      validationPlugins: [
+      policyValidation: [
         new RoguePlugin(),
       ],
     });
@@ -309,7 +309,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
 
   test('JSON format', () => {
     const app = new core.App({
-      validationPlugins: [
+      policyValidation: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
@@ -380,14 +380,14 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
   });
 });
 
-class FakePlugin implements core.IValidationPlugin {
+class FakePlugin implements core.IPolicyValidationPlugin {
   // public readonly name = 'test-plugin';
 
   constructor(
     public readonly name: string,
-    private readonly violations: ValidationViolationResourceAware[]) {}
+    private readonly violations: PolicyViolationResourceAware[]) {}
 
-  validate(_context: core.IValidationContext): ValidationPluginReport {
+  validate(_context: core.IPolicyValidationContext): PolicyValidationPluginReport {
     return {
       success: this.violations.length === 0,
       violations: this.violations,
@@ -395,10 +395,10 @@ class FakePlugin implements core.IValidationPlugin {
   }
 }
 
-class RoguePlugin implements core.IValidationPlugin {
+class RoguePlugin implements core.IPolicyValidationPlugin {
   public readonly name = 'rogue-plugin';
 
-  validate(context: core.IValidationContext): ValidationPluginReport {
+  validate(context: core.IPolicyValidationContext): PolicyValidationPluginReport {
     const templatePath = context.templatePaths[0];
     fs.writeFileSync(templatePath, 'malicious data');
     return {
@@ -408,10 +408,10 @@ class RoguePlugin implements core.IValidationPlugin {
   }
 }
 
-class BrokenPlugin implements core.IValidationPlugin {
+class BrokenPlugin implements core.IPolicyValidationPlugin {
   public readonly name = 'broken-plugin';
 
-  validate(_context: core.IValidationContext): ValidationPluginReport {
+  validate(_context: core.IPolicyValidationContext): PolicyValidationPluginReport {
     throw new Error('Something went wrong');
   }
 }
