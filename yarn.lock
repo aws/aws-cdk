@@ -803,10 +803,25 @@
     chalk "^4.1.2"
     semver "^7.3.8"
 
-"@jsii/spec@1.77.0", "@jsii/spec@^1.76.0", "@jsii/spec@^1.77.0":
+"@jsii/check-node@1.78.0":
+  version "1.78.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.78.0.tgz#ba9a64d7d0a7127bb3360079ee6a246d08d92a38"
+  integrity sha512-Wojj9q+PA4pCsejkBtdFOKu/HJ6TzTekKqeNK0UgUMKNkVbmA7CG3tSu3f8MskunwtujPXBHrAR80V+AuKC/cw==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.3.8"
+
+"@jsii/spec@1.77.0":
   version "1.77.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.77.0.tgz#2ee31c32e26d61880e422a546a62296c6543bff9"
   integrity sha512-QmwXRREX8W1YOdKHbfu+Tw0rygdCJ2AYcKt7iu56Is2giQ9doyRLKvzywXoKxJjZtj9E7Sp0GdDob8pl8cwmlg==
+  dependencies:
+    ajv "^8.12.0"
+
+"@jsii/spec@1.78.0", "@jsii/spec@^1.76.0", "@jsii/spec@^1.77.0", "@jsii/spec@^1.78.0":
+  version "1.78.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.78.0.tgz#eabf5168c15a23f5fb20fa8a6e301358fc0efe06"
+  integrity sha512-5WJ11q5UYujE2z/Z8DSOEdzZiUUIXopRje6Of4LBWf/99a3XdxDgM8M10hYxwpunLh5XMrWRdHnxWbacWpzdCw==
   dependencies:
     ajv "^8.12.0"
 
@@ -1980,7 +1995,7 @@
   dependencies:
     "@types/glob" "*"
 
-"@types/aws-lambda@^8.10.110", "@types/aws-lambda@^8.10.111":
+"@types/aws-lambda@^8.10.111":
   version "8.10.111"
   resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.111.tgz#9107c405f3011a5c423b5ac93fbf279439558571"
   integrity sha512-8HR9UjIKmoemEzE2BviVtFkeenxfbizSu8raFjnT2VXxguZZ2JTlNww7INOH7IA0J/zRa3TjOftkYq6hVNkxDA==
@@ -2895,22 +2910,6 @@ aws-sdk-mock@5.6.0:
     sinon "^11.1.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.1317.0:
-  version "2.1326.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1326.0.tgz#91da60f08d10e4e1db0640c97bc7d2298fde8f17"
-  integrity sha512-LSGiO4RSooupHnkvYbPOuOYqwAxmcnYinwIxBz4P1YI8ulhZZ/pypOj/HKqC629UyhY1ndSMtlM1l56U74UclA==
-  dependencies:
-    buffer "4.9.2"
-    events "1.1.1"
-    ieee754 "1.1.13"
-    jmespath "0.16.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    util "^0.12.4"
-    uuid "8.0.0"
-    xml2js "0.4.19"
-
 aws-sdk@^2.1329.0, aws-sdk@^2.928.0:
   version "2.1329.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1329.0.tgz#6a83a1f7f8e1b3cdc8f8bdc3b7db7bfd43812b78"
@@ -3550,10 +3549,10 @@ co@^4.6.0:
   resolved "https://registry.npmjs.org/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
   integrity sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==
 
-codemaker@1.77.0, codemaker@^1.77.0:
-  version "1.77.0"
-  resolved "https://registry.npmjs.org/codemaker/-/codemaker-1.77.0.tgz#8fa150ab21c8fcb0f6ee557bbc3160529c03499c"
-  integrity sha512-XSHAqkXMn5OtcebJLVMFEW9puB+4ZmmChBFspEf62ZeYzs+ggSXEHW9GrjC/ZyX+sfxql6ciJP3z25sSp4VsVQ==
+codemaker@1.78.0, codemaker@^1.78.0:
+  version "1.78.0"
+  resolved "https://registry.npmjs.org/codemaker/-/codemaker-1.78.0.tgz#ef82b5c622eefe042312bb1ace406b5e1822f58e"
+  integrity sha512-K4WKXtSyFpabMPKW5XdqHrj34lIK0mr6eQ32kM51kjeEmzFKcy2Pn3oCifM62/dfAw4rf2HhONrBDOmRfzC9pA==
   dependencies:
     camelcase "^6.3.0"
     decamelize "^5.0.1"
@@ -7035,47 +7034,47 @@ jsesc@^2.5.1:
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
 
-jsii-diff@1.77.0:
-  version "1.77.0"
-  resolved "https://registry.npmjs.org/jsii-diff/-/jsii-diff-1.77.0.tgz#f56c72ff22918dbcf2dcdfd10ad3c15815833aa0"
-  integrity sha512-H/ujCkMXM1VrZJQJVOfkz+t1S9CAVTut0HSENuXrDdxdIUgIIIT7gnap7LNFVxKwOU9E54Ya+hEnSwjO3sw1FQ==
+jsii-diff@1.78.0:
+  version "1.78.0"
+  resolved "https://registry.npmjs.org/jsii-diff/-/jsii-diff-1.78.0.tgz#edbb8032797a0985b05d40940d8bf25b77adb5ba"
+  integrity sha512-s3j6tCB4nVekgCrNWrVqr5OBWQMv+oCgCJsPrCRqnfaRBkpv00Yox/Faxw9uG7dKAhAxpsQhNfJAY9/P+AH6nA==
   dependencies:
-    "@jsii/check-node" "1.77.0"
-    "@jsii/spec" "^1.77.0"
+    "@jsii/check-node" "1.78.0"
+    "@jsii/spec" "^1.78.0"
     fs-extra "^10.1.0"
-    jsii-reflect "^1.77.0"
+    jsii-reflect "^1.78.0"
     log4js "^6.8.0"
     yargs "^16.2.0"
 
-jsii-pacmak@1.77.0:
-  version "1.77.0"
-  resolved "https://registry.npmjs.org/jsii-pacmak/-/jsii-pacmak-1.77.0.tgz#f6253a871bccc8a0617a032235a8cdbf33bffd03"
-  integrity sha512-mYrITqM/fTiS1rzGFYeIK90/Ab7S39/4wFlBlhVYqqxbeAwiOFS1+zfx2m5RBYGvJMw5rd6S4zoWg6CnK2kpPg==
+jsii-pacmak@1.78.0:
+  version "1.78.0"
+  resolved "https://registry.npmjs.org/jsii-pacmak/-/jsii-pacmak-1.78.0.tgz#ca979bff8ac6f0b129420c17f87ec563565b054f"
+  integrity sha512-ZSr4XN7Mj5N2CvgGWYvEO4wPv2S69Ko00D68CkQ16RFiZBql/6RWwr6xWdn8n5IED7f73UktQ6nVScuHKxS3IA==
   dependencies:
-    "@jsii/check-node" "1.77.0"
-    "@jsii/spec" "^1.77.0"
+    "@jsii/check-node" "1.78.0"
+    "@jsii/spec" "^1.78.0"
     clone "^2.1.2"
-    codemaker "^1.77.0"
+    codemaker "^1.78.0"
     commonmark "^0.30.0"
     escape-string-regexp "^4.0.0"
     fs-extra "^10.1.0"
-    jsii-reflect "^1.77.0"
-    jsii-rosetta "^1.77.0"
+    jsii-reflect "^1.78.0"
+    jsii-rosetta "^1.78.0"
     semver "^7.3.8"
     spdx-license-list "^6.6.0"
     xmlbuilder "^15.1.1"
     yargs "^16.2.0"
 
-jsii-reflect@1.77.0, jsii-reflect@^1.77.0:
-  version "1.77.0"
-  resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.77.0.tgz#f4fa0c43f550f6af065b118427763dc00f861a7c"
-  integrity sha512-wSEkBxdEjuZHp2qLPpUPFamhppvDBW+vUJi8/VnQlAYJMCOIvQPdj8GVfiMllc+6tir9xIHl8q30PZaanbQpXA==
+jsii-reflect@1.78.0, jsii-reflect@^1.77.0, jsii-reflect@^1.78.0:
+  version "1.78.0"
+  resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.78.0.tgz#5fc8ac6faaf7629906169fa3814bccc4008fbf52"
+  integrity sha512-iKRepENxf1QER/9bnjH6FQXiuYatdok5wkLvI49oDUBdZa5Qepcak6ezohBRQaFste1nxqimrxrypMrh+C40Zg==
   dependencies:
-    "@jsii/check-node" "1.77.0"
-    "@jsii/spec" "^1.77.0"
+    "@jsii/check-node" "1.78.0"
+    "@jsii/spec" "^1.78.0"
     chalk "^4"
     fs-extra "^10.1.0"
-    oo-ascii-tree "^1.77.0"
+    oo-ascii-tree "^1.78.0"
     yargs "^16.2.0"
 
 jsii-rosetta@^1.77.0:
@@ -7089,6 +7088,23 @@ jsii-rosetta@^1.77.0:
     commonmark "^0.30.0"
     fast-glob "^3.2.12"
     jsii "1.77.0"
+    semver "^7.3.8"
+    semver-intersect "^1.4.0"
+    typescript "~3.9.10"
+    workerpool "^6.4.0"
+    yargs "^16.2.0"
+
+jsii-rosetta@^1.78.0:
+  version "1.78.0"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-1.78.0.tgz#1d16948778e7ad55327e2bf7f4445fc97c65af72"
+  integrity sha512-/+aefrbpZCfw69ys8a6cNbPSNioHHYx6pFDtDLy3Ij6hXnvPzqqgWza3wEzc6EutmJ8QJnC1nElwnxn2QehcxA==
+  dependencies:
+    "@jsii/check-node" "1.78.0"
+    "@jsii/spec" "1.78.0"
+    "@xmldom/xmldom" "^0.8.6"
+    commonmark "^0.30.0"
+    fast-glob "^3.2.12"
+    jsii "1.78.0"
     semver "^7.3.8"
     semver-intersect "^1.4.0"
     typescript "~3.9.10"
@@ -7119,6 +7135,25 @@ jsii@1.77.0, jsii@^1.77.0:
   dependencies:
     "@jsii/check-node" "1.77.0"
     "@jsii/spec" "^1.77.0"
+    case "^1.6.3"
+    chalk "^4"
+    fast-deep-equal "^3.1.3"
+    fs-extra "^10.1.0"
+    log4js "^6.8.0"
+    semver "^7.3.8"
+    semver-intersect "^1.4.0"
+    sort-json "^2.0.1"
+    spdx-license-list "^6.6.0"
+    typescript "~3.9.10"
+    yargs "^16.2.0"
+
+jsii@1.78.0:
+  version "1.78.0"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-1.78.0.tgz#fbb3bda041c3b6aa3dd76a231255b5b958455e29"
+  integrity sha512-Cqn9Zn0eY2HoYwVyXVfmBdz+tctwcOyJEu/s9KOgodDTePl9Ox7q9cnmo1JzTx2sNFoKydgcuBWpIeLbQb2PIA==
+  dependencies:
+    "@jsii/check-node" "1.78.0"
+    "@jsii/spec" "^1.78.0"
     case "^1.6.3"
     chalk "^4"
     fast-deep-equal "^3.1.3"
@@ -8890,10 +8925,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-oo-ascii-tree@^1.77.0:
-  version "1.77.0"
-  resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.77.0.tgz#8205a3b2df0bd6f085764092ed93b0cd61218f67"
-  integrity sha512-UQXPEVtecK9FDQxlp5WQ9nVBgS0sq96R9LWE1HBmlS3ZLJRqXh3+kdU7Bxs+qqF+cdWmE9uOggwihBffTpqLrA==
+oo-ascii-tree@^1.78.0:
+  version "1.78.0"
+  resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.78.0.tgz#423f4db4dd5ae9ed5562608c61cf64b1c0f906be"
+  integrity sha512-1xNAGuyU4mRuseC3JKAzMVczP4jaIXr+hlLLJZwUdPeBDv1geAGxA/Rxixs3tcmUSX4us6RAuqjX1tJ6Vlezyg==
 
 open@^7.4.2:
   version "7.4.2"
