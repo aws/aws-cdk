@@ -41,7 +41,7 @@ describe(AppScopedStagingSynthesizer, () => {
     const stackArtifact = asm.getStackArtifact('Stack');
 
     const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
-    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-000000000000-us-east-1/${templateObjectKey}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-000000000000-us-east-1-stagingstackc8adc83b19/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -54,10 +54,10 @@ describe(AppScopedStagingSynthesizer, () => {
       source: { path: 'Stack.template.json', packaging: 'file' },
       destinations: {
         '000000000000-us-east-1': {
-          bucketName: 'cdk-000000000000-us-east-1',
+          bucketName: 'cdk-000000000000-us-east-1-stagingstackc8adc83b19',
           objectKey: templateObjectKey,
           region: 'us-east-1',
-          assumeRoleArn: 'arn:' + Aws.PARTITION + ':iam:us-east-1:000000000000:role:cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}',
+          assumeRoleArn: 'arn:' + Aws.PARTITION + ':iam:us-east-1:000000000000:role:cdk-file-publishing-role-000000000000-us-east-1-stagingstackc8a',
         },
       },
     });
@@ -74,7 +74,7 @@ describe(AppScopedStagingSynthesizer, () => {
     // THEN - we have a stack dependency on the staging stack
     expect(stack.dependencies.length).toEqual(1);
     const depStack = stack.dependencies[0];
-    expect(depStack.stackName).toEqual('StagingStack');
+    expect(depStack.stackName).toEqual('StagingStackc8adc83b19');
   });
 
   test('add file asset', () => {
@@ -86,8 +86,8 @@ describe(AppScopedStagingSynthesizer, () => {
     });
 
     // THEN - we have a fixed asset location
-    expect(evalCFN(location.bucketName)).toEqual('cdk-000000000000-us-east-1');
-    expect(evalCFN(location.httpUrl)).toEqual('https://s3.us-east-1.domain.aws/cdk-000000000000-us-east-1/abcdef.js');
+    expect(evalCFN(location.bucketName)).toEqual('cdk-000000000000-us-east-1-stagingstackc8adc83b19');
+    expect(evalCFN(location.httpUrl)).toEqual('https://s3.us-east-1.domain.aws/cdk-000000000000-us-east-1-stagingstackc8adc83b19/abcdef.js');
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);

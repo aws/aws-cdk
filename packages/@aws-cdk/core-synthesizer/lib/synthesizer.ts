@@ -156,8 +156,9 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
 
   private getCreateStagingStack(app: Stage, env: Environment): IStagingStack {
     // TODO: env could be tokens
-    const stackName = `StagingStack${app.stageName}`;
-    const stagingStack = app.node.tryFindChild(stackName) as DefaultStagingStack ?? new DefaultStagingStack(app, stackName, {
+    const stackName = `StagingStack${app.node.addr.slice(0, 10)}`;
+    const stackId = 'StagingStack';
+    const stagingStack = app.node.tryFindChild(stackId) as DefaultStagingStack ?? new DefaultStagingStack(app, stackId, {
       env,
       stackName,
     });
