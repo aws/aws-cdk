@@ -249,6 +249,20 @@ export interface DockerImageAssetSource {
    * @default - no unique id
    */
   readonly uniqueId?: string;
+  
+  /*
+   * Cache from options to pass to the `docker build` command.
+   *
+   * @default - no cache from args are passed
+   */
+  readonly dockerCacheFrom?: DockerCacheOption[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   *
+   * @default - no cache to args are passed
+   */
+  readonly dockerCacheTo?: DockerCacheOption;
 }
 
 /**
@@ -353,4 +367,26 @@ export interface DockerImageAssetLocation {
    * @default - the hash of the asset, or the `dockerTagPrefix` concatenated with the asset hash if a `dockerTagPrefix` is specified in the stack synthesizer
    */
   readonly imageTag?: string;
+}
+
+/**
+ * Options for configuring the Docker cache backend
+ */
+export interface DockerCacheOption {
+  /**
+   * The type of cache to use.
+   * Refer to https://docs.docker.com/build/cache/backends/ for full list of backends.
+   * @default - unspecified
+   *
+   * @example 'registry'
+   */
+  readonly type: string;
+  /**
+   * Any parameters to pass into the docker cache backend configuration.
+   * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
+   * @default {} No options provided
+   *
+   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   */
+  readonly params?: { [key: string]: string };
 }
