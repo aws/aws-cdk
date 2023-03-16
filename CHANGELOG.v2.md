@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.69.0](https://github.com/aws/aws-cdk/compare/v2.68.0...v2.69.0) (2023-03-14)
+
+
+### Features
+
+* **custom-resources:** AwsCustomResource copy physicalResourceId from request when omit it in onUpdate ([#24194](https://github.com/aws/aws-cdk/issues/24194)) ([21ad7a7](https://github.com/aws/aws-cdk/commit/21ad7a7a0462a00c491ed104163d2065828a9aa1)), closes [#23843](https://github.com/aws/aws-cdk/issues/23843)
+* **docdb:** added ability to enable performance insights ([#24039](https://github.com/aws/aws-cdk/issues/24039)) ([c897f44](https://github.com/aws/aws-cdk/commit/c897f44ea438487a8bf48053dead667c35cade02)), closes [#24036](https://github.com/aws/aws-cdk/issues/24036)
+* **ecr-assets:** Support cache-from and cache-to flags ([#24024](https://github.com/aws/aws-cdk/issues/24024)) ([4e02566](https://github.com/aws/aws-cdk/commit/4e02566fab0f6c6708c9ee766e2805adbb329f18))
+* **eks:** support for Kubernetes version 1.25 ([#24484](https://github.com/aws/aws-cdk/issues/24484)) ([70fd3e9](https://github.com/aws/aws-cdk/commit/70fd3e97e5b3555f4036ada6e562cec4359cadeb)), closes [#24282](https://github.com/aws/aws-cdk/issues/24282)
+* **rds:** add support for minor versions of PostgreSQL: 14.7, 13.10, 12.14, and 11.19 ([#24539](https://github.com/aws/aws-cdk/issues/24539)) ([15cb919](https://github.com/aws/aws-cdk/commit/15cb919fab9d20d0e8f0485662131cbb10980269))
+* **rds:** PostgreSQL engine version 15.2 ([#24463](https://github.com/aws/aws-cdk/issues/24463)) ([59d795b](https://github.com/aws/aws-cdk/commit/59d795b6e8d77b2d2d099169eaeb83a66c9d6a1a)), closes [#24462](https://github.com/aws/aws-cdk/issues/24462)
+
+
+### Bug Fixes
+
+* **custom-resource:** custom resources fail with data containing multi-byte utf8 chars ([#24501](https://github.com/aws/aws-cdk/issues/24501)) ([9bd5078](https://github.com/aws/aws-cdk/commit/9bd507842f567ee3e450c3f44e5c3dccc7c42ae6)), closes [#24491](https://github.com/aws/aws-cdk/issues/24491)
+* **ecr-assets:** prefix cache arguments correctly ([#24524](https://github.com/aws/aws-cdk/issues/24524)) ([d451b30](https://github.com/aws/aws-cdk/commit/d451b3014a1d39e0a6ea18c2ec79a547b187adc5))
+* **pipelines:** Ubuntu 5 images will be slow, move to Ubuntu 6 ([#24544](https://github.com/aws/aws-cdk/issues/24544)) ([1f62c43](https://github.com/aws/aws-cdk/commit/1f62c438fb68332a492b624bad65159cc9c0308f))
+* **sfn:** can't override toStateJson() from other languages ([#24593](https://github.com/aws/aws-cdk/issues/24593)) ([e955d18](https://github.com/aws/aws-cdk/commit/e955d18052b8ec397c06ae6994b96bb7558e12bb)), closes [#14639](https://github.com/aws/aws-cdk/issues/14639)
+
 ## [2.68.0](https://github.com/aws/aws-cdk/compare/v2.67.0...v2.68.0) (2023-03-08)
 
 
