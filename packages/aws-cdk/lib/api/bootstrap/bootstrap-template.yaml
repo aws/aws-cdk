@@ -50,6 +50,12 @@ Parameters:
     Default: 'false'
     AllowedValues: [ 'true', 'false' ]
     Type: String
+  BootstrapVariant:
+    Type: String
+    Default: 'AWS CDK: Default Resources'
+    Description: Describe the provenance of the resources in this bootstrap
+      stack. Change this when you customize the template. To prevent accidents,
+      the CDK CLI will not overwrite bootstrap stacks with a different variant.
 Conditions:
   HasTrustedAccounts:
     Fn::Not:
@@ -199,6 +205,13 @@ Resources:
           - Ref: AWS::NoValue
       VersioningConfiguration:
         Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          # Exising objects will never be overwritten but Security Hub wants this rule to exist
+          - Id: CleanupOldVersions
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 365
     UpdateReplacePolicy: Retain
     DeletionPolicy: Retain
   StagingBucketPolicy:
@@ -442,20 +455,35 @@ Resources:
                     StringNotEquals:
                         s3:ResourceAccount:
                             Ref: 'AWS::AccountId'
-              - Sid: PipelineCrossAccountArtifactsKey
-                # Use keys only for the purposes of reading encrypted files from S3.
-                Effect: Allow
-                Action:
-                  - kms:Decrypt
-                  - kms:DescribeKey
-                  - kms:Encrypt
-                  - kms:ReEncrypt*
-                  - kms:GenerateDataKey*
-                Resource: "*"
-                Condition:
-                  StringEquals:
-                    kms:ViaService:
-                      Fn::Sub: s3.${AWS::Region}.amazonaws.com
+              - Fn::If:
+                - HasTrustedAccounts
+                - Sid: PipelineCrossAccountArtifactsKey
+                  # Use keys only for the purposes of reading encrypted files from S3.
+                  Effect: Allow
+                  Action:
+                    - kms:Decrypt
+                    - kms:DescribeKey
+                    - kms:Encrypt
+                    - kms:ReEncrypt*
+                    - kms:GenerateDataKey*
+
+                  # SecurityHub's rule KMS.2 complains if we put a '*' here, so instead we'll
+                  # turn the list of trusted accountIds ['111', '222', ...] into a list of
+                  # wildcard ARNS: ['arn:aws:kms:*:1111:*', 'arn:aws:kms:*:2222:*', ...].
+                  Resource:
+                    Fn::Split:
+                      - "|"
+                      - Fn::Sub:
+                        - "arn:aws:kms:*:${JoinedAccounts}:*"
+                        - JoinedAccounts:
+                            Fn::Join:
+                              - ":*|arn:aws:kms:*:"
+                              - { Ref: TrustedAccounts }
+                  Condition:
+                    StringEquals:
+                      kms:ViaService:
+                        Fn::Sub: s3.${AWS::Region}.amazonaws.com
+                - { Ref: AWS::NoValue }
               - Action: iam:PassRole
                 Resource:
                   Fn::Sub: "${CloudFormationExecutionRole.Arn}"
@@ -587,7 +615,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '15'
+      Value: '16'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

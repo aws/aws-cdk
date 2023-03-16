@@ -4,6 +4,11 @@ import * as chalk from 'chalk';
 import { install as enableSourceMapSupport } from 'source-map-support';
 
 import type { Argv } from 'yargs';
+import { DeploymentMethod } from './api';
+import { HotswapMode } from './api/hotswap/common';
+import { ILock } from './api/util/rwlock';
+import { checkForPlatformWarnings } from './platform-warnings';
+import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
@@ -23,10 +28,6 @@ import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
-import { DeploymentMethod } from './api';
-import { ILock } from './api/util/rwlock';
-import { checkForPlatformWarnings } from './platform-warnings';
-import { enableTracing } from './util/tracing';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -143,6 +144,13 @@ async function parseCommandLineArguments(args: string[]) {
       .option('hotswap', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
+          'Do not use this in production environments',
+      })
+      .option('hotswap-fallback', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
           'which skips CloudFormation and updates the resources directly, ' +
           'and falls back to a full deployment if that is not possible. ' +
           'Do not use this in production environments',
@@ -222,9 +230,15 @@ async function parseCommandLineArguments(args: string[]) {
       .option('hotswap', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
-          'which skips CloudFormation and updates the resources directly, ' +
-          'and falls back to a full deployment if that is not possible. ' +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
           "'true' by default, use --no-hotswap to turn off",
+      })
+      .option('hotswap-fallback', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'which skips CloudFormation and updates the resources directly, ' +
+          'and falls back to a full deployment if that is not possible.',
       })
       .options('logs', {
         type: 'boolean',
@@ -548,7 +562,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
@@ -586,7 +600,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback, true),
           traceLogs: args.logs,
           concurrency: args.concurrency,
         });
@@ -703,6 +717,27 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
     }
     return argv;
   };
+}
+
+function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {
+  if (hotswap && hotswapFallback) {
+    throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
+  } else if (!hotswap && !hotswapFallback) {
+    if (hotswap === undefined && hotswapFallback === undefined) {
+      return watch ? HotswapMode.HOTSWAP_ONLY : HotswapMode.FULL_DEPLOYMENT;
+    } else if (hotswap === false || hotswapFallback === false) {
+      return HotswapMode.FULL_DEPLOYMENT;
+    }
+  }
+
+  let hotswapMode: HotswapMode;
+  if (hotswap) {
+    hotswapMode = HotswapMode.HOTSWAP_ONLY;
+  } else /*if (hotswapFallback)*/ {
+    hotswapMode = HotswapMode.FALL_BACK;
+  }
+
+  return hotswapMode;
 }
 
 export function cli(args: string[] = process.argv.slice(2)) {

@@ -72,6 +72,28 @@ export interface Tag {
 }
 
 /**
+ * Options for configuring the Docker cache backend
+ */
+export interface ContainerImageAssetCacheOption {
+  /**
+   * The type of cache to use.
+   * Refer to https://docs.docker.com/build/cache/backends/ for full list of backends.
+   * @default - unspecified
+   *
+   * @example 'registry'
+   */
+  readonly type: string;
+  /**
+   * Any parameters to pass into the docker cache backend configuration.
+   * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
+   * @default {} No options provided
+   *
+   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   */
+  readonly params?: { [key: string]: string };
+}
+
+/**
  * Metadata Entry spec for container images.
  */
 export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry {
@@ -119,6 +141,13 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
   readonly buildArgs?: { [key: string]: string };
 
   /**
+   * Build secrets to pass to the `docker build` command
+   *
+   * @default no build secrets are passed
+   */
+  readonly buildSecrets?: { [key: string]: string };
+
+  /**
    * Docker target to build to
    *
    * @default no build target
@@ -153,6 +182,22 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
    */
   readonly outputs?: string[];
+
+  /**
+   * Cache from options to pass to the `docker build` command.
+   *
+   * @default - no cache from options are passed to the build command
+   * @see https://docs.docker.com/build/cache/backends/
+   */
+  readonly cacheFrom?: ContainerImageAssetCacheOption[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   *
+   * @default - no cache to options are passed to the build command
+   * @see https://docs.docker.com/build/cache/backends/
+   */
+  readonly cacheTo?: ContainerImageAssetCacheOption;
 }
 
 /**

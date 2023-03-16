@@ -167,11 +167,14 @@ class ContainerImageBuilder {
       directory: fullPath,
       tag: localTagName,
       buildArgs: source.dockerBuildArgs,
+      buildSecrets: source.dockerBuildSecrets,
       target: source.dockerBuildTarget,
       file: source.dockerFile,
       networkMode: source.networkMode,
       platform: source.platform,
       outputs: source.dockerOutputs,
+      cacheFrom: source.cacheFrom,
+      cacheTo: source.cacheTo,
     });
   }
 

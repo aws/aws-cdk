@@ -50,8 +50,8 @@ This example defines an Amazon EKS cluster with the following configuration:
 ```ts
 // provisiong a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_24,
-  kubectlLayer: new KubectlV24Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_25,
+  kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
 });
 
 // apply a kubernetes manifest to the cluster
@@ -684,11 +684,11 @@ Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a differ
 version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV24Layer } from '@aws-cdk/lambda-layer-kubectl-v24';
+import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_24,
-  kubectlLayer: new KubectlV24Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_25,
+  kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
 });
 ```
 
@@ -1193,6 +1193,20 @@ cluster.addHelmChart('ExternalSecretsOperator', {
 });
 ```
 
+Helm chart can come with Custom Resource Definitions (CRDs) defined that by default will be installed by helm as well. However in special cases it might be needed to skip the installation of CRDs, for that the property `skipCrds` can be used.
+
+```ts
+declare const cluster: eks.Cluster;
+// option 1: use a construct
+new eks.HelmChart(this, 'NginxIngress', {
+  cluster,
+  chart: 'nginx-ingress',
+  repository: 'https://helm.nginx.com/stable',
+  namespace: 'kube-system',
+  skipCrds: true,
+});
+```
+
 ### OCI Charts
 
 OCI charts are also supported.
@@ -1237,7 +1251,7 @@ const chart2 = cluster.addHelmChart('MyChart', {
 chart2.node.addDependency(chart1);
 ```
 
-#### CDK8s Charts
+### CDK8s Charts
 
 [CDK8s](https://cdk8s.io/) is an open-source library that enables Kubernetes manifest authoring using familiar programming languages. It is founded on the same technologies as the AWS CDK, such as [`constructs`](https://github.com/aws/constructs) and [`jsii`](https://github.com/aws/jsii).
 
@@ -1313,7 +1327,7 @@ const myChart = new MyChart(new cdk8s.App(), 'MyChart', { bucket });
 cluster.addCdk8sChart('my-chart', myChart);
 ```
 
-##### Custom CDK8s Constructs
+#### Custom CDK8s Constructs
 
 You can also compose a few stock `cdk8s+` constructs into your own custom construct. However, since mixing scopes between `aws-cdk` and `cdk8s` is currently not supported, the `Construct` class
 you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `@aws-cdk/core` like you normally would.
@@ -1350,7 +1364,7 @@ export class LoadBalancedWebService extends constructs.Construct {
 }
 ```
 
-##### Manually importing k8s specs and CRD's
+#### Manually importing k8s specs and CRD's
 
 If you find yourself unable to use `cdk8s+`, or just like to directly use the `k8s` native objects or CRD's, you can do so by manually importing them using the `cdk8s-cli`.
 

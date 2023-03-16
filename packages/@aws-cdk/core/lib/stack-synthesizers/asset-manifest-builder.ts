@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { FileAssetSource, FileAssetPackaging, DockerImageAssetSource } from '../assets';
-import { Stack } from '../stack';
 import { resolvedOr } from './_shared';
 import { ISynthesisSession } from './types';
+import { FileAssetSource, FileAssetPackaging, DockerImageAssetSource } from '../assets';
+import { Stack } from '../stack';
 
 /**
  * Build an asset manifest from assets added to a stack
@@ -65,11 +65,14 @@ export class AssetManifestBuilder {
       executable: asset.executable,
       directory: asset.directoryName,
       dockerBuildArgs: asset.dockerBuildArgs,
+      dockerBuildSecrets: asset.dockerBuildSecrets,
       dockerBuildTarget: asset.dockerBuildTarget,
       dockerFile: asset.dockerFile,
       networkMode: asset.networkMode,
       platform: asset.platform,
       dockerOutputs: asset.dockerOutputs,
+      cacheFrom: asset.dockerCacheFrom,
+      cacheTo: asset.dockerCacheTo,
     }, {
       repositoryName: target.repositoryName,
       imageTag,

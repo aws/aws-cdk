@@ -109,6 +109,22 @@ Packaging is executed using the `Packaging` class, which:
 ├── poetry.lock # your poetry lock file has to be present at the entry path
 ```
 
+**Excluding source files**
+
+You can exclude files from being copied using the optional bundling string array parameter `assetExcludes`
+
+```ts
+new python.PythonFunction(this, 'function', {
+  entry: '/path/to/poetry-function',
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    // translates to `rsync --exclude='.venv'`
+    assetExcludes: ['.venv'],
+  },
+});
+```
+
+
 ## Custom Bundling
 
 Custom bundling can be performed by passing in additional build arguments that point to index URLs to private repos, or by using an entirely custom Docker images for bundling dependencies. The build args currently supported are:
@@ -269,3 +285,24 @@ new python.PythonFunction(this, 'function', {
   },
 });
 ```
+
+## Troubleshooting
+
+### Containerfile: no such file or directory
+
+If you are on a Mac, using [Finch](https://github.com/runfinch/finch) instead of Docker, and see an error
+like this:
+
+```txt
+lstat /private/var/folders/zx/d5wln9n10sn0tcj1v9798f1c0000gr/T/jsii-kernel-9VYgrO/node_modules/@aws-cdk/aws-lambda-python-alpha/lib/Containerfile: no such file or directory
+```
+
+That is a sign that your temporary directory has not been mapped into the Finch VM. Add the following to `~/.finch/finch.yaml`:
+
+```yaml
+additional_directories:
+  - path: /private/var/folders/
+  - path: /var/folders/
+```
+
+Then restart the Finch VM by running `finch vm stop && finch vm start`.

@@ -42,7 +42,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
   environmentVariables: {
     stage: 'prod',
   },
@@ -115,7 +115,7 @@ If you want the canary to run just once upon deployment, you can use `Schedule.o
 
 You can specify whether the AWS CloudFormation is to also delete the Lambda functions and layers used by this canary, when the canary is deleted.
 
-This can be provisioned by setting the `DeleteLambdaResourcesOnCanaryDeletion` property to `true` when we define the canary.
+This can be provisioned by setting the `enableAutoDeleteLambdas` property to `true` when we define the canary.
 
 ```ts
 const stack = new Stack();
@@ -126,12 +126,12 @@ const canary = new synthetics.Canary(stack, 'Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code'),
   }),
   enableAutoDeleteLambdas: true,
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 ```
 
-Even when set to `true` there are resources such as S3 buckets/logs that do NOT get deleted and are to be deleted manually.
-
+Synthetic Canaries create additional resources under the hood beyond Lambda functions. Setting `enableAutoDeleteLambdas: true` will take care of
+cleaning up Lambda functions on deletion, but you still have to manually delete other resources like S3 buckets and CloudWatch logs.
 
 ### Configuring the Canary Script
 
@@ -152,7 +152,7 @@ new synthetics.Canary(this, 'Inline Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 // To supply the code from your local filesystem:
@@ -161,7 +161,7 @@ new synthetics.Canary(this, 'Asset Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 // To supply the code from a S3 bucket:
@@ -172,7 +172,7 @@ new synthetics.Canary(this, 'Bucket Canary', {
     code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 ```
 
@@ -198,8 +198,8 @@ new synthetics.Canary(this, 'Bucket Canary', {
 
 ### Running a canary on a VPC
 
-You can specify what [VPC a canary executes in](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html). 
-This can allow for monitoring services that may be internal to a specific VPC. To place a canary within a VPC, you can specify the `vpc` property with the desired `VPC` to place then canary in. 
+You can specify what [VPC a canary executes in](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html).
+This can allow for monitoring services that may be internal to a specific VPC. To place a canary within a VPC, you can specify the `vpc` property with the desired `VPC` to place then canary in.
 This will automatically attach the appropriate IAM permissions to attach to the VPC. This will also create a Security Group and attach to the default subnets for the VPC unless specified via `vpcSubnets` and `securityGroups`.
 
 ```ts
@@ -211,7 +211,7 @@ new synthetics.Canary(this, 'Vpc Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
   vpc,
 });
 ```

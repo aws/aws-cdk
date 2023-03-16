@@ -99,6 +99,13 @@ export interface DockerImageAssetInvalidationOptions {
   readonly buildArgs?: boolean;
 
   /**
+   * Use `buildSecrets` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly buildSecrets?: boolean;
+
+  /**
    * Use `target` while calculating the asset hash
    *
    * @default true
@@ -142,6 +149,28 @@ export interface DockerImageAssetInvalidationOptions {
 }
 
 /**
+ * Options for configuring the Docker cache backend
+ */
+export interface DockerCacheOption {
+  /**
+   * The type of cache to use.
+   * Refer to https://docs.docker.com/build/cache/backends/ for full list of backends.
+   * @default - unspecified
+   *
+   * @example 'registry'
+   */
+  readonly type: string;
+  /**
+   * Any parameters to pass into the docker cache backend configuration.
+   * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
+   * @default {} No options provided
+   *
+   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   */
+  readonly params?: { [key: string]: string };
+}
+
+/**
  * Options for DockerImageAsset
  */
 export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerprintOptions {
@@ -169,6 +198,23 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no build args are passed
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Build secrets.
+   *
+   * Docker BuildKit must be enabled to use build secrets.
+   *
+   * @see https://docs.docker.com/build/buildkit/
+   *
+   * @default - no build secrets
+   *
+   * @example
+   *
+   * {
+   *   'MY_SECRET': DockerBuildSecret.fromSrc('file.txt')
+   * }
+   */
+  readonly buildSecrets?: { [key: string]: string }
 
   /**
    * Docker target to build to
@@ -212,6 +258,22 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
    */
   readonly outputs?: string[];
+
+  /**
+   * Cache from options to pass to the `docker build` command.
+   *
+   * @default - no cache from options are passed to the build command
+   * @see https://docs.docker.com/build/cache/backends/
+   */
+  readonly cacheFrom?: DockerCacheOption[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   *
+   * @default - no cache to options are passed to the build command
+   * @see https://docs.docker.com/build/cache/backends/
+   */
+  readonly cacheTo?: DockerCacheOption;
 }
 
 /**
@@ -283,9 +345,24 @@ export class DockerImageAsset extends Construct implements IAsset {
   private readonly dockerBuildArgs?: { [key: string]: string };
 
   /**
+   * Build secrets to pass to the `docker build` command.
+   */
+  private readonly dockerBuildSecrets?: { [key: string]: string };
+
+  /**
    * Outputs to pass to the `docker build` command.
    */
   private readonly dockerOutputs?: string[];
+
+  /**
+   * Cache from options to pass to the `docker build` command.
+   */
+  private readonly dockerCacheFrom?: DockerCacheOption[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   */
+  private readonly dockerCacheTo?: DockerCacheOption;
 
   /**
    * Docker target to build to
@@ -345,6 +422,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     const extraHash: { [field: string]: any } = {};
     if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
     if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
+    if (props.invalidation?.buildSecrets !== false && props.buildSecrets) { extraHash.buildSecrets = props.buildSecrets; }
     if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
     if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
     if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
@@ -374,18 +452,24 @@ export class DockerImageAsset extends Construct implements IAsset {
     const stack = Stack.of(this);
     this.assetPath = staging.relativeStagedPath(stack);
     this.dockerBuildArgs = props.buildArgs;
+    this.dockerBuildSecrets = props.buildSecrets;
     this.dockerBuildTarget = props.target;
     this.dockerOutputs = props.outputs;
+    this.dockerCacheFrom = props.cacheFrom;
+    this.dockerCacheTo = props.cacheTo;
 
     const location = stack.synthesizer.addDockerImageAsset({
       directoryName: this.assetPath,
       dockerBuildArgs: this.dockerBuildArgs,
+      dockerBuildSecrets: this.dockerBuildSecrets,
       dockerBuildTarget: this.dockerBuildTarget,
       dockerFile: props.file,
       sourceHash: staging.assetHash,
       networkMode: props.networkMode?.mode,
       platform: props.platform?.platform,
       dockerOutputs: this.dockerOutputs,
+      dockerCacheFrom: this.dockerCacheFrom,
+      dockerCacheTo: this.dockerCacheTo,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
@@ -420,9 +504,12 @@ export class DockerImageAsset extends Construct implements IAsset {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] = this.dockerfilePath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] = this.dockerBuildArgs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY] = this.dockerBuildSecrets;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY] = this.dockerOutputs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_FROM_KEY] = this.dockerCacheFrom;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY] = this.dockerCacheTo;
   }
 
 }
@@ -435,14 +522,23 @@ function validateProps(props: DockerImageAssetProps) {
   }
 
   validateBuildArgs(props.buildArgs);
+  validateBuildSecrets(props.buildSecrets);
+}
+
+function validateBuildProps(buildPropName: string, buildProps?: { [key: string]: string }) {
+  for (const [key, value] of Object.entries(buildProps || {})) {
+    if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
+      throw new Error(`Cannot use tokens in keys or values of "${buildPropName}" since they are needed before deployment`);
+    }
+  }
 }
 
 function validateBuildArgs(buildArgs?: { [key: string]: string }) {
-  for (const [key, value] of Object.entries(buildArgs || {})) {
-    if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
-      throw new Error('Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment');
-    }
-  }
+  validateBuildProps('buildArgs', buildArgs);
+}
+
+function validateBuildSecrets(buildSecrets?: { [key: string]: string }) {
+  validateBuildProps('buildSecrets', buildSecrets);
 }
 
 function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefined {

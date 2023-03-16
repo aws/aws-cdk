@@ -218,6 +218,13 @@
                         "type": "string"
                     }
                 },
+                "buildSecrets": {
+                    "description": "Build secrets to pass to the `docker build` command (Default no build secrets are passed)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "target": {
                     "description": "Docker target to build to (Default no build target)",
                     "type": "string"
@@ -241,6 +248,17 @@
                         "type": "string"
                     }
                 },
+                "cacheFrom": {
+                    "description": "Cache from options to pass to the `docker build` command. (Default - no cache from options are passed to the build command)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ContainerImageAssetCacheOption"
+                    }
+                },
+                "cacheTo": {
+                    "description": "Cache to options to pass to the `docker build` command. (Default - no cache to options are passed to the build command)",
+                    "$ref": "#/definitions/ContainerImageAssetCacheOption"
+                },
                 "id": {
                     "description": "Logical identifier for the asset",
                     "type": "string"
@@ -259,6 +277,26 @@
                 "packaging",
                 "path",
                 "sourceHash"
+            ]
+        },
+        "ContainerImageAssetCacheOption": {
+            "description": "Options for configuring the Docker cache backend",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of cache to use.\nRefer to https://docs.docker.com/build/cache/backends/ for full list of backends. (Default - unspecified)",
+                    "type": "string"
+                },
+                "params": {
+                    "description": "Any parameters to pass into the docker cache backend configuration.\nRefer to https://docs.docker.com/build/cache/backends/ for cache backend configuration. (Default {} No options provided)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "type"
             ]
         },
         "Tag": {
@@ -656,6 +694,10 @@
                 "subnetGroupNameTag": {
                     "description": "Optional tag for subnet group name.\nIf not provided, we'll look at the aws-cdk:subnet-name tag.\nIf the subnet does not have the specified tag,\nwe'll use its type as the name. (Default 'aws-cdk:subnet-name')",
                     "type": "string"
+                },
+                "returnVpnGateways": {
+                    "description": "Whether to populate the `vpnGatewayId` field of the `VpcContextResponse`,\nwhich contains the VPN Gateway ID, if one exists. You can explicitly\ndisable this in order to avoid the lookup if you know the VPC does not have\na VPN Gatway attached. (Default true)",
+                    "type": "boolean"
                 }
             },
             "required": [
