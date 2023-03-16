@@ -13710,9 +13710,8 @@
         "AttributeDefinitions": "A list of attributes that describe the key schema for the table and indexes.\n\nThis property is required to create a DynamoDB table.\n\nUpdate requires: [Some interruptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-some-interrupt) . Replacement if you edit an existing AttributeDefinition.",
         "BillingMode": "Specify how you are charged for read and write throughput and how you manage capacity.\n\nValid values include:\n\n- `PROVISIONED` - We recommend using `PROVISIONED` for predictable workloads. `PROVISIONED` sets the billing mode to [Provisioned Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.ProvisionedThroughput.Manual) .\n- `PAY_PER_REQUEST` - We recommend using `PAY_PER_REQUEST` for unpredictable workloads. `PAY_PER_REQUEST` sets the billing mode to [On-Demand Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.OnDemand) .\n\nIf not specified, the default is `PROVISIONED` .",
         "ContributorInsightsSpecification": "The settings used to enable or disable CloudWatch Contributor Insights for the specified table.",
-        "DeletionProtectionEnabled": "Determines if a table is protected from deletion. When enabled, the table cannot be deleted by any user or process. This setting is disabled by default.",
         "GlobalSecondaryIndexes": "Global secondary indexes to be created on the table. You can create up to 20 global secondary indexes.\n\n> If you update a table to include a new global secondary index, AWS CloudFormation initiates the index creation and then proceeds with the stack update. AWS CloudFormation doesn't wait for the index to complete creation because the backfilling phase can take a long time, depending on the size of the table. You can't use the index or update the table until the index's status is `ACTIVE` . You can track its status by using the DynamoDB [DescribeTable](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/describe-table.html) command.\n> \n> If you add or delete an index during an update, we recommend that you don't update any other resources. If your stack fails to update and is rolled back while adding a new index, you must manually delete the index.\n> \n> Updates are not supported. The following are exceptions:\n> \n> - If you update either the contributor insights specification or the provisioned throughput values of global secondary indexes, you can update the table without interruption.\n> - You can delete or add one global secondary index without interruption. If you do both in the same update (for example, by changing the index's logical ID), the update fails.",
-        "ImportSourceSpecification": "Specifies the properties of data being imported from the S3 bucket source to the table.\n\n> If you specify the `ImportSourceSpecification` property, and also specify either the `StreamSpecification` , the `TableClass` property, or the `DeletionProtectionEnabled` property, the IAM entity creating/updating stack must have `UpdateTable` permission.",
+        "ImportSourceSpecification": "Specifies the properties of data being imported from the S3 bucket source to the table.\n\n> If you specify the `ImportSourceSpecification` property, and also specify either the `StreamSpecification` or `TableClass` property, the IAM entity creating/updating stack must have `UpdateTable` permission.",
         "KeySchema": "Specifies the attributes that make up the primary key for the table. The attributes in the `KeySchema` property must also be defined in the `AttributeDefinitions` property.",
         "KinesisStreamSpecification": "The Kinesis Data Streams configuration for the specified table.",
         "LocalSecondaryIndexes": "Local secondary indexes to be created on the table. You can create up to 5 local secondary indexes. Each index is scoped to a given hash key value. The size of each hash key can be up to 10 gigabytes.",
@@ -42490,14 +42489,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -42505,18 +42504,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -42525,25 +42524,25 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
         "Source": "The trust anchor type and its related certificate data.",
-        "Tags": ""
+        "Tags": "The tags to attach to the trust anchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
