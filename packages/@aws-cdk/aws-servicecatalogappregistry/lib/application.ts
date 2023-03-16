@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { StageStackAssociator } from './aspects/stack-associator';
-import { IAttributeGroup } from './attribute-group';
+import { AttributeGroup, IAttributeGroup } from './attribute-group';
 import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { isAccountUnresolved } from './private/utils';
 import { InputValidator } from './private/validation';
@@ -11,6 +11,32 @@ import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } 
 
 const APPLICATION_READ_ONLY_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly';
 const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation';
+
+/**
+ * Properties for a Service Catalog AppRegistry Attribute Group
+ */
+export interface AttributeGroupAssociationProps {
+  /**
+   * Logical Id of the attribute group created
+   */
+  readonly logicalId: string;
+  /**
+   * Enforces a particular physical attribute group name.
+   */
+  readonly attributeGroupName: string;
+
+  /**
+   * Description for attribute group.
+   * @default - No description provided
+   */
+  readonly description?: string;
+
+  /**
+   * A JSON of nested key-value pairs that represent the attributes in the group.
+   * Attributes maybe an empty JSON '{}', but must be explicitly stated.
+   */
+  readonly attributes: { [key: string]: any };
+}
 
 /**
  * A Service Catalog AppRegistry Application.
@@ -40,6 +66,13 @@ export interface IApplication extends cdk.IResource {
    * @param attributeGroup AppRegistry attribute group
    */
   associateAttributeGroup(attributeGroup: IAttributeGroup): void;
+
+  /**
+   * Create an attribute group and associate this application with the created attribute group.
+   *
+   * @param attributeGroup AppRegistry attribute group props
+   */
+  associateNewAttributeGroup(attributeGroup: AttributeGroupAssociationProps): IAttributeGroup;
 
   /**
    * Associate this application with a CloudFormation stack.
@@ -112,6 +145,21 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
       });
       this.associatedAttributeGroups.add(attributeGroup.node.addr);
     }
+  }
+
+  /**
+   * Create an attribute group and associate this application with the created attribute group.
+   */
+  public associateNewAttributeGroup(props: AttributeGroupAssociationProps): IAttributeGroup {
+    const attributeGroup = new AttributeGroup(this, props.logicalId, {
+      ...props,
+    });
+    new CfnAttributeGroupAssociation(this, `AttributeGroupAssociation${this.generateUniqueHash(attributeGroup.node.addr)}`, {
+      application: this.applicationId,
+      attributeGroup: attributeGroup.attributeGroupId,
+    });
+    this.associatedAttributeGroups.add(attributeGroup.node.addr);
+    return attributeGroup;
   }
 
   /**
