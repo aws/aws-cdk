@@ -7,5 +7,5 @@ export * from './ecs-job-definition';
 export * from './job-definition-base';
 export { IComputeEnvironment, ComputeEnvironmentProps } from './compute-environment-base';
 export * from './eks-job-definition';
-export * from './container-definition';
-export * from './eks-container';
+export * from './ecs-container-definition';
+export * from './eks-container-definition';

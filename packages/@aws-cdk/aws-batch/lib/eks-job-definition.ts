@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
+import { CfnJobDefinition } from './batch.generated';
 //import { CfnJobDefinition } from './batch.generated';
-import { EksContainerDefinition } from './eks-container';
+import { EksContainerDefinition } from './eks-container-definition';
 import { IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 
 export interface IEksJobDefinition extends IJobDefinition {
@@ -117,12 +118,26 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
     this.useHostNetwork = props.useHostNetwork;
     this.serviceAccount = props.serviceAccount;
 
-    /*new CfnJobDefinition(this, 'Resource', {
+    new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
       type: 'container',
-      containerProperties: this.containerDefinition.renderContainerDefinition(),
-      platformCapabilities: this.renderPlatformCapabilities(),
+      eksProperties: {
+        podProperties: {
+          containers: [
+            this.containerDefinition.renderContainerDefinition(),
+          ],
+          dnsPolicy: this.dnsPolicy,
+          hostNetwork: this.useHostNetwork,
+          serviceAccountName: this.serviceAccount,
+          volumes: this.containerDefinition.volumes?.map((volume) => {
+            return {
+              name: volume.name,
+
+            }
+
+          }),
+        },
+      },
     });
-    */
   }
 }

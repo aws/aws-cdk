@@ -1,7 +1,7 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
-import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './container-definition';
+import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
 import { IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 
 interface IEcsJobDefinition extends IJobDefinition {
