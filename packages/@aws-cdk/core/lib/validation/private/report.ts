@@ -124,6 +124,9 @@ export class ValidationReportFormatter {
         const title = reset(red(bright(`${violation.ruleName} (${occurrences} occurrences)`)));
         output.push('');
         output.push(title);
+        if (violation.severity) {
+          output.push(`Severity: ${violation.severity}`);
+        }
         output.push('');
         output.push('  Occurrences:');
         for (const construct of constructs) {
@@ -169,6 +172,8 @@ export class ValidationReportFormatter {
             ruleName: violation.ruleName,
             description: violation.description,
             fix: violation.fix,
+            ruleMetadata: violation.ruleMetadata,
+            severity: violation.severity,
             violatingConstructs: violation.violatingResources.map(resource => {
               const constructPath = this.tree.getConstructByLogicalId(resource.resourceLogicalId)?.node.path;
               return {

@@ -24,6 +24,10 @@ describe('validations', () => {
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
+          severity: 'medium',
+          ruleMetadata: {
+            id: 'abcdefg',
+          },
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
@@ -47,6 +51,10 @@ describe('validations', () => {
       templatePath: '/path/to/stack.template.json',
       constructPath: 'Default/Fake',
       title: 'test-rule',
+      ruleMetadata: {
+        id: 'abcdefg',
+      },
+      severity: 'medium',
       creationStack: `\t└──  Default (Default)
 \t     │ Library: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
@@ -305,6 +313,9 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
+          ruleMetadata: {
+            id: 'abcdefg',
+          },
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
@@ -338,6 +349,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
             {
               ruleName: 'test-rule',
               description: 'test recommendation',
+              ruleMetadata: { id: 'abcdefg' },
               violatingConstructs: [
                 {
                   constructStack: {
@@ -410,6 +422,8 @@ interface ValidationReportData {
   constructPath: string,
   creationStack?: string,
   resourceLogicalId: string,
+  severity?: string,
+  ruleMetadata?: { [key: string]: string };
 }
 
 const validationReport = (data: ValidationReportData) => {
@@ -430,6 +444,7 @@ const validationReport = (data: ValidationReportData) => {
     '(Violations)',
     '',
     title,
+    ...data.severity ? [`Severity: ${data.severity}`] : [],
     '',
     '  Occurrences:',
     '',
@@ -442,6 +457,7 @@ const validationReport = (data: ValidationReportData) => {
     '      > test-location',
     '',
     '  Description: test recommendation',
+    ...data.ruleMetadata ? [`  Rule Metadata: \n\t${Object.entries(data.ruleMetadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`] : [],
 
   ].join('\n');
 };
