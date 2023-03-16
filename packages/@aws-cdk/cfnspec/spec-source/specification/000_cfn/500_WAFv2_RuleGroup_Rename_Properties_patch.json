@@ -4,11 +4,11 @@
         "operations": [
             {
                 "op": "remove",
-                "path": "PropertyTypes/AWS::WAFv2::RuleGroup.AllowAction"
+                "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.AllowAction"
             },
             {
                 "op": "add",
-                "path": "PropertyTypes/AWS::WAFv2::RuleGroup.Allow",
+                "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.Allow",
                 "value": {
                     "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-allowaction.html",
                     "Properties": {
@@ -23,11 +23,11 @@
             },
             {
                 "op": "remove",
-                "path": "PropertyTypes/AWS::WAFv2::RuleGroup.BlockAction"
+                "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.BlockAction"
             },
             {
                 "op": "add",
-                "path": "PropertyTypes/AWS::WAFv2::RuleGroup.Block",
+                "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.Block",
                 "value": {
                     "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-blockaction.html",
                     "Properties": {
@@ -42,11 +42,11 @@
             },
             {
                 "op": "remove",
-                "path": "PropertyTypes/AWS::WAFv2::RuleGroup.CaptchaAction"
+                "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.CaptchaAction"
             },
             {
                 "op": "add",
-                "path": "PropertyTypes/AWS::WAFv2::RuleGroup.Captcha",
+                "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.Captcha",
                 "value": {
                     "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-captchaaction.html",
                     "Properties": {
@@ -61,11 +61,11 @@
             },
             {
                 "op": "remove",
-                "path": "PropertyTypes/AWS::WAFv2::RuleGroup.ChallengeAction"
+                "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.ChallengeAction"
             },
             {
                 "op": "add",
-                "path": "PropertyTypes/AWS::WAFv2::RuleGroup.Challenge",
+                "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.Challenge",
                 "value": {
                     "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-challengeaction.html",
                     "Properties": {
@@ -80,11 +80,11 @@
             },
             {
                 "op": "remove",
-                "path": "PropertyTypes/AWS::WAFv2::RuleGroup.CountAction"
+                "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.CountAction"
             },
             {
                 "op": "add",
-                "path": "PropertyTypes/AWS::WAFv2::RuleGroup.Count",
+                "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.Count",
                 "value": {
                     "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-countaction.html",
                     "Properties": {
@@ -98,39 +98,5 @@
                 }
             }
         ]
-    },
-    "PropertyTypes": {
-        "AWS::WAFv2::RuleGroup.RuleAction": {
-            "patch": {
-                "description": "Reverting type names which were introduced as part of this PR: https://github.com/aws/aws-cdk/pull/23984",
-                "operations": [
-                    {
-                        "op": "replace",
-                        "path": "Properties/Allow/Type",
-                        "value": "Allow"
-                    },
-                    {
-                        "op": "replace",
-                        "path": "Properties/Block/Type",
-                        "value": "Block"
-                    },
-                    {
-                        "op": "replace",
-                        "path": "Properties/Captcha/Type",
-                        "value": "Captcha"
-                    },
-                    {
-                        "op": "replace",
-                        "path": "Properties/Challenge/Type",
-                        "value": "Challenge"
-                    },
-                    {
-                        "op": "replace",
-                        "path": "Properties/Count/Type",
-                        "value": "Count"
-                    }
-                ]
-            }
-        }
     }
 }
