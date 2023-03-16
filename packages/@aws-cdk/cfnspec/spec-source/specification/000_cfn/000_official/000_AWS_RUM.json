@@ -1,5 +1,5 @@
 {
-  "$version": "109.0.0",
+  "$version": "115.0.0",
   "PropertyTypes": {
     "AWS::RUM::AppMonitor.AppMonitorConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html",
@@ -157,6 +157,11 @@
   },
   "ResourceTypes": {
     "AWS::RUM::AppMonitor": {
+      "Attributes": {
+        "Id": {
+          "PrimitiveType": "String"
+        }
+      },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html",
       "Properties": {
         "AppMonitorConfiguration": {
