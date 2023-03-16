@@ -324,4 +324,112 @@ describe('task definition', () => {
 
     });
   });
+
+  describe('Validate container cpu value', () => {
+    describe('when using addContainer', () => {
+      test('created successfully if the total CPU allocated to the task and the CPU allocated to the container are the same', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
+          cpu: '512',
+          memoryMiB: '512',
+          compatibility: ecs.Compatibility.FARGATE,
+        });
+
+        // WHEN
+        const container1 = taskDefinition.addContainer('Container', {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+          cpu: 256,
+        });
+        const container2 = taskDefinition.addContainer('Container2', {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+          cpu: 256,
+        });
+
+        // THEN
+        expect(taskDefinition.compatibility).toBe(ecs.Compatibility.FARGATE);
+        expect(container1.cpu).toBe(256);
+        expect(container2.cpu).toBe(256);
+      });
+
+      test('throws an error if the total CPU allocated to the container exceeds the task CPU', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
+          cpu: '256',
+          memoryMiB: '512',
+          compatibility: ecs.Compatibility.FARGATE,
+        });
+
+        // WHEN
+        taskDefinition.addContainer('Container', {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+          cpu: 256,
+        });
+
+        // THEN
+        expect(() => {
+          taskDefinition.addContainer('Container2', {
+            image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+            cpu: 256,
+          });
+        }).toThrow('The sum of all container cpu values cannot be greater than the value of the task cpu');
+      });
+    });
+
+    describe('when using ContainerDefinition constructor', () => {
+      test('created successfully if the total CPU allocated to the task and the CPU allocated to the container are the same', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
+          cpu: '512',
+          memoryMiB: '512',
+          compatibility: ecs.Compatibility.FARGATE,
+        });
+
+        // WHEN
+        const container1 = new ecs.ContainerDefinition(stack, 'Container', {
+          taskDefinition,
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+          cpu: 256,
+        });
+        const container2 = new ecs.ContainerDefinition(stack, 'Container2', {
+          taskDefinition,
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+          cpu: 256,
+        });
+
+        // THEN
+        expect(taskDefinition.compatibility).toBe(ecs.Compatibility.FARGATE);
+        expect(container1.cpu).toBe(256);
+        expect(container2.cpu).toBe(256);
+      });
+
+      test('throws an error if the total CPU allocated to the container exceeds the task CPU', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
+          cpu: '256',
+          memoryMiB: '512',
+          compatibility: ecs.Compatibility.FARGATE,
+        });
+
+        // WHEN
+        new ecs.ContainerDefinition(stack, 'Container', {
+          taskDefinition,
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+          cpu: 256,
+        });
+
+        // THEN
+        expect(() => {
+          new ecs.ContainerDefinition(stack, 'Container2', {
+            taskDefinition,
+            image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+            cpu: 256,
+          });
+        }).toThrow('The sum of all container cpu values cannot be greater than the value of the task cpu');
+      });
+    });
+  });
 });
