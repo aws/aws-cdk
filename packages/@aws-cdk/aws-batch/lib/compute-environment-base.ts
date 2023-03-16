@@ -69,6 +69,9 @@ export interface ComputeEnvironmentProps {
   readonly enabled?: boolean;
 }
 
+/**
+ * @internal
+ */
 export abstract class ComputeEnvironmentBase extends Resource implements IComputeEnvironment {
   readonly name?: string | undefined;
   readonly serviceRole?: iam.IRole | undefined;

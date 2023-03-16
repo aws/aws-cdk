@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+//import { CfnJobDefinition } from './batch.generated';
 import { EksContainerDefinition } from './eks-container';
 import { IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 
@@ -6,7 +7,8 @@ export interface IEksJobDefinition extends IJobDefinition {
   /**
    * The container this Job Definition will run
    */
-  readonly container: EksContainerDefinition;
+  readonly containerDefinition: EksContainerDefinition;
+
 
   /**
    * The DNS Policy of the pod used by this Job Definition
@@ -102,47 +104,25 @@ export enum DnsPolicy {
 }
 
 export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefinition {
-  /**
-   * The container this Job Definition will run
-   */
-  readonly container: EksContainerDefinition;
-
-  /**
-   * The DNS Policy of the pod used by this Job Definition
-   *
-   * @see https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
-   */
+  readonly containerDefinition: EksContainerDefinition;
   readonly dnsPolicy?: DnsPolicy;
-
-  /**
-   * If specified, the Pod used by this Job Definition will use the host's network IP address.
-   * Otherwise, the Kubernetes pod networking model is enabled.
-   * Most AWS Batch workloads are egress-only and don't require the overhead of IP allocation for each pod for incoming connections.
-   *
-   * @default false
-   *
-   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#host-namespaces
-   * @see https://kubernetes.io/docs/concepts/workloads/pods/#pod-networking
-   */
   readonly useHostNetwork?: boolean;
-
-  /**
-   * The name of the service account that's used to run the container.
-   * service accounts are Kubernetes method of identification and authentication,
-   * roughly analogous to IAM users.
-   *
-   * @see https://docs.aws.amazon.com/eks/latest/userguide/service-accounts.html
-   * @see https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-   * @see https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html
-   */
   readonly serviceAccount?: string;
 
   constructor(scope: Construct, id: string, props: EksJobDefinitionProps) {
     super(scope, id, props);
 
-    this.container = props.container;
+    this.containerDefinition = props.container;
     this.dnsPolicy = props.dnsPolicy;
     this.useHostNetwork = props.useHostNetwork;
     this.serviceAccount = props.serviceAccount;
+
+    /*new CfnJobDefinition(this, 'Resource', {
+      ...this.resourceProps,
+      type: 'container',
+      containerProperties: this.containerDefinition.renderContainerDefinition(),
+      platformCapabilities: this.renderPlatformCapabilities(),
+    });
+    */
   }
 }

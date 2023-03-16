@@ -151,21 +151,24 @@ export interface CustomReason {
 }
 
 export class Reason {
-  static readonly NON_ZERO_EXIT_CODE = {
+  static readonly NON_ZERO_EXIT_CODE: Reason = {
     onExitCode: '*',
   };
-  static readonly CANNOT_PULL_CONTAINER = {
+  static readonly CANNOT_PULL_CONTAINER: Reason = {
     onReason: 'CannotPullContainerError:*',
   }
-  static readonly SPOT_INSTANCE_RECLAIMED = {
+  static readonly SPOT_INSTANCE_RECLAIMED: Reason = {
     onStatusReason: 'Host EC2*',
   }
 
-  static custom(customReasonProps: CustomReason) {
+  static custom(customReasonProps: CustomReason): Reason {
     return customReasonProps;
   }
 }
 
+/**
+ * @internal
+ */
 export abstract class JobDefinitionBase extends Resource implements IJobDefinition {
   /**
    * The name of this job definition

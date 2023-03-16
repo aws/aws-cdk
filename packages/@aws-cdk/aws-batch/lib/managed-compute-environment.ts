@@ -181,6 +181,9 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
   readonly updateToLatestImageVersion?: boolean;
 }
 
+/**
+ * @internal
+ */
 export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBase implements IManagedComputeEnvironment {
   readonly maxvCpus: number;
   readonly replaceComputeEnvironment?: boolean;

@@ -1,10 +1,13 @@
 import * as ecs from '@aws-cdk/aws-ecs';
+import { IFileSystem } from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Lazy, PhysicalName } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 
+const EFS_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.EfsVolume');
+const HOST_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.HostVolume');
 
 export class LinuxParameters extends ecs.LinuxParameters {
   /**
@@ -23,26 +26,99 @@ export class LinuxParameters extends ecs.LinuxParameters {
   }
 }
 
-export interface MountedEcsVolume {
+export interface EcsVolumeOptions {
   readonly name: string;
-  readonly efsVolumeConfiguration?: EfsVolumeConfiguration; // TODO: see if EfsVolumeConfiguration can be specified with host volumes
-  readonly host?: string;
+  /**
+   * The path on the container where this volume is mounted
+   */
   readonly containerPath: string;
-  readonly readOnly: boolean;
+  readonly readonly?: boolean;
 }
 
-export interface EfsVolumeConfiguration {
-  readonly fileSystemId: string;
+
+export abstract class EcsVolume {
+  static efs(options: EfsVolumeOptions) {
+    return new EfsVolume(options);
+  }
+  static host(options: HostVolumeOptions) {
+    return new HostVolume(options);
+  }
+
+  readonly name: string;
+  readonly containerPath: string;
+  readonly readonly?: boolean;
+
+  constructor(options: EcsVolumeOptions) {
+    this.name = options.name;
+    this.containerPath = options.containerPath;
+    this.readonly = options.readonly;
+  }
+}
+
+export interface EfsVolumeOptions extends EcsVolumeOptions {
+  readonly fileSystem: IFileSystem;
   readonly rootDirectory?: string;
   readonly transitEncryption?: string;
   readonly transitEncryptionPort?: number;
-  readonly authorizationConfig?: AuthorizationConfig;
+  readonly accessPointId?: string;
+  readonly useJobDefinitionRole?: string;
 }
 
-export interface AuthorizationConfig {
+export class EfsVolume extends EcsVolume {
+  public static isEfsVolume(x: any) : x is EfsVolume {
+    return x !== null && typeof(x) === 'object' && EFS_VOLUME_SYMBOL in x;
+  }
+
+  readonly fileSystem: IFileSystem;
+  readonly rootDirectory?: string;
+  readonly transitEncryption?: string;
+  readonly transitEncryptionPort?: number;
   readonly accessPointId?: string;
-  readonly iam?: string;
+  readonly useJobDefinitionRole?: string;
+
+  constructor(options: EfsVolumeOptions) {
+    super(options);
+
+    this.fileSystem = options.fileSystem;
+    this.rootDirectory = options.rootDirectory;
+    this.transitEncryption = options.transitEncryption;
+    this.transitEncryptionPort = options.transitEncryptionPort;
+    this.accessPointId = options.accessPointId;
+    this.useJobDefinitionRole = options.useJobDefinitionRole;
+  }
 }
+
+Object.defineProperty(EfsVolume.prototype, EFS_VOLUME_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
+
+export interface HostVolumeOptions extends EcsVolumeOptions {
+  /**
+   * The path on the host machine this container will have access to
+   */
+  readonly hostPath?: string;
+}
+
+export class HostVolume extends EcsVolume {
+  public static isHostVolume(x: any) : x is HostVolume {
+    return x !== null && typeof(x) === 'object' && HOST_VOLUME_SYMBOL in x;
+  }
+
+  readonly hostPath?: string;
+
+  constructor(options: HostVolumeOptions) {
+    super(options);
+    this.hostPath = options.hostPath;
+  }
+}
+
+Object.defineProperty(HostVolume.prototype, HOST_VOLUME_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
 
 export interface IEcsContainerDefinition {
   readonly image: ecs.ContainerImage;
@@ -55,10 +131,10 @@ export interface IEcsContainerDefinition {
   readonly linuxParameters?: LinuxParameters;
   readonly logDriverConfig?: ecs.LogDriverConfig;
   readonly readonlyRootFileSystem?: boolean;
-  readonly gpuCount?: number;
+  readonly gpu?: number;
   readonly secrets?: secretsmanager.Secret[];
   readonly user?: string;
-  readonly volumes?: MountedEcsVolume[];
+  readonly volumes?: EcsVolume[];
 
   renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty;
 }
@@ -74,13 +150,13 @@ export interface EcsContainerDefinitionProps {
   readonly logging?: ecs.LogDriver;
   readonly readonlyRootFileSystem?: boolean;
   readonly cpu: number;
-  readonly gpuCount?: number;
+  readonly gpu?: number;
   readonly secrets?: secretsmanager.Secret[];
   readonly user?: string;
-  readonly volumes?: MountedEcsVolume[];
+  readonly volumes?: EcsVolume[];
 }
 
-export abstract class EcsContainerDefinitionBase extends Construct implements IEcsContainerDefinition {
+abstract class EcsContainerDefinitionBase extends Construct implements IEcsContainerDefinition {
   readonly image: ecs.ContainerImage;
   readonly cpu: number;
   readonly memoryMiB: number;
@@ -91,10 +167,10 @@ export abstract class EcsContainerDefinitionBase extends Construct implements IE
   readonly linuxParameters?: LinuxParameters;
   readonly logDriverConfig?: ecs.LogDriverConfig;
   readonly readonlyRootFileSystem?: boolean;
-  readonly gpuCount?: number;
+  readonly gpu?: number;
   readonly secrets?: secretsmanager.Secret[];
   readonly user?: string;
-  readonly volumes?: MountedEcsVolume[];
+  readonly volumes?: EcsVolume[];
 
   private readonly imageConfig: ecs.ContainerImageConfig;
 
@@ -119,7 +195,7 @@ export abstract class EcsContainerDefinitionBase extends Construct implements IE
       this.logDriverConfig = props.logging.bind(this, this as any);
     }
     this.readonlyRootFileSystem = props.readonlyRootFileSystem;
-    this.gpuCount = props.gpuCount;
+    this.gpu = props.gpu;
     this.secrets = props.secrets;
     this.user = props.user;
     this.volumes = props.volumes;
@@ -144,22 +220,50 @@ export abstract class EcsContainerDefinitionBase extends Construct implements IE
           valueFrom: secret.secretArn,
         };
       }),
+      mountPoints: this.volumes?.map((volume) => {
+        return {
+          containerPath: volume.containerPath,
+          readOnly: volume.readonly,
+          sourceVolume: volume.name,
+        };
+      }),
+      volumes: this.volumes?.map((volume) => {
+        if (EfsVolume.isEfsVolume(volume)) {
+          return {
+            name: volume.name,
+            efsVolumeConfiguration: {
+              fileSystemId: volume.fileSystem.fileSystemId,
+              rootDirectory: volume.rootDirectory,
+              transitEncription: volume.transitEncryption,
+              transitEncryptionPort: volume.transitEncryptionPort,
+            },
+          };
+        } else if (HostVolume.isHostVolume(volume)) {
+          return {
+            name: volume.name,
+            host: {
+              sourcePath: volume.hostPath,
+            },
+          };
+        }
+
+        throw new Error('unsupported Volume encountered');
+      }),
     };
   }
 
   //addUlimit(...Ulimit[])
-  //addMountedVolume(..MountedEcsVolume[])
+  //addMountedVolume(..EcsVolume[])
 
   private renderResourceRequirements() {
     const resourceRequirements = [];
 
-    /*if (this.gpuCount) {
+    if (this.gpu) {
       resourceRequirements.push({
         type: 'GPU',
-        value: this.gpuCount?.toString(),
+        value: this.gpu.toString(),
       });
     }
-    */
 
     resourceRequirements.push({
       type: 'MEMORY',
