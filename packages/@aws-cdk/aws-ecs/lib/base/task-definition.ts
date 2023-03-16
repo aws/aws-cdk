@@ -621,8 +621,8 @@ export class TaskDefinition extends TaskDefinitionBase {
   public _linkContainer(container: ContainerDefinition) {
     if (this._cpu) {
       const taskCpu = Number(this._cpu);
-      const sumOfContainerCPU = [...this.containers, container].map(c => c.cpu).filter((cpu): cpu is number => typeof cpu === 'number').reduce((a, c) => a + c, 0);
-      if (taskCpu < sumOfContainerCPU) {
+      const sumOfContainerCpu = [...this.containers, container].map(c => c.cpu).filter((cpu): cpu is number => typeof cpu === 'number').reduce((a, c) => a + c, 0);
+      if (taskCpu < sumOfContainerCpu) {
         throw new Error('The sum of all container cpu values cannot be greater than the value of the task cpu');
       }
     }
