@@ -135,6 +135,7 @@ export async function findIntegFiles(dir: string): Promise<IntegPath[]> {
     { path: 'aws-servicecatalog/test/assetsv2', copy: true },
     { path: 'aws-servicecatalog/test/product1.template.json', copy: true },
     { path: 'aws-servicecatalog/test/product2.template.json', copy: true },
+    { path: 'aws-stepfunctions/test/fake-task.ts', copy: true },
     { path: 'aws-stepfunctions-tasks/test/batch/batchjob-image', copy: true },
     { path: 'aws-stepfunctions-tasks/test/ecs/eventhandler-image', copy: true },
     { path: 'aws-stepfunctions-tasks/test/glue/my-glue-script/job.py', copy: true },
