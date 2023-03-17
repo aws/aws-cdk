@@ -1,5 +1,5 @@
 import {
-  Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
+  Connections, IConnectable, Instance, ISecurityGroup, IVpc, Peer, Port,
   SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
 } from '@aws-cdk/aws-ec2';
 import { Duration, Lazy, Resource } from '@aws-cdk/core';
@@ -251,13 +251,13 @@ export class LoadBalancer extends Resource implements IConnectable {
 
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
+  private readonly instanceIds: string[] = [];
 
   constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
 
     this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
-
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
     const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 
@@ -265,6 +265,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
       listeners: Lazy.any({ produce: () => this.listeners }),
+      instances: Lazy.list({ produce: () => this.instanceIds }, { omitEmpty: true }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
       crossZone: props.crossZone ?? true,
@@ -397,6 +398,33 @@ export class LoadBalancer extends Resource implements IConnectable {
       target,
       Port.tcp(instancePort),
       `Port ${instancePort} LB to fleet`);
+  }
+
+  /**
+   * Add instance to the load balancer.
+   * @internal
+   */
+  public _addInstanceId(instanceId: string) {
+    this.instanceIds.push(instanceId);
+  }
+}
+
+/**
+ * An EC2 instance that is the target for load balancing
+ */
+export class InstanceTarget implements ILoadBalancerTarget {
+  readonly connections: Connections;
+  /**
+   * Create a new Instance target.
+   *
+   * @param instance Instance to register to.
+   */
+  constructor(public readonly instance: Instance) {
+    this.connections = instance.connections;
+  }
+
+  public attachToClassicLB(loadBalancer: LoadBalancer): void {
+    loadBalancer._addInstanceId(this.instance.instanceId);
   }
 }
 
