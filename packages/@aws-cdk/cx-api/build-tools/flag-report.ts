@@ -15,6 +15,8 @@ async function main() {
     diff: changedFlags(),
     migratejson: migrateJson(),
   });
+
+  await writeRecommendedFlagsReport(path.join(__dirname, '..', 'recommended-feature-flags.json'));
 }
 
 function flagsTable() {
@@ -114,12 +116,25 @@ function oldBehavior(flag: FlagInfo): string | undefined {
   }
 }
 
+/**
+ * New project context, but sorted for readability
+ */
+function newProjectContext() {
+  const kv = Object.entries(feats.NEW_PROJECT_CONTEXT);
+  kv.sort((a, b) => a[0].localeCompare(b[0]));
+  return Object.fromEntries(kv);
+}
+
 function recommendedJson() {
   return [
     '```json',
-    JSON.stringify({ context: feats.NEW_PROJECT_CONTEXT }, undefined, 2),
+    JSON.stringify({ context: newProjectContext() }, undefined, 2),
     '```',
   ].join('\n');
+}
+
+async function writeRecommendedFlagsReport(fileName: string) {
+  await fs.writeFile(fileName, JSON.stringify(newProjectContext(), undefined, 2), { encoding: 'utf-8' });
 }
 
 function v2flags() {
