@@ -10,6 +10,7 @@ import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
 import { Mode } from './credentials';
 import { ISDK, SDK, isUnrecoverableAwsError } from './sdk';
+import { rootDir } from '../../util/directories';
 import { traceMethods } from '../../util/tracing';
 
 
@@ -417,9 +418,7 @@ function parseHttpOptions(options: SdkHttpOptions) {
 
   let userAgent = options.userAgent;
   if (userAgent == null) {
-    // Find the package.json from the main toolkit
-    const pkg = JSON.parse(readIfPossible(path.join(__dirname, '..', '..', '..', 'package.json')) ?? '{}');
-    userAgent = `${pkg.name}/${pkg.version}`;
+    userAgent = defaultCliUserAgent();
   }
   config.customUserAgent = userAgent;
 
@@ -442,6 +441,20 @@ function parseHttpOptions(options: SdkHttpOptions) {
   config.httpOptions.agent = new ProxyAgent(options.proxyAddress);
 
   return config;
+}
+
+/**
+ * Find the package.json from the main toolkit.
+ *
+ * If we can't read it for some reason, try to do something reasonable anyway.
+ * Fall back to argv[1], or a standard string if that is undefined for some reason.
+ */
+export function defaultCliUserAgent() {
+  const root = rootDir(false);
+  const pkg = JSON.parse((root ? readIfPossible(path.join(root, 'package.json')) : undefined) ?? '{}');
+  const name = pkg.name ?? path.basename(process.argv[1] ?? 'cdk-cli');
+  const version = pkg.version ?? '<unknown>';
+  return `${name}/${version}`;
 }
 
 /**
