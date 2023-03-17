@@ -172,14 +172,16 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   }
 
   /**
-   * Associate all stacks present in construct's aspect with application.
+   * Associate all stacks present in construct's aspect with application, including cross-account stacks.
    *
    * NOTE: This method won't automatically register stacks under pipeline stages,
    * and requires association of each pipeline stage by calling this method with stage Construct.
    *
    */
   public associateAllStacksInScope(scope: Construct): void {
-    cdk.Aspects.of(scope).add(new StageStackAssociator(this));
+    cdk.Aspects.of(scope).add(new StageStackAssociator(this, {
+      associateCrossAccountStacks: true,
+    }));
   }
 
   /**
@@ -256,7 +258,7 @@ export class Application extends ApplicationBase {
    * Application manager URL for the Application.
    * @attribute
    */
-  public readonly applicationManagerUrl?: cdk.CfnOutput;
+  public readonly applicationManagerUrl?: string;
   public readonly applicationArn: string;
   public readonly applicationId: string;
   public readonly applicationName?: string;
@@ -277,10 +279,8 @@ export class Application extends ApplicationBase {
     this.applicationName = props.applicationName;
     this.nodeAddress = cdk.Names.nodeUniqueId(application.node);
 
-    this.applicationManagerUrl = new cdk.CfnOutput(this, 'ApplicationManagerUrl', {
-      value: `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`,
-      description: 'Application manager url for the application created.',
-    });
+    this.applicationManagerUrl =
+        `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`;
   }
 
   protected generateUniqueHash(resourceAddress: string): string {
