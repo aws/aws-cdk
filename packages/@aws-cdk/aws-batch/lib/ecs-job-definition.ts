@@ -18,7 +18,10 @@ interface IEcsJobDefinition extends IJobDefinition {
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 }
 
-enum Compatibility {
+/**
+ * @internal
+ */
+export enum Compatibility {
   EC2 = 'EC2',
   FARGATE = 'FARGATE',
 }

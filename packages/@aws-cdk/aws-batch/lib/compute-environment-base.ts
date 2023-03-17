@@ -34,6 +34,13 @@ export interface IComputeEnvironment extends IResource {
    * To ensure you aren't billed for unused capacity, remove the ComputeEnvironment from your stack.
    */
   readonly enabled: boolean;
+
+  /**
+   * The ARN of this compute environment.
+   *
+   * @attribute
+   */
+  readonly computeEnvironmentArn: string;
 }
 
 export interface ComputeEnvironmentProps {
@@ -76,6 +83,7 @@ export abstract class ComputeEnvironmentBase extends Resource implements IComput
   readonly name?: string | undefined;
   readonly serviceRole?: iam.IRole | undefined;
   readonly enabled: boolean;
+  public abstract readonly computeEnvironmentArn: string;
 
   protected resourceProps: CfnComputeEnvironmentProps;
 

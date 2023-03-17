@@ -311,13 +311,11 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase {
   public renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       ...super.renderContainerDefinition(),
-      ulimits: this.ulimits?.map((ulimit) => {
-        return {
-          hardLimit: ulimit.hardLimit,
-          name: ulimit.name,
-          softLimit: ulimit.softLimit,
-        };
-      }),
+      ulimits: this.ulimits?.map((ulimit) => ({
+        hardLimit: ulimit.hardLimit,
+        name: ulimit.name,
+        softLimit: ulimit.softLimit,
+      })),
       privileged: this.privileged,
     };
   };

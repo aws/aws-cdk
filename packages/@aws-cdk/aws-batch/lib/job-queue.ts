@@ -1,5 +1,6 @@
-import { IResource, Resource, ResourceProps } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { CfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
 
@@ -15,7 +16,7 @@ export interface IJobQueue extends IResource {
    * *Note*: All compute environments that are associated with a job queue must share the same architecture.
    * AWS Batch doesn't support mixing compute environment architecture types in a single job queue.
    */
-  computeEnvironments: OrderedComputeEnvironment[]
+  readonly computeEnvironments: OrderedComputeEnvironment[]
 
   /**
    * The priority of the job queue.
@@ -23,7 +24,7 @@ export interface IJobQueue extends IResource {
    * Priority is determined in descending order.
    * For example, a job queue with a priority value of 10 is given scheduling preference over a job queue with a priority value of 1.
    */
-  priority: number
+  readonly priority: number
 
   /**
    * The name of the job queue. It can be up to 128 letters long.
@@ -31,7 +32,7 @@ export interface IJobQueue extends IResource {
    *
    * @default - no name
    */
-  name?: string
+  readonly name?: string
 
   /**
    * If the job queue is enabled, it is able to accept jobs.
@@ -39,15 +40,15 @@ export interface IJobQueue extends IResource {
    *
    * @default true
    */
-  enabled?: boolean
+  readonly enabled?: boolean
 
   /**
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
    */
-  schedulingPolicy?: ISchedulingPolicy
+  readonly schedulingPolicy?: ISchedulingPolicy
 }
 
-export interface JobQueueProps extends ResourceProps {
+export interface JobQueueProps {
   /**
    * The set of compute environments mapped to a job queue and their order relative to each other.
    * The job scheduler uses this parameter to determine which compute environment runs a specific job.
@@ -59,7 +60,7 @@ export interface JobQueueProps extends ResourceProps {
    * *Note*: All compute environments that are associated with a job queue must share the same architecture.
    * AWS Batch doesn't support mixing compute environment architecture types in a single job queue.
    */
-  computeEnvironments: OrderedComputeEnvironment[]
+  readonly computeEnvironments: OrderedComputeEnvironment[]
 
   /**
    * The priority of the job queue.
@@ -67,7 +68,7 @@ export interface JobQueueProps extends ResourceProps {
    * Priority is determined in descending order.
    * For example, a job queue with a priority value of 10 is given scheduling preference over a job queue with a priority value of 1.
    */
-  priority: number
+  readonly priority: number
 
   /**
    * The name of the job queue. It can be up to 128 letters long.
@@ -75,7 +76,7 @@ export interface JobQueueProps extends ResourceProps {
    *
    * @default - no name
    */
-  name?: string
+  readonly name?: string
 
   /**
    * If the job queue is enabled, it is able to accept jobs.
@@ -83,71 +84,57 @@ export interface JobQueueProps extends ResourceProps {
    *
    * @default true
    */
-  enabled?: boolean
+  readonly enabled?: boolean
 
   /**
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
    */
-  schedulingPolicy?: ISchedulingPolicy
+  readonly schedulingPolicy?: ISchedulingPolicy
 }
 
 export interface OrderedComputeEnvironment {
-  computeEnvironment: IComputeEnvironment;
-  order: number;
+  readonly computeEnvironment: IComputeEnvironment;
+  readonly order: number;
 }
 
 export class JobQueue extends Resource implements IJobQueue {
-  /**
-   * The set of compute environments mapped to a job queue and their order relative to each other.
-   * The job scheduler uses this parameter to determine which compute environment runs a specific job.
-   * Compute environments must be in the VALID state before you can associate them with a job queue.
-   * You can associate up to three compute environments with a job queue.
-   * All of the compute environments must be either EC2 (EC2 or SPOT) or Fargate (FARGATE or FARGATE_SPOT);
-   * EC2 and Fargate compute environments can't be mixed.
-   *
-   * *Note*: All compute environments that are associated with a job queue must share the same architecture.
-   * AWS Batch doesn't support mixing compute environment architecture types in a single job queue.
-   */
-  computeEnvironments: OrderedComputeEnvironment[]
-
-  /**
-   * The priority of the job queue.
-   * Job queues with a higher priority are evaluated first when associated with the same compute environment.
-   * Priority is determined in descending order.
-   * For example, a job queue with a priority value of 10 is given scheduling preference over a job queue with a priority value of 1.
-   */
-  priority: number
-
-  /**
-   * The name of the job queue. It can be up to 128 letters long.
-   * It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_)
-   *
-   * @default - no name
-   */
-  name?: string
-
-  /**
-   * If the job queue is enabled, it is able to accept jobs.
-   * Otherwise, new jobs can't be added to the queue, but jobs already in the queue can finish.
-   *
-   * @default true
-   */
-  enabled?: boolean
-
-  /**
-   * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
-   */
-  schedulingPolicy?: ISchedulingPolicy
+  readonly computeEnvironments: OrderedComputeEnvironment[]
+  readonly priority: number
+  readonly name?: string
+  readonly enabled?: boolean
+  readonly schedulingPolicy?: ISchedulingPolicy
 
   constructor(scope: Construct, id: string, props: JobQueueProps) {
-    super(scope, id, props);
+    super(scope, id, {
+      physicalName: props.name,
+    });
 
     this.computeEnvironments = props.computeEnvironments;
     this.priority = props.priority;
     this.name = props.name;
     this.enabled = props.enabled;
     this.schedulingPolicy = props.schedulingPolicy;
+
+    new CfnJobQueue(this, id, {
+      computeEnvironmentOrder: Lazy.any({
+        produce: () => this.computeEnvironments.map((ce) => {
+          return {
+            computeEnvironment: ce.computeEnvironment.computeEnvironmentArn,
+            order: ce.order,
+          };
+        }),
+      }),
+      priority: this.priority,
+      jobQueueName: this.name,
+      state: this.enabled === undefined ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
+      schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
+    });
   }
 
-  //addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number)
+  addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number): void {
+    this.computeEnvironments.push({
+      computeEnvironment,
+      order,
+    });
+  }
 }

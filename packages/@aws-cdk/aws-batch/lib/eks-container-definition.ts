@@ -1,4 +1,5 @@
 import * as ecs from '@aws-cdk/aws-ecs';
+import { Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 
@@ -673,7 +674,7 @@ export interface EmptyDirVolumeOptions extends EksVolumeOptions {
    *
    * @default - no size limit
    */
-  readonly sizeLimit?: KubernetesSizeLimit;
+  readonly sizeLimit?: Size
 }
 
 export enum EmptyDirMediumType {
@@ -688,38 +689,6 @@ export enum EmptyDirMediumType {
    * Items written here will *not* survive node reboots.
    */
   MEMORY = 'Memory',
-}
-
-export enum KubernetesQuantitySuffix {
-  K = 'k',
-  M = 'M',
-  G = 'G',
-  T = 'T',
-  P = 'P',
-  E = 'E',
-
-  KI = 'Ki',
-  MI = 'Mi',
-  GI = 'Gi',
-  TI = 'Ti',
-  PI = 'Pi',
-  EI = 'Ei',
-}
-
-export class KubernetesSizeLimit {
-  public static of(sizeLimit: number, suffix: KubernetesQuantitySuffix) {
-    return new KubernetesSizeLimit(sizeLimit, suffix);
-  }
-  public readonly sizeLimit: number;
-  /**
-   * @see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#quantity-resource-core
-   */
-  public readonly suffix: KubernetesQuantitySuffix;
-
-  private constructor(sizeLimit: number, suffix: KubernetesQuantitySuffix) {
-    this.sizeLimit = sizeLimit;
-    this.suffix = suffix;
-  }
 }
 
 /**
@@ -742,7 +711,7 @@ export class EmptyDirVolume extends EksVolume {
    *
    * @default - no size limit
    */
-  readonly sizeLimit?: KubernetesSizeLimit;
+  readonly sizeLimit?: Size;
 
   constructor(options: EmptyDirVolumeOptions) {
     super(options);

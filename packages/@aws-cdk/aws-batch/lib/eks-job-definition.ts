@@ -135,7 +135,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
                 name: volume.name,
                 emptyDir: {
                   medium: volume.medium,
-                  sizeLimit: volume.sizeLimit ? volume.sizeLimit?.sizeLimit + volume.sizeLimit?.suffix : undefined,
+                  sizeLimit: volume.sizeLimit ? volume.sizeLimit.toMebibytes().toString() + 'Mi' : undefined,
                 },
               };
             }

@@ -473,6 +473,8 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   readonly minvCpus?: number;
   readonly placementGroup?: ec2.IPlacementGroup;
 
+  public readonly computeEnvironmentArn: string;
+
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
@@ -496,30 +498,33 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     validateVCpus(id, this.minvCpus, this.maxvCpus);
     validateSpotBidPercentage(id, this.spot, this.spotBidPercentage);
 
-    new CfnComputeEnvironment(this, 'Resource', {
+    const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...this.resourceProps,
-      // We need instanceTypes to be Lazy, but it doesn't implement IResolvable
-      computeResources: Lazy.any({
-        produce: () => {
+      computeResources: {
+        ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
+        minvCpus: this.minvCpus,
+        instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
+        instanceTypes: Lazy.list({
+          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
+        }),
+        type: this.spot ? 'SPOT' : 'EC2',
+        spotIamFleetRole: this.spotFleetRole?.roleArn,
+        allocationStrategy: this.allocationStrategy,
+        bidPercentage: this.spotBidPercentage,
+        launchTemplate: this.launchTemplate,
+        ec2Configuration: this.images?.map((image) => {
           return {
-            ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
-            minvCpus: this.minvCpus,
-            instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
-            instanceTypes: renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
-            type: this.spot ? 'SPOT' : 'EC2',
-            spotIamFleetRole: this.spotFleetRole?.roleArn,
-            allocationStrategy: this.allocationStrategy,
-            bidPercentage: this.spotBidPercentage,
-            launchTemplate: this.launchTemplate,
-            ec2Configuration: this.images?.map((image) => {
-              return {
-                imageIdOverride: image.image?.getImage(this).imageId,
-                imageType: image.imageType ?? EcsMachineImageType.ECS_AL2,
-              };
-            }),
+            imageIdOverride: image.image?.getImage(this).imageId,
+            imageType: image.imageType ?? EcsMachineImageType.ECS_AL2,
           };
-        },
-      }),
+        }),
+      },
+    });
+
+    this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
+      service: 'batch',
+      resource: 'compute-environment',
+      resourceName: this.physicalName,
     });
   }
 
@@ -757,6 +762,8 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   readonly minvCpus?: number;
   readonly placementGroup?: ec2.IPlacementGroup;
 
+  public readonly computeEnvironmentArn: string;
+
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {
@@ -785,7 +792,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     validateVCpus(id, this.minvCpus, this.maxvCpus);
     validateSpotBidPercentage(id, this.spot, this.spotBidPercentage);
 
-    new CfnComputeEnvironment(this, 'Resource', {
+    const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...this.resourceProps,
       eksConfiguration: {
         eksClusterArn: this.eksCluster.clusterArn,
@@ -813,6 +820,12 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
         },
       }),
     });
+
+    this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
+      service: 'batch',
+      resource: 'compute-environment',
+      resourceName: this.physicalName,
+    });
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
@@ -829,8 +842,23 @@ export interface IFargateComputeEnvironment extends IManagedComputeEnvironment {
 export interface FargateComputeEnvironmentProps extends ManagedComputeEnvironmentProps {}
 
 export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
+  public readonly computeEnvironmentArn: string;
+
   constructor(scope: Construct, id: string, props: FargateComputeEnvironmentProps) {
     super(scope, id, props);
+
+    const resource = new CfnComputeEnvironment(this, id, {
+      ...this.resourceProps,
+      computeResources: {
+        ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
+        type: this.spot ? 'FARGATE_SPOT' : 'FARGATE',
+      },
+    });
+    this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
+      service: 'batch',
+      resource: 'compute-environment',
+      resourceName: this.physicalName,
+    });
   }
 }
 
