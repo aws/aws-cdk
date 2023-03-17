@@ -161,6 +161,7 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   private getCreateStagingStack(app: Stage, env: Environment): IStagingStack {
     const stackName = `StagingStack${this.appId}`;
     const stackId = 'StagingStack';
+    // TODO: this needs to be an IStagingStack
     const stagingStack = app.node.tryFindChild(stackId) as DefaultStagingStack ?? new DefaultStagingStack(app, stackId, {
       env,
       stackName,
@@ -175,12 +176,7 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
     const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
     const templateAsset = this.addFileAsset(templateAssetSource);
 
-    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
-      // TODO: handle verison props here
-    });
-
-    // eslint-disable-next-line no-console
-    console.log(templateAsset, assetManifestId);
+    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session);
 
     this.emitArtifact(session, {
       additionalDependencies: [assetManifestId],
@@ -189,7 +185,7 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   }
 
   /**
-   * // TODO
+   * Add a file asset to the manifest.
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     const { bucketName, assumeRoleArn } = this.stagingStack.addFile(asset);
@@ -201,7 +197,7 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   }
 
   /**
-   * // TODO
+   * Add a docker image asset to the manifest.
    */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     const { repoName, assumeRoleArn } = this.stagingStack.addDockerImage(asset);
