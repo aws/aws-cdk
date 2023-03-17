@@ -233,7 +233,7 @@ export class Table extends TableBase {
   }
 
   readonly tableName: string;
-  readonly tableColumns: Column[] = [];
+  readonly tableColumns: Column[];
   readonly cluster: ICluster;
   readonly databaseName: string;
 
