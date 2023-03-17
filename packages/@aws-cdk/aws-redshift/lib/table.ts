@@ -233,7 +233,7 @@ export class Table extends TableBase {
   }
 
   readonly tableName: string;
-  readonly tableColumns: Column[];
+  readonly tableColumns: Column[] = [];
   readonly cluster: ICluster;
   readonly databaseName: string;
 
@@ -241,6 +241,7 @@ export class Table extends TableBase {
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
+    this.tableColumns = props.tableColumns;
 
     this.validateDistKeyColumns(props.tableColumns);
     if (props.distStyle) {
@@ -250,7 +251,7 @@ export class Table extends TableBase {
       this.validateSortStyle(props.sortStyle, props.tableColumns);
     }
 
-    this.tableColumns = this.addColumnIds(props.tableColumns);
+    this.addColumnIds(props.tableColumns);
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
 
@@ -326,11 +327,10 @@ export class Table extends TableBase {
     return (sortKeyColumns.length === 0) ? TableSortStyle.AUTO : TableSortStyle.COMPOUND;
   }
 
-  private addColumnIds(columns: Column[]): Column[] {
-    const newColumns = [...columns];
+  private addColumnIds(columns: Column[]): void {
     const columnIds = new Set<string>();
     for (let i = 0; i < columns.length; i++) {
-      const column = newColumns[i];
+      const column = columns[i];
       if (column.id) {
         if (columnIds.has(column.id)) {
           throw new Error(`Column id '${column.id}' is not unique.`);
@@ -340,11 +340,13 @@ export class Table extends TableBase {
         if (columnIds.has(column.name)) {
           throw new Error(`Column name '${column.name}' is not unique amongst the column ids.`);
         }
-        newColumns[i] = { ...column, id: column.name };
+        this.tableColumns[i] = {
+          ...column,
+          id: column.name,
+        };
         columnIds.add(column.name);
       }
     }
-    return newColumns;
   }
 }
 
