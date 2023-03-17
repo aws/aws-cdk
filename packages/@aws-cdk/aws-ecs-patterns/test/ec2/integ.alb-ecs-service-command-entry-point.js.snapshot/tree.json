@@ -675,7 +675,7 @@
                   "aws:cdk:cloudformation:props": {
                     "capacityProviders": [
                       {
-                        "Ref": "CapacityProvier480DE32F"
+                        "Ref": "CapacityProviderF92AC12E"
                       }
                     ],
                     "cluster": {
@@ -1009,13 +1009,13 @@
               "version": "0.0.0"
             }
           },
-          "CapacityProvier": {
-            "id": "CapacityProvier",
-            "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvier",
+          "CapacityProvider": {
+            "id": "CapacityProvider",
+            "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvider",
             "children": {
-              "CapacityProvier": {
-                "id": "CapacityProvier",
-                "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvier/CapacityProvier",
+              "CapacityProvider": {
+                "id": "CapacityProvider",
+                "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvider/CapacityProvider",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::CapacityProvider",
                   "aws:cdk:cloudformation:props": {
@@ -1500,7 +1500,7 @@
                         "capacityProviderStrategy": [
                           {
                             "capacityProvider": {
-                              "Ref": "CapacityProvier480DE32F"
+                              "Ref": "CapacityProviderF92AC12E"
                             },
                             "base": 1,
                             "weight": 1

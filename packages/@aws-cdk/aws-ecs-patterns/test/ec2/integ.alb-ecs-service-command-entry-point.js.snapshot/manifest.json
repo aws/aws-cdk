@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2ea50d901ac478c9b6d603d0403d39d9627cc8be6301da75ec282f831a755d3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a2b6f9c760d3bc7595270ed832060b71a55291a5c65590ff3d3be135ecf644.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -216,10 +216,7 @@
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AutoScalingGroupLaunchConfigDEEB160C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AutoScalingGroupLaunchConfigDEEB160C"
           }
         ],
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/ASG": [
@@ -234,10 +231,10 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvier/CapacityProvier": [
+        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvider/CapacityProvider": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CapacityProvier480DE32F"
+            "data": "CapacityProviderF92AC12E"
           }
         ],
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/LB/Resource": [
@@ -328,6 +325,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "CapacityProvier480DE32F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CapacityProvier480DE32F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

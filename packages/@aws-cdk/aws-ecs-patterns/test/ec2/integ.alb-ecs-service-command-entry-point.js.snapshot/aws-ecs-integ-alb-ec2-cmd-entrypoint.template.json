@@ -399,7 +399,7 @@
    "Properties": {
     "CapacityProviders": [
      {
-      "Ref": "CapacityProvier480DE32F"
+      "Ref": "CapacityProviderF92AC12E"
      }
     ],
     "Cluster": {
@@ -611,7 +611,7 @@
     }
    }
   },
-  "CapacityProvier480DE32F": {
+  "CapacityProviderF92AC12E": {
    "Type": "AWS::ECS::CapacityProvider",
    "Properties": {
     "AutoScalingGroupProvider": {
@@ -869,7 +869,7 @@
      {
       "Base": 1,
       "CapacityProvider": {
-       "Ref": "CapacityProvier480DE32F"
+       "Ref": "CapacityProviderF92AC12E"
       },
       "Weight": 1
      }
