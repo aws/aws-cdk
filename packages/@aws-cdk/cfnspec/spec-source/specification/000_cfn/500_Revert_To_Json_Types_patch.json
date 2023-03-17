@@ -906,6 +906,15 @@
           },
           {
             "op": "remove",
+            "path": "/Properties/Challenge/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Challenge/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
             "path": "/Properties/Count/Type"
           },
           {
