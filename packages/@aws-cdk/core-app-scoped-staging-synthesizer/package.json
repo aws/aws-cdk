@@ -1,8 +1,8 @@
 {
-  "name": "@aws-cdk/core-synthesizer",
+  "name": "@aws-cdk/core-app-scoped-staging-synthesizer",
   "private": true,
   "version": "0.0.0",
-  "description": "Cdk synthesizer for Bootstrap v3",
+  "description": "Cdk synthesizer for app-scoped bootstrap",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -19,20 +19,20 @@
       "java": {
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-core-synthesizer"
+          "artifactId": "cdk-core-app-scoped-staging-synthesizer"
         },
-        "package": "software.amazon.awscdk.core.synthesizer"
+        "package": "software.amazon.awscdk.core.app.scoped.staging.synthesizer"
       },
       "python": {
-        "distName": "aws-cdk.core-synthesizer",
-        "module": "aws_cdk.core_synthesizer",
+        "distName": "aws-cdk.core-app-scoped-staging-synthesizer",
+        "module": "aws_cdk.core_app_scoped_staging_synthesizer",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Core.Synthesizer",
+        "namespace": "Amazon.CDK.Core.App.Scoped.Staging.Synthesizer",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       }
     }
@@ -40,7 +40,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/core-synthesizer"
+    "directory": "packages/@aws-cdk/core-app-scoped-staging-synthesizer"
   },
   "scripts": {
     "build": "cdk-build",
@@ -108,6 +108,7 @@
     "@aws-cdk/core": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-ecr": "0.0.0"
+    "@aws-cdk/aws-ecr": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0"
   }
 }
