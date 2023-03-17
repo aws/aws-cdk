@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { FakeTask } from './integ.state-machine-credentials';
+import { FakeTask } from './fake-task';
 import { renderGraph } from './private/render-util';
 import { JsonPath } from '../lib';
 
