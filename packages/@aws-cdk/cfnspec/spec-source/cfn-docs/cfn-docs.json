@@ -382,7 +382,7 @@
     },
     "AWS::AccessAnalyzer::Analyzer.Filter": {
       "attributes": {},
-      "description": "The criteria that defines the rule.",
+      "description": "The criteria that defines the rule.\n\nTo learn about filter keys that you can use to create an archive rule, see [filter keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-reference-filter-keys.html) in the *User Guide* .",
       "properties": {
         "Contains": "A \"contains\" condition to match for the rule.",
         "Eq": "An \"equals\" condition to match for the rule.",
@@ -7271,7 +7271,7 @@
       "attributes": {
         "Ref": "`Ref` returns the name of the keyspace. For example:\n\n`{ \"Ref\": \"MyNewKeyspace\" }`"
       },
-      "description": "The `AWS::Cassandra::Keyspace` resource allows you to create a new keyspace in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
+      "description": "You can use the `AWS::Cassandra::Keyspace` resource to create a new keyspace in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
       "properties": {
         "KeyspaceName": "The name of the keyspace to be created. The keyspace name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the keyspace name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
         "Tags": "A list of key-value pair tags to be attached to the resource."
@@ -7281,23 +7281,24 @@
       "attributes": {
         "Ref": "`Ref` returns the name of the table and the keyspace where the table exists (delimited by '|'). For example:\n\n`{ \"Ref\": \"myKeyspace|myTable\" }`"
       },
-      "description": "The `AWS::Cassandra::Table` resource allows you to create a new table in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
+      "description": "You can use the `AWS::Cassandra::Table` resource to create a new table in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
       "properties": {
         "BillingMode": "The billing mode for the table, which determines how you'll be charged for reads and writes:\n\n- *On-demand mode* (default) - You pay based on the actual reads and writes your application performs.\n- *Provisioned mode* - Lets you specify the number of reads and writes per second that you need for your application.\n\nIf you don't specify a value for this property, then the table will use on-demand mode.",
+        "ClientSideTimestampsEnabled": "Enables client-side timestamps for the table. By default, the setting is disabled. You can enable client-side timestamps with the following option:\n\n- `status: \"enabled\"`\n\nAfter client-side timestamps are enabled for a table, you can't disable this setting.",
         "ClusteringKeyColumns": "One or more columns that determine how the table data is sorted.",
         "DefaultTimeToLive": "The default Time To Live (TTL) value for all rows in a table in seconds. The maximum configurable value is 630,720,000 seconds, which is the equivalent of 20 years. By default, the TTL value for a table is 0, which means data does not expire.\n\nFor more information, see [Setting the default TTL value for a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/TTL-how-it-works.html#ttl-howitworks_default_ttl) in the *Amazon Keyspaces Developer Guide* .",
         "EncryptionSpecification": "The encryption at rest options for the table.\n\n- *AWS owned key* (default) - The key is owned by Amazon Keyspaces.\n- *Customer managed key* - The key is stored in your account and is created, owned, and managed by you.\n\n> If you choose encryption with a customer managed key, you must specify a valid customer managed KMS key with permissions granted to Amazon Keyspaces.\n\nFor more information, see [Encryption at rest in Amazon Keyspaces](https://docs.aws.amazon.com/keyspaces/latest/devguide/EncryptionAtRest.html) in the *Amazon Keyspaces Developer Guide* .",
-        "KeyspaceName": "The name of the keyspace in which to create the table. The keyspace must already exist.",
+        "KeyspaceName": "The name of the keyspace to create the table in. The keyspace must already exist.",
         "PartitionKeyColumns": "One or more columns that uniquely identify every row in the table. Every table must have a partition key.",
         "PointInTimeRecoveryEnabled": "Specifies if point-in-time recovery is enabled or disabled for the table. The options are `PointInTimeRecoveryEnabled=true` and `PointInTimeRecoveryEnabled=false` . If not specified, the default is `PointInTimeRecoveryEnabled=false` .",
         "RegularColumns": "One or more columns that are not part of the primary key - that is, columns that are *not* defined as partition key columns or clustering key columns.\n\nYou can add regular columns to existing tables by adding them to the template.",
-        "TableName": "The name of the table to be created. The table name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the table name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name. \n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
+        "TableName": "The name of the table to be created. The table name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the table name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacing this resource. You can perform updates that require no interruption or some interruption. If you must replace the resource, specify a new name. \n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
         "Tags": "A list of key-value pair tags to be attached to the resource."
       }
     },
     "AWS::Cassandra::Table.BillingMode": {
       "attributes": {},
-      "description": "Determines the billing mode for the table - On-demand or provisioned.",
+      "description": "Determines the billing mode for the table - on-demand or provisioned.",
       "properties": {
         "Mode": "The billing mode for the table:\n\n- On-demand mode - `ON_DEMAND`\n- Provisioned mode - `PROVISIONED`\n\n> If you choose `PROVISIONED` mode, then you also need to specify provisioned throughput (read and write capacity) for the table.\n\nValid values: `ON_DEMAND` | `PROVISIONED`",
         "ProvisionedThroughput": "The provisioned read capacity and write capacity for the table. For more information, see [Provisioned throughput capacity mode](https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.html#ReadWriteCapacityMode.Provisioned) in the *Amazon Keyspaces Developer Guide* ."
@@ -9047,7 +9048,7 @@
       "properties": {
         "Name": "The name or key of the environment variable.",
         "Type": "The type of environment variable. Valid values include:\n\n- `PARAMETER_STORE` : An environment variable stored in Systems Manager Parameter Store. To learn how to specify a parameter store environment variable, see [env/parameter-store](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.parameter-store) in the *AWS CodeBuild User Guide* .\n- `PLAINTEXT` : An environment variable in plain text format. This is the default value.\n- `SECRETS_MANAGER` : An environment variable stored in AWS Secrets Manager . To learn how to specify a secrets manager environment variable, see [env/secrets-manager](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager) in the *AWS CodeBuild User Guide* .",
-        "Value": "The value of the environment variable.\n\n> We strongly discourage the use of `PLAINTEXT` environment variables to store sensitive values, especially AWS secret key IDs. `PLAINTEXT` environment variables can be displayed in plain text using the AWS CodeBuild console and the AWS CLI . For sensitive values, we recommend you use an environment variable of type `PARAMETER_STORE` or `SECRETS_MANAGER` ."
+        "Value": "The value of the environment variable.\n\n> We strongly discourage the use of `PLAINTEXT` environment variables to store sensitive values, especially AWS secret key IDs and secret access keys. `PLAINTEXT` environment variables can be displayed in plain text using the AWS CodeBuild console and the AWS CLI . For sensitive values, we recommend you use an environment variable of type `PARAMETER_STORE` or `SECRETS_MANAGER` ."
       }
     },
     "AWS::CodeBuild::Project.FilterGroup": {
@@ -10395,6 +10396,65 @@
         "GroupName": "The group name.",
         "UserPoolId": "The user pool ID for the user pool.",
         "Username": "The username for the user."
+      }
+    },
+    "AWS::Comprehend::Flywheel": {
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) of the flywheel.",
+        "Ref": "`Ref` returns the Amazon Resource Name (ARN) of the flywheel."
+      },
+      "description": "A flywheel is an AWS resource that orchestrates the ongoing training of a model for custom classification or custom entity recognition. You can create a flywheel to start with an existing trained model, or Comprehend can create and train a new model.\n\nWhen you create the flywheel, Comprehend creates a data lake in your account. The data lake holds the training data and test data for all versions of the model.\n\nTo use a flywheel with an existing trained model, you specify the active model version. Comprehend copies the model's training data and test data into the flywheel's data lake.\n\nTo use the flywheel with a new model, you need to provide a dataset for training data (and optional test data) when you create the flywheel.\n\nFor more information about flywheels, see [Flywheel overview](https://docs.aws.amazon.com/comprehend/latest/dg/flywheels-about.html) in the *Amazon Comprehend Developer Guide* .",
+      "properties": {
+        "ActiveModelArn": "The Amazon Resource Number (ARN) of the active model version.",
+        "DataAccessRoleArn": "The Amazon Resource Name (ARN) of the IAM role that grants Amazon Comprehend permission to access the flywheel data.",
+        "DataLakeS3Uri": "Amazon S3 URI of the data lake location.",
+        "DataSecurityConfig": "Data security configuration.",
+        "FlywheelName": "Name for the flywheel.",
+        "ModelType": "Model type of the flywheel's model.",
+        "Tags": "Tags associated with the endpoint being created. A tag is a key-value pair that adds metadata to the endpoint. For example, a tag with \"Sales\" as the key might be added to an endpoint to indicate its use by the sales department.",
+        "TaskConfig": "Configuration about the custom classifier associated with the flywheel."
+      }
+    },
+    "AWS::Comprehend::Flywheel.DataSecurityConfig": {
+      "attributes": {},
+      "description": "Data security configuration.",
+      "properties": {
+        "DataLakeKmsKeyId": "ID for the AWS KMS key that Amazon Comprehend uses to encrypt the data in the data lake.",
+        "ModelKmsKeyId": "ID for the AWS KMS key that Amazon Comprehend uses to encrypt trained custom models. The ModelKmsKeyId can be either of the following formats:\n\n- KMS Key ID: `\"1234abcd-12ab-34cd-56ef-1234567890ab\"`\n- Amazon Resource Name (ARN) of a KMS Key: `\"arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab\"`",
+        "VolumeKmsKeyId": "ID for the AWS KMS key that Amazon Comprehend uses to encrypt the volume.",
+        "VpcConfig": "Configuration parameters for an optional private Virtual Private Cloud (VPC) containing the resources you are using for the job. For more information, see [Amazon VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html) ."
+      }
+    },
+    "AWS::Comprehend::Flywheel.DocumentClassificationConfig": {
+      "attributes": {},
+      "description": "Configuration required for a custom classification model.",
+      "properties": {
+        "Labels": "One or more labels to associate with the custom classifier.",
+        "Mode": "Classification mode indicates whether the documents are `MULTI_CLASS` or `MULTI_LABEL` ."
+      }
+    },
+    "AWS::Comprehend::Flywheel.EntityRecognitionConfig": {
+      "attributes": {},
+      "description": "Configuration required for an entity recognition model.",
+      "properties": {
+        "EntityTypes": "Up to 25 entity types that the model is trained to recognize."
+      }
+    },
+    "AWS::Comprehend::Flywheel.TaskConfig": {
+      "attributes": {},
+      "description": "Configuration about the custom classifier associated with the flywheel.",
+      "properties": {
+        "DocumentClassificationConfig": "Configuration required for a classification model.",
+        "EntityRecognitionConfig": "Configuration required for an entity recognition model.",
+        "LanguageCode": "Language code for the language that the model supports."
+      }
+    },
+    "AWS::Comprehend::Flywheel.VpcConfig": {
+      "attributes": {},
+      "description": "Configuration parameters for an optional private Virtual Private Cloud (VPC) containing the resources you are using for the job. For more information, see [Amazon VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html) .",
+      "properties": {
+        "SecurityGroupIds": "The ID number for a security group on an instance of your private VPC. Security groups on your VPC function serve as a virtual firewall to control inbound and outbound traffic and provides security for the resources that you\u2019ll be accessing on the VPC. This ID number is preceded by \"sg-\", for instance: \"sg-03b388029b0a285ea\". For more information, see [Security Groups for your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html) .",
+        "Subnets": "The ID for each subnet being used in your private VPC. This subnet is a subset of the a range of IPv4 addresses used by the VPC and is specific to a given availability zone in the VPC\u2019s Region. This ID number is preceded by \"subnet-\", for instance: \"subnet-04ccf456919e69055\". For more information, see [VPCs and Subnets](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html) ."
       }
     },
     "AWS::Config::AggregationAuthorization": {
@@ -13648,7 +13708,7 @@
       "description": "Defines settings specific to a single replica of a global table.",
       "properties": {
         "ContributorInsightsSpecification": "The settings used to enable or disable CloudWatch Contributor Insights for the specified replica. When not specified, defaults to contributor insights disabled for the replica.",
-        "DeletionProtectionEnabled": "",
+        "DeletionProtectionEnabled": "Determines if a replica is protected from deletion. When enabled, the table cannot be deleted by any user or process. This setting is disabled by default. For more information, see [Using deletion protection](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.Basics.html#WorkingWithTables.Basics.DeletionProtection) in the *Amazon DynamoDB Developer Guide* .",
         "GlobalSecondaryIndexes": "Defines additional settings for the global secondary indexes of this replica.",
         "KinesisStreamSpecification": "Defines the Kinesis Data Streams configuration for the specified replica.",
         "PointInTimeRecoverySpecification": "The settings used to enable point in time recovery. When not specified, defaults to point in time recovery disabled for the replica.",
@@ -13710,8 +13770,9 @@
         "AttributeDefinitions": "A list of attributes that describe the key schema for the table and indexes.\n\nThis property is required to create a DynamoDB table.\n\nUpdate requires: [Some interruptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-some-interrupt) . Replacement if you edit an existing AttributeDefinition.",
         "BillingMode": "Specify how you are charged for read and write throughput and how you manage capacity.\n\nValid values include:\n\n- `PROVISIONED` - We recommend using `PROVISIONED` for predictable workloads. `PROVISIONED` sets the billing mode to [Provisioned Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.ProvisionedThroughput.Manual) .\n- `PAY_PER_REQUEST` - We recommend using `PAY_PER_REQUEST` for unpredictable workloads. `PAY_PER_REQUEST` sets the billing mode to [On-Demand Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.OnDemand) .\n\nIf not specified, the default is `PROVISIONED` .",
         "ContributorInsightsSpecification": "The settings used to enable or disable CloudWatch Contributor Insights for the specified table.",
+        "DeletionProtectionEnabled": "Determines if a table is protected from deletion. When enabled, the table cannot be deleted by any user or process. This setting is disabled by default. For more information, see [Using deletion protection](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.Basics.html#WorkingWithTables.Basics.DeletionProtection) in the *Amazon DynamoDB Developer Guide* .",
         "GlobalSecondaryIndexes": "Global secondary indexes to be created on the table. You can create up to 20 global secondary indexes.\n\n> If you update a table to include a new global secondary index, AWS CloudFormation initiates the index creation and then proceeds with the stack update. AWS CloudFormation doesn't wait for the index to complete creation because the backfilling phase can take a long time, depending on the size of the table. You can't use the index or update the table until the index's status is `ACTIVE` . You can track its status by using the DynamoDB [DescribeTable](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/describe-table.html) command.\n> \n> If you add or delete an index during an update, we recommend that you don't update any other resources. If your stack fails to update and is rolled back while adding a new index, you must manually delete the index.\n> \n> Updates are not supported. The following are exceptions:\n> \n> - If you update either the contributor insights specification or the provisioned throughput values of global secondary indexes, you can update the table without interruption.\n> - You can delete or add one global secondary index without interruption. If you do both in the same update (for example, by changing the index's logical ID), the update fails.",
-        "ImportSourceSpecification": "Specifies the properties of data being imported from the S3 bucket source to the table.\n\n> If you specify the `ImportSourceSpecification` property, and also specify either the `StreamSpecification` or `TableClass` property, the IAM entity creating/updating stack must have `UpdateTable` permission.",
+        "ImportSourceSpecification": "Specifies the properties of data being imported from the S3 bucket source to the table.\n\n> If you specify the `ImportSourceSpecification` property, and also specify either the `StreamSpecification` , the `TableClass` property, or the `DeletionProtectionEnabled` property, the IAM entity creating/updating stack must have `UpdateTable` permission.",
         "KeySchema": "Specifies the attributes that make up the primary key for the table. The attributes in the `KeySchema` property must also be defined in the `AttributeDefinitions` property.",
         "KinesisStreamSpecification": "The Kinesis Data Streams configuration for the specified table.",
         "LocalSecondaryIndexes": "Local secondary indexes to be created on the table. You can create up to 5 local secondary indexes. Each index is scoped to a given hash key value. The size of each hash key can be up to 10 gigabytes.",
@@ -15636,12 +15697,12 @@
       },
       "description": "Specifies a path to analyze for reachability.\n\nVPC Reachability Analyzer enables you to analyze and debug network reachability between two resources in your virtual private cloud (VPC). For more information, see the [Reachability Analyzer User Guide](https://docs.aws.amazon.com/vpc/latest/reachability/what-is-reachability-analyzer.html) .",
       "properties": {
-        "Destination": "The AWS resource that is the destination of the path.",
-        "DestinationIp": "The IP address of the AWS resource that is the destination of the path.",
+        "Destination": "The ID or ARN of the destination. If the resource is in another account, you must specify an ARN.",
+        "DestinationIp": "The IP address of the destination.",
         "DestinationPort": "The destination port.",
         "Protocol": "The protocol.",
-        "Source": "The AWS resource that is the source of the path.",
-        "SourceIp": "The IP address of the AWS resource that is the source of the path.",
+        "Source": "The ID or ARN of the source. If the resource is in another account, you must specify an ARN.",
+        "SourceIp": "The IP address of the source.",
         "Tags": "The tags to add to the path."
       }
     },
@@ -24186,7 +24247,7 @@
         "Path": "The path for the virtual MFA device. For more information about paths, see [IAM identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) in the *IAM User Guide* .\n\nThis parameter is optional. If it is not included, it defaults to a slash (/).\n\nThis parameter allows (through its [regex pattern](https://docs.aws.amazon.com/http://wikipedia.org/wiki/regex) ) a string of characters consisting of either a forward slash (/) by itself or a string that must begin and end with forward slashes. In addition, it can contain any ASCII character from the ! ( `\\u0021` ) through the DEL character ( `\\u007F` ), including most punctuation characters, digits, and upper and lowercased letters.",
         "Tags": "A list of tags that you want to attach to the new IAM virtual MFA device. Each tag consists of a key name and an associated value. For more information about tagging, see [Tagging IAM resources](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_tags.html) in the *IAM User Guide* .\n\n> If any one of the tags is invalid or if you exceed the allowed maximum number of tags, then the entire request fails and the resource is not created.",
         "Users": "The IAM user associated with this virtual MFA device.",
-        "VirtualMfaDeviceName": "The name of the virtual MFA device. Use with path to uniquely identify a virtual MFA device.\n\nThis parameter allows (through its [regex pattern](https://docs.aws.amazon.com/http://wikipedia.org/wiki/regex) ) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-"
+        "VirtualMfaDeviceName": "The name of the virtual MFA device, which must be unique. Use with path to uniquely identify a virtual MFA device.\n\nThis parameter allows (through its [regex pattern](https://docs.aws.amazon.com/http://wikipedia.org/wiki/regex) ) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-"
       }
     },
     "AWS::IVS::Channel": {
@@ -26113,7 +26174,7 @@
       "attributes": {},
       "description": "A structure that contains the configuration information of a delta time session window.\n\n[`DeltaTime`](https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_DeltaTime.html) specifies a time interval. You can use `DeltaTime` to create dataset contents with data that has arrived in the data store since the last execution. For an example of `DeltaTime` , see [Creating a SQL dataset with a delta window (CLI)](https://docs.aws.amazon.com/iotanalytics/latest/userguide/automate-create-dataset.html#automate-example6) in the *AWS IoT Analytics User Guide* .",
       "properties": {
-        "TimeoutInMinutes": "A time interval. You can use `timeoutInMinutes` so that AWS IoT Analytics can batch up late data notifications that have been generated since the last execution. AWS IoT Analytics sends one batch of notifications to Amazon CloudWatch Events at one time.\n\nFor more information about how to write a timestamp expression, see [Date and Time Functions and Operators](https://docs.aws.amazon.com/https://prestodb.io/docs/0.172/functions/datetime.html) , in the *Presto 0.172 Documentation* ."
+        "TimeoutInMinutes": "A time interval. You can use `timeoutInMinutes` so that AWS IoT Analytics can batch up late data notifications that have been generated since the last execution. AWS IoT Analytics sends one batch of notifications to Amazon CloudWatch Events at one time.\n\nFor more information about how to write a timestamp expression, see [Date and Time Functions and Operators](https://docs.aws.amazon.com/https://prestodb.io/docs/current/functions/datetime.html) , in the *Presto 0.172 Documentation* ."
       }
     },
     "AWS::IoTAnalytics::Dataset.Filter": {
@@ -28956,9 +29017,9 @@
       "description": "Provides the configuration information required for Amazon Kendra Web Crawler.",
       "properties": {
         "AuthenticationConfiguration": "Configuration information required to connect to websites using authentication.\n\nYou can connect to websites using basic authentication of user name and password. You use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) to store your authentication credentials.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS.",
-        "CrawlDepth": "Specifies the number of levels in a website that you want to crawl.\n\nThe first level begins from the website seed or starting point URL. For example, if a website has 3 levels \u2013 index level (i.e. seed in this example), sections level, and subsections level \u2013 and you are only interested in crawling information up to the sections level (i.e. levels 0-1), you can set your depth to 1.\n\nThe default crawl depth is set to 2.",
-        "MaxContentSizePerPageInMegaBytes": "The maximum size (in MB) of a webpage or attachment to crawl.\n\nFiles larger than this size (in MB) are skipped/not crawled.\n\nThe default maximum size of a webpage or attachment is set to 50 MB.",
-        "MaxLinksPerPage": "The maximum number of URLs on a webpage to include when crawling a website. This number is per webpage.\n\nAs a website\u2019s webpages are crawled, any URLs the webpages link to are also crawled. URLs on a webpage are crawled in order of appearance.\n\nThe default maximum links per page is 100.",
+        "CrawlDepth": "Specifies the number of levels in a website that you want to crawl.\n\nThe first level begins from the website seed or starting point URL. For example, if a website has three levels\u2014index level (the seed in this example), sections level, and subsections level\u2014and you are only interested in crawling information up to the sections level (levels 0-1), you can set your depth to 1.\n\nThe default crawl depth is set to 2.",
+        "MaxContentSizePerPageInMegaBytes": "The maximum size (in MB) of a web page or attachment to crawl.\n\nFiles larger than this size (in MB) are skipped/not crawled.\n\nThe default maximum size of a web page or attachment is set to 50 MB.",
+        "MaxLinksPerPage": "The maximum number of URLs on a web page to include when crawling a website. This number is per web page.\n\nAs a website\u2019s web pages are crawled, any URLs the web pages link to are also crawled. URLs on a web page are crawled in order of appearance.\n\nThe default maximum links per page is 100.",
         "MaxUrlsPerMinuteCrawlRate": "The maximum number of URLs crawled per website host per minute.\n\nA minimum of one URL is required.\n\nThe default maximum number of URLs crawled per website host per minute is 300.",
         "ProxyConfiguration": "Configuration information required to connect to your internal websites via a web proxy.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS.\n\nWeb proxy credentials are optional and you can use them to connect to a web proxy server that requires basic authentication. To store web proxy credentials, you use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) .",
         "UrlExclusionPatterns": "A list of regular expression patterns to exclude certain URLs to crawl. URLs that match the patterns are excluded from the index. URLs that don't match the patterns are included in the index. If a URL matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the URL file isn't included in the index.",
@@ -28971,7 +29032,7 @@
       "description": "Provides the configuration information of the seed or starting point URLs to crawl.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use the Amazon Kendra web crawler to index your own webpages, or webpages that you have authorization to index.*",
       "properties": {
         "SeedUrls": "The list of seed or starting point URLs of the websites you want to crawl.\n\nThe list can include a maximum of 100 seed URLs.",
-        "WebCrawlerMode": "You can choose one of the following modes:\n\n- `HOST_ONLY` \u2013 crawl only the website host names. For example, if the seed URL is \"abc.example.com\", then only URLs with host name \"abc.example.com\" are crawled.\n- `SUBDOMAINS` \u2013 crawl the website host names with subdomains. For example, if the seed URL is \"abc.example.com\", then \"a.abc.example.com\" and \"b.abc.example.com\" are also crawled.\n- `EVERYTHING` \u2013 crawl the website host names with subdomains and other domains that the webpages link to.\n\nThe default mode is set to `HOST_ONLY` ."
+        "WebCrawlerMode": "You can choose one of the following modes:\n\n- `HOST_ONLY` \u2013 crawl only the website host names. For example, if the seed URL is \"abc.example.com\", then only URLs with host name \"abc.example.com\" are crawled.\n- `SUBDOMAINS` \u2013 crawl the website host names with subdomains. For example, if the seed URL is \"abc.example.com\", then \"a.abc.example.com\" and \"b.abc.example.com\" are also crawled.\n- `EVERYTHING` \u2013 crawl the website host names with subdomains and other domains that the web pages link to.\n\nThe default mode is set to `HOST_ONLY` ."
       }
     },
     "AWS::Kendra::DataSource.WebCrawlerSiteMapsConfiguration": {
@@ -28985,7 +29046,7 @@
       "attributes": {},
       "description": "Specifies the seed or starting point URLs of the websites or the sitemap URLs of the websites you want to crawl.\n\nYou can include website subdomains. You can list up to 100 seed URLs and up to three sitemap URLs.\n\nYou can only crawl websites that use the secure communication protocol, Hypertext Transfer Protocol Secure (HTTPS). If you receive an error when crawling a website, it could be that the website is blocked from crawling.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use the Amazon Kendra web crawler to index your own webpages, or webpages that you have authorization to index.*",
       "properties": {
-        "SeedUrlConfiguration": "Configuration of the seed or starting point URLs of the websites you want to crawl.\n\nYou can choose to crawl only the website host names, or the website host names with subdomains, or the website host names with subdomains and other domains that the webpages link to.\n\nYou can list up to 100 seed URLs.",
+        "SeedUrlConfiguration": "Configuration of the seed or starting point URLs of the websites you want to crawl.\n\nYou can choose to crawl only the website host names, or the website host names with subdomains, or the website host names with subdomains and other domains that the web pages link to.\n\nYou can list up to 100 seed URLs.",
         "SiteMapsConfiguration": "Configuration of the sitemap URLs of the websites you want to crawl.\n\nOnly URLs belonging to the same website host names are crawled. You can list up to three sitemap URLs."
       }
     },
@@ -31605,7 +31666,7 @@
         "MaxRetries": "The maximum number of times the bot tries to elicit a response from the user using this prompt.",
         "MessageGroupsList": "A collection of messages that Amazon Lex can send to the user. Amazon Lex chooses the actual message to send at runtime.",
         "MessageSelectionStrategy": "Indicates how a message is selected from a message group among retries.",
-        "PromptAttemptsSpecification": "Specifies the advanced settings on each attempt of the prompt."
+        "PromptAttemptsSpecification": "Specifies the advanced settings on each attempt of the prompt. The valid keys are `Initial` , `Retry1` , `Retry2` , `Retry3` , `Retry4` , and `Retry5` ."
       }
     },
     "AWS::Lex::Bot.ResponseSpecification": {
@@ -41501,7 +41562,6 @@
     },
     "AWS::RUM::AppMonitor": {
       "attributes": {
-        "Id": "",
         "Ref": "`Ref` returns the name of the app monitor."
       },
       "description": "Creates a CloudWatch RUM app monitor, which you can use to collect telemetry data from your application and send it to CloudWatch RUM. The data includes performance and reliability information such as page load time, client-side errors, and user behavior.\n\nAfter you create an app monitor, sign in to the CloudWatch RUM console to get the JavaScript code snippet to add to your web application. For more information, see [How do I find a code snippet that I've already generated?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-find-code-snippet.html)",
@@ -41539,11 +41599,12 @@
     },
     "AWS::RUM::AppMonitor.MetricDefinition": {
       "attributes": {},
-      "description": "Specifies the extended metrics that you want the CloudWatch RUM app monitor to send to a destination. Valid destinations include CloudWatch and Evidently.\n\nBy default, RUM app monitors send some metrics to CloudWatch . These default metrics are listed in [CloudWatch metrics that you can collect with CloudWatch RUM](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-metrics.html) .\n\nIf you also send extended metrics, you can send metrics to Evidently as well as CloudWatch , and you can also optionally send the metrics with additional dimensions. The valid dimension names for the additional dimensions are `BrowserName` , `CountryCode` , `DeviceType` , `FileType` , `OSName` , and `PageId` . For more information, see [Extended metrics that you can send to CloudWatch and CloudWatch Evidently](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-vended-metrics.html) .\n\nThe maximum number of metric definitions that one destination can contain is 2000.\n\nExtended metrics sent are charged as CloudWatch custom metrics. Each combination of additional dimension name and dimension value counts as a custom metric.\n\nIf some metric definitions that you specify are not valid, then the operation will not modify any metric definitions even if other metric definitions specified are valid.",
+      "description": "Specifies one custom metric or extended metric that you want the CloudWatch RUM app monitor to send to a destination. Valid destinations include CloudWatch and Evidently.\n\nBy default, RUM app monitors send some metrics to CloudWatch . These default metrics are listed in [CloudWatch metrics that you can collect.](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-metrics.html)\n\nIn addition to these default metrics, you can choose to send extended metrics or custom metrics or both.\n\n- Extended metrics enable you to send metrics with additional dimensions not included in the default metrics. You can also send extended metrics to Evidently as well as CloudWatch . The valid dimension names for the additional dimensions for extended metrics are `BrowserName` , `CountryCode` , `DeviceType` , `FileType` , `OSName` , and `PageId` . For more information, see [Extended metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-vended-metrics.html) .\n- Custom metrics are metrics that you define. You can send custom metrics to CloudWatch or to CloudWatch Evidently or to both. With custom metrics, you can use any metric name and namespace, and to derive the metrics you can use any custom events, built-in events, custom attributes, or default attributes.\n\nYou can't send custom metrics to the `AWS/RUM` namespace. You must send custom metrics to a custom namespace that you define. The namespace that you use can't start with `AWS/` . CloudWatch RUM prepends `RUM/CustomMetrics/` to the custom namespace that you define, so the final namespace for your metrics in CloudWatch is `RUM/CustomMetrics/ *your-custom-namespace*` .\n\nFor information about syntax rules for specifying custom metrics and extended metrics, see [MetridDefinitionRequest](https://docs.aws.amazon.com/cloudwatchrum/latest/APIReference/API_MetricDefinitionRequest.html) in the *CloudWatch RUM API Reference* .\n\nThe maximum number of metric definitions that one destination can contain is 2000.\n\nExtended metrics sent to CloudWatch and RUM custom metrics are charged as CloudWatch custom metrics. Each combination of additional dimension name and dimension value counts as a custom metric.\n\nIf some metric definitions that you specify are not valid, then the operation will not modify any metric definitions even if other metric definitions specified are valid.",
       "properties": {
-        "DimensionKeys": "This field is a map of field paths to dimension names. It defines the dimensions to associate with this metric in CloudWatch The value of this field is used only if the metric destination is `CloudWatch` . If the metric destination is `Evidently` , the value of `DimensionKeys` is ignored.",
+        "DimensionKeys": "This field is a map of field paths to dimension names. It defines the dimensions to associate with this metric in CloudWatch . The value of this field is used only if the metric destination is `CloudWatch` . If the metric destination is `Evidently` , the value of `DimensionKeys` is ignored.",
         "EventPattern": "The pattern that defines the metric. RUM checks events that happen in a user's session against the pattern, and events that match the pattern are sent to the metric destination.\n\nIf the metrics destination is `CloudWatch` and the event also matches a value in `DimensionKeys` , then the metric is published with the specified dimensions.",
         "Name": "The name of the metric that is defined in this structure.",
+        "Namespace": "If you are creating a custom metric instead of an extended metrics, use this parameter to define the metric namespace for that custom metric. Do not specify this parameter if you are creating an extended metric.\n\nYou can't use any string that starts with `AWS/` for your namespace.",
         "UnitLabel": "Use this field only if you are sending this metric to CloudWatch . It defines the CloudWatch metric unit that this metric is measured in.",
         "ValueKey": "The field within the event object that the metric value is sourced from."
       }
@@ -43087,8 +43148,6 @@
         "HostVPCId": "The ID of the VPC that you want to create the resolver endpoint in.",
         "IpAddressCount": "The number of IP addresses that the resolver endpoint can use for DNS queries.",
         "Name": "The name that you assigned to the resolver endpoint when you created the endpoint.",
-        "OutpostArn": "",
-        "PreferredInstanceType": "",
         "Ref": "`Ref` returns the `ResolverEndpoint` object.",
         "ResolverEndpointId": "The ID of the resolver endpoint.",
         "ResolverEndpointType": ""
@@ -43098,8 +43157,6 @@
         "Direction": "Indicates whether the Resolver endpoint allows inbound or outbound DNS queries:\n\n- `INBOUND` : allows DNS queries to your VPC from your network\n- `OUTBOUND` : allows DNS queries from your VPC to your network",
         "IpAddresses": "The subnets and IP addresses in your VPC that DNS queries originate from (for outbound endpoints) or that you forward DNS queries to (for inbound endpoints). The subnet ID uniquely identifies a VPC.",
         "Name": "A friendly name that lets you easily find a configuration in the Resolver dashboard in the Route 53 console.",
-        "OutpostArn": "",
-        "PreferredInstanceType": "",
         "ResolverEndpointType": "The Resolver endpoint IP address type.",
         "SecurityGroupIds": "The ID of one or more security groups that control access to this VPC. The security group must include one or more inbound rules (for inbound endpoints) or outbound rules (for outbound endpoints). Inbound and outbound rules must allow TCP and UDP access. For inbound access, open port 53. For outbound access, open the port that you're using for DNS queries on your network.",
         "Tags": "Route 53 Resolver doesn't support updating tags through CloudFormation."
@@ -43790,7 +43847,8 @@
       "attributes": {},
       "description": "A bucket associated with a specific Region when creating Multi-Region Access Points.",
       "properties": {
-        "Bucket": "The name of the associated bucket for the Region."
+        "Bucket": "The name of the associated bucket for the Region.",
+        "BucketAccountId": "The AWS account ID that owns the Amazon S3 bucket that's associated with this Multi-Region Access Point."
       }
     },
     "AWS::S3::MultiRegionAccessPointPolicy": {
@@ -43968,6 +44026,9 @@
     },
     "AWS::S3ObjectLambda::AccessPoint": {
       "attributes": {
+        "Alias": "",
+        "Alias.Status": "",
+        "Alias.Value": "",
         "Arn": "Specifies the ARN for the Object Lambda Access Point.",
         "CreationDate": "The date and time when the specified Object Lambda Access Point was created.",
         "PolicyStatus": "",
@@ -43983,6 +44044,14 @@
       "properties": {
         "Name": "The name of this access point.",
         "ObjectLambdaConfiguration": "A configuration used when creating an Object Lambda Access Point."
+      }
+    },
+    "AWS::S3ObjectLambda::AccessPoint.Alias": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Status": "",
+        "Value": ""
       }
     },
     "AWS::S3ObjectLambda::AccessPoint.AwsLambda": {
@@ -46012,7 +46081,7 @@
       "attributes": {},
       "description": "The security configuration for `OnlineStore` .",
       "properties": {
-        "KmsKeyId": "The AWS Key Management Service (KMS) key ARN that SageMaker Feature Store uses to encrypt the Amazon S3 objects at rest using Amazon S3 server-side encryption.\n\nThe caller (either IAM user or IAM role) of `CreateFeatureGroup` must have below permissions to the `OnlineStore` `KmsKeyId` :\n\n- `\"kms:Encrypt\"`\n- `\"kms:Decrypt\"`\n- `\"kms:DescribeKey\"`\n- `\"kms:CreateGrant\"`\n- `\"kms:RetireGrant\"`\n- `\"kms:ReEncryptFrom\"`\n- `\"kms:ReEncryptTo\"`\n- `\"kms:GenerateDataKey\"`\n- `\"kms:ListAliases\"`\n- `\"kms:ListGrants\"`\n- `\"kms:RevokeGrant\"`\n\nThe caller (either user or IAM role) to all DataPlane operations ( `PutRecord` , `GetRecord` , `DeleteRecord` ) must have the following permissions to the `KmsKeyId` :\n\n- `\"kms:Decrypt\"`"
+        "KmsKeyId": "The AWS Key Management Service (KMS) key ARN that SageMaker Feature Store uses to encrypt the Amazon S3 objects at rest using Amazon S3 server-side encryption.\n\nThe caller (either user or IAM role) of `CreateFeatureGroup` must have below permissions to the `OnlineStore` `KmsKeyId` :\n\n- `\"kms:Encrypt\"`\n- `\"kms:Decrypt\"`\n- `\"kms:DescribeKey\"`\n- `\"kms:CreateGrant\"`\n- `\"kms:RetireGrant\"`\n- `\"kms:ReEncryptFrom\"`\n- `\"kms:ReEncryptTo\"`\n- `\"kms:GenerateDataKey\"`\n- `\"kms:ListAliases\"`\n- `\"kms:ListGrants\"`\n- `\"kms:RevokeGrant\"`\n\nThe caller (either user or IAM role) to all DataPlane operations ( `PutRecord` , `GetRecord` , `DeleteRecord` ) must have the following permissions to the `KmsKeyId` :\n\n- `\"kms:Decrypt\"`"
       }
     },
     "AWS::SageMaker::FeatureGroup.S3StorageConfig": {
