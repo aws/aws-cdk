@@ -39,10 +39,50 @@
     }
    }
   },
-  "TestApplicationRAMSharead8ba81b8cdd40199FD1": {
+  "TestApplicationAnotherAttributeGroupCA590490": {
+   "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
+   "Properties": {
+    "Attributes": {
+     "stage": "alpha",
+     "teamMembers": [
+      "markI",
+      "markII",
+      "markIII"
+     ],
+     "public": false,
+     "publishYear": 2021,
+     "plannedRoadMap": {
+      "alpha": "some time",
+      "beta": "another time",
+      "gamma": "penultimate time",
+      "release": "go time"
+     }
+    },
+    "Name": "myAnotherAttributeGroup",
+    "Description": "my another attribute group description"
+   }
+  },
+  "TestApplicationAttributeGroupAssociation367d2d5499029870E720": {
+   "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+   "Properties": {
+    "Application": {
+     "Fn::GetAtt": [
+      "TestApplication2FBC585F",
+      "Id"
+     ]
+    },
+    "AttributeGroup": {
+     "Fn::GetAtt": [
+      "TestApplicationAnotherAttributeGroupCA590490",
+      "Id"
+     ]
+    }
+   }
+  },
+  "TestApplicationRAMShare004736f08f8e57044D5D": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
-    "Name": "RAMSharead8ba81b8cdd",
+    "Name": "RAMShare004736f08f8e",
     "AllowExternalPrincipals": false,
     "PermissionArns": [
      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"

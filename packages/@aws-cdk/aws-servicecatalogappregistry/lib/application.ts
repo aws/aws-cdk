@@ -19,7 +19,7 @@ export interface AttributeGroupAssociationProps {
   /**
    * Logical Id of the attribute group created
    */
-  readonly logicalId: string;
+  readonly attributeGroupLogicalId: string;
   /**
    * Enforces a particular physical attribute group name.
    */
@@ -72,7 +72,7 @@ export interface IApplication extends cdk.IResource {
    *
    * @param attributeGroup AppRegistry attribute group props
    */
-  associateNewAttributeGroup(attributeGroup: AttributeGroupAssociationProps): IAttributeGroup;
+  addAttributeGroup(attributeGroup: AttributeGroupAssociationProps): IAttributeGroup;
 
   /**
    * Associate this application with a CloudFormation stack.
@@ -150,9 +150,11 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Create an attribute group and associate this application with the created attribute group.
    */
-  public associateNewAttributeGroup(props: AttributeGroupAssociationProps): IAttributeGroup {
-    const attributeGroup = new AttributeGroup(this, props.logicalId, {
-      ...props,
+  public addAttributeGroup(props: AttributeGroupAssociationProps): IAttributeGroup {
+    const attributeGroup = new AttributeGroup(this, props.attributeGroupLogicalId, {
+      attributeGroupName: props.attributeGroupName,
+      attributes: props.attributes,
+      description: props.description,
     });
     new CfnAttributeGroupAssociation(this, `AttributeGroupAssociation${this.generateUniqueHash(attributeGroup.node.addr)}`, {
       application: this.applicationId,

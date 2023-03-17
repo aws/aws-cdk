@@ -75,13 +75,79 @@
                   "version": "0.0.0"
                 }
               },
-              "RAMSharead8ba81b8cdd": {
-                "id": "RAMSharead8ba81b8cdd",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMSharead8ba81b8cdd",
+              "AnotherAttributeGroup": {
+                "id": "AnotherAttributeGroup",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/AnotherAttributeGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-servicecatalogappregistry-application/TestApplication/AnotherAttributeGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "attributes": {
+                          "stage": "alpha",
+                          "teamMembers": [
+                            "markI",
+                            "markII",
+                            "markIII"
+                          ],
+                          "public": false,
+                          "publishYear": 2021,
+                          "plannedRoadMap": {
+                            "alpha": "some time",
+                            "beta": "another time",
+                            "gamma": "penultimate time",
+                            "release": "go time"
+                          }
+                        },
+                        "name": "myAnotherAttributeGroup",
+                        "description": "my another attribute group description"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnAttributeGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.AttributeGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "AttributeGroupAssociation367d2d549902": {
+                "id": "AttributeGroupAssociation367d2d549902",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociation367d2d549902",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "application": {
+                      "Fn::GetAtt": [
+                        "TestApplication2FBC585F",
+                        "Id"
+                      ]
+                    },
+                    "attributeGroup": {
+                      "Fn::GetAtt": [
+                        "TestApplicationAnotherAttributeGroupCA590490",
+                        "Id"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnAttributeGroupAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "RAMShare004736f08f8e": {
+                "id": "RAMShare004736f08f8e",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMShare004736f08f8e",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
-                    "name": "RAMSharead8ba81b8cdd",
+                    "name": "RAMShare004736f08f8e",
                     "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
@@ -241,7 +307,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.252"
+          "version": "10.1.270"
         }
       }
     },
