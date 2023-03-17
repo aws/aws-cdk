@@ -64,13 +64,15 @@ export interface StagingStackSynthesizerProps {
    * @default - default role
    */
   readonly lookupRole?: BootstrapRole;
+
+  readonly appId: string;
 }
 
 /**
  * New Stack Synthesizer
  */
 export class AppScopedStagingSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer {
-  constructor(private readonly props: StagingStackSynthesizerProps = {}) {
+  constructor(private readonly props: StagingStackSynthesizerProps) {
     super();
 
     for (const key in props) {
@@ -136,13 +138,15 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
 
   private stagingStack: IStagingStack;
   private assetManifest = new AssetManifestBuilder();
-  private lookupRoleArn: string;
+  private readonly lookupRoleArn: string;
+  private readonly appId: string;
 
-  constructor(private readonly stack: Stack, props: StagingStackSynthesizerProps = {}) {
+  constructor(private readonly stack: Stack, props: StagingStackSynthesizerProps) {
     super();
     super.bind(stack);
 
-    this.lookupRoleArn = props.lookupRole?.roleArn ?? BoundStagingStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN;
+    this.lookupRoleArn = props.lookupRole ? props.lookupRole.roleArn : BoundStagingStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN;
+    this.appId = props.appId;
 
     const app = App.of(stack);
     if (!app) {
@@ -155,12 +159,12 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   }
 
   private getCreateStagingStack(app: Stage, env: Environment): IStagingStack {
-    // TODO: env could be tokens
-    const stackName = `StagingStack${app.node.addr.slice(0, 10)}`;
+    const stackName = `StagingStack${this.appId}`;
     const stackId = 'StagingStack';
     const stagingStack = app.node.tryFindChild(stackId) as DefaultStagingStack ?? new DefaultStagingStack(app, stackId, {
       env,
       stackName,
+      appId: this.appId,
     });
     this.stack.addDependency(stagingStack, 'reason');
 

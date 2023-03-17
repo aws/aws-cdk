@@ -19,6 +19,11 @@ export interface DockerAssetInfo {
  */
 export interface IDefaultStagingStack extends IConstruct {
   /**
+   * App level unique identifier
+   */
+  readonly appId: string;
+
+  /**
    * The app-scoped, environment-keyed bucket created in this staging stack.
    */
   readonly stagingBucket?: s3.Bucket;
@@ -28,13 +33,6 @@ export interface IDefaultStagingStack extends IConstruct {
    * A repository is created per image asset family.
    */
   readonly stagingRepos: Record<string, ecr.Repository>;
-
-  /**
-   * Stack others can depend on.
-   *
-   * @default this
-   */
-  readonly dependencyStack: Stack;
 
   /**
    * // TODO
@@ -71,6 +69,11 @@ export interface DefaultStagingStackProps extends StackProps {
    * @default - a well-known name unique to this app/env.
    */
   readonly dockerAssetPublishingRole?: BootstrapRole;
+
+  /**
+   * Application identifier unique to the app.
+   */
+  readonly appId: string;
 }
 
 /**
@@ -78,24 +81,17 @@ export interface DefaultStagingStackProps extends StackProps {
  */
 export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
   /**
-   * An identifier unique to the App.
-   */
-  private get AppId() {
-    return `${this.account}-${this.region}-${this.stackName.toLocaleLowerCase()}`;
-  }
-
-  /**
    * Default asset publishing role name for file (S3) assets.
    */
   private get DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME() {
-    return `cdk-file-publishing-role-${this.AppId}`.slice(0, 63);
+    return `cdk-file-publishing-role-${this.region}-${this.appId}`.slice(0, 63);
   }
 
   /**
    * Default asset publishing role name for docker (ECR) assets.
    */
   private get DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_NAME() {
-    return `cdk-asset-publishing-role-${this.AppId}`.slice(0, 63);
+    return `cdk-asset-publishing-role-${this.region}-${this.appId}`.slice(0, 63);
   }
 
   /**
@@ -108,19 +104,18 @@ export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
    */
   public readonly stagingRepos: Record<string, ecr.Repository>;
 
-  public readonly dependencyStack: Stack;
-
+  public readonly appId: string;
   private readonly stagingBucketName?: string;
   private fileAssetPublishingRole?: BootstrapRole;
   private dockerAssetPublishingRole?: BootstrapRole;
 
-  constructor(scope: Construct, id: string, props: DefaultStagingStackProps = {}) {
+  constructor(scope: Construct, id: string, props: DefaultStagingStackProps) {
     super(scope, id, {
       ...props,
       synthesizer: new BootstraplessSynthesizer(),
     });
 
-    this.dependencyStack = this;
+    this.appId = props.appId;
 
     this.stagingBucketName = props.stagingBucketName;
     this.fileAssetPublishingRole = props.fileAssetPublishingRole;
@@ -211,11 +206,10 @@ export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
 
   private getCreateBucket() {
     // Error: Resolution error: ID components may not include unresolved tokens:
-    const stagingBucketName = this.stagingBucketName ?? `cdk-${this.AppId}`;
+    const stagingBucketName = this.stagingBucketName ?? `cdk-${this.account}-${this.region}-${this.appId.toLocaleLowerCase()}`;
     const bucketId = 'CdkStagingBucket';
     const bucket = this.node.tryFindChild(bucketId) as s3.Bucket ?? new s3.Bucket(this, bucketId, {
       bucketName: stagingBucketName,
-      // autoDeleteObjects: true, // this creates a custom resource with an asset
       removalPolicy: RemovalPolicy.DESTROY,
     });
     return {

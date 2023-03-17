@@ -10,6 +10,7 @@ const CFN_CONTEXT = {
   'AWS::AccountId': 'the_account',
   'AWS::URLSuffix': 'domain.aws',
 };
+const APP_ID = 'appId';
 
 describe(AppScopedStagingSynthesizer, () => {
   let app: App;
@@ -17,7 +18,9 @@ describe(AppScopedStagingSynthesizer, () => {
 
   beforeEach(() => {
     app = new App({
-      defaultStackSynthesizer: new AppScopedStagingSynthesizer(),
+      defaultStackSynthesizer: new AppScopedStagingSynthesizer({
+        appId: APP_ID,
+      }),
     });
     stack = new Stack(app, 'Stack', {
       env: {
@@ -41,7 +44,7 @@ describe(AppScopedStagingSynthesizer, () => {
     const stackArtifact = asm.getStackArtifact('Stack');
 
     const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
-    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-000000000000-us-east-1-stagingstackc8adc83b19/${templateObjectKey}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-000000000000-us-east-1-${APP_ID.toLocaleLowerCase()}/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -54,10 +57,10 @@ describe(AppScopedStagingSynthesizer, () => {
       source: { path: 'Stack.template.json', packaging: 'file' },
       destinations: {
         '000000000000-us-east-1': {
-          bucketName: 'cdk-000000000000-us-east-1-stagingstackc8adc83b19',
+          bucketName: `cdk-000000000000-us-east-1-${APP_ID.toLocaleLowerCase()}`,
           objectKey: templateObjectKey,
           region: 'us-east-1',
-          assumeRoleArn: 'arn:' + Aws.PARTITION + ':iam:us-east-1:000000000000:role:cdk-file-publishing-role-000000000000-us-east-1-stagingstackc8a',
+          assumeRoleArn: `arn:${Aws.PARTITION}:iam:us-east-1:000000000000:role:cdk-file-publishing-role-us-east-1-${APP_ID}`,
         },
       },
     });
@@ -74,7 +77,7 @@ describe(AppScopedStagingSynthesizer, () => {
     // THEN - we have a stack dependency on the staging stack
     expect(stack.dependencies.length).toEqual(1);
     const depStack = stack.dependencies[0];
-    expect(depStack.stackName).toEqual('StagingStackc8adc83b19');
+    expect(depStack.stackName).toEqual(`StagingStack${APP_ID}`);
   });
 
   test('add file asset', () => {
@@ -86,8 +89,8 @@ describe(AppScopedStagingSynthesizer, () => {
     });
 
     // THEN - we have a fixed asset location
-    expect(evalCFN(location.bucketName)).toEqual('cdk-000000000000-us-east-1-stagingstackc8adc83b19');
-    expect(evalCFN(location.httpUrl)).toEqual('https://s3.us-east-1.domain.aws/cdk-000000000000-us-east-1-stagingstackc8adc83b19/abcdef.js');
+    expect(evalCFN(location.bucketName)).toEqual(`cdk-000000000000-us-east-1-${APP_ID.toLocaleLowerCase()}`);
+    expect(evalCFN(location.httpUrl)).toEqual(`https://s3.us-east-1.domain.aws/cdk-000000000000-us-east-1-${APP_ID.toLocaleLowerCase()}/abcdef.js`);
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
@@ -161,7 +164,7 @@ describe(AppScopedStagingSynthesizer, () => {
     });
 
     // THEN - we have a fixed asset location
-    console.log(location.bucketName);
+    console.log(stack.dependencies);
   });
 
   /**
