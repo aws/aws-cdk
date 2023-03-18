@@ -1,3 +1,65 @@
+# CloudFormation Resource Specification v116.0.0
+
+## New Resource Types
+
+* AWS::Chatbot::MicrosoftTeamsChannelConfiguration
+* AWS::Comprehend::Flywheel
+* AWS::SageMaker::InferenceExperiment
+* AWS::VpcLattice::AccessLogSubscription
+* AWS::VpcLattice::AuthPolicy
+* AWS::VpcLattice::Listener
+* AWS::VpcLattice::ResourcePolicy
+* AWS::VpcLattice::Rule
+* AWS::VpcLattice::Service
+* AWS::VpcLattice::ServiceNetwork
+* AWS::VpcLattice::ServiceNetworkServiceAssociation
+* AWS::VpcLattice::ServiceNetworkVpcAssociation
+* AWS::VpcLattice::TargetGroup
+
+## Attribute Changes
+
+* AWS::EC2::VPCDHCPOptionsAssociation Id (__deleted__)
+* AWS::EC2::VPCEndpoint Id (__added__)
+
+## Property Changes
+
+* AWS::Cassandra::Table ClientSideTimestampsEnabled (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule ListenerArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSMContacts::Contact Plan.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::Athena::WorkGroup.AclConfiguration (__added__)
+* AWS::Athena::WorkGroup.CustomerContentEncryptionConfiguration (__added__)
+* AWS::Athena::WorkGroup.ResultConfiguration AclConfiguration (__added__)
+* AWS::Athena::WorkGroup.ResultConfiguration ExpectedBucketOwner (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration AdditionalConfiguration (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration CustomerContentEncryptionConfiguration (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration ExecutionRole (__added__)
+* AWS::MediaPackage::PackagingConfiguration.EncryptionContractConfiguration PresetSpeke20Audio (__deleted__)
+* AWS::MediaPackage::PackagingConfiguration.EncryptionContractConfiguration PresetSpeke20Video (__deleted__)
+* AWS::RUM::AppMonitor.MetricDefinition Namespace (__added__)
+* AWS::S3::MultiRegionAccessPoint.Region BucketAccountId (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v116.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v115.0.0
 
 ## New Resource Types
