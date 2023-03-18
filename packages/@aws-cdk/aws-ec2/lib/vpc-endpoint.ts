@@ -409,7 +409,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly OMICS_ANALYTICS = new InterfaceVpcEndpointAwsService('analytics-omics');
   public static readonly OMICS_CONTROL_STORAGE = new InterfaceVpcEndpointAwsService('control-storage-omics');
   public static readonly OMICS_STORAGE = new InterfaceVpcEndpointAwsService('storage-omics');
-  public static readonly OMICS_TAGS = new InterfaceVpcEndpointAwsService('tags-omics'); 
+  public static readonly OMICS_TAGS = new InterfaceVpcEndpointAwsService('tags-omics');
   public static readonly OMICS_WORKFLOWS = new InterfaceVpcEndpointAwsService('workflows-omics');
   public static readonly PANORAMA = new InterfaceVpcEndpointAwsService('panorama');
   public static readonly PINPOINT = new InterfaceVpcEndpointAwsService('pinpoint-sms-voice-v2');
