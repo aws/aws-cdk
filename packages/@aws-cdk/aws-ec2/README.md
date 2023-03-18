@@ -1151,6 +1151,41 @@ new ec2.Instance(this, 'Instance', {
 });
 ```
 
+`InitCommand` can not be used to start long-running processes. But if your Linux
+OS is using SystemD (like Amazon Linux 2 or higher), the CDK has helpers to
+create a long-running service using CFN Init. You can create a
+SystemD-compatible config file using `InitService.systemdConfigFile()`, and
+start it immediately. The following examples shows how to start a trivial Python
+3 web server:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux({
+    // Amazon Linux 2 uses SystemD
+    generation: ec2.AmazonLinuxGeneration: AMAZON_LINUX_2,
+  }),
+
+  init: ec2.CloudFormationInit.fromElements([
+    // Create a simple config file that runs a Python web server
+    ec2.InitService.systemdConfigFile('simpleserver', {
+      command: '/usr/bin/python3 -m http.server 8080',
+      cwd: '/var/www/html',
+    }),
+    // Start the server using SystemD
+    ec2.InitService.enable('simpleserver', {
+      serviceManager: ec2.ServiceManager.SYSTEMD,
+    }),
+    // Drop an example file to show the web server working
+    ec2.InitFile.fromString('/var/www/html/index.html', 'Hello! It\'s working!'),
+  ]),
+});
+```
+
 You can have services restarted after the init process has made changes to the system.
 To do that, instantiate an `InitServiceRestartHandle` and pass it to the config elements
 that need to trigger the restart and the service itself. For example, the following
