@@ -19,19 +19,11 @@
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
                   "aws:cdk:cloudformation:props": {
                     "name": "TestApplication",
-                    "description": "Test application description"
+                    "description": "My application description"
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnApplication",
-                  "version": "0.0.0"
-                }
-              },
-              "ApplicationManagerUrl": {
-                "id": "ApplicationManagerUrl",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/ApplicationManagerUrl",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
                 }
               },
@@ -83,13 +75,13 @@
                   "version": "0.0.0"
                 }
               },
-              "RAMShare3dc6227daec1": {
-                "id": "RAMShare3dc6227daec1",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMShare3dc6227daec1",
+              "RAMSharead8ba81b8cdd": {
+                "id": "RAMSharead8ba81b8cdd",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMSharead8ba81b8cdd",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
-                    "name": "RAMShare3dc6227daec1",
+                    "name": "RAMSharead8ba81b8cdd",
                     "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
@@ -249,7 +241,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.209"
+          "version": "10.1.252"
         }
       }
     },

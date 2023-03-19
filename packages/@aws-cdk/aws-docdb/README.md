@@ -161,3 +161,23 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
   cloudWatchLogsRetentionRole: myLogsPublishingRole, // Optional - a role will be created if not provided
 });
 ```
+
+## Enable Performance Insights
+
+By enabling this feature it will be cascaded and enabled in all instances inside the cluster:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  masterUser: {
+    username: 'myuser',
+  },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PUBLIC,
+  },
+  vpc,
+  enablePerformanceInsights: true, // Enable Performance Insights in all instances under this cluster
+});
+```

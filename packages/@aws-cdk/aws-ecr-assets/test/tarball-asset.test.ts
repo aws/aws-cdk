@@ -11,12 +11,13 @@ import { TarballImageAsset } from '../lib';
 
 
 describe('image asset', () => {
+  const tarballFile = path.join(__dirname, 'demo-tarball', 'empty.tar');
   test('test instantiating Asset Image', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app);
     const asset = new TarballImageAsset(stack, 'Image', {
-      tarballFile: __dirname + '/demo-tarball/empty.tar',
+      tarballFile,
     });
 
     // WHEN
@@ -42,7 +43,7 @@ describe('image asset', () => {
         executable: [
           'sh',
           '-c',
-          `docker load -i asset.${asset.assetHash}.tar | sed "s/Loaded image: //g"`,
+          `docker load -i asset.${asset.assetHash}.tar | tail -n 1 | sed "s/Loaded image: //g"`,
         ],
       },
     );
@@ -56,7 +57,7 @@ describe('image asset', () => {
     const stack = new Stack();
     const user = new iam.User(stack, 'MyUser');
     const asset = new TarballImageAsset(stack, 'Image', {
-      tarballFile: 'test/demo-tarball/empty.tar',
+      tarballFile,
     });
 
     // WHEN
@@ -118,7 +119,7 @@ describe('image asset', () => {
     const app = new App();
     const stack = new Stack(app);
     const image = new TarballImageAsset(stack, 'MyAsset', {
-      tarballFile: 'test/demo-tarball/empty.tar',
+      tarballFile,
     });
 
     const session = app.synth();
@@ -145,10 +146,10 @@ describe('image asset', () => {
       }),
     });
     const asset1 = new TarballImageAsset(stack1, 'MyAsset', {
-      tarballFile: 'test/demo-tarball/empty.tar',
+      tarballFile,
     });
     const asset2 = new TarballImageAsset(stack2, 'MyAsset', {
-      tarballFile: 'test/demo-tarball/empty.tar',
+      tarballFile,
     });
 
     test('stack with default synthesizer', () => {

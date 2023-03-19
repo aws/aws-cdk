@@ -6,7 +6,7 @@ jest.mock('aws-sdk/clients/redshiftdata', () => class {
   executeStatement = mockExecuteStatement;
   describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
 });
-import { Column, TableDistStyle, TableSortStyle } from '../../lib';
+import { Column, ColumnEncoding, TableDistStyle, TableSortStyle } from '../../lib';
 import { handler as manageTable } from '../../lib/private/database-query-provider/table';
 import { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
 
@@ -19,6 +19,7 @@ const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
 const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties: ResourcePropertiesType = {
+  useColumnIds: true,
   tableName: {
     prefix: tableNamePrefix,
     generateSuffix: 'true',
@@ -270,6 +271,59 @@ describe('update', () => {
     }));
   });
 
+  describe('column name', () => {
+    test('does not replace if column name changed', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [
+            { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+          ],
+        },
+      };
+      const newTableColumnName = 'col2';
+      const newResourceProperties: ResourcePropertiesType = {
+        ...resourceProperties,
+        tableColumns: [
+          { id: 'col1', name: newTableColumnName, dataType: 'varchar(1)' },
+        ],
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO ${newTableColumnName}`,
+      }));
+    });
+
+    test('does not replace if column id assigned, from undefined', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [
+            { name: 'col1', dataType: 'varchar(1)' },
+          ],
+        },
+      };
+      const newResourceProperties: ResourcePropertiesType = {
+        ...resourceProperties,
+        tableColumns: [
+          { id: 'col1', name: 'col1', dataType: 'varchar(1)' },
+        ],
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO col1`,
+      }));
+    });
+  });
+
   describe('distStyle and distKey', () => {
     test('replaces if distStyle is added', async () => {
       const newResourceProperties: ResourcePropertiesType = {
@@ -423,7 +477,7 @@ describe('update', () => {
       }));
     });
 
-    test('replaces when differnt sortStyle: INTERLEAVED', async () => {
+    test('replaces when different sortStyle: INTERLEAVED', async () => {
       const newEvent: AWSLambda.CloudFormationCustomResourceEvent = {
         ...event,
         OldResourceProperties: {
@@ -469,7 +523,7 @@ describe('update', () => {
       }));
     });
 
-    test('does not replace when differnt sortStyle: COMPOUND', async () => {
+    test('does not replace when different sortStyle: COMPOUND', async () => {
       const newEvent: AWSLambda.CloudFormationCustomResourceEvent = {
         ...event,
         OldResourceProperties: {
@@ -492,7 +546,7 @@ describe('update', () => {
       }));
     });
 
-    test('does not replace when differnt sortStyle: AUTO', async () => {
+    test('does not replace when different sortStyle: AUTO', async () => {
       const newEvent: AWSLambda.CloudFormationCustomResourceEvent = {
         ...event,
         OldResourceProperties: {
@@ -549,6 +603,98 @@ describe('update', () => {
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
         Sql: `COMMENT ON TABLE ${physicalResourceId} IS NULL`,
+      }));
+    });
+  });
+
+  describe('column comment', () => {
+    test('does not replace if comment added on column', async () => {
+      const newComment = 'newComment';
+      const newResourceProperties = {
+        ...resourceProperties,
+        tableColumns: [{ name: 'col1', dataType: 'varchar(1)', comment: newComment }],
+      };
+
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `COMMENT ON COLUMN ${physicalResourceId}.col1 IS '${newComment}'`,
+      }));
+    });
+
+    test('does not replace if comment removed on column', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [{ name: 'col1', dataType: 'varchar(1)', comment: 'oldComment' }],
+        },
+      };
+
+      await expect(manageTable(resourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `COMMENT ON COLUMN ${physicalResourceId}.col1 IS NULL`,
+      }));
+    });
+  });
+
+  describe('column encoding', () => {
+    test('does not replace if encoding added on column', async () => {
+      const newResourceProperties = {
+        ...resourceProperties,
+        tableColumns: [{ name: 'col1', dataType: 'varchar(1)', encoding: ColumnEncoding.RAW }],
+      };
+
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE RAW`,
+      }));
+    });
+
+    test('does not replace if encoding removed on column', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [{ name: 'col1', dataType: 'varchar(1)', encoding: ColumnEncoding.RAW }],
+        },
+      };
+      const newResourceProperties = {
+        ...resourceProperties,
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE AUTO`,
+      }));
+    });
+
+    test('adds a comma between multiple statements', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [{ name: 'col1', dataType: 'varchar(1)' }, { name: 'col2', dataType: 'varchar(1)' }],
+        },
+      };
+
+      const newResourceProperties = {
+        ...resourceProperties,
+        tableColumns: [{ name: 'col1', dataType: 'varchar(1)', encoding: ColumnEncoding.RAW }, { name: 'col2', dataType: 'varchar(1)', encoding: ColumnEncoding.RAW }],
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE RAW, ALTER COLUMN col2 ENCODE RAW`,
       }));
     });
   });
