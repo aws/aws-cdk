@@ -264,10 +264,10 @@ test('cached lookups of Amazon Linux 2022 with kernel 5.x', () => {
   }).getImage(stack).imageId;
 
   // THEN
-  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.15-x86_64');
+  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64');
   expect(app.synth().manifest.missing).toEqual([
     {
-      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.15-x86_64:region=testregion',
+      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64:region=testregion',
       props: {
         account: '1234',
         lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
