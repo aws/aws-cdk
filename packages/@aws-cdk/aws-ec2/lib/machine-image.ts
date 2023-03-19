@@ -410,6 +410,9 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
       if (props && props.virtualization) {
         throw new Error('Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022 or Amazon Linux 2023.');
       }
+      if (props && props.storage) {
+        throw new Error('Storage parameter does not exist in smm parameter name for Amazon Linux 2022 or Amazon Linux 2023.');
+      }
     } else {
       virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
       storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
