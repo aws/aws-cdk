@@ -402,13 +402,13 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
     let virtualization: AmazonLinuxVirt | undefined;
     let storage: AmazonLinuxStorage | undefined;
 
-    if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
+    if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022 || generation === AmazonLinuxGeneration.AMAZON_LINUX_2023) {
       kernel = AmazonLinuxKernel.KERNEL5_X;
       if (props && props.storage) {
-        throw new Error('Storage parameter does not exist in smm parameter name for Amazon Linux 2022.');
+        throw new Error('Storage parameter does not exist in smm parameter name for Amazon Linux 2022 or Amazon Linux 2023.');
       }
       if (props && props.virtualization) {
-        throw new Error('Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022.');
+        throw new Error('Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022 or Amazon Linux 2023.');
       }
     } else {
       virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
@@ -469,6 +469,11 @@ export enum AmazonLinuxGeneration {
    * Amazon Linux 2022
    */
   AMAZON_LINUX_2022 = 'al2022',
+
+  /**
+   * Amazon Linux 2023
+   */
+  AMAZON_LINUX_2023 = 'al2023'
 }
 
 /**
