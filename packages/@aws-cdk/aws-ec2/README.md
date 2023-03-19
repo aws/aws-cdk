@@ -1083,6 +1083,15 @@ new ec2.Instance(this, 'Instance5', {
     cpuType: ec2.AmazonLinuxCpuType.ARM_64,
   }),
 });
+
+// AWS Linux 2023
+new ec2.Instance(this, 'Instance6', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
+  }),
+});
 ```
 
 ### Configuring Instances using CloudFormation Init (cfn-init)
