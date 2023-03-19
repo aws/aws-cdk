@@ -1,0 +1,13 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "amazon-linux-2023-ec2/DefaultTest": {
+      "stacks": [
+        "TestStack"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "amazon-linux-2023-ec2/DefaultTest/DeployAssert",
+      "assertionStackName": "amazonlinux2023ec2DefaultTestDeployAssert35AD32B8"
+    }
+  }
+}
