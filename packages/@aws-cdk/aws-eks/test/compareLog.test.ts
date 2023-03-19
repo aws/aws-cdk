@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk';
 import * as eks from '../lib';
-import { compareLoggingProps } from '../lib/private/compareLogging';
+import { compareLoggingProps } from '../lib/cluster-resource-handler/compareLogging';
 
 describe('compareLoggingProps', () => {
 

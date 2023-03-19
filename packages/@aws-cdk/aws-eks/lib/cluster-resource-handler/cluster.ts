@@ -5,7 +5,7 @@ import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/l
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
-import { compareLoggingProps } from '../private/compareLogging';
+import { compareLoggingProps } from './compareLogging';
 
 
 const MAX_CLUSTER_NAME_LEN = 100;
