@@ -403,7 +403,7 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
     let storage: AmazonLinuxStorage | undefined;
 
     if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022 || generation === AmazonLinuxGeneration.AMAZON_LINUX_2023) {
-      kernel = AmazonLinuxKernel.KERNEL5_X;
+      kernel = (props && props.kernel) || AmazonLinuxKernel.DEFAULT;
       if (props && props.storage) {
         throw new Error('Storage parameter does not exist in smm parameter name for Amazon Linux 2022 or Amazon Linux 2023.');
       }
@@ -487,6 +487,21 @@ export enum AmazonLinuxKernel {
    * Standard edition
    */
   KERNEL5_X = 'kernel-5.10',
+
+  /**
+   * Kernel 5.15
+  */
+  KERNEL5_15 = 'kernel-5.15',
+
+  /**
+   * Kernel 6.1
+   */
+  KERNEL6_X = 'kernel-6.1',
+
+  /**
+   * Default Kernel Version for the newer Amazon Linux 2022 and 2023 Generations
+   */
+  DEFAULT = 'kernel-default',
 }
 
 /**
