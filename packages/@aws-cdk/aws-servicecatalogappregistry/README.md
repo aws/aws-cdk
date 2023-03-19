@@ -198,6 +198,24 @@ const cdkPipeline = new ApplicationPipelineStack(app, 'CDKApplicationPipelineSta
 });
 ```
 
+By default, ApplicationAssociator will not perform cross-account stack associations with the target Application,
+to avoid deployment failures for accounts which have not been setup for cross-account associations.
+To enable cross-account stack associations, make sure all accounts are in the same organization as the
+target Application's account and that resource sharing is enabled within the organization.
+If you wish to turn on cross-account sharing and associations, set the `associateCrossAccountStacks` field to `true`,
+as shown in the example below:
+
+```ts
+const app = new App();
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
+    associateCrossAccountStacks: true,
+    applicationName: 'MyAssociatedApplication',
+    env: { account: '123456789012', region: 'us-east-1' },
+  })],
+});
+```
+
 ## Attribute Group
 
 An AppRegistry attribute group acts as a container for user-defined attributes for an application.
