@@ -162,7 +162,6 @@ describe('Application', () => {
 
     test('associate new attribute group', () => {
       application.addAttributeGroup({
-        attributeGroupLogicalId: 'AttributeGroupName',
         attributeGroupName: 'AttributeGroupName',
         attributes: {},
         description: 'Description for Attribute Group',
@@ -170,12 +169,12 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
         Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
-        AttributeGroup: { 'Fn::GetAtt': ['MyApplicationAttributeGroupName8052B9AC', 'Id'] },
+        AttributeGroup: { 'Fn::GetAtt': ['MyApplicationAttributeGroupf12e549e6ff02E7751C7', 'Id'] },
       });
 
       Template.fromStack(stack).templateMatches({
         Resources: {
-          MyApplicationAttributeGroupName8052B9AC: {
+          MyApplicationAttributeGroupf12e549e6ff02E7751C7: {
             Type: 'AWS::ServiceCatalogAppRegistry::AttributeGroup',
             Properties: {
               Name: 'AttributeGroupName',

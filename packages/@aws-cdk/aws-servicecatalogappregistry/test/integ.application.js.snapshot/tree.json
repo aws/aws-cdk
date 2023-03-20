@@ -75,13 +75,13 @@
                   "version": "0.0.0"
                 }
               },
-              "AnotherAttributeGroup": {
-                "id": "AnotherAttributeGroup",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/AnotherAttributeGroup",
+              "AttributeGroupedd07c89e5d0": {
+                "id": "AttributeGroupedd07c89e5d0",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupedd07c89e5d0",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-servicecatalogappregistry-application/TestApplication/AnotherAttributeGroup/Resource",
+                    "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupedd07c89e5d0/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
                       "aws:cdk:cloudformation:props": {
@@ -116,9 +116,9 @@
                   "version": "0.0.0"
                 }
               },
-              "AttributeGroupAssociation367d2d549902": {
-                "id": "AttributeGroupAssociation367d2d549902",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociation367d2d549902",
+              "AttributeGroupAssociation816a9a189931": {
+                "id": "AttributeGroupAssociation816a9a189931",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociation816a9a189931",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
                   "aws:cdk:cloudformation:props": {
@@ -130,7 +130,7 @@
                     },
                     "attributeGroup": {
                       "Fn::GetAtt": [
-                        "TestApplicationAnotherAttributeGroupCA590490",
+                        "TestApplicationAttributeGroupedd07c89e5d0ED9B6EF4",
                         "Id"
                       ]
                     }

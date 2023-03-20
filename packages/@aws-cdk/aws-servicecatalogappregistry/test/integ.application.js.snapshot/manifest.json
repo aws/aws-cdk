@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/46a57fb6c30ac9042bbd044d95fdb5058eaae41e638a9c57e9518b754955c2a2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f042d7ac1cd123ef4cfb09d96b2762527c0e5bd6f5752351db845ad4030c8170.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,16 +51,16 @@
             "data": "TestApplicationAttributeGroupAssociation4ba7f5842818B8EE1C6F"
           }
         ],
-        "/integ-servicecatalogappregistry-application/TestApplication/AnotherAttributeGroup/Resource": [
+        "/integ-servicecatalogappregistry-application/TestApplication/AttributeGroupedd07c89e5d0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestApplicationAnotherAttributeGroupCA590490"
+            "data": "TestApplicationAttributeGroupedd07c89e5d0ED9B6EF4"
           }
         ],
-        "/integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociation367d2d549902": [
+        "/integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociation816a9a189931": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestApplicationAttributeGroupAssociation367d2d5499029870E720"
+            "data": "TestApplicationAttributeGroupAssociation816a9a189931B4C2763F"
           }
         ],
         "/integ-servicecatalogappregistry-application/TestApplication/RAMShare004736f08f8e": [
@@ -93,10 +93,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "TestApplicationRAMSharead8ba81b8cdd40199FD1": [
+        "TestApplicationAttributeGroup502ba78ec9fb413C5EC8": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestApplicationRAMSharead8ba81b8cdd40199FD1",
+            "data": "TestApplicationAttributeGroup502ba78ec9fb413C5EC8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "TestApplicationAttributeGroupAssociationef7896b52b8cAACE5E73": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplicationAttributeGroupAssociationef7896b52b8cAACE5E73",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
