@@ -169,13 +169,13 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
     const stackName = `StagingStack${app._appId}`;
     const stackId = 'StagingStack';
     // TODO: this needs to be an IStagingStack
-    const stagingStack = app.node.tryFindChild(stackId) as DefaultStagingStack ?? new DefaultStagingStack(app, stackId, {
+    const stagingStack = app.node.tryFindChild(stackId) as IStagingStack ?? new DefaultStagingStack(app, stackId, {
       env,
       stackName,
       fileAssetPublishingRole: this.fileAssetPublishingRole,
       dockerAssetPublishingRole: this.dockerAssetPublishingRole,
     });
-    this.stack.addDependency(stagingStack, 'reason');
+    this.stack.addDependency(stagingStack.dependencyStack, 'reason');
 
     return stagingStack;
   }

@@ -216,6 +216,7 @@ describe(AppScopedStagingSynthesizer, () => {
     class TestStagingStack extends Stack implements IStagingStack {
       readonly appId = 'appId';
       readonly stagingRepos = {};
+      readonly dependencyStack = this;
       addFile(_asset: FileAssetSource): FileAssetInfo {
         return {
           assumeRoleArn: 'assumeRoleArn',

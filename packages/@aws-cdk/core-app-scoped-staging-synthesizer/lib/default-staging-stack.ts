@@ -34,6 +34,8 @@ export interface IStagingStack extends IConstruct {
    */
   readonly stagingRepos: Record<string, ecr.Repository>;
 
+  readonly dependencyStack: Stack;
+
   /**
    * // TODO
    */
@@ -99,6 +101,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
    */
   public readonly stagingRepos: Record<string, ecr.Repository>;
 
+  public readonly dependencyStack: Stack;
   public readonly appId: string;
   private readonly stagingBucketName?: string;
   private fileAssetPublishingRole?: BootstrapRole;
@@ -115,6 +118,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     }
 
     this.appId = scope._appId;
+    this.dependencyStack = this;
 
     this.stagingBucketName = props.stagingBucketName;
     this.fileAssetPublishingRole = props.fileAssetPublishingRole;
