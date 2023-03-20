@@ -7131,9 +7131,9 @@ jsii-rosetta@^1.78.1:
     yargs "^16.2.0"
 
 jsii-rosetta@v5.0-next:
-  version "5.0.0-dev.0"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.0.0-dev.0.tgz#ed8ad21a69426cf81ebcf508ebdd758a5c548d5e"
-  integrity sha512-ul1AXoQHvUMOVzh0MZGi2cIjxbjZgnH+DhDZwq4HcbteZ6YrEkKC3UrgfPJ6CPubjPwKiP5XQmPb8I0Q2XL7+g==
+  version "5.0.0-dev.2"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.0.0-dev.2.tgz#03abd86509c481fcf7963d6854a54ec4c1e95e4b"
+  integrity sha512-ZSlVBcfaGJPs3KtX7r98dBJTSIAFnJw3SHHRKJekIf6AtbgpQvHnx0lKBfA6vXX/T0htlTQjmCNau2ITdfIfyQ==
   dependencies:
     "@jsii/check-node" "1.78.1"
     "@jsii/spec" "^1.78.1"
@@ -7187,9 +7187,9 @@ jsii@1.78.1:
     yargs "^16.2.0"
 
 jsii@v5.0-next:
-  version "5.0.0-dev.0"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.0-dev.0.tgz#b46b8456da90ee9c8e70d4287d85972ed9e5bd82"
-  integrity sha512-cx2w5CuC1Q+SEoVmAsZa+x6nBE+Th54UuEoOSJqewXGVnjQbZmr1HkVg0tRFtjHD9kfJIK/5mk/xDsTBiDVxDQ==
+  version "5.0.0-dev.3"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.0-dev.3.tgz#d87ddd873e472b657aaaf884b837833da0ec8056"
+  integrity sha512-y3slZsIEaIPXeNlQcv/k0nPJXZR8qtyl1dVaLU24oQnKaxOZGZQhrmUSDNBzLNjC+6GSk855UXzZWnBNmv3tlg==
   dependencies:
     "@jsii/check-node" "1.78.1"
     "@jsii/spec" "^1.78.1"
