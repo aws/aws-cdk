@@ -64,7 +64,7 @@ benefits:
 > As this library is `experimental`, the accompanying Bootstrap Stack is not yet implemented. To use this
 > library right now, you must reuse roles that have been traditionally bootstrapped.
 
-## Example
+## Basic Example
 
 To use this library, supply the `AppScopedStagingSynthesizer` in as the default synthesizer to the app.
 This will ensure that a Staging Stack will be created next to the CDK App to hold the staging resources.
@@ -93,11 +93,14 @@ new lambda.Function(stack, 'lambda', {
 app.synth();
 ```
 
-You can customize some or all of the roles you'd like to use in the synthesizer as well:
+## Custom Roles
+
+You can customize some or all of the roles you'd like to use in the synthesizer as well,
+if all you need is to supply custom roles (and not change anything else in the `DefaultStagingStack`):
 
 ```ts
 import { App } from 'aws-cdk-lib';
-import { AppScopedStagingSynthesizer } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
+import { AppScopedStagingSynthesizer, BootstrapRole } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
 
 const app = new App({
   defaultSynthesizer: new AppScopedStagingSynthesizer({
@@ -113,6 +116,24 @@ const app = new App({
 });
 ```
 
+You can also supply specific roles to the Staging Stack:
+
+```ts
+import { App } from 'aws-cdk-lib';
+import { AppScopedStagingSynthesizer, BootstrapRole } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
+
+const app = new App({
+  defaultSynthesizer: new AppScopedStagingSynthesizer({
+    appId: 'my-app-id',
+    stagingStack: new DefaultStagingStack(this, 'StagingStack', {
+      fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
+      dockerAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
+      // additional properties
+    }),
+  }),
+});
+```
+
 ## Custom Staging Stack
 
 You can supply your own staging stack if you need further customization from what the
@@ -120,6 +141,9 @@ You can supply your own staging stack if you need further customization from wha
 supply your custom construct in as the `defaultSynthesizer`.
 
 ```ts
+import { App } from 'aws-cdk-lib';
+import { AppScopedStagingSynthesizer } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
+
 class CustomStagingStack implements IStagingStack {
   // ...
 }
