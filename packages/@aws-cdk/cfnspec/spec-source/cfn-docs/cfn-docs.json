@@ -5487,6 +5487,20 @@
         "WorkGroupConfiguration": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified. The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings."
       }
     },
+    "AWS::Athena::WorkGroup.AclConfiguration": {
+      "attributes": {},
+      "description": "Indicates that an Amazon S3 canned ACL should be set to control ownership of stored query results. When Athena stores query results in Amazon S3, the canned ACL is set with the `x-amz-acl` request header. For more information about S3 Object Ownership, see [Object Ownership settings](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html#object-ownership-overview) in the *Amazon S3 User Guide* .",
+      "properties": {
+        "S3AclOption": "The Amazon S3 canned ACL that Athena should specify when storing query results. Currently the only supported canned ACL is `BUCKET_OWNER_FULL_CONTROL` . If a query runs in a workgroup and the workgroup overrides client-side settings, then the Amazon S3 canned ACL specified in the workgroup's settings is used for all queries that run in the workgroup. For more information about Amazon S3 canned ACLs, see [Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl) in the *Amazon S3 User Guide* ."
+      }
+    },
+    "AWS::Athena::WorkGroup.CustomerContentEncryptionConfiguration": {
+      "attributes": {},
+      "description": "Specifies the KMS key that is used to encrypt the user's data stores in Athena.",
+      "properties": {
+        "KmsKey": "The KMS key that is used to encrypt the user's data stores in Athena."
+      }
+    },
     "AWS::Athena::WorkGroup.EncryptionConfiguration": {
       "attributes": {},
       "description": "If query results are encrypted in Amazon S3, indicates the encryption option used (for example, `SSE_KMS` or `CSE_KMS` ) and key information.",
@@ -5507,7 +5521,9 @@
       "attributes": {},
       "description": "The location in Amazon S3 where query and calculation results are stored and the encryption option, if any, used for query and calculation results. These are known as \"client-side settings\". If workgroup settings override client-side settings, then the query uses the workgroup settings.",
       "properties": {
+        "AclConfiguration": "Indicates that an Amazon S3 canned ACL should be set to control ownership of stored query results. Currently the only supported canned ACL is `BUCKET_OWNER_FULL_CONTROL` . This is a client-side setting. If workgroup settings override client-side settings, then the query uses the ACL configuration that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. For more information, see `WorkGroupConfiguration$EnforceWorkGroupConfiguration` and [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
         "EncryptionConfiguration": "If query results are encrypted in Amazon S3, indicates the encryption option used (for example, `SSE_KMS` or `CSE_KMS` ) and key information. This is a client-side setting. If workgroup settings override client-side settings, then the query uses the encryption configuration that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. See `EnforceWorkGroupConfiguration` and [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
+        "ExpectedBucketOwner": "The AWS account ID that you expect to be the owner of the Amazon S3 bucket specified by `ResultConfiguration$OutputLocation` . If set, Athena uses the value for `ExpectedBucketOwner` when it makes Amazon S3 calls to your specified output location. If the `ExpectedBucketOwner` AWS account ID does not match the actual owner of the Amazon S3 bucket, the call fails with a permissions error.\n\nThis is a client-side setting. If workgroup settings override client-side settings, then the query uses the `ExpectedBucketOwner` setting that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. See `WorkGroupConfiguration$EnforceWorkGroupConfiguration` and [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
         "OutputLocation": "The location in Amazon S3 where your query results are stored, such as `s3://path/to/query/bucket/` . To run a query, you must specify the query results location using either a client-side setting for individual queries or a location specified by the workgroup. If workgroup settings override client-side settings, then the query uses the location specified for the workgroup. If no query location is set, Athena issues an error. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) and `EnforceWorkGroupConfiguration` ."
       }
     },
@@ -5515,9 +5531,12 @@
       "attributes": {},
       "description": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified. The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings.",
       "properties": {
+        "AdditionalConfiguration": "Specifies a user defined JSON string that is passed to the notebook engine.",
         "BytesScannedCutoffPerQuery": "The upper limit (cutoff) for the amount of bytes a single query in a workgroup is allowed to scan. No default is defined.\n\n> This property currently supports integer types. Support for long values is planned.",
+        "CustomerContentEncryptionConfiguration": "Specifies the KMS key that is used to encrypt the user's data stores in Athena.",
         "EnforceWorkGroupConfiguration": "If set to \"true\", the settings for the workgroup override client-side settings. If set to \"false\", client-side settings are used. For more information, see [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
         "EngineVersion": "The engine version that all queries running on the workgroup use. Queries on the `AmazonAthenaPreviewFunctionality` workgroup run on the preview engine regardless of this setting.",
+        "ExecutionRole": "Role used in a session for accessing the user's resources.",
         "PublishCloudWatchMetricsEnabled": "Indicates that the Amazon CloudWatch metrics are enabled for the workgroup.",
         "RequesterPaysEnabled": "If set to `true` , allows members assigned to a workgroup to reference Amazon S3 Requester Pays buckets in queries. If set to `false` , workgroup members cannot query data from Requester Pays buckets, and queries that retrieve data from Requester Pays buckets cause an error. The default is `false` . For more information about Requester Pays buckets, see [Requester Pays Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) in the *Amazon Simple Storage Service Developer Guide* .",
         "ResultConfiguration": "Specifies the location in Amazon S3 where query results are stored and the encryption option, if any, used for query results. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) ."
@@ -7375,6 +7394,24 @@
         "DomainName": "A fully qualified domain name (FQDN) in the certificate request.",
         "HostedZoneId": "The `HostedZoneId` option, which is available if you are using Route 53 as your domain registrar, causes ACM to add your CNAME to the domain record. Your list of `DomainValidationOptions` must contain one and only one of the domain-validation options, and the `HostedZoneId` can be used only when `DNS` is specified as your validation method.\n\nUse the Route 53 `ListHostedZones` API to discover IDs for available hosted zones.\n\nThis option is required for publicly trusted certificates.\n\n> The `ListHostedZones` API returns IDs in the format \"/hostedzone/Z111111QQQQQQQ\", but CloudFormation requires the IDs to be in the format \"Z111111QQQQQQQ\". \n\nWhen you change your `DomainValidationOptions` , a new resource is created.",
         "ValidationDomain": "The domain name to which you want ACM to send validation emails. This domain name is the suffix of the email addresses that you want ACM to use. This must be the same as the `DomainName` value or a superdomain of the `DomainName` value. For example, if you request a certificate for `testing.example.com` , you can specify `example.com` as this value. In that case, ACM sends domain validation emails to the following five addresses:\n\n- admin@example.com\n- administrator@example.com\n- hostmaster@example.com\n- postmaster@example.com\n- webmaster@example.com"
+      }
+    },
+    "AWS::Chatbot::MicrosoftTeamsChannelConfiguration": {
+      "attributes": {
+        "Arn": "",
+        "Ref": "When you pass the logical ID of this resource to the intrinsic Ref function, Ref returns the ARN of the configuration created."
+      },
+      "description": "The `AWS::Chatbot::MicrosoftTeamsChannelConfiguration` resource configures a Microsoft Teams channel to allow users to use AWS Chatbot with AWS CloudFormation templates.\n\nThis resource requires some setup to be done in the AWS Chatbot console. To provide the required Microsoft Teams team and tenant IDs, you must perform the initial authorization flow with Microsoft Teams in the AWS Chatbot console, then copy and paste the IDs from the console. For more details, see steps 1-4 in [Setting Up AWS Chatbot with Microsoft Teams](https://docs.aws.amazon.com/chatbot/latest/adminguide/teams-setup.html#teams-client-setup) in the *AWS Chatbot Administrator Guide* .",
+      "properties": {
+        "ConfigurationName": "The name of the configuration.",
+        "GuardrailPolicies": "The list of IAM policy ARNs that are applied as channel guardrails. The AWS managed 'AdministratorAccess' policy is applied as a default if this is not set.",
+        "IamRoleArn": "The ARN of the IAM role that defines the permissions for AWS Chatbot .\n\nThis is a user-defined role that AWS Chatbot will assume. This is not the service-linked role. For more information, see [IAM Policies for AWS Chatbot](https://docs.aws.amazon.com/chatbot/latest/adminguide/chatbot-iam-policies.html) .",
+        "LoggingLevel": "Specifies the logging level for this configuration. This property affects the log entries pushed to Amazon CloudWatch Logs.\n\nLogging levels include `ERROR` , `INFO` , or `NONE` .",
+        "SnsTopicArns": "The ARNs of the SNS topics that deliver notifications to AWS Chatbot .",
+        "TeamId": "The ID of the Microsoft Team authorized with AWS Chatbot .\n\nTo get the team ID, you must perform the initial authorization flow with Microsoft Teams in the AWS Chatbot console. Then you can copy and paste the team ID from the console. For more details, see steps 1-4 in [Get started with Microsoft Teams](https://docs.aws.amazon.com/chatbot/latest/adminguide/teams-setup.html#teams-client-setup) in the *AWS Chatbot Administrator Guide* .",
+        "TeamsChannelId": "The ID of the Microsoft Teams channel.\n\nTo get the channel ID, open Microsoft Teams, right click on the channel name in the left pane, then choose Copy. An example of the channel ID syntax is: `19%3ab6ef35dc342d56ba5654e6fc6d25a071%40thread.tacv2` .",
+        "TeamsTenantId": "The ID of the Microsoft Teams tenant.\n\nTo get the tenant ID, you must perform the initial authorization flow with Microsoft Teams in the AWS Chatbot console. Then you can copy and paste the tenant ID from the console. For more details, see steps 1-4 in [Get started with Microsoft Teams](https://docs.aws.amazon.com/chatbot/latest/adminguide/teams-setup.html#teams-client-setup) in the *AWS Chatbot Administrator Guide* .",
+        "UserRoleRequired": "Enables use of a user role requirement in your chat configuration."
       }
     },
     "AWS::Chatbot::SlackChannelConfiguration": {
@@ -10438,6 +10475,13 @@
       "description": "Configuration required for an entity recognition model.",
       "properties": {
         "EntityTypes": "Up to 25 entity types that the model is trained to recognize."
+      }
+    },
+    "AWS::Comprehend::Flywheel.EntityTypesListItem": {
+      "attributes": {},
+      "description": "An entity type within a labeled training dataset that Amazon Comprehend uses to train a custom entity recognizer.",
+      "properties": {
+        "Type": "An entity type within a labeled training dataset that Amazon Comprehend uses to train a custom entity recognizer.\n\nEntity types must not contain the following invalid characters: \\n (line break), \\\\n (escaped line break, \\r (carriage return), \\\\r (escaped carriage return), \\t (tab), \\\\t (escaped tab), space, and , (comma)."
       }
     },
     "AWS::Comprehend::Flywheel.TaskConfig": {
@@ -14610,14 +14654,14 @@
     },
     "AWS::EC2::IPAMResourceDiscoveryAssociation": {
       "attributes": {
-        "IpamArn": "",
-        "IpamRegion": "",
+        "IpamArn": "The IPAM ARN.",
+        "IpamRegion": "The IPAM home Region.",
         "IpamResourceDiscoveryAssociationArn": "The resource discovery association ARN.",
         "IpamResourceDiscoveryAssociationId": "The resource discovery association ID.",
         "IsDefault": "Defines if the resource discovery is the default. When you create an IPAM, a default resource discovery is created for your IPAM and it's associated with your IPAM.",
         "OwnerId": "The owner ID.",
         "Ref": "`Ref` returns the resource discovery ID. For example: `ipam-res-disco-111122223333` .",
-        "ResourceDiscoveryStatus": "",
+        "ResourceDiscoveryStatus": "The resource discovery status.\n\n- `active` - Connection or permissions required to read the results of the resource discovery are intact.\n- `not-found` - Connection or permissions required to read the results of the resource discovery are broken. This may happen if the owner of the resource discovery stopped sharing it or deleted the resource discovery. Verify the resource discovery still exists and the AWS RAM resource share is still intact.",
         "State": "The lifecycle state of the association when you associate or disassociate a resource discovery.\n\n- `associate-in-progress` - Resource discovery is being associated.\n- `associate-complete` - Resource discovery association is complete.\n- `associate-failed` - Resource discovery association has failed.\n- `disassociate-in-progress` - Resource discovery is being disassociated.\n- `disassociate-complete` - Resource discovery disassociation is complete.\n- `disassociate-failed` - Resource discovery disassociation has failed.\n- `isolate-in-progress` - AWS account that created the resource discovery association has been removed and the resource discovery associatation is being isolated.\n- `isolate-complete` - Resource discovery isolation is complete..\n- `restore-in-progress` - Resource discovery is being restored."
       },
       "description": "An IPAM resource discovery association. An associated resource discovery is a resource discovery that has been associated with an IPAM. IPAM aggregates the resource CIDRs discovered by the associated resource discovery.",
@@ -16675,7 +16719,6 @@
     },
     "AWS::EC2::VPCDHCPOptionsAssociation": {
       "attributes": {
-        "Id": "The ID of the DHCP options set.",
         "Ref": "`Ref` returns the ID of the DHCP options association."
       },
       "description": "Associates a set of DHCP options with a VPC, or associates no DHCP options with the VPC.\n\nAfter you associate the options with the VPC, any existing instances and all new instances that you launch in that VPC use the options. You don't need to restart or relaunch the instances. They automatically pick up the changes within a few hours, depending on how frequently the instance renews its DHCP lease. You can explicitly renew the lease using the operating system on the instance.",
@@ -16688,6 +16731,7 @@
       "attributes": {
         "CreationTimestamp": "The date and time the VPC endpoint was created. For example: `Fri Sep 28 23:34:36 UTC 2018.`",
         "DnsEntries": "(Interface endpoints) The DNS entries for the endpoint. Each entry is a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services.\n\nThe following is an example. In the first entry, the hosted zone ID is Z1HUB23UULQXV and the DNS name is vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com.\n\n[\"Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com\", \"Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3-us-east-1a.ec2.us-east-1.vpce.amazonaws.com\", \"Z1C12344VYDITB0:ec2.us-east-1.amazonaws.com\"]\n\nIf you update the `PrivateDnsEnabled` or `SubnetIds` properties, the DNS entries in the list will change.",
+        "Id": "The ID of the VPC endpoint.",
         "NetworkInterfaceIds": "(Interface endpoints) The network interface IDs. If you update the `PrivateDnsEnabled` or `SubnetIds` properties, the items in this list might change.",
         "Ref": "`Ref` returns the ID of the VPC endpoint."
       },
@@ -35998,10 +36042,7 @@
     "AWS::MediaPackage::PackagingConfiguration.EncryptionContractConfiguration": {
       "attributes": {},
       "description": "Use `encryptionContractConfiguration` to configure one or more content encryption keys for your endpoints that use SPEKE Version 2.0. The encryption contract defines the content keys used to encrypt the audio and video tracks in your stream. To configure the encryption contract, specify which audio and video encryption presets to use. For more information about these presets, see [SPEKE Version 2.0 Presets](https://docs.aws.amazon.com/mediapackage/latest/ug/drm-content-speke-v2-presets.html) .\n\nNote the following considerations when using `encryptionContractConfiguration` :\n\n- You can use `encryptionContractConfiguration` for DASH endpoints that use SPEKE Version 2.0. SPEKE Version 2.0 relies on the CPIX Version 2.3 specification.\n- You cannot combine an `UNENCRYPTED` preset with `UNENCRYPTED` or `SHARED` presets across `presetSpeke20Audio` and `presetSpeke20Video` .\n- When you use a `SHARED` preset, you must use it for both `presetSpeke20Audio` and `presetSpeke20Video` .",
-      "properties": {
-        "PresetSpeke20Audio": "A collection of audio encryption presets.\n\nValue description:\n\n- `PRESET-AUDIO-1` - Use one content key to encrypt all of the audio tracks in your stream.\n- `PRESET-AUDIO-2` - Use one content key to encrypt all of the stereo audio tracks and one content key to encrypt all of the multichannel audio tracks.\n- `PRESET-AUDIO-3` - Use one content key to encrypt all of the stereo audio tracks, one content key to encrypt all of the multichannel audio tracks with 3 to 6 channels, and one content key to encrypt all of the multichannel audio tracks with more than 6 channels.\n- `SHARED` - Use the same content key for all of the audio and video tracks in your stream.\n- `UNENCRYPTED` - Don't encrypt any of the audio tracks in your stream.",
-        "PresetSpeke20Video": "A collection of video encryption presets.\n\nValue description:\n\n- `PRESET-VIDEO-1` - Use one content key to encrypt all of the video tracks in your stream.\n- `PRESET-VIDEO-2` - Use one content key to encrypt all of the SD video tracks and one content key for all HD and higher resolutions video tracks.\n- `PRESET-VIDEO-3` - Use one content key to encrypt all of the SD video tracks, one content key for HD video tracks and one content key for all UHD video tracks.\n- `PRESET-VIDEO-4` - Use one content key to encrypt all of the SD video tracks, one content key for HD video tracks, one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.\n- `PRESET-VIDEO-5` - Use one content key to encrypt all of the SD video tracks, one content key for HD1 video tracks, one content key for HD2 video tracks, one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.\n- `PRESET-VIDEO-6` - Use one content key to encrypt all of the SD video tracks, one content key for HD1 video tracks, one content key for HD2 video tracks and one content key for all UHD video tracks.\n- `PRESET-VIDEO-7` - Use one content key to encrypt all of the SD+HD1 video tracks, one content key for HD2 video tracks and one content key for all UHD video tracks.\n- `PRESET-VIDEO-8` - Use one content key to encrypt all of the SD+HD1 video tracks, one content key for HD2 video tracks, one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.\n- `SHARED` - Use the same content key for all of the video and audio tracks in your stream.\n- `UNENCRYPTED` - Don't encrypt any of the video tracks in your stream."
-      }
+      "properties": {}
     },
     "AWS::MediaPackage::PackagingConfiguration.HlsEncryption": {
       "attributes": {},
@@ -41562,6 +41603,7 @@
     },
     "AWS::RUM::AppMonitor": {
       "attributes": {
+        "Id": "The ID of the app monitor, such as `123456ab-1234-4ca9-9d2f-a1b2c3456789` .",
         "Ref": "`Ref` returns the name of the app monitor."
       },
       "description": "Creates a CloudWatch RUM app monitor, which you can use to collect telemetry data from your application and send it to CloudWatch RUM. The data includes performance and reliability information such as page load time, client-side errors, and user behavior.\n\nAfter you create an app monitor, sign in to the CloudWatch RUM console to get the JavaScript code snippet to add to your web application. For more information, see [How do I find a code snippet that I've already generated?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-find-code-snippet.html)",
@@ -42550,14 +42592,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
-        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -42565,18 +42607,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "The tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -42585,7 +42627,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -42595,15 +42637,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -43148,6 +43190,8 @@
         "HostVPCId": "The ID of the VPC that you want to create the resolver endpoint in.",
         "IpAddressCount": "The number of IP addresses that the resolver endpoint can use for DNS queries.",
         "Name": "The name that you assigned to the resolver endpoint when you created the endpoint.",
+        "OutpostArn": "",
+        "PreferredInstanceType": "",
         "Ref": "`Ref` returns the `ResolverEndpoint` object.",
         "ResolverEndpointId": "The ID of the resolver endpoint.",
         "ResolverEndpointType": ""
@@ -43157,6 +43201,8 @@
         "Direction": "Indicates whether the Resolver endpoint allows inbound or outbound DNS queries:\n\n- `INBOUND` : allows DNS queries to your VPC from your network\n- `OUTBOUND` : allows DNS queries from your VPC to your network",
         "IpAddresses": "The subnets and IP addresses in your VPC that DNS queries originate from (for outbound endpoints) or that you forward DNS queries to (for inbound endpoints). The subnet ID uniquely identifies a VPC.",
         "Name": "A friendly name that lets you easily find a configuration in the Resolver dashboard in the Route 53 console.",
+        "OutpostArn": "",
+        "PreferredInstanceType": "",
         "ResolverEndpointType": "The Resolver endpoint IP address type.",
         "SecurityGroupIds": "The ID of one or more security groups that control access to this VPC. The security group must include one or more inbound rules (for inbound endpoints) or outbound rules (for outbound endpoints). Inbound and outbound rules must allow TCP and UDP access. For inbound access, open port 53. For outbound access, open the port that you're using for DNS queries on your network.",
         "Tags": "Route 53 Resolver doesn't support updating tags through CloudFormation."
@@ -44026,9 +44072,6 @@
     },
     "AWS::S3ObjectLambda::AccessPoint": {
       "attributes": {
-        "Alias": "",
-        "Alias.Status": "",
-        "Alias.Value": "",
         "Arn": "Specifies the ARN for the Object Lambda Access Point.",
         "CreationDate": "The date and time when the specified Object Lambda Access Point was created.",
         "PolicyStatus": "",
@@ -44044,14 +44087,6 @@
       "properties": {
         "Name": "The name of this access point.",
         "ObjectLambdaConfiguration": "A configuration used when creating an Object Lambda Access Point."
-      }
-    },
-    "AWS::S3ObjectLambda::AccessPoint.Alias": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "Status": "",
-        "Value": ""
       }
     },
     "AWS::S3ObjectLambda::AccessPoint.AwsLambda": {
@@ -46120,6 +46155,110 @@
         "ImageName": "The name of the parent image.\n\n*Length Constraints* : Minimum length of 1. Maximum length of 63.\n\n*Pattern* : `^[a-zA-Z0-9]([-.]?[a-zA-Z0-9]){0,62}$`"
       }
     },
+    "AWS::SageMaker::InferenceExperiment": {
+      "attributes": {
+        "Arn": "",
+        "CreationTime": "",
+        "EndpointMetadata": "",
+        "EndpointMetadata.EndpointConfigName": "",
+        "EndpointMetadata.EndpointName": "",
+        "EndpointMetadata.EndpointStatus": "",
+        "LastModifiedTime": "",
+        "Ref": "",
+        "Status": ""
+      },
+      "description": "Creates an inference experiment using the configurations specified in the request.\n\nUse this API to setup and schedule an experiment to compare model variants on a Amazon SageMaker inference endpoint. For more information about inference experiments, see [Shadow tests](https://docs.aws.amazon.com/sagemaker/latest/dg/shadow-tests.html) .\n\nAmazon SageMaker begins your experiment at the scheduled time and routes traffic to your endpoint's model variants based on your specified configuration.\n\nWhile the experiment is in progress or after it has concluded, you can view metrics that compare your model variants. For more information, see [View, monitor, and edit shadow tests](https://docs.aws.amazon.com/sagemaker/latest/dg/shadow-tests-view-monitor-edit.html) .",
+      "properties": {
+        "DataStorageConfig": "",
+        "Description": "The description of the inference experiment.",
+        "DesiredState": "",
+        "EndpointName": "",
+        "KmsKey": "The AWS Key Management Service key that Amazon SageMaker uses to encrypt captured data at rest using Amazon S3 server-side encryption.",
+        "ModelVariants": "",
+        "Name": "The name of the inference experiment.",
+        "RoleArn": "The ARN of the IAM role that Amazon SageMaker can assume to access model artifacts and container images, and manage Amazon SageMaker Inference endpoints for model deployment.",
+        "Schedule": "The duration for which the inference experiment ran or will run.\n\nThe maximum duration that you can set for an inference experiment is 30 days.",
+        "ShadowModeConfig": "",
+        "StatusReason": "The error message for the inference experiment status result.",
+        "Tags": "",
+        "Type": "The type of the inference experiment."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.CaptureContentTypeHeader": {
+      "attributes": {},
+      "description": "Configuration specifying how to treat different headers. If no headers are specified SageMaker will by default base64 encode when capturing the data.",
+      "properties": {
+        "CsvContentTypes": "The list of all content type headers that SageMaker will treat as CSV and capture accordingly.",
+        "JsonContentTypes": "The list of all content type headers that SageMaker will treat as JSON and capture accordingly."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.DataStorageConfig": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ContentType": "",
+        "Destination": "",
+        "KmsKey": ""
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.EndpointMetadata": {
+      "attributes": {},
+      "description": "The metadata of the endpoint.",
+      "properties": {
+        "EndpointConfigName": "The name of the endpoint configuration.",
+        "EndpointName": "The name of the endpoint.",
+        "EndpointStatus": "The status of the endpoint. For possible values of the status of an endpoint, see `EndpointSummary$EndpointStatus` ."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.InferenceExperimentSchedule": {
+      "attributes": {},
+      "description": "The start and end times of an inference experiment.\n\nThe maximum duration that you can set for an inference experiment is 30 days.",
+      "properties": {
+        "EndTime": "The timestamp at which the inference experiment ended or will end.",
+        "StartTime": "The timestamp at which the inference experiment started or will start."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.ModelInfrastructureConfig": {
+      "attributes": {},
+      "description": "The configuration for the infrastructure that the model will be deployed to.",
+      "properties": {
+        "InfrastructureType": "The inference option to which to deploy your model. Possible values are the following:\n\n- `RealTime` : Deploy to real-time inference.",
+        "RealTimeInferenceConfig": "The infrastructure configuration for deploying the model to real-time inference."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.ModelVariantConfig": {
+      "attributes": {},
+      "description": "Contains information about the deployment options of a model.",
+      "properties": {
+        "InfrastructureConfig": "The configuration for the infrastructure that the model will be deployed to.",
+        "ModelName": "The name of the Amazon SageMaker Model entity.",
+        "VariantName": "The name of the variant."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.RealTimeInferenceConfig": {
+      "attributes": {},
+      "description": "The infrastructure configuration for deploying the model to a real-time inference endpoint.",
+      "properties": {
+        "InstanceCount": "The number of instances of the type specified by `InstanceType` .",
+        "InstanceType": "The instance type the model is deployed to."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.ShadowModeConfig": {
+      "attributes": {},
+      "description": "The configuration of `ShadowMode` inference experiment type, which specifies a production variant to take all the inference requests, and a shadow variant to which Amazon SageMaker replicates a percentage of the inference requests. For the shadow variant it also specifies the percentage of requests that Amazon SageMaker replicates.",
+      "properties": {
+        "ShadowModelVariants": "List of shadow variant configurations.",
+        "SourceModelVariantName": "The name of the production variant, which takes all the inference requests."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.ShadowModelVariantConfig": {
+      "attributes": {},
+      "description": "The name and sampling percentage of a shadow variant.",
+      "properties": {
+        "SamplingPercentage": "The percentage of inference requests that Amazon SageMaker replicates from the production variant to the shadow variant.",
+        "ShadowModelVariantName": "The name of the shadow variant."
+      }
+    },
     "AWS::SageMaker::Model": {
       "attributes": {
         "ModelName": "The name of the model, such as `MyModel` .",
@@ -47852,8 +47991,8 @@
       "attributes": {},
       "description": "Allows you to configure a time window during which EventBridge Scheduler invokes the schedule.",
       "properties": {
-        "MaximumWindowInMinutes": "The maximum time window during which a schedule can be invoked.",
-        "Mode": "Determines whether the schedule is invoked within a flexible time window."
+        "MaximumWindowInMinutes": "The maximum time window during which a schedule can be invoked.\n\n*Minimum* : `1`\n\n*Maximum* : `1440`",
+        "Mode": "Determines whether the schedule is invoked within a flexible time window.\n\n*Allowed Values* : `OFF` | `FLEXIBLE`"
       }
     },
     "AWS::Scheduler::Schedule.KinesisParameters": {
