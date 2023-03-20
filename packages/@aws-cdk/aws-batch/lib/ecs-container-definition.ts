@@ -288,6 +288,7 @@ export interface Ulimit {
 export enum UlimitName {
   FOO = 'foo',
 }
+
 export interface IEcsEc2ContainerDefinition extends IEcsContainerDefinition {
   readonly privileged?: boolean;
   readonly ulimits?: Ulimit[];
@@ -321,34 +322,41 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase {
   };
 }
 
-export enum FargateVersion {
-  FOO = 'bar',
-}
-
 export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition {
-  readonly fargateVersion?: FargateVersion;
   readonly assignPublicIp?: boolean;
+  /**
+   * Which version of Fargate to use when running this container
+   *
+   * @default LATEST
+   */
+  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 }
 
 export interface EcsFargateContainerDefinitionProps extends EcsContainerDefinitionProps {
-  readonly fargateVersion?: FargateVersion;
   readonly assignPublicIp?: boolean;
+  /**
+   * Which version of Fargate to use when running this container
+   *
+   * @default LATEST
+   */
+  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 }
 
 export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase {
-  readonly fargateVersion?: FargateVersion;
+  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   readonly assignPublicIp?: boolean;
 
   constructor(scope: Construct, id: string, props: EcsFargateContainerDefinitionProps) {
     super(scope, id, props);
     this.assignPublicIp = props.assignPublicIp;
+    this.fargatePlatformVersion = props.fargatePlatformVersion;
   }
 
   public renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       ...super.renderContainerDefinition(),
       fargatePlatformConfiguration: {
-        platformVersion: this.fargateVersion?.toString(),
+        platformVersion: this.fargatePlatformVersion?.toString(),
       },
       networkConfiguration: {
         assignPublicIp: this.assignPublicIp ? 'ENABLED' : 'DISABLED',

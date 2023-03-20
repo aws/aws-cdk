@@ -511,7 +511,9 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         spotIamFleetRole: this.spotFleetRole?.roleArn,
         allocationStrategy: this.allocationStrategy,
         bidPercentage: this.spotBidPercentage,
-        launchTemplate: this.launchTemplate,
+        launchTemplate: this.launchTemplate ? {
+          launchTemplateId: this.launchTemplate?.launchTemplateId,
+        } : undefined,
         ec2Configuration: this.images?.map((image) => {
           return {
             imageIdOverride: image.image?.getImage(this).imageId,
@@ -550,10 +552,8 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
   /**
    * The cluster that backs this Compute Environment. Required
    * for Compute Environments running Kubernetes jobs.
-   *
-   * @default - an EKS Cluster will be created
    */
-  readonly eksCluster?: eks.ICluster;
+  readonly eksCluster: eks.ICluster;
 
   /**
   * Configure which AMIs this Compute Environment can launch.
@@ -643,10 +643,8 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
   /**
    * The cluster that backs this Compute Environment. Required
    * for Compute Environments running Kubernetes jobs.
-   *
-   * @default - an EKS Cluster will be created
    */
-  readonly eksCluster?: eks.ICluster;
+  readonly eksCluster: eks.ICluster;
 
   /**
     * Whether or not to use batch's optimal instance type.
@@ -749,7 +747,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
 
 export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EksComputeEnvironment {
   readonly kubernetesNamespace?: string;
-  readonly eksCluster?: eks.ICluster;
+  readonly eksCluster: eks.ICluster;
 
   readonly images?: EksMachineImage[];
   readonly allocationStrategy?: AllocationStrategy;
@@ -769,10 +767,8 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {
     super(scope, id, props);
 
-    this.kubernetesNamespace = props.kubernetesNamespace ?? 'batch-eks-cluster-' + id;
-    this.eksCluster = props.eksCluster ?? new eks.Cluster(this, 'EKSCluster', {
-      version: eks.KubernetesVersion.V1_24,
-    });
+    this.kubernetesNamespace = props.kubernetesNamespace;
+    this.eksCluster = props.eksCluster;
 
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
@@ -798,27 +794,25 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
         eksClusterArn: this.eksCluster.clusterArn,
         kubernetesNamespace: this.kubernetesNamespace,
       },
-      computeResources: Lazy.any({
-        produce: () => {
+      computeResources: {
+        ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
+        minvCpus: this.minvCpus,
+        instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
+        instanceTypes: Lazy.list({ produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) }),
+        type: this.spot ? 'SPOT' : 'EC2',
+        spotIamFleetRole: this.spotFleetRole?.roleArn,
+        allocationStrategy: this.allocationStrategy,
+        bidPercentage: this.spotBidPercentage,
+        launchTemplate: this.launchTemplate ? {
+          launchTemplateId: this.launchTemplate?.launchTemplateId,
+        } : undefined,
+        ec2Configuration: this.images?.map((image) => {
           return {
-            ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
-            minvCpus: this.minvCpus,
-            instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
-            instanceTypes: renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
-            type: this.spot ? 'SPOT' : 'EC2',
-            spotIamFleetRole: this.spotFleetRole?.roleArn,
-            allocationStrategy: this.allocationStrategy,
-            bidPercentage: this.spotBidPercentage,
-            launchTemplate: this.launchTemplate,
-            ec2Configuration: this.images?.map((image) => {
-              return {
-                imageIdOverride: image.image?.getImage(this).imageId,
-                imageType: image.imageType ?? EksMachineImageType.EKS_AL2,
-              };
-            }),
+            imageIdOverride: image.image?.getImage(this).imageId,
+            imageType: image.imageType ?? EksMachineImageType.EKS_AL2,
           };
-        },
-      }),
+        }),
+      },
     });
 
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {

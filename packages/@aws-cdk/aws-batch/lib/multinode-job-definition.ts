@@ -1,4 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { IEcsContainerDefinition } from './ecs-container-definition';
@@ -92,27 +93,33 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
       type: 'multinode',
       nodeProperties: {
         mainNode: this.mainNode,
-        nodeRangeProperties: this.containers.map((container) => ({
-          targetNodes: container.startNode + ':' + container.endNode,
-          container: {
-            ...container.container.renderContainerDefinition(),
-            instanceType: this.instanceType.toString(),
-          },
-        })),
-        numNodes: computeNumNodes(this.containers),
+        nodeRangeProperties: Lazy.any({
+          produce: () => this.containers.map((container) => ({
+            targetNodes: container.startNode + ':' + container.endNode,
+            container: {
+              ...container.container.renderContainerDefinition(),
+              instanceType: this.instanceType.toString(),
+            },
+          })),
+        }),
+        numNodes: Lazy.number({
+          produce: () => computeNumNodes(this.containers),
+        }),
       },
       platformCapabilities: [Compatibility.EC2],
     });
   }
 
-  //public addContainer(...containers: MultiNodeContainer[]) {}
+  public addContainer(container: MultiNodeContainer) {
+    this.containers.push(container);
+  }
 }
 
 function computeNumNodes(containers: MultiNodeContainer[]) {
-  let result = 1;
+  let result = 0;
 
   for (const container of containers) {
-    result += container.endNode - container.startNode;
+    result += container.endNode - container.startNode + 1;
   }
 
   return result;

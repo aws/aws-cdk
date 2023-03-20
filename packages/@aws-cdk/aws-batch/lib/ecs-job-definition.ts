@@ -9,13 +9,6 @@ interface IEcsJobDefinition extends IJobDefinition {
    * The container that this job will run
    */
   readonly containerDefinition: IEcsContainerDefinition
-
-  /**
-   * Which version of Fargate to use when running this container
-   *
-   * @default LATEST
-   */
-  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 }
 
 /**
@@ -31,13 +24,6 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
    * The container that this job will run
    */
   readonly containerDefinition: IEcsContainerDefinition
-
-  /**
-   * Which version of Fargate to use when running this container
-   *
-   * @default LATEST
-   */
-  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 }
 
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
@@ -48,7 +34,6 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     super(scope, id, props);
 
     this.containerDefinition = props.containerDefinition;
-    this.fargatePlatformVersion = props.fargatePlatformVersion;
 
     new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
