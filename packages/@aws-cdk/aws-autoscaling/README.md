@@ -25,7 +25,11 @@ declare const vpc: ec2.Vpc;
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
-  machineImage: new ec2.AmazonLinuxImage() // get the latest Amazon Linux image
+
+  // The latest Amazon Linux image of a particular generation
+  machineImage: ec2.MachineImage.latestAmazonLinux({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  }),
 });
 ```
 
@@ -41,7 +45,9 @@ const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
-  machineImage: new ec2.AmazonLinuxImage(),
+  machineImage: ec2.MachineImage.latestAmazonLinux({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  }),
   securityGroup: mySecurityGroup,
 });
 ```
@@ -538,6 +544,40 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+## Connecting to your instances using SSM Session Manager
+
+SSM Session Manager makes it possible to connect to your instances from the
+AWS Console, without preparing SSH keys.
+
+To do so, you need to:
+
+* Use an image with [SSM agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html) installed
+  and configured. [Many images come with SSM Agent
+  preinstalled](https://docs.aws.amazon.com/systems-manager/latest/userguide/ami-preinstalled-agent.html), otherwise you
+  may need to manually put instructions to [install SSM
+  Agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-manual-agent-install.html) into your
+  instance's UserData or use EC2 Init).
+* Create the AutoScalingGroup with `ssmSessionPermissions: true`.
+
+If these conditions are met, you can connect to the instance from the EC2 Console. Example:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+
+  // Amazon Linux 2 comes with SSM Agent by default
+  machineImage: ec2.MachineImage.latestAmazonLinux({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  }),
+
+  // Turn on SSM
+  ssmSessionPermissions: true,
+});
+```
+
 ## Configuring Instance Metadata Service (IMDS)
 
 ### Toggling IMDSv1
@@ -596,13 +636,13 @@ autoScalingGroup.addWarmPool({
 
 ### Default Instance Warming
 
-You can use the default instance warmup feature to improve the Amazon CloudWatch metrics used for dynamic scaling. 
-When default instance warmup is not enabled, each instance starts contributing usage data to the aggregated metrics 
-as soon as the instance reaches the InService state. However, if you enable default instance warmup, this lets 
+You can use the default instance warmup feature to improve the Amazon CloudWatch metrics used for dynamic scaling.
+When default instance warmup is not enabled, each instance starts contributing usage data to the aggregated metrics
+as soon as the instance reaches the InService state. However, if you enable default instance warmup, this lets
 your instances finish warming up before they contribute the usage data.
 
-To optimize the performance of scaling policies that scale continuously, such as target tracking and step scaling 
-policies, we strongly recommend that you enable the default instance warmup, even if its value is set to 0 seconds. 
+To optimize the performance of scaling policies that scale continuously, such as target tracking and step scaling
+policies, we strongly recommend that you enable the default instance warmup, even if its value is set to 0 seconds.
 
 To set up Default Instance Warming for an autoscaling group, simply pass it in as a prop
 
