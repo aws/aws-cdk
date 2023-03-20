@@ -1151,9 +1151,16 @@ new ec2.Instance(this, 'Instance', {
 });
 ```
 
-`InitCommand` can not be used to start long-running processes. But if your Linux
-OS is using SystemD (like Amazon Linux 2 or higher), the CDK has helpers to
-create a long-running service using CFN Init. You can create a
+`InitCommand` can not be used to start long-running processes. At deploy time,
+`cfn-init` will always wait for the process to exit before continuing, causing
+the CloudFormation deployment to fail because the signal hasn't been received
+within the expected timeout.
+
+Instead, you should install a service configuration file onto your machine `InitFile`,
+and then use `InitService` to start it.
+
+If your Linux OS is using SystemD (like Amazon Linux 2 or higher), the CDK has
+helpers to create a long-running service using CFN Init. You can create a
 SystemD-compatible config file using `InitService.systemdConfigFile()`, and
 start it immediately. The following examples shows how to start a trivial Python
 3 web server:
