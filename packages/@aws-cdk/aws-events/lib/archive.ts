@@ -73,7 +73,7 @@ export class Archive extends Resource {
     });
 
     this.archiveArn = archive.attrArn;
-    this.archiveName = archive.attrArchiveName;
+    this.archiveName = archive.ref;
     this.node.defaultChild = archive;
   }
 }
