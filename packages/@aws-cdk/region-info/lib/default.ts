@@ -107,6 +107,11 @@ export class Default {
             ? partitional
             : universal;
 
+        case 'ec2':
+          return region.startsWith('cn-')
+            ? partitional
+            : universal;
+
         // Services with a universal principal across all regions/partitions (the default case)
         default:
           return universal;

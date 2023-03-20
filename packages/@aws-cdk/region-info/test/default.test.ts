@@ -51,6 +51,7 @@ describe('servicePrincipal', () => {
   for (const cnRegion of ['cn-north-1', 'cn-northwest-1']) {
     test(`Exceptions: codedeploy in ${cnRegion}`, () => {
       expect(Default.servicePrincipal('codedeploy', cnRegion, 'amazonaws.com.cn')).toBe(`codedeploy.${cnRegion}.amazonaws.com.cn`);
+      expect(Default.servicePrincipal('ec2', cnRegion, 'amazonaws.com.cn')).toBe('ec2.amazonaws.com.cn');
     });
   }
 });
