@@ -706,7 +706,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `COMMENT ON COLUMN ${physicalResourceId}.col1 IS '${newComment}'`,
+        Sql: `COMMENT ON COLUMN ${event.OldResourceProperties.Data.TableName}.col1 IS '${newComment}'`,
       }));
     });
 
@@ -723,7 +723,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `COMMENT ON COLUMN ${physicalResourceId}.col1 IS NULL`,
+        Sql: `COMMENT ON COLUMN ${event.OldResourceProperties.Data.TableName}.col1 IS NULL`,
       }));
     });
   });
@@ -739,7 +739,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE RAW`,
+        Sql: `ALTER TABLE ${event.OldResourceProperties.Data.TableName} ALTER COLUMN col1 ENCODE RAW`,
       }));
     });
 
@@ -759,7 +759,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE AUTO`,
+        Sql: `ALTER TABLE ${event.OldResourceProperties.Data.TableName} ALTER COLUMN col1 ENCODE AUTO`,
       }));
     });
 
@@ -781,7 +781,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE RAW, ALTER COLUMN col2 ENCODE RAW`,
+        Sql: `ALTER TABLE ${event.OldResourceProperties.Data.TableName} ALTER COLUMN col1 ENCODE RAW, ALTER COLUMN col2 ENCODE RAW`,
       }));
     });
   });
