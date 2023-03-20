@@ -14,6 +14,7 @@ export * from './port';
 export * from './security-group';
 export * from './subnet';
 export * from './peer';
+export * from './prefix-list';
 export * from './volume';
 export * from './vpc';
 export * from './vpc-lookup';

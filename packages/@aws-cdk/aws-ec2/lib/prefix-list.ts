@@ -14,49 +14,51 @@ export interface IPrefixList extends IResource {
   readonly prefixListId: string;
 }
 
+/**
+ * The IP address type.
+ */
 export enum AddressFamily {
   IP_V4 = 'IPv4',
   IP_V6 = 'IPv6',
 }
 
-// export interface Entry extends CfnPrefixList.EntryProperty {
-//   readonly Cidr: string,
-//   readonly Discription?: string,
-// }
-
-
 /**
- * Options to add a flow log to a VPC
+ * Options to add a prefixlist
  */
 export interface PrefixListOptions {
   /**
-   * The type of traffic to log. You can log traffic that the resource accepts or rejects, or all traffic.
+   * The maximum number of entries for the prefix list.
    *
-   * @default Automatically calculated
+   * @default Automatically-calculated
    */
   readonly maxEntries?: number;
 }
 
 /**
- * Properties of a VPC Flow Log
+ * Properties for creating a prefix list.
  */
 export interface PrefixListProps extends PrefixListOptions {
   /**
-   * The name of the FlowLog
-   *
-   * It is not recommended to use an explicit name.
+   * The address family of the prefix list.
    *
    * @default AddressFamily.IP_V4
    */
   readonly addressFamily?: AddressFamily;
 
   /**
-   * A name for the prefix list.
+   * The name of the prefix list.
+   *
+   * @default None
+   *
+   * @remarks
+   * It is not recommended to use an explicit name.
    */
   readonly prefixListName?: string;
 
   /**
-   * A name for the prefix list.
+   * The list of entries for the prefix list.
+   *
+   * @default []
    */
   readonly entries?: CfnPrefixList.EntryProperty[];
 }
@@ -79,23 +81,58 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
  */
 export class PrefixList extends PrefixListBase {
   /**
+   * Look up prefix list by id.
+   *
+   */
+  public static fromPrefixListId(scope: Construct, id: string, prefixListId: string): IPrefixList {
+    class Import extends Resource implements IPrefixList {
+      public readonly prefixListId = prefixListId;
+    }
+    return new Import(scope, id);
+  }
+  /**
    * The Id of the Prefix List
    *
    * @attribute
    */
   public readonly prefixListId: string;
+
   /**
    * The Name of the Prefix List
    *
    */
   public readonly name: string;
 
-  constructor(scope: Construct, id: string, props: PrefixListProps) {
+  /**
+   * The ARN of the Prefix List
+   *
+   */
+  public readonly arn: string;
+
+  /**
+   * The OwnerId of the Prefix List
+   *
+   */
+  public readonly ownerId: string;
+
+  /**
+   * The Version of the Prefix List
+   *
+   */
+  public readonly version: number;
+
+  /**
+   * The AddressFamily of the Prefix List
+   *
+   */
+  public readonly addressFamily: string;
+
+  constructor(scope: Construct, id: string, props?: PrefixListProps) {
     super(scope, id, {
-      physicalName: props.prefixListName,
+      physicalName: props?.prefixListName,
     });
 
-    if (props.prefixListName) {
+    if (props?.prefixListName) {
       if ( props.prefixListName.startsWith('com.amazonaws')) {
         throw new Error('The name cannot start with \'com.amazonaws.\'');
       };
@@ -104,9 +141,9 @@ export class PrefixList extends PrefixListBase {
       };
     };
 
-    this.name = props.prefixListName || id;
+    this.name = props?.prefixListName || id;
 
-    if (!props.maxEntries && !props.entries) {
+    if (!props?.maxEntries && !props?.entries) {
       throw new Error('Set maxEntries or enrties.');
     }
 
@@ -117,7 +154,12 @@ export class PrefixList extends PrefixListBase {
       entries: props.entries || [],
     });
 
-    this.prefixListId = prefixList.ref;
+    this.prefixListId = prefixList.attrPrefixListId;
+    this.arn = prefixList.attrArn;
+    this.ownerId = prefixList.attrOwnerId;
+    this.version = prefixList.attrVersion;
+    this.addressFamily = prefixList.addressFamily;
+
     this.node.defaultChild = prefixList;
   }
 }

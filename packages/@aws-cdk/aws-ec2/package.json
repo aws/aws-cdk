@@ -146,6 +146,8 @@
       "attribute-tag:@aws-cdk/aws-ec2.BastionHostLinux.instance",
       "attribute-tag:@aws-cdk/aws-ec2.Instance.instance",
       "from-signature:@aws-cdk/aws-ec2.SecurityGroup.fromSecurityGroupId",
+      "docs-public-apis:@aws-cdk/aws-ec2.AddressFamily.IP_V4",
+      "docs-public-apis:@aws-cdk/aws-ec2.AddressFamily.IP_V6",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_DEEP_LEARNING",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2017_EXPRESS",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2016_SP2_WEB",
