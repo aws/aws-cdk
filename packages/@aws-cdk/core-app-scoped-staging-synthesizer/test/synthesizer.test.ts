@@ -18,9 +18,8 @@ describe(AppScopedStagingSynthesizer, () => {
 
   beforeEach(() => {
     app = new App({
-      defaultStackSynthesizer: new AppScopedStagingSynthesizer({
-        appId: APP_ID,
-      }),
+      appId: APP_ID,
+      defaultStackSynthesizer: new AppScopedStagingSynthesizer(),
     });
     stack = new Stack(app, 'Stack', {
       env: {
@@ -157,7 +156,7 @@ describe(AppScopedStagingSynthesizer, () => {
 
   test('file asset depends on staging stack', () => {
     // WHEN
-    const location = stack.synthesizer.addFileAsset({
+    stack.synthesizer.addFileAsset({
       fileName: __filename,
       packaging: FileAssetPackaging.FILE,
       sourceHash: 'abcdef',

@@ -118,6 +118,13 @@ export interface AppProps {
    * @default - A `DefaultStackSynthesizer` with default settings
    */
   readonly defaultStackSynthesizer?: IReusableStackSynthesizer;
+
+  /**
+   * A unique identifier for the app.
+   *
+   * @default - no identifier
+   */
+  readonly appId?: string;
 }
 
 /**
@@ -153,6 +160,13 @@ export class App extends Stage {
   public readonly _treeMetadata: boolean;
 
   /**
+   * Id of the app
+   *
+   * @internal
+   */
+  public readonly _appId?: string;
+
+  /**
    * Initializes a CDK application.
    * @param props initialization properties
    */
@@ -172,6 +186,8 @@ export class App extends Stage {
     if (props.defaultStackSynthesizer) {
       this.node.setContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER, props.defaultStackSynthesizer);
     }
+
+    this._appId = props.appId;
 
     const analyticsReporting = props.analyticsReporting ?? props.runtimeInfo;
 

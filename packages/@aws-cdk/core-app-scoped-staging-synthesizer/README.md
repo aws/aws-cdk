@@ -93,6 +93,10 @@ new lambda.Function(stack, 'lambda', {
 app.synth();
 ```
 
+Every CDK App that uses the `AppScopedStagingSynthesizer` must include an `appId`. This should
+be an identifier unique to the app and is used to differentiate staging resources associated
+with the app.
+
 ## Custom Roles
 
 You can customize some or all of the roles you'd like to use in the synthesizer as well,

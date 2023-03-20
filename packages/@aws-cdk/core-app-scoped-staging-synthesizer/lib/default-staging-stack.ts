@@ -1,8 +1,8 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Arn, ArnFormat, Aws, BootstraplessSynthesizer, DockerImageAssetSource, FileAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
-import { Construct, IConstruct } from 'constructs';
+import { App, Arn, ArnFormat, Aws, BootstraplessSynthesizer, DockerImageAssetSource, FileAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { BootstrapRole } from './synthesizer';
 
 export interface FileAssetInfo {
@@ -17,7 +17,7 @@ export interface DockerAssetInfo {
 /**
  * Information on how a Staging Stack should look.
  */
-export interface IDefaultStagingStack extends IConstruct {
+export interface IStagingStack extends IConstruct {
   /**
    * App level unique identifier
    */
@@ -69,17 +69,12 @@ export interface DefaultStagingStackProps extends StackProps {
    * @default - a well-known name unique to this app/env.
    */
   readonly dockerAssetPublishingRole?: BootstrapRole;
-
-  /**
-   * Application identifier unique to the app.
-   */
-  readonly appId: string;
 }
 
 /**
  * A default Staging Stack
  */
-export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
+export class DefaultStagingStack extends Stack implements IStagingStack {
   /**
    * Default asset publishing role name for file (S3) assets.
    */
@@ -109,13 +104,17 @@ export class DefaultStagingStack extends Stack implements IDefaultStagingStack {
   private fileAssetPublishingRole?: BootstrapRole;
   private dockerAssetPublishingRole?: BootstrapRole;
 
-  constructor(scope: Construct, id: string, props: DefaultStagingStackProps) {
+  constructor(scope: App, id: string, props: DefaultStagingStackProps) {
     super(scope, id, {
       ...props,
       synthesizer: new BootstraplessSynthesizer(),
     });
 
-    this.appId = props.appId;
+    if (scope._appId === undefined) {
+      throw new Error('DefaultStagingStack can only be used on Apps with a user-specified appId, but no appId found.');
+    }
+
+    this.appId = scope._appId;
 
     this.stagingBucketName = props.stagingBucketName;
     this.fileAssetPublishingRole = props.fileAssetPublishingRole;

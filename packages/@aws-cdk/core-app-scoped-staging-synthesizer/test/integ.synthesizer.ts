@@ -3,12 +3,12 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
 import { AppScopedStagingSynthesizer } from '../lib';
 
-const app = new App();
+const app = new App({
+  appId: 'app1',
+});
 
 const stack = new Stack(app, 'app-scoped-staging-test', {
-  synthesizer: new AppScopedStagingSynthesizer({
-    appId: '1',
-  }),
+  synthesizer: new AppScopedStagingSynthesizer(),
   // env: {
   //   account: '489318732371',
   //   region: 'us-east-1',

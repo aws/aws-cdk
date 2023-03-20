@@ -12,11 +12,10 @@ import {
   ISynthesisSession,
   Stack,
   StackSynthesizer,
-  Stage,
   Token,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IDefaultStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
+import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
 
 export class BootstrapRole {
   // public abstract arn(stack: Stack) {
@@ -47,10 +46,18 @@ export class BootstrapRole {
   }
 }
 
+export interface BootstrapRoles {
+  readonly cloudFormationExecutionRole?: BootstrapRole;
+  readonly deploymentActionRole?: BootstrapRole;
+  readonly lookupRole?: BootstrapRole;
+  readonly fileAssetPublishingRole?: BootstrapRole;
+  readonly imageAssetPublishingRole?: BootstrapRole;
+}
+
 /**
  * New stack synthesizer properties
  */
-export interface StagingStackSynthesizerProps {
+export interface AppScopedStagingSynthesizerProps {
   /**
    * Bring a custom staging stack into the app.
    *
@@ -59,29 +66,27 @@ export interface StagingStackSynthesizerProps {
   readonly stagingStack?: IStagingStack;
 
   /**
-   * Custom lookup role arn
+   * Custom roles
    *
-   * @default - default role
+   * @default - no custom roles
    */
-  readonly lookupRole?: BootstrapRole;
-
-  readonly appId: string;
+  readonly bootstrapRoles?: BootstrapRoles;
 }
 
 /**
  * New Stack Synthesizer
  */
 export class AppScopedStagingSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer {
-  constructor(private readonly props: StagingStackSynthesizerProps) {
+  constructor(private readonly props: AppScopedStagingSynthesizerProps = {}) {
     super();
 
     for (const key in props) {
       if (props.hasOwnProperty(key)) {
-        validateNoToken(key as keyof StagingStackSynthesizerProps);
+        validateNoToken(key as keyof AppScopedStagingSynthesizerProps);
       }
     }
 
-    function validateNoToken<A extends keyof StagingStackSynthesizerProps>(key: A) {
+    function validateNoToken<A extends keyof AppScopedStagingSynthesizerProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
         throw new Error(`AppScopedStagingSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
@@ -139,33 +144,32 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   private stagingStack: IStagingStack;
   private assetManifest = new AssetManifestBuilder();
   private readonly lookupRoleArn: string;
-  private readonly appId: string;
 
-  constructor(private readonly stack: Stack, props: StagingStackSynthesizerProps) {
+  constructor(private readonly stack: Stack, props: AppScopedStagingSynthesizerProps) {
     super();
     super.bind(stack);
 
-    this.lookupRoleArn = props.lookupRole ? props.lookupRole.roleArn : BoundStagingStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN;
-    this.appId = props.appId;
+    this.lookupRoleArn = props.bootstrapRoles?.lookupRole ?
+      props.bootstrapRoles.lookupRole.roleArn : BoundStagingStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN;
 
     const app = App.of(stack);
-    if (!app) {
-      throw new Error(`stack ${stack.stackName} must be part of an App`);
+    if (!App.isApp(app)) {
+      throw new Error(`Stack ${stack.stackName} must be part of an App`);
     }
+
     this.stagingStack = props.stagingStack ?? this.getCreateStagingStack(app, {
       account: stack.account,
       region: stack.region,
     });
   }
 
-  private getCreateStagingStack(app: Stage, env: Environment): IStagingStack {
-    const stackName = `StagingStack${this.appId}`;
+  private getCreateStagingStack(app: App, env: Environment): IStagingStack {
+    const stackName = `StagingStack${app._appId}`;
     const stackId = 'StagingStack';
     // TODO: this needs to be an IStagingStack
     const stagingStack = app.node.tryFindChild(stackId) as DefaultStagingStack ?? new DefaultStagingStack(app, stackId, {
       env,
       stackName,
-      appId: this.appId,
     });
     this.stack.addDependency(stagingStack, 'reason');
 
