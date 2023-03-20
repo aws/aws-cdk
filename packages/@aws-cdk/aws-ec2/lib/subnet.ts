@@ -1,6 +1,6 @@
-import { Token } from '@aws-cdk/core';
 import { CidrBlock, NetworkUtils } from './network-util';
 import { ISubnet } from './vpc';
+
 /**
  * Contains logic which chooses a set of subnets from a larger list, in conjunction
  * with SubnetSelection, to determine where to place AWS resources such as VPC
@@ -144,7 +144,7 @@ class SubnetIdSubnetFilter extends SubnetFilter {
    * Executes the subnet filtering logic.
    */
   public selectSubnets(subnets: ISubnet[]): ISubnet[] {
-    return subnets.filter(subnet => this.subnetIds.includes(Token.asString(subnet.subnetId)));
+    return subnets.filter(subnet => this.subnetIds.includes(subnet.subnetId));
   }
 }
 
