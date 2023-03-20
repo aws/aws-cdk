@@ -155,7 +155,7 @@ describe(AppScopedStagingSynthesizer, () => {
     });
 
     // THEN - we have a fixed asset location
-    const repo = 'abcdefrepo';
+    const repo = 'abcdef';
     expect(evalCFN(location.repositoryName)).toEqual(repo);
     expect(evalCFN(location.imageUri)).toEqual(`000000000000.dkr.ecr.us-east-1.domain.aws/${repo}:abcdef`);
   });
@@ -200,7 +200,7 @@ describe(AppScopedStagingSynthesizer, () => {
     });
 
     // THEN - images share same ecr repo
-    const repo = 'abcdefrepo';
+    const repo = 'abcdef';
     expect(evalCFN(location1.repositoryName)).toEqual(repo);
     expect(evalCFN(location1.repositoryName)).toEqual(evalCFN(location2.repositoryName));
   });

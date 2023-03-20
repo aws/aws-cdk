@@ -4,7 +4,7 @@ import { App, Stack } from '@aws-cdk/core';
 import { AppScopedStagingSynthesizer } from '../lib';
 
 const app = new App({
-  appId: 'app1',
+  appId: 'app2',
 });
 
 const stack = new Stack(app, 'app-scoped-staging-test', {

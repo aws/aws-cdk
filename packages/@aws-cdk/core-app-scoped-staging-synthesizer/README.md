@@ -37,7 +37,13 @@ it gets uploaded to the `StagingBucket` using the `FilePublishingRole` when you 
 This library introduces an alternate model to bootstrapping, by splitting out essential CloudFormation iam roles
 and staging resources. There will still be a Bootstrap Stack, but this will only contain IAM roles necessary for
 CloudFormation deployment. Each CDK App will instead be in charge of it's own staging resources, including the
-S3 Bucket, ECR Repository, and associated IAM roles.
+S3 Bucket, ECR Repositories, and associated IAM roles. It works like this:
+
+The Staging Stack will contain, on a per-need basis, 
+
+- 1 S3 Bucket with KMS encryption for all file assets in the CDK App.
+- An ECR Repository _per_ image (and it's revisions).
+- IAM roles with access to the Bucket and Repositories.
 
 ```mermaid
 graph TD
@@ -77,9 +83,8 @@ import { App, Stack } from 'aws-cdk-lib';
 import { AppScopedStagingSynthesizer } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
 
 const app = new App({
-  defaultSynthesizer: new AppScopedStagingSynthesizer({
-    appId: 'my-app-id',
-  }),
+  appId: 'my-app-id',
+  defaultSynthesizer: new AppScopedStagingSynthesizer(),
 });
 
 const stack = new Stack(app, 'my-stack');
@@ -107,8 +112,8 @@ import { App } from 'aws-cdk-lib';
 import { AppScopedStagingSynthesizer, BootstrapRole } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
 
 const app = new App({
+  appId: 'my-app-id',
   defaultSynthesizer: new AppScopedStagingSynthesizer({
-    appId: 'my-app-id',
     roles: {
       cloudFormationExecutionRole: BoostrapRole.fromRoleArn('arn'),
       deploymentActionRole: BootstrapRole.fromRoleArn('arn'),
@@ -127,8 +132,8 @@ import { App } from 'aws-cdk-lib';
 import { AppScopedStagingSynthesizer, BootstrapRole } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
 
 const app = new App({
+  appId: 'my-app-id',
   defaultSynthesizer: new AppScopedStagingSynthesizer({
-    appId: 'my-app-id',
     stagingStack: new DefaultStagingStack(this, 'StagingStack', {
       fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
       dockerAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
@@ -156,5 +161,49 @@ const app = new App({
   defaultSynthesizer = new AppScopedStagingSynthesizer({
     stagingStack: new CustomStagingStack(),
   }),
+});
+```
+
+## Repository Lifecycle Rules
+
+You can specify your own lifecycle rules on images. In the example below, we set lifecycle rules for both
+images by referencing their `imageId`. `imageId` is a required property on docker assets that use the
+`DefaultStagingStack`.
+
+```ts
+import { App, Stack, Duration } from 'aws-cdk-lib';
+import { AppScopedStagingSynthesizer, BootstrapRole } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
+import * as ecr_assets from 'aws-cdk-lib/aws-ecr-assets';
+import * as path from 'path';
+
+const IMAGE_ID = 'image-id';
+const IMAGE_ID_2 = 'image-id-2';
+const app = new App({
+  appId: 'my-app-id',
+  defaultSynthesizer: new AppScopedStagingSynthesizer({
+    stagingStack: new DefaultStagingStack(this, 'StagingStack', {
+      repositoryLifecycleRules: [{
+        assets: [IMAGE_ID],
+        lifecycleRules: [{
+          { maxImageCount: 3 },
+        }],
+      }, {
+        asset: [IMAGE_ID, IMAGE_ID_2],
+        lifecycleRules: [{
+          expiration: Duration.days(30),
+        }],
+      }],
+    }),
+  }),
+});
+
+const stack = new Stack(app, 'my-stack');
+const dockerAsset = new ecr_assets.DockerImageAsset(stack, 'Assets', {
+  imageId: IMAGE_ID,
+  directory: path.join(__dirname, './docker.assets'),
+});
+const dockerAsset2 = new ecr_assets.DockerImageAsset(stack, 'Assets2', {
+  imageId: IMAGE_ID_2,
+  directory: path.join(__dirname, './docker2.assets'),
 });
 ```

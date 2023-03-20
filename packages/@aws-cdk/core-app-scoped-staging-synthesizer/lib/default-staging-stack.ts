@@ -1,6 +1,7 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as kms from '@aws-cdk/aws-kms';
 import { App, Arn, ArnFormat, Aws, BootstraplessSynthesizer, DockerImageAssetSource, FileAssetSource, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 import { BootstrapRole } from './synthesizer';
@@ -71,6 +72,13 @@ export interface DefaultStagingStackProps extends StackProps {
    * @default - a well-known name unique to this app/env.
    */
   readonly dockerAssetPublishingRole?: BootstrapRole;
+
+  readonly repositoryLifecycleRules?: StagingRepoLifecycleRule[];
+}
+
+export interface StagingRepoLifecycleRule {
+  readonly lifecycleRules: ecr.LifecycleRule[];
+  readonly assets: string[];
 }
 
 /**
@@ -106,6 +114,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   private readonly stagingBucketName?: string;
   private fileAssetPublishingRole?: BootstrapRole;
   private dockerAssetPublishingRole?: BootstrapRole;
+  private readonly repositoryLifecycleRules: Record<string, ecr.LifecycleRule[]>;
 
   constructor(scope: App, id: string, props: DefaultStagingStackProps) {
     super(scope, id, {
@@ -123,7 +132,21 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     this.stagingBucketName = props.stagingBucketName;
     this.fileAssetPublishingRole = props.fileAssetPublishingRole;
     this.dockerAssetPublishingRole = props.dockerAssetPublishingRole;
+    this.repositoryLifecycleRules = this.processLifecycleRules(props.repositoryLifecycleRules ?? []);
     this.stagingRepos = {};
+  }
+
+  private processLifecycleRules(rules: StagingRepoLifecycleRule[]) {
+    const ruleMap: Record<string, ecr.LifecycleRule[]> = {};
+    for (const rule of rules) {
+      for (const asset of rule.assets) {
+        if (ruleMap[asset] === undefined) {
+          ruleMap[asset] = [];
+        }
+        ruleMap[asset].push(...rule.lifecycleRules);
+      }
+    }
+    return ruleMap;
   }
 
   /**
@@ -142,6 +165,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
         roleName: roleName,
         assumedBy: new iam.ServicePrincipal('sts.amazonaws.com'),
       });
+      const bucket = this.getCreateBucket();
       role.addToPolicy(new iam.PolicyStatement({
         actions: [
           's3:GetObject*',
@@ -153,8 +177,8 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
           's3:Abort*',
         ],
         resources: [
-          this.getCreateBucket().bucketArn,
-          `${this.getCreateBucket().bucketArn}/*`,
+          bucket.bucketArn,
+          `${bucket.bucketArn}/*`,
         ],
         effect: iam.Effect.ALLOW,
       }));
@@ -207,13 +231,83 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     });
   }
 
+  private createBucketKey(): kms.IKey {
+    const bucketKeyId = 'BucketKey';
+    const key = this.node.tryFindChild(bucketKeyId) as kms.IKey ?? new kms.Key(this, bucketKeyId, {
+      policy: new iam.PolicyDocument({
+        statements: [
+          new iam.PolicyStatement({
+            actions: [
+              'kms:Create*',
+              'kms:Describe*',
+              'kms:Enable*',
+              'kms:List*',
+              'kms:Put*',
+              'kms:Update*',
+              'kms:Revoke*',
+              'kms:Disable*',
+              'kms:Get*',
+              'kms:Delete*',
+              'kms:ScheduleKeyDeletion',
+              'kms:CancelKeyDeletion',
+              'kms:GenerateDataKey',
+              'kms:TagResource',
+              'kms:UntagResource',
+            ],
+            resources: ['*'],
+            principals: [
+              new iam.AccountPrincipal(this.account),
+            ],
+            effect: iam.Effect.ALLOW,
+          }),
+          new iam.PolicyStatement({
+            actions: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            resources: ['*'],
+            principals: [
+              new iam.AnyPrincipal(),
+            ],
+            conditions: {
+              StringEquals: {
+                'kms:CallerAccount': this.account,
+                'kms:ViaService': `s3.${this.partition}.amazonaws.com`,
+              },
+            },
+            effect: iam.Effect.ALLOW,
+          }),
+          // new iam.PolicyStatement({
+          //   actions: [
+          //     'kms:Decrypt',
+          //     'kms:DescribeKey',
+          //     'kms:Encrypt',
+          //     'kms:ReEncrypt*',
+          //     'kms:GenerateDataKey*',
+          //   ],
+          //   resources: ['*'],
+          //   principals: [
+          //     new iam.ArnPrincipal(this.getCreateFilePublishingRole()),
+          //   ],
+          //   effect: iam.Effect.ALLOW,
+          // }),
+        ],
+      }),
+    });
+    return key;
+  }
+
   private getCreateBucket() {
-    // Error: Resolution error: ID components may not include unresolved tokens:
     const stagingBucketName = this.stagingBucketName ?? `cdk-${this.account}-${this.region}-${this.appId.toLocaleLowerCase()}`;
     const bucketId = 'CdkStagingBucket';
     const bucket = this.node.tryFindChild(bucketId) as s3.Bucket ?? new s3.Bucket(this, bucketId, {
       bucketName: stagingBucketName,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
+      encryption: s3.BucketEncryption.KMS,
+      encryptionKey: this.createBucketKey(),
     });
     return {
       bucketName: stagingBucketName,
@@ -229,11 +323,11 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       throw new Error('Assets synthesized with AppScopedStagingSynthesizer must include a \'uniqueId\' in the asset source definition.');
     }
 
-    const repoName = `${asset.uniqueId}repo`.replace('.', '-'); // TODO: actually sanitize
+    const repoName = `${asset.uniqueId}`.replace('.', '-'); // TODO: actually sanitize
     if (this.stagingRepos[asset.uniqueId] === undefined) {
       this.stagingRepos[asset.uniqueId] = new ecr.Repository(this, repoName, {
         repositoryName: repoName,
-        // TODO: lifecycle rules
+        lifecycleRules: this.repositoryLifecycleRules[asset.uniqueId],
       });
     }
     return repoName;
