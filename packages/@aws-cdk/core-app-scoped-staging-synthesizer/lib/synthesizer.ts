@@ -51,7 +51,7 @@ export interface BootstrapRoles {
   readonly deploymentActionRole?: BootstrapRole;
   readonly lookupRole?: BootstrapRole;
   readonly fileAssetPublishingRole?: BootstrapRole;
-  readonly imageAssetPublishingRole?: BootstrapRole;
+  readonly dockerAssetPublishingRole?: BootstrapRole;
 }
 
 /**
@@ -74,7 +74,7 @@ export interface AppScopedStagingSynthesizerProps {
 }
 
 /**
- * New Stack Synthesizer
+ * App Scoped Staging Stack Synthesizer
  */
 export class AppScopedStagingSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer {
   constructor(private readonly props: AppScopedStagingSynthesizerProps = {}) {
@@ -136,21 +136,23 @@ export class AppScopedStagingSynthesizer extends StackSynthesizer implements IRe
 }
 
 class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundStackSynthesizer {
-  /**
-   * Default lookup role ARN for missing values.
-   */
-  public static readonly DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
-
   private stagingStack: IStagingStack;
   private assetManifest = new AssetManifestBuilder();
-  private readonly lookupRoleArn: string;
+  private readonly lookupRoleArn?: string;
+  private readonly cloudFormationExecutionRoleArn?: string;
+  private readonly deploymentActionRoleArn?: string;
+  private readonly fileAssetPublishingRole?: BootstrapRole;
+  private readonly dockerAssetPublishingRole?: BootstrapRole;
 
-  constructor(private readonly stack: Stack, props: AppScopedStagingSynthesizerProps) {
+  constructor(private readonly stack: Stack, props: AppScopedStagingSynthesizerProps = {}) {
     super();
     super.bind(stack);
 
-    this.lookupRoleArn = props.bootstrapRoles?.lookupRole ?
-      props.bootstrapRoles.lookupRole.roleArn : BoundStagingStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN;
+    this.lookupRoleArn = props.bootstrapRoles?.lookupRole?.roleArn;
+    this.cloudFormationExecutionRoleArn = props.bootstrapRoles?.cloudFormationExecutionRole?.roleArn;
+    this.deploymentActionRoleArn = props.bootstrapRoles?.deploymentActionRole?.roleArn;
+    this.fileAssetPublishingRole = props.bootstrapRoles?.fileAssetPublishingRole;
+    this.dockerAssetPublishingRole = props.bootstrapRoles?.dockerAssetPublishingRole;
 
     const app = App.of(stack);
     if (!App.isApp(app)) {
@@ -170,6 +172,8 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
     const stagingStack = app.node.tryFindChild(stackId) as DefaultStagingStack ?? new DefaultStagingStack(app, stackId, {
       env,
       stackName,
+      fileAssetPublishingRole: this.fileAssetPublishingRole,
+      dockerAssetPublishingRole: this.dockerAssetPublishingRole,
     });
     this.stack.addDependency(stagingStack, 'reason');
 
@@ -183,8 +187,13 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
     const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session);
 
     this.emitArtifact(session, {
+      assumeRoleArn: this.deploymentActionRoleArn,
       additionalDependencies: [assetManifestId],
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
+      cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
+      lookupRole: this.lookupRoleArn ? {
+        arn: this.lookupRoleArn,
+      }: undefined,
     });
   }
 

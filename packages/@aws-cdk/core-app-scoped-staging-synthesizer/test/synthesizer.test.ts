@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App, Stack, CfnResource, FileAssetPackaging, Aws } from '@aws-cdk/core';
+import { App, Stack, CfnResource, FileAssetPackaging, Aws, FileAssetSource, DockerImageAssetSource, Token } from '@aws-cdk/core';
 import { evaluateCFN } from '@aws-cdk/core/test/evaluate-cfn';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AppScopedStagingSynthesizer } from '../lib';
+import { AppScopedStagingSynthesizer, AppScopedStagingSynthesizerProps, BootstrapRole, DockerAssetInfo, FileAssetInfo, IStagingStack } from '../lib';
 
 const CFN_CONTEXT = {
   'AWS::Region': 'the_region',
@@ -11,6 +11,9 @@ const CFN_CONTEXT = {
   'AWS::URLSuffix': 'domain.aws',
 };
 const APP_ID = 'appId';
+const CLOUDFORMATION_EXECUTION_ROLE = 'role';
+const DEPLOY_ACTION_ROLE = 'role';
+const LOOKUP_ROLE = 'role';
 
 describe(AppScopedStagingSynthesizer, () => {
   let app: App;
@@ -19,7 +22,7 @@ describe(AppScopedStagingSynthesizer, () => {
   beforeEach(() => {
     app = new App({
       appId: APP_ID,
-      defaultStackSynthesizer: new AppScopedStagingSynthesizer(),
+      defaultStackSynthesizer: new TestAppScopedStagingSynthesizer(),
     });
     stack = new Stack(app, 'Stack', {
       env: {
@@ -60,6 +63,54 @@ describe(AppScopedStagingSynthesizer, () => {
           objectKey: templateObjectKey,
           region: 'us-east-1',
           assumeRoleArn: `arn:${Aws.PARTITION}:iam:us-east-1:000000000000:role:cdk-file-publishing-role-us-east-1-${APP_ID}`,
+        },
+      },
+    });
+  });
+
+  test('stack template is in the asset manifest - environment tokens', () => {
+    const app2 = new App({
+      appId: APP_ID,
+      defaultStackSynthesizer: new TestAppScopedStagingSynthesizer(),
+    });
+    const accountToken = Token.asString('111111111111');
+    const regionToken = Token.asString('us-east-2');
+    const stack2 = new Stack(app2, 'Stack2', {
+      env: {
+        account: accountToken,
+        region: regionToken,
+      },
+    });
+
+    // GIVEN
+    new CfnResource(stack2, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // WHEN
+    const asm = app2.synth();
+
+    // THEN -- the S3 url is advertised on the stack artifact
+    const stackArtifact = asm.getStackArtifact('Stack2');
+
+    const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${accountToken}-${regionToken}-${APP_ID.toLocaleLowerCase()}/${templateObjectKey}`);
+
+    // THEN - the template is in the asset manifest
+    const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
+    expect(manifestArtifact).toBeDefined();
+    const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+
+    const firstFile = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
+
+    expect(firstFile).toEqual({
+      source: { path: 'Stack2.template.json', packaging: 'file' },
+      destinations: {
+        '111111111111-us-east-2': {
+          bucketName: `cdk-111111111111-us-east-2-${APP_ID.toLocaleLowerCase()}`,
+          objectKey: templateObjectKey,
+          region: 'us-east-2',
+          assumeRoleArn: `arn:${Aws.PARTITION}:iam:us-east-2:111111111111:role:cdk-file-publishing-role-us-east-2-${APP_ID}`,
         },
       },
     });
@@ -154,16 +205,37 @@ describe(AppScopedStagingSynthesizer, () => {
     expect(evalCFN(location1.repositoryName)).toEqual(evalCFN(location2.repositoryName));
   });
 
-  test('file asset depends on staging stack', () => {
-    // WHEN
-    stack.synthesizer.addFileAsset({
-      fileName: __filename,
-      packaging: FileAssetPackaging.FILE,
-      sourceHash: 'abcdef',
+  test('throws when App uses DefaultStagingStack and does not have appId', () => {
+    const app2 = new App({
+      defaultStackSynthesizer: new TestAppScopedStagingSynthesizer(),
     });
+    expect(() => new Stack(app2, 'Stack')).toThrowError('DefaultStagingStack can only be used on Apps with a user-specified appId, but no appId found.');
+  });
 
-    // THEN - we have a fixed asset location
-    console.log(stack.dependencies);
+  test('does not throw when App does not have appId and does not use DefaultStagingStack', () => {
+    class TestStagingStack extends Stack implements IStagingStack {
+      readonly appId = 'appId';
+      readonly stagingRepos = {};
+      addFile(_asset: FileAssetSource): FileAssetInfo {
+        return {
+          assumeRoleArn: 'assumeRoleArn',
+          bucketName: 'bucketName',
+        };
+      }
+      addDockerImage(_asset: DockerImageAssetSource): DockerAssetInfo {
+        return {
+          assumeRoleArn: 'assumeRoleArn',
+          repoName: 'repoName',
+        };
+      }
+    }
+
+    const app2 = new App({
+      defaultStackSynthesizer: new TestAppScopedStagingSynthesizer({
+        stagingStack: new TestStagingStack(),
+      }),
+    });
+    expect(() => new Stack(app2, 'Stack')).not.toThrow();
   });
 
   /**
@@ -174,7 +246,51 @@ describe(AppScopedStagingSynthesizer, () => {
   function evalCFN(value: any) {
     return evaluateCFN(stack.resolve(value), CFN_CONTEXT);
   }
+});
 
+describe('Custom Roles on AppScopedStagingSynthesizer', () => {
+  test('Can supply different roles', () => {
+    const app = new App({
+      appId: APP_ID,
+      defaultStackSynthesizer: new AppScopedStagingSynthesizer({
+        bootstrapRoles: {
+          cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
+          lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
+          deploymentActionRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
+          fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
+          dockerAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
+        },
+      }),
+    });
+
+    const stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    const stackArtifact = asm.getStackArtifact('Stack');
+
+    // CloudFormation roles are as advertised
+    expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual(CLOUDFORMATION_EXECUTION_ROLE);
+    expect(stackArtifact.lookupRole).toEqual({ arn: LOOKUP_ROLE });
+    expect(stackArtifact.assumeRoleArn).toEqual(DEPLOY_ACTION_ROLE);
+
+    const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
+    expect(manifestArtifact).toBeDefined();
+    const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+    const firstFile: any = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
+
+    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn');
+  });
 });
 
 function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {
@@ -183,4 +299,17 @@ function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifa
 
 function last<A>(xs?: A[]): A | undefined {
   return xs ? xs[xs.length - 1] : undefined;
+}
+
+class TestAppScopedStagingSynthesizer extends AppScopedStagingSynthesizer {
+  public constructor(props: Partial<AppScopedStagingSynthesizerProps> = {}) {
+    super({
+      bootstrapRoles: {
+        cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
+        deploymentActionRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
+        lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
+      },
+      ...props,
+    });
+  }
 }
