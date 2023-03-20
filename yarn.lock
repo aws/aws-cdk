@@ -7130,10 +7130,10 @@ jsii-rosetta@^1.78.1:
     workerpool "^6.4.0"
     yargs "^16.2.0"
 
-jsii-rosetta@v5.0-next:
-  version "5.0.0-dev.2"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.0.0-dev.2.tgz#03abd86509c481fcf7963d6854a54ec4c1e95e4b"
-  integrity sha512-ZSlVBcfaGJPs3KtX7r98dBJTSIAFnJw3SHHRKJekIf6AtbgpQvHnx0lKBfA6vXX/T0htlTQjmCNau2ITdfIfyQ==
+jsii-rosetta@~5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.0.0.tgz#14801f97427db6cb4ad4b693924b3c9427069df1"
+  integrity sha512-DQ20nZCJO0idMnTlIxCxJs+3zt7JEhmbTtuzGkS0e9E62iT1cMB4qiyCZ97rFqzUcWxKjq31HiEEjp9ou28row==
   dependencies:
     "@jsii/check-node" "1.78.1"
     "@jsii/spec" "^1.78.1"
@@ -7190,6 +7190,25 @@ jsii@v5.0-next:
   version "5.0.0-dev.3"
   resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.0-dev.3.tgz#d87ddd873e472b657aaaf884b837833da0ec8056"
   integrity sha512-y3slZsIEaIPXeNlQcv/k0nPJXZR8qtyl1dVaLU24oQnKaxOZGZQhrmUSDNBzLNjC+6GSk855UXzZWnBNmv3tlg==
+  dependencies:
+    "@jsii/check-node" "1.78.1"
+    "@jsii/spec" "^1.78.1"
+    case "^1.6.3"
+    chalk "^4"
+    downlevel-dts "^0.11.0"
+    fast-deep-equal "^3.1.3"
+    log4js "^6.9.1"
+    semver "^7.3.8"
+    semver-intersect "^1.4.0"
+    sort-json "^2.0.1"
+    spdx-license-list "^6.6.0"
+    typescript "~5.0.2"
+    yargs "^17.7.1"
+
+jsii@~5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.0.tgz#8e4196c8bb902c30d650f57c035ee418200e8b65"
+  integrity sha512-/lMnzw2ySi8iFtlIuA5o8PoZXkXfeWBURR8TVj32aaeW2A9ueMbgQicqgd8A31yF1BZNLdTjunsenChAMCZK+Q==
   dependencies:
     "@jsii/check-node" "1.78.1"
     "@jsii/spec" "^1.78.1"
