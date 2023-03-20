@@ -1,3 +1,202 @@
+# CloudFormation Resource Specification v116.0.0
+
+## New Resource Types
+
+* AWS::Chatbot::MicrosoftTeamsChannelConfiguration
+* AWS::Comprehend::Flywheel
+* AWS::EC2::LocalGatewayRouteTable
+* AWS::EC2::LocalGatewayRouteTableVirtualInterfaceGroupAssociation
+* AWS::FMS::ResourceSet
+* AWS::IVSChat::LoggingConfiguration
+* AWS::IVSChat::Room
+* AWS::InternetMonitor::Monitor
+* AWS::ManagedBlockchain::Accessor
+* AWS::NetworkManager::TransitGatewayPeering
+* AWS::NetworkManager::TransitGatewayRouteTableAttachment
+* AWS::Organizations::ResourcePolicy
+* AWS::SageMaker::InferenceExperiment
+* AWS::SageMaker::Space
+* AWS::SystemsManagerSAP::Application
+* AWS::VpcLattice::AccessLogSubscription
+* AWS::VpcLattice::AuthPolicy
+* AWS::VpcLattice::Listener
+* AWS::VpcLattice::ResourcePolicy
+* AWS::VpcLattice::Rule
+* AWS::VpcLattice::Service
+* AWS::VpcLattice::ServiceNetwork
+* AWS::VpcLattice::ServiceNetworkServiceAssociation
+* AWS::VpcLattice::ServiceNetworkVpcAssociation
+* AWS::VpcLattice::TargetGroup
+
+## Attribute Changes
+
+* AWS::ApiGateway::VpcLink VpcLinkId (__added__)
+* AWS::AppIntegrations::EventIntegration Associations (__deleted__)
+* AWS::DocDBElastic::Cluster ClusterEndpoint (__added__)
+* AWS::EC2::VPCDHCPOptionsAssociation Id (__deleted__)
+* AWS::EC2::VPCEndpoint Id (__added__)
+* AWS::EC2::VPCEndpointService ServiceId (__added__)
+* AWS::EC2::VPNConnectionRoute Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection-route.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnectionroute.html
+* AWS::Events::Archive ArchiveName (__deleted__)
+* AWS::MediaPackage::Asset EgressEndpoints (__deleted__)
+* AWS::RDS::DBProxyEndpoint TargetRole (__deleted__)
+* AWS::RUM::AppMonitor Id (__added__)
+* AWS::Redshift::ClusterParameterGroup ParameterGroupName (__deleted__)
+* AWS::Redshift::EndpointAccess VpcEndpoint (__added__)
+* AWS::Redshift::EndpointAccess VpcEndpoint.NetworkInterfaces (__added__)
+* AWS::Redshift::EndpointAccess VpcSecurityGroups (__added__)
+* AWS::RedshiftServerless::Namespace Namespace (__added__)
+* AWS::RedshiftServerless::Workgroup Workgroup (__added__)
+* AWS::RedshiftServerless::Workgroup Workgroup.ConfigParameters (__added__)
+* AWS::RedshiftServerless::Workgroup Workgroup.Endpoint (__added__)
+* AWS::RedshiftServerless::Workgroup Workgroup.Endpoint.VpcEndpoints (__added__)
+* AWS::Route53RecoveryControl::Cluster ClusterEndpoints (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::VpcLink Tags.DuplicatesAllowed (__added__)
+* AWS::ApiGateway::VpcLink TargetArns.DuplicatesAllowed (__added__)
+* AWS::AppConfig::HostedConfigurationVersion VersionLabel (__added__)
+* AWS::Cassandra::Table ClientSideTimestampsEnabled (__added__)
+* AWS::CodeStarNotifications::NotificationRule Tags.PrimitiveType (__deleted__)
+* AWS::CodeStarNotifications::NotificationRule Tags.PrimitiveItemType (__added__)
+* AWS::CodeStarNotifications::NotificationRule Tags.Type (__added__)
+* AWS::Config::OrganizationConfigRule OrganizationCustomCodeRuleMetadata (__deleted__)
+* AWS::Config::OrganizationConfigRule OrganizationCustomPolicyRuleMetadata (__added__)
+* AWS::DataSync::Agent ActivationKey.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxONTAP Protocol.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxOpenZFS FsxFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationObjectStorage ServerCertificate (__added__)
+* AWS::DataSync::LocationS3 S3BucketArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DocDBElastic::Cluster PreferredMaintenanceWindow.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DynamoDB::Table DeletionProtectionEnabled (__added__)
+* AWS::EC2::NetworkInsightsAnalysis Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::NetworkInsightsPath Destination.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::VPCEndpointService GatewayLoadBalancerArns.DuplicatesAllowed (__added__)
+* AWS::EC2::VPCEndpointService NetworkLoadBalancerArns.DuplicatesAllowed (__added__)
+* AWS::EC2::VPNConnectionRoute DestinationCidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection-route.html#cfn-ec2-vpnconnectionroute-cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnectionroute.html#cfn-ec2-vpnconnectionroute-destinationcidrblock
+* AWS::EC2::VPNConnectionRoute VpnConnectionId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection-route.html#cfn-ec2-vpnconnectionroute-connectionid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnectionroute.html#cfn-ec2-vpnconnectionroute-vpnconnectionid
+* AWS::ElastiCache::ReplicationGroup TransitEncryptionMode (__added__)
+* AWS::ElastiCache::ReplicationGroup TransitEncryptionEnabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ElastiCache::User Tags (__added__)
+* AWS::ElastiCache::UserGroup Tags (__added__)
+* AWS::ElastiCache::UserGroup UserIds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElasticLoadBalancingV2::ListenerRule ListenerArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Events::Endpoint Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GreengrassV2::Deployment ParentTargetArn (__added__)
+* AWS::IoT::JobTemplate MaintenanceWindows (__added__)
+* AWS::Lambda::EventSourceMapping DocumentDBEventSourceConfig (__added__)
+* AWS::MediaPackage::Asset EgressEndpoints (__added__)
+* AWS::Oam::Link LabelTemplate.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::OpenSearchServerless::VpcEndpoint SubnetIds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Organizations::Policy Content.PrimitiveType (__changed__)
+  * Old: String
+  * New: Json
+* AWS::RDS::DBProxyEndpoint TargetRole (__added__)
+* AWS::RDS::DBProxyTargetGroup DBProxyName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Redshift::ClusterParameterGroup ParameterGroupName (__added__)
+* AWS::Redshift::EndpointAccess VpcEndpoint (__deleted__)
+* AWS::Redshift::EndpointAccess VpcSecurityGroups (__deleted__)
+* AWS::RedshiftServerless::Namespace Namespace (__deleted__)
+* AWS::RedshiftServerless::Workgroup Workgroup (__deleted__)
+* AWS::RedshiftServerless::Workgroup Port (__added__)
+* AWS::Route53RecoveryControl::Cluster ClusterEndpoints (__deleted__)
+* AWS::Route53RecoveryControl::Cluster Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Route53Resolver::ResolverRule DomainName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::SSMContacts::Contact Plan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ServiceCatalog::CloudFormationProduct SourceConnection (__added__)
+* AWS::ServiceCatalog::CloudFormationProduct ProvisioningArtifactParameters.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::AppIntegrations::EventIntegration.EventIntegrationAssociation (__removed__)
+* AWS::AppIntegrations::EventIntegration.Metadata (__removed__)
+* AWS::Config::OrganizationConfigRule.OrganizationCustomCodeRuleMetadata (__removed__)
+* AWS::Athena::WorkGroup.AclConfiguration (__added__)
+* AWS::Athena::WorkGroup.CustomerContentEncryptionConfiguration (__added__)
+* AWS::Config::OrganizationConfigRule.OrganizationCustomPolicyRuleMetadata (__added__)
+* AWS::DynamoDB::GlobalTable.KinesisStreamSpecification (__added__)
+* AWS::IoT::JobTemplate.MaintenanceWindow (__added__)
+* AWS::Lambda::EventSourceMapping.DocumentDBEventSourceConfig (__added__)
+* AWS::ServiceCatalog::CloudFormationProduct.CodeStarParameters (__added__)
+* AWS::ServiceCatalog::CloudFormationProduct.ConnectionParameters (__added__)
+* AWS::ServiceCatalog::CloudFormationProduct.SourceConnection (__added__)
+* AWS::WAFv2::WebACL.AWSManagedRulesATPRuleSet (__added__)
+* AWS::WAFv2::WebACL.RequestInspection (__added__)
+* AWS::WAFv2::WebACL.ResponseInspection (__added__)
+* AWS::WAFv2::WebACL.ResponseInspectionBodyContains (__added__)
+* AWS::WAFv2::WebACL.ResponseInspectionHeader (__added__)
+* AWS::WAFv2::WebACL.ResponseInspectionJson (__added__)
+* AWS::WAFv2::WebACL.ResponseInspectionStatusCode (__added__)
+* AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileProperties usePrivateLinkForMetadataAndAuthorization (__added__)
+* AWS::AppFlow::Flow.TriggerConfig ActivateFlowOnCreate (__added__)
+* AWS::Athena::WorkGroup.ResultConfiguration AclConfiguration (__added__)
+* AWS::Athena::WorkGroup.ResultConfiguration ExpectedBucketOwner (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration AdditionalConfiguration (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration CustomerContentEncryptionConfiguration (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration ExecutionRole (__added__)
+* AWS::DynamoDB::GlobalTable.ReplicaSpecification DeletionProtectionEnabled (__added__)
+* AWS::DynamoDB::GlobalTable.ReplicaSpecification KinesisStreamSpecification (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.AdditionalDetail LoadBalancers (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.AdditionalDetail ServiceName (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.PathComponent ServiceName (__added__)
+* AWS::Lex::Bot.CustomVocabularyItem DisplayAs (__added__)
+* AWS::MediaPackage::OriginEndpoint.EncryptionContractConfiguration PresetSpeke20Audio (__deleted__)
+* AWS::MediaPackage::OriginEndpoint.EncryptionContractConfiguration PresetSpeke20Video (__deleted__)
+* AWS::MediaPackage::PackagingConfiguration.EncryptionContractConfiguration PresetSpeke20Audio (__deleted__)
+* AWS::MediaPackage::PackagingConfiguration.EncryptionContractConfiguration PresetSpeke20Video (__deleted__)
+* AWS::RUM::AppMonitor.MetricDefinition Namespace (__added__)
+* AWS::Route53Resolver::ResolverRule.TargetAddress Ipv6 (__added__)
+* AWS::Route53Resolver::ResolverRule.TargetAddress Ip.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::S3::MultiRegionAccessPoint.Region BucketAccountId (__added__)
+* AWS::SecretsManager::RotationSchedule.HostedRotationLambda Runtime (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupConfig AWSManagedRulesATPRuleSet (__added__)
+
+
 # CloudFormation Resource Specification v109.0.0
 
 ## New Resource Types
