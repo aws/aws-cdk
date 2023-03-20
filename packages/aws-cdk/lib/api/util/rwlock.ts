@@ -14,13 +14,12 @@ import * as path from 'path';
 export class RWLock {
   private readonly pidString: string;
   private readonly writerFile: string;
-  private readonly readerFile: string;
+  private readCounter = 0;
 
   constructor(public readonly directory: string) {
     this.pidString = `${process.pid}`;
 
     this.writerFile = path.join(this.directory, 'synth.lock');
-    this.readerFile = path.join(this.directory, `read.${this.pidString}.lock`);
   }
 
   /**
@@ -63,13 +62,25 @@ export class RWLock {
   }
 
   /**
+   * Obtains the name fo a (new) `readerFile` to use. This includes a counter so
+   * that if multiple threads of the same PID attempt to concurrently acquire
+   * the same lock, they're guaranteed to use a different reader file name (only
+   * one thread will ever execute JS code at once, guaranteeing the readCounter
+   * is incremented "atomically" from the point of view of this PID.).
+   */
+  private readerFile(): string {
+    return path.join(this.directory, `read.${this.pidString}.${++this.readCounter}.lock`);
+  }
+
+  /**
    * Do the actual acquiring of a read lock.
    */
   private async doAcquireRead(): Promise<ILock> {
-    await writeFileAtomic(this.readerFile, this.pidString);
+    const readerFile = this.readerFile();
+    await writeFileAtomic(readerFile, this.pidString);
     return {
       release: async () => {
-        await deleteFile(this.readerFile);
+        await deleteFile(readerFile);
       },
     };
   }
@@ -102,7 +113,7 @@ export class RWLock {
    * Check the current readers (if any)
    */
   private async currentReaders(): Promise<number[]> {
-    const re = /^read\.([^.]+)\.lock$/;
+    const re = /^read\.([^.]+)\.[^.]+\.lock$/;
     const ret = new Array<number>();
 
     let children;
@@ -156,9 +167,10 @@ async function readFileIfExists(filename: string): Promise<string | undefined> {
   }
 }
 
+let tmpCounter = 0;
 async function writeFileAtomic(filename: string, contents: string): Promise<void> {
   await fs.mkdir(path.dirname(filename), { recursive: true });
-  const tmpFile = `${filename}.${process.pid}`;
+  const tmpFile = `${filename}.${++tmpCounter}`;
   await fs.writeFile(tmpFile, contents, { encoding: 'utf-8' });
   await fs.rename(tmpFile, filename);
 }
