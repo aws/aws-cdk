@@ -119,7 +119,7 @@ export class ResourceImporter {
    * Based on the provided resource mapping, prepare CFN structures for import (template,
    * ResourcesToImport structure) and perform the import operation (CloudFormation deployment)
    *
-   * @param resourceMap Mapping from CDK construct tree path to physical resource import identifiers
+   * @param importMap Mapping from CDK construct tree path to physical resource import identifiers
    * @param options Options to pass to CloudFormation deploy operation
    */
   public async importResources(importMap: ImportMap, options: DeployStackOptions) {
