@@ -170,7 +170,7 @@ async function readFileIfExists(filename: string): Promise<string | undefined> {
 let tmpCounter = 0;
 async function writeFileAtomic(filename: string, contents: string): Promise<void> {
   await fs.mkdir(path.dirname(filename), { recursive: true });
-  const tmpFile = `${filename}.${++tmpCounter}`;
+  const tmpFile = `${filename}.${process.pid}_${++tmpCounter}`;
   await fs.writeFile(tmpFile, contents, { encoding: 'utf-8' });
   await fs.rename(tmpFile, filename);
 }
