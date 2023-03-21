@@ -84,6 +84,14 @@ export class ReplicaProvider extends NestedStack {
       }),
     );
 
+    // Required for replica table deletion
+    this.onEventHandler.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['dynamodb:DeleteTable', 'dynamodb:DeleteTableReplica'],
+        resources: ['*'],
+      }),
+    );
+
     this.provider = new cr.Provider(this, 'Provider', {
       onEventHandler: this.onEventHandler,
       isCompleteHandler: this.isCompleteHandler,

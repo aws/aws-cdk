@@ -57,7 +57,11 @@
        }
       },
       {
-       "Action": "dynamodb:DescribeLimits",
+       "Action": [
+        "dynamodb:DeleteTable",
+        "dynamodb:DeleteTableReplica",
+        "dynamodb:DescribeLimits"
+       ],
        "Effect": "Allow",
        "Resource": "*"
       }
@@ -257,7 +261,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+     "S3Key": "e1c44c46b1daa364ad4e38dbc77e6fe7714ea5fbf40251a924e8c34281aa2eda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -394,7 +398,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+     "S3Key": "e1c44c46b1daa364ad4e38dbc77e6fe7714ea5fbf40251a924e8c34281aa2eda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -528,7 +532,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+     "S3Key": "e1c44c46b1daa364ad4e38dbc77e6fe7714ea5fbf40251a924e8c34281aa2eda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
