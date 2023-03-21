@@ -8,6 +8,7 @@ const ecr = new ECR();
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   switch (event.RequestType) {
     case 'Create':
+      break;
     case 'Update':
       return onUpdate(event);
     case 'Delete':
@@ -19,7 +20,8 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
   const oldRepositoryName = updateEvent.OldResourceProperties?.RepositoryName;
   const newRepositoryName = updateEvent.ResourceProperties?.RepositoryName;
-  const repositoryNameHasChanged = newRepositoryName != null && oldRepositoryName != null && newRepositoryName !== oldRepositoryName;
+  const repositoryNameHasChanged = (newRepositoryName && oldRepositoryName)
+    && (newRepositoryName !== oldRepositoryName);
 
   /* If the name of the repository has changed, CloudFormation will try to delete the repository
      and create a new one with the new name. So we have to delete the images in the

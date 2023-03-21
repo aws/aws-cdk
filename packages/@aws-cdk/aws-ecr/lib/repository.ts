@@ -781,17 +781,11 @@ export class Repository extends RepositoryBase {
           Effect: 'Allow',
           Action: [
             'ecr:BatchDeleteImage',
-            'ecr:ListImages',
-          ],
-          Resource: ['*'], // TODO?
-        },
-        {
-          Effect: 'Allow',
-          Action: [
             'ecr:DescribeRepositories',
+            'ecr:ListImages',
             'ecr:ListTagsForResource',
           ],
-          Resource: ['*'],
+          Resource: [this._resource.attrArn],
         },
       ],
     });

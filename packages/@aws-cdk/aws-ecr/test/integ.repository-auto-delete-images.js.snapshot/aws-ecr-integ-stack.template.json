@@ -63,20 +63,17 @@
          "Effect": "Allow",
          "Action": [
           "ecr:BatchDeleteImage",
-          "ecr:ListImages"
-         ],
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Action": [
           "ecr:DescribeRepositories",
+          "ecr:ListImages",
           "ecr:ListTagsForResource"
          ],
          "Resource": [
-          "*"
+          {
+           "Fn::GetAtt": [
+            "Repo02AC86CF",
+            "Arn"
+           ]
+          }
          ]
         }
        ]
@@ -92,7 +89,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9631303d93bca290c0dc23afdd33080f3c5f2fa03ebf3dd73a028853023cf12e.zip"
+     "S3Key": "6150227d515909a73f0bcde4b9e19b4b206cc65634027053380d700f6e53f08e.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
