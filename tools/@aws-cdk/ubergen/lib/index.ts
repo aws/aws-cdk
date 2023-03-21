@@ -80,7 +80,7 @@ export interface PackageJson {
   readonly stability: string;
   readonly [key: string]: unknown;
   readonly 'cdk-build'?: {
-    readonly cloudformation: string[] | string;
+    readonly cloudformation?: string[] | string;
   };
   readonly ubergen?: {
     readonly deprecatedPackages?: readonly string[];

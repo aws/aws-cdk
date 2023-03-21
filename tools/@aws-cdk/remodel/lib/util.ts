@@ -1,6 +1,25 @@
 /* eslint-disable no-console */
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import { PackageJson as UbgPkgJson } from '@aws-cdk/ubergen';
+
+export interface PackageJson extends UbgPkgJson {
+  readonly scripts: { [key: string]: string };
+  readonly pkglint: {
+    readonly exclude: string[],
+  };
+  readonly repository: {
+    readonly directory?: string,
+  };
+  readonly peerDependencies?: {
+    [key: string]: string;
+  };
+  readonly 'cdk-build'?: {
+    pre?: string[];
+    post?: string[];
+    cloudformation?: string | string[];
+  }
+}
 
 // Recursively find .ts files from starting directory
 export async function discoverSourceFiles(dir: string): Promise<string[]> {
@@ -469,3 +488,36 @@ async function replaceLinesInFile(filePath:string, replacements: [string, string
   const newContent = lines.join('\n');
   await fs.writeFile(filePath, newContent);
 }
+
+export function getPackageJson(filePath: string): Promise<PackageJson> {
+  return fs.readJson(filePath);
+}
+
+export function writePackageJson(filePath: string, content: PackageJson) {
+  return fs.writeJson(
+    filePath,
+    content,
+    { spaces: 2 },
+  );
+}
+
+type PackageJsonFormatter = (input: PackageJson) => Promise<PackageJson> | PackageJson;
+export async function formatPackageJson(filePath: string, formatter: PackageJsonFormatter) {
+  const original = await getPackageJson(filePath);
+  const formatted = await formatter(original);
+  await writePackageJson(filePath, formatted);
+}
+
+export const additionalCleanupDirs = [
+  'tools/@aws-cdk/remodel',
+  'tools/@aws-cdk/ubergen',
+  'tools/@aws-cdk/individual-pkg-gen',
+  'packages/cdk-dasm',
+];
+
+// Packages that are bundled in aws-cdk-lib but also published separately
+export const doublePackages = [
+  'cloud-assembly-schema',
+  'cx-api',
+  'region-info',
+];
