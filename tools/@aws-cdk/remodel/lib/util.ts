@@ -84,12 +84,34 @@ export async function rewriteSourceFiles(dir: string, formatter: sourceFileForma
   const files = await discoverSourceFiles(dir);
 
   await Promise.all(files.map(async (filePath) => {
-    const content = await fs.readFile(filePath, 'utf8');
-    const output = await formatter(content);
-    if (output.trim() !== content.trim()) {
-      await fs.writeFile(filePath, output);
-    }
+    await rewriteSourceFile(filePath, formatter);
   }));
+}
+
+export async function rewriteSourceFile(filePath: string, formatter: sourceFileFormatter) {
+  const content = await fs.readFile(filePath, 'utf8');
+  const output = await formatter(content);
+  if (output.trim() !== content.trim()) {
+    await fs.writeFile(filePath, output);
+  }
+}
+
+export async function replaceInFiles(dir: string, oldStr: string, newStr: string) {
+  const files = await discoverSourceFiles(dir);
+  await Promise.all(files.map(async (filePath) => {
+    await replaceInFile(filePath, oldStr, newStr);
+  }));
+}
+
+export async function replaceInFile(filePath: string, oldStr: string, newStr: string) {
+  await rewriteSourceFile(filePath, (content: string) => {
+    const lines = content.split('\n')
+      .map((line: string) => {
+        return line.replace(oldStr, newStr);
+      });
+
+    return lines.join('\n');
+  });
 }
 
 export async function discoverIntegPaths(dir: string): Promise<IntegPath[]> {

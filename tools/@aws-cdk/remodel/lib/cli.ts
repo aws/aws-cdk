@@ -26,6 +26,7 @@ import {
   rewriteDependencies,
   rewriteDepVersions,
   rewriteSourceFiles,
+  replaceInFiles,
 } from './util';
 
 
@@ -113,7 +114,7 @@ export async function main() {
   await runPartialBuild(targetDir);
 
   await cleanup(targetDir, bundlingResult);
-  await postRun(targetDir);
+  // await postRun(targetDir);
 
   if (clean) {
     await fs.remove(path.resolve(targetDir));
@@ -368,8 +369,10 @@ async function runPartialBuild(dir: string) {
   await e('./scripts/transform.sh --skip-tests --skip-build');
 }
 
-async function postRun(dir: string) {
+export async function postRun(dir: string) {
   const e = makeExecDir(dir);
+  // remove node_modules because some of the symlinks are bad now
+  await fs.remove(path.join(dir, 'node_modules'));
   await e('yarn install');
   await e('yarn build --skip-tests --skip-prereqs --skip-compat');
 
@@ -555,6 +558,33 @@ async function reformatPackage(dir: string, nameMap: PackageNameMap) {
     });
   });
 
+  let lintFix = false;
+  // Do some special case import changes for specific packages.
+  // These work in the current repo because the generated files are
+  // duplicated within the alpha packages.
+  if (packageJson.name === '@aws-cdk/aws-kinesisfirehose-alpha') {
+    await replaceInFiles(
+      dir,
+      './kinesisfirehose-canned-metrics.generated',
+      'aws-cdk-lib/aws-kinesisfirehose/lib/kinesisfirehose-canned-metrics.generated',
+    );
+    lintFix = true;
+  } else if (packageJson.name === '@aws-cdk/aws-amplify-alpha') {
+    await replaceInFiles(
+      dir,
+      '@aws-cdk/custom-resources/lib/provider-framework/types',
+      'aws-cdk-lib/custom-resources/lib/provider-framework/types',
+    );
+    lintFix = true;
+  } else if (packageJson.name === '@aws-cdk/aws-synthetics-alpha') {
+    await replaceInFiles(
+      dir,
+      './synthetics-canned-metrics.generated',
+      'aws-cdk-lib/aws-synthetics/lib/synthetics-canned-metrics.generated',
+    );
+    lintFix = true;
+  }
+
   // Rewrite the imports in all source files
   if (rewriteImportPackages.includes(packageJson.name)) {
     const files = await discoverSourceFiles(dir);
@@ -567,8 +597,12 @@ async function reformatPackage(dir: string, nameMap: PackageNameMap) {
         await fs.writeFile(filePath, output);
       }
     }));
+    lintFix = true;
+  }
 
+  if (lintFix) {
     // run eslint fix as rewriting imports can change import order
+    console.log('Running `eslint --fix` on package ${dir}');
     await exec('npx eslint --fix', { cwd: dir });
   }
 }

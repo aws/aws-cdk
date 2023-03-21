@@ -113,6 +113,9 @@ function transformPackages(): void {
             // Imports of the unstable packages are rewritten from an ordered source
             // It's not required and therefore reasonable to ensure order after the imports are rewritten
             resultFileLines.push("baseConfig.rules['import/order'] = 'off';");
+            // Disable this rule for alpha packages because it was built expecting the alpha packages to still declare dependencies
+            // on @aws-cdk/* named modules instead of aws-cdk-lib
+            resultFileLines.push("baseConfig.rules['@aws-cdk/invalid-cfn-imports'] = 'off';");
 
             // Add some extra whitespace at the end
             resultFileLines.push('');
