@@ -301,7 +301,8 @@ import * as iam from '@aws-cdk/aws-iam';
 declare const application: appreg.Application;
 declare const myRole: iam.IRole;
 declare const myUser: iam.IUser;
-application.shareApplication({
+application.shareApplication('MyShareId', {
+  name:'MyShare',
   accounts: ['123456789012'],
   organizationArns: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
   roles: [myRole],
@@ -314,7 +315,8 @@ E.g., sharing an application with multiple accounts and allowing the accounts to
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 declare const application: appreg.Application;
-application.shareApplication({
+application.shareApplication('MyShareId', {
+  name: 'MyShare',
   accounts: ['123456789012', '234567890123'],
   sharePermission: appreg.SharePermission.ALLOW_ACCESS,
 });
@@ -327,7 +329,8 @@ import * as iam from '@aws-cdk/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
 declare const myRole: iam.IRole;
 declare const myUser: iam.IUser;
-attributeGroup.shareAttributeGroup({
+attributeGroup.shareAttributeGroup('MyShareId', {
+  name: 'MyShare',
   accounts: ['123456789012'],
   organizationArns: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
   roles: [myRole],
@@ -340,7 +343,8 @@ E.g., sharing an application with multiple accounts and allowing the accounts to
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
-attributeGroup.shareAttributeGroup({
+attributeGroup.shareAttributeGroup('MyShareId', {
+  name: 'MyShare'
   accounts: ['123456789012', '234567890123'],
   sharePermission: appreg.SharePermission.ALLOW_ACCESS,
 });
