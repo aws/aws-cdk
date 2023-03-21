@@ -1,7 +1,7 @@
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { SqsSendMessage } from '../../lib/sqs/send-message';
+import { SqsMessageAttributeDataType, SqsSendMessage } from '../../lib/sqs/send-message';
 
 describe('SqsSendMessage', () => {
   let stack: cdk.Stack;
@@ -236,4 +236,64 @@ describe('SqsSendMessage', () => {
     }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,WAIT_FOR_TASK_TOKEN. Received: RUN_JOB/);
   });
 
+  test('send message with message attributes', () => {
+    // GIVEN
+    const encodedData = new Buffer('some data to be base64 encoded').toString('base64');
+
+    // WHEN
+    const task = new SqsSendMessage(stack, 'Send', {
+      queue,
+      messageBody: sfn.TaskInput.fromText('sample body'),
+      messageAttributes: {
+        'Attribute 1': {
+          dataType: SqsMessageAttributeDataType.STRING,
+          value: 'sample attribute value',
+        },
+        'Attribute 2': {
+          dataType: SqsMessageAttributeDataType.NUMBER,
+          value: 512,
+        },
+        'Attribute 3': {
+          dataType: SqsMessageAttributeDataType.BINARY,
+          value: encodedData,
+        },
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::sqs:sendMessage',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        QueueUrl: { Ref: 'Queue4A7E3555' },
+        MessageBody: 'sample body',
+        MessageAttributes: {
+          'Attribute 1': {
+            DataType: 'String',
+            StringValue: 'sample attribute value',
+          },
+          'Attribute 2': {
+            DataType: 'Number',
+            StringValue: '512',
+          },
+          'Attribute 3': {
+            DataType: 'Binary',
+            BinaryValue: encodedData,
+          },
+        },
+      },
+    });
+  });
 });

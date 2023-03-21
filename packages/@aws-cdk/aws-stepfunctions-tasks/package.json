@@ -61,6 +61,7 @@
   },
   "awslint": {
     "exclude": [
+      "no-unused-type:@aws-cdk/aws-stepfunctions-tasks.MessageAttributeType",
       "props-no-arn-refs:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps.jobDefinitionArn",
       "props-no-arn-refs:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps.jobQueueArn"
     ]
