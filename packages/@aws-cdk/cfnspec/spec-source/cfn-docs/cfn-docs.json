@@ -1932,7 +1932,7 @@
       "properties": {
         "ApplicationId": "The application ID.",
         "Description": "A description of the configuration profile.",
-        "LocationUri": "A URI to locate the configuration. You can specify the following:\n\n- For the AWS AppConfig hosted configuration store and for feature flags, specify `hosted` .\n- For an AWS Systems Manager Parameter Store parameter, specify either the parameter name in the format `ssm-parameter://<parameter name>` or the ARN.\n- For an AWS Secrets Manager secret, specify the URI in the following format: `secrets-manager` ://<secret name>.\n- For an Amazon S3 object, specify the URI in the following format: `s3://<bucket>/<objectKey>` . Here is an example: `s3://my-bucket/my-app/us-east-1/my-config.json`\n- For an SSM document, specify either the document name in the format `ssm-document://<document name>` or the Amazon Resource Name (ARN).",
+        "LocationUri": "A URI to locate the configuration. You can specify the following:\n\n- For the AWS AppConfig hosted configuration store and for feature flags, specify `hosted` .\n- For an AWS Systems Manager Parameter Store parameter, specify either the parameter name in the format `ssm-parameter://<parameter name>` or the ARN.\n- For an AWS Secrets Manager secret, specify the URI in the following format: `secretsmanager` ://<secret name>.\n- For an Amazon S3 object, specify the URI in the following format: `s3://<bucket>/<objectKey>` . Here is an example: `s3://my-bucket/my-app/us-east-1/my-config.json`\n- For an SSM document, specify either the document name in the format `ssm-document://<document name>` or the Amazon Resource Name (ARN).",
         "Name": "A name for the configuration profile.",
         "RetrievalRoleArn": "The ARN of an IAM role with permission to access the configuration at the specified `LocationUri` .\n\n> A retrieval role ARN is not required for configurations stored in the AWS AppConfig hosted configuration store. It is required for all other sources that store your configuration.",
         "Tags": "Metadata to assign to the configuration profile. Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
@@ -5221,7 +5221,7 @@
       "description": "Contains customized metric specification information for a target tracking scaling policy for Application Auto Scaling.\n\nFor information about the available metrics for a service, see [AWS services that publish CloudWatch metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html) in the *Amazon CloudWatch User Guide* .\n\nTo create your customized metric specification:\n\n- Add values for each required parameter from CloudWatch. You can use an existing metric, or a new metric that you create. To use your own metric, you must first publish the metric to CloudWatch. For more information, see [Publish custom metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/publishingMetrics.html) in the *Amazon CloudWatch User Guide* .\n- Choose a metric that changes proportionally with capacity. The value of the metric should increase or decrease in inverse proportion to the number of capacity units. That is, the value of the metric should decrease when capacity increases, and increase when capacity decreases.\n\nFor an example of how creating new metrics can be useful, see [Scaling based on Amazon SQS](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html) in the *Amazon EC2 Auto Scaling User Guide* . This topic mentions Auto Scaling groups, but the same scenario for Amazon SQS can apply to the target tracking scaling policies that you create for a Spot Fleet by using Application Auto Scaling.\n\nFor more information about the CloudWatch terminology below, see [Amazon CloudWatch concepts](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html) .\n\n`CustomizedMetricSpecification` is a property of the [AWS::ApplicationAutoScaling::ScalingPolicy TargetTrackingScalingPolicyConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html) property type.",
       "properties": {
         "Dimensions": "The dimensions of the metric.\n\nConditional: If you published your metric with dimensions, you must specify the same dimensions in your scaling policy.",
-        "MetricName": "The name of the metric. To get the exact metric name, namespace, and dimensions, inspect the [Metric](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_Metric.html) object that is returned by a call to [ListMetrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_ListMetrics.html) .",
+        "MetricName": "The name of the metric. To get the exact metric name, namespace, and dimensions, inspect the [Metric](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_Metric.html) object that's returned by a call to [ListMetrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_ListMetrics.html) .",
         "Namespace": "The namespace of the metric.",
         "Statistic": "The statistic of the metric.",
         "Unit": "The unit of the metric. For a complete list of the units that CloudWatch supports, see the [MetricDatum](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html) data type in the *Amazon CloudWatch API Reference* ."
@@ -16971,7 +16971,7 @@
     },
     "AWS::ECR::ReplicationConfiguration.RepositoryFilter": {
       "attributes": {},
-      "description": "The filter settings used with image replication. Specifying a repository filter to a replication rule provides a method for controlling which repositories in a private registry are replicated. If no repository filter is specified, all images in the repository are replicated.",
+      "description": "The filter settings used with image replication. Specifying a repository filter to a replication rule provides a method for controlling which repositories in a private registry are replicated. If no filters are added, the contents of all repositories are replicated.",
       "properties": {
         "Filter": "The repository filter details. When the `PREFIX_MATCH` filter type is specified, this value is required and should be the repository name prefix to configure replication for.",
         "FilterType": "The repository filter type. The only supported value is `PREFIX_MATCH` , which is a repository name prefix specified with the `filter` parameter."
@@ -42592,14 +42592,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -42607,18 +42607,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -42627,7 +42627,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -42637,15 +42637,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -43194,9 +43194,9 @@
         "PreferredInstanceType": "",
         "Ref": "`Ref` returns the `ResolverEndpoint` object.",
         "ResolverEndpointId": "The ID of the resolver endpoint.",
-        "ResolverEndpointType": ""
+        "ResolverEndpointType": "For the endpoint type you can choose either IPv4, IPv6. or dual-stack. A dual-stack endpoint means that it will resolve via both IPv4 and IPv6. If you choose either IPv4 or IPv6, this endpoint type is applied to all IP addresses."
       },
-      "description": "Creates a Resolver endpoint. There are two types of Resolver endpoints, inbound and outbound:\n\n- An *inbound Resolver endpoint* forwards DNS queries to the DNS service for a VPC from your network.\n- An *outbound Resolver endpoint* forwards DNS queries from the DNS service for a VPC to your network.",
+      "description": "Creates a Resolver endpoint. There are two types of Resolver endpoints, inbound and outbound:\n\n- An *inbound Resolver endpoint* forwards DNS queries to the DNS service for a VPC from your network.\n- An *outbound Resolver endpoint* forwards DNS queries from the DNS service for a VPC to your network.\n\n> - You cannot update `ResolverEndpointType` and `IpAddresses` in the same request.\n> - When you update a dual-stack IP address, you must update both IP addresses. You can\u2019t update only an IPv4 or IPv6 and keep an existing IP address.",
       "properties": {
         "Direction": "Indicates whether the Resolver endpoint allows inbound or outbound DNS queries:\n\n- `INBOUND` : allows DNS queries to your VPC from your network\n- `OUTBOUND` : allows DNS queries from your VPC to your network",
         "IpAddresses": "The subnets and IP addresses in your VPC that DNS queries originate from (for outbound endpoints) or that you forward DNS queries to (for inbound endpoints). The subnet ID uniquely identifies a VPC.",
@@ -43266,7 +43266,7 @@
         "Name": "The name for the Resolver rule, which you specified when you created the Resolver rule.",
         "ResolverEndpointId": "The ID of the endpoint that the rule is associated with.",
         "RuleType": "When you want to forward DNS queries for specified domain name to resolvers on your network, specify `FORWARD` .\n\nWhen you have a forwarding rule to forward DNS queries for a domain to your network and you want Resolver to process queries for a subdomain of that domain, specify `SYSTEM` .\n\nFor example, to forward DNS queries for example.com to resolvers on your network, you create a rule and specify `FORWARD` for `RuleType` . To then have Resolver process queries for apex.example.com, you create a rule and specify `SYSTEM` for `RuleType` .\n\nCurrently, only Resolver can create rules that have a value of `RECURSIVE` for `RuleType` .",
-        "Tags": "Route 53 Resolver doesn't support updating tags through CloudFormation.",
+        "Tags": "Tags help organize and categorize your Resolver rules. Each tag consists of a key and an optional value, both of which you define.",
         "TargetIps": "An array that contains the IP addresses and ports that an outbound endpoint forwards DNS queries to. Typically, these are the IP addresses of DNS resolvers on your network."
       }
     },
@@ -43578,7 +43578,7 @@
     },
     "AWS::S3::Bucket.NotificationFilter": {
       "attributes": {},
-      "description": "Specifies object key name filtering rules. For information about key name filtering, see [Configuring Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html) in the *Amazon S3 User Guide* .",
+      "description": "Specifies object key name filtering rules. For information about key name filtering, see [Configuring event notifications using object key name filtering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html) in the *Amazon S3 User Guide* .",
       "properties": {
         "S3Key": "A container for object key name prefix and suffix filtering rules."
       }
@@ -47919,7 +47919,7 @@
         "Arn": "The Amazon Resource Name (ARN) for the Amazon EventBridge Scheduler schedule.",
         "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the `Name` attribute of theschedule."
       },
-      "description": "Creates the specified schedule.",
+      "description": "A *schedule* is the main resource you create, configure, and manage using Amazon EventBridge Scheduler.\n\nEvery schedule has a *schedule expression* that determines when, and with what frequency, the schedule runs. EventBridge Scheduler supports three types of schedules: rate, cron, and one-time schedules. For more information about different schedule types, see [Schedule types](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html) in the *EventBridge Scheduler User Guide* .\n\nWhen you create a schedule, you configure a target for the schedule to invoke. A target is an API operation that EventBridge Scheduler calls on your behalf every time your schedule runs. EventBridge Scheduler supports two types of targets: *templated* targets invoke common API operations across a core groups of services, and customizeable *universal* targets that you can use to call more than 6,000 operations across over 270 services. For more information about configuring targets, see [Managing targets](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets.html) in the *EventBridge Scheduler User Guide* .\n\nFor more information about managing schedules, changing the schedule state, setting up flexible time windows, and configuring a dead-letter queue for a schedule, see [Managing a schedule](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule.html) in the *EventBridge Scheduler User Guide* .",
       "properties": {
         "Description": "The description you specify for the schedule.",
         "EndDate": "The date, in UTC, before which the schedule can invoke its target. Depending on the schedule's recurrence expression, invocations might stop on, or before, the `EndDate` you specify.\nEventBridge Scheduler ignores `EndDate` for one-time schedules.",
@@ -47930,7 +47930,7 @@
         "ScheduleExpression": "The expression that defines when the schedule runs. The following formats are supported.\n\n- `at` expression - `at(yyyy-mm-ddThh:mm:ss)`\n- `rate` expression - `rate(unit value)`\n- `cron` expression - `cron(fields)`\n\nYou can use `at` expressions to create one-time schedules that invoke a target once, at the time and in the time zone, that you specify. You can use `rate` and `cron` expressions to create recurring schedules. Rate-based schedules are useful when you want to invoke a target at regular intervals, such as every 15 minutes or every five days. Cron-based schedules are useful when you want to invoke a target periodically at a specific time, such as at 8:00 am (UTC+0) every 1st day of the month.\n\nA `cron` expression consists of six fields separated by white spaces: `(minutes hours day_of_month month day_of_week year)` .\n\nA `rate` expression consists of a *value* as a positive integer, and a *unit* with the following options: `minute` | `minutes` | `hour` | `hours` | `day` | `days`\n\nFor more information and examples, see [Schedule types on EventBridge Scheduler](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html) in the *EventBridge Scheduler User Guide* .",
         "ScheduleExpressionTimezone": "The timezone in which the scheduling expression is evaluated.",
         "StartDate": "The date, in UTC, after which the schedule can begin invoking its target. Depending on the schedule's recurrence expression, invocations might occur on, or after, the `StartDate` you specify.\nEventBridge Scheduler ignores `StartDate` for one-time schedules.",
-        "State": "Specifies whether the schedule is enabled or disabled.",
+        "State": "Specifies whether the schedule is enabled or disabled.\n\n*Allowed Values* : `ENABLED` | `DISABLED`",
         "Target": "The schedule's target details."
       }
     },
@@ -48077,9 +48077,9 @@
         "CreationDate": "The date and time at which the schedule group was created.",
         "LastModificationDate": "The time at which the schedule group was last modified.",
         "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the `Name` attribute of the schedule group.",
-        "State": "Specifies the state of the schedule group.\n\nValid values are `ACTIVE` and `DELETING` ."
+        "State": "Specifies the state of the schedule group.\n\n*Allowed Values* : `ACTIVE` | `DELETING`"
       },
-      "description": "Creates the specified schedule group.",
+      "description": "A *schedule group* is an Amazon EventBridge Scheduler resource you use to organize your schedules.\n\nYour AWS account comes with a `default` scheduler group. You associate a new schedule with the `default` group or with schedule groups that you create and manage. You can create up to [500 schedule groups](https://docs.aws.amazon.com/scheduler/latest/UserGuide/scheduler-quotas.html) in your AWS account. With EventBridge Scheduler, you apply [tags](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) to schedule groups, not to individual schedules to organize your resources.\n\nFor more information about managing schedule groups, see [Managing a schedule group](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-group.html) in the *EventBridge Scheduler User Guide* .",
       "properties": {
         "Name": "The name of the schedule group.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
