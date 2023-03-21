@@ -15,6 +15,14 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
     * @deprecated - Use `stackName` instead to control the name and id of the stack
     */
   readonly stackId?: string;
+
+  /**
+    * Determines whether any cross-account stacks defined in the CDK app definition should be associated with the
+    * target application. If set to `true`, the application will first be shared with the accounts that own the stacks.
+    *
+    * @default - false
+    */
+  readonly associateCrossAccountStacks?: boolean;
 }
 
 
@@ -33,6 +41,13 @@ export interface CreateTargetApplicationOptions extends TargetApplicationCommonO
     * @default - Application containing stacks deployed via CDK.
     */
   readonly applicationDescription?: string;
+
+  /**
+   * Whether create cloudFormation Output for application manager URL.
+   *
+   * @default - Application containing stacks deployed via CDK.
+   */
+  readonly emitApplicationManagerUrlAsOutput?: boolean;
 }
 
 /**
@@ -80,6 +95,10 @@ export interface BindTargetApplicationResult {
    * Created or imported application.
    */
   readonly application: IApplication;
+  /**
+   * Enables cross-account associations with the target application.
+   */
+  readonly associateCrossAccountStacks: boolean;
 }
 
 /**
@@ -99,6 +118,8 @@ class CreateTargetApplication extends TargetApplication {
             this.applicationOptions.description || 'Stack to create AppRegistry application';
     (this.applicationOptions.env as cdk.Environment) =
             this.applicationOptions.env || { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+    (this.applicationOptions.emitApplicationManagerUrlAsOutput as boolean) = this.applicationOptions.emitApplicationManagerUrlAsOutput ?? true;
+
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = new Application(applicationStack, 'DefaultCdkApplication', {
       applicationName: this.applicationOptions.applicationName,
@@ -106,8 +127,16 @@ class CreateTargetApplication extends TargetApplication {
     });
     cdk.Tags.of(appRegApplication).add('managedBy', 'CDK_Application_Associator');
 
+    if (this.applicationOptions.emitApplicationManagerUrlAsOutput) {
+      new cdk.CfnOutput(appRegApplication, 'ApplicationManagerUrl', {
+        value: `https://${appRegApplication.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${appRegApplication.applicationName}`,
+        description: 'System Manager Application Manager URL for the application created.',
+      });
+    }
+
     return {
       application: appRegApplication,
+      associateCrossAccountStacks: this.applicationOptions.associateCrossAccountStacks ?? false,
     };
   }
 }
@@ -128,6 +157,7 @@ class ExistingTargetApplication extends TargetApplication {
     const appRegApplication = Application.fromApplicationArn(applicationStack, 'ExistingApplication', this.applicationOptions.applicationArnValue);
     return {
       application: appRegApplication,
+      associateCrossAccountStacks: this.applicationOptions.associateCrossAccountStacks ?? false,
     };
   }
 }

@@ -15,8 +15,6 @@ export function stringNoLongerThan(max: number): Matcher {
   return new StringLengthMatcher(max);
 }
 
-// Reimplementation of
-// https://github.com/aws/aws-cdk/blob/430f50a546e9c575f8cdbd259367e440d985e68f/packages/%40aws-cdk/assert-internal/lib/assertions/have-resource-matchers.ts#L244
 class StringLike extends Matcher {
   public name = 'StringLike';
 
