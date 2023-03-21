@@ -18,7 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudWatch::Dashboard",
                   "aws:cdk:cloudformation:props": {
-                    "dashboardBody": "{\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"I don't have a background\",\"background\":\"transparent\"}}]}"
+                    "dashboardBody": "{\"start\":\"-P7D\",\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"I don't have a background\",\"background\":\"transparent\"}}]}"
                   }
                 },
                 "constructInfo": {
@@ -75,7 +75,7 @@
                 "path": "DashboardIntegrationTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.252"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -121,7 +121,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.252"
+          "version": "10.1.270"
         }
       }
     },

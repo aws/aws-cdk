@@ -3,7 +3,7 @@
   "DashCCD7F836": {
    "Type": "AWS::CloudWatch::Dashboard",
    "Properties": {
-    "DashboardBody": "{\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"I don't have a background\",\"background\":\"transparent\"}}]}"
+    "DashboardBody": "{\"start\":\"-P7D\",\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"I don't have a background\",\"background\":\"transparent\"}}]}"
    }
   }
  },

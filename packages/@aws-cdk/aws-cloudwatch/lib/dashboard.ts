@@ -1,4 +1,4 @@
-import { Lazy, Resource, Stack, Token, Annotations } from '@aws-cdk/core';
+import { Lazy, Resource, Stack, Token, Annotations, Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
@@ -30,6 +30,14 @@ export interface DashboardProps {
    * @default - automatically generated name
    */
   readonly dashboardName?: string;
+
+  /**
+   * Interval duration for metrics.
+   * You can specify defaultInterval with the relative time(eg. cdk.Duration.days(7)).
+   *
+   * @default When the dashboard loads, the defaultInterval time will be the default time range.
+   */
+  readonly defaultInterval?: Duration
 
   /**
    * The start of the time range to use for each widget on the dashboard.
@@ -107,6 +115,10 @@ export class Dashboard extends Resource {
       }
     }
 
+    if (props.start !== undefined && props.defaultInterval !== undefined) {
+      throw ('both properties defaultInterval and start cannot be set at once');
+    }
+
     const dashboard = new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,
       dashboardBody: Lazy.string({
@@ -114,8 +126,8 @@ export class Dashboard extends Resource {
           const column = new Column(...this.rows);
           column.position(0, 0);
           return Stack.of(this).toJsonString({
-            start: props.start,
-            end: props.end,
+            start: props.defaultInterval !== undefined ? `-${props.defaultInterval?.toIsoString()}` : props.start,
+            end: props.defaultInterval !== undefined ? undefined : props.end,
             periodOverride: props.periodOverride,
             widgets: column.toJson(),
           });

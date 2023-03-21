@@ -1,5 +1,5 @@
 import { Template, Annotations, Match } from '@aws-cdk/assertions';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack } from '@aws-cdk/core';
 import { Dashboard, GraphWidget, PeriodOverride, TextWidget, MathExpression, TextWidgetBackground } from '../lib';
 
 describe('Dashboard', () => {
@@ -128,6 +128,31 @@ describe('Dashboard', () => {
       },
     });
 
+
+  });
+
+  test('defaultInterval test', () => {
+    // GIVEN
+    const stack = new Stack();
+    // WHEN
+    const dashboard = new Dashboard(stack, 'Dash', {
+      defaultInterval: Duration.days(7),
+    });
+    dashboard.addWidgets(
+      new GraphWidget({ width: 1, height: 1 }), // GraphWidget has internal reference to current region
+    );
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
+      DashboardBody: {
+        'Fn::Join': ['', [
+          '{"start":"-P7D",\
+"widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
+          { Ref: 'AWS::Region' },
+          '","yAxis":{}}}]}',
+        ]],
+      },
+    });
 
   });
 
