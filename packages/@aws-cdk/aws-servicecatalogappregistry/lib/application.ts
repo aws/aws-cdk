@@ -17,7 +17,7 @@ const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission
  */
 export interface AttributeGroupAssociationProps {
   /**
-   * name for attribute group.
+   * Name for attribute group.
    *
    */
   readonly attributeGroupName: string;
