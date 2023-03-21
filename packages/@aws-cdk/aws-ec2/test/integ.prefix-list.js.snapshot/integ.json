@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "prefix-list/DefaultTest": {
+      "stacks": [
+        "PrefixListTestStack"
+      ],
+      "assertionStack": "prefix-list/DefaultTest/DeployAssert",
+      "assertionStackName": "prefixlistDefaultTestDeployAssert07983ED5"
+    }
+  }
+}
