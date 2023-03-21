@@ -18,8 +18,9 @@ const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission
 export interface AttributeGroupAssociationProps {
   /**
    * Enforces a particular physical attribute group name.
+   * @default The value of `id` will be used as attribute group name
    */
-  readonly attributeGroupName: string;
+  readonly attributeGroupName?: string;
 
   /**
    * Description for attribute group.
@@ -66,9 +67,10 @@ export interface IApplication extends cdk.IResource {
   /**
    * Create an attribute group and associate this application with the created attribute group.
    *
+   * @param id construct id of the attribute group construct created
    * @param attributeGroupProps AppRegistry attribute group props
    */
-  addAttributeGroup(attributeGroupProps: AttributeGroupAssociationProps): IAttributeGroup;
+  addAttributeGroup(id: string, attributeGroupProps: AttributeGroupAssociationProps): IAttributeGroup;
 
   /**
    * Associate this application with a CloudFormation stack.
@@ -146,9 +148,10 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Create an attribute group and associate this application with the created attribute group.
    */
-  public addAttributeGroup(props: AttributeGroupAssociationProps): IAttributeGroup {
-    const attributeGroup = new AttributeGroup(this, `AttributeGroup${this.generateUniqueHash(props.attributeGroupName)}`, {
-      attributeGroupName: props.attributeGroupName,
+  public addAttributeGroup(id: string, props: AttributeGroupAssociationProps): IAttributeGroup {
+    const attributeGroupName = props.attributeGroupName ?? id;
+    const attributeGroup = new AttributeGroup(this, id, {
+      attributeGroupName: attributeGroupName,
       attributes: props.attributes,
       description: props.description,
     });

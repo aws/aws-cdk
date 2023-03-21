@@ -75,13 +75,13 @@
                   "version": "0.0.0"
                 }
               },
-              "AttributeGroupedd07c89e5d0": {
-                "id": "AttributeGroupedd07c89e5d0",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupedd07c89e5d0",
+              "myAnotherAttributeGroup": {
+                "id": "myAnotherAttributeGroup",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/myAnotherAttributeGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupedd07c89e5d0/Resource",
+                    "path": "integ-servicecatalogappregistry-application/TestApplication/myAnotherAttributeGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
                       "aws:cdk:cloudformation:props": {
@@ -116,9 +116,9 @@
                   "version": "0.0.0"
                 }
               },
-              "AttributeGroupAssociation816a9a189931": {
-                "id": "AttributeGroupAssociation816a9a189931",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociation816a9a189931",
+              "AttributeGroupAssociationb6f47e836a8c": {
+                "id": "AttributeGroupAssociationb6f47e836a8c",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociationb6f47e836a8c",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
                   "aws:cdk:cloudformation:props": {
@@ -130,7 +130,7 @@
                     },
                     "attributeGroup": {
                       "Fn::GetAtt": [
-                        "TestApplicationAttributeGroupedd07c89e5d0ED9B6EF4",
+                        "TestApplicationmyAnotherAttributeGroup375F79DB",
                         "Id"
                       ]
                     }

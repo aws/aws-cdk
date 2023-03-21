@@ -39,7 +39,7 @@
     }
    }
   },
-  "TestApplicationAttributeGroupedd07c89e5d0ED9B6EF4": {
+  "TestApplicationmyAnotherAttributeGroup375F79DB": {
    "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
    "Properties": {
     "Attributes": {
@@ -62,7 +62,7 @@
     "Description": "my another attribute group description"
    }
   },
-  "TestApplicationAttributeGroupAssociation816a9a189931B4C2763F": {
+  "TestApplicationAttributeGroupAssociationb6f47e836a8c4FCAC29E": {
    "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
    "Properties": {
     "Application": {
@@ -73,7 +73,7 @@
     },
     "AttributeGroup": {
      "Fn::GetAtt": [
-      "TestApplicationAttributeGroupedd07c89e5d0ED9B6EF4",
+      "TestApplicationmyAnotherAttributeGroup375F79DB",
       "Id"
      ]
     }

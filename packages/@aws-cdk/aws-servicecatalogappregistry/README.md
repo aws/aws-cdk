@@ -138,7 +138,7 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 
 // Associate application to the attribute group.
-associatedApp.appRegistryApplication.addAttributeGroup({
+associatedApp.appRegistryApplication.addAttributeGroup('MyAttributeGroup' , {
   attributeGroupName: 'MyAttributeGroupName',
   description: 'Test attribute group',
   attributes: {},

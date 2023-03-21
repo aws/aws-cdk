@@ -161,7 +161,31 @@ describe('Application', () => {
     }),
 
     test('associate new attribute group', () => {
-      application.addAttributeGroup({
+      application.addAttributeGroup('AttributeGroup', {
+        attributes: {},
+        description: 'Description for Attribute Group',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
+        Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
+        AttributeGroup: { 'Fn::GetAtt': ['MyApplicationAttributeGroup0BD166B6', 'Id'] },
+      });
+
+      Template.fromStack(stack).templateMatches({
+        Resources: {
+          MyApplicationAttributeGroup0BD166B6: {
+            Type: 'AWS::ServiceCatalogAppRegistry::AttributeGroup',
+            Properties: {
+              Name: 'AttributeGroup',
+              Attributes: {},
+            },
+          },
+        },
+      });
+    }),
+
+    test('associate new attribute group with name', () => {
+      application.addAttributeGroup('AttributeGroup', {
         attributeGroupName: 'AttributeGroupName',
         attributes: {},
         description: 'Description for Attribute Group',
@@ -169,12 +193,12 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
         Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
-        AttributeGroup: { 'Fn::GetAtt': ['MyApplicationAttributeGroupf12e549e6ff02E7751C7', 'Id'] },
+        AttributeGroup: { 'Fn::GetAtt': ['MyApplicationAttributeGroup0BD166B6', 'Id'] },
       });
 
       Template.fromStack(stack).templateMatches({
         Resources: {
-          MyApplicationAttributeGroupf12e549e6ff02E7751C7: {
+          MyApplicationAttributeGroup0BD166B6: {
             Type: 'AWS::ServiceCatalogAppRegistry::AttributeGroup',
             Properties: {
               Name: 'AttributeGroupName',

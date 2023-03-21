@@ -33,7 +33,7 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
 
 application.associateStack(stack);
 application.associateAttributeGroup(attributeGroup);
-application.addAttributeGroup({
+application.addAttributeGroup('myAnotherAttributeGroup', {
   attributeGroupName: 'myAnotherAttributeGroup',
   attributes: {
     stage: 'alpha',
