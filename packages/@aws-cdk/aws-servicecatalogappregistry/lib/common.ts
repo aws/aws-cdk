@@ -21,6 +21,12 @@ export enum SharePermission {
  */
 export interface ShareOptions {
   /**
+   * Name of the share.
+   *
+   * @default - The value of `id` will be used
+   */
+  readonly name: string;
+  /**
    * A list of AWS accounts that the application will be shared with.
    *
    * @default - No accounts specified for share

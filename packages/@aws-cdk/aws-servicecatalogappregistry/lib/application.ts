@@ -1,6 +1,5 @@
 import { CfnResourceShare } from '@aws-cdk/aws-ram';
 import * as cdk from '@aws-cdk/core';
-import { Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { StageStackAssociator } from './aspects/stack-associator';
 import { IAttributeGroup } from './attribute-group';
@@ -59,9 +58,10 @@ export interface IApplication extends cdk.IResource {
   /**
    * Share this application with other IAM entities, accounts, or OUs.
    *
+   * @param id The construct name for the share.
    * @param shareOptions The options for the share.
    */
-  shareApplication(shareOptions: ShareOptions): void;
+  shareApplication(id: string, shareOptions: ShareOptions): void;
 
   /**
    * Associate this application with all stacks under the construct node.
@@ -157,13 +157,13 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
    * Share an application with accounts, organizations and OUs, and IAM roles and users.
    * The application will become available to end users within those principals.
    *
+   * @param id The construct name for the share.
    * @param shareOptions The options for the share.
    */
-  public shareApplication(shareOptions: ShareOptions): void {
+  public shareApplication(id: string, shareOptions: ShareOptions): void {
     const principals = getPrincipalsforSharing(shareOptions);
-    const shareName = `RAMShare${hashValues(Names.nodeUniqueId(this.node), this.node.children.length.toString())}`;
-    new CfnResourceShare(this, shareName, {
-      name: shareName,
+    new CfnResourceShare(this, id, {
+      name: shareOptions.name,
       allowExternalPrincipals: false,
       principals: principals,
       resourceArns: [this.applicationArn],

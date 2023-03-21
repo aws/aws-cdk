@@ -39,10 +39,10 @@
     }
    }
   },
-  "TestApplicationRAMSharead8ba81b8cdd40199FD1": {
+  "TestApplicationMyShare4D4589BB": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
-    "Name": "RAMSharead8ba81b8cdd",
+    "Name": "MyShare",
     "AllowExternalPrincipals": false,
     "PermissionArns": [
      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"

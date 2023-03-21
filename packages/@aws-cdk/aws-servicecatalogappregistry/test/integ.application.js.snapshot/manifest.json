@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "31.0.0",
   "artifacts": {
     "integ-servicecatalogappregistry-application.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2332c6df6777cc571585060fa4888d6d3b9ef548aa00dcbfc53fbdde386d7591.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/033f8e8a3f184aa3222c86eab1e093dafe21f57a63e4ce8b27e3650f3416408b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,10 +51,10 @@
             "data": "TestApplicationAttributeGroupAssociation4ba7f5842818B8EE1C6F"
           }
         ],
-        "/integ-servicecatalogappregistry-application/TestApplication/RAMSharead8ba81b8cdd": [
+        "/integ-servicecatalogappregistry-application/TestApplication/MyShare": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestApplicationRAMSharead8ba81b8cdd40199FD1"
+            "data": "TestApplicationMyShare4D4589BB"
           }
         ],
         "/integ-servicecatalogappregistry-application/TestAttributeGroup/Resource": [
@@ -79,6 +79,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "TestApplicationRAMSharead8ba81b8cdd40199FD1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplicationRAMSharead8ba81b8cdd40199FD1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
