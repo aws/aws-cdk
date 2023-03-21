@@ -1,8 +1,8 @@
 import { Template } from '@aws-cdk/assertions';
-import { Vpc, MachineImage, InstanceClass, InstanceType, InstanceSize, LaunchTemplate/*, PlacementGroup*/ } from '@aws-cdk/aws-ec2';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as eks from '@aws-cdk/aws-eks';
-import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/core';
+import { ArnPrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Stack, Duration } from '@aws-cdk/core';
 import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
 import * as batch from '../lib';
 import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps } from '../lib';
@@ -34,7 +34,9 @@ describe('managed CEs', () => {
       instanceTypes: ['optimal'],
       launchTemplate: undefined,
       placementGroup: undefined,
-      securityGroupIds: undefined,
+      securityGroupIds: [{
+        'Fn::GetAtt': ['MyCESecurityGroup81DCAA06', 'GroupId'],
+      }] as any,
       spotIamFleetRole: undefined,
       updateToLatestImageVersion: true,
     },
@@ -51,7 +53,7 @@ describe('managed CEs', () => {
   };
 
   let stack: Stack;
-  let vpc: Vpc;
+  let vpc: ec2.Vpc;
 
   let pascalCaseExpectedEcsProps: any;
   let pascalCaseExpectedEksProps: any;
@@ -66,7 +68,7 @@ describe('managed CEs', () => {
   describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment])('%p type ComputeEnvironment', (ComputeEnvironment) => {
     beforeEach(() => {
       stack = new Stack();
-      vpc = new Vpc(stack, 'vpc');
+      vpc = new ec2.Vpc(stack, 'vpc');
 
       pascalCaseExpectedEcsProps = capitalizePropertyNames(stack, defaultExpectedEcsProps);
       pascalCaseExpectedEksProps = capitalizePropertyNames(stack, defaultExpectedEksProps);
@@ -168,24 +170,6 @@ describe('managed CEs', () => {
       });
     });
 
-    test('can use non-default allocation strategy', () => {
-      // WHEN
-      new ComputeEnvironment(stack, 'MyCE', {
-        ...defaultProps,
-        vpc,
-        allocationStrategy: AllocationStrategy.BEST_FIT,
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-        ...expectedProps,
-        ComputeResources: {
-          ...defaultComputeResources,
-          AllocationStrategy: 'BEST_FIT',
-        },
-      });
-    });
-
     test('spot => AllocationStrategy.SPOT_CAPACITY_OPTIMIZED and a default spot fleet role is created', () => {
       // WHEN
       new ComputeEnvironment(stack, 'MyCE', {
@@ -217,7 +201,7 @@ describe('managed CEs', () => {
         vpc,
         images: [
           {
-            image: MachineImage.latestAmazonLinux(),
+            image: ec2.MachineImage.latestAmazonLinux(),
           },
         ],
       });
@@ -242,7 +226,7 @@ describe('managed CEs', () => {
       new ComputeEnvironment(stack, 'MyCE', {
         ...defaultProps,
         vpc,
-        instanceClasses: [InstanceClass.R4],
+        instanceClasses: [ec2.InstanceClass.R4],
       });
 
       // THEN
@@ -263,11 +247,11 @@ describe('managed CEs', () => {
       const ce = new ComputeEnvironment(stack, 'MyCE', {
         ...defaultProps,
         vpc,
-        instanceTypes: [InstanceType.of(InstanceClass.R4, InstanceSize.LARGE)],
+        instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE)],
       });
 
-      ce.addInstanceClass(InstanceClass.M4);
-      ce.addInstanceType(InstanceType.of(InstanceClass.C4, InstanceSize.LARGE));
+      ce.addInstanceClass(ec2.InstanceClass.M4);
+      ce.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE));
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
@@ -290,7 +274,7 @@ describe('managed CEs', () => {
         ...defaultProps,
         vpc,
         useOptimalInstanceClasses: false,
-        instanceClasses: [InstanceClass.R4],
+        instanceClasses: [ec2.InstanceClass.R4],
       });
 
       // THEN
@@ -345,7 +329,7 @@ describe('managed CEs', () => {
       new ComputeEnvironment(stack, 'MyCE', {
         ...defaultProps,
         vpc,
-        launchTemplate: new LaunchTemplate(stack, 'launchTemplate'),
+        launchTemplate: new ec2.LaunchTemplate(stack, 'launchTemplate'),
       });
 
       // THEN
@@ -413,6 +397,154 @@ describe('managed CEs', () => {
         ...expectedProps,
         ComputeResources: {
           ...defaultComputeResources,
+        },
+        ReplaceComputeEnvironment: false,
+      });
+    });
+
+    test('respects security groups', () => {
+      // WHEN
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        securityGroups: [new ec2.SecurityGroup(stack, 'TestSG', {
+          vpc,
+          allowAllOutbound: false,
+        })],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+        ...expectedProps,
+        ComputeResources: {
+          ...defaultComputeResources,
+          SecurityGroupIds: [{
+            'Fn::GetAtt': ['TestSG581D3391', 'GroupId'],
+          }],
+        },
+      });
+    });
+
+    test('respects service role', () => {
+      // WHEN
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        serviceRole: new Role(stack, 'TestSLR', {
+          assumedBy: new ServicePrincipal('cdk.amazonaws.com'),
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+        ...expectedProps,
+        ServiceRole: {
+          'Fn::GetAtt': ['TestSLR05974C22', 'Arn'],
+        },
+        ComputeResources: {
+          ...defaultComputeResources,
+        },
+      });
+    });
+
+    test('respects vpcSubnets', () => {
+      // WHEN
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpcSubnets: {
+          subnets: [new ec2.Subnet(stack, 'testSubnet', {
+            availabilityZone: 'az-3',
+            cidrBlock: '10.0.0.0/32',
+            vpcId: new ec2.Vpc(stack, 'subnetVpc').vpcId,
+          })],
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+        ...expectedProps,
+        ComputeResources: {
+          ...defaultComputeResources,
+          Subnets: [
+            { Ref: 'testSubnet42F0FA0C' },
+          ],
+        },
+      });
+    });
+
+    test('respects updateTimeout', () => {
+      // WHEN
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        updateTimeout: Duration.minutes(1),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+        ...expectedProps,
+        ComputeResources: {
+          ...defaultComputeResources,
+        },
+        UpdatePolicy: {
+          JobExecutionTimeoutMinutes: 1,
+        },
+      });
+    });
+
+    test('respects terminateOnUpdate', () => {
+      // WHEN
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        terminateOnUpdate: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+        ...expectedProps,
+        ComputeResources: {
+          ...defaultComputeResources,
+        },
+        UpdatePolicy: {
+          TerminateJobsOnUpdate: false,
+        },
+      });
+    });
+
+    test('respects updateToLatestImageVersion', () => {
+      // WHEN
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        updateToLatestImageVersion: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+        ...expectedProps,
+        ComputeResources: {
+          ...defaultComputeResources,
+          UpdateToLatestImageVersion: false,
+        },
+      });
+    });
+
+    test('respects spotFleetRole', () => {
+      // WHEN
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        spot: true,
+        spotFleetRole: new Role(stack, 'SpotFleetRole', {
+          assumedBy: new ArnPrincipal('arn:aws:iam:123456789012:magicuser/foobar'),
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+        ...expectedProps,
+        ComputeResources: {
+          ...defaultComputeResources,
+          AllocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
+          Type: 'SPOT',
+          SpotIamFleetRole: {
+            'Fn::GetAtt': ['SpotFleetRole6D4F7558', 'Arn'],
+          },
         },
       });
     });
@@ -486,6 +618,18 @@ describe('managed CEs', () => {
       }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotBidPercentage' < 0/);
     });
 
+    test('throws when spotFleetRole is specified without spot', () => {
+      // WHEN
+      expect(() => {
+        new ComputeEnvironment(stack, 'MyCE', {
+          ...defaultProps,
+          spotFleetRole: new Role(stack, 'SpotFleetRole', {
+            assumedBy: new ArnPrincipal('arn:aws:iam:123456789012:magicuser/foobar'),
+          }),
+        });
+      }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotFleetRole' without specifying 'spot'/);
+    });
+
     test('throws error when minvCpus > maxvCpus', () => {
       // THEN
       expect(() => {
@@ -513,7 +657,7 @@ describe('managed CEs', () => {
   describe('ManagedEc2EcsComputeEnvironment', () => {
     beforeEach(() => {
       stack = new Stack();
-      vpc = new Vpc(stack, 'vpc');
+      vpc = new ec2.Vpc(stack, 'vpc');
 
       pascalCaseExpectedEcsProps = capitalizePropertyNames(stack, defaultExpectedEcsProps);
       pascalCaseExpectedEksProps = capitalizePropertyNames(stack, defaultExpectedEksProps);
@@ -556,12 +700,30 @@ describe('managed CEs', () => {
         },
       });
     });
+
+    test('can use non-default allocation strategy', () => {
+      // WHEN
+      new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        allocationStrategy: AllocationStrategy.BEST_FIT,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+        ...pascalCaseExpectedEcsProps,
+        ComputeResources: {
+          ...defaultComputeResources,
+          AllocationStrategy: 'BEST_FIT',
+        },
+      });
+    });
   });
 
   describe('ManagedEc2EksComputeEnvironment', () => {
     beforeEach(() => {
       stack = new Stack();
-      vpc = new Vpc(stack, 'vpc');
+      vpc = new ec2.Vpc(stack, 'vpc');
 
       pascalCaseExpectedEcsProps = capitalizePropertyNames(stack, defaultExpectedEcsProps);
       pascalCaseExpectedEksProps = capitalizePropertyNames(stack, defaultExpectedEksProps);
@@ -593,6 +755,16 @@ describe('managed CEs', () => {
           ...defaultComputeResources,
         },
       });
+    });
+
+    test('throws error when AllocationStrategy.BEST_FIT is used', () => {
+      // THEN
+      expect(() => {
+        new ManagedEc2EksComputeEnvironment(stack, 'MyCE', {
+          ...defaultProps,
+          allocationStrategy: AllocationStrategy.BEST_FIT,
+        });
+      }).toThrow(/ManagedEc2EksComputeEnvironment 'MyCE' invalid allocation strategy 'AllocationStrategy.BEST_FIT'/);
     });
 
     test('image types are correctly rendered as EC2ConfigurationObjects', () => {

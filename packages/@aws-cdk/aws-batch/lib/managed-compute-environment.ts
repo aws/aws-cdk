@@ -75,7 +75,7 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
   /**
    * The VPC Subnets this Compute Environment will launch instances in.
    */
-  readonly subnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Whether or not the AMI is updated to the latest one supported by Batch
@@ -119,6 +119,8 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
   * `allocationStrategy`, `spotBidPercentage`, // TODO
   * @see: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
   * @see: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
+  *
+  * @default true
   */
   readonly replaceComputeEnvironment?: boolean;
 
@@ -168,7 +170,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
   *
   * @default new subnets will be created
   */
-  readonly subnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
   * Whether or not the AMI is updated to the latest one supported by Batch
@@ -191,7 +193,6 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
   readonly updateTimeout?: Duration;
   readonly terminateOnUpdate?: boolean;
   readonly securityGroups?: ec2.ISecurityGroup[];
-  readonly subnets?: ec2.SubnetSelection;
   readonly updateToLatestImageVersion?: boolean;
 
   readonly connections: ec2.Connections;
@@ -204,7 +205,6 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
     this.spot = props.spot;
     this.updateTimeout = props.updateTimeout;
     this.terminateOnUpdate = props.terminateOnUpdate;
-    this.subnets = props.subnets;
     this.updateToLatestImageVersion = props.updateToLatestImageVersion ?? true;
     this.securityGroups = props.securityGroups ?? [
       new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -214,7 +214,7 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
     this.connections = new ec2.Connections({
       securityGroups: this.securityGroups,
     });
-    const { subnetIds } = props.vpc.selectSubnets(props.subnets);
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
 
     this.resourceProps = {
       ...this.resourceProps,
@@ -483,7 +483,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
     this.spotBidPercentage = props.spotBidPercentage;
-    this.spotFleetRole = props.spotFleetRole ?? createSpotFleetRole(this);
+    this.spotFleetRole = props.spotFleetRole ?? (this.spot ? createSpotFleetRole(this) : undefined);
     this.instanceTypes = props.instanceTypes ?? [];
     this.instanceClasses = props.instanceClasses ?? [];
 
@@ -496,7 +496,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.placementGroup = props.placementGroup;
 
     validateVCpus(id, this.minvCpus, this.maxvCpus);
-    validateSpotBidPercentage(id, this.spot, this.spotBidPercentage);
+    validateSpotConfig(id, this.spot, this.spotBidPercentage, this.spotFleetRole);
 
     const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...this.resourceProps,
@@ -780,8 +780,11 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
+    if (this.allocationStrategy === AllocationStrategy.BEST_FIT) {
+      throw new Error(`ManagedEc2EksComputeEnvironment '${id}' invalid allocation strategy 'AllocationStrategy.BEST_FIT'`);
+    }
     this.spotBidPercentage = props.spotBidPercentage;
-    this.spotFleetRole = props.spotFleetRole ?? createSpotFleetRole(this);
+    this.spotFleetRole = props.spotFleetRole ?? (this.spot ? createSpotFleetRole(this) : undefined);
     this.instanceTypes = props.instanceTypes ?? [];
     this.instanceClasses = props.instanceClasses ?? [];
 
@@ -794,7 +797,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.placementGroup = props.placementGroup;
 
     validateVCpus(id, this.minvCpus, this.maxvCpus);
-    validateSpotBidPercentage(id, this.spot, this.spotBidPercentage);
+    validateSpotConfig(id, this.spot, this.spotBidPercentage, this.spotFleetRole);
 
     const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...this.resourceProps,
@@ -911,7 +914,7 @@ function determineAllocationStrategy(id: string, allocationStrategy?: Allocation
   return result;
 }
 
-function validateSpotBidPercentage(id: string, spot?: boolean, spotBidPercentage?: number) {
+function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: number, spotFleetRole?: iam.IRole) {
   if (spotBidPercentage) {
     if (!spot) {
       throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' without specifying 'spot'`);
@@ -919,6 +922,12 @@ function validateSpotBidPercentage(id: string, spot?: boolean, spotBidPercentage
       throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' > 100`);
     } else if (spotBidPercentage < 0) {
       throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' < 0`);
+    }
+  }
+
+  if (spotFleetRole) {
+    if (!spot) {
+      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotFleetRole' without specifying 'spot'`);
     }
   }
 }
