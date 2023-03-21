@@ -1,26 +1,33 @@
-import * as AWS from 'aws-sdk';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as S3 from '@aws-sdk/client-s3';
 import { PhysicalResourceId } from '../../../lib';
 import { handler } from '../../../lib/aws-custom-resource/runtime/index';
 
 /* eslint-disable no-console */
 console.log = jest.fn();
 
-jest.mock('aws-sdk', () => {
+jest.mock('@aws-sdk/client-s3', () => {
   return {
-    ...jest.requireActual('aws-sdk'),
-    SSM: jest.fn(() => {
+    ...jest.requireActual('@aws-sdk/client-s3'),
+    S3Client: jest.fn(() => {
       return {
         config: {
           apiVersion: 'apiVersion',
           region: 'eu-west-1',
         },
-        getParameter: () => {
+        send: () => {
           return {
             promise: async () => {},
           };
         },
       };
     }),
+  };
+});
+
+jest.mock('@aws-sdk/credential-providers', () => {
+  return {
+    fromTemporaryCredentials: jest.fn(() => ({})),
   };
 });
 
@@ -40,39 +47,13 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-test('SDK global credentials are never set', async () => {
-  // WHEN
-  await handler({
-    LogicalResourceId: 'logicalResourceId',
-    RequestId: 'requestId',
-    RequestType: 'Create',
-    ResponseURL: 'responseUrl',
-    ResourceProperties: {
-      Create: JSON.stringify({
-        action: 'getParameter',
-        assumedRoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
-        parameters: {
-          Name: 'foo',
-        },
-        physicalResourceId: PhysicalResourceId.of('id'),
-        service: 'SSM',
-      }),
-      ServiceToken: 'serviceToken',
-    },
-    ResourceType: 'resourceType',
-    ServiceToken: 'serviceToken',
-    StackId: 'stackId',
-  }, {} as AWSLambda.Context);
-
-  // THEN
-  expect(AWS.config).toBeInstanceOf(AWS.Config);
-  expect(AWS.config.credentials).toBeNull();
-});
-
 test('SDK credentials are not persisted across subsequent invocations', async () => {
   // GIVEN
-  const mockCreds = new AWS.ChainableTemporaryCredentials();
-  jest.spyOn(AWS, 'ChainableTemporaryCredentials').mockReturnValue(mockCreds);
+  const credentialProviders = await import('@aws-sdk/credential-providers' as string);
+  const mockCreds = credentialProviders.fromTemporaryCredentials({
+    params: { RoleArn: 'arn:aws:iam::123456789012:role/CoolRole' },
+  });
+  jest.spyOn(credentialProviders, 'fromTemporaryCredentials').mockReturnValue(mockCreds);
 
   // WHEN
   await handler({
@@ -82,12 +63,13 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
     ResponseURL: 'responseUrl',
     ResourceProperties: {
       Create: JSON.stringify({
-        action: 'getParameter',
+        action: 'getObject',
         parameters: {
-          Name: 'foo',
+          Bucket: 'foo',
+          Key: 'bar',
         },
         physicalResourceId: PhysicalResourceId.of('id'),
-        service: 'SSM',
+        service: 'S3',
       }),
       ServiceToken: 'serviceToken',
     },
@@ -103,13 +85,14 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
     ResponseURL: 'responseUrl',
     ResourceProperties: {
       Create: JSON.stringify({
-        action: 'getParameter',
+        action: 'getObject',
         assumedRoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
         parameters: {
-          Name: 'foo',
+          Bucket: 'foo',
+          Key: 'bar',
         },
         physicalResourceId: PhysicalResourceId.of('id'),
-        service: 'SSM',
+        service: 'S3',
       }),
       ServiceToken: 'serviceToken',
     },
@@ -125,12 +108,13 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
     ResponseURL: 'responseUrl',
     ResourceProperties: {
       Create: JSON.stringify({
-        action: 'getParameter',
+        action: 'getObject',
         parameters: {
-          Name: 'foo',
+          Bucket: 'foo',
+          Key: 'bar',
         },
         physicalResourceId: PhysicalResourceId.of('id'),
-        service: 'SSM',
+        service: 'S3',
       }),
       ServiceToken: 'serviceToken',
     },
@@ -140,17 +124,17 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
   }, {} as AWSLambda.Context);
 
   // THEN
-  expect(AWS.SSM).toHaveBeenNthCalledWith(1, {
+  expect(S3.S3Client).toHaveBeenNthCalledWith(1, {
     apiVersion: undefined,
     credentials: undefined,
     region: undefined,
   });
-  expect(AWS.SSM).toHaveBeenNthCalledWith(2, {
+  expect(S3.S3Client).toHaveBeenNthCalledWith(2, {
     apiVersion: undefined,
     credentials: mockCreds,
     region: undefined,
   });
-  expect(AWS.SSM).toHaveBeenNthCalledWith(3, {
+  expect(S3.S3Client).toHaveBeenNthCalledWith(3, {
     apiVersion: undefined,
     credentials: undefined,
     region: undefined,

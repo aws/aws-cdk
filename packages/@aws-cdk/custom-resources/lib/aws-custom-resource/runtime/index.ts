@@ -1,7 +1,5 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
-import * as fs from 'fs';
-import { join } from 'path';
 // import the AWSLambda package explicitly,
 // which is globally available in the Lambda runtime,
 // as otherwise linking this repository with link-all.sh
@@ -63,82 +61,59 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
     );
 }
 
-let latestSdkInstalled = false;
+let installedSdk: { [service: string]: boolean } = {};
 
 export function forceSdkInstallation() {
-  latestSdkInstalled = false;
+  installedSdk = {};
 }
 
 /**
- * Installs latest AWS SDK v2
+ * Installs latest AWS SDK v3
  */
-function installLatestSdk(): void {
-  console.log('Installing latest AWS SDK v2');
+function installLatestSdk(serviceName: string): void {
+  console.log('Installing latest AWS SDK v3');
   // Both HOME and --prefix are needed here because /tmp is the only writable location
-  execSync('HOME=/tmp npm install aws-sdk@2 --production --no-package-lock --no-save --prefix /tmp');
-  latestSdkInstalled = true;
+  execSync(
+    `HOME=/tmp npm install @aws-sdk/client-${serviceName} --production --no-package-lock --no-save --prefix /tmp`,
+  );
+  installedSdk = {
+    ...installedSdk,
+    [serviceName]: true,
+  };
 }
 
-// no currently patched services
-const patchedServices: { serviceName: string; apiVersions: string[] }[] = [];
-/**
- * Patches the AWS SDK by loading service models in the same manner as the actual SDK
- */
-function patchSdk(awsSdk: any): any {
-  const apiLoader = awsSdk.apiLoader;
-  patchedServices.forEach(({ serviceName, apiVersions }) => {
-    const lowerServiceName = serviceName.toLowerCase();
-    if (!awsSdk.Service.hasService(lowerServiceName)) {
-      apiLoader.services[lowerServiceName] = {};
-      awsSdk[serviceName] = awsSdk.Service.defineService(lowerServiceName, apiVersions);
-    } else {
-      awsSdk.Service.addVersions(awsSdk[serviceName], apiVersions);
-    }
-    apiVersions.forEach(apiVersion => {
-      Object.defineProperty(apiLoader.services[lowerServiceName], apiVersion, {
-        get: function get() {
-          const modelFilePrefix = `aws-sdk-patch/${lowerServiceName}-${apiVersion}`;
-          const model = JSON.parse(fs.readFileSync(join(__dirname, `${modelFilePrefix}.service.json`), 'utf-8'));
-          model.paginators = JSON.parse(fs.readFileSync(join(__dirname, `${modelFilePrefix}.paginators.json`), 'utf-8')).pagination;
-          return model;
-        },
-        enumerable: true,
-        configurable: true,
+async function loadAwsSdk(
+  serviceName: string,
+  installLatestAwsSdk?: 'true' | 'false',
+) {
+  const lowerServiceName = serviceName.toLowerCase();
+  let awsSdk: { [key: string]: any };
+  try {
+    if (!installedSdk[lowerServiceName] && installLatestAwsSdk === 'true') {
+      installLatestSdk(lowerServiceName);
+      awsSdk = await import(`/tmp/node_modules/@aws-sdk/client-${lowerServiceName}`).catch(async (e) => {
+        console.log(`Failed to install latest AWS SDK v3: ${e}`);
+        return import(`@aws-sdk/client-${lowerServiceName}`); // Fallback to pre-installed version
       });
-    });
-  });
+    } else if (installedSdk[lowerServiceName]) {
+      awsSdk = await import(`/tmp/node_modules/@aws-sdk/client-${lowerServiceName}`);
+    } else {
+      awsSdk = await import(`@aws-sdk/client-${lowerServiceName}`);
+    }
+  } catch (error) {
+    throw Error(`Service ${serviceName} does not exist in AWS SDK.`);
+  }
   return awsSdk;
 }
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
-    let AWS: any;
-    if (!latestSdkInstalled && event.ResourceProperties.InstallLatestAwsSdk === 'true') {
-      try {
-        installLatestSdk();
-        AWS = require('/tmp/node_modules/aws-sdk');
-      } catch (e) {
-        console.log(`Failed to install latest AWS SDK v2: ${e}`);
-        AWS = require('aws-sdk'); // Fallback to pre-installed version
-      }
-    } else if (latestSdkInstalled) {
-      AWS = require('/tmp/node_modules/aws-sdk');
-    } else {
-      AWS = require('aws-sdk');
-    }
-    try {
-      AWS = patchSdk(AWS);
-    } catch (e) {
-      console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
-    }
-
-    console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
-    console.log('AWS SDK VERSION: ' + AWS.VERSION);
-
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
     event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
     event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
+    let data: { [key: string]: string } = {};
+
     // Default physical resource id
     let physicalResourceId: string;
     switch (event.RequestType) {
@@ -153,12 +128,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
         break;
     }
-
-    let flatData: { [key: string]: string } = {};
-    let data: { [key: string]: string } = {};
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
-
     if (call) {
+      const awsSdk = await loadAwsSdk(
+        call.service,
+        event.ResourceProperties.InstallLatestAwsSdk,
+      );
+
+      console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
 
       let credentials;
       if (call.assumedRoleArn) {
@@ -169,27 +146,36 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           RoleSessionName: `${timestamp}-${physicalResourceId}`.substring(0, 64),
         };
 
-        credentials = new AWS.ChainableTemporaryCredentials({
+        const { fromTemporaryCredentials } = await import('@aws-sdk/credential-providers' as string);
+        credentials = fromTemporaryCredentials({
           params: params,
-          stsConfig: { stsRegionalEndpoints: 'regional' },
         });
       }
 
-      if (!Object.prototype.hasOwnProperty.call(AWS, call.service)) {
-        throw Error(`Service ${call.service} does not exist in AWS SDK version ${AWS.VERSION}.`);
-      }
-      const awsService = new (AWS as any)[call.service]({
+      const ServiceClient = Object.entries(awsSdk).find(
+        ([name]) => name.toLowerCase() === `${call.service}Client`.toLowerCase(),
+      )?.[1] as { new (config: any): any };
+      const client = new ServiceClient({
         apiVersion: call.apiVersion,
         credentials: credentials,
         region: call.region,
       });
 
+      const Command = Object.entries(awsSdk).find(
+        ([name]) => name.toLowerCase() === `${call.action}Command`.toLowerCase(),
+      )?.[1] as { new (input: any): any };
+
+      let flatData: { [key: string]: string } = {};
       try {
-        const response = await awsService[call.action](
-          call.parameters && decodeSpecialValues(call.parameters, physicalResourceId)).promise();
+        const response = await client.send(
+          new Command(
+            call.parameters &&
+              decodeSpecialValues(call.parameters, physicalResourceId),
+          ),
+        );
         flatData = {
-          apiVersion: awsService.config.apiVersion, // For test purposes: check if apiVersion was correctly passed.
-          region: awsService.config.region, // For test purposes: check if region was correctly passed.
+          apiVersion: client.config.apiVersion, // For test purposes: check if apiVersion was correctly passed.
+          region: await client.config.region().catch(() => undefined), // For test purposes: check if region was correctly passed.
           ...flatten(response),
         };
 

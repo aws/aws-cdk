@@ -1,8 +1,8 @@
-import * as SDK from 'aws-sdk';
+import * as S3 from '@aws-sdk/client-s3';
+import { mockClient } from 'aws-sdk-client-mock';
 import * as AWS from 'aws-sdk-mock';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
-import * as sinon from 'sinon';
 import { AwsSdkCall, PhysicalResourceId } from '../../lib';
 import { flatten, handler, forceSdkInstallation } from '../../lib/aws-custom-resource/runtime';
 
@@ -30,17 +30,19 @@ function createRequest(bodyPredicate: (body: AWSLambda.CloudFormationCustomResou
     .reply(200);
 }
 
+const s3MockClient = mockClient(S3.S3Client);
+
 beforeEach(() => {
-  AWS.setSDK(require.resolve('aws-sdk'));
+  s3MockClient.reset();
 });
 
 afterEach(() => {
-  AWS.restore();
+  s3MockClient.reset();
   nock.cleanAll();
 });
 
 test('create event with physical resource id path', async () => {
-  const listObjectsFake = sinon.fake.resolves({
+  s3MockClient.on(S3.ListObjectsCommand).resolves({
     Contents: [
       {
         Key: 'first-key',
@@ -51,9 +53,7 @@ test('create event with physical resource id path', async () => {
         ETag: 'second-key-etag',
       },
     ],
-  } as SDK.S3.ListObjectsOutput);
-
-  AWS.mock('S3', 'listObjects', listObjectsFake);
+  } as S3.ListObjectsCommandOutput);
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
     ...eventCommon,
@@ -78,8 +78,8 @@ test('create event with physical resource id path', async () => {
   );
 
   await handler(event, {} as AWSLambda.Context);
-
-  sinon.assert.calledWith(listObjectsFake, {
+  const commandCalls = s3MockClient.commandCalls(S3.ListObjectsCommand);
+  expect(commandCalls[0].args[0].input).toEqual({
     Bucket: 'my-bucket',
   });
 
@@ -87,9 +87,7 @@ test('create event with physical resource id path', async () => {
 });
 
 test('update event with physical resource id', async () => {
-  const publish = sinon.fake.resolves({});
-
-  AWS.mock('SNS', 'publish', publish);
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
 
   const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
     ...eventCommon,
@@ -99,20 +97,20 @@ test('update event with physical resource id', async () => {
     ResourceProperties: {
       ServiceToken: 'token',
       Update: JSON.stringify({
-        service: 'SNS',
-        action: 'publish',
+        service: 'S3',
+        action: 'getObject',
         parameters: {
-          Message: 'hello',
-          TopicArn: 'topicarn',
+          Bucket: 'hello',
+          Key: 'key',
         },
-        physicalResourceId: PhysicalResourceId.of('topicarn'),
+        physicalResourceId: PhysicalResourceId.of('key'),
       } as AwsSdkCall),
     },
   };
 
   const request = createRequest(body =>
     body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'topicarn',
+    body.PhysicalResourceId === 'key',
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -121,9 +119,7 @@ test('update event with physical resource id', async () => {
 });
 
 test('delete event', async () => {
-  const listObjectsFake = sinon.fake.resolves({});
-
-  AWS.mock('S3', 'listObjects', listObjectsFake);
+  s3MockClient.on(S3.ListObjectsCommand).resolves({});
 
   const event: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
     ...eventCommon,
@@ -150,15 +146,14 @@ test('delete event', async () => {
 
   await handler(event, {} as AWSLambda.Context);
 
-  sinon.assert.notCalled(listObjectsFake);
+  const commandCalls = s3MockClient.commandCalls(S3.ListObjectsCommand);
+  expect(commandCalls.length).toBe(0);
 
   expect(request.isDone()).toBeTruthy();
 });
 
 test('delete event with Delete call and no physical resource id in call', async () => {
-  const deleteParameterFake = sinon.fake.resolves({});
-
-  AWS.mock('SSM', 'deleteParameter', deleteParameterFake);
+  s3MockClient.on(S3.DeleteObjectCommand).resolves({});
 
   const event: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
     ...eventCommon,
@@ -167,10 +162,11 @@ test('delete event with Delete call and no physical resource id in call', async 
     ResourceProperties: {
       ServiceToken: 'token',
       Delete: JSON.stringify({
-        service: 'SSM',
-        action: 'deleteParameter',
+        service: 'S3',
+        action: 'deleteObject',
         parameters: {
-          Name: 'my-param',
+          Bucket: 'my-bucket',
+          Key: 'my-object',
         },
       } as AwsSdkCall),
     },
@@ -183,17 +179,17 @@ test('delete event with Delete call and no physical resource id in call', async 
 
   await handler(event, {} as AWSLambda.Context);
 
-  sinon.assert.calledWith(deleteParameterFake, {
-    Name: 'my-param',
+  const commandCalls = s3MockClient.commandCalls(S3.DeleteObjectCommand);
+  expect(commandCalls[0].args[0].input).toMatchObject({
+    Bucket: 'my-bucket',
+    Key: 'my-object',
   });
 
   expect(request.isDone()).toBeTruthy();
 });
 
 test('create event with Delete call only', async () => {
-  const deleteParameterFake = sinon.fake.resolves({});
-
-  AWS.mock('SSM', 'deleteParameter', deleteParameterFake);
+  s3MockClient.on(S3.DeleteObjectCommand).resolves({});
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
     ...eventCommon,
@@ -201,10 +197,11 @@ test('create event with Delete call only', async () => {
     ResourceProperties: {
       ServiceToken: 'token',
       Delete: JSON.stringify({
-        service: 'SSM',
-        action: 'deleteParameter',
+        service: 'S3',
+        action: 'deleteObject',
         parameters: {
-          Name: 'my-param',
+          Bucket: 'my-bucket',
+          Key: 'my-object',
         },
       } as AwsSdkCall),
     },
@@ -217,7 +214,8 @@ test('create event with Delete call only', async () => {
 
   await handler(event, {} as AWSLambda.Context);
 
-  sinon.assert.notCalled(deleteParameterFake);
+  const commandCalls = s3MockClient.commandCalls(S3.DeleteObjectCommand);
+  expect(commandCalls.length).toBe(0);
 
   expect(request.isDone()).toBeTruthy();
 });
@@ -225,9 +223,7 @@ test('create event with Delete call only', async () => {
 test('catch errors', async () => {
   const error: NodeJS.ErrnoException = new Error();
   error.code = 'NoSuchBucket';
-  const listObjectsFake = sinon.fake.rejects(error);
-
-  AWS.mock('S3', 'listObjects', listObjectsFake);
+  s3MockClient.on(S3.ListObjectsCommand).rejects(error);
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
     ...eventCommon,
@@ -258,7 +254,7 @@ test('catch errors', async () => {
 });
 
 test('restrict output path', async () => {
-  const listObjectsFake = sinon.fake.resolves({
+  s3MockClient.on(S3.ListObjectsCommand).resolves({
     Contents: [
       {
         Key: 'first-key',
@@ -269,9 +265,7 @@ test('restrict output path', async () => {
         ETag: 'second-key-etag',
       },
     ],
-  } as SDK.S3.ListObjectsOutput);
-
-  AWS.mock('S3', 'listObjects', listObjectsFake);
+  } as S3.ListObjectsCommandOutput);
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
     ...eventCommon,
@@ -303,7 +297,7 @@ test('restrict output path', async () => {
 });
 
 test('restrict output paths', async () => {
-  const listObjectsFake = sinon.fake.resolves({
+  s3MockClient.on(S3.ListObjectsCommand).resolves({
     Contents: [
       {
         Key: 'first-key',
@@ -314,9 +308,7 @@ test('restrict output paths', async () => {
         ETag: 'second-key-etag',
       },
     ],
-  } as SDK.S3.ListObjectsOutput);
-
-  AWS.mock('S3', 'listObjects', listObjectsFake);
+  } as S3.ListObjectsCommandOutput);
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
     ...eventCommon,
@@ -350,9 +342,7 @@ test('restrict output paths', async () => {
 });
 
 test('can specify apiVersion and region', async () => {
-  const publishFake = sinon.fake.resolves({});
-
-  AWS.mock('SNS', 'publish', publishFake);
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
     ...eventCommon,
@@ -360,11 +350,11 @@ test('can specify apiVersion and region', async () => {
     ResourceProperties: {
       ServiceToken: 'token',
       Create: JSON.stringify({
-        service: 'SNS',
-        action: 'publish',
+        service: 'S3',
+        action: 'getObject',
         parameters: {
-          Message: 'message',
-          TopicArn: 'topic',
+          Bucket: 'my-bucket',
+          Key: 'key',
         },
         apiVersion: '2010-03-31',
         region: 'eu-west-1',
@@ -420,19 +410,17 @@ test('flatten correctly flattens an object with buffers', () => {
 });
 
 test('installs the latest SDK', async () => {
-  const tmpPath = '/tmp/node_modules/aws-sdk';
+  const tmpPath = '/tmp/node_modules/@aws-sdk/client-s3';
 
   // Symlink to normal SDK to be able to call AWS.setSDK()
   await fs.ensureDir('/tmp/node_modules');
-  await fs.symlink(require.resolve('aws-sdk'), tmpPath);
+  await fs.symlink(require.resolve('@aws-sdk/client-s3'), tmpPath);
   AWS.setSDK(tmpPath);
 
   // Now remove the symlink and let the handler install it
   await fs.unlink(tmpPath);
 
-  const publishFake = sinon.fake.resolves({});
-
-  AWS.mock('SNS', 'publish', publishFake);
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
     ...eventCommon,
@@ -440,11 +428,11 @@ test('installs the latest SDK', async () => {
     ResourceProperties: {
       ServiceToken: 'token',
       Create: JSON.stringify({
-        service: 'SNS',
-        action: 'publish',
+        service: 'S3',
+        action: 'getObject',
         parameters: {
-          Message: 'message',
-          TopicArn: 'topic',
+          Bucket: 'my-bucket',
+          Key: 'key',
         },
         physicalResourceId: PhysicalResourceId.of('id'),
       } as AwsSdkCall),
@@ -469,9 +457,7 @@ test('installs the latest SDK', async () => {
 });
 
 test('invalid service name throws explicit error', async () => {
-  const publishFake = sinon.fake.resolves({});
-
-  AWS.mock('SNS', 'publish', publishFake);
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
     ...eventCommon,
@@ -480,10 +466,10 @@ test('invalid service name throws explicit error', async () => {
       ServiceToken: 'token',
       Create: JSON.stringify({
         service: 'thisisnotarealservice',
-        action: 'publish',
+        action: 'getObject',
         parameters: {
-          Message: 'message',
-          TopicArn: 'topic',
+          Bucket: 'my-bucket',
+          Key: 'key',
         },
         physicalResourceId: PhysicalResourceId.of('id'),
       } as AwsSdkCall),

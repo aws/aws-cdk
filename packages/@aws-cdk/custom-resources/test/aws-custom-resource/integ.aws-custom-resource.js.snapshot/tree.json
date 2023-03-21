@@ -202,7 +202,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "8c980c60f4c1c0edebd987e6043e356b8d439b2d731c5af3329df082ca5a6a79.zip"
+                      "s3Key": "85f64add5ac87978fd492ab595f4d0cc168b2047a8d8c92ab8f55762fa476b5c.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -211,7 +211,7 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x",
+                    "runtime": "nodejs18.x",
                     "timeout": 120
                   }
                 },
@@ -586,7 +586,7 @@
                 "path": "AwsCustomResourceTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.264"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -632,7 +632,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.264"
+          "version": "10.1.270"
         }
       }
     },

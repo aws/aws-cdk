@@ -409,7 +409,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
         exclude: ['*.ts'],
       }),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
