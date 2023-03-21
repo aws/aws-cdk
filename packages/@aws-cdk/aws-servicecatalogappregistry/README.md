@@ -344,7 +344,7 @@ E.g., sharing an application with multiple accounts and allowing the accounts to
 import * as iam from '@aws-cdk/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
 attributeGroup.shareAttributeGroup('MyShareId', {
-  name: 'MyShare'
+  name: 'MyShare',
   accounts: ['123456789012', '234567890123'],
   sharePermission: appreg.SharePermission.ALLOW_ACCESS,
 });
