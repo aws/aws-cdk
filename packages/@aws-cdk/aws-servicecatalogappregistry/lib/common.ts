@@ -23,7 +23,6 @@ export interface ShareOptions {
   /**
    * Name of the share.
    *
-   * @default - The value of `id` will be used
    */
   readonly name: string;
   /**

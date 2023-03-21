@@ -75,9 +75,9 @@
                   "version": "0.0.0"
                 }
               },
-              "MyShare": {
-                "id": "MyShare",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/MyShare",
+              "MyShareId": {
+                "id": "MyShareId",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/MyShareId",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {

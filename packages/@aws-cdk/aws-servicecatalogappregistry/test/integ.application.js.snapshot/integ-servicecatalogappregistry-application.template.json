@@ -39,7 +39,7 @@
     }
    }
   },
-  "TestApplicationMyShare4D4589BB": {
+  "TestApplicationMyShareIdE1044482": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
     "Name": "MyShare",

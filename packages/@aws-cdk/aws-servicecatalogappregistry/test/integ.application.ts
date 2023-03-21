@@ -36,7 +36,7 @@ application.associateAttributeGroup(attributeGroup);
 const myRole = new iam.Role(stack, 'MyRole', {
   assumedBy: new iam.AccountPrincipal(stack.account),
 });
-application.shareApplication('MyShare', {
+application.shareApplication('MyShareId', {
   name: 'MyShare',
   roles: [myRole],
 });

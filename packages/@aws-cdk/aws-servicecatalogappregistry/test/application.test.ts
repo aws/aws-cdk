@@ -244,14 +244,14 @@ describe('Application', () => {
 
     test('fails for sharing application without principals', () => {
       expect(() => {
-        application.shareApplication('MyShare', {
+        application.shareApplication('MyShareId', {
           name: 'MyShare',
         });
       }).toThrow(/An entity must be provided for the share/);
     });
 
     test('share application with an organization', () => {
-      application.shareApplication('MyShare', {
+      application.shareApplication('MyShareId', {
         name: 'MyShare',
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
       });
@@ -266,7 +266,7 @@ describe('Application', () => {
     });
 
     test('share application with an account', () => {
-      application.shareApplication('MyShare', {
+      application.shareApplication('MyShareId', {
         name: 'MyShare',
         accounts: ['123456789012'],
       });
@@ -283,7 +283,7 @@ describe('Application', () => {
     test('share application with an IAM role', () => {
       const myRole = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/myRole');
 
-      application.shareApplication('MyShare', {
+      application.shareApplication('MyShareId', {
         name: 'MyShare',
         roles: [myRole],
       });
@@ -300,7 +300,7 @@ describe('Application', () => {
     test('share application with an IAM user', () => {
       const myUser = iam.User.fromUserArn(stack, 'MyUser', 'arn:aws:iam::123456789012:user/myUser');
 
-      application.shareApplication('MyShare', {
+      application.shareApplication('MyShareId', {
         name: 'MyShare',
         users: [myUser],
       });
@@ -315,7 +315,7 @@ describe('Application', () => {
     });
 
     test('share application with organization, give explicit read only access to an application', () => {
-      application.shareApplication('MyShare', {
+      application.shareApplication('MyShareId', {
         name: 'MyShare',
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.READ_ONLY,
@@ -331,7 +331,7 @@ describe('Application', () => {
     });
 
     test('share application with organization, allow access to associate resources and attribute group with an application', () => {
-      application.shareApplication('MyShare', {
+      application.shareApplication('MyShareId', {
         name: 'MyShare',
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.ALLOW_ACCESS,
