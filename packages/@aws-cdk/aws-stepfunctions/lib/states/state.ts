@@ -1,7 +1,7 @@
 import { Token } from '@aws-cdk/core';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Condition } from '../condition';
-import { FieldUtils, JsonPath } from '../fields';
+import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types';
 
