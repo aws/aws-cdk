@@ -1,5 +1,5 @@
 {
-  "$version": "115.0.0",
+  "$version": "116.0.0",
   "PropertyTypes": {
     "AWS::EC2::CapacityReservation.TagSpecification": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-capacityreservation-tagspecification.html",
@@ -8506,11 +8506,6 @@
       }
     },
     "AWS::EC2::VPCDHCPOptionsAssociation": {
-      "Attributes": {
-        "Id": {
-          "PrimitiveType": "String"
-        }
-      },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcdhcpoptionsassociation.html",
       "Properties": {
         "DhcpOptionsId": {
@@ -8535,6 +8530,9 @@
         "DnsEntries": {
           "PrimitiveItemType": "String",
           "Type": "List"
+        },
+        "Id": {
+          "PrimitiveType": "String"
         },
         "NetworkInterfaceIds": {
           "PrimitiveItemType": "String",
