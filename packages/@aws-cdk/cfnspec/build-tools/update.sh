@@ -70,8 +70,6 @@ update-spec \
     spec-source/specification/000_cfn/000_official \
     true true
 
-exit 1
-
 update-spec \
     "CloudFormation Resource Specification (us-west-2)" \
     "${2:-https://d201a2mn26r7lk.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json}" \
