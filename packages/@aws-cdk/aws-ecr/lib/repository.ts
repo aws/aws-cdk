@@ -4,8 +4,17 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack,
-  Tags, Token, TokenComparison, CustomResource, CustomResourceProvider,
+  ArnFormat,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Tags,
+  Token,
+  TokenComparison,
+  CustomResource,
+  CustomResourceProvider,
   CustomResourceProviderRuntime,
 } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
