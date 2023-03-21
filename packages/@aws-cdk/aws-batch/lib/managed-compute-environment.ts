@@ -643,6 +643,14 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
   /**
    * The cluster that backs this Compute Environment. Required
    * for Compute Environments running Kubernetes jobs.
+   *
+   * Please ensure that you have followed the steps at
+   *
+   * https://docs.aws.amazon.com/batch/latest/userguide/getting-started-eks.html
+   *
+   * before attempting to deploy a `ManagedEc2EksComputeEnvironment` that uses this cluster.
+   * If you do not follow the steps in the link, the deployment fail with a message that the
+   * compute environment did not stabilize.
    */
   readonly eksCluster: eks.ICluster;
 
