@@ -65,6 +65,7 @@ export class PublishConfigTagIsRequired extends ValidationRule {
     'aws-cdk',
     'awslint',
     'cdk-assets',
+    '@aws-cdk/integ-runner',
   ];
 
   public validate(pkg: PackageJson): void {
