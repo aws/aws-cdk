@@ -10,6 +10,8 @@ scriptdir=$(cd $(dirname $0) && pwd)
 
 rm -f CHANGELOG.md.new
 
+
+# update-spec <TITLE> <SOURCE> <TARGETDIR> <IS_GZIPPED> <SHOULD_SPLIT> [<SVC> [...]]
 function update-spec() {
     local title=$1
     local url=$2
@@ -67,6 +69,8 @@ update-spec \
     "${1:-https://d1uauaxba7bl26.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json}" \
     spec-source/specification/000_cfn/000_official \
     true true
+
+exit 1
 
 update-spec \
     "CloudFormation Resource Specification (us-west-2)" \
