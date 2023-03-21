@@ -12,6 +12,8 @@ import yargs from 'yargs/yargs';
 import {
   additionalCleanupDirs,
   addTypesReference,
+  exec,
+  makeExecDir,
   findIntegFiles,
   rewriteIntegTestImports,
   fixUnitTests,
@@ -21,20 +23,11 @@ import {
   PackageJson,
   formatPackageJson,
   doublePackages,
+  rewriteDependencies,
+  rewriteDepVersions,
+  rewriteSourceFiles,
 } from './util';
 
-const exec = (cmd: string, opts?: cp.ExecOptions) => new Promise((ok, ko) => {
-  const proc = cp.exec(cmd, opts, (err: cp.ExecException | null, stdout: string | Buffer, stderr: string | Buffer) => {
-    if (err) {
-      return ko(err);
-    }
-
-    return ok({ stdout, stderr });
-  });
-
-  proc.stdout?.pipe(process.stdout);
-  proc.stderr?.pipe(process.stderr);
-});
 
 export async function main() {
   const args = yargs(process.argv.slice(2))
@@ -105,7 +98,6 @@ export async function main() {
 
       await fs.copy(addlSourceDir, addlTargetDir);
     }
-    
   }
 
   // Clone all source files from the current repo to our new working
@@ -117,14 +109,11 @@ export async function main() {
   const bundlingResult = await makeAwsCdkLib(targetDir);
   await makeAwsCdkLibInteg(targetDir);
 
-  if (fullBuild) {
-    await runBuild(targetDir);
-  } else {
-    await runPartialBuild(targetDir);
-  }
+  // Build aws-cdk-lib then run transform.sh to generate alpha packages
+  await runPartialBuild(targetDir);
 
-  await postRun(targetDir);
   await cleanup(targetDir, bundlingResult);
+  await postRun(targetDir);
 
   if (clean) {
     await fs.remove(path.resolve(targetDir));
@@ -373,46 +362,17 @@ async function makeAwsCdkLibInteg(dir: string) {
 
 async function runPartialBuild(dir: string) {
   const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
+  console.log('building aws-cdk-lib and alpha packages');
   await e('yarn install');
-  await e('npx lerna run build --scope aws-cdk-lib --include-dependencies');
-  await e('./scripts/transform.sh --skip-tests --skip-build');
-}
-
-async function runBuild(dir: string) {
-  const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
-
-  await e('yarn install');
-
-  // need to take our changes to the build script
-  await fs.copyFile(
-    path.join(__dirname, '../../../../build.sh'),
-    path.join(dir, 'build.sh'),
-  );
-
-  // Running the full build is necessary for ./transform.sh to work correctly
-  await e('./build.sh --skip-prereqs --skip-compat --skip-tests');
-
-  // Generate the alpha packages
+  await e('npx lerna run build --scope aws-cdk-lib --scope @aws-cdk/individual-pkg-gen --include-dependencies');
   await e('./scripts/transform.sh --skip-tests --skip-build');
 }
 
 async function postRun(dir: string) {
-  const target = path.join(dir, 'packages', '@aws-cdk-testing', 'framework-integ', 'test');
-  // can't add integ-tests-alpha until after `yarn install` has been run
-  await formatPackageJson(
-    path.join(target, '..', 'package.json'),
-    (packageJson) => {
-      return {
-        ...packageJson,
-        dependencies: {
-          ...packageJson.dependencies,
-          '@aws-cdk/integ-tests-alpha': '0.0.0',
-        }
-      };
-    },
-  );
+  const e = makeExecDir(dir);
+  await e('yarn install');
+  await e('yarn build --skip-tests --skip-prereqs --skip-compat');
 
-  const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: path.join(target, '..'), ...opts });
   const dryRunInteg: string[] = [
     'test/pipelines/test/integ.newpipeline.js',
     'test/pipelines/test/integ.pipeline.js',
@@ -424,9 +384,9 @@ async function postRun(dir: string) {
     'test/pipelines/test/integ.newpipeline-with-cross-account-keys.js',
     'test/aws-ecr-assets/test/integ.assets-tarball.js',
   ];
-  // need to build framework-integ since we skip it during ./build.sh
-  await e('yarn build');
-  await e(`yarn integ-runner --update-on-failed --dry-run ${dryRunInteg.join(' ')}`);
+  const integPackagesDir = path.join(dir, 'packages', '@aws-cdk-testing', 'framework-integ');
+  // Update integ snapshots that are expected to change
+  await exec(`yarn integ-runner --update-on-failed --dry-run ${dryRunInteg.join(' ')}`, { cwd: integPackagesDir });
 }
 
 async function cleanup(dir: string, packages: BundlingResult) {
@@ -453,9 +413,13 @@ async function cleanup(dir: string, packages: BundlingResult) {
     nameMap: newPackageNames,
     ignore: [
       'aws-cdk-lib',
+      'aws-cdk',
       ...doublePackages,
     ],
   });
+
+  await reformatCliPackage(path.join(dir, 'packages', 'aws-cdk'));
+  await reformatIntegPackage(path.join(dir, 'packages', '@aws-cdk-testing', 'framework-integ'));
 
   // Remove the `build.js` file within aws-cloudformation-include because this functionality is now
   // handled during codegen
@@ -498,6 +462,7 @@ async function cleanupExperimentalPackages(dir: string, packages: readonly Libra
     const pkgJson = await getPackageJson(pkgJsonPath);
     const packageName = pkgJson.name;
     const oldPackageName = packageName.replace('-alpha', '');
+    const oldVersion = pkgJson.version;
 
     const original = packages.find((pkg) => pkg.packageJson.name === oldPackageName);
     if (original) {
@@ -512,7 +477,10 @@ async function cleanupExperimentalPackages(dir: string, packages: readonly Libra
       newPackagePath,
     );
 
+    const formatAlphaVersions = (deps: { [name: string]: string }) => rewriteDepVersions(deps, oldVersion, '0.0.0');
+
     // Change version to "0.0.0" since these packages aren't built yet
+    // and alpha-dependencies versions
     await writePackageJson(
       path.join(newPackagePath, 'package.json'),
       {
@@ -522,6 +490,9 @@ async function cleanupExperimentalPackages(dir: string, packages: readonly Libra
           ...pkgJson.repository,
           directory: `packages/@aws-cdk/${pkgDir}`,
         },
+        dependencies: formatAlphaVersions(pkgJson.dependencies ?? {}),
+        devDependencies: formatAlphaVersions(pkgJson.devDependencies ?? {}),
+        peerDependencies: formatAlphaVersions(pkgJson.peerDependencies ?? {}),
       },
     );
   }
@@ -598,8 +569,45 @@ async function reformatPackage(dir: string, nameMap: PackageNameMap) {
     }));
 
     // run eslint fix as rewriting imports can change import order
-    await exec(`npx eslint --fix`, { cwd: dir });
+    await exec('npx eslint --fix', { cwd: dir });
   }
+}
+
+async function reformatCliPackage(dir: string) {
+  const pkgJsonPath = path.join(dir, 'package.json');
+  await formatPackageJson(pkgJsonPath, (pkgJson: PackageJson) => {
+    return formatNewPkgJson(pkgJson, {
+      '@aws-cdk/core': 'aws-cdk-lib',
+    });
+  });
+
+  // replace imports of @aws-cdk/core with aws-cdk-lib in tests
+  // but don't replace all the stuff like @aws-cdk/region-info,
+  // so we can't use aws-cdk-migration
+  await rewriteSourceFiles(path.join(dir, 'test'), async (fileContent: string) => {
+    const lines = fileContent.split('\n')
+      .map((line) => {
+        return line.replace('@aws-cdk/core', 'aws-cdk-lib');
+      });
+
+    return lines.join('\n');
+  });
+}
+
+async function reformatIntegPackage(dir: string) {
+  // can't add integ-tests-alpha until after `yarn install` has been run
+  await formatPackageJson(
+    path.join(dir, 'package.json'),
+    (packageJson) => {
+      return {
+        ...packageJson,
+        dependencies: {
+          ...packageJson.dependencies,
+          '@aws-cdk/integ-tests-alpha': '0.0.0',
+        },
+      };
+    },
+  );
 }
 
 async function formatNewPkgJson(pkgJson: PackageJson, alphaMap: { [oldName: string]: string }) {
@@ -613,17 +621,6 @@ async function formatNewPkgJson(pkgJson: PackageJson, alphaMap: { [oldName: stri
     ...(devDependencies ? { devDependencies } : {}),
     ...(peerDependencies ? { peerDependencies } : {}),
   };
-}
-
-function rewriteDependencies(deps: { [name: string]: string }, nameMap: { [oldName: string]: string }): { [name: string] : string } {
-  return Object.entries(deps)
-    .reduce((accum, [key, val]) => {
-      const newKey = nameMap[key] ?? key;
-      return {
-        ...accum,
-        [newKey]: val,
-      };
-    }, {});
 }
 
 // Creates a map of directories to the cloudformations scopes that should be

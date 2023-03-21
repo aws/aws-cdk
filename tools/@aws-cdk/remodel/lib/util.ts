@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
+import * as cp from 'child_process';
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { PackageJson as UbgPkgJson } from '@aws-cdk/ubergen';
+import * as fs from 'fs-extra';
 
 export interface PackageJson extends UbgPkgJson {
   readonly scripts: { [key: string]: string };
@@ -21,6 +22,23 @@ export interface PackageJson extends UbgPkgJson {
   }
 }
 
+export const exec = (cmd: string, opts?: cp.ExecOptions) => new Promise((ok, ko) => {
+  const proc = cp.exec(cmd, opts, (err: cp.ExecException | null, stdout: string | Buffer, stderr: string | Buffer) => {
+    if (err) {
+      return ko(err);
+    }
+
+    return ok({ stdout, stderr });
+  });
+
+  proc.stdout?.pipe(process.stdout);
+  proc.stderr?.pipe(process.stderr);
+});
+
+export const makeExecDir = (dir: string) =>
+  (cmd: string, opts: cp.ExecOptions = {}) =>
+    exec(cmd, { cwd: dir, ...opts });
+
 // Recursively find .ts files from starting directory
 export async function discoverSourceFiles(dir: string): Promise<string[]> {
   const items = await fs.readdir(dir);
@@ -37,6 +55,41 @@ export async function discoverSourceFiles(dir: string): Promise<string[]> {
   }));
 
   return paths.flat().filter(x => Boolean(x)) as string[];
+}
+
+export function rewriteDepVersions(deps: { [name: string]: string }, oldVal: string, newVal: string): { [name: string]: string } {
+  return Object.entries(deps).reduce((accum, [key, val]) => {
+    const formatted = val === oldVal ? newVal : val;
+    return {
+      ...accum,
+      [key]: formatted,
+    };
+  }, {});
+}
+
+
+export function rewriteDependencies(deps: { [name: string]: string }, nameMap: { [oldName: string]: string }): { [name: string] : string } {
+  return Object.entries(deps)
+    .reduce((accum, [key, val]) => {
+      const newKey = nameMap[key] ?? key;
+      return {
+        ...accum,
+        [newKey]: val,
+      };
+    }, {});
+}
+
+type sourceFileFormatter = (contents: string) => string | Promise<string>;
+export async function rewriteSourceFiles(dir: string, formatter: sourceFileFormatter) {
+  const files = await discoverSourceFiles(dir);
+
+  await Promise.all(files.map(async (filePath) => {
+    const content = await fs.readFile(filePath, 'utf8');
+    const output = await formatter(content);
+    if (output.trim() !== content.trim()) {
+      await fs.writeFile(filePath, output);
+    }
+  }));
 }
 
 export async function discoverIntegPaths(dir: string): Promise<IntegPath[]> {
@@ -385,20 +438,6 @@ export async function fixUnitTests(dir: string) {
       '\'my-module\': expect.stringMatching(/packages\\/aws-cdk-lib\\/core/),',
     ],
   ]);
-
-
-  // Fix assertion based on cwd
-  // const lambdaGoUtilTestPath = path.join(dir, 'aws-lambda-go', 'test', 'util.test.ts');
-  // await replaceLinesInFile(lambdaGoUtilTestPath, [
-  //   [
-  //     'expect(findUp(\'README.md\')).toMatch(/aws-lambda-go\\/README.md$/);',
-  //     'expect(findUp(\'README.md\')).toMatch(/aws-cdk-lib\\/README.md$/);',
-  //   ],
-  //   [
-  //     'expect(findUp(\'util.test.ts\', \'test/integ-handlers\')).toMatch(/aws-lambda-go\\/test\\/util.test.ts$/);',
-  //     'expect(findUp(\'util.test.ts\', \'aws-lambda-go/test/integ-handlers\')).toMatch(/aws-lambda-go\\/test\\/util.test.ts$/);',
-  //   ],
-  // ]);
 
   //Fix assertions in piplines installing v1 clis
   const pipelinesTestsPath = path.join(dir, 'pipelines', 'test');
