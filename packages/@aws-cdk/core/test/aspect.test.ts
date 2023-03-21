@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, IConstruct } from 'constructs';
 import { App } from '../lib';
-import { IAspect, Aspects } from '../lib/aspect';
+import { Aspects, IAspect } from '../lib/aspect';
 
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
@@ -68,5 +68,13 @@ describe('aspect', () => {
     // no warning is added
     expect(root.node.metadata.length).toEqual(1);
     expect(child.node.metadata.length).toEqual(1);
+  });
+
+  test('Can add multiple Aspects at a time', () => {
+    const app = new App();
+    const root = new MyConstruct(app, 'MyConstruct');
+    Aspects.of(root).add(new VisitOnce(), new VisitOnce());
+    app.synth();
+    expect(root.visitCounter).toEqual(2);
   });
 });

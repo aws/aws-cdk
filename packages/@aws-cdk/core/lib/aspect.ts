@@ -42,11 +42,11 @@ export class Aspects {
   }
 
   /**
-   * Adds an aspect to apply this scope before synthesis.
-   * @param aspect The aspect to add.
+   * Adds aspects to apply this scope before synthesis.
+   * @param aspect The aspects to add.
    */
-  public add(aspect: IAspect) {
-    this._aspects.push(aspect);
+  public add(...aspect: IAspect[]) {
+    this._aspects.push(...aspect);
   }
 
   /**
