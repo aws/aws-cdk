@@ -152,7 +152,7 @@ export class Stage extends Construct {
    *
    * @default - no validation plugins are used
    */
-  public readonly validationPlugins: IPolicyValidationPlugin[] = [];
+  public readonly policyValidation: IPolicyValidationPlugin[] = [];
 
 
   constructor(scope: Construct, id: string, props: StageProps = {}) {

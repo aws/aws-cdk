@@ -92,7 +92,7 @@ export class TreeMetadata extends Construct {
    *
    * @internal
    */
-  public getNodeBranch(constructPath: string): Node | undefined {
+  public _getNodeBranch(constructPath: string): Node | undefined {
     if (!this._tree) {
       throw new Error('tree has not been created yet!');
     }
