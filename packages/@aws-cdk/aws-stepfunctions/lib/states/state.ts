@@ -1,6 +1,7 @@
+import { Token } from '@aws-cdk/core';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Condition } from '../condition';
-import { FieldUtils, JsonPath } from '../fields';
+import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types';
 
@@ -577,9 +578,8 @@ export function renderList<T>(xs: T[], mapFn: (x: T) => any, sortFn?: (a: T, b: 
  */
 export function renderJsonPath(jsonPath?: string): undefined | null | string {
   if (jsonPath === undefined) { return undefined; }
-  if (jsonPath === JsonPath.DISCARD) { return null; }
 
-  if (!jsonPath.startsWith('$')) {
+  if (!Token.isUnresolved(jsonPath) && !jsonPath.startsWith('$')) {
     throw new Error(`Expected JSON path to start with '$', got: ${jsonPath}`);
   }
   return jsonPath;

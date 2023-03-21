@@ -1,6 +1,7 @@
 # See https://doc.mergify.io
 queue_rules:
   - name: default
+    update_method: merge
     conditions:
       - status-success~=AWS CodeBuild us-east-1
 
