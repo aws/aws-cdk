@@ -5,6 +5,8 @@ import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/l
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
+import { compareLoggingProps } from './compareLogging';
+
 
 const MAX_CLUSTER_NAME_LEN = 100;
 
@@ -25,6 +27,9 @@ export class ClusterResourceHandler extends ResourceHandler {
 
     this.newProps = parseProps(this.event.ResourceProperties);
     this.oldProps = event.RequestType === 'Update' ? parseProps(event.OldResourceProperties) : {};
+    // compare newProps and oldProps and update the newProps by appending disabled LogSetup if any
+    const compared: Partial<aws.EKS.CreateClusterRequest> = compareLoggingProps(this.oldProps, this.newProps);
+    this.newProps.logging = compared.logging;
   }
 
   // ------
