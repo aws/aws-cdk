@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "31.0.0",
   "artifacts": {
     "aws-cdk-elb-instance-target-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11ca0111a871a53be970c5db0c5a24d4146213fd59f6d172b6fc1bc3de206cf9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c8ab3e4e4503281b1f7df3028abab9a0ca3738640d31201b5118a18aaa225eab.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -129,6 +129,12 @@
             "data": "targetInstanceInstanceRole3F8EC526"
           }
         ],
+        "/aws-cdk-elb-instance-target-integ/targetInstance/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "targetInstanceInstanceRoleDefaultPolicy1E71262F"
+          }
+        ],
         "/aws-cdk-elb-instance-target-integ/targetInstance/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
@@ -138,7 +144,7 @@
         "/aws-cdk-elb-instance-target-integ/targetInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "targetInstance603C5817"
+            "data": "targetInstance603C5817b329f03eca862331"
           }
         ],
         "/aws-cdk-elb-instance-target-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -162,7 +168,10 @@
         "/aws-cdk-elb-instance-target-integ/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LB8A12904C"
+            "data": "LB8A12904C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-elb-instance-target-integ/BootstrapVersion": [
@@ -177,19 +186,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "targetInstanceInstanceSecurityGroupfromawscdkelbinstancetargetintegLBSecurityGroup395870CC80E053AA6C": [
+        "targetInstance603C5817": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "targetInstanceInstanceSecurityGroupfromawscdkelbinstancetargetintegLBSecurityGroup395870CC80E053AA6C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "LBSecurityGrouptoawscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E80A95A3BE8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LBSecurityGrouptoawscdkelbinstancetargetintegtargetInstanceInstanceSecurityGroup4B82664E80A95A3BE8",
+            "data": "targetInstance603C5817",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

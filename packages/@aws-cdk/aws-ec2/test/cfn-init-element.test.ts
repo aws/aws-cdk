@@ -625,6 +625,51 @@ describe('InitService', () => {
     });
   });
 
+  test('can request systemd service', () => {
+    // WHEN
+    const service = ec2.InitService.enable('httpd', {
+      serviceManager: ec2.ServiceManager.SYSTEMD,
+    });
+
+    // THEN
+    const bindOptions = defaultOptions(InitPlatform.LINUX);
+    const rendered = service._bind(bindOptions).config;
+
+    // THEN
+    expect(rendered.systemd).toEqual({
+      httpd: {
+        enabled: true,
+        ensureRunning: true,
+      },
+    });
+  });
+
+  test('can create simple systemd config file', () => {
+    // WHEN
+    const file = ec2.InitService.systemdConfigFile('myserver', {
+      command: '/start/my/service',
+      cwd: '/my/dir',
+      user: 'ec2-user',
+      group: 'ec2-user',
+      description: 'my service',
+    });
+
+    // THEN
+    const bindOptions = defaultOptions(InitPlatform.LINUX);
+    const rendered = file._bind(bindOptions).config;
+    expect(rendered).toEqual({
+      '/etc/systemd/system/myserver.service': expect.objectContaining({
+        content: expect.any(String),
+      }),
+    });
+
+    const capture = rendered['/etc/systemd/system/myserver.service'].content;
+    expect(capture).toContain('ExecStart=/start/my/service');
+    expect(capture).toContain('WorkingDirectory=/my/dir');
+    expect(capture).toContain('User=ec2-user');
+    expect(capture).toContain('Group=ec2-user');
+    expect(capture).toContain('Description=my service');
+  });
 });
 
 describe('InitSource', () => {
