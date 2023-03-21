@@ -151,7 +151,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: 'ec2.amazonaws.com',
+                Service: {  "Fn::FindInMap": ["ServiceprincipalMap", { "Ref": "AWS::Region" }, "ec2" ] },
               },
             },
           ],
@@ -320,7 +320,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: 'ec2.amazonaws.com',
+                Service: {  "Fn::FindInMap": ["ServiceprincipalMap", { "Ref": "AWS::Region" }, "ec2" ] },
               },
             },
           ],
@@ -684,7 +684,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: 'ec2.amazonaws.com',
+                Service: {  "Fn::FindInMap": ["ServiceprincipalMap", { "Ref": "AWS::Region" }, "ec2" ] },
               },
             },
           ],
@@ -1683,7 +1683,7 @@ describe('cluster', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: 'ec2.amazonaws.com',
+              Service: {  "Fn::FindInMap": ["ServiceprincipalMap", { "Ref": "AWS::Region" }, "ec2" ] },
             },
           },
         ],
