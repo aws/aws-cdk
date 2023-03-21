@@ -403,182 +403,6 @@ export class ResultWriter {
 }
 
 /**
- * Percentage of failed items to tolerate in a Map Run
- */
-export class ToleratedFailurePercentage {
-
-  /**
-   * Fill value from JSON path
-   */
-  public static fromPath(path: string): ToleratedFailurePercentage {
-    return new ToleratedFailurePercentage(path, true);
-  }
-
-  /**
-   * Fill value from number
-   */
-  public static fromNumber(value: number): ToleratedFailurePercentage {
-    return new ToleratedFailurePercentage(value);
-  }
-
-  /**
-   * Number value or string JSON path
-   */
-  private readonly value: any;
-
-  /**
-   * Is the value a string JSON path
-   */
-  private readonly fromPath?: boolean
-
-  private constructor(value: any, fromPath?: boolean) {
-    this.value = value;
-    this.fromPath = fromPath;
-  }
-
-  /**
-   * Renders the value as ASL JSON
-   */
-  public render(): any {
-    return {
-      [(this.fromPath ? 'ToleratedFailurePercentagePath' : 'ToleratedFailurePercentage')]: this.value,
-    };
-  }
-}
-
-/**
- * Number of failed items to tolerate in a Map Run
- */
-export class ToleratedFailureCount {
-
-  /**
-   * Fill value from JSON path
-   */
-  public static fromPath(path: string): ToleratedFailureCount {
-    return new ToleratedFailureCount(path, true);
-  }
-
-  /**
-   * Fill value from number
-   */
-  public static fromNumber(value: number): ToleratedFailureCount {
-    return new ToleratedFailureCount(value);
-  }
-
-  /**
-   * Number value or string JSON path
-   */
-  private readonly value: any;
-
-  /**
-   * Is the value a string JSON path
-   */
-  private readonly fromPath?: boolean
-
-  private constructor(value: any, fromPath?: boolean) {
-    this.value = value;
-    this.fromPath = fromPath;
-  }
-
-  /**
-   * Renders the value as ASL JSON
-   */
-  public render(): any {
-    return {
-      [(this.fromPath ? 'ToleratedFailureCountPath' : 'ToleratedFailureCount')]: this.value,
-    };
-  }
-}
-
-/**
- * Maximum number of items that each child workflow execution processes
- */
-export class MaxItemsPerBatch {
-
-  /**
-   * Fill value from JSON path
-   */
-  public static fromPath(path: string): MaxItemsPerBatch {
-    return new MaxItemsPerBatch(path, true);
-  }
-
-  /**
-   * Fill value from number
-   */
-  public static fromNumber(value: number): MaxItemsPerBatch {
-    return new MaxItemsPerBatch(value);
-  }
-
-  /**
-   * Number value or string JSON path
-   */
-  private readonly value: any;
-
-  /**
-   * Is the value a string JSON path
-   */
-  private readonly fromPath?: boolean
-
-  private constructor(value: any, fromPath?: boolean) {
-    this.value = value;
-    this.fromPath = fromPath;
-  }
-
-  /**
-   * Renders the value as ASL JSON
-   */
-  public render(): any {
-    return {
-      [(this.fromPath ? 'MaxItemsPerBatchPath' : 'MaxItemsPerBatch')]: this.value,
-    };
-  }
-}
-
-/**
- * Maximum number of bytes that each child workflow execution processes
- */
-export class MaxInputBytesPerBatch {
-
-  /**
-   * Fill value from JSON path
-   */
-  public static fromPath(path: string): MaxInputBytesPerBatch {
-    return new MaxInputBytesPerBatch(path, true);
-  }
-
-  /**
-   * Fill value from number
-   */
-  public static fromNumber(value: number): MaxInputBytesPerBatch {
-    return new MaxInputBytesPerBatch(value);
-  }
-
-  /**
-   * Number value or string JSON path
-   */
-  private readonly value: any;
-
-  /**
-   * Is the value a string JSON path
-   */
-  private readonly fromPath?: boolean
-
-  private constructor(value: any, fromPath?: boolean) {
-    this.value = value;
-    this.fromPath = fromPath;
-  }
-
-  /**
-   * Renders the value as ASL JSON
-   */
-  public render(): any {
-    return {
-      [(this.fromPath ? 'MaxInputBytesPerBatchPath' : 'MaxInputBytesPerBatch')]: this.value,
-    };
-  }
-}
-
-/**
  * Properties for configuring a Distribute Map state
  */
 export interface DistributedMapProps extends MapProps {
@@ -604,24 +428,39 @@ export interface DistributedMapProps extends MapProps {
   /**
      * ToleratedFailurePercentage
      *
-     * Percentage of failed items to tolerate in a Map Run
-     *
-     * Supports a static number or a JsonPath to a field containing the number value
+     * Percentage of failed items to tolerate in a Map Run, as static number
      *
      * @default - No toleratedFailurePercentage
      */
-  readonly toleratedFailurePercentage?: ToleratedFailurePercentage
+  readonly toleratedFailurePercentage?: number
+
+  /**
+     * ToleratedFailurePercentagePath
+     *
+     * Percentage of failed items to tolerate in a Map Run, as JsonPath
+     *
+     * @default - No toleratedFailurePercentagePath
+     */
+  readonly toleratedFailurePercentagePath?: string
 
   /**
      * ToleratedFailureCount
      *
-     * Number of failed items to tolerate in a Map Run
-     *
-     * Supports a static number or a JsonPath to a field containing the number value
+     * Number of failed items to tolerate in a Map Run, as static number
      *
      * @default - No toleratedFailureCount
      */
-  readonly toleratedFailureCount?: ToleratedFailureCount
+  readonly toleratedFailureCount?: number
+
+  /**
+     * ToleratedFailureCountPath
+     *
+     * Number of failed items to tolerate in a Map Run, as JsonPath
+     *
+     * @default - No toleratedFailureCountPath
+     */
+  readonly toleratedFailureCountPath?: string
+
 
   /**
      * Label
@@ -635,24 +474,38 @@ export interface DistributedMapProps extends MapProps {
   /**
    * MaxItemsPerBatch
    *
-   * Specifies the maximum number of items that each child workflow execution processes
-   *
-   * Supports a static number or a JsonPath to a field containing the number value
+   * Specifies the maximum number of items that each child workflow execution processes, as static number
    *
    * @default - No maxItemsPerBatch
    */
-  readonly maxItemsPerBatch?: MaxItemsPerBatch
+  readonly maxItemsPerBatch?: number
+
+  /**
+   * MaxItemsPerBatchPath
+   *
+   * Specifies the maximum number of items that each child workflow execution processes, as JsonPath
+   *
+   * @default - No maxItemsPerBatchPath
+   */
+  readonly maxItemsPerBatchPath?: string
 
   /**
    * MaxInputBytesPerBatch
    *
-   * Specifies the maximum number of bytes that each child workflow execution processes
-   *
-   * Supports a static number or a JsonPath to a field containing the number value
+   * Specifies the maximum number of bytes that each child workflow execution processes, as static number
    *
    * @default - No maxInputBytesPerBatch
    */
-  readonly maxInputBytesPerBatch?: MaxInputBytesPerBatch
+  readonly maxInputBytesPerBatch?: number
+
+  /**
+   * MaxInputBytesPerBatchPath
+   *
+   * Specifies the maximum number of bytes that each child workflow execution processes, as JsonPath
+   *
+   * @default - No maxInputBytesPerBatchPath
+   */
+  readonly maxInputBytesPerBatchPath?: string
 
   /**
    * BatchInput
@@ -696,11 +549,15 @@ export class DistributedMap extends Map implements INextable {
 
   private readonly mapExecutionType?: StateMachineType;
   private readonly itemReader?: IItemReader;
-  private readonly toleratedFailurePercentage?: ToleratedFailurePercentage;
-  private readonly toleratedFailureCount?: ToleratedFailureCount;
+  private readonly toleratedFailurePercentage?: number;
+  private readonly toleratedFailurePercentagePath?: string;
+  private readonly toleratedFailureCount?: number;
+  private readonly toleratedFailureCountPath?: string;
   private readonly label?: string;
-  private readonly maxItemsPerBatch?: MaxItemsPerBatch;
-  private readonly maxInputBytesPerBatch?: MaxInputBytesPerBatch;
+  private readonly maxItemsPerBatch?: number;
+  private readonly maxItemsPerBatchPath?: string;
+  private readonly maxInputBytesPerBatch?: number;
+  private readonly maxInputBytesPerBatchPath?: string;
   private readonly batchInput?: object;
   private readonly resultWriter?: ResultWriter;
 
@@ -709,10 +566,14 @@ export class DistributedMap extends Map implements INextable {
     this.mapExecutionType = props.mapExecutionType ?? StateMachineType.STANDARD;
     this.itemReader = props.itemReader;
     this.toleratedFailurePercentage = props.toleratedFailurePercentage;
+    this.toleratedFailurePercentagePath = props.toleratedFailurePercentagePath;
     this.toleratedFailureCount = props.toleratedFailureCount;
+    this.toleratedFailureCountPath = props.toleratedFailureCountPath;
     this.label = props.label;
     this.maxItemsPerBatch = props.maxItemsPerBatch;
+    this.maxItemsPerBatchPath = props.maxItemsPerBatchPath;
     this.maxInputBytesPerBatch = props.maxInputBytesPerBatch;
+    this.maxInputBytesPerBatchPath = props.maxInputBytesPerBatchPath;
     this.batchInput = props.batchInput;
     this.resultWriter = props.resultWriter;
   }
@@ -725,6 +586,26 @@ export class DistributedMap extends Map implements INextable {
 
     if (this.itemsPath !== undefined && this.itemReader !== undefined) {
       errors.push('Provide either `itemsPath` or `itemReader`, but not both');
+    }
+
+    if (this.toleratedFailurePercentage !== undefined && this.toleratedFailurePercentagePath !== undefined) {
+      errors.push('Provide either `toleratedFailurePercentage` or `toleratedFailurePercentagePath`, but not both');
+    }
+
+    if (this.toleratedFailurePercentage && !(this.toleratedFailurePercentage >= 0 && this.toleratedFailurePercentage <= 100)) {
+      errors.push('toleratedFailurePercentage must be between 0 and 100');
+    }
+
+    if (this.toleratedFailureCount !== undefined && this.toleratedFailureCountPath !== undefined) {
+      errors.push('Provide either `toleratedFailureCount` or `toleratedFailureCountPath`, but not both');
+    }
+
+    if (this.maxItemsPerBatch !== undefined && this.maxItemsPerBatchPath !== undefined) {
+      errors.push('Provide either `maxItemsPerBatch` or `maxItemsPerBatchPath`, but not both');
+    }
+
+    if (this.maxInputBytesPerBatch !== undefined && this.maxInputBytesPerBatchPath !== undefined) {
+      errors.push('Provide either `maxInputBytesPerBatch` or `maxInputBytesPerBatchPath`, but not both');
     }
 
     if (this.label !== undefined) {
@@ -754,8 +635,10 @@ export class DistributedMap extends Map implements INextable {
       ...rendered,
       ...this.renderItemReader(),
       ...this.renderItemBatcher(),
-      ...this.toleratedFailurePercentage?.render(),
-      ...this.toleratedFailureCount?.render(),
+      ...(this.toleratedFailurePercentage && { ToleratedFailurePercentage: this.toleratedFailurePercentage }),
+      ...(this.toleratedFailurePercentagePath && { ToleratedFailurePercentagePath: this.toleratedFailurePercentagePath }),
+      ...(this.toleratedFailureCount && { ToleratedFailureCount: this.toleratedFailureCount }),
+      ...(this.toleratedFailureCountPath && { ToleratedFailureCountPath: this.toleratedFailureCountPath }),
       ...(this.label && { Label: this.label }),
       ...this.renderResultWriter(),
     };
@@ -795,12 +678,19 @@ export class DistributedMap extends Map implements INextable {
    * Render ItemBatcher in ASL JSON format
    */
   private renderItemBatcher(): any {
-    if (this.maxItemsPerBatch === undefined && this.maxInputBytesPerBatch === undefined && this.batchInput === undefined) { return undefined; }
+    if (
+      this.maxItemsPerBatch === undefined &&
+      this.maxItemsPerBatchPath === undefined &&
+      this.maxInputBytesPerBatch === undefined &&
+      this.maxInputBytesPerBatchPath === undefined &&
+      this.batchInput === undefined) { return undefined; }
 
     return {
       ItemBatcher: {
-        ...this.maxItemsPerBatch?.render(),
-        ...this.maxInputBytesPerBatch?.render(),
+        ...(this.maxItemsPerBatch && { MaxItemsPerBatch: this.maxItemsPerBatch }),
+        ...(this.maxItemsPerBatchPath && { MaxItemsPerBatchPath: this.maxItemsPerBatchPath }),
+        ...(this.maxInputBytesPerBatch && { MaxInputBytesPerBatch: this.maxInputBytesPerBatch }),
+        ...(this.maxInputBytesPerBatchPath && { MaxInputBytesPerBatchPath: this.maxInputBytesPerBatchPath }),
         ...(this.batchInput && { BatchInput: this.batchInput }),
       },
     };

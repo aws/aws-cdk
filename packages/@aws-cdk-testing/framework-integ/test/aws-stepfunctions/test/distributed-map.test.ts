@@ -537,7 +537,7 @@ describe('Distributed Map State', () => {
     });
   }),
 
-  test('State Machine With Distributed Map State From Path Properties', () => {
+  test('State Machine With Distributed Map State Path Properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -545,10 +545,10 @@ describe('Distributed Map State', () => {
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
       mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
-      toleratedFailurePercentage: stepfunctions.ToleratedFailurePercentage.fromPath(stepfunctions.JsonPath.stringAt('$.toleratedFailurePercentage')),
-      toleratedFailureCount: stepfunctions.ToleratedFailureCount.fromPath(stepfunctions.JsonPath.stringAt('$.toleratedFailureCount')),
-      maxItemsPerBatch: stepfunctions.MaxItemsPerBatch.fromPath(stepfunctions.JsonPath.stringAt('$.maxItemsPerBatch')),
-      maxInputBytesPerBatch: stepfunctions.MaxInputBytesPerBatch.fromPath(stepfunctions.JsonPath.stringAt('$.maxInputBytesPerBatch')),
+      toleratedFailurePercentagePath: stepfunctions.JsonPath.stringAt('$.toleratedFailurePercentage'),
+      toleratedFailureCountPath: stepfunctions.JsonPath.stringAt('$.toleratedFailureCount'),
+      maxItemsPerBatchPath: stepfunctions.JsonPath.stringAt('$.maxItemsPerBatch'),
+      maxInputBytesPerBatchPath: stepfunctions.JsonPath.stringAt('$.maxInputBytesPerBatch'),
     });
     map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
 
@@ -584,7 +584,7 @@ describe('Distributed Map State', () => {
     });
   }),
 
-  test('State Machine With Distributed Map State From Number Properties', () => {
+  test('State Machine With Distributed Map State Number Properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -592,11 +592,11 @@ describe('Distributed Map State', () => {
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
       mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
-      toleratedFailurePercentage: stepfunctions.ToleratedFailurePercentage.fromNumber(100),
-      toleratedFailureCount: stepfunctions.ToleratedFailureCount.fromNumber(101),
+      toleratedFailurePercentage: 100,
+      toleratedFailureCount: 101,
       label: 'testLabel',
-      maxItemsPerBatch: stepfunctions.MaxItemsPerBatch.fromNumber(10),
-      maxInputBytesPerBatch: stepfunctions.MaxInputBytesPerBatch.fromNumber(11),
+      maxItemsPerBatch: 10,
+      maxInputBytesPerBatch: 11,
       batchInput: {
         Test: 'test',
       },
