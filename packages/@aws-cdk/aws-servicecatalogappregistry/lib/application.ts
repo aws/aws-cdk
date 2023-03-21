@@ -67,7 +67,7 @@ export interface IApplication extends cdk.IResource {
   /**
    * Create an attribute group and associate this application with the created attribute group.
    *
-   * @param id construct id of the attribute group construct created
+   * @param id name of the AttributeGroup construct to be created.
    * @param attributeGroupProps AppRegistry attribute group props
    */
   addAttributeGroup(id: string, attributeGroupProps: AttributeGroupAssociationProps): IAttributeGroup;
