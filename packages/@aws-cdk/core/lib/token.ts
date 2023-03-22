@@ -4,7 +4,7 @@ import { unresolved } from './private/encoding';
 import { Intrinsic } from './private/intrinsic';
 import { resolve } from './private/resolve';
 import { TokenMap } from './private/token-map';
-import { IResolvable, ITokenResolver } from './resolvable';
+import { IResolvable, ITokenResolver, IResolveContext } from './resolvable';
 import { TokenizedStringFragments } from './string-fragments';
 
 /**
@@ -236,11 +236,17 @@ export class Tokenization {
  * An object which serializes to the JSON `null` literal, and which can safely
  * be passed across languages where `undefined` and `null` are not different.
  */
-export class JsonNull {
+export class JsonNull implements IResolvable {
   /** The canonical instance of `JsonNull`. */
   public static readonly INSTANCE = new JsonNull();
 
+  public readonly creationStack: string[] = [];
+
   private constructor() { }
+
+  public resolve(_ctx: IResolveContext): any {
+    return null;
+  }
 
   /** Obtains the JSON representation of this object (`null`) */
   public toJSON(): any {

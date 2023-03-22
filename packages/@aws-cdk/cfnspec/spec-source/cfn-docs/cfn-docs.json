@@ -382,7 +382,7 @@
     },
     "AWS::AccessAnalyzer::Analyzer.Filter": {
       "attributes": {},
-      "description": "The criteria that defines the rule.",
+      "description": "The criteria that defines the rule.\n\nTo learn about filter keys that you can use to create an archive rule, see [filter keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-reference-filter-keys.html) in the *User Guide* .",
       "properties": {
         "Contains": "A \"contains\" condition to match for the rule.",
         "Eq": "An \"equals\" condition to match for the rule.",
@@ -1932,7 +1932,7 @@
       "properties": {
         "ApplicationId": "The application ID.",
         "Description": "A description of the configuration profile.",
-        "LocationUri": "A URI to locate the configuration. You can specify the following:\n\n- For the AWS AppConfig hosted configuration store and for feature flags, specify `hosted` .\n- For an AWS Systems Manager Parameter Store parameter, specify either the parameter name in the format `ssm-parameter://<parameter name>` or the ARN.\n- For an AWS Secrets Manager secret, specify the URI in the following format: `secrets-manager` ://<secret name>.\n- For an Amazon S3 object, specify the URI in the following format: `s3://<bucket>/<objectKey>` . Here is an example: `s3://my-bucket/my-app/us-east-1/my-config.json`\n- For an SSM document, specify either the document name in the format `ssm-document://<document name>` or the Amazon Resource Name (ARN).",
+        "LocationUri": "A URI to locate the configuration. You can specify the following:\n\n- For the AWS AppConfig hosted configuration store and for feature flags, specify `hosted` .\n- For an AWS Systems Manager Parameter Store parameter, specify either the parameter name in the format `ssm-parameter://<parameter name>` or the ARN.\n- For an AWS Secrets Manager secret, specify the URI in the following format: `secretsmanager` ://<secret name>.\n- For an Amazon S3 object, specify the URI in the following format: `s3://<bucket>/<objectKey>` . Here is an example: `s3://my-bucket/my-app/us-east-1/my-config.json`\n- For an SSM document, specify either the document name in the format `ssm-document://<document name>` or the Amazon Resource Name (ARN).",
         "Name": "A name for the configuration profile.",
         "RetrievalRoleArn": "The ARN of an IAM role with permission to access the configuration at the specified `LocationUri` .\n\n> A retrieval role ARN is not required for configurations stored in the AWS AppConfig hosted configuration store. It is required for all other sources that store your configuration.",
         "Tags": "Metadata to assign to the configuration profile. Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
@@ -5221,7 +5221,7 @@
       "description": "Contains customized metric specification information for a target tracking scaling policy for Application Auto Scaling.\n\nFor information about the available metrics for a service, see [AWS services that publish CloudWatch metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html) in the *Amazon CloudWatch User Guide* .\n\nTo create your customized metric specification:\n\n- Add values for each required parameter from CloudWatch. You can use an existing metric, or a new metric that you create. To use your own metric, you must first publish the metric to CloudWatch. For more information, see [Publish custom metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/publishingMetrics.html) in the *Amazon CloudWatch User Guide* .\n- Choose a metric that changes proportionally with capacity. The value of the metric should increase or decrease in inverse proportion to the number of capacity units. That is, the value of the metric should decrease when capacity increases, and increase when capacity decreases.\n\nFor an example of how creating new metrics can be useful, see [Scaling based on Amazon SQS](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html) in the *Amazon EC2 Auto Scaling User Guide* . This topic mentions Auto Scaling groups, but the same scenario for Amazon SQS can apply to the target tracking scaling policies that you create for a Spot Fleet by using Application Auto Scaling.\n\nFor more information about the CloudWatch terminology below, see [Amazon CloudWatch concepts](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html) .\n\n`CustomizedMetricSpecification` is a property of the [AWS::ApplicationAutoScaling::ScalingPolicy TargetTrackingScalingPolicyConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html) property type.",
       "properties": {
         "Dimensions": "The dimensions of the metric.\n\nConditional: If you published your metric with dimensions, you must specify the same dimensions in your scaling policy.",
-        "MetricName": "The name of the metric. To get the exact metric name, namespace, and dimensions, inspect the [Metric](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_Metric.html) object that is returned by a call to [ListMetrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_ListMetrics.html) .",
+        "MetricName": "The name of the metric. To get the exact metric name, namespace, and dimensions, inspect the [Metric](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_Metric.html) object that's returned by a call to [ListMetrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_ListMetrics.html) .",
         "Namespace": "The namespace of the metric.",
         "Statistic": "The statistic of the metric.",
         "Unit": "The unit of the metric. For a complete list of the units that CloudWatch supports, see the [MetricDatum](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html) data type in the *Amazon CloudWatch API Reference* ."
@@ -5487,6 +5487,20 @@
         "WorkGroupConfiguration": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified. The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings."
       }
     },
+    "AWS::Athena::WorkGroup.AclConfiguration": {
+      "attributes": {},
+      "description": "Indicates that an Amazon S3 canned ACL should be set to control ownership of stored query results. When Athena stores query results in Amazon S3, the canned ACL is set with the `x-amz-acl` request header. For more information about S3 Object Ownership, see [Object Ownership settings](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html#object-ownership-overview) in the *Amazon S3 User Guide* .",
+      "properties": {
+        "S3AclOption": "The Amazon S3 canned ACL that Athena should specify when storing query results. Currently the only supported canned ACL is `BUCKET_OWNER_FULL_CONTROL` . If a query runs in a workgroup and the workgroup overrides client-side settings, then the Amazon S3 canned ACL specified in the workgroup's settings is used for all queries that run in the workgroup. For more information about Amazon S3 canned ACLs, see [Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl) in the *Amazon S3 User Guide* ."
+      }
+    },
+    "AWS::Athena::WorkGroup.CustomerContentEncryptionConfiguration": {
+      "attributes": {},
+      "description": "Specifies the KMS key that is used to encrypt the user's data stores in Athena.",
+      "properties": {
+        "KmsKey": "The KMS key that is used to encrypt the user's data stores in Athena."
+      }
+    },
     "AWS::Athena::WorkGroup.EncryptionConfiguration": {
       "attributes": {},
       "description": "If query results are encrypted in Amazon S3, indicates the encryption option used (for example, `SSE_KMS` or `CSE_KMS` ) and key information.",
@@ -5507,7 +5521,9 @@
       "attributes": {},
       "description": "The location in Amazon S3 where query and calculation results are stored and the encryption option, if any, used for query and calculation results. These are known as \"client-side settings\". If workgroup settings override client-side settings, then the query uses the workgroup settings.",
       "properties": {
+        "AclConfiguration": "Indicates that an Amazon S3 canned ACL should be set to control ownership of stored query results. Currently the only supported canned ACL is `BUCKET_OWNER_FULL_CONTROL` . This is a client-side setting. If workgroup settings override client-side settings, then the query uses the ACL configuration that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. For more information, see `WorkGroupConfiguration$EnforceWorkGroupConfiguration` and [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
         "EncryptionConfiguration": "If query results are encrypted in Amazon S3, indicates the encryption option used (for example, `SSE_KMS` or `CSE_KMS` ) and key information. This is a client-side setting. If workgroup settings override client-side settings, then the query uses the encryption configuration that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. See `EnforceWorkGroupConfiguration` and [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
+        "ExpectedBucketOwner": "The AWS account ID that you expect to be the owner of the Amazon S3 bucket specified by `ResultConfiguration$OutputLocation` . If set, Athena uses the value for `ExpectedBucketOwner` when it makes Amazon S3 calls to your specified output location. If the `ExpectedBucketOwner` AWS account ID does not match the actual owner of the Amazon S3 bucket, the call fails with a permissions error.\n\nThis is a client-side setting. If workgroup settings override client-side settings, then the query uses the `ExpectedBucketOwner` setting that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. See `WorkGroupConfiguration$EnforceWorkGroupConfiguration` and [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
         "OutputLocation": "The location in Amazon S3 where your query results are stored, such as `s3://path/to/query/bucket/` . To run a query, you must specify the query results location using either a client-side setting for individual queries or a location specified by the workgroup. If workgroup settings override client-side settings, then the query uses the location specified for the workgroup. If no query location is set, Athena issues an error. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) and `EnforceWorkGroupConfiguration` ."
       }
     },
@@ -5515,9 +5531,12 @@
       "attributes": {},
       "description": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified. The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings.",
       "properties": {
+        "AdditionalConfiguration": "Specifies a user defined JSON string that is passed to the notebook engine.",
         "BytesScannedCutoffPerQuery": "The upper limit (cutoff) for the amount of bytes a single query in a workgroup is allowed to scan. No default is defined.\n\n> This property currently supports integer types. Support for long values is planned.",
+        "CustomerContentEncryptionConfiguration": "Specifies the KMS key that is used to encrypt the user's data stores in Athena.",
         "EnforceWorkGroupConfiguration": "If set to \"true\", the settings for the workgroup override client-side settings. If set to \"false\", client-side settings are used. For more information, see [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
         "EngineVersion": "The engine version that all queries running on the workgroup use. Queries on the `AmazonAthenaPreviewFunctionality` workgroup run on the preview engine regardless of this setting.",
+        "ExecutionRole": "Role used in a session for accessing the user's resources.",
         "PublishCloudWatchMetricsEnabled": "Indicates that the Amazon CloudWatch metrics are enabled for the workgroup.",
         "RequesterPaysEnabled": "If set to `true` , allows members assigned to a workgroup to reference Amazon S3 Requester Pays buckets in queries. If set to `false` , workgroup members cannot query data from Requester Pays buckets, and queries that retrieve data from Requester Pays buckets cause an error. The default is `false` . For more information about Requester Pays buckets, see [Requester Pays Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) in the *Amazon Simple Storage Service Developer Guide* .",
         "ResultConfiguration": "Specifies the location in Amazon S3 where query results are stored and the encryption option, if any, used for query results. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) ."
@@ -7271,7 +7290,7 @@
       "attributes": {
         "Ref": "`Ref` returns the name of the keyspace. For example:\n\n`{ \"Ref\": \"MyNewKeyspace\" }`"
       },
-      "description": "The `AWS::Cassandra::Keyspace` resource allows you to create a new keyspace in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
+      "description": "You can use the `AWS::Cassandra::Keyspace` resource to create a new keyspace in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
       "properties": {
         "KeyspaceName": "The name of the keyspace to be created. The keyspace name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the keyspace name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
         "Tags": "A list of key-value pair tags to be attached to the resource."
@@ -7281,23 +7300,24 @@
       "attributes": {
         "Ref": "`Ref` returns the name of the table and the keyspace where the table exists (delimited by '|'). For example:\n\n`{ \"Ref\": \"myKeyspace|myTable\" }`"
       },
-      "description": "The `AWS::Cassandra::Table` resource allows you to create a new table in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
+      "description": "You can use the `AWS::Cassandra::Table` resource to create a new table in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
       "properties": {
         "BillingMode": "The billing mode for the table, which determines how you'll be charged for reads and writes:\n\n- *On-demand mode* (default) - You pay based on the actual reads and writes your application performs.\n- *Provisioned mode* - Lets you specify the number of reads and writes per second that you need for your application.\n\nIf you don't specify a value for this property, then the table will use on-demand mode.",
+        "ClientSideTimestampsEnabled": "Enables client-side timestamps for the table. By default, the setting is disabled. You can enable client-side timestamps with the following option:\n\n- `status: \"enabled\"`\n\nAfter client-side timestamps are enabled for a table, you can't disable this setting.",
         "ClusteringKeyColumns": "One or more columns that determine how the table data is sorted.",
         "DefaultTimeToLive": "The default Time To Live (TTL) value for all rows in a table in seconds. The maximum configurable value is 630,720,000 seconds, which is the equivalent of 20 years. By default, the TTL value for a table is 0, which means data does not expire.\n\nFor more information, see [Setting the default TTL value for a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/TTL-how-it-works.html#ttl-howitworks_default_ttl) in the *Amazon Keyspaces Developer Guide* .",
         "EncryptionSpecification": "The encryption at rest options for the table.\n\n- *AWS owned key* (default) - The key is owned by Amazon Keyspaces.\n- *Customer managed key* - The key is stored in your account and is created, owned, and managed by you.\n\n> If you choose encryption with a customer managed key, you must specify a valid customer managed KMS key with permissions granted to Amazon Keyspaces.\n\nFor more information, see [Encryption at rest in Amazon Keyspaces](https://docs.aws.amazon.com/keyspaces/latest/devguide/EncryptionAtRest.html) in the *Amazon Keyspaces Developer Guide* .",
-        "KeyspaceName": "The name of the keyspace in which to create the table. The keyspace must already exist.",
+        "KeyspaceName": "The name of the keyspace to create the table in. The keyspace must already exist.",
         "PartitionKeyColumns": "One or more columns that uniquely identify every row in the table. Every table must have a partition key.",
         "PointInTimeRecoveryEnabled": "Specifies if point-in-time recovery is enabled or disabled for the table. The options are `PointInTimeRecoveryEnabled=true` and `PointInTimeRecoveryEnabled=false` . If not specified, the default is `PointInTimeRecoveryEnabled=false` .",
         "RegularColumns": "One or more columns that are not part of the primary key - that is, columns that are *not* defined as partition key columns or clustering key columns.\n\nYou can add regular columns to existing tables by adding them to the template.",
-        "TableName": "The name of the table to be created. The table name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the table name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name. \n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
+        "TableName": "The name of the table to be created. The table name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the table name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacing this resource. You can perform updates that require no interruption or some interruption. If you must replace the resource, specify a new name. \n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
         "Tags": "A list of key-value pair tags to be attached to the resource."
       }
     },
     "AWS::Cassandra::Table.BillingMode": {
       "attributes": {},
-      "description": "Determines the billing mode for the table - On-demand or provisioned.",
+      "description": "Determines the billing mode for the table - on-demand or provisioned.",
       "properties": {
         "Mode": "The billing mode for the table:\n\n- On-demand mode - `ON_DEMAND`\n- Provisioned mode - `PROVISIONED`\n\n> If you choose `PROVISIONED` mode, then you also need to specify provisioned throughput (read and write capacity) for the table.\n\nValid values: `ON_DEMAND` | `PROVISIONED`",
         "ProvisionedThroughput": "The provisioned read capacity and write capacity for the table. For more information, see [Provisioned throughput capacity mode](https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.html#ReadWriteCapacityMode.Provisioned) in the *Amazon Keyspaces Developer Guide* ."
@@ -7374,6 +7394,24 @@
         "DomainName": "A fully qualified domain name (FQDN) in the certificate request.",
         "HostedZoneId": "The `HostedZoneId` option, which is available if you are using Route 53 as your domain registrar, causes ACM to add your CNAME to the domain record. Your list of `DomainValidationOptions` must contain one and only one of the domain-validation options, and the `HostedZoneId` can be used only when `DNS` is specified as your validation method.\n\nUse the Route 53 `ListHostedZones` API to discover IDs for available hosted zones.\n\nThis option is required for publicly trusted certificates.\n\n> The `ListHostedZones` API returns IDs in the format \"/hostedzone/Z111111QQQQQQQ\", but CloudFormation requires the IDs to be in the format \"Z111111QQQQQQQ\". \n\nWhen you change your `DomainValidationOptions` , a new resource is created.",
         "ValidationDomain": "The domain name to which you want ACM to send validation emails. This domain name is the suffix of the email addresses that you want ACM to use. This must be the same as the `DomainName` value or a superdomain of the `DomainName` value. For example, if you request a certificate for `testing.example.com` , you can specify `example.com` as this value. In that case, ACM sends domain validation emails to the following five addresses:\n\n- admin@example.com\n- administrator@example.com\n- hostmaster@example.com\n- postmaster@example.com\n- webmaster@example.com"
+      }
+    },
+    "AWS::Chatbot::MicrosoftTeamsChannelConfiguration": {
+      "attributes": {
+        "Arn": "",
+        "Ref": "When you pass the logical ID of this resource to the intrinsic Ref function, Ref returns the ARN of the configuration created."
+      },
+      "description": "The `AWS::Chatbot::MicrosoftTeamsChannelConfiguration` resource configures a Microsoft Teams channel to allow users to use AWS Chatbot with AWS CloudFormation templates.\n\nThis resource requires some setup to be done in the AWS Chatbot console. To provide the required Microsoft Teams team and tenant IDs, you must perform the initial authorization flow with Microsoft Teams in the AWS Chatbot console, then copy and paste the IDs from the console. For more details, see steps 1-4 in [Setting Up AWS Chatbot with Microsoft Teams](https://docs.aws.amazon.com/chatbot/latest/adminguide/teams-setup.html#teams-client-setup) in the *AWS Chatbot Administrator Guide* .",
+      "properties": {
+        "ConfigurationName": "The name of the configuration.",
+        "GuardrailPolicies": "The list of IAM policy ARNs that are applied as channel guardrails. The AWS managed 'AdministratorAccess' policy is applied as a default if this is not set.",
+        "IamRoleArn": "The ARN of the IAM role that defines the permissions for AWS Chatbot .\n\nThis is a user-defined role that AWS Chatbot will assume. This is not the service-linked role. For more information, see [IAM Policies for AWS Chatbot](https://docs.aws.amazon.com/chatbot/latest/adminguide/chatbot-iam-policies.html) .",
+        "LoggingLevel": "Specifies the logging level for this configuration. This property affects the log entries pushed to Amazon CloudWatch Logs.\n\nLogging levels include `ERROR` , `INFO` , or `NONE` .",
+        "SnsTopicArns": "The ARNs of the SNS topics that deliver notifications to AWS Chatbot .",
+        "TeamId": "The ID of the Microsoft Team authorized with AWS Chatbot .\n\nTo get the team ID, you must perform the initial authorization flow with Microsoft Teams in the AWS Chatbot console. Then you can copy and paste the team ID from the console. For more details, see steps 1-4 in [Get started with Microsoft Teams](https://docs.aws.amazon.com/chatbot/latest/adminguide/teams-setup.html#teams-client-setup) in the *AWS Chatbot Administrator Guide* .",
+        "TeamsChannelId": "The ID of the Microsoft Teams channel.\n\nTo get the channel ID, open Microsoft Teams, right click on the channel name in the left pane, then choose Copy. An example of the channel ID syntax is: `19%3ab6ef35dc342d56ba5654e6fc6d25a071%40thread.tacv2` .",
+        "TeamsTenantId": "The ID of the Microsoft Teams tenant.\n\nTo get the tenant ID, you must perform the initial authorization flow with Microsoft Teams in the AWS Chatbot console. Then you can copy and paste the tenant ID from the console. For more details, see steps 1-4 in [Get started with Microsoft Teams](https://docs.aws.amazon.com/chatbot/latest/adminguide/teams-setup.html#teams-client-setup) in the *AWS Chatbot Administrator Guide* .",
+        "UserRoleRequired": "Enables use of a user role requirement in your chat configuration."
       }
     },
     "AWS::Chatbot::SlackChannelConfiguration": {
@@ -8761,7 +8799,7 @@
       "description": "A dimension is a name/value pair that is part of the identity of a metric. Because dimensions are part of the unique identifier for a metric, whenever you add a unique name/value pair to one of your metrics, you are creating a new variation of that metric. For example, many Amazon EC2 metrics publish `InstanceId` as a dimension name, and the actual instance ID as the value for that dimension.\n\nYou can assign up to 30 dimensions to a metric.",
       "properties": {
         "Name": "The name of the dimension.",
-        "Value": "The value of the dimension. Dimension values must contain only ASCII characters and must include at least one non-whitespace character."
+        "Value": "The value of the dimension. Dimension values must contain only ASCII characters and must include at least one non-whitespace character. ASCII control characters are not supported as part of dimension values."
       }
     },
     "AWS::CloudWatch::AnomalyDetector.Metric": {
@@ -9047,7 +9085,7 @@
       "properties": {
         "Name": "The name or key of the environment variable.",
         "Type": "The type of environment variable. Valid values include:\n\n- `PARAMETER_STORE` : An environment variable stored in Systems Manager Parameter Store. To learn how to specify a parameter store environment variable, see [env/parameter-store](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.parameter-store) in the *AWS CodeBuild User Guide* .\n- `PLAINTEXT` : An environment variable in plain text format. This is the default value.\n- `SECRETS_MANAGER` : An environment variable stored in AWS Secrets Manager . To learn how to specify a secrets manager environment variable, see [env/secrets-manager](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager) in the *AWS CodeBuild User Guide* .",
-        "Value": "The value of the environment variable.\n\n> We strongly discourage the use of `PLAINTEXT` environment variables to store sensitive values, especially AWS secret key IDs. `PLAINTEXT` environment variables can be displayed in plain text using the AWS CodeBuild console and the AWS CLI . For sensitive values, we recommend you use an environment variable of type `PARAMETER_STORE` or `SECRETS_MANAGER` ."
+        "Value": "The value of the environment variable.\n\n> We strongly discourage the use of `PLAINTEXT` environment variables to store sensitive values, especially AWS secret key IDs and secret access keys. `PLAINTEXT` environment variables can be displayed in plain text using the AWS CodeBuild console and the AWS CLI . For sensitive values, we recommend you use an environment variable of type `PARAMETER_STORE` or `SECRETS_MANAGER` ."
       }
     },
     "AWS::CodeBuild::Project.FilterGroup": {
@@ -10395,6 +10433,72 @@
         "GroupName": "The group name.",
         "UserPoolId": "The user pool ID for the user pool.",
         "Username": "The username for the user."
+      }
+    },
+    "AWS::Comprehend::Flywheel": {
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) of the flywheel.",
+        "Ref": "`Ref` returns the Amazon Resource Name (ARN) of the flywheel."
+      },
+      "description": "A flywheel is an AWS resource that orchestrates the ongoing training of a model for custom classification or custom entity recognition. You can create a flywheel to start with an existing trained model, or Comprehend can create and train a new model.\n\nWhen you create the flywheel, Comprehend creates a data lake in your account. The data lake holds the training data and test data for all versions of the model.\n\nTo use a flywheel with an existing trained model, you specify the active model version. Comprehend copies the model's training data and test data into the flywheel's data lake.\n\nTo use the flywheel with a new model, you need to provide a dataset for training data (and optional test data) when you create the flywheel.\n\nFor more information about flywheels, see [Flywheel overview](https://docs.aws.amazon.com/comprehend/latest/dg/flywheels-about.html) in the *Amazon Comprehend Developer Guide* .",
+      "properties": {
+        "ActiveModelArn": "The Amazon Resource Number (ARN) of the active model version.",
+        "DataAccessRoleArn": "The Amazon Resource Name (ARN) of the IAM role that grants Amazon Comprehend permission to access the flywheel data.",
+        "DataLakeS3Uri": "Amazon S3 URI of the data lake location.",
+        "DataSecurityConfig": "Data security configuration.",
+        "FlywheelName": "Name for the flywheel.",
+        "ModelType": "Model type of the flywheel's model.",
+        "Tags": "Tags associated with the endpoint being created. A tag is a key-value pair that adds metadata to the endpoint. For example, a tag with \"Sales\" as the key might be added to an endpoint to indicate its use by the sales department.",
+        "TaskConfig": "Configuration about the custom classifier associated with the flywheel."
+      }
+    },
+    "AWS::Comprehend::Flywheel.DataSecurityConfig": {
+      "attributes": {},
+      "description": "Data security configuration.",
+      "properties": {
+        "DataLakeKmsKeyId": "ID for the AWS KMS key that Amazon Comprehend uses to encrypt the data in the data lake.",
+        "ModelKmsKeyId": "ID for the AWS KMS key that Amazon Comprehend uses to encrypt trained custom models. The ModelKmsKeyId can be either of the following formats:\n\n- KMS Key ID: `\"1234abcd-12ab-34cd-56ef-1234567890ab\"`\n- Amazon Resource Name (ARN) of a KMS Key: `\"arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab\"`",
+        "VolumeKmsKeyId": "ID for the AWS KMS key that Amazon Comprehend uses to encrypt the volume.",
+        "VpcConfig": "Configuration parameters for an optional private Virtual Private Cloud (VPC) containing the resources you are using for the job. For more information, see [Amazon VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html) ."
+      }
+    },
+    "AWS::Comprehend::Flywheel.DocumentClassificationConfig": {
+      "attributes": {},
+      "description": "Configuration required for a custom classification model.",
+      "properties": {
+        "Labels": "One or more labels to associate with the custom classifier.",
+        "Mode": "Classification mode indicates whether the documents are `MULTI_CLASS` or `MULTI_LABEL` ."
+      }
+    },
+    "AWS::Comprehend::Flywheel.EntityRecognitionConfig": {
+      "attributes": {},
+      "description": "Configuration required for an entity recognition model.",
+      "properties": {
+        "EntityTypes": "Up to 25 entity types that the model is trained to recognize."
+      }
+    },
+    "AWS::Comprehend::Flywheel.EntityTypesListItem": {
+      "attributes": {},
+      "description": "An entity type within a labeled training dataset that Amazon Comprehend uses to train a custom entity recognizer.",
+      "properties": {
+        "Type": "An entity type within a labeled training dataset that Amazon Comprehend uses to train a custom entity recognizer.\n\nEntity types must not contain the following invalid characters: \\n (line break), \\\\n (escaped line break, \\r (carriage return), \\\\r (escaped carriage return), \\t (tab), \\\\t (escaped tab), space, and , (comma)."
+      }
+    },
+    "AWS::Comprehend::Flywheel.TaskConfig": {
+      "attributes": {},
+      "description": "Configuration about the custom classifier associated with the flywheel.",
+      "properties": {
+        "DocumentClassificationConfig": "Configuration required for a classification model.",
+        "EntityRecognitionConfig": "Configuration required for an entity recognition model.",
+        "LanguageCode": "Language code for the language that the model supports."
+      }
+    },
+    "AWS::Comprehend::Flywheel.VpcConfig": {
+      "attributes": {},
+      "description": "Configuration parameters for an optional private Virtual Private Cloud (VPC) containing the resources you are using for the job. For more information, see [Amazon VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html) .",
+      "properties": {
+        "SecurityGroupIds": "The ID number for a security group on an instance of your private VPC. Security groups on your VPC function serve as a virtual firewall to control inbound and outbound traffic and provides security for the resources that you\u2019ll be accessing on the VPC. This ID number is preceded by \"sg-\", for instance: \"sg-03b388029b0a285ea\". For more information, see [Security Groups for your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html) .",
+        "Subnets": "The ID for each subnet being used in your private VPC. This subnet is a subset of the a range of IPv4 addresses used by the VPC and is specific to a given availability zone in the VPC\u2019s Region. This ID number is preceded by \"subnet-\", for instance: \"subnet-04ccf456919e69055\". For more information, see [VPCs and Subnets](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html) ."
       }
     },
     "AWS::Config::AggregationAuthorization": {
@@ -13648,7 +13752,7 @@
       "description": "Defines settings specific to a single replica of a global table.",
       "properties": {
         "ContributorInsightsSpecification": "The settings used to enable or disable CloudWatch Contributor Insights for the specified replica. When not specified, defaults to contributor insights disabled for the replica.",
-        "DeletionProtectionEnabled": "",
+        "DeletionProtectionEnabled": "Determines if a replica is protected from deletion. When enabled, the table cannot be deleted by any user or process. This setting is disabled by default. For more information, see [Using deletion protection](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.Basics.html#WorkingWithTables.Basics.DeletionProtection) in the *Amazon DynamoDB Developer Guide* .",
         "GlobalSecondaryIndexes": "Defines additional settings for the global secondary indexes of this replica.",
         "KinesisStreamSpecification": "Defines the Kinesis Data Streams configuration for the specified replica.",
         "PointInTimeRecoverySpecification": "The settings used to enable point in time recovery. When not specified, defaults to point in time recovery disabled for the replica.",
@@ -13710,7 +13814,7 @@
         "AttributeDefinitions": "A list of attributes that describe the key schema for the table and indexes.\n\nThis property is required to create a DynamoDB table.\n\nUpdate requires: [Some interruptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-some-interrupt) . Replacement if you edit an existing AttributeDefinition.",
         "BillingMode": "Specify how you are charged for read and write throughput and how you manage capacity.\n\nValid values include:\n\n- `PROVISIONED` - We recommend using `PROVISIONED` for predictable workloads. `PROVISIONED` sets the billing mode to [Provisioned Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.ProvisionedThroughput.Manual) .\n- `PAY_PER_REQUEST` - We recommend using `PAY_PER_REQUEST` for unpredictable workloads. `PAY_PER_REQUEST` sets the billing mode to [On-Demand Mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.OnDemand) .\n\nIf not specified, the default is `PROVISIONED` .",
         "ContributorInsightsSpecification": "The settings used to enable or disable CloudWatch Contributor Insights for the specified table.",
-        "DeletionProtectionEnabled": "Determines if a table is protected from deletion. When enabled, the table cannot be deleted by any user or process. This setting is disabled by default.",
+        "DeletionProtectionEnabled": "Determines if a table is protected from deletion. When enabled, the table cannot be deleted by any user or process. This setting is disabled by default. For more information, see [Using deletion protection](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.Basics.html#WorkingWithTables.Basics.DeletionProtection) in the *Amazon DynamoDB Developer Guide* .",
         "GlobalSecondaryIndexes": "Global secondary indexes to be created on the table. You can create up to 20 global secondary indexes.\n\n> If you update a table to include a new global secondary index, AWS CloudFormation initiates the index creation and then proceeds with the stack update. AWS CloudFormation doesn't wait for the index to complete creation because the backfilling phase can take a long time, depending on the size of the table. You can't use the index or update the table until the index's status is `ACTIVE` . You can track its status by using the DynamoDB [DescribeTable](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/describe-table.html) command.\n> \n> If you add or delete an index during an update, we recommend that you don't update any other resources. If your stack fails to update and is rolled back while adding a new index, you must manually delete the index.\n> \n> Updates are not supported. The following are exceptions:\n> \n> - If you update either the contributor insights specification or the provisioned throughput values of global secondary indexes, you can update the table without interruption.\n> - You can delete or add one global secondary index without interruption. If you do both in the same update (for example, by changing the index's logical ID), the update fails.",
         "ImportSourceSpecification": "Specifies the properties of data being imported from the S3 bucket source to the table.\n\n> If you specify the `ImportSourceSpecification` property, and also specify either the `StreamSpecification` , the `TableClass` property, or the `DeletionProtectionEnabled` property, the IAM entity creating/updating stack must have `UpdateTable` permission.",
         "KeySchema": "Specifies the attributes that make up the primary key for the table. The attributes in the `KeySchema` property must also be defined in the `AttributeDefinitions` property.",
@@ -14550,14 +14654,14 @@
     },
     "AWS::EC2::IPAMResourceDiscoveryAssociation": {
       "attributes": {
-        "IpamArn": "",
-        "IpamRegion": "",
+        "IpamArn": "The IPAM ARN.",
+        "IpamRegion": "The IPAM home Region.",
         "IpamResourceDiscoveryAssociationArn": "The resource discovery association ARN.",
         "IpamResourceDiscoveryAssociationId": "The resource discovery association ID.",
         "IsDefault": "Defines if the resource discovery is the default. When you create an IPAM, a default resource discovery is created for your IPAM and it's associated with your IPAM.",
         "OwnerId": "The owner ID.",
         "Ref": "`Ref` returns the resource discovery ID. For example: `ipam-res-disco-111122223333` .",
-        "ResourceDiscoveryStatus": "",
+        "ResourceDiscoveryStatus": "The resource discovery status.\n\n- `active` - Connection or permissions required to read the results of the resource discovery are intact.\n- `not-found` - Connection or permissions required to read the results of the resource discovery are broken. This may happen if the owner of the resource discovery stopped sharing it or deleted the resource discovery. Verify the resource discovery still exists and the AWS RAM resource share is still intact.",
         "State": "The lifecycle state of the association when you associate or disassociate a resource discovery.\n\n- `associate-in-progress` - Resource discovery is being associated.\n- `associate-complete` - Resource discovery association is complete.\n- `associate-failed` - Resource discovery association has failed.\n- `disassociate-in-progress` - Resource discovery is being disassociated.\n- `disassociate-complete` - Resource discovery disassociation is complete.\n- `disassociate-failed` - Resource discovery disassociation has failed.\n- `isolate-in-progress` - AWS account that created the resource discovery association has been removed and the resource discovery associatation is being isolated.\n- `isolate-complete` - Resource discovery isolation is complete..\n- `restore-in-progress` - Resource discovery is being restored."
       },
       "description": "An IPAM resource discovery association. An associated resource discovery is a resource discovery that has been associated with an IPAM. IPAM aggregates the resource CIDRs discovered by the associated resource discovery.",
@@ -15431,9 +15535,9 @@
     },
     "AWS::EC2::NetworkInsightsAnalysis.AdditionalDetail": {
       "attributes": {},
-      "description": "Describes an additional detail for a path analysis.",
+      "description": "Describes an additional detail for a path analysis. For more information, see [Reachability Analyzer additional detail codes](https://docs.aws.amazon.com/vpc/latest/reachability/additional-detail-codes.html) .",
       "properties": {
-        "AdditionalDetailType": "The information type.",
+        "AdditionalDetailType": "The additional detail code.",
         "Component": "The path component.",
         "LoadBalancers": "",
         "ServiceName": ""
@@ -15637,12 +15741,12 @@
       },
       "description": "Specifies a path to analyze for reachability.\n\nVPC Reachability Analyzer enables you to analyze and debug network reachability between two resources in your virtual private cloud (VPC). For more information, see the [Reachability Analyzer User Guide](https://docs.aws.amazon.com/vpc/latest/reachability/what-is-reachability-analyzer.html) .",
       "properties": {
-        "Destination": "The AWS resource that is the destination of the path.",
-        "DestinationIp": "The IP address of the AWS resource that is the destination of the path.",
+        "Destination": "The ID or ARN of the destination. If the resource is in another account, you must specify an ARN.",
+        "DestinationIp": "The IP address of the destination.",
         "DestinationPort": "The destination port.",
         "Protocol": "The protocol.",
-        "Source": "The AWS resource that is the source of the path.",
-        "SourceIp": "The IP address of the AWS resource that is the source of the path.",
+        "Source": "The ID or ARN of the source. If the resource is in another account, you must specify an ARN.",
+        "SourceIp": "The IP address of the source.",
         "Tags": "The tags to add to the path."
       }
     },
@@ -16615,7 +16719,6 @@
     },
     "AWS::EC2::VPCDHCPOptionsAssociation": {
       "attributes": {
-        "Id": "The ID of the DHCP options set.",
         "Ref": "`Ref` returns the ID of the DHCP options association."
       },
       "description": "Associates a set of DHCP options with a VPC, or associates no DHCP options with the VPC.\n\nAfter you associate the options with the VPC, any existing instances and all new instances that you launch in that VPC use the options. You don't need to restart or relaunch the instances. They automatically pick up the changes within a few hours, depending on how frequently the instance renews its DHCP lease. You can explicitly renew the lease using the operating system on the instance.",
@@ -16628,6 +16731,7 @@
       "attributes": {
         "CreationTimestamp": "The date and time the VPC endpoint was created. For example: `Fri Sep 28 23:34:36 UTC 2018.`",
         "DnsEntries": "(Interface endpoints) The DNS entries for the endpoint. Each entry is a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services.\n\nThe following is an example. In the first entry, the hosted zone ID is Z1HUB23UULQXV and the DNS name is vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com.\n\n[\"Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com\", \"Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3-us-east-1a.ec2.us-east-1.vpce.amazonaws.com\", \"Z1C12344VYDITB0:ec2.us-east-1.amazonaws.com\"]\n\nIf you update the `PrivateDnsEnabled` or `SubnetIds` properties, the DNS entries in the list will change.",
+        "Id": "The ID of the VPC endpoint.",
         "NetworkInterfaceIds": "(Interface endpoints) The network interface IDs. If you update the `PrivateDnsEnabled` or `SubnetIds` properties, the items in this list might change.",
         "Ref": "`Ref` returns the ID of the VPC endpoint."
       },
@@ -16867,7 +16971,7 @@
     },
     "AWS::ECR::ReplicationConfiguration.RepositoryFilter": {
       "attributes": {},
-      "description": "The filter settings used with image replication. Specifying a repository filter to a replication rule provides a method for controlling which repositories in a private registry are replicated. If no repository filter is specified, all images in the repository are replicated.",
+      "description": "The filter settings used with image replication. Specifying a repository filter to a replication rule provides a method for controlling which repositories in a private registry are replicated. If no filters are added, the contents of all repositories are replicated.",
       "properties": {
         "Filter": "The repository filter details. When the `PREFIX_MATCH` filter type is specified, this value is required and should be the repository name prefix to configure replication for.",
         "FilterType": "The repository filter type. The only supported value is `PREFIX_MATCH` , which is a repository name prefix specified with the `filter` parameter."
@@ -24187,7 +24291,7 @@
         "Path": "The path for the virtual MFA device. For more information about paths, see [IAM identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) in the *IAM User Guide* .\n\nThis parameter is optional. If it is not included, it defaults to a slash (/).\n\nThis parameter allows (through its [regex pattern](https://docs.aws.amazon.com/http://wikipedia.org/wiki/regex) ) a string of characters consisting of either a forward slash (/) by itself or a string that must begin and end with forward slashes. In addition, it can contain any ASCII character from the ! ( `\\u0021` ) through the DEL character ( `\\u007F` ), including most punctuation characters, digits, and upper and lowercased letters.",
         "Tags": "A list of tags that you want to attach to the new IAM virtual MFA device. Each tag consists of a key name and an associated value. For more information about tagging, see [Tagging IAM resources](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_tags.html) in the *IAM User Guide* .\n\n> If any one of the tags is invalid or if you exceed the allowed maximum number of tags, then the entire request fails and the resource is not created.",
         "Users": "The IAM user associated with this virtual MFA device.",
-        "VirtualMfaDeviceName": "The name of the virtual MFA device. Use with path to uniquely identify a virtual MFA device.\n\nThis parameter allows (through its [regex pattern](https://docs.aws.amazon.com/http://wikipedia.org/wiki/regex) ) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-"
+        "VirtualMfaDeviceName": "The name of the virtual MFA device, which must be unique. Use with path to uniquely identify a virtual MFA device.\n\nThis parameter allows (through its [regex pattern](https://docs.aws.amazon.com/http://wikipedia.org/wiki/regex) ) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-"
       }
     },
     "AWS::IVS::Channel": {
@@ -26114,7 +26218,7 @@
       "attributes": {},
       "description": "A structure that contains the configuration information of a delta time session window.\n\n[`DeltaTime`](https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_DeltaTime.html) specifies a time interval. You can use `DeltaTime` to create dataset contents with data that has arrived in the data store since the last execution. For an example of `DeltaTime` , see [Creating a SQL dataset with a delta window (CLI)](https://docs.aws.amazon.com/iotanalytics/latest/userguide/automate-create-dataset.html#automate-example6) in the *AWS IoT Analytics User Guide* .",
       "properties": {
-        "TimeoutInMinutes": "A time interval. You can use `timeoutInMinutes` so that AWS IoT Analytics can batch up late data notifications that have been generated since the last execution. AWS IoT Analytics sends one batch of notifications to Amazon CloudWatch Events at one time.\n\nFor more information about how to write a timestamp expression, see [Date and Time Functions and Operators](https://docs.aws.amazon.com/https://prestodb.io/docs/0.172/functions/datetime.html) , in the *Presto 0.172 Documentation* ."
+        "TimeoutInMinutes": "A time interval. You can use `timeoutInMinutes` so that AWS IoT Analytics can batch up late data notifications that have been generated since the last execution. AWS IoT Analytics sends one batch of notifications to Amazon CloudWatch Events at one time.\n\nFor more information about how to write a timestamp expression, see [Date and Time Functions and Operators](https://docs.aws.amazon.com/https://prestodb.io/docs/current/functions/datetime.html) , in the *Presto 0.172 Documentation* ."
       }
     },
     "AWS::IoTAnalytics::Dataset.Filter": {
@@ -28957,9 +29061,9 @@
       "description": "Provides the configuration information required for Amazon Kendra Web Crawler.",
       "properties": {
         "AuthenticationConfiguration": "Configuration information required to connect to websites using authentication.\n\nYou can connect to websites using basic authentication of user name and password. You use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) to store your authentication credentials.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS.",
-        "CrawlDepth": "Specifies the number of levels in a website that you want to crawl.\n\nThe first level begins from the website seed or starting point URL. For example, if a website has 3 levels \u2013 index level (i.e. seed in this example), sections level, and subsections level \u2013 and you are only interested in crawling information up to the sections level (i.e. levels 0-1), you can set your depth to 1.\n\nThe default crawl depth is set to 2.",
-        "MaxContentSizePerPageInMegaBytes": "The maximum size (in MB) of a webpage or attachment to crawl.\n\nFiles larger than this size (in MB) are skipped/not crawled.\n\nThe default maximum size of a webpage or attachment is set to 50 MB.",
-        "MaxLinksPerPage": "The maximum number of URLs on a webpage to include when crawling a website. This number is per webpage.\n\nAs a website\u2019s webpages are crawled, any URLs the webpages link to are also crawled. URLs on a webpage are crawled in order of appearance.\n\nThe default maximum links per page is 100.",
+        "CrawlDepth": "Specifies the number of levels in a website that you want to crawl.\n\nThe first level begins from the website seed or starting point URL. For example, if a website has three levels\u2014index level (the seed in this example), sections level, and subsections level\u2014and you are only interested in crawling information up to the sections level (levels 0-1), you can set your depth to 1.\n\nThe default crawl depth is set to 2.",
+        "MaxContentSizePerPageInMegaBytes": "The maximum size (in MB) of a web page or attachment to crawl.\n\nFiles larger than this size (in MB) are skipped/not crawled.\n\nThe default maximum size of a web page or attachment is set to 50 MB.",
+        "MaxLinksPerPage": "The maximum number of URLs on a web page to include when crawling a website. This number is per web page.\n\nAs a website\u2019s web pages are crawled, any URLs the web pages link to are also crawled. URLs on a web page are crawled in order of appearance.\n\nThe default maximum links per page is 100.",
         "MaxUrlsPerMinuteCrawlRate": "The maximum number of URLs crawled per website host per minute.\n\nA minimum of one URL is required.\n\nThe default maximum number of URLs crawled per website host per minute is 300.",
         "ProxyConfiguration": "Configuration information required to connect to your internal websites via a web proxy.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS.\n\nWeb proxy credentials are optional and you can use them to connect to a web proxy server that requires basic authentication. To store web proxy credentials, you use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) .",
         "UrlExclusionPatterns": "A list of regular expression patterns to exclude certain URLs to crawl. URLs that match the patterns are excluded from the index. URLs that don't match the patterns are included in the index. If a URL matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the URL file isn't included in the index.",
@@ -28972,7 +29076,7 @@
       "description": "Provides the configuration information of the seed or starting point URLs to crawl.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use the Amazon Kendra web crawler to index your own webpages, or webpages that you have authorization to index.*",
       "properties": {
         "SeedUrls": "The list of seed or starting point URLs of the websites you want to crawl.\n\nThe list can include a maximum of 100 seed URLs.",
-        "WebCrawlerMode": "You can choose one of the following modes:\n\n- `HOST_ONLY` \u2013 crawl only the website host names. For example, if the seed URL is \"abc.example.com\", then only URLs with host name \"abc.example.com\" are crawled.\n- `SUBDOMAINS` \u2013 crawl the website host names with subdomains. For example, if the seed URL is \"abc.example.com\", then \"a.abc.example.com\" and \"b.abc.example.com\" are also crawled.\n- `EVERYTHING` \u2013 crawl the website host names with subdomains and other domains that the webpages link to.\n\nThe default mode is set to `HOST_ONLY` ."
+        "WebCrawlerMode": "You can choose one of the following modes:\n\n- `HOST_ONLY` \u2013 crawl only the website host names. For example, if the seed URL is \"abc.example.com\", then only URLs with host name \"abc.example.com\" are crawled.\n- `SUBDOMAINS` \u2013 crawl the website host names with subdomains. For example, if the seed URL is \"abc.example.com\", then \"a.abc.example.com\" and \"b.abc.example.com\" are also crawled.\n- `EVERYTHING` \u2013 crawl the website host names with subdomains and other domains that the web pages link to.\n\nThe default mode is set to `HOST_ONLY` ."
       }
     },
     "AWS::Kendra::DataSource.WebCrawlerSiteMapsConfiguration": {
@@ -28986,7 +29090,7 @@
       "attributes": {},
       "description": "Specifies the seed or starting point URLs of the websites or the sitemap URLs of the websites you want to crawl.\n\nYou can include website subdomains. You can list up to 100 seed URLs and up to three sitemap URLs.\n\nYou can only crawl websites that use the secure communication protocol, Hypertext Transfer Protocol Secure (HTTPS). If you receive an error when crawling a website, it could be that the website is blocked from crawling.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use the Amazon Kendra web crawler to index your own webpages, or webpages that you have authorization to index.*",
       "properties": {
-        "SeedUrlConfiguration": "Configuration of the seed or starting point URLs of the websites you want to crawl.\n\nYou can choose to crawl only the website host names, or the website host names with subdomains, or the website host names with subdomains and other domains that the webpages link to.\n\nYou can list up to 100 seed URLs.",
+        "SeedUrlConfiguration": "Configuration of the seed or starting point URLs of the websites you want to crawl.\n\nYou can choose to crawl only the website host names, or the website host names with subdomains, or the website host names with subdomains and other domains that the web pages link to.\n\nYou can list up to 100 seed URLs.",
         "SiteMapsConfiguration": "Configuration of the sitemap URLs of the websites you want to crawl.\n\nOnly URLs belonging to the same website host names are crawled. You can list up to three sitemap URLs."
       }
     },
@@ -31606,7 +31710,7 @@
         "MaxRetries": "The maximum number of times the bot tries to elicit a response from the user using this prompt.",
         "MessageGroupsList": "A collection of messages that Amazon Lex can send to the user. Amazon Lex chooses the actual message to send at runtime.",
         "MessageSelectionStrategy": "Indicates how a message is selected from a message group among retries.",
-        "PromptAttemptsSpecification": "Specifies the advanced settings on each attempt of the prompt."
+        "PromptAttemptsSpecification": "Specifies the advanced settings on each attempt of the prompt. The valid keys are `Initial` , `Retry1` , `Retry2` , `Retry3` , `Retry4` , and `Retry5` ."
       }
     },
     "AWS::Lex::Bot.ResponseSpecification": {
@@ -35938,10 +36042,7 @@
     "AWS::MediaPackage::PackagingConfiguration.EncryptionContractConfiguration": {
       "attributes": {},
       "description": "Use `encryptionContractConfiguration` to configure one or more content encryption keys for your endpoints that use SPEKE Version 2.0. The encryption contract defines the content keys used to encrypt the audio and video tracks in your stream. To configure the encryption contract, specify which audio and video encryption presets to use. For more information about these presets, see [SPEKE Version 2.0 Presets](https://docs.aws.amazon.com/mediapackage/latest/ug/drm-content-speke-v2-presets.html) .\n\nNote the following considerations when using `encryptionContractConfiguration` :\n\n- You can use `encryptionContractConfiguration` for DASH endpoints that use SPEKE Version 2.0. SPEKE Version 2.0 relies on the CPIX Version 2.3 specification.\n- You cannot combine an `UNENCRYPTED` preset with `UNENCRYPTED` or `SHARED` presets across `presetSpeke20Audio` and `presetSpeke20Video` .\n- When you use a `SHARED` preset, you must use it for both `presetSpeke20Audio` and `presetSpeke20Video` .",
-      "properties": {
-        "PresetSpeke20Audio": "A collection of audio encryption presets.\n\nValue description:\n\n- `PRESET-AUDIO-1` - Use one content key to encrypt all of the audio tracks in your stream.\n- `PRESET-AUDIO-2` - Use one content key to encrypt all of the stereo audio tracks and one content key to encrypt all of the multichannel audio tracks.\n- `PRESET-AUDIO-3` - Use one content key to encrypt all of the stereo audio tracks, one content key to encrypt all of the multichannel audio tracks with 3 to 6 channels, and one content key to encrypt all of the multichannel audio tracks with more than 6 channels.\n- `SHARED` - Use the same content key for all of the audio and video tracks in your stream.\n- `UNENCRYPTED` - Don't encrypt any of the audio tracks in your stream.",
-        "PresetSpeke20Video": "A collection of video encryption presets.\n\nValue description:\n\n- `PRESET-VIDEO-1` - Use one content key to encrypt all of the video tracks in your stream.\n- `PRESET-VIDEO-2` - Use one content key to encrypt all of the SD video tracks and one content key for all HD and higher resolutions video tracks.\n- `PRESET-VIDEO-3` - Use one content key to encrypt all of the SD video tracks, one content key for HD video tracks and one content key for all UHD video tracks.\n- `PRESET-VIDEO-4` - Use one content key to encrypt all of the SD video tracks, one content key for HD video tracks, one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.\n- `PRESET-VIDEO-5` - Use one content key to encrypt all of the SD video tracks, one content key for HD1 video tracks, one content key for HD2 video tracks, one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.\n- `PRESET-VIDEO-6` - Use one content key to encrypt all of the SD video tracks, one content key for HD1 video tracks, one content key for HD2 video tracks and one content key for all UHD video tracks.\n- `PRESET-VIDEO-7` - Use one content key to encrypt all of the SD+HD1 video tracks, one content key for HD2 video tracks and one content key for all UHD video tracks.\n- `PRESET-VIDEO-8` - Use one content key to encrypt all of the SD+HD1 video tracks, one content key for HD2 video tracks, one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.\n- `SHARED` - Use the same content key for all of the video and audio tracks in your stream.\n- `UNENCRYPTED` - Don't encrypt any of the video tracks in your stream."
-      }
+      "properties": {}
     },
     "AWS::MediaPackage::PackagingConfiguration.HlsEncryption": {
       "attributes": {},
@@ -41502,7 +41603,7 @@
     },
     "AWS::RUM::AppMonitor": {
       "attributes": {
-        "Id": "",
+        "Id": "The ID of the app monitor, such as `123456ab-1234-4ca9-9d2f-a1b2c3456789` .",
         "Ref": "`Ref` returns the name of the app monitor."
       },
       "description": "Creates a CloudWatch RUM app monitor, which you can use to collect telemetry data from your application and send it to CloudWatch RUM. The data includes performance and reliability information such as page load time, client-side errors, and user behavior.\n\nAfter you create an app monitor, sign in to the CloudWatch RUM console to get the JavaScript code snippet to add to your web application. For more information, see [How do I find a code snippet that I've already generated?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-find-code-snippet.html)",
@@ -41540,11 +41641,12 @@
     },
     "AWS::RUM::AppMonitor.MetricDefinition": {
       "attributes": {},
-      "description": "Specifies the extended metrics that you want the CloudWatch RUM app monitor to send to a destination. Valid destinations include CloudWatch and Evidently.\n\nBy default, RUM app monitors send some metrics to CloudWatch . These default metrics are listed in [CloudWatch metrics that you can collect with CloudWatch RUM](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-metrics.html) .\n\nIf you also send extended metrics, you can send metrics to Evidently as well as CloudWatch , and you can also optionally send the metrics with additional dimensions. The valid dimension names for the additional dimensions are `BrowserName` , `CountryCode` , `DeviceType` , `FileType` , `OSName` , and `PageId` . For more information, see [Extended metrics that you can send to CloudWatch and CloudWatch Evidently](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-vended-metrics.html) .\n\nThe maximum number of metric definitions that one destination can contain is 2000.\n\nExtended metrics sent are charged as CloudWatch custom metrics. Each combination of additional dimension name and dimension value counts as a custom metric.\n\nIf some metric definitions that you specify are not valid, then the operation will not modify any metric definitions even if other metric definitions specified are valid.",
+      "description": "Specifies one custom metric or extended metric that you want the CloudWatch RUM app monitor to send to a destination. Valid destinations include CloudWatch and Evidently.\n\nBy default, RUM app monitors send some metrics to CloudWatch . These default metrics are listed in [CloudWatch metrics that you can collect.](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-metrics.html)\n\nIn addition to these default metrics, you can choose to send extended metrics or custom metrics or both.\n\n- Extended metrics enable you to send metrics with additional dimensions not included in the default metrics. You can also send extended metrics to Evidently as well as CloudWatch . The valid dimension names for the additional dimensions for extended metrics are `BrowserName` , `CountryCode` , `DeviceType` , `FileType` , `OSName` , and `PageId` . For more information, see [Extended metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-vended-metrics.html) .\n- Custom metrics are metrics that you define. You can send custom metrics to CloudWatch or to CloudWatch Evidently or to both. With custom metrics, you can use any metric name and namespace, and to derive the metrics you can use any custom events, built-in events, custom attributes, or default attributes.\n\nYou can't send custom metrics to the `AWS/RUM` namespace. You must send custom metrics to a custom namespace that you define. The namespace that you use can't start with `AWS/` . CloudWatch RUM prepends `RUM/CustomMetrics/` to the custom namespace that you define, so the final namespace for your metrics in CloudWatch is `RUM/CustomMetrics/ *your-custom-namespace*` .\n\nFor information about syntax rules for specifying custom metrics and extended metrics, see [MetridDefinitionRequest](https://docs.aws.amazon.com/cloudwatchrum/latest/APIReference/API_MetricDefinitionRequest.html) in the *CloudWatch RUM API Reference* .\n\nThe maximum number of metric definitions that one destination can contain is 2000.\n\nExtended metrics sent to CloudWatch and RUM custom metrics are charged as CloudWatch custom metrics. Each combination of additional dimension name and dimension value counts as a custom metric.\n\nIf some metric definitions that you specify are not valid, then the operation will not modify any metric definitions even if other metric definitions specified are valid.",
       "properties": {
-        "DimensionKeys": "This field is a map of field paths to dimension names. It defines the dimensions to associate with this metric in CloudWatch The value of this field is used only if the metric destination is `CloudWatch` . If the metric destination is `Evidently` , the value of `DimensionKeys` is ignored.",
+        "DimensionKeys": "This field is a map of field paths to dimension names. It defines the dimensions to associate with this metric in CloudWatch . The value of this field is used only if the metric destination is `CloudWatch` . If the metric destination is `Evidently` , the value of `DimensionKeys` is ignored.",
         "EventPattern": "The pattern that defines the metric. RUM checks events that happen in a user's session against the pattern, and events that match the pattern are sent to the metric destination.\n\nIf the metrics destination is `CloudWatch` and the event also matches a value in `DimensionKeys` , then the metric is published with the specified dimensions.",
         "Name": "The name of the metric that is defined in this structure.",
+        "Namespace": "If you are creating a custom metric instead of an extended metrics, use this parameter to define the metric namespace for that custom metric. Do not specify this parameter if you are creating an extended metric.\n\nYou can't use any string that starts with `AWS/` for your namespace.",
         "UnitLabel": "Use this field only if you are sending this metric to CloudWatch . It defines the CloudWatch metric unit that this metric is measured in.",
         "ValueKey": "The field within the event object that the metric value is sourced from."
       }
@@ -42490,14 +42592,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -42505,18 +42607,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -42525,25 +42627,25 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
         "Source": "The trust anchor type and its related certificate data.",
-        "Tags": ""
+        "Tags": "The tags to attach to the trust anchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -43092,9 +43194,9 @@
         "PreferredInstanceType": "",
         "Ref": "`Ref` returns the `ResolverEndpoint` object.",
         "ResolverEndpointId": "The ID of the resolver endpoint.",
-        "ResolverEndpointType": ""
+        "ResolverEndpointType": "For the endpoint type you can choose either IPv4, IPv6. or dual-stack. A dual-stack endpoint means that it will resolve via both IPv4 and IPv6. If you choose either IPv4 or IPv6, this endpoint type is applied to all IP addresses."
       },
-      "description": "Creates a Resolver endpoint. There are two types of Resolver endpoints, inbound and outbound:\n\n- An *inbound Resolver endpoint* forwards DNS queries to the DNS service for a VPC from your network.\n- An *outbound Resolver endpoint* forwards DNS queries from the DNS service for a VPC to your network.",
+      "description": "Creates a Resolver endpoint. There are two types of Resolver endpoints, inbound and outbound:\n\n- An *inbound Resolver endpoint* forwards DNS queries to the DNS service for a VPC from your network.\n- An *outbound Resolver endpoint* forwards DNS queries from the DNS service for a VPC to your network.\n\n> - You cannot update `ResolverEndpointType` and `IpAddresses` in the same request.\n> - When you update a dual-stack IP address, you must update both IP addresses. You can\u2019t update only an IPv4 or IPv6 and keep an existing IP address.",
       "properties": {
         "Direction": "Indicates whether the Resolver endpoint allows inbound or outbound DNS queries:\n\n- `INBOUND` : allows DNS queries to your VPC from your network\n- `OUTBOUND` : allows DNS queries from your VPC to your network",
         "IpAddresses": "The subnets and IP addresses in your VPC that DNS queries originate from (for outbound endpoints) or that you forward DNS queries to (for inbound endpoints). The subnet ID uniquely identifies a VPC.",
@@ -43164,7 +43266,7 @@
         "Name": "The name for the Resolver rule, which you specified when you created the Resolver rule.",
         "ResolverEndpointId": "The ID of the endpoint that the rule is associated with.",
         "RuleType": "When you want to forward DNS queries for specified domain name to resolvers on your network, specify `FORWARD` .\n\nWhen you have a forwarding rule to forward DNS queries for a domain to your network and you want Resolver to process queries for a subdomain of that domain, specify `SYSTEM` .\n\nFor example, to forward DNS queries for example.com to resolvers on your network, you create a rule and specify `FORWARD` for `RuleType` . To then have Resolver process queries for apex.example.com, you create a rule and specify `SYSTEM` for `RuleType` .\n\nCurrently, only Resolver can create rules that have a value of `RECURSIVE` for `RuleType` .",
-        "Tags": "Route 53 Resolver doesn't support updating tags through CloudFormation.",
+        "Tags": "Tags help organize and categorize your Resolver rules. Each tag consists of a key and an optional value, both of which you define.",
         "TargetIps": "An array that contains the IP addresses and ports that an outbound endpoint forwards DNS queries to. Typically, these are the IP addresses of DNS resolvers on your network."
       }
     },
@@ -43476,7 +43578,7 @@
     },
     "AWS::S3::Bucket.NotificationFilter": {
       "attributes": {},
-      "description": "Specifies object key name filtering rules. For information about key name filtering, see [Configuring Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html) in the *Amazon S3 User Guide* .",
+      "description": "Specifies object key name filtering rules. For information about key name filtering, see [Configuring event notifications using object key name filtering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html) in the *Amazon S3 User Guide* .",
       "properties": {
         "S3Key": "A container for object key name prefix and suffix filtering rules."
       }
@@ -43791,7 +43893,8 @@
       "attributes": {},
       "description": "A bucket associated with a specific Region when creating Multi-Region Access Points.",
       "properties": {
-        "Bucket": "The name of the associated bucket for the Region."
+        "Bucket": "The name of the associated bucket for the Region.",
+        "BucketAccountId": "The AWS account ID that owns the Amazon S3 bucket that's associated with this Multi-Region Access Point."
       }
     },
     "AWS::S3::MultiRegionAccessPointPolicy": {
@@ -46013,7 +46116,7 @@
       "attributes": {},
       "description": "The security configuration for `OnlineStore` .",
       "properties": {
-        "KmsKeyId": "The AWS Key Management Service (KMS) key ARN that SageMaker Feature Store uses to encrypt the Amazon S3 objects at rest using Amazon S3 server-side encryption.\n\nThe caller (either IAM user or IAM role) of `CreateFeatureGroup` must have below permissions to the `OnlineStore` `KmsKeyId` :\n\n- `\"kms:Encrypt\"`\n- `\"kms:Decrypt\"`\n- `\"kms:DescribeKey\"`\n- `\"kms:CreateGrant\"`\n- `\"kms:RetireGrant\"`\n- `\"kms:ReEncryptFrom\"`\n- `\"kms:ReEncryptTo\"`\n- `\"kms:GenerateDataKey\"`\n- `\"kms:ListAliases\"`\n- `\"kms:ListGrants\"`\n- `\"kms:RevokeGrant\"`\n\nThe caller (either user or IAM role) to all DataPlane operations ( `PutRecord` , `GetRecord` , `DeleteRecord` ) must have the following permissions to the `KmsKeyId` :\n\n- `\"kms:Decrypt\"`"
+        "KmsKeyId": "The AWS Key Management Service (KMS) key ARN that SageMaker Feature Store uses to encrypt the Amazon S3 objects at rest using Amazon S3 server-side encryption.\n\nThe caller (either user or IAM role) of `CreateFeatureGroup` must have below permissions to the `OnlineStore` `KmsKeyId` :\n\n- `\"kms:Encrypt\"`\n- `\"kms:Decrypt\"`\n- `\"kms:DescribeKey\"`\n- `\"kms:CreateGrant\"`\n- `\"kms:RetireGrant\"`\n- `\"kms:ReEncryptFrom\"`\n- `\"kms:ReEncryptTo\"`\n- `\"kms:GenerateDataKey\"`\n- `\"kms:ListAliases\"`\n- `\"kms:ListGrants\"`\n- `\"kms:RevokeGrant\"`\n\nThe caller (either user or IAM role) to all DataPlane operations ( `PutRecord` , `GetRecord` , `DeleteRecord` ) must have the following permissions to the `KmsKeyId` :\n\n- `\"kms:Decrypt\"`"
       }
     },
     "AWS::SageMaker::FeatureGroup.S3StorageConfig": {
@@ -46050,6 +46153,110 @@
       "properties": {
         "BaseImage": "The container image that the SageMaker image version is based on.\n\n*Length Constraints* : Minimum length of 1. Maximum length of 255.\n\n*Pattern* : `.*`",
         "ImageName": "The name of the parent image.\n\n*Length Constraints* : Minimum length of 1. Maximum length of 63.\n\n*Pattern* : `^[a-zA-Z0-9]([-.]?[a-zA-Z0-9]){0,62}$`"
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment": {
+      "attributes": {
+        "Arn": "",
+        "CreationTime": "",
+        "EndpointMetadata": "",
+        "EndpointMetadata.EndpointConfigName": "",
+        "EndpointMetadata.EndpointName": "",
+        "EndpointMetadata.EndpointStatus": "",
+        "LastModifiedTime": "",
+        "Ref": "",
+        "Status": ""
+      },
+      "description": "Creates an inference experiment using the configurations specified in the request.\n\nUse this API to setup and schedule an experiment to compare model variants on a Amazon SageMaker inference endpoint. For more information about inference experiments, see [Shadow tests](https://docs.aws.amazon.com/sagemaker/latest/dg/shadow-tests.html) .\n\nAmazon SageMaker begins your experiment at the scheduled time and routes traffic to your endpoint's model variants based on your specified configuration.\n\nWhile the experiment is in progress or after it has concluded, you can view metrics that compare your model variants. For more information, see [View, monitor, and edit shadow tests](https://docs.aws.amazon.com/sagemaker/latest/dg/shadow-tests-view-monitor-edit.html) .",
+      "properties": {
+        "DataStorageConfig": "",
+        "Description": "The description of the inference experiment.",
+        "DesiredState": "",
+        "EndpointName": "",
+        "KmsKey": "The AWS Key Management Service key that Amazon SageMaker uses to encrypt captured data at rest using Amazon S3 server-side encryption.",
+        "ModelVariants": "",
+        "Name": "The name of the inference experiment.",
+        "RoleArn": "The ARN of the IAM role that Amazon SageMaker can assume to access model artifacts and container images, and manage Amazon SageMaker Inference endpoints for model deployment.",
+        "Schedule": "The duration for which the inference experiment ran or will run.\n\nThe maximum duration that you can set for an inference experiment is 30 days.",
+        "ShadowModeConfig": "",
+        "StatusReason": "The error message for the inference experiment status result.",
+        "Tags": "",
+        "Type": "The type of the inference experiment."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.CaptureContentTypeHeader": {
+      "attributes": {},
+      "description": "Configuration specifying how to treat different headers. If no headers are specified SageMaker will by default base64 encode when capturing the data.",
+      "properties": {
+        "CsvContentTypes": "The list of all content type headers that SageMaker will treat as CSV and capture accordingly.",
+        "JsonContentTypes": "The list of all content type headers that SageMaker will treat as JSON and capture accordingly."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.DataStorageConfig": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ContentType": "",
+        "Destination": "",
+        "KmsKey": ""
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.EndpointMetadata": {
+      "attributes": {},
+      "description": "The metadata of the endpoint.",
+      "properties": {
+        "EndpointConfigName": "The name of the endpoint configuration.",
+        "EndpointName": "The name of the endpoint.",
+        "EndpointStatus": "The status of the endpoint. For possible values of the status of an endpoint, see `EndpointSummary$EndpointStatus` ."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.InferenceExperimentSchedule": {
+      "attributes": {},
+      "description": "The start and end times of an inference experiment.\n\nThe maximum duration that you can set for an inference experiment is 30 days.",
+      "properties": {
+        "EndTime": "The timestamp at which the inference experiment ended or will end.",
+        "StartTime": "The timestamp at which the inference experiment started or will start."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.ModelInfrastructureConfig": {
+      "attributes": {},
+      "description": "The configuration for the infrastructure that the model will be deployed to.",
+      "properties": {
+        "InfrastructureType": "The inference option to which to deploy your model. Possible values are the following:\n\n- `RealTime` : Deploy to real-time inference.",
+        "RealTimeInferenceConfig": "The infrastructure configuration for deploying the model to real-time inference."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.ModelVariantConfig": {
+      "attributes": {},
+      "description": "Contains information about the deployment options of a model.",
+      "properties": {
+        "InfrastructureConfig": "The configuration for the infrastructure that the model will be deployed to.",
+        "ModelName": "The name of the Amazon SageMaker Model entity.",
+        "VariantName": "The name of the variant."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.RealTimeInferenceConfig": {
+      "attributes": {},
+      "description": "The infrastructure configuration for deploying the model to a real-time inference endpoint.",
+      "properties": {
+        "InstanceCount": "The number of instances of the type specified by `InstanceType` .",
+        "InstanceType": "The instance type the model is deployed to."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.ShadowModeConfig": {
+      "attributes": {},
+      "description": "The configuration of `ShadowMode` inference experiment type, which specifies a production variant to take all the inference requests, and a shadow variant to which Amazon SageMaker replicates a percentage of the inference requests. For the shadow variant it also specifies the percentage of requests that Amazon SageMaker replicates.",
+      "properties": {
+        "ShadowModelVariants": "List of shadow variant configurations.",
+        "SourceModelVariantName": "The name of the production variant, which takes all the inference requests."
+      }
+    },
+    "AWS::SageMaker::InferenceExperiment.ShadowModelVariantConfig": {
+      "attributes": {},
+      "description": "The name and sampling percentage of a shadow variant.",
+      "properties": {
+        "SamplingPercentage": "The percentage of inference requests that Amazon SageMaker replicates from the production variant to the shadow variant.",
+        "ShadowModelVariantName": "The name of the shadow variant."
       }
     },
     "AWS::SageMaker::Model": {
@@ -47712,7 +47919,7 @@
         "Arn": "The Amazon Resource Name (ARN) for the Amazon EventBridge Scheduler schedule.",
         "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the `Name` attribute of theschedule."
       },
-      "description": "Creates the specified schedule.",
+      "description": "A *schedule* is the main resource you create, configure, and manage using Amazon EventBridge Scheduler.\n\nEvery schedule has a *schedule expression* that determines when, and with what frequency, the schedule runs. EventBridge Scheduler supports three types of schedules: rate, cron, and one-time schedules. For more information about different schedule types, see [Schedule types](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html) in the *EventBridge Scheduler User Guide* .\n\nWhen you create a schedule, you configure a target for the schedule to invoke. A target is an API operation that EventBridge Scheduler calls on your behalf every time your schedule runs. EventBridge Scheduler supports two types of targets: *templated* targets invoke common API operations across a core groups of services, and customizeable *universal* targets that you can use to call more than 6,000 operations across over 270 services. For more information about configuring targets, see [Managing targets](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets.html) in the *EventBridge Scheduler User Guide* .\n\nFor more information about managing schedules, changing the schedule state, setting up flexible time windows, and configuring a dead-letter queue for a schedule, see [Managing a schedule](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule.html) in the *EventBridge Scheduler User Guide* .",
       "properties": {
         "Description": "The description you specify for the schedule.",
         "EndDate": "The date, in UTC, before which the schedule can invoke its target. Depending on the schedule's recurrence expression, invocations might stop on, or before, the `EndDate` you specify.\nEventBridge Scheduler ignores `EndDate` for one-time schedules.",
@@ -47723,7 +47930,7 @@
         "ScheduleExpression": "The expression that defines when the schedule runs. The following formats are supported.\n\n- `at` expression - `at(yyyy-mm-ddThh:mm:ss)`\n- `rate` expression - `rate(unit value)`\n- `cron` expression - `cron(fields)`\n\nYou can use `at` expressions to create one-time schedules that invoke a target once, at the time and in the time zone, that you specify. You can use `rate` and `cron` expressions to create recurring schedules. Rate-based schedules are useful when you want to invoke a target at regular intervals, such as every 15 minutes or every five days. Cron-based schedules are useful when you want to invoke a target periodically at a specific time, such as at 8:00 am (UTC+0) every 1st day of the month.\n\nA `cron` expression consists of six fields separated by white spaces: `(minutes hours day_of_month month day_of_week year)` .\n\nA `rate` expression consists of a *value* as a positive integer, and a *unit* with the following options: `minute` | `minutes` | `hour` | `hours` | `day` | `days`\n\nFor more information and examples, see [Schedule types on EventBridge Scheduler](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html) in the *EventBridge Scheduler User Guide* .",
         "ScheduleExpressionTimezone": "The timezone in which the scheduling expression is evaluated.",
         "StartDate": "The date, in UTC, after which the schedule can begin invoking its target. Depending on the schedule's recurrence expression, invocations might occur on, or after, the `StartDate` you specify.\nEventBridge Scheduler ignores `StartDate` for one-time schedules.",
-        "State": "Specifies whether the schedule is enabled or disabled.",
+        "State": "Specifies whether the schedule is enabled or disabled.\n\n*Allowed Values* : `ENABLED` | `DISABLED`",
         "Target": "The schedule's target details."
       }
     },
@@ -47784,8 +47991,8 @@
       "attributes": {},
       "description": "Allows you to configure a time window during which EventBridge Scheduler invokes the schedule.",
       "properties": {
-        "MaximumWindowInMinutes": "The maximum time window during which a schedule can be invoked.",
-        "Mode": "Determines whether the schedule is invoked within a flexible time window."
+        "MaximumWindowInMinutes": "The maximum time window during which a schedule can be invoked.\n\n*Minimum* : `1`\n\n*Maximum* : `1440`",
+        "Mode": "Determines whether the schedule is invoked within a flexible time window.\n\n*Allowed Values* : `OFF` | `FLEXIBLE`"
       }
     },
     "AWS::Scheduler::Schedule.KinesisParameters": {
@@ -47870,9 +48077,9 @@
         "CreationDate": "The date and time at which the schedule group was created.",
         "LastModificationDate": "The time at which the schedule group was last modified.",
         "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the `Name` attribute of the schedule group.",
-        "State": "Specifies the state of the schedule group.\n\nValid values are `ACTIVE` and `DELETING` ."
+        "State": "Specifies the state of the schedule group.\n\n*Allowed Values* : `ACTIVE` | `DELETING`"
       },
-      "description": "Creates the specified schedule group.",
+      "description": "A *schedule group* is an Amazon EventBridge Scheduler resource you use to organize your schedules.\n\nYour AWS account comes with a `default` scheduler group. You associate a new schedule with the `default` group or with schedule groups that you create and manage. You can create up to [500 schedule groups](https://docs.aws.amazon.com/scheduler/latest/UserGuide/scheduler-quotas.html) in your AWS account. With EventBridge Scheduler, you apply [tags](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) to schedule groups, not to individual schedules to organize your resources.\n\nFor more information about managing schedule groups, see [Managing a schedule group](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-group.html) in the *EventBridge Scheduler User Guide* .",
       "properties": {
         "Name": "The name of the schedule group.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
@@ -49834,7 +50041,7 @@
         "AvailableLabels": "The labels that one or more rules in this rule group add to matching web requests. These labels are defined in the `RuleLabels` for a `Rule` .",
         "Capacity": "The web ACL capacity units (WCUs) required for this rule group.\n\nWhen you create your own rule group, you define this, and you cannot change it after creation. When you add or modify the rules in a rule group, AWS WAF enforces this limit.\n\nAWS WAF uses WCUs to calculate and control the operating resources that are used to run your rules, rule groups, and web ACLs. AWS WAF calculates capacity differently for each rule type, to reflect the relative cost of each rule. Simple rules that cost little to run use fewer WCUs than more complex rules that use more processing power. Rule group capacity is fixed at creation, which helps users plan their web ACL WCU usage when they use a rule group. The WCU limit for web ACLs is 1,500.",
         "ConsumedLabels": "The labels that one or more rules in this rule group match against in label match statements. These labels are defined in a `LabelMatchStatement` specification, in the `Statement` definition of a rule.",
-        "CustomResponseBodies": "A map of custom response keys and content bodies. When you create a rule with a block action, you can send a custom response to the web request. You define these for the rule group, and then use them in the rules that you define in the rule group.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+        "CustomResponseBodies": "A map of custom response keys and content bodies. When you create a rule with a block action, you can send a custom response to the web request. You define these for the rule group, and then use them in the rules that you define in the rule group.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* .\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* .",
         "Description": "A description of the rule group that helps with identification.",
         "Name": "The name of the rule group. You cannot change the name of a rule group after you create it.",
         "Rules": "The rule statements used to identify the web requests that you want to allow, block, or count. Each rule includes one top-level statement that AWS WAF uses to identify matching web requests, and parameters that govern how AWS WAF handles them.",
@@ -49847,7 +50054,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should allow the request and optionally defines additional custom handling for the request.\n\nThis is used in the context of other settings, for example to specify values for `RuleAction` and web ACL `DefaultAction` .",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.AndStatement": {
@@ -49861,7 +50068,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should block the request and optionally defines additional custom handling for the response to the web request.\n\nThis is used in the context of other settings, for example to specify values for `RuleAction` and web ACL `DefaultAction` .",
       "properties": {
-        "CustomResponse": "Defines a custom response for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomResponse": "Defines a custom response for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.Body": {
@@ -49886,7 +50093,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should run a `CAPTCHA` check against the request:\n\n- If the request includes a valid, unexpired `CAPTCHA` token, AWS WAF applies any custom request handling and labels that you've configured and then allows the web request inspection to proceed to the next rule, similar to a `CountAction` .\n- If the request doesn't include a valid, unexpired token, AWS WAF discontinues the web ACL evaluation of the request and blocks it from going to its intended destination.\n\nAWS WAF generates a response that it sends back to the client, which includes the following:\n\n- The header `x-amzn-waf-action` with a value of `captcha` .\n- The HTTP status code `405 Method Not Allowed` .\n- If the request contains an `Accept` header with a value of `text/html` , the response includes a `CAPTCHA` JavaScript page interstitial.\n\nYou can configure the expiration time in the `CaptchaConfig` `ImmunityTimeProperty` setting at the rule and web ACL level. The rule setting overrides the web ACL setting.\n\nThis action option is available for rules. It isn't available for web ACL default actions.",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request, used when the `CAPTCHA` inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request, used when the `CAPTCHA` inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.CaptchaConfig": {
@@ -49900,7 +50107,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should run a `Challenge` check against the request to verify that the request is coming from a legitimate client session:\n\n- If the request includes a valid, unexpired challenge token, AWS WAF applies any custom request handling and labels that you've configured and then allows the web request inspection to proceed to the next rule, similar to a `CountAction` .\n- If the request doesn't include a valid, unexpired challenge token, AWS WAF discontinues the web ACL evaluation of the request and blocks it from going to its intended destination.\n\nAWS WAF then generates a challenge response that it sends back to the client, which includes the following:\n\n- The header `x-amzn-waf-action` with a value of `challenge` .\n- The HTTP status code `202 Request Accepted` .\n- If the request contains an `Accept` header with a value of `text/html` , the response includes a JavaScript page interstitial with a challenge script.\n\nChallenges run silent browser interrogations in the background, and don't generally affect the end user experience.\n\nA challenge enforces token acquisition using an interstitial JavaScript challenge that inspects the client session for legitimate behavior. The challenge blocks bots or at least increases the cost of operating sophisticated bots.\n\nAfter the client session successfully responds to the challenge, it receives a new token from AWS WAF , which the challenge script uses to resubmit the original request.\n\nYou can configure the expiration time in the `ChallengeConfig` `ImmunityTimeProperty` setting at the rule and web ACL level. The rule setting overrides the web ACL setting.\n\nThis action option is available for rules. It isn't available for web ACL default actions.",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request, used when the challenge inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request, used when the challenge inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.ChallengeConfig": {
@@ -49932,7 +50139,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should count the request. Optionally defines additional custom handling for the request.\n\nThis is used in the context of other settings, for example to specify values for `RuleAction` and web ACL `DefaultAction` .",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.CustomHTTPHeader": {
@@ -49945,9 +50152,9 @@
     },
     "AWS::WAFv2::RuleGroup.CustomRequestHandling": {
       "attributes": {},
-      "description": "Custom request handling behavior that inserts custom headers into a web request. You can add custom request handling for AWS WAF to use when the rule action doesn't block the request. For example, `CaptchaAction` for requests with valid t okens, and `AllowAction` .\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+      "description": "Custom request handling behavior that inserts custom headers into a web request. You can add custom request handling for AWS WAF to use when the rule action doesn't block the request. For example, `CaptchaAction` for requests with valid t okens, and `AllowAction` .\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* .",
       "properties": {
-        "InsertHeaders": "The HTTP headers to insert into the request. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "InsertHeaders": "The HTTP headers to insert into the request. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.CustomResponse": {
@@ -49955,15 +50162,15 @@
       "description": "A custom response to send to the client. You can define a custom response for rule actions and default web ACL actions that are set to `Block` .\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
       "properties": {
         "CustomResponseBodyKey": "References the response body that you want AWS WAF to return to the web request client. You can define a custom response for a rule action or a default web ACL action that is set to block. To do this, you first define the response body key and value in the `CustomResponseBodies` setting for the `WebACL` or `RuleGroup` where you want to use it. Then, in the rule action or web ACL default action `BlockAction` setting, you reference the response body using this key.",
-        "ResponseCode": "The HTTP status code to return to the client.\n\nFor a list of status codes that you can use in your custom responses, see [Supported status codes for custom response](https://docs.aws.amazon.com/waf/latest/developerguide/customizing-the-response-status-codes.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
-        "ResponseHeaders": "The HTTP headers to use in the response. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "ResponseCode": "The HTTP status code to return to the client.\n\nFor a list of status codes that you can use in your custom responses, see [Supported status codes for custom response](https://docs.aws.amazon.com/waf/latest/developerguide/customizing-the-response-status-codes.html) in the *AWS WAF Developer Guide* .",
+        "ResponseHeaders": "The HTTP headers to use in the response. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.CustomResponseBody": {
       "attributes": {},
       "description": "The response body to use in a custom response to a web request. This is referenced by key from `CustomResponse` `CustomResponseBodyKey` .",
       "properties": {
-        "Content": "The payload of the custom response.\n\nYou can use JSON escape strings in JSON content. To do this, you must specify JSON content in the `ContentType` setting.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+        "Content": "The payload of the custom response.\n\nYou can use JSON escape strings in JSON content. To do this, you must specify JSON content in the `ContentType` setting.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* .",
         "ContentType": "The type of content in the payload that you are defining in the `Content` string."
       }
     },
@@ -50212,7 +50419,7 @@
       "attributes": {},
       "description": "Defines and enables Amazon CloudWatch metrics and web request sample collection.",
       "properties": {
-        "CloudWatchMetricsEnabled": "A boolean indicating whether the associated resource sends metrics to Amazon CloudWatch. For the list of available metrics, see [AWS WAF Metrics](https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#waf-metrics) .",
+        "CloudWatchMetricsEnabled": "A boolean indicating whether the associated resource sends metrics to Amazon CloudWatch. For the list of available metrics, see [AWS WAF Metrics](https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#waf-metrics) in the *AWS WAF Developer Guide* .",
         "MetricName": "A name of the Amazon CloudWatch metric dimension. The name can contain only the characters: A-Z, a-z, 0-9, - (hyphen), and _ (underscore). The name can be from one to 128 characters long. It can't contain whitespace or metric names that are reserved for AWS WAF , for example `All` and `Default_Action` .",
         "SampledRequestsEnabled": "A boolean indicating whether AWS WAF should store a sampling of the web requests that match the rules. You can view the sampled requests through the AWS WAF console."
       }
@@ -50237,7 +50444,7 @@
       "properties": {
         "CaptchaConfig": "Specifies how AWS WAF should handle `CAPTCHA` evaluations for rules that don't have their own `CaptchaConfig` settings. If you don't specify this, AWS WAF uses its default settings for `CaptchaConfig` .",
         "ChallengeConfig": "Specifies how AWS WAF should handle challenge evaluations for rules that don't have their own `ChallengeConfig` settings. If you don't specify this, AWS WAF uses its default settings for `ChallengeConfig` .",
-        "CustomResponseBodies": "A map of custom response keys and content bodies. When you create a rule with a block action, you can send a custom response to the web request. You define these for the web ACL, and then use them in the rules and default actions that you define in the web ACL.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+        "CustomResponseBodies": "A map of custom response keys and content bodies. When you create a rule with a block action, you can send a custom response to the web request. You define these for the web ACL, and then use them in the rules and default actions that you define in the web ACL.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* .\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* .",
         "DefaultAction": "The action to perform if none of the `Rules` contained in the `WebACL` match.",
         "Description": "A description of the web ACL that helps with identification.",
         "Name": "The name of the web ACL. You cannot change the name of a web ACL after you create it.",
@@ -50268,7 +50475,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should allow the request and optionally defines additional custom handling for the request.\n\nThis is used in the context of other settings, for example to specify values for a rule action or a web ACL default action.",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.AndStatement": {
@@ -50282,7 +50489,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should block the request and optionally defines additional custom handling for the response to the web request.\n\nThis is used in the context of other settings, for example to specify values for a rule action or a web ACL default action.",
       "properties": {
-        "CustomResponse": "Defines a custom response for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomResponse": "Defines a custom response for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.Body": {
@@ -50307,7 +50514,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should run a `CAPTCHA` check against the request:\n\n- If the request includes a valid, unexpired `CAPTCHA` token, AWS WAF allows the web request inspection to proceed to the next rule, similar to a `CountAction` .\n- If the request doesn't include a valid, unexpired `CAPTCHA` token, AWS WAF discontinues the web ACL evaluation of the request and blocks it from going to its intended destination.\n\nAWS WAF generates a response that it sends back to the client, which includes the following:\n\n- The header `x-amzn-waf-action` with a value of `captcha` .\n- The HTTP status code `405 Method Not Allowed` .\n- If the request contains an `Accept` header with a value of `text/html` , the response includes a `CAPTCHA` challenge.\n\nYou can configure the expiration time in the `CaptchaConfig` `ImmunityTimeProperty` setting at the rule and web ACL level. The rule setting overrides the web ACL setting.\n\nThis action option is available for rules. It isn't available for web ACL default actions.",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request, used when the `CAPTCHA` inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request, used when the `CAPTCHA` inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.CaptchaConfig": {
@@ -50353,7 +50560,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should count the request. Optionally defines additional custom handling for the request.\n\nThis is used in the context of other settings, for example to specify values for a rule action or a web ACL default action.",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.CustomHTTPHeader": {
@@ -50366,9 +50573,9 @@
     },
     "AWS::WAFv2::WebACL.CustomRequestHandling": {
       "attributes": {},
-      "description": "Custom request handling behavior that inserts custom headers into a web request. You can add custom request handling for AWS WAF to use when the rule action doesn't block the request. For example, `CaptchaAction` for requests with valid t okens, and `AllowAction` .\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+      "description": "Custom request handling behavior that inserts custom headers into a web request. You can add custom request handling for AWS WAF to use when the rule action doesn't block the request. For example, `CaptchaAction` for requests with valid t okens, and `AllowAction` .\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* .",
       "properties": {
-        "InsertHeaders": "The HTTP headers to insert into the request. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "InsertHeaders": "The HTTP headers to insert into the request. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.CustomResponse": {
@@ -50376,15 +50583,15 @@
       "description": "A custom response to send to the client. You can define a custom response for rule actions and default web ACL actions that are set to the block action.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
       "properties": {
         "CustomResponseBodyKey": "References the response body that you want AWS WAF to return to the web request client. You can define a custom response for a rule action or a default web ACL action that is set to block. To do this, you first define the response body key and value in the `CustomResponseBodies` setting for the `WebACL` or `RuleGroup` where you want to use it. Then, in the rule action or web ACL default action `BlockAction` setting, you reference the response body using this key.",
-        "ResponseCode": "The HTTP status code to return to the client.\n\nFor a list of status codes that you can use in your custom responses, see [Supported status codes for custom response](https://docs.aws.amazon.com/waf/latest/developerguide/customizing-the-response-status-codes.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
-        "ResponseHeaders": "The HTTP headers to use in the response. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "ResponseCode": "The HTTP status code to return to the client.\n\nFor a list of status codes that you can use in your custom responses, see [Supported status codes for custom response](https://docs.aws.amazon.com/waf/latest/developerguide/customizing-the-response-status-codes.html) in the *AWS WAF Developer Guide* .",
+        "ResponseHeaders": "The HTTP headers to use in the response. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.CustomResponseBody": {
       "attributes": {},
       "description": "The response body to use in a custom response to a web request. This is referenced by key from `CustomResponse` `CustomResponseBodyKey` .",
       "properties": {
-        "Content": "The payload of the custom response.\n\nYou can use JSON escape strings in JSON content. To do this, you must specify JSON content in the `ContentType` setting.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+        "Content": "The payload of the custom response.\n\nYou can use JSON escape strings in JSON content. To do this, you must specify JSON content in the `ContentType` setting.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* .",
         "ContentType": "The type of content in the payload that you are defining in the `Content` string."
       }
     },
@@ -50754,7 +50961,7 @@
       "attributes": {},
       "description": "Defines and enables Amazon CloudWatch metrics and web request sample collection.",
       "properties": {
-        "CloudWatchMetricsEnabled": "A boolean indicating whether the associated resource sends metrics to Amazon CloudWatch. For the list of available metrics, see [AWS WAF Metrics](https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#waf-metrics) .",
+        "CloudWatchMetricsEnabled": "A boolean indicating whether the associated resource sends metrics to Amazon CloudWatch. For the list of available metrics, see [AWS WAF Metrics](https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#waf-metrics) in the *AWS WAF Developer Guide* .",
         "MetricName": "A name of the Amazon CloudWatch metric dimension. The name can contain only the characters: A-Z, a-z, 0-9, - (hyphen), and _ (underscore). The name can be from one to 128 characters long. It can't contain whitespace or metric names that are reserved for AWS WAF , for example `All` and `Default_Action` .",
         "SampledRequestsEnabled": "A boolean indicating whether AWS WAF should store a sampling of the web requests that match the rules. You can view the sampled requests through the AWS WAF console."
       }

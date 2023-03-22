@@ -254,6 +254,23 @@ export interface InstanceProps {
    * @default - false
    */
   readonly detailedMonitoring?: boolean;
+
+  /**
+   * Add SSM session permissions to the instance role
+   *
+   * Setting this to `true` adds the necessary permissions to connect
+   * to the instance using SSM Session Manager. You can do this
+   * from the AWS Console.
+   *
+   * NOTE: Setting this flag to `true` may not be enough by itself.
+   * You must also use an AMI that comes with the SSM Agent, or install
+   * the SSM Agent yourself. See
+   * [Working with SSM Agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html)
+   * in the SSM Developer Guide.
+   *
+   * @default false
+   */
+  readonly ssmSessionPermissions?: boolean;
 }
 
 /**
@@ -341,6 +358,10 @@ export class Instance extends Resource implements IInstance {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
     this.grantPrincipal = this.role;
+
+    if (props.ssmSessionPermissions) {
+      this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
+    }
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [this.role.roleName],

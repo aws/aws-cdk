@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "cdk-integ-auto-delete-images/DefaultTest": {
+      "stacks": [
+        "aws-ecr-integ-stack"
+      ],
+      "assertionStack": "cdk-integ-auto-delete-images/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegautodeleteimagesDefaultTestDeployAssert6B08011C"
+    }
+  }
+}

@@ -1,11 +1,28 @@
 import { EOL } from 'os';
+import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Tags, Token, TokenComparison } from '@aws-cdk/core';
+import {
+  ArnFormat,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Tags,
+  Token,
+  TokenComparison,
+  CustomResource,
+  CustomResourceProvider,
+  CustomResourceProviderRuntime,
+} from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
+
+const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
+const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
 
 /**
  * Represents an ECR repository.
@@ -479,6 +496,16 @@ export interface RepositoryProps {
    *  @default TagMutability.MUTABLE
    */
   readonly imageTagMutability?: TagMutability;
+
+  /**
+   * Whether all images should be automatically deleted when the repository is
+   * removed from the stack or when the stack is deleted.
+   *
+   * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   *
+   * @default false
+   */
+  readonly autoDeleteImages?: boolean;
 }
 
 export interface RepositoryAttributes {
@@ -589,6 +616,7 @@ export class Repository extends RepositoryBase {
   private readonly lifecycleRules = new Array<LifecycleRule>();
   private readonly registryId?: string;
   private policyDocument?: iam.PolicyDocument;
+  private readonly _resource: CfnRepository;
 
   constructor(scope: Construct, id: string, props: RepositoryProps = {}) {
     super(scope, id, {
@@ -606,6 +634,14 @@ export class Repository extends RepositoryBase {
       imageTagMutability: props.imageTagMutability || undefined,
       encryptionConfiguration: this.parseEncryption(props),
     });
+    this._resource = resource;
+
+    if (props.autoDeleteImages) {
+      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+        throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+      }
+      this.enableAutoDeleteImages();
+    }
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -740,6 +776,44 @@ export class Repository extends RepositoryBase {
     }
 
     throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
+  }
+
+  private enableAutoDeleteImages() {
+    // Use a iam policy to allow the custom resource to list & delete
+    // images in the repository and the ability to get all repositories to find the arn needed on delete.
+    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
+      policyStatements: [
+        {
+          Effect: 'Allow',
+          Action: [
+            'ecr:BatchDeleteImage',
+            'ecr:DescribeRepositories',
+            'ecr:ListImages',
+            'ecr:ListTagsForResource',
+          ],
+          Resource: [this._resource.attrArn],
+        },
+      ],
+    });
+
+    const customResource = new CustomResource(this, 'AutoDeleteImagesCustomResource', {
+      resourceType: AUTO_DELETE_IMAGES_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        RepositoryName: Lazy.any({ produce: () => this.repositoryName }),
+      },
+    });
+    customResource.node.addDependency(this);
+
+    // We also tag the repository to record the fact that we want it autodeleted.
+    // The custom resource will check this tag before actually doing the delete.
+    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
+    // we can set `autoDeleteImages: false` without the removal of the CR emptying
+    // the repository as a side effect.
+    Tags.of(this._resource).add(AUTO_DELETE_IMAGES_TAG, 'true');
   }
 }
 

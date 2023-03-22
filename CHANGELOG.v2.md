@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.70.0](https://github.com/aws/aws-cdk/compare/v2.69.0...v2.70.0) (2023-03-22)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v116.0.0 ([#24662](https://github.com/aws/aws-cdk/issues/24662)) ([e8158af](https://github.com/aws/aws-cdk/commit/e8158af34eb6402c79edbc171746fb5501775c68))
+* **cloudwatch:** added defaultInterval prop to cw-dashboard ([#24707](https://github.com/aws/aws-cdk/issues/24707)) ([d4717cf](https://github.com/aws/aws-cdk/commit/d4717cf035c9f7027d8081ea1f15a631044315e8))
+* **ec2:** CFN-init support for systemd ([#24683](https://github.com/aws/aws-cdk/issues/24683)) ([f3fe8e1](https://github.com/aws/aws-cdk/commit/f3fe8e1c4348194f89b47a276e6c85328b1044fa))
+* **ec2:** SSM sessions ([#24673](https://github.com/aws/aws-cdk/issues/24673)) ([9744a82](https://github.com/aws/aws-cdk/commit/9744a8295fab28f1e8c38a0b980935f7546990e6))
+* **ecr:** add option to auto delete images upon ECR repository removal ([#24572](https://github.com/aws/aws-cdk/issues/24572)) ([7de5b00](https://github.com/aws/aws-cdk/commit/7de5b00dcf24c4f6721317860c7e42c485e3ca58)), closes [#15932](https://github.com/aws/aws-cdk/issues/15932) [#12618](https://github.com/aws/aws-cdk/issues/12618) [#15932](https://github.com/aws/aws-cdk/issues/15932)
+* **elasticloadbalancing:** classic load balancer supports ec2 instances  ([#24353](https://github.com/aws/aws-cdk/issues/24353)) ([25b6edd](https://github.com/aws/aws-cdk/commit/25b6edd9d83e4766a2cb064b8eb8e3c6198b4f53)), closes [#23500](https://github.com/aws/aws-cdk/issues/23500)
+* **servicecatalogappregistry-alpha:** Introduce flag to control application sharing and association behavior for cross-account stacks ([#24408](https://github.com/aws/aws-cdk/issues/24408)) ([2167289](https://github.com/aws/aws-cdk/commit/2167289658e8f3431ec815c741277dc1be1aa110)), closes [aws-cdk/aws-servicecatalogappregistry/lib/aspects/stack-associator.ts#L91-L95](https://github.com/aws-cdk/aws-servicecatalogappregistry/lib/aspects/stack-associator.ts/issues/L91-L95)
+
+
+### Bug Fixes
+
+* **bootstrap:** remove Security Hub finding KMS.2 ([#24588](https://github.com/aws/aws-cdk/issues/24588)) ([274c3d5](https://github.com/aws/aws-cdk/commit/274c3d54dcc0b9534d1ede287fe3672ec9883dbe)), closes [/docs.aws.amazon.com/securityhub/latest/userguide/kms-controls.html#kms-2](https://github.com/aws//docs.aws.amazon.com/securityhub/latest/userguide/kms-controls.html/issues/kms-2)
+* **cli:** no change deployment prints "hotswap deployment skipped" without hotswap flag ([#24602](https://github.com/aws/aws-cdk/issues/24602)) ([79151fd](https://github.com/aws/aws-cdk/commit/79151fd7f4916defeb1e17d3bcdbec1e119ec994))
+* **cli:** user agent is reported as `undefined/undefined` ([#24663](https://github.com/aws/aws-cdk/issues/24663)) ([3e8d8d8](https://github.com/aws/aws-cdk/commit/3e8d8d8e1b9a88376a6460094dea0c08ce19742e))
+* **eks:** fail to update cluster by disabling logging props ([#24688](https://github.com/aws/aws-cdk/issues/24688)) ([767cf93](https://github.com/aws/aws-cdk/commit/767cf93eb131c707f8243e8f3779dd3bad89271a))
+* **sfn:** stop replacing JsonPath.DISCARD with `null` ([#24717](https://github.com/aws/aws-cdk/issues/24717)) ([413b643](https://github.com/aws/aws-cdk/commit/413b64347f333573b2a07150e87244bd4c11d264)), closes [#24593](https://github.com/aws/aws-cdk/issues/24593)
+* **toolkit:** RWLock.acquireRead is not re-entrant ([#24702](https://github.com/aws/aws-cdk/issues/24702)) ([3b7431b](https://github.com/aws/aws-cdk/commit/3b7431b6ac27f8557c22a8959ae1ce431f6d2167))
+* **WAFv2:** add patch to revert struct names ([#24651](https://github.com/aws/aws-cdk/issues/24651)) ([dfa09d1](https://github.com/aws/aws-cdk/commit/dfa09d133523f0457a9ab2369bde13b44c398c30)), closes [/github.com/aws/aws-cdk/commit/affe040c8443be074822254d1e75a28b264cd801#diff-827a2fd012e049c7ccedffa0360c12e7d967a173f36b8150de73ef6adc42ee4cL175-L357](https://github.com/aws//github.com/aws/aws-cdk/commit/affe040c8443be074822254d1e75a28b264cd801/issues/diff-827a2fd012e049c7ccedffa0360c12e7d967a173f36b8150de73ef6adc42ee4cL175-L357)
+
 ## [2.69.0](https://github.com/aws/aws-cdk/compare/v2.68.0...v2.69.0) (2023-03-14)
 
 

@@ -327,6 +327,11 @@ export enum RetentionDays {
   TWO_YEARS = 731,
 
   /**
+   * 3 years
+   */
+  THREE_YEARS = 1096,
+
+  /**
    * 5 years
    */
   FIVE_YEARS = 1827,
