@@ -323,7 +323,7 @@ function validateTree(root: IConstruct) {
 }
 
 /**
- * Visit the given construct tree in either pre or post order, stopping at Assemblies
+ * Visit the given construct tree in either pre or post order, only looking at Assemblies
  */
 function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
   if (order === 'pre') {
