@@ -180,7 +180,7 @@ export interface IEksContainerDefinition {
    *
    * @default false
    */
-  readonly priveleged?: boolean;
+  readonly privileged?: boolean;
 
   /**
    * If specified, gives this container readonly access to its root file system.
@@ -193,7 +193,7 @@ export interface IEksContainerDefinition {
    *
    * @default false
    */
-  readonly readonlyFileSystem?: boolean;
+  readonly readonlyRootFilesystem?: boolean;
 
   /**
    * If specified, the container is run as the specified group ID (`gid`).
@@ -269,7 +269,7 @@ export enum ImagePullPolicy {
   NEVER = 'Never',
 }
 
-export interface EksContainerProps {
+export interface EksContainerDefinitionProps {
   /**
    * The image that this container will run
    */
@@ -443,7 +443,7 @@ export interface EksContainerProps {
    *
    * @default false
    */
-  readonly priveleged?: boolean;
+  readonly privileged?: boolean;
 
   /**
    * If specified, gives this container readonly access to its root file system.
@@ -456,7 +456,7 @@ export interface EksContainerProps {
    *
    * @default false
    */
-  readonly readonlyFileSystem?: boolean;
+  readonly readonlyRootFilesystem?: boolean;
 
   /**
    * If specified, the container is run as the specified group ID (`gid`).
@@ -517,8 +517,8 @@ export class EksContainerDefinition extends Construct {
   readonly cpuReservation?: number;
   readonly gpuLimit?: number;
   readonly gpuReservation?: number;
-  readonly priveleged?: boolean;
-  readonly readonlyFileSystem?: boolean;
+  readonly privileged?: boolean;
+  readonly readonlyRootFilesystem?: boolean;
   readonly runAsGroup?: number;
   readonly runAsRoot?: boolean;
   readonly runAsUser?: number;
@@ -526,7 +526,7 @@ export class EksContainerDefinition extends Construct {
 
   private readonly imageConfig: ecs.ContainerImageConfig;
 
-  constructor(scope: Construct, id: string, props: EksContainerProps) {
+  constructor(scope: Construct, id: string, props: EksContainerDefinitionProps) {
     super(scope, id);
 
     this.image = props.image;
@@ -541,8 +541,8 @@ export class EksContainerDefinition extends Construct {
     this.cpuReservation = props.cpuReservation;
     this.gpuLimit = props.gpuLimit;
     this.gpuReservation = props.gpuReservation;
-    this.priveleged = props.priveleged;
-    this.readonlyFileSystem = props.readonlyFileSystem;
+    this.privileged = props.privileged;
+    this.readonlyRootFilesystem = props.readonlyRootFilesystem;
     this.runAsGroup = props.runAsGroup;
     this.runAsRoot = props.runAsRoot;
     this.runAsUser = props.runAsUser;
@@ -578,8 +578,8 @@ export class EksContainerDefinition extends Construct {
         },
       },
       securityContext: {
-        privileged: this.priveleged,
-        readOnlyRootFilesystem: this.readonlyFileSystem,
+        privileged: this.privileged,
+        readOnlyRootFilesystem: this.readonlyRootFilesystem,
         runAsGroup: this.runAsGroup,
         runAsNonRoot: !this.runAsRoot,
         runAsUser: this.runAsUser,

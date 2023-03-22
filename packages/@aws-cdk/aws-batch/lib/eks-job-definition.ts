@@ -46,7 +46,7 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
   /**
    * The container this Job Definition will run
    */
-  readonly container: EksContainerDefinition;
+  readonly containerDefinition: EksContainerDefinition;
 
   /**
    * The DNS Policy of the pod used by this Job Definition
@@ -113,7 +113,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
   constructor(scope: Construct, id: string, props: EksJobDefinitionProps) {
     super(scope, id, props);
 
-    this.containerDefinition = props.container;
+    this.containerDefinition = props.containerDefinition;
     this.dnsPolicy = props.dnsPolicy;
     this.useHostNetwork = props.useHostNetwork;
     this.serviceAccount = props.serviceAccount;
