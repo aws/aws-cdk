@@ -21,7 +21,7 @@ export class AssetManifest {
     try {
       const obj = Manifest.loadAssetManifest(fileName);
       return new AssetManifest(path.dirname(fileName), obj);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Canot read asset manifest '${fileName}': ${e.message}`);
     }
   }
@@ -35,7 +35,7 @@ export class AssetManifest {
     let st;
     try {
       st = fs.statSync(filePath);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Cannot read asset manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {

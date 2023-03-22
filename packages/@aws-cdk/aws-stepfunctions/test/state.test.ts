@@ -1,26 +1,33 @@
+import * as assert from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { FakeTask } from './fake-task';
-import { renderGraph } from './private/render-util';
-import { JsonPath } from '../lib';
+import { JsonPath, StateMachine } from '../lib';
 
 test('JsonPath.DISCARD can be used to discard a state\'s output', () => {
-  const stack = new cdk.Stack();
-
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'TestStack');
   const task = new FakeTask(stack, 'my-state', {
     inputPath: JsonPath.DISCARD,
     outputPath: JsonPath.DISCARD,
     resultPath: JsonPath.DISCARD,
   });
+  new StateMachine(stack, 'state-machine', {
+    definition: task,
+  });
 
-  expect(renderGraph(task)).toEqual({
-    StartAt: 'my-state',
+  // WHEN
+  const definitionString = new assert.Capture();
+  assert.Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+    DefinitionString: definitionString,
+  });
+
+  // THEN
+  const definition = JSON.parse(definitionString.asString());
+
+  expect(definition).toMatchObject({
     States: {
       'my-state': {
-        End: true,
-        Type: 'Task',
-        Resource: expect.any(String),
-        Parameters: expect.any(Object),
-        // The important bits:
         InputPath: null,
         OutputPath: null,
         ResultPath: null,

@@ -3255,3 +3255,46 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
     ],
   });
 }
+
+describe('deletionProtectionEnabled', () => {
+  test.each([
+    [true],
+    [false],
+  ])('gets passed to table', (state) => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      deletionProtection: state,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      DeletionProtectionEnabled: state,
+    });
+  });
+
+  test('is not passed when not set', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', Match.objectLike({
+      DeletionProtectionEnabled: Match.absent(),
+    }));
+  });
+});
+

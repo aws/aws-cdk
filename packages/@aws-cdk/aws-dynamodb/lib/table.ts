@@ -291,6 +291,13 @@ export interface TableOptions extends SchemaOptions {
    * @default false
    */
   readonly contributorInsightsEnabled?: boolean;
+
+  /**
+   * Enables deletion protection for the table.
+   *
+   * @default false
+   */
+  readonly deletionProtection?: boolean;
 }
 
 /**
@@ -1238,6 +1245,7 @@ export class Table extends TableBase {
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
+      deletionProtectionEnabled: props.deletionProtection,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 

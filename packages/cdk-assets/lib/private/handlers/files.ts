@@ -229,7 +229,7 @@ class BucketInformation {
     try {
       await s3.getBucketLocation({ Bucket: bucket }).promise();
       return BucketOwnership.MINE;
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'NoSuchBucket') { return BucketOwnership.DOES_NOT_EXIST; }
       if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) { return BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS; }
       throw e;
@@ -247,7 +247,7 @@ class BucketInformation {
         if (ssealgo === 'aws:kms') return { type: 'kms', kmsKeyId: apply?.KMSMasterKeyID };
       }
       return { type: 'no_encryption' };
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'NoSuchBucket') {
         return { type: 'does_not_exist' };
       }
