@@ -8,7 +8,7 @@ interface IEcsJobDefinition extends IJobDefinition {
   /**
    * The container that this job will run
    */
-  readonly containerDefinition: IEcsContainerDefinition
+  readonly containerDefinition?: IEcsContainerDefinition
 }
 
 /**
@@ -23,22 +23,22 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
   /**
    * The container that this job will run
    */
-  readonly containerDefinition: IEcsContainerDefinition
+  readonly containerDefinition?: IEcsContainerDefinition
 }
 
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
-  readonly containerDefinition: IEcsContainerDefinition
+  readonly containerDefinition?: IEcsContainerDefinition
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 
-  constructor(scope: Construct, id: string, props: EcsJobDefinitionProps) {
+  constructor(scope: Construct, id: string, props?: EcsJobDefinitionProps) {
     super(scope, id, props);
 
-    this.containerDefinition = props.containerDefinition;
+    this.containerDefinition = props?.containerDefinition;
 
     new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
       type: 'container',
-      containerProperties: this.containerDefinition.renderContainerDefinition(),
+      containerProperties: this.containerDefinition?.renderContainerDefinition(),
       platformCapabilities: this.renderPlatformCapabilities(),
     });
   }

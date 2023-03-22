@@ -231,7 +231,7 @@ describe('ecs container', () => {
     });
   });
 
-  test('respects linuxParameters', () => {
+  test('respects logDriver', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
@@ -251,11 +251,14 @@ describe('ecs container', () => {
       ...pascalCaseExpectedProps,
       ContainerProperties: {
         ...pascalCaseExpectedProps.ContainerProperties,
-        LinuxParameters: {
-          InitProcessEnabled: true,
-          MaxSwap: 4,
-          SharedMemorySize: 256,
-          Swappiness: 30,
+        LogConfiguration: {
+          Options: {
+            'awslogs-datetime-format': 'format',
+            'awslogs-group': { Ref: 'EcsEc2ContainerLogGroup7855929B' },
+            'awslogs-multiline-pattern': 'pattern',
+            'awslogs-region': { Ref: 'AWS::Region' },
+            'awslogs-stream-prefix': 'hello',
+          },
         },
       },
     });

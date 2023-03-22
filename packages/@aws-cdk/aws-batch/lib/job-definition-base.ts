@@ -231,15 +231,15 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
 
   protected resourceProps: CfnJobDefinitionProps;
 
-  constructor(scope: Construct, id: string, props: JobDefinitionProps) {
+  constructor(scope: Construct, id: string, props?: JobDefinitionProps) {
     super(scope, id);
-    this.name = props.name;
-    this.parameters = props.parameters;
-    this.propagateTags = props.propagateTags;
-    this.retryAttempts = props.retryAttempts;
-    this.retryStrategies = props.retryStrategies;
-    this.schedulingPriority = props.schedulingPriority;
-    this.timeout = props.timeout;
+    this.name = props?.name;
+    this.parameters = props?.parameters;
+    this.propagateTags = props?.propagateTags;
+    this.retryAttempts = props?.retryAttempts;
+    this.retryStrategies = props?.retryStrategies;
+    this.schedulingPriority = props?.schedulingPriority;
+    this.timeout = props?.timeout;
 
     this.resourceProps = {
       jobDefinitionName: this.name,

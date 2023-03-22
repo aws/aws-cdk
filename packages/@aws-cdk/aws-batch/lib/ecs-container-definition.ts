@@ -192,7 +192,12 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.memoryMiB = props.memoryMiB;
 
     if (props.logging) {
-      this.logDriverConfig = props.logging.bind(this, this as any);
+      this.logDriverConfig = props.logging.bind(this, {
+        ...this as any,
+        taskDefinition: {
+          obtainExecutionRole: () => this.executionRole,
+        },
+      });
     }
     this.readonlyRootFileSystem = props.readonlyRootFileSystem;
     this.gpu = props.gpu;
