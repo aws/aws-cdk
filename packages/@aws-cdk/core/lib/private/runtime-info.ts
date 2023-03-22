@@ -45,25 +45,26 @@ export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo
  * as a special case
  */
 function addValidationPluginInfo(stack: Stack, allConstructInfos: ConstructInfo[]): void {
-  let stage = Stage.of(stack);
-  let done = false;
-  do {
-    if (App.isApp(stage)) {
-      done = true;
-    }
-    if (stage) {
-      allConstructInfos.push(...stage.policyValidation.map(
-        plugin => {
-          return {
-            fqn: `validation.${plugin.name}`,
-            // TODO: what version should we have here?
-            version: '0.0.0',
-          };
-        },
-      ));
-      stage = Stage.of(stage);
-    }
-  } while (!done && stage);
+  const app = App.of(stack);
+  if (app) {
+    const stages = [app, ...app.node.findAll().filter(node => Stage.isStage(node))];
+    stages.forEach(node => {
+      if (Stage.isStage(node) && node.policyValidation.length > 0) {
+        allConstructInfos.push(...node.policyValidation.map(
+          plugin => {
+            return {
+              // the fqn can be in the format of `package.module.construct`
+              // those get pulled out into separate fields
+              fqn: `validation.${plugin.name}`,
+              // we don't have a good way of getting a version from the plugin
+              // this needs to be in the format of `x.x.x`
+              version: '0.0.0',
+            };
+          },
+        ));
+      }
+    });
+  }
 }
 
 /**
