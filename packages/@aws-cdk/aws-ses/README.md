@@ -148,7 +148,7 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
 });
 ```
 
-Use `addEventDestination()` to send email sending events to Amazon SNS or Amazon CloudWatch:
+Use `addEventDestination()` to publish email sending events to Amazon SNS or Amazon CloudWatch:
 
 ```ts
 declare const myConfigurationSet: ses.ConfigurationSet;
