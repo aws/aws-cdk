@@ -5,6 +5,7 @@ import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack } from '@aws-cdk
 import * as cr from '@aws-cdk/custom-resources';
 import { AwsCustomResource } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
+import { IConnection } from './connection';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
@@ -183,6 +184,13 @@ export interface TableProps {
    * @default - The parameter is not defined
    */
   readonly enablePartitionFiltering?: boolean;
+
+  /**
+   * The connection the table will use when performing reads and writes.
+   *
+   * @default - No connection
+   */
+  readonly connection?: IConnection;
 }
 
 /**
@@ -276,6 +284,11 @@ export class Table extends Resource implements ITable {
   public readonly partitionIndexes?: PartitionIndex[];
 
   /**
+   * The connection this table is associated with.
+   */
+  public readonly connection?: IConnection;
+
+  /**
    * Partition indexes must be created one at a time. To avoid
    * race conditions, we store the resource and add dependencies
    * each time a new partition index is created.
@@ -303,6 +316,7 @@ export class Table extends Resource implements ITable {
     this.bucket = bucket;
     this.encryption = encryption;
     this.encryptionKey = encryptionKey;
+    this.connection = props.connection;
 
     const tableResource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,
@@ -319,6 +333,7 @@ export class Table extends Resource implements ITable {
           'classification': props.dataFormat.classificationString?.value,
           'has_encrypted_data': this.encryption !== TableEncryption.UNENCRYPTED,
           'partition_filtering.enabled': props.enablePartitionFiltering,
+          'connectionName': props.connection?.connectionName,
         },
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
