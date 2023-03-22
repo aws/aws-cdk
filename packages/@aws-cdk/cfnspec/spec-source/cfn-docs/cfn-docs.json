@@ -8799,7 +8799,7 @@
       "description": "A dimension is a name/value pair that is part of the identity of a metric. Because dimensions are part of the unique identifier for a metric, whenever you add a unique name/value pair to one of your metrics, you are creating a new variation of that metric. For example, many Amazon EC2 metrics publish `InstanceId` as a dimension name, and the actual instance ID as the value for that dimension.\n\nYou can assign up to 30 dimensions to a metric.",
       "properties": {
         "Name": "The name of the dimension.",
-        "Value": "The value of the dimension. Dimension values must contain only ASCII characters and must include at least one non-whitespace character."
+        "Value": "The value of the dimension. Dimension values must contain only ASCII characters and must include at least one non-whitespace character. ASCII control characters are not supported as part of dimension values."
       }
     },
     "AWS::CloudWatch::AnomalyDetector.Metric": {
@@ -15535,9 +15535,9 @@
     },
     "AWS::EC2::NetworkInsightsAnalysis.AdditionalDetail": {
       "attributes": {},
-      "description": "Describes an additional detail for a path analysis.",
+      "description": "Describes an additional detail for a path analysis. For more information, see [Reachability Analyzer additional detail codes](https://docs.aws.amazon.com/vpc/latest/reachability/additional-detail-codes.html) .",
       "properties": {
-        "AdditionalDetailType": "The information type.",
+        "AdditionalDetailType": "The additional detail code.",
         "Component": "The path component.",
         "LoadBalancers": "",
         "ServiceName": ""
@@ -50041,7 +50041,7 @@
         "AvailableLabels": "The labels that one or more rules in this rule group add to matching web requests. These labels are defined in the `RuleLabels` for a `Rule` .",
         "Capacity": "The web ACL capacity units (WCUs) required for this rule group.\n\nWhen you create your own rule group, you define this, and you cannot change it after creation. When you add or modify the rules in a rule group, AWS WAF enforces this limit.\n\nAWS WAF uses WCUs to calculate and control the operating resources that are used to run your rules, rule groups, and web ACLs. AWS WAF calculates capacity differently for each rule type, to reflect the relative cost of each rule. Simple rules that cost little to run use fewer WCUs than more complex rules that use more processing power. Rule group capacity is fixed at creation, which helps users plan their web ACL WCU usage when they use a rule group. The WCU limit for web ACLs is 1,500.",
         "ConsumedLabels": "The labels that one or more rules in this rule group match against in label match statements. These labels are defined in a `LabelMatchStatement` specification, in the `Statement` definition of a rule.",
-        "CustomResponseBodies": "A map of custom response keys and content bodies. When you create a rule with a block action, you can send a custom response to the web request. You define these for the rule group, and then use them in the rules that you define in the rule group.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+        "CustomResponseBodies": "A map of custom response keys and content bodies. When you create a rule with a block action, you can send a custom response to the web request. You define these for the rule group, and then use them in the rules that you define in the rule group.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* .\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* .",
         "Description": "A description of the rule group that helps with identification.",
         "Name": "The name of the rule group. You cannot change the name of a rule group after you create it.",
         "Rules": "The rule statements used to identify the web requests that you want to allow, block, or count. Each rule includes one top-level statement that AWS WAF uses to identify matching web requests, and parameters that govern how AWS WAF handles them.",
@@ -50054,7 +50054,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should allow the request and optionally defines additional custom handling for the request.\n\nThis is used in the context of other settings, for example to specify values for `RuleAction` and web ACL `DefaultAction` .",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.AndStatement": {
@@ -50068,7 +50068,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should block the request and optionally defines additional custom handling for the response to the web request.\n\nThis is used in the context of other settings, for example to specify values for `RuleAction` and web ACL `DefaultAction` .",
       "properties": {
-        "CustomResponse": "Defines a custom response for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomResponse": "Defines a custom response for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.Body": {
@@ -50093,7 +50093,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should run a `CAPTCHA` check against the request:\n\n- If the request includes a valid, unexpired `CAPTCHA` token, AWS WAF applies any custom request handling and labels that you've configured and then allows the web request inspection to proceed to the next rule, similar to a `CountAction` .\n- If the request doesn't include a valid, unexpired token, AWS WAF discontinues the web ACL evaluation of the request and blocks it from going to its intended destination.\n\nAWS WAF generates a response that it sends back to the client, which includes the following:\n\n- The header `x-amzn-waf-action` with a value of `captcha` .\n- The HTTP status code `405 Method Not Allowed` .\n- If the request contains an `Accept` header with a value of `text/html` , the response includes a `CAPTCHA` JavaScript page interstitial.\n\nYou can configure the expiration time in the `CaptchaConfig` `ImmunityTimeProperty` setting at the rule and web ACL level. The rule setting overrides the web ACL setting.\n\nThis action option is available for rules. It isn't available for web ACL default actions.",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request, used when the `CAPTCHA` inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request, used when the `CAPTCHA` inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.CaptchaConfig": {
@@ -50107,7 +50107,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should run a `Challenge` check against the request to verify that the request is coming from a legitimate client session:\n\n- If the request includes a valid, unexpired challenge token, AWS WAF applies any custom request handling and labels that you've configured and then allows the web request inspection to proceed to the next rule, similar to a `CountAction` .\n- If the request doesn't include a valid, unexpired challenge token, AWS WAF discontinues the web ACL evaluation of the request and blocks it from going to its intended destination.\n\nAWS WAF then generates a challenge response that it sends back to the client, which includes the following:\n\n- The header `x-amzn-waf-action` with a value of `challenge` .\n- The HTTP status code `202 Request Accepted` .\n- If the request contains an `Accept` header with a value of `text/html` , the response includes a JavaScript page interstitial with a challenge script.\n\nChallenges run silent browser interrogations in the background, and don't generally affect the end user experience.\n\nA challenge enforces token acquisition using an interstitial JavaScript challenge that inspects the client session for legitimate behavior. The challenge blocks bots or at least increases the cost of operating sophisticated bots.\n\nAfter the client session successfully responds to the challenge, it receives a new token from AWS WAF , which the challenge script uses to resubmit the original request.\n\nYou can configure the expiration time in the `ChallengeConfig` `ImmunityTimeProperty` setting at the rule and web ACL level. The rule setting overrides the web ACL setting.\n\nThis action option is available for rules. It isn't available for web ACL default actions.",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request, used when the challenge inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request, used when the challenge inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.ChallengeConfig": {
@@ -50139,7 +50139,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should count the request. Optionally defines additional custom handling for the request.\n\nThis is used in the context of other settings, for example to specify values for `RuleAction` and web ACL `DefaultAction` .",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.CustomHTTPHeader": {
@@ -50152,9 +50152,9 @@
     },
     "AWS::WAFv2::RuleGroup.CustomRequestHandling": {
       "attributes": {},
-      "description": "Custom request handling behavior that inserts custom headers into a web request. You can add custom request handling for AWS WAF to use when the rule action doesn't block the request. For example, `CaptchaAction` for requests with valid t okens, and `AllowAction` .\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+      "description": "Custom request handling behavior that inserts custom headers into a web request. You can add custom request handling for AWS WAF to use when the rule action doesn't block the request. For example, `CaptchaAction` for requests with valid t okens, and `AllowAction` .\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* .",
       "properties": {
-        "InsertHeaders": "The HTTP headers to insert into the request. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "InsertHeaders": "The HTTP headers to insert into the request. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.CustomResponse": {
@@ -50162,15 +50162,15 @@
       "description": "A custom response to send to the client. You can define a custom response for rule actions and default web ACL actions that are set to `Block` .\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
       "properties": {
         "CustomResponseBodyKey": "References the response body that you want AWS WAF to return to the web request client. You can define a custom response for a rule action or a default web ACL action that is set to block. To do this, you first define the response body key and value in the `CustomResponseBodies` setting for the `WebACL` or `RuleGroup` where you want to use it. Then, in the rule action or web ACL default action `BlockAction` setting, you reference the response body using this key.",
-        "ResponseCode": "The HTTP status code to return to the client.\n\nFor a list of status codes that you can use in your custom responses, see [Supported status codes for custom response](https://docs.aws.amazon.com/waf/latest/developerguide/customizing-the-response-status-codes.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
-        "ResponseHeaders": "The HTTP headers to use in the response. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "ResponseCode": "The HTTP status code to return to the client.\n\nFor a list of status codes that you can use in your custom responses, see [Supported status codes for custom response](https://docs.aws.amazon.com/waf/latest/developerguide/customizing-the-response-status-codes.html) in the *AWS WAF Developer Guide* .",
+        "ResponseHeaders": "The HTTP headers to use in the response. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::RuleGroup.CustomResponseBody": {
       "attributes": {},
       "description": "The response body to use in a custom response to a web request. This is referenced by key from `CustomResponse` `CustomResponseBodyKey` .",
       "properties": {
-        "Content": "The payload of the custom response.\n\nYou can use JSON escape strings in JSON content. To do this, you must specify JSON content in the `ContentType` setting.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+        "Content": "The payload of the custom response.\n\nYou can use JSON escape strings in JSON content. To do this, you must specify JSON content in the `ContentType` setting.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* .",
         "ContentType": "The type of content in the payload that you are defining in the `Content` string."
       }
     },
@@ -50419,7 +50419,7 @@
       "attributes": {},
       "description": "Defines and enables Amazon CloudWatch metrics and web request sample collection.",
       "properties": {
-        "CloudWatchMetricsEnabled": "A boolean indicating whether the associated resource sends metrics to Amazon CloudWatch. For the list of available metrics, see [AWS WAF Metrics](https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#waf-metrics) .",
+        "CloudWatchMetricsEnabled": "A boolean indicating whether the associated resource sends metrics to Amazon CloudWatch. For the list of available metrics, see [AWS WAF Metrics](https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#waf-metrics) in the *AWS WAF Developer Guide* .",
         "MetricName": "A name of the Amazon CloudWatch metric dimension. The name can contain only the characters: A-Z, a-z, 0-9, - (hyphen), and _ (underscore). The name can be from one to 128 characters long. It can't contain whitespace or metric names that are reserved for AWS WAF , for example `All` and `Default_Action` .",
         "SampledRequestsEnabled": "A boolean indicating whether AWS WAF should store a sampling of the web requests that match the rules. You can view the sampled requests through the AWS WAF console."
       }
@@ -50444,7 +50444,7 @@
       "properties": {
         "CaptchaConfig": "Specifies how AWS WAF should handle `CAPTCHA` evaluations for rules that don't have their own `CaptchaConfig` settings. If you don't specify this, AWS WAF uses its default settings for `CaptchaConfig` .",
         "ChallengeConfig": "Specifies how AWS WAF should handle challenge evaluations for rules that don't have their own `ChallengeConfig` settings. If you don't specify this, AWS WAF uses its default settings for `ChallengeConfig` .",
-        "CustomResponseBodies": "A map of custom response keys and content bodies. When you create a rule with a block action, you can send a custom response to the web request. You define these for the web ACL, and then use them in the rules and default actions that you define in the web ACL.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+        "CustomResponseBodies": "A map of custom response keys and content bodies. When you create a rule with a block action, you can send a custom response to the web request. You define these for the web ACL, and then use them in the rules and default actions that you define in the web ACL.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* .\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* .",
         "DefaultAction": "The action to perform if none of the `Rules` contained in the `WebACL` match.",
         "Description": "A description of the web ACL that helps with identification.",
         "Name": "The name of the web ACL. You cannot change the name of a web ACL after you create it.",
@@ -50475,7 +50475,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should allow the request and optionally defines additional custom handling for the request.\n\nThis is used in the context of other settings, for example to specify values for a rule action or a web ACL default action.",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.AndStatement": {
@@ -50489,7 +50489,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should block the request and optionally defines additional custom handling for the response to the web request.\n\nThis is used in the context of other settings, for example to specify values for a rule action or a web ACL default action.",
       "properties": {
-        "CustomResponse": "Defines a custom response for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomResponse": "Defines a custom response for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.Body": {
@@ -50514,7 +50514,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should run a `CAPTCHA` check against the request:\n\n- If the request includes a valid, unexpired `CAPTCHA` token, AWS WAF allows the web request inspection to proceed to the next rule, similar to a `CountAction` .\n- If the request doesn't include a valid, unexpired `CAPTCHA` token, AWS WAF discontinues the web ACL evaluation of the request and blocks it from going to its intended destination.\n\nAWS WAF generates a response that it sends back to the client, which includes the following:\n\n- The header `x-amzn-waf-action` with a value of `captcha` .\n- The HTTP status code `405 Method Not Allowed` .\n- If the request contains an `Accept` header with a value of `text/html` , the response includes a `CAPTCHA` challenge.\n\nYou can configure the expiration time in the `CaptchaConfig` `ImmunityTimeProperty` setting at the rule and web ACL level. The rule setting overrides the web ACL setting.\n\nThis action option is available for rules. It isn't available for web ACL default actions.",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request, used when the `CAPTCHA` inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request, used when the `CAPTCHA` inspection determines that the request's token is valid and unexpired.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.CaptchaConfig": {
@@ -50560,7 +50560,7 @@
       "attributes": {},
       "description": "Specifies that AWS WAF should count the request. Optionally defines additional custom handling for the request.\n\nThis is used in the context of other settings, for example to specify values for a rule action or a web ACL default action.",
       "properties": {
-        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "CustomRequestHandling": "Defines custom handling for the web request.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.CustomHTTPHeader": {
@@ -50573,9 +50573,9 @@
     },
     "AWS::WAFv2::WebACL.CustomRequestHandling": {
       "attributes": {},
-      "description": "Custom request handling behavior that inserts custom headers into a web request. You can add custom request handling for AWS WAF to use when the rule action doesn't block the request. For example, `CaptchaAction` for requests with valid t okens, and `AllowAction` .\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+      "description": "Custom request handling behavior that inserts custom headers into a web request. You can add custom request handling for AWS WAF to use when the rule action doesn't block the request. For example, `CaptchaAction` for requests with valid t okens, and `AllowAction` .\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* .",
       "properties": {
-        "InsertHeaders": "The HTTP headers to insert into the request. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "InsertHeaders": "The HTTP headers to insert into the request. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.CustomResponse": {
@@ -50583,15 +50583,15 @@
       "description": "A custom response to send to the client. You can define a custom response for rule actions and default web ACL actions that are set to the block action.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
       "properties": {
         "CustomResponseBodyKey": "References the response body that you want AWS WAF to return to the web request client. You can define a custom response for a rule action or a default web ACL action that is set to block. To do this, you first define the response body key and value in the `CustomResponseBodies` setting for the `WebACL` or `RuleGroup` where you want to use it. Then, in the rule action or web ACL default action `BlockAction` setting, you reference the response body using this key.",
-        "ResponseCode": "The HTTP status code to return to the client.\n\nFor a list of status codes that you can use in your custom responses, see [Supported status codes for custom response](https://docs.aws.amazon.com/waf/latest/developerguide/customizing-the-response-status-codes.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
-        "ResponseHeaders": "The HTTP headers to use in the response. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) ."
+        "ResponseCode": "The HTTP status code to return to the client.\n\nFor a list of status codes that you can use in your custom responses, see [Supported status codes for custom response](https://docs.aws.amazon.com/waf/latest/developerguide/customizing-the-response-status-codes.html) in the *AWS WAF Developer Guide* .",
+        "ResponseHeaders": "The HTTP headers to use in the response. Duplicate header names are not allowed.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* ."
       }
     },
     "AWS::WAFv2::WebACL.CustomResponseBody": {
       "attributes": {},
       "description": "The response body to use in a custom response to a web request. This is referenced by key from `CustomResponse` `CustomResponseBodyKey` .",
       "properties": {
-        "Content": "The payload of the custom response.\n\nYou can use JSON escape strings in JSON content. To do this, you must specify JSON content in the `ContentType` setting.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) .",
+        "Content": "The payload of the custom response.\n\nYou can use JSON escape strings in JSON content. To do this, you must specify JSON content in the `ContentType` setting.\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* .",
         "ContentType": "The type of content in the payload that you are defining in the `Content` string."
       }
     },
@@ -50961,7 +50961,7 @@
       "attributes": {},
       "description": "Defines and enables Amazon CloudWatch metrics and web request sample collection.",
       "properties": {
-        "CloudWatchMetricsEnabled": "A boolean indicating whether the associated resource sends metrics to Amazon CloudWatch. For the list of available metrics, see [AWS WAF Metrics](https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#waf-metrics) .",
+        "CloudWatchMetricsEnabled": "A boolean indicating whether the associated resource sends metrics to Amazon CloudWatch. For the list of available metrics, see [AWS WAF Metrics](https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#waf-metrics) in the *AWS WAF Developer Guide* .",
         "MetricName": "A name of the Amazon CloudWatch metric dimension. The name can contain only the characters: A-Z, a-z, 0-9, - (hyphen), and _ (underscore). The name can be from one to 128 characters long. It can't contain whitespace or metric names that are reserved for AWS WAF , for example `All` and `Default_Action` .",
         "SampledRequestsEnabled": "A boolean indicating whether AWS WAF should store a sampling of the web requests that match the rules. You can view the sampled requests through the AWS WAF console."
       }
