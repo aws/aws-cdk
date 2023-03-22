@@ -1,7 +1,7 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "files": {
-    "d21fee6f9384d15c5a0a826f4dbc23d103a989e9cc2e9c8abc2a629de9ea5cd2": {
+    "3f9deb43f8f02da8be7c2aa727a501250dbddc1fd19e848d488e7071380ce060": {
       "source": {
         "path": "integ-apprunner.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d21fee6f9384d15c5a0a826f4dbc23d103a989e9cc2e9c8abc2a629de9ea5cd2.json",
+          "objectKey": "3f9deb43f8f02da8be7c2aa727a501250dbddc1fd19e848d488e7071380ce060.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

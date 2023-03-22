@@ -39,6 +39,20 @@ export abstract class MachineImage {
    * deployment. Be aware this will cause your instances to be replaced when a
    * new version of the image becomes available. Do not store stateful information
    * on the instance if you are using this image.
+   *
+   * N.B.: "latest" in the name of this function indicates that it always uses the most recent
+   * image of a particular generation of Amazon Linux, not that it uses the "latest generation".
+   * For backwards compatibility, this function uses Amazon Linux 1 if no generation
+   * is specified.
+   *
+   * Specify the desired generation using the `generation` property:
+   *
+   * ```ts
+   * ec2.MachineImage.latestAmazonLinux({
+   *   // Use Amazon Linux 2
+   *   generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+   * })
+   * ```
    */
   public static latestAmazonLinux(props?: AmazonLinuxImageProps): IMachineImage {
     return new AmazonLinuxImage(props);
