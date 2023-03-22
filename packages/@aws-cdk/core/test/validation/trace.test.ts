@@ -22,13 +22,13 @@ describe('ReportTrace', () => {
       // THEN
       expect(formatted).toEqual({
         id: 'MyStack',
-        library: expect.stringMatching(/.*Stack/),
+        construct: expect.stringMatching(/.*Stack/),
         libraryVersion: '0.0.0',
         location: expect.stringMatching(/Object.<anonymous> \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
         path: 'MyStack',
         child: {
           id: 'MyConstruct',
-          library: 'constructs.Construct',
+          construct: 'constructs.Construct',
           libraryVersion: expect.any(String),
           location: expect.stringMatching(/new MyStack \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
           path: 'MyStack/MyConstruct',
@@ -55,13 +55,13 @@ describe('ReportTrace', () => {
     // THEN
     expect(formatted).toEqual({
       id: 'MyStack',
-      library: expect.stringMatching(/.*Stack/),
+      construct: expect.stringMatching(/.*Stack/),
       libraryVersion: '0.0.0',
       location: "Run with '--debug' to include location info",
       path: 'MyStack',
       child: {
         id: 'MyConstruct',
-        library: 'constructs.Construct',
+        construct: 'constructs.Construct',
         libraryVersion: expect.any(String),
         location: "Run with '--debug' to include location info",
         path: 'MyStack/MyConstruct',

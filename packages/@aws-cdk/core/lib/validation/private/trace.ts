@@ -47,7 +47,7 @@ export class ReportTrace {
       const indentation = indent ?? ' '.repeat(STARTER_LINE.length+1);
       const result: string[] = [
         `${start} ${info?.id} (${info?.path})`,
-        `${indentation}${VERTICAL_LINE} Library: ${info?.library}`,
+        `${indentation}${VERTICAL_LINE} Construct: ${info?.construct}`,
         `${indentation}${VERTICAL_LINE} Library Version: ${info?.libraryVersion}`,
         `${indentation}${VERTICAL_LINE} Location: ${info?.location}`,
         ...info?.child ? [this.renderPrettyPrintedTraceInfo(info?.child, ' '.repeat(indentation.length+STARTER_LINE.length+1), indentation+STARTER_LINE)] : [],
@@ -128,7 +128,7 @@ export class ReportTrace {
       child: node.children
         ? this.getConstructTrace(this.getChild(node.children), metadata)
         : undefined,
-      library: node.constructInfo?.fqn,
+      construct: node.constructInfo?.fqn,
       libraryVersion: node.constructInfo?.version,
       location: thisLocation ?? "Run with '--debug' to include location info",
     };

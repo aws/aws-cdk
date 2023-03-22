@@ -185,6 +185,7 @@ export class PolicyValidationReportFormatter {
             fix: violation.fix,
             ruleMetadata: violation.ruleMetadata,
             severity: violation.severity,
+            violatingResources: violation.violatingResources,
             violatingConstructs: violation.violatingResources.map(resource => {
               const constructPath = this.tree.getConstructByLogicalId(
                 path.basename(resource.templatePath),

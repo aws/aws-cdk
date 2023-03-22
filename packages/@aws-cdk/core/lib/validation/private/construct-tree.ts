@@ -26,11 +26,14 @@ export interface ConstructTrace {
   readonly child?: ConstructTrace;
 
   /**
-   * The name of the library the construct comes from
+   * The name of the construct
+   *
+   * This will be equal to the fqn so will also include
+   * library information
    *
    * @default - undefined if this is a locally defined construct
    */
-  readonly library?: string;
+  readonly construct?: string;
 
   /**
    * The version of the library the construct comes from

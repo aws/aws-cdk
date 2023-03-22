@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
 import * as core from '../../lib';
-import { PolicyValidationPluginReport, PolicyViolationResourceAware } from '../../lib';
+import { PolicyValidationPluginReport, PolicyViolation } from '../../lib';
 
 
 let consoleErrorMock: jest.SpyInstance;
@@ -56,11 +56,11 @@ describe('validations', () => {
       },
       severity: 'medium',
       creationStack: `\t└──  Default (Default)
-\t     │ Library: @aws-cdk/core.Stack
+\t     │ Construct: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
 \t     │ Location: Run with '--debug' to include location info
 \t     └──  Fake (Default/Fake)
-\t          │ Library: @aws-cdk/core.CfnResource
+\t          │ Construct: @aws-cdk/core.CfnResource
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info`,
       resourceLogicalId: 'Fake',
@@ -226,15 +226,15 @@ ${reset(red(bright('test-rule2 (1 occurrences)')))}
     - Template Path: /path/to/Stage1stack1DDED8B6C.template.json
     - Creation Stack:
 \t└──  Stage1 (Stage1)
-\t     │ Library: @aws-cdk/core.Stage
+\t     │ Construct: @aws-cdk/core.Stage
 \t     │ Library Version: 0.0.0
 \t     │ Location: Run with '--debug' to include location info
 \t     └──  stack1 (Stage1/stack1)
-\t          │ Library: @aws-cdk/core.Stack
+\t          │ Construct: @aws-cdk/core.Stack
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
 \t          └──  DefaultResource (Stage1/stack1/DefaultResource)
-\t               │ Library: @aws-cdk/core.CfnResource
+\t               │ Construct: @aws-cdk/core.CfnResource
 \t               │ Library Version: 0.0.0
 \t               │ Location: Run with '--debug' to include location info
     - Resource ID: DefaultResource
@@ -262,15 +262,15 @@ ${reset(red(bright('test-rule4 (1 occurrences)')))}
     - Template Path: /path/to/Stage2Stage3stack10CD36915.template.json
     - Creation Stack:
 \t└──  Stage3 (Stage2/Stage3)
-\t     │ Library: @aws-cdk/core.Stage
+\t     │ Construct: @aws-cdk/core.Stage
 \t     │ Library Version: 0.0.0
 \t     │ Location: Run with '--debug' to include location info
 \t     └──  stack1 (Stage2/Stage3/stack1)
-\t          │ Library: @aws-cdk/core.Stack
+\t          │ Construct: @aws-cdk/core.Stack
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
 \t          └──  DefaultResource (Stage2/Stage3/stack1/DefaultResource)
-\t               │ Library: @aws-cdk/core.CfnResource
+\t               │ Construct: @aws-cdk/core.CfnResource
 \t               │ Library Version: 0.0.0
 \t               │ Location: Run with '--debug' to include location info
     - Resource ID: DefaultResource
@@ -298,15 +298,15 @@ ${reset(red(bright('test-rule3 (1 occurrences)')))}
     - Template Path: /path/to/Stage2stack259BA718E.template.json
     - Creation Stack:
 \t└──  Stage2 (Stage2)
-\t     │ Library: @aws-cdk/core.Stage
+\t     │ Construct: @aws-cdk/core.Stage
 \t     │ Library Version: 0.0.0
 \t     │ Location: Run with '--debug' to include location info
 \t     └──  stack2 (Stage2/stack2)
-\t          │ Library: @aws-cdk/core.Stack
+\t          │ Construct: @aws-cdk/core.Stack
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
 \t          └──  DefaultResource (Stage2/stack2/DefaultResource)
-\t               │ Library: @aws-cdk/core.CfnResource
+\t               │ Construct: @aws-cdk/core.CfnResource
 \t               │ Library Version: 0.0.0
 \t               │ Location: Run with '--debug' to include location info
     - Resource ID: DefaultResource
@@ -334,15 +334,15 @@ ${reset(red(bright('test-rule1 (1 occurrences)')))}
     - Template Path: /path/to/Stage1stack1DDED8B6C.template.json
     - Creation Stack:
 \t└──  Stage1 (Stage1)
-\t     │ Library: @aws-cdk/core.Stage
+\t     │ Construct: @aws-cdk/core.Stage
 \t     │ Library Version: 0.0.0
 \t     │ Location: Run with '--debug' to include location info
 \t     └──  stack1 (Stage1/stack1)
-\t          │ Library: @aws-cdk/core.Stack
+\t          │ Construct: @aws-cdk/core.Stack
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
 \t          └──  DefaultResource (Stage1/stack1/DefaultResource)
-\t               │ Library: @aws-cdk/core.CfnResource
+\t               │ Construct: @aws-cdk/core.CfnResource
 \t               │ Library Version: 0.0.0
 \t               │ Location: Run with '--debug' to include location info
     - Resource ID: DefaultResource
@@ -551,11 +551,11 @@ ${reset(red(bright('rule-1 (1 occurrences)')))}
     - Template Path: /path/to/Default.template.json
     - Creation Stack:
 \t└──  Default (Default)
-\t     │ Library: @aws-cdk/core.Stack
+\t     │ Construct: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
 \t     │ Location: Run with '--debug' to include location info
 \t     └──  Fake (Default/Fake)
-\t          │ Library: @aws-cdk/core.CfnResource
+\t          │ Construct: @aws-cdk/core.CfnResource
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
     - Resource ID: Fake
@@ -583,11 +583,11 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     - Template Path: /path/to/Default.template.json
     - Creation Stack:
 \t└──  Default (Default)
-\t     │ Library: @aws-cdk/core.Stack
+\t     │ Construct: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
 \t     │ Location: Run with '--debug' to include location info
 \t     └──  Fake (Default/Fake)
-\t          │ Library: @aws-cdk/core.CfnResource
+\t          │ Construct: @aws-cdk/core.CfnResource
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
     - Resource ID: Fake
@@ -646,11 +646,11 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     - Template Path: /path/to/Default.template.json
     - Creation Stack:
 \t└──  Default (Default)
-\t     │ Library: @aws-cdk/core.Stack
+\t     │ Construct: @aws-cdk/core.Stack
 \t     │ Library Version: 0.0.0
 \t     │ Location: Run with '--debug' to include location info
 \t     └──  Fake (Default/Fake)
-\t          │ Library: @aws-cdk/core.CfnResource
+\t          │ Construct: @aws-cdk/core.CfnResource
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
     - Resource ID: Fake
@@ -744,6 +744,8 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     }).toThrow(/Validation failed/);
 
     const report = consoleLogMock.mock.calls[0][0];
+    expect(consoleLogMock.mock.calls.length).toEqual(1);
+    expect(consoleLogMock.mock.calls[0].length).toEqual(1);
     expect(JSON.parse(report)).toEqual(expect.objectContaining({
       title: 'Validation Report',
       pluginReports: [
@@ -757,17 +759,24 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
               ruleName: 'test-rule',
               description: 'test recommendation',
               ruleMetadata: { id: 'abcdefg' },
+              violatingResources: [{
+                'locations': [
+                  'test-location',
+                ],
+                'resourceLogicalId': 'Fake',
+                'templatePath': '/path/to/Default.template.json',
+              }],
               violatingConstructs: [
                 {
                   constructStack: {
                     'id': 'Default',
-                    'library': '@aws-cdk/core.Stack',
+                    'construct': '@aws-cdk/core.Stack',
                     'libraryVersion': '0.0.0',
                     'location': "Run with '--debug' to include location info",
                     'path': 'Default',
                     'child': {
                       'id': 'Fake',
-                      'library': '@aws-cdk/core.CfnResource',
+                      'construct': '@aws-cdk/core.CfnResource',
                       'libraryVersion': '0.0.0',
                       'location': "Run with '--debug' to include location info",
                       'path': 'Default/Fake',
@@ -792,7 +801,7 @@ class FakePlugin implements core.IPolicyValidationPlugin {
 
   constructor(
     public readonly name: string,
-    private readonly violations: PolicyViolationResourceAware[]) {}
+    private readonly violations: PolicyViolation[]) {}
 
   validate(_context: core.IPolicyValidationContext): PolicyValidationPluginReport {
     return {

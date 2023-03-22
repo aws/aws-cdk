@@ -13,6 +13,11 @@ export interface PolicyViolation {
   readonly description: string;
 
   /**
+   * The resources violating this rule.
+   */
+  readonly violatingResources: PolicyViolatingResource[];
+
+  /**
    * How to fix the violation.
    *
    * @default - no fix is provided
@@ -59,17 +64,6 @@ export interface PolicyViolatingResource {
 }
 
 /**
- * Validation produced by the validation plugin, in CFN resource terms
- */
-export interface PolicyViolationResourceAware extends PolicyViolation {
-  /**
-   * The resources violating this rule.
-   */
-  readonly violatingResources: PolicyViolatingResource[];
-}
-
-
-/**
  * The final status of the validation report
  */
 export enum PolicyValidationReportStatus {
@@ -91,7 +85,7 @@ export interface PolicyValidationPluginReport {
   /**
    * List of violations in the report.
    */
-  readonly violations: PolicyViolationResourceAware[];
+  readonly violations: PolicyViolation[];
 
   /**
    * Whether or not the report was successful.
