@@ -132,7 +132,7 @@ export class CheckedStageStackAssociator extends StackAssociatorBase {
 
   constructor(app: ApplicationAssociator, props?: StackAssociatorBaseProps) {
     super(props);
-    this.application = app.appRegistryApplication();
+    this.application = app.appRegistryApplication;
     this.applicationAssociator = app;
   }
 }
