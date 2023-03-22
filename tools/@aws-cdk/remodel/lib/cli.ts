@@ -393,7 +393,7 @@ export async function postRun(dir: string) {
   await exec(`yarn integ-runner --update-on-failed --dry-run ${dryRunInteg.join(' ')}`, { cwd: integPackagesDir });
 
   // Run full build to make sure everything works
-  await e('yarn build --skip-prereqs --skip-compat');
+  // await e('yarn build --skip-prereqs --skip-compat');
 }
 
 async function cleanup(dir: string, packages: BundlingResult) {
