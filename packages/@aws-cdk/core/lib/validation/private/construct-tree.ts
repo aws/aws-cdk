@@ -64,7 +64,7 @@ export class ConstructTree {
    */
   private readonly _traceCache = new Map<string, ConstructTrace>();
   private readonly _constructByPath = new Map<string, Construct>();
-  private readonly _constructByLogicalId = new Map<string, Construct>();
+  private readonly _constructByTemplatePathAndLogicalId = new Map<string, Map<string, Construct>>();
   private readonly treeMetadata: TreeMetadata;
 
   constructor(
@@ -82,19 +82,28 @@ export class ConstructTree {
       this._constructByPath.set(child.node.path, child);
       const defaultChild = child.node.defaultChild;
       if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
-        this._constructByLogicalId.set(Stack.of(child).resolve(defaultChild.logicalId), child);
+        const stack = Stack.of(defaultChild);
+        const logicalId = stack.resolve(defaultChild.logicalId);
+        this.setLogicalId(stack, logicalId, child);
       }
     });
 
     // Another pass to include all the L1s that haven't been added yet
     this.root.node.findAll().forEach(child => {
       if (CfnResource.isCfnResource(child)) {
+        const stack = Stack.of(child);
         const logicalId = Stack.of(child).resolve(child.logicalId);
-        if (!this._constructByLogicalId.has(logicalId)) {
-          this._constructByLogicalId.set(logicalId, child);
-        }
+        this.setLogicalId(stack, logicalId, child);
       }
     });
+  }
+
+  private setLogicalId(stack: Stack, logicalId: string, child: Construct) {
+    if (!this._constructByTemplatePathAndLogicalId.has(stack.templateFile)) {
+      this._constructByTemplatePathAndLogicalId.set(stack.templateFile, new Map([[logicalId, child]]));
+    } else {
+      this._constructByTemplatePathAndLogicalId.get(stack.templateFile)?.set(logicalId, child);
+    }
   }
 
   /**
@@ -138,7 +147,7 @@ export class ConstructTree {
    * @param logicalId the ID of the CfnResource
    * @returns the Construct
    */
-  public getConstructByLogicalId(logicalId: string): Construct | undefined {
-    return this._constructByLogicalId.get(logicalId);
+  public getConstructByLogicalId(templateFile: string, logicalId: string): Construct | undefined {
+    return this._constructByTemplatePathAndLogicalId.get(templateFile)?.get(logicalId);
   }
 }

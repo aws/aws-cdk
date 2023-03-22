@@ -31,7 +31,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/stack.template.json',
+            templatePath: '/path/to/Default.template.json',
           }],
         }]),
       ],
@@ -48,7 +48,7 @@ describe('validations', () => {
     }).toThrow(/Validation failed/);
 
     expect(consoleErrorMock.mock.calls[0][0]).toEqual(validationReport({
-      templatePath: '/path/to/stack.template.json',
+      templatePath: '/path/to/Default.template.json',
       constructPath: 'Default/Fake',
       title: 'test-rule',
       ruleMetadata: {
@@ -131,8 +131,8 @@ describe('validations', () => {
           ruleName: 'test-rule1',
           violatingResources: [{
             locations: ['test-location'],
-            resourceLogicalId: 'DefaultResource1',
-            templatePath: '/path/to/stack1.template.json',
+            resourceLogicalId: 'DefaultResource',
+            templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
           }],
         }]),
       ],
@@ -144,8 +144,8 @@ describe('validations', () => {
           ruleName: 'test-rule2',
           violatingResources: [{
             locations: ['test-location'],
-            resourceLogicalId: 'DefaultResource1',
-            templatePath: '/path/to/stack1.template.json',
+            resourceLogicalId: 'DefaultResource',
+            templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
           }],
         }]),
       ],
@@ -157,21 +157,41 @@ describe('validations', () => {
           ruleName: 'test-rule3',
           violatingResources: [{
             locations: ['test-location'],
-            resourceLogicalId: 'DefaultResource2',
-            templatePath: '/path/to/stack2.template.json',
+            resourceLogicalId: 'DefaultResource',
+            templatePath: '/path/to/Stage2stack259BA718E.template.json',
           }],
         }]),
       ],
     });
+    const stage3 = new core.Stage(stage2, 'Stage3', {
+      policyValidation: [
+        new FakePlugin('test-plugin4', [{
+          description: 'do something',
+          ruleName: 'test-rule4',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'DefaultResource',
+            templatePath: '/path/to/Stage2Stage3stack10CD36915.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack3 = new core.Stack(stage3, 'stack1');
+    new core.CfnResource(stack3, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
     const stack1 = new core.Stack(stage1, 'stack1');
-    new core.CfnResource(stack1, 'DefaultResource1', {
+    new core.CfnResource(stack1, 'DefaultResource', {
       type: 'Test::Resource::Fake',
       properties: {
         result: 'failure',
       },
     });
     const stack2 = new core.Stack(stage2, 'stack2');
-    new core.CfnResource(stack2, 'DefaultResource2', {
+    new core.CfnResource(stack2, 'DefaultResource', {
       type: 'Test::Resource::Fake',
       properties: {
         result: 'failure',
@@ -182,6 +202,7 @@ describe('validations', () => {
     }).toThrow(/Validation failed/);
 
     const report = consoleErrorMock.mock.calls[0][0];
+    // const report = consoleErrorMock.mock.calls;
     // Assuming the rest of the report's content is checked by another test
     expect(report).toEqual(`Validation Report
 -----------------
@@ -201,8 +222,8 @@ ${reset(red(bright('test-rule2 (1 occurrences)')))}
 
   Occurrences:
 
-    - Construct Path: Stage1/stack1/DefaultResource1
-    - Template Path: /path/to/stack1.template.json
+    - Construct Path: Stage1/stack1/DefaultResource
+    - Template Path: /path/to/Stage1stack1DDED8B6C.template.json
     - Creation Stack:
 \t└──  Stage1 (Stage1)
 \t     │ Library: @aws-cdk/core.Stage
@@ -212,11 +233,47 @@ ${reset(red(bright('test-rule2 (1 occurrences)')))}
 \t          │ Library: @aws-cdk/core.Stack
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
-\t          └──  DefaultResource1 (Stage1/stack1/DefaultResource1)
+\t          └──  DefaultResource (Stage1/stack1/DefaultResource)
 \t               │ Library: @aws-cdk/core.CfnResource
 \t               │ Library Version: 0.0.0
 \t               │ Location: Run with '--debug' to include location info
-    - Resource ID: DefaultResource1
+    - Resource ID: DefaultResource
+    - Template Locations:
+      > test-location
+
+  Description: do something
+
+(Summary)
+
+╔════════╤══════════════╗
+║ Status │ failure      ║
+╟────────┼──────────────╢
+║ Plugin │ test-plugin4 ║
+╚════════╧══════════════╝
+
+
+(Violations)
+
+${reset(red(bright('test-rule4 (1 occurrences)')))}
+
+  Occurrences:
+
+    - Construct Path: Stage2/Stage3/stack1/DefaultResource
+    - Template Path: /path/to/Stage2Stage3stack10CD36915.template.json
+    - Creation Stack:
+\t└──  Stage3 (Stage2/Stage3)
+\t     │ Library: @aws-cdk/core.Stage
+\t     │ Library Version: 0.0.0
+\t     │ Location: Run with '--debug' to include location info
+\t     └──  stack1 (Stage2/Stage3/stack1)
+\t          │ Library: @aws-cdk/core.Stack
+\t          │ Library Version: 0.0.0
+\t          │ Location: Run with '--debug' to include location info
+\t          └──  DefaultResource (Stage2/Stage3/stack1/DefaultResource)
+\t               │ Library: @aws-cdk/core.CfnResource
+\t               │ Library Version: 0.0.0
+\t               │ Location: Run with '--debug' to include location info
+    - Resource ID: DefaultResource
     - Template Locations:
       > test-location
 
@@ -237,8 +294,8 @@ ${reset(red(bright('test-rule3 (1 occurrences)')))}
 
   Occurrences:
 
-    - Construct Path: Stage2/stack2/DefaultResource2
-    - Template Path: /path/to/stack2.template.json
+    - Construct Path: Stage2/stack2/DefaultResource
+    - Template Path: /path/to/Stage2stack259BA718E.template.json
     - Creation Stack:
 \t└──  Stage2 (Stage2)
 \t     │ Library: @aws-cdk/core.Stage
@@ -248,11 +305,11 @@ ${reset(red(bright('test-rule3 (1 occurrences)')))}
 \t          │ Library: @aws-cdk/core.Stack
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
-\t          └──  DefaultResource2 (Stage2/stack2/DefaultResource2)
+\t          └──  DefaultResource (Stage2/stack2/DefaultResource)
 \t               │ Library: @aws-cdk/core.CfnResource
 \t               │ Library Version: 0.0.0
 \t               │ Location: Run with '--debug' to include location info
-    - Resource ID: DefaultResource2
+    - Resource ID: DefaultResource
     - Template Locations:
       > test-location
 
@@ -273,8 +330,8 @@ ${reset(red(bright('test-rule1 (1 occurrences)')))}
 
   Occurrences:
 
-    - Construct Path: Stage1/stack1/DefaultResource1
-    - Template Path: /path/to/stack1.template.json
+    - Construct Path: Stage1/stack1/DefaultResource
+    - Template Path: /path/to/Stage1stack1DDED8B6C.template.json
     - Creation Stack:
 \t└──  Stage1 (Stage1)
 \t     │ Library: @aws-cdk/core.Stage
@@ -284,15 +341,130 @@ ${reset(red(bright('test-rule1 (1 occurrences)')))}
 \t          │ Library: @aws-cdk/core.Stack
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
-\t          └──  DefaultResource1 (Stage1/stack1/DefaultResource1)
+\t          └──  DefaultResource (Stage1/stack1/DefaultResource)
 \t               │ Library: @aws-cdk/core.CfnResource
 \t               │ Library Version: 0.0.0
 \t               │ Location: Run with '--debug' to include location info
-    - Resource ID: DefaultResource1
+    - Resource ID: DefaultResource
     - Template Locations:
       > test-location
 
   Description: do something`);
+  });
+
+  test('multiple stages, multiple plugins', () => {
+    const mockValidate = jest.fn().mockImplementation(() => {
+      return {
+        success: true,
+        violations: [],
+      };
+    });
+    const app = new core.App({
+      policyValidation: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+    const stage1 = new core.Stage(app, 'Stage1', { });
+    const stage2 = new core.Stage(app, 'Stage2', {
+      policyValidation: [
+        {
+          name: 'test-plugin2',
+          validate: mockValidate,
+        },
+      ],
+    });
+    const stage3 = new core.Stage(stage2, 'Stage3', { });
+    const stack3 = new core.Stack(stage3, 'stack1');
+    new core.CfnResource(stack3, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    const stack1 = new core.Stack(stage1, 'stack1');
+    new core.CfnResource(stack1, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    const stack2 = new core.Stack(stage2, 'stack2');
+    new core.CfnResource(stack2, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    app.synth();
+
+    expect(mockValidate).toHaveBeenCalledTimes(2);
+    expect(mockValidate).toHaveBeenNthCalledWith(2, {
+      templatePaths: [
+        expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
+        expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
+        expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
+      ],
+    });
+    expect(mockValidate).toHaveBeenNthCalledWith(1, {
+      templatePaths: [
+        expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
+        expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
+      ],
+    });
+  });
+
+  test('multiple stages, single plugin', () => {
+    const mockValidate = jest.fn().mockImplementation(() => {
+      return {
+        success: true,
+        violations: [],
+      };
+    });
+    const app = new core.App({
+      policyValidation: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+    const stage1 = new core.Stage(app, 'Stage1', { });
+    const stage2 = new core.Stage(app, 'Stage2', { });
+    const stage3 = new core.Stage(stage2, 'Stage3', { });
+    const stack3 = new core.Stack(stage3, 'stack1');
+    new core.CfnResource(stack3, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    const stack1 = new core.Stack(stage1, 'stack1');
+    new core.CfnResource(stack1, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    const stack2 = new core.Stack(stage2, 'stack2');
+    new core.CfnResource(stack2, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    app.synth();
+
+    expect(mockValidate).toHaveBeenCalledTimes(1);
+    expect(mockValidate).toHaveBeenCalledWith({
+      templatePaths: [
+        expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
+        expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
+        expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
+      ],
+    });
   });
 
   test('multiple constructs', () => {
@@ -304,7 +476,7 @@ ${reset(red(bright('test-rule1 (1 occurrences)')))}
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'SomeResource317FDD71',
-            templatePath: '/path/to/stack.template.json',
+            templatePath: '/path/to/Default.template.json',
           }],
         }]),
       ],
@@ -331,7 +503,7 @@ ${reset(red(bright('test-rule1 (1 occurrences)')))}
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/stack.template.json',
+            templatePath: '/path/to/Default.template.json',
           }],
         }]),
         new FakePlugin('plugin2', [{
@@ -340,7 +512,7 @@ ${reset(red(bright('test-rule1 (1 occurrences)')))}
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/stack.template.json',
+            templatePath: '/path/to/Default.template.json',
           }],
         }]),
       ],
@@ -376,7 +548,7 @@ ${reset(red(bright('rule-1 (1 occurrences)')))}
   Occurrences:
 
     - Construct Path: Default/Fake
-    - Template Path: /path/to/stack.template.json
+    - Template Path: /path/to/Default.template.json
     - Creation Stack:
 \t└──  Default (Default)
 \t     │ Library: @aws-cdk/core.Stack
@@ -408,7 +580,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
   Occurrences:
 
     - Construct Path: Default/Fake
-    - Template Path: /path/to/stack.template.json
+    - Template Path: /path/to/Default.template.json
     - Creation Stack:
 \t└──  Default (Default)
 \t     │ Library: @aws-cdk/core.Stack
@@ -435,7 +607,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/stack.template.json',
+            templatePath: '/path/to/Default.template.json',
           }],
         }]),
       ],
@@ -471,7 +643,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
   Occurrences:
 
     - Construct Path: Default/Fake
-    - Template Path: /path/to/stack.template.json
+    - Template Path: /path/to/Default.template.json
     - Creation Stack:
 \t└──  Default (Default)
 \t     │ Library: @aws-cdk/core.Stack
@@ -501,7 +673,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/stack.template.json',
+            templatePath: '/path/to/Default.template.json',
           }],
         }]),
       ],
@@ -554,7 +726,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/stack.template.json',
+            templatePath: '/path/to/Default.template.json',
           }],
         }]),
       ],
@@ -604,7 +776,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
                   constructPath: 'Default/Fake',
                   locations: ['test-location'],
                   resourceLogicalId: 'Fake',
-                  templatePath: '/path/to/stack.template.json',
+                  templatePath: '/path/to/Default.template.json',
                 },
               ],
             },

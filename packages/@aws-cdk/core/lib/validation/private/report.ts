@@ -1,4 +1,5 @@
 import * as os from 'os';
+import * as path from 'path';
 import { table } from 'table';
 import { ConstructTree, ConstructTrace } from './construct-tree';
 import { ReportTrace } from './trace';
@@ -185,7 +186,10 @@ export class PolicyValidationReportFormatter {
             ruleMetadata: violation.ruleMetadata,
             severity: violation.severity,
             violatingConstructs: violation.violatingResources.map(resource => {
-              const constructPath = this.tree.getConstructByLogicalId(resource.resourceLogicalId)?.node.path;
+              const constructPath = this.tree.getConstructByLogicalId(
+                path.basename(resource.templatePath),
+                resource.resourceLogicalId,
+              )?.node.path;
               return {
                 constructStack: this.reportTrace.formatJson(constructPath),
                 constructPath: constructPath,

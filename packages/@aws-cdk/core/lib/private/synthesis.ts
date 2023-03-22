@@ -64,10 +64,32 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   return assembly;
 }
 
+/**
+ * Find all the assemblies in the app, including all levels of nested assemblies
+ * and return a map where the assemblyId is the key
+ */
+function getAssemblies(root: App, rootAssembly: CloudAssembly): Map<string, CloudAssembly> {
+  const assemblies = new Map<string, CloudAssembly>();
+  assemblies.set(root.artifactId, rootAssembly);
+  visitAssemblies(root, 'pre', construct => {
+    const stage = construct as Stage;
+    if (stage.parentStage && assemblies.has(stage.parentStage.artifactId)) {
+      assemblies.set(
+        stage.artifactId,
+        assemblies.get(stage.parentStage.artifactId)!.getNestedAssembly(stage.artifactId),
+      );
+    }
+  });
+  return assemblies;
+}
+
+/**
+ * Invoke validation plugins for all stages in an App.
+ */
 function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly) {
   if (!App.isApp(root)) return;
   const hash = computeChecksumOfFolder(outdir);
-
+  const assemblies = getAssemblies(root, assembly);
   const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
     if (Stage.isStage(construct)) {
@@ -75,13 +97,9 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
         if (!templatePathsByPlugin.has(plugin)) {
           templatePathsByPlugin.set(plugin, []);
         }
-        let assemblyToUse;
-        if (!App.isApp(construct)) {
-          assemblyToUse = assembly.getNestedAssembly(construct.artifactId);
-        } else {
-          assemblyToUse = assembly;
-        }
-        templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacks.map(stack => stack.templateFullPath));
+        let assemblyToUse = assemblies.get(construct.artifactId);
+        if (!assemblyToUse) throw new Error(`Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
+        templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacksRecursively.map(stack => stack.templateFullPath));
       }
     }
   });
@@ -332,7 +350,7 @@ function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x: IConst
 
   for (const child of root.node.children) {
     if (!Stage.isStage(child)) { continue; }
-    visit(child, order, cb);
+    visitAssemblies(child, order, cb);
   }
 
   if (order === 'post') {
