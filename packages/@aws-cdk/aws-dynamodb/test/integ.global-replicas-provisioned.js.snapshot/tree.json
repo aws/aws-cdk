@@ -500,13 +500,48 @@
                                       }
                                     },
                                     {
-                                      "Action": [
-                                        "dynamodb:DeleteTable",
-                                        "dynamodb:DeleteTableReplica",
-                                        "dynamodb:DescribeLimits"
-                                      ],
+                                      "Action": "dynamodb:DescribeLimits",
                                       "Effect": "Allow",
                                       "Resource": "*"
+                                    },
+                                    {
+                                      "Action": [
+                                        "dynamodb:DeleteTable",
+                                        "dynamodb:DeleteTableReplica"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:aws:dynamodb:eu-west-3:",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":table/",
+                                              {
+                                                "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref"
+                                              }
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:aws:dynamodb:us-east-2:",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":table/",
+                                              {
+                                                "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref"
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -1529,6 +1564,14 @@
                   "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
                 }
+              },
+              "reference-to-awscdkdynamodbglobalreplicasprovisionedTable12280A12Ref": {
+                "id": "reference-to-awscdkdynamodbglobalreplicasprovisionedTable12280A12Ref",
+                "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/reference-to-awscdkdynamodbglobalreplicasprovisionedTable12280A12Ref",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -1562,9 +1605,14 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/1e17de61d1be99f5a871e95fe96d2c7dd0f0dc7b41e9ebfc2cd0cf577ca140c2.json"
+                          "/cf4730b0be0dfb553e6b9c37bedbba20746a488e34196097845d91bacf8c5782.json"
                         ]
                       ]
+                    },
+                    "parameters": {
+                      "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref": {
+                        "Ref": "TableCD117FA1"
+                      }
                     }
                   }
                 },

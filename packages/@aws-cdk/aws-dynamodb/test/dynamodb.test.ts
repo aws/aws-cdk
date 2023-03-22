@@ -574,7 +574,10 @@ test('replica-handler permission check', () => {
   const stack = new Stack(app, 'Stack');
 
   // WHEN
-  const provider = ReplicaProvider.getOrCreate(stack);
+  const provider = ReplicaProvider.getOrCreate(stack, {
+    tableName: 'test',
+    regions: ['eu-central-1', 'eu-west-1'],
+  });
 
   // THEN
   Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
@@ -611,7 +614,14 @@ test('replica-handler permission check', () => {
             'dynamodb:DeleteTableReplica',
           ],
           'Effect': 'Allow',
-          'Resource': '*',
+          'Resource': [
+            {
+              'Fn::Join': ['', ['arn:aws:dynamodb:eu-central-1:', { Ref: 'AWS::AccountId' }, ':table/test']],
+            },
+            {
+              'Fn::Join': ['', ['arn:aws:dynamodb:eu-west-1:', { Ref: 'AWS::AccountId' }, ':table/test']],
+            },
+          ],
         },
       ],
     },

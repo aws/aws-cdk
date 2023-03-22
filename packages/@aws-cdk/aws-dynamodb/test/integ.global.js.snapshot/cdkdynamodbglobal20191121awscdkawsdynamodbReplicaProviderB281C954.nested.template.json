@@ -53,13 +53,48 @@
        }
       },
       {
-       "Action": [
-        "dynamodb:DeleteTable",
-        "dynamodb:DeleteTableReplica",
-        "dynamodb:DescribeLimits"
-       ],
+       "Action": "dynamodb:DescribeLimits",
        "Effect": "Allow",
        "Resource": "*"
+      },
+      {
+       "Action": [
+        "dynamodb:DeleteTable",
+        "dynamodb:DeleteTableReplica"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:dynamodb:eu-central-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "referencetocdkdynamodbglobal20191121TableB640876BRef"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:dynamodb:eu-west-2:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "referencetocdkdynamodbglobal20191121TableB640876BRef"
+           }
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -697,6 +732,11 @@
      "Arn"
     ]
    }
+  }
+ },
+ "Parameters": {
+  "referencetocdkdynamodbglobal20191121TableB640876BRef": {
+   "Type": "String"
   }
  }
 }

@@ -411,13 +411,48 @@
                                       }
                                     },
                                     {
-                                      "Action": [
-                                        "dynamodb:DeleteTable",
-                                        "dynamodb:DeleteTableReplica",
-                                        "dynamodb:DescribeLimits"
-                                      ],
+                                      "Action": "dynamodb:DescribeLimits",
                                       "Effect": "Allow",
                                       "Resource": "*"
+                                    },
+                                    {
+                                      "Action": [
+                                        "dynamodb:DeleteTable",
+                                        "dynamodb:DeleteTableReplica"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:aws:dynamodb:eu-central-1:",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":table/",
+                                              {
+                                                "Ref": "referencetocdkdynamodbglobal20191121TableB640876BRef"
+                                              }
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:aws:dynamodb:eu-west-2:",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":table/",
+                                              {
+                                                "Ref": "referencetocdkdynamodbglobal20191121TableB640876BRef"
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -1440,6 +1475,14 @@
                   "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
                 }
+              },
+              "reference-to-cdkdynamodbglobal20191121TableB640876BRef": {
+                "id": "reference-to-cdkdynamodbglobal20191121TableB640876BRef",
+                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/reference-to-cdkdynamodbglobal20191121TableB640876BRef",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -1469,9 +1512,14 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                           },
-                          "/6750cf49b4e6bbe02c2af14092fc2ed72c6b663e1bf94e2cc2f0035517307db7.json"
+                          "/f4e67f8a6a717c5dd8a20be0c2dcbfa4809c307f3ec3513be25001d192773b12.json"
                         ]
                       ]
+                    },
+                    "parameters": {
+                      "referencetocdkdynamodbglobal20191121TableB640876BRef": {
+                        "Ref": "TableCD117FA1"
+                      }
                     }
                   }
                 },
