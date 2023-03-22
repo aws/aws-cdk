@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
@@ -1146,30 +1146,11 @@ test('autoDeploymentsEnabled flag is NOT set', () => {
     }),
   });
   // THEN
-  Template.fromStack(stack).resourcePropertiesCountIs('AWS::AppRunner::Service',
-    {
-      SourceConfiguration: {
-        AutoDeploymentsEnabled: undefined,
-      },
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AutoDeploymentsEnabled: Match.absent(),
     },
-    0,
-  );
-  Template.fromStack(stack).resourcePropertiesCountIs('AWS::AppRunner::Service',
-    {
-      SourceConfiguration: {
-        AutoDeploymentsEnabled: true,
-      },
-    },
-    0,
-  );
-  Template.fromStack(stack).resourcePropertiesCountIs('AWS::AppRunner::Service',
-    {
-      SourceConfiguration: {
-        AutoDeploymentsEnabled: false,
-      },
-    },
-    0,
-  );
+  });
 });
 
 testDeprecated('Using both environmentVariables and environment should throw an error', () => {
