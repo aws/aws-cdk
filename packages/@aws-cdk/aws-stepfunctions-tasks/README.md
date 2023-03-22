@@ -1311,4 +1311,28 @@ const task2 = new tasks.SqsSendMessage(this, 'Send2', {
     field2: sfn.JsonPath.stringAt('$.field2'),
   }),
 });
+
+// Pass message attributes along with the message.
+const task3 = new tasks.SqsSendMessage(this, 'Send3', {
+  queue,
+  messageBody: sfn.TaskInput.fromText('sometext'),
+  messageAttributes: {
+    'tracing': {
+      dataType: SqsMessageAttributeDataType.STRING,
+      value: '$.tracing-id',
+    },
+    'lang': {
+      dataType: SqsMessageAttributeDataType.STRING,
+      value: 'en',
+    },
+    'some number': {
+      dataType: SqsMessageAttributeDataType.NUMBER,
+      value: 123456,
+    },
+    'encoded-file': {
+      dataType: SqsMessageAttributeDataType.BINARY,
+      value: 'base-64 encoded string'
+    },
+  },
+});
 ```
