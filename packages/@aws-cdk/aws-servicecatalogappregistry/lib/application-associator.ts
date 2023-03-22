@@ -77,7 +77,7 @@ export class ApplicationAssociator extends Construct {
    * Get the AppRegistry application.
    *
    */
-  public appRegistryApplication(): IApplication {
+  public get appRegistryApplication(): IApplication {
     return this.application;
   }
 }

@@ -45,7 +45,7 @@ export interface CreateTargetApplicationOptions extends TargetApplicationCommonO
   /**
    * Whether create cloudFormation Output for application manager URL.
    *
-   * @default - Application containing stacks deployed via CDK.
+   * @default - true
    */
   readonly emitApplicationManagerUrlAsOutput?: boolean;
 }

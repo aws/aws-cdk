@@ -126,22 +126,6 @@ import * as cdk from "@aws-cdk/core";
 
 const app = new App();
 
-class CustomAppRegistryAttributeGroup extends cdk.Stack {
-  public readonly attributeGroup: appreg.AttributeGroup
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
-    const myAttributeGroup = new appreg.AttributeGroup(app, 'MyFirstAttributeGroup', {
-      attributeGroupName: 'MyAttributeGroupName',
-      description: 'Test attribute group',
-      attributes: {},
-    });
-
-    this.attributeGroup = myAttributeGroup;
-  }
-}
-
-const customAttributeGroup = new CustomAppRegistryAttributeGroup(app, 'AppRegistryAttributeGroup');
-
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
     applicationName: 'MyAssociatedApplication',
@@ -154,7 +138,11 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 
 // Associate application to the attribute group.
-customAttributeGroup.attributeGroup.associateWith(associatedApp.appRegistryApplication());
+associatedApp.appRegistryApplication.addAttributeGroup('MyAttributeGroup' , {
+  attributeGroupName: 'MyAttributeGroupName',
+  description: 'Test attribute group',
+  attributes: {},
+});
 
 ```
 
