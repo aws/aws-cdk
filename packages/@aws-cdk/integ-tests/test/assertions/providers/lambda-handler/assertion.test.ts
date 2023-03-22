@@ -32,7 +32,7 @@ describe('AssertionHandler', () => {
     let failed: Error = new Error();
     try {
       await handler.processEvent(request);
-    } catch (e) {
+    } catch (e: any) {
       failed = e;
     }
     expect(failed.message).toMatch(/String 'this is the actual results' did not match pattern 'abcd'/);

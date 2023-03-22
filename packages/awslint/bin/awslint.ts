@@ -254,7 +254,7 @@ function mergeOptions(dest: any, pkg?: any) {
 
 async function shell(command: string) {
   const child = child_process.spawn(command, [], { stdio: ['inherit', 'inherit', 'inherit'] });
-  return new Promise((ok, ko) => {
+  return new Promise<void>((ok, ko) => {
     child.once('exit', (status: any) => {
       if (status === 0) {
         return ok();

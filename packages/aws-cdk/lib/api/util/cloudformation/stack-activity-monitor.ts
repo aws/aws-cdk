@@ -257,7 +257,7 @@ export class StackActivityMonitor {
           finished = true;
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
         return;
       }

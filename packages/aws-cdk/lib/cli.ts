@@ -381,7 +381,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     function tryResolve(plugin: string): string {
       try {
         return require.resolve(plugin);
-      } catch (e) {
+      } catch (e: any) {
         error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
         throw new Error(`Unable to resolve plug-in: ${plugin}`);
       }

@@ -86,7 +86,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       description = `from ${peer.uniqueId}:${connection}`;
     }
 
-    const [scope, id] = this.determineRuleScope(peer, connection, 'from', remoteRule);
+    const { scope, id } = this.determineRuleScope(peer, connection, 'from', remoteRule);
 
     // Skip duplicates
     if (scope.node.tryFindChild(id) === undefined) {
@@ -104,7 +104,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       description = `to ${peer.uniqueId}:${connection}`;
     }
 
-    const [scope, id] = this.determineRuleScope(peer, connection, 'to', remoteRule);
+    const { scope, id } = this.determineRuleScope(peer, connection, 'to', remoteRule);
 
     // Skip duplicates
     if (scope.node.tryFindChild(id) === undefined) {
@@ -178,15 +178,15 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     peer: IPeer,
     connection: Port,
     fromTo: 'from' | 'to',
-    remoteRule?: boolean): [SecurityGroupBase, string] {
+    remoteRule?: boolean): RuleScope {
 
     if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(this, peer)) {
       // Reversed
       const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
-      return [peer, `${this.uniqueId}:${connection} ${reversedFromTo}`];
+      return { scope: peer, id: `${this.uniqueId}:${connection} ${reversedFromTo}` };
     } else {
       // Regular (do old ID escaping to in order to not disturb existing deployments)
-      return [this, `${fromTo} ${this.renderPeer(peer)}:${connection}`.replace('/', '_')];
+      return { scope: this, id: `${fromTo} ${this.renderPeer(peer)}:${connection}`.replace('/', '_') };
     }
   }
 
@@ -200,6 +200,20 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       return peer.uniqueId;
     }
   }
+}
+
+/**
+ * The scope and id in which a given SecurityGroup rule should be defined.
+ */
+export interface RuleScope {
+  /**
+   * The SecurityGroup in which a rule should be scoped.
+   */
+  readonly scope: ISecurityGroup;
+  /**
+   * The construct ID to use for the rule.
+   */
+  readonly id: string;
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
@@ -674,7 +688,7 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   private removeNoTrafficRule() {
     if (this.disableInlineRules) {
-      const [scope, id] = this.determineRuleScope(
+      const { scope, id } = this.determineRuleScope(
         NO_TRAFFIC_PEER,
         NO_TRAFFIC_PORT,
         'to',

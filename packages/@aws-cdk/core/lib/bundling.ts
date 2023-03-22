@@ -354,7 +354,7 @@ export class DockerImage extends BundlingDockerImage {
    *
    * @param image the image name
    */
-  public static fromRegistry(image: string) {
+  public static override fromRegistry(image: string) {
     return new DockerImage(image);
   }
 

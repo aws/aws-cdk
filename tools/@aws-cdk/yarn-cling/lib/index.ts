@@ -152,7 +152,7 @@ async function fileExists(fullPath: string): Promise<boolean> {
   try {
     await fs.stat(fullPath);
     return true;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT' || e.code === 'ENOTDIR') { return false; }
     throw e;
   }

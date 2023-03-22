@@ -98,7 +98,7 @@ function findPathsInIntrinsicFunctions(expression?: string): string[] {
     const parsed = new IntrinsicParser(expression).parseTopLevelIntrinsic();
     recurse(parsed);
     return ret;
-  } catch (e) {
+  } catch {
     // Not sure that our parsing is 100% correct. We don't want to break anyone, so
     // fall back to legacy behavior if we can't parse this string.
     return [expression];

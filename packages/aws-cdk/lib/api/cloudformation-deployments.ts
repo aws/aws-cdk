@@ -89,7 +89,7 @@ export async function prepareSdkWithLookupRoleFor(
       warning(upgradeMessage);
     }
     return { ...stackSdk, resolvedEnvironment };
-  } catch (e) {
+  } catch (e: any) {
     debug(e);
     // only print out the warnings if the lookupRole exists AND there is a required
     // bootstrap version, otherwise the warnings will print `undefined`
@@ -590,7 +590,7 @@ export class CloudFormationDeployments {
 
     try {
       await toolkitInfo.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`${stackName}: ${e.message}`);
     }
   }
