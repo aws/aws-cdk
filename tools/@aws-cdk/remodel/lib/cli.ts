@@ -114,7 +114,7 @@ export async function main() {
   await runPartialBuild(targetDir);
 
   await cleanup(targetDir, bundlingResult);
-  // await postRun(targetDir);
+  await postRun(targetDir);
 
   if (clean) {
     await fs.remove(path.resolve(targetDir));
@@ -372,6 +372,7 @@ async function runPartialBuild(dir: string) {
 export async function postRun(dir: string) {
   const e = makeExecDir(dir);
   // remove node_modules because some of the symlinks are bad now
+  // and yarn install doesn't full clean the workspace apparently
   await fs.remove(path.join(dir, 'node_modules'));
   await e('yarn install');
   await e('yarn build --skip-tests --skip-prereqs --skip-compat');
@@ -540,8 +541,6 @@ const rewriteImportPackages = [
 ];
 
 async function reformatPackage(dir: string, nameMap: PackageNameMap) {
-  console.log(`Reformatting dependencies and imports for package: ${dir}`);
-
   const pkgJsonPath = path.join(dir, 'package.json');
   const packageJson = await getPackageJson(pkgJsonPath);
   await formatPackageJson(pkgJsonPath, (pkgJson: PackageJson) => {
@@ -558,7 +557,6 @@ async function reformatPackage(dir: string, nameMap: PackageNameMap) {
     });
   });
 
-  let lintFix = false;
   // Do some special case import changes for specific packages.
   // These work in the current repo because the generated files are
   // duplicated within the alpha packages.
@@ -568,21 +566,24 @@ async function reformatPackage(dir: string, nameMap: PackageNameMap) {
       './kinesisfirehose-canned-metrics.generated',
       'aws-cdk-lib/aws-kinesisfirehose/lib/kinesisfirehose-canned-metrics.generated',
     );
-    lintFix = true;
   } else if (packageJson.name === '@aws-cdk/aws-amplify-alpha') {
     await replaceInFiles(
       dir,
       '@aws-cdk/custom-resources/lib/provider-framework/types',
       'aws-cdk-lib/custom-resources/lib/provider-framework/types',
     );
-    lintFix = true;
   } else if (packageJson.name === '@aws-cdk/aws-synthetics-alpha') {
     await replaceInFiles(
       dir,
       './synthetics-canned-metrics.generated',
       'aws-cdk-lib/aws-synthetics/lib/synthetics-canned-metrics.generated',
     );
-    lintFix = true;
+  } else if (packageJson.name === '@aws-cdk/aws-gamelift-alpha') {
+    await replaceInFiles(
+      dir,
+      './gamelift-canned-metrics.generated',
+      'aws-cdk-lib/aws-gamelift/lib/gamelift-canned-metrics.generated',
+    );
   }
 
   // Rewrite the imports in all source files
@@ -597,13 +598,6 @@ async function reformatPackage(dir: string, nameMap: PackageNameMap) {
         await fs.writeFile(filePath, output);
       }
     }));
-    lintFix = true;
-  }
-
-  if (lintFix) {
-    // run eslint fix as rewriting imports can change import order
-    console.log('Running `eslint --fix` on package ${dir}');
-    await exec('npx eslint --fix', { cwd: dir });
   }
 }
 

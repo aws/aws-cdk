@@ -22,6 +22,18 @@ export interface PackageJson extends UbgPkgJson {
   }
 }
 
+// export const exec = (cmd: string, opts?: cp.ExecOptions) => new Promise((ok, ko) => {
+//   const proc = cp.spawn(cmd, opts);
+
+//   proc.on('exit', function (code) {
+//     ok(code);
+//   });
+
+//   proc.on('error', function (err) {
+//     ko(err);
+//   });
+// });
+
 export const exec = (cmd: string, opts?: cp.ExecOptions) => new Promise((ok, ko) => {
   const proc = cp.exec(cmd, opts, (err: cp.ExecException | null, stdout: string | Buffer, stderr: string | Buffer) => {
     if (err) {
