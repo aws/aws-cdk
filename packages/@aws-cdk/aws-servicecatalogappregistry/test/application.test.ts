@@ -160,6 +160,31 @@ describe('Application', () => {
       });
     }),
 
+    test('associate new attribute group', () => {
+      application.addAttributeGroup('AttributeGroup', {
+        attributeGroupName: 'AttributeGroupName',
+        attributes: {},
+        description: 'Description for Attribute Group',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
+        Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
+        AttributeGroup: { 'Fn::GetAtt': ['MyApplicationAttributeGroup0BD166B6', 'Id'] },
+      });
+
+      Template.fromStack(stack).templateMatches({
+        Resources: {
+          MyApplicationAttributeGroup0BD166B6: {
+            Type: 'AWS::ServiceCatalogAppRegistry::AttributeGroup',
+            Properties: {
+              Name: 'AttributeGroupName',
+              Attributes: {},
+            },
+          },
+        },
+      });
+    }),
+
     test('duplicate attribute group association are idempotent', () => {
       const attributeGroup = new appreg.AttributeGroup(stack, 'AttributeGroup', {
         attributeGroupName: 'attributeGroupName',
