@@ -418,7 +418,7 @@ async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResource
       try {
         await framework.isComplete(event);
         retry = false;
-      } catch (e) {
+      } catch (e: any) {
         if (e instanceof cfnResponse.Retry) {
           if (count-- === 0) {
             await framework.onTimeout({ Cause: JSON.stringify({ errorMessage: e.message }) });

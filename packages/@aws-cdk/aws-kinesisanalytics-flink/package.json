@@ -79,8 +79,7 @@
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1",
-    "jsii": "v4.9-next"
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/assets": "0.0.0",
@@ -116,7 +115,8 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kinesisanalytics-flink.ApplicationProps"
+      "props-physical-name:@aws-cdk/aws-kinesisanalytics-flink.ApplicationProps",
+      "no-unused-type:@aws-cdk/aws-kinesisanalytics-flink.PropertyGroups"
     ]
   },
   "stability": "experimental",
