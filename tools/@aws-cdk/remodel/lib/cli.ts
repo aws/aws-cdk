@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import * as cp from 'child_process';
 import * as path from 'path';
 import {
   main as ubergen,
@@ -362,7 +361,7 @@ async function makeAwsCdkLibInteg(dir: string) {
 }
 
 async function runPartialBuild(dir: string) {
-  const e = (cmd: string, opts: cp.ExecOptions = {}) => exec(cmd, { cwd: dir, ...opts });
+  const e = makeExecDir(dir);
   console.log('building aws-cdk-lib and alpha packages');
   await e('yarn install');
   await e('npx lerna run build --scope aws-cdk-lib --scope @aws-cdk/individual-pkg-gen --include-dependencies');
@@ -375,7 +374,8 @@ export async function postRun(dir: string) {
   // and yarn install doesn't full clean the workspace apparently
   await fs.remove(path.join(dir, 'node_modules'));
   await e('yarn install');
-  await e('yarn build --skip-tests --skip-prereqs --skip-compat');
+  // build integ tests package so we can update snapshots
+  await e('npx lerna run build --scope @aws-cdk-testing/framework-integ --include-dependencies');
 
   const dryRunInteg: string[] = [
     'test/pipelines/test/integ.newpipeline.js',
@@ -391,6 +391,9 @@ export async function postRun(dir: string) {
   const integPackagesDir = path.join(dir, 'packages', '@aws-cdk-testing', 'framework-integ');
   // Update integ snapshots that are expected to change
   await exec(`yarn integ-runner --update-on-failed --dry-run ${dryRunInteg.join(' ')}`, { cwd: integPackagesDir });
+
+  // Run full build to make sure everything works
+  await e('yarn build --skip-prereqs --skip-compat');
 }
 
 async function cleanup(dir: string, packages: BundlingResult) {
