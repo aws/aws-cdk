@@ -31,7 +31,7 @@ export function exec(commandLine: string[], options: { cwd?: string, json?: bool
       return JSON.parse(output);
     }
     return output;
-  } catch (e) {
+  } catch {
     // eslint-disable-next-line no-console
     console.error('Not JSON: ' + output);
     throw new Error('Command output is not JSON');
