@@ -1,7 +1,7 @@
 {
   "version": "31.0.0",
   "files": {
-    "8b5896a268ed7744b472a9268f050bba5aad447cbebc753a0de4bd9533f2d1c3": {
+    "5e918941c8c1948aee7eef54957c6e0f9e2b2f8b36e6378143ee00f89977fbe2": {
       "source": {
         "path": "aws-cdk-glue.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8b5896a268ed7744b472a9268f050bba5aad447cbebc753a0de4bd9533f2d1c3.json",
+          "objectKey": "5e918941c8c1948aee7eef54957c6e0f9e2b2f8b36e6378143ee00f89977fbe2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

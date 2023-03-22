@@ -9,7 +9,19 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-glue');
 
-const bucket = new s3.Bucket(stack, 'DataBucket');
+const bucket = new s3.Bucket(stack, 'DataBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+const connection = new glue.Connection(stack, 'MyConnection', {
+  connectionName: 'my_connection',
+  type: glue.ConnectionType.JDBC,
+  properties: {
+    JDBC_CONNECTION_URL: 'jdbc:mysql://mysql.example.com:3306',
+    USERNAME: 'username',
+    PASSWORD: 'password',
+  },
+});
 
 const database = new glue.Database(stack, 'MyDatabase', {
   databaseName: 'my_database',
@@ -84,19 +96,32 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
   partitionKeys,
   dataFormat: glue.DataFormat.JSON,
   encryption: glue.TableEncryption.KMS,
-  encryptionKey: new kms.Key(stack, 'MyKey'),
+  encryptionKey: new kms.Key(stack, 'MyKey', {
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+  }),
 });
 
 new glue.Table(stack, 'MyPartitionFilteredTable', {
   database,
+  bucket,
   tableName: 'partition_filtered_table',
   columns,
   dataFormat: glue.DataFormat.JSON,
   enablePartitionFiltering: true,
 });
 
+new glue.Table(stack, 'MyTableWithConnection', {
+  database,
+  bucket,
+  tableName: 'connection_table',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+  connection,
+});
+
 new glue.Table(stack, 'MyTableWithCustomLocation', {
   database,
+  bucket,
   tableName: 'custom_location_table',
   columns,
   dataFormat: glue.DataFormat.JSON,

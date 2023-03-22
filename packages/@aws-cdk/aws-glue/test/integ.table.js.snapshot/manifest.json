@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b5896a268ed7744b472a9268f050bba5aad447cbebc753a0de4bd9533f2d1c3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5e918941c8c1948aee7eef54957c6e0f9e2b2f8b36e6378143ee00f89977fbe2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,6 +37,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DataBucketE3889A50"
+          }
+        ],
+        "/aws-cdk-glue/MyConnection/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConnection5621880D"
           }
         ],
         "/aws-cdk-glue/MyDatabase/Resource": [
@@ -87,16 +93,16 @@
             "data": "MyEncryptedTable981A88C6"
           }
         ],
-        "/aws-cdk-glue/MyPartitionFilteredTable/Bucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPartitionFilteredTableBucket6ACAA137"
-          }
-        ],
         "/aws-cdk-glue/MyPartitionFilteredTable/Table": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPartitionFilteredTable324BA27A"
+          }
+        ],
+        "/aws-cdk-glue/MyTableWithConnection/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTableWithConnectionTable4BCA8495"
           }
         ],
         "/aws-cdk-glue/MyTableWithCustomLocation/Table": [
@@ -139,6 +145,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyPartitionFilteredTableBucket6ACAA137": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPartitionFilteredTableBucket6ACAA137",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
