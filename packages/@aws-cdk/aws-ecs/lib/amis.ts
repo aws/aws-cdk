@@ -36,6 +36,10 @@ export enum WindowsOptimizedVersion {
   SERVER_2016 = '2016',
 }
 
+const BR_IMAGE_SYMBOL = Symbol.for(
+  '@aws-cdk/aws-ecs/lib/amis.BottleRocketImage',
+);
+
 /*
  * TODO:v2.0.0
  *  * remove `export` keyword
@@ -326,6 +330,13 @@ export interface BottleRocketImageProps {
  * Construct an Bottlerocket image from the latest AMI published in SSM
  */
 export class BottleRocketImage implements ec2.IMachineImage {
+  /**
+   * Return whether the given object is a BottleRocketImage
+   */
+  public static isBottleRocketImage(x: any): x is BottleRocketImage {
+    return x !== null && typeof x === 'object' && BR_IMAGE_SYMBOL in x;
+  }
+
   private readonly amiParameterName: string;
   /**
    * Amazon ECS variant for Bottlerocket AMI
@@ -365,6 +376,12 @@ export class BottleRocketImage implements ec2.IMachineImage {
     };
   }
 }
+
+Object.defineProperty(BottleRocketImage.prototype, BR_IMAGE_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
 
 function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string) {
   return cachedInContext

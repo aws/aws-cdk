@@ -73,7 +73,7 @@ async function removeTags(ssm: SSM, parameters: string[], keyName: string): Prom
         ResourceType: 'Parameter',
         ResourceId: name,
       }).promise();
-    } catch (e) {
+    } catch (e: any) {
       switch (e.code) {
         // if the parameter doesn't exist then there is nothing to release
         case 'InvalidResourceId':

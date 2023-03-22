@@ -67,10 +67,10 @@ export abstract class ResourceHandler {
     console.log(JSON.stringify(x, undefined, 2));
   }
 
-  protected abstract async onCreate(): Promise<AmplifyJobId>;
-  protected abstract async onDelete(): Promise<void>;
-  protected abstract async onUpdate(): Promise<AmplifyJobId>;
-  protected abstract async isCreateComplete(): Promise<IsCompleteResponse>;
-  protected abstract async isDeleteComplete(): Promise<IsCompleteResponse>;
-  protected abstract async isUpdateComplete(): Promise<IsCompleteResponse>;
+  protected abstract onCreate(): Promise<AmplifyJobId>;
+  protected abstract onDelete(): Promise<void>;
+  protected abstract onUpdate(): Promise<AmplifyJobId>;
+  protected abstract isCreateComplete(): Promise<IsCompleteResponse>;
+  protected abstract isDeleteComplete(): Promise<IsCompleteResponse>;
+  protected abstract isUpdateComplete(): Promise<IsCompleteResponse>;
 }

@@ -49,7 +49,7 @@ if [ "$run_tests" == "true" ]; then
   runtarget="$runtarget+test"
 fi
 
-export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTIONS:-}"
+export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
 individual_packages_folder=${scriptdir}/../packages/individual-packages
 # copy & build the packages that are individually released from 'aws-cdk-lib'

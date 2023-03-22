@@ -269,10 +269,9 @@ function validate(construct: IConstruct): string[] {
   try {
     (construct.node.root as cdk.App).synth();
     return [];
-  } catch (e) {
-    const err = e as any; // coerce unknown to any
+  } catch (err: any) {
     if (!('message' in err) || !err.message.startsWith('Validation failed')) {
-      throw e;
+      throw err;
     }
     return err.message.split('\n').slice(1);
   }

@@ -48,7 +48,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           },
         });
         return;
-      } catch (e) {
+      } catch (e: any) {
         await provider.respond({
           status: 'FAILED',
           reason: e.message ?? 'Internal Error',
@@ -61,7 +61,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       reason: 'OK',
       data: result,
     });
-  } catch (e) {
+  } catch (e: any) {
     await provider.respond({
       status: 'FAILED',
       reason: e.message ?? 'Internal Error',

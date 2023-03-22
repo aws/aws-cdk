@@ -1,4 +1,5 @@
 import * as core from '@aws-cdk/core';
+import { Lazy, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnPlaybackKeyPair } from './ivs.generated';
 
@@ -35,9 +36,9 @@ export interface PlaybackKeyPairProps {
    * An arbitrary string (a nickname) assigned to a playback key pair that helps the customer identify that resource.
    * The value does not need to be unique.
    *
-   * @default None
+   * @default Automatically generated name
    */
-  readonly name?: string;
+  readonly playbackKeyPairName?: string;
 }
 
 /**
@@ -54,15 +55,19 @@ export class PlaybackKeyPair extends PlaybackKeyPairBase {
   public readonly playbackKeyPairFingerprint: string;
 
   constructor(scope: Construct, id: string, props: PlaybackKeyPairProps) {
-    super(scope, id, {});
+    super(scope, id, {
+      physicalName: props.playbackKeyPairName ?? Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
+      }),
+    });
 
-    if (props.name && !core.Token.isUnresolved(props.name) && !/^[a-zA-Z0-9-_]*$/.test(props.name)) {
-      throw new Error(`name must contain only numbers, letters, hyphens and underscores, got: '${props.name}'`);
+    if (props.playbackKeyPairName && !core.Token.isUnresolved(props.playbackKeyPairName) && !/^[a-zA-Z0-9-_]*$/.test(props.playbackKeyPairName)) {
+      throw new Error(`playbackKeyPairName must contain only numbers, letters, hyphens and underscores, got: '${props.playbackKeyPairName}'`);
     }
 
     const resource = new CfnPlaybackKeyPair(this, 'Resource', {
       publicKeyMaterial: props.publicKeyMaterial,
-      name: props.name,
+      name: props.playbackKeyPairName,
     });
 
     this.playbackKeyPairArn = resource.attrArn;

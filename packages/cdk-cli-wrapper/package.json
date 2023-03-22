@@ -64,8 +64,7 @@
     "@types/jest": "^27.5.2",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "jest": "^27.5.1",
-    "@aws-cdk/pkglint": "0.0.0",
-    "jsii": "v4.9-next"
+    "@aws-cdk/pkglint": "0.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

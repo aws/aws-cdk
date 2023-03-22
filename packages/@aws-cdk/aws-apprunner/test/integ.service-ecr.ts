@@ -18,6 +18,7 @@ const service3 = new Service(stack, 'Service3', {
     imageConfiguration: { port: 8000 },
     asset: imageAsset,
   }),
+  autoDeploymentsEnabled: true,
 });
 new cdk.CfnOutput(stack, 'URL3', { value: `https://${service3.serviceUrl}` });
 

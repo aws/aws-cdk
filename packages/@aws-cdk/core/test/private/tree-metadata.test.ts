@@ -16,7 +16,7 @@ abstract class AbstractCfnResource extends CfnResource {
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected abstract get cfnProperties(): { [key: string]: any };
+  protected abstract override get cfnProperties(): { [key: string]: any };
 }
 
 describe('tree metadata', () => {

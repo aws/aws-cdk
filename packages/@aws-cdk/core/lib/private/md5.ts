@@ -20,7 +20,7 @@ export function md5hash(x: string) {
     try {
       crypto.createHash('md5');
       _impl = cryptoMd5;
-    } catch (e) {
+    } catch {
       _impl = jsMd5;
     }
   }

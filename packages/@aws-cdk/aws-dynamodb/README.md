@@ -236,3 +236,15 @@ new cloudwatch.Alarm(stack, 'Alarm', {
   threshold: 1,
 });
 ```
+
+## Deletion Protection for Tables
+
+You can enable deletion protection for a table by setting the `deletionProtection` property to `true`. 
+When deletion protection is enabled for a table, it cannot be deleted by anyone. By default, deletion protection is disabled.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  deletionProtection: true,
+});
+```

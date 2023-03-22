@@ -69,7 +69,7 @@ export async function listFiles(dirName: string, predicate: (x: File) => boolean
     }
 
     return ret;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') { return []; }
     throw e;
   }

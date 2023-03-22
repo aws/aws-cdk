@@ -16,7 +16,7 @@ async function run() {
 
   try {
     await prLinter.validate()
-  } catch (error) {
+  } catch (error: any) {
     core.setFailed(error.message);
   }
 }

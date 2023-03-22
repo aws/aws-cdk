@@ -504,7 +504,7 @@ export class Key extends KeyBase {
     let keyPolicy: iam.PolicyDocument;
     try {
       keyPolicy = iam.PolicyDocument.fromJson(cfnKey.keyPolicy);
-    } catch (e) {
+    } catch {
       // If the KeyPolicy contains any CloudFormation functions,
       // PolicyDocument.fromJson() throws an exception.
       // In that case, because we would have to effectively make the returned IKey immutable,
