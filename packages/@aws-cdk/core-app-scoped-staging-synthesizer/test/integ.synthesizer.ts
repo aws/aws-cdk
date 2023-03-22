@@ -9,10 +9,10 @@ const app = new App({
 
 const stack = new Stack(app, 'app-scoped-staging-test', {
   synthesizer: new AppScopedStagingSynthesizer(),
-  // env: {
-  //   account: '489318732371',
-  //   region: 'us-east-1',
-  // },
+  env: {
+    account: '489318732371',
+    region: 'us-east-2',
+  },
 });
 
 new lambda.Function(stack, 'lambda', {

@@ -150,52 +150,36 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   }
 
   /**
-   * Returns the well-known arn of the file publishing role
+   * Returns the file publishing role arn
    */
-  private getCreateFilePublishingRole() {
+  private getFilePublishingRoleArn(): string {
     if (this.fileAssetPublishingRole) {
       return this.fileAssetPublishingRole.roleArn;
     }
-
-    const roleId = 'CdkFilePublishingRole';
-    const roleName = this.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME;
-
-    const createIamRole = () => {
-      const role = new iam.Role(this, roleId, {
-        roleName: roleName,
-        assumedBy: new iam.ServicePrincipal('sts.amazonaws.com'),
-      });
-      const bucket = this.getCreateBucket();
-      role.addToPolicy(new iam.PolicyStatement({
-        actions: [
-          's3:GetObject*',
-          's3:GetBucket*',
-          's3:GetEncryptionConfiguration',
-          's3:List*',
-          's3:DeleteObject*',
-          's3:PutObject*',
-          's3:Abort*',
-        ],
-        resources: [
-          bucket.bucketArn,
-          `${bucket.bucketArn}/*`,
-        ],
-        effect: iam.Effect.ALLOW,
-      }));
-      return role;
-    };
-
-    // Create the default role if it does not exist yet
-    this.node.tryFindChild(roleId) as iam.Role ?? createIamRole();
-    return Arn.format({
-      partition: this.partition ?? Aws.PARTITION,
-      account: this.account ?? Aws.ACCOUNT_ID,
-      region: this.region ?? Aws.REGION,
+    const role = this.node.tryFindChild('CdkFilePublishingRole') as iam.Role;
+    if (role === undefined) {
+      throw new Error('Cannot call getFilePublishingRoleArn before createFilePublishingRole');
+    }
+    return Stack.of(this).formatArn({
+      partition: 'aws', // TODO: token partition doesn't work
+      region: '', // iam is global
       service: 'iam',
       resource: 'role',
-      resourceName: roleName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: this.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
+  }
+
+  /**
+   * Creates the file publishing role
+   */
+  private createFilePublishingRole() {
+    const roleName = this.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME;
+    const role = new iam.Role(this, 'CdkFilePublishingRole', {
+      roleName: roleName,
+      assumedBy: new iam.AccountPrincipal(this.account),
+    });
+    return role;
   }
 
   /**
@@ -234,6 +218,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   private createBucketKey(): kms.IKey {
     const bucketKeyId = 'BucketKey';
     const key = this.node.tryFindChild(bucketKeyId) as kms.IKey ?? new kms.Key(this, bucketKeyId, {
+      alias: 'StagingBucketKey',
       policy: new iam.PolicyDocument({
         statements: [
           new iam.PolicyStatement({
@@ -280,20 +265,20 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
             },
             effect: iam.Effect.ALLOW,
           }),
-          // new iam.PolicyStatement({
-          //   actions: [
-          //     'kms:Decrypt',
-          //     'kms:DescribeKey',
-          //     'kms:Encrypt',
-          //     'kms:ReEncrypt*',
-          //     'kms:GenerateDataKey*',
-          //   ],
-          //   resources: ['*'],
-          //   principals: [
-          //     new iam.ArnPrincipal(this.getCreateFilePublishingRole()),
-          //   ],
-          //   effect: iam.Effect.ALLOW,
-          // }),
+          new iam.PolicyStatement({
+            actions: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            resources: ['*'],
+            principals: [
+              new iam.ArnPrincipal(this.getFilePublishingRoleArn()),
+            ],
+            effect: iam.Effect.ALLOW,
+          }),
         ],
       }),
     });
@@ -303,16 +288,72 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   private getCreateBucket() {
     const stagingBucketName = this.stagingBucketName ?? `cdk-${this.account}-${this.region}-${this.appId.toLocaleLowerCase()}`;
     const bucketId = 'CdkStagingBucket';
-    const bucket = this.node.tryFindChild(bucketId) as s3.Bucket ?? new s3.Bucket(this, bucketId, {
+    const createdBucket = this.node.tryFindChild(bucketId) as s3.Bucket;
+    if (createdBucket) {
+      return stagingBucketName;
+    }
+
+    // Create the role that the KMS key depends on
+    const role = this.createFilePublishingRole();
+    // Create the KMS key that the bucket depends on
+    const key = this.createBucketKey();
+    key.node.addDependency(role);
+    const keyArn = Stack.of(this).formatArn({
+      service: 'kms',
+      resource: 'key',
+      resourceName: 'StagingBucketKey', // TODO change name
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+
+    // Create the bucket once the dependencies have been created
+    new s3.Bucket(this, bucketId, {
       bucketName: stagingBucketName,
       removalPolicy: RemovalPolicy.RETAIN,
       encryption: s3.BucketEncryption.KMS,
-      encryptionKey: this.createBucketKey(),
+      encryptionKey: key,
     });
-    return {
-      bucketName: stagingBucketName,
-      bucketArn: bucket.bucketArn,
-    };
+    const bucketArn = Stack.of(this).formatArn({
+      region: '',
+      account: '',
+      service: 's3',
+      resource: 'bucket',
+      resourceName: stagingBucketName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+
+    // Add policy to bucket role. Need to use computed arn
+    // so we don't add a circular dependency
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: [
+        's3:GetObject*',
+        's3:GetBucket*',
+        's3:GetEncryptionConfiguration',
+        's3:List*',
+        's3:DeleteObject*',
+        's3:PutObject*',
+        's3:Abort*',
+      ],
+      resources: [
+        bucketArn,
+        `${bucketArn}/*`,
+      ],
+      effect: iam.Effect.ALLOW,
+    }));
+
+    // Need to use computed arn so we don't add a circular dependency.
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: [
+        'kms:Decrypt',
+        'kms:DescribeKey',
+        'kms:Encrypt',
+        'kms:ReEncrypt*',
+        'kms:GenerateDataKey*',
+      ],
+      resources: [keyArn],
+      effect: iam.Effect.ALLOW,
+    }));
+
+    return stagingBucketName;
   }
 
   /**
@@ -335,8 +376,8 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
 
   public addFile(_asset: FileAssetSource): FileAssetInfo {
     return {
-      bucketName: this.getCreateBucket().bucketName,
-      assumeRoleArn: this.getCreateFilePublishingRole(),
+      bucketName: this.getCreateBucket(),
+      assumeRoleArn: this.getFilePublishingRoleArn(),
     };
   }
 

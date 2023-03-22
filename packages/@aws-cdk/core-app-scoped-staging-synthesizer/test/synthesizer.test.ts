@@ -30,7 +30,6 @@ describe(AppScopedStagingSynthesizer, () => {
         region: 'us-east-1',
       },
     });
-    // TODO: test with tokens
   });
 
   test('stack template is in asset manifest', () => {
@@ -62,7 +61,7 @@ describe(AppScopedStagingSynthesizer, () => {
           bucketName: `cdk-000000000000-us-east-1-${APP_ID.toLocaleLowerCase()}`,
           objectKey: templateObjectKey,
           region: 'us-east-1',
-          assumeRoleArn: `arn:${Aws.PARTITION}:iam:us-east-1:000000000000:role:cdk-file-publishing-role-us-east-1-${APP_ID}`,
+          assumeRoleArn: `arn:${Aws.PARTITION}:iam::000000000000:role/cdk-file-publishing-role-us-east-1-${APP_ID}`,
         },
       },
     });
@@ -110,7 +109,7 @@ describe(AppScopedStagingSynthesizer, () => {
           bucketName: `cdk-111111111111-us-east-2-${APP_ID.toLocaleLowerCase()}`,
           objectKey: templateObjectKey,
           region: 'us-east-2',
-          assumeRoleArn: `arn:${Aws.PARTITION}:iam:us-east-2:111111111111:role:cdk-file-publishing-role-us-east-2-${APP_ID}`,
+          assumeRoleArn: `arn:${Aws.PARTITION}:iam::111111111111:role/cdk-file-publishing-role-us-east-2-${APP_ID}`,
         },
       },
     });
