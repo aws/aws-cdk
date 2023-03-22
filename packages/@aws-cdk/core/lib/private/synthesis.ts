@@ -1,4 +1,4 @@
-import { createHash, Hash } from 'crypto';
+import { createHash } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -64,21 +64,8 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   return assembly;
 }
 
-class LazyHash {
-  private hash?: string;
-
-  constructor(private readonly outdir: string) {}
-
-  get value(): string {
-    if (!this.hash) {
-      this.hash = computeChecksumOfFolder(this.outdir);
-    }
-    return this.hash;
-  }
-}
-
 function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly) {
-  const lazyHash = new LazyHash(outdir);
+  const hash = computeChecksumOfFolder(outdir);
 
   const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visit(root, 'post', construct => {
@@ -94,7 +81,6 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
 
   const reports: NamedValidationPluginReport[] = [];
   for (const [plugin, paths] of templatePathsByPlugin.entries()) {
-    const originalHash = lazyHash.value;
 
     try {
       const report = plugin.validate({ templatePaths: paths });
@@ -109,7 +95,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
         },
       });
     }
-    if (computeChecksumOfFolder(outdir) !== originalHash) {
+    if (computeChecksumOfFolder(outdir) !== hash) {
       throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
   }
@@ -135,25 +121,19 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
   }
 }
 
-function computeChecksumOfFolder(folder: string, inputHash: Hash | undefined = undefined): string {
-  const hash = inputHash ? inputHash : createHash('sha256');
+function computeChecksumOfFolder(folder: string): string {
+  const hash = createHash('sha256');
+  const files = fs.readdirSync(folder, { withFileTypes: true });
 
-  const info = fs.readdirSync(folder, { withFileTypes: true });
-  for (let item of info) {
-    const fullPath = path.join(folder, item.name);
-    if (item.isFile()) {
+  for (const file of files) {
+    const fullPath = path.join(folder, file.name);
+    if (file.isDirectory()) {
+      hash.update(computeChecksumOfFolder(fullPath));
+    } else if (file.isFile()) {
       hash.update(fs.readFileSync(fullPath));
-    } else if (item.isDirectory()) {
-      computeChecksumOfFolder(fullPath, hash);
     }
   }
-
-  if (!inputHash) {
-    return hash.digest().toString('hex');
-  }
-
-  // Will be ignored
-  return '';
+  return hash.digest().toString('hex');
 }
 
 const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
