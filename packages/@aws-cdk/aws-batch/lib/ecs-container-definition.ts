@@ -58,10 +58,13 @@ export abstract class EcsVolume {
 export interface EfsVolumeOptions extends EcsVolumeOptions {
   readonly fileSystem: IFileSystem;
   readonly rootDirectory?: string;
-  readonly transitEncryption?: string;
+  /**
+   * @default false
+   */
+  readonly enableTransitEncryption?: boolean;
   readonly transitEncryptionPort?: number;
   readonly accessPointId?: string;
-  readonly useJobDefinitionRole?: string;
+  readonly useJobDefinitionRole?: boolean;
 }
 
 export class EfsVolume extends EcsVolume {
@@ -71,17 +74,17 @@ export class EfsVolume extends EcsVolume {
 
   readonly fileSystem: IFileSystem;
   readonly rootDirectory?: string;
-  readonly transitEncryption?: string;
+  readonly enableTransitEncryption?: boolean;
   readonly transitEncryptionPort?: number;
   readonly accessPointId?: string;
-  readonly useJobDefinitionRole?: string;
+  readonly useJobDefinitionRole?: boolean;
 
   constructor(options: EfsVolumeOptions) {
     super(options);
 
     this.fileSystem = options.fileSystem;
     this.rootDirectory = options.rootDirectory;
-    this.transitEncryption = options.transitEncryption;
+    this.enableTransitEncryption = options.enableTransitEncryption;
     this.transitEncryptionPort = options.transitEncryptionPort;
     this.accessPointId = options.accessPointId;
     this.useJobDefinitionRole = options.useJobDefinitionRole;
@@ -130,7 +133,7 @@ export interface IEcsContainerDefinition {
   readonly jobRole?: iam.IRole;
   readonly linuxParameters?: LinuxParameters;
   readonly logDriverConfig?: ecs.LogDriverConfig;
-  readonly readonlyRootFileSystem?: boolean;
+  readonly readonlyRootFilesystem?: boolean;
   readonly gpu?: number;
   readonly secrets?: secretsmanager.Secret[];
   readonly user?: string;
@@ -148,7 +151,10 @@ export interface EcsContainerDefinitionProps {
   readonly executionRole?: iam.IRole;
   readonly linuxParameters?: LinuxParameters;
   readonly logging?: ecs.LogDriver;
-  readonly readonlyRootFileSystem?: boolean;
+  /**
+   * @default false
+   */
+  readonly readonlyRootFilesystem?: boolean;
   readonly cpu: number;
   readonly gpu?: number;
   readonly secrets?: secretsmanager.Secret[];
@@ -166,7 +172,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   readonly executionRole?: iam.IRole;
   readonly linuxParameters?: LinuxParameters;
   readonly logDriverConfig?: ecs.LogDriverConfig;
-  readonly readonlyRootFileSystem?: boolean;
+  readonly readonlyRootFilesystem?: boolean;
   readonly gpu?: number;
   readonly secrets?: secretsmanager.Secret[];
   readonly user?: string;
@@ -199,7 +205,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
         },
       });
     }
-    this.readonlyRootFileSystem = props.readonlyRootFileSystem;
+    this.readonlyRootFilesystem = props.readonlyRootFilesystem ?? false;
     this.gpu = props.gpu;
     this.secrets = props.secrets;
     this.user = props.user;
@@ -220,7 +226,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       executionRoleArn: this.executionRole?.roleArn,
       linuxParameters: this.linuxParameters && this.linuxParameters.renderBatchLinuxParameters(),
       logConfiguration: this.logDriverConfig,
-      readonlyRootFilesystem: this.readonlyRootFileSystem,
+      readonlyRootFilesystem: this.readonlyRootFilesystem,
       resourceRequirements: this.renderResourceRequirements(),
       secrets: this.secrets?.map((secret) => {
         return {
@@ -242,8 +248,12 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
             efsVolumeConfiguration: {
               fileSystemId: volume.fileSystem.fileSystemId,
               rootDirectory: volume.rootDirectory,
-              transitEncription: volume.transitEncryption,
+              transitEncryption: volume.enableTransitEncryption ? 'ENABLED' : (volume.enableTransitEncryption === false ? 'DISABLED' : undefined),
               transitEncryptionPort: volume.transitEncryptionPort,
+              authorizationConfig: {
+                accessPointId: volume.accessPointId,
+                iam: volume.useJobDefinitionRole ? 'ENABLED' : (volume.useJobDefinitionRole === false ? 'DISABLED' : undefined),
+              },
             },
           };
         } else if (HostVolume.isHostVolume(volume)) {
@@ -257,6 +267,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
 
         throw new Error('unsupported Volume encountered');
       }),
+      user: this.user,
     };
   }
 
@@ -294,7 +305,21 @@ export interface Ulimit {
 }
 
 export enum UlimitName {
-  FOO = 'foo',
+  CORE = 'core',
+  CPU = 'cpu',
+  DATA = 'data',
+  FSIZE = 'fsize',
+  LOCKS = 'locks',
+  MEMLOCK = 'memlock',
+  MSGQUEUE = 'msgqueue',
+  NICE = 'nice',
+  NOFILE = 'nofile',
+  NPROC = 'nproc',
+  RSS = 'rss',
+  RTPRIO = 'rtprio',
+  RTTIME = 'rttime',
+  SIGPENDING = 'sigpending',
+  STACK = 'stack',
 }
 
 export interface IEcsEc2ContainerDefinition extends IEcsContainerDefinition {

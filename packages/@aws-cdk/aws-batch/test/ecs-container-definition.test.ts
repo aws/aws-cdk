@@ -3,10 +3,13 @@ import { Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { ArnPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
+import * as efs from '@aws-cdk/aws-efs';
+import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { Size, Stack } from '@aws-cdk/core';
 import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
-import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsJobDefinition, LinuxParameters } from '../lib';
+import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsJobDefinition, EcsVolume, LinuxParameters, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from '../lib/batch.generated';
+import { Vpc } from '@aws-cdk/aws-ec2';
 
 
 // GIVEN
@@ -236,7 +239,6 @@ describe('ecs container', () => {
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
-        privileged: true,
         logging: ecs.LogDriver.awsLogs({
           datetimeFormat: 'format',
           logRetention: logs.RetentionDays.ONE_MONTH,
@@ -260,6 +262,265 @@ describe('ecs container', () => {
             'awslogs-stream-prefix': 'hello',
           },
         },
+      },
+    });
+  });
+
+  test('respects readonlyRootFilesystem', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        readonlyRootFilesystem: true,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        ReadonlyRootFilesystem: true,
+      },
+    });
+  });
+
+  test('respects secrets', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        secrets: [
+          new Secret(stack, 'testSecret'),
+        ],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Secrets: [
+          {
+            Name: {
+              'Fn::Join': [
+                '-',
+                [
+                  {
+                    'Fn::Select': [
+                      0,
+                      {
+                        'Fn::Split': [
+                          '-',
+                          {
+                            'Fn::Select': [
+                              6,
+                              {
+                                'Fn::Split': [
+                                  ':',
+                                  {
+                                    Ref: 'testSecretB96AD12C',
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    'Fn::Select': [
+                      1,
+                      {
+                        'Fn::Split': [
+                          '-',
+                          {
+                            'Fn::Select': [
+                              6,
+                              {
+                                'Fn::Split': [
+                                  ':',
+                                  {
+                                    Ref: 'testSecretB96AD12C',
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              ],
+            },
+            ValueFrom: { Ref: 'testSecretB96AD12C' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('respects user', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        user: 'foo',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        User: 'foo',
+      },
+    });
+  });
+
+  test('respects ulimits', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        ulimits: [
+          {
+            hardLimit: 100,
+            name: UlimitName.CORE,
+            softLimit: 10,
+          },
+        ],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Ulimits: [
+          {
+            HardLimit: 100,
+            Name: 'core',
+            SoftLimit: 10,
+          },
+        ],
+      },
+    });
+  });
+
+  test('respects efs volumes', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        volumes: [
+          EcsVolume.efs({
+            containerPath: '/first/path',
+            fileSystem: new efs.FileSystem(stack, 'efs', {
+              vpc: new Vpc(stack, 'vpc'),
+            }),
+            name: 'firstEfsVolume',
+            accessPointId: 'EfsVolumeAccessPointId',
+            readonly: true,
+            rootDirectory: 'efsRootDir',
+            enableTransitEncryption: true,
+            transitEncryptionPort: 20181,
+            useJobDefinitionRole: true,
+          }),
+          EcsVolume.efs({
+            containerPath: '/second/path',
+            fileSystem: new efs.FileSystem(stack, 'efs2', {
+              vpc: new Vpc(stack, 'vpc2'),
+            }),
+            name: 'secondEfsVolume',
+          }),
+        ],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Volumes: [
+          {
+            EfsVolumeConfiguration: {
+              FileSystemId: {
+                Ref: 'efs6C17982A',
+              },
+              RootDirectory: 'efsRootDir',
+              TransitEncryptionPort: 20181,
+              AuthorizationConfig: {
+                AccessPointId: 'EfsVolumeAccessPointId',
+                Iam: 'ENABLED',
+              },
+            },
+            Name: 'firstEfsVolume',
+          },
+          {
+            EfsVolumeConfiguration: {
+              FileSystemId: {
+                Ref: 'efs2CB3916C1',
+              },
+            },
+            Name: 'secondEfsVolume',
+          },
+        ],
+        MountPoints: [
+          {
+            ContainerPath: '/first/path',
+            ReadOnly: true,
+            SourceVolume: 'firstEfsVolume',
+          },
+          {
+            ContainerPath: '/second/path',
+            SourceVolume: 'secondEfsVolume',
+          },
+        ],
+      },
+    });
+  });
+
+  test('respects host volumes', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        volumes: [
+          EcsVolume.host({
+            containerPath: '/container/path',
+            name: 'EcsHostPathVolume',
+            hostPath: '/host/path',
+          }),
+        ],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Volumes: [
+          {
+            Name: 'EcsHostPathVolume',
+            Host: {
+              SourcePath: '/host/path',
+            },
+          },
+        ],
+        MountPoints: [
+          {
+            ContainerPath: '/container/path',
+            SourceVolume: 'EcsHostPathVolume',
+          },
+        ],
       },
     });
   });
