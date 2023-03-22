@@ -9,10 +9,15 @@ describe('MetadataResource', () => {
   let stack: Stack;
 
   beforeEach(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+    jest.spyOn(console, 'error').mockImplementation(() => { return true; });
     app = new App({
       analyticsReporting: true,
     });
     stack = new Stack(app, 'Stack');
+  });
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   test('is not included if the region is known and metadata is not available', () => {

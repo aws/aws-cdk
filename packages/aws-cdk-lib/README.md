@@ -1351,15 +1351,18 @@ validation.
 > secure to use.
 
 By default, the report will be printed in a human readable format. If you want a
-report in JSON format, enable it using the `@aws-cdk/core:validationReportJson` context 
-via the CLI, passing it directly to the application, or via the
-`cdk.context.json` file:
+report in JSON format, enable it using the `@aws-cdk/core:validationReportJson` 
+context passing it directly to the application:
 
 ```ts
 const app = new App({ 
   context: { '@aws-cdk/core:validationReportJson': true }, 
 });
 ```
+
+Alternatively, you can set this context key-value pair using the `cdk.json` or
+`cdk.context.json` files in your project directory (see
+[Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
 
 ### For plugin authors
 

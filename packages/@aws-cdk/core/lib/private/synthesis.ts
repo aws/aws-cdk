@@ -144,13 +144,13 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
       // eslint-disable-next-line no-console
       console.error(output);
     }
-  }
-  const failed = reports.some(r => !r.success);
-  if (failed) {
-    throw new Error('Validation failed. See the validation report above for details');
-  } else {
-    // eslint-disable-next-line no-console
-    console.log('Policy Validation Successful!');
+    const failed = reports.some(r => !r.success);
+    if (failed) {
+      throw new Error('Validation failed. See the validation report above for details');
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('Policy Validation Successful!');
+    }
   }
 }
 
