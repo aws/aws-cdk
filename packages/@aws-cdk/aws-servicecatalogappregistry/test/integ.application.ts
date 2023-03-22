@@ -33,6 +33,26 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
 
 application.associateStack(stack);
 application.associateAttributeGroup(attributeGroup);
+application.addAttributeGroup('myAnotherAttributeGroup', {
+  attributeGroupName: 'myAnotherAttributeGroup',
+  attributes: {
+    stage: 'alpha',
+    teamMembers: [
+      'markI',
+      'markII',
+      'markIII',
+    ],
+    public: false,
+    publishYear: 2021,
+    plannedRoadMap: {
+      alpha: 'some time',
+      beta: 'another time',
+      gamma: 'penultimate time',
+      release: 'go time',
+    },
+  },
+  description: 'my another attribute group description',
+});
 const myRole = new iam.Role(stack, 'MyRole', {
   assumedBy: new iam.AccountPrincipal(stack.account),
 });
