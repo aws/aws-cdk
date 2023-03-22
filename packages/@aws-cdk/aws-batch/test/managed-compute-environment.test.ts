@@ -92,7 +92,6 @@ describe('managed CEs', () => {
         : defaultEksProps as ManagedEc2EksComputeEnvironmentProps;
     });
 
-
     test('default props', () => {
       // WHEN
       new ComputeEnvironment(stack, 'MyCE', {

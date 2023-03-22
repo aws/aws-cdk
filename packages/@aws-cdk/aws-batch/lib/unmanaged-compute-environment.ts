@@ -29,11 +29,15 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
   unmanagedvCPUs?: number | undefined;
   public readonly computeEnvironmentArn: string;
 
-  constructor(scope: Construct, id: string, props: UnmanagedComputeEnvironmentProps) {
+  constructor(scope: Construct, id: string, props?: UnmanagedComputeEnvironmentProps) {
     super(scope, id, props);
 
-    this.unmanagedvCPUs = props.unmanagedvCpus;
-    const resource = new CfnComputeEnvironment(this, id, this.resourceProps);
+    this.unmanagedvCPUs = props?.unmanagedvCpus;
+    const resource = new CfnComputeEnvironment(this, 'Resource', {
+      ...this.resourceProps,
+      type: 'unmanaged',
+      unmanagedvCpus: this.unmanagedvCPUs,
+    });
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
       service: 'batch',
       resource: 'compute-environment',
