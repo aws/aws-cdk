@@ -123,6 +123,37 @@
      ]
     }
    }
+  },
+  "Dist24014FEC1": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": {
+       "Ref": "CachePolicy26D8A535"
+      },
+      "Compress": true,
+      "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
+      "ResponseHeadersPolicyId": {
+       "Ref": "ResponseHeadersPolicy13DBF9E0"
+      },
+      "TargetOriginId": "integdistributionpoliciesDist2Origin16AFA66C6",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example-2.com",
+       "Id": "integdistributionpoliciesDist2Origin16AFA66C6"
+      }
+     ]
+    }
+   }
   }
  },
  "Parameters": {

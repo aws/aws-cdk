@@ -66,7 +66,7 @@ class CustomSynthesizer extends StackSynthesizer {
   private readonly manifest = new AssetManifestBuilder();
   private parameter?: CfnParameter;
 
-  bind(stack: Stack) {
+  override bind(stack: Stack) {
     super.bind(stack);
 
     this.parameter = new CfnParameter(stack, 'BucketName');

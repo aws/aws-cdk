@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { TestOrigin } from './test-origin';
 import * as cloudfront from '../lib';
+import { OriginRequestPolicy } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-distribution-policies');
@@ -34,6 +35,15 @@ new cloudfront.Distribution(stack, 'Dist', {
     origin: new TestOrigin('www.example.com'),
     cachePolicy,
     originRequestPolicy,
+    responseHeadersPolicy,
+  },
+});
+
+new cloudfront.Distribution(stack, 'Dist-2', {
+  defaultBehavior: {
+    origin: new TestOrigin('www.example-2.com'),
+    cachePolicy,
+    originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
     responseHeadersPolicy,
   },
 });

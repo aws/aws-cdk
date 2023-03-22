@@ -552,7 +552,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * Try to recognize some specific Principal classes first, then try a generic
    * fallback.
    */
-  private parsePermissionPrincipal(principal: iam.IPrincipal) {
+  private parsePermissionPrincipal(principal: iam.IPrincipal | { readonly wrapped: iam.IPrincipal }) {
     // Try some specific common classes first.
     // use duck-typing, not instance of
     if ('wrapped' in principal) {
@@ -680,6 +680,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 }
 
 export abstract class QualifiedFunctionBase extends FunctionBase {
+  /** The underlying `IFunction` */
   public abstract readonly lambda: IFunction;
 
   public readonly permissionsNode = this.node;
