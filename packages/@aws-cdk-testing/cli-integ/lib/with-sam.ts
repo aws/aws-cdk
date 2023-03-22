@@ -64,7 +64,7 @@ export function withSamIntegrationCdkApp<A extends TestContext & AwsContext>(blo
         });
       }
       await block(fixture);
-    } catch (e) {
+    } catch (e: any) {
       // We survive certain cases involving gopkg.in
       if (errorCausedByGoPkg(e.message)) {
         return;
