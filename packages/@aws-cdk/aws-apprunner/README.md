@@ -70,7 +70,9 @@ new apprunner.Service(this, 'Service', {
 });
 ```
 
-To create a `Service` from local docker image asset directory  built and pushed to Amazon ECR:
+To create a `Service` from local docker image asset directory built and pushed to Amazon ECR:
+
+You can specify whether to enable continuous integration from the source repository with the `autoDeploymentsEnabled` flag.
 
 ```ts
 import * as assets from '@aws-cdk/aws-ecr-assets';
@@ -83,6 +85,7 @@ new apprunner.Service(this, 'Service', {
     imageConfiguration: { port: 8000 },
     asset: imageAsset,
   }),
+  autoDeploymentsEnabled: true,
 });
 ```
 
