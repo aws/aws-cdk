@@ -105,13 +105,3 @@ export interface PolicyValidationPluginReport {
    */
   readonly metadata?: { readonly [key: string]: string }
 }
-
-/**
- * The report containing the name of the plugin that created it.
- */
-export interface NamedValidationPluginReport extends PolicyValidationPluginReport {
-  /**
-   * The name of the plugin that created the report
-   */
-  readonly pluginName: string;
-}

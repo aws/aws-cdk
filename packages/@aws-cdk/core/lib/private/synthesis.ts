@@ -14,9 +14,9 @@ import { FeatureFlags } from '../feature-flags';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
-import { IPolicyValidationPlugin, NamedValidationPluginReport } from '../validation';
+import { IPolicyValidationPlugin } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { PolicyValidationReportFormatter } from '../validation/private/report';
+import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
 /**
  * Options for `synthesize()`
@@ -83,7 +83,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
   const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visit(root, 'post', construct => {
     if (Stage.isStage(construct)) {
-      for (const plugin of construct.validationPlugins) {
+      for (const plugin of construct.policyValidation) {
         if (!templatePathsByPlugin.has(plugin)) {
           templatePathsByPlugin.set(plugin, []);
         }

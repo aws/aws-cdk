@@ -97,7 +97,7 @@ export class ReportTrace {
    * root of the tree and go down to the construct that has the violation
    */
   private getConstructTrace(node: Node, locations?: string[]): ConstructTrace {
-    const trace = this.tree.getTraceFromCache(node.path);
+    const trace = this.tree.getTrace(node.path);
     if (trace) {
       return trace;
     }
@@ -132,7 +132,7 @@ export class ReportTrace {
       libraryVersion: node.constructInfo?.version,
       location: thisLocation ?? "Run with '--debug' to include location info",
     };
-    this.tree.setTraceCache(constructTrace.path, constructTrace);
+    this.tree.getTrace(constructTrace.path, constructTrace);
     return constructTrace;
   }
 

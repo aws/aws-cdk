@@ -1321,12 +1321,12 @@ will be printed to the console.
 ### For application developers
 
 To use one or more validation plugins in your application, use the
-`validationPlugins` property of `Stage`:
+`policyValidation` property of `Stage`:
 
 ```ts
 // globally for the entire app (an app is a stage)
 const app = new App({
-  validationPlugins: [
+  policyValidation: [
     // These hypothetical classes implement IValidationPlugin:
     new ThirdPartyPluginX(), 
     new ThirdPartyPluginY(),
@@ -1335,7 +1335,7 @@ const app = new App({
 
 // only apply to a particular stage
 const prodStage = new Stage(app, 'ProdStage', {
-  validationPlugins: [...],
+  policyValidation: [...],
 });
 ```
 
@@ -1352,7 +1352,8 @@ validation.
 
 By default, the report will be printed in a human readable format. If you want a
 report in JSON format, enable it using the `@aws-cdk/core:validationReportJson` context 
-via the CLI or passing it directly to the application:
+via the CLI, passing it directly to the application, or via the
+`cdk.context.json` file:
 
 ```ts
 const app = new App({ 

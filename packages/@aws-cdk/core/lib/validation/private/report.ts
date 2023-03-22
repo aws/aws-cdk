@@ -87,6 +87,16 @@ export interface PolicyValidationReportSummary {
   readonly metadata?: { readonly [key: string]: string };
 }
 
+/**
+ * The report containing the name of the plugin that created it.
+ */
+export interface NamedValidationPluginReport extends report.PolicyValidationPluginReport {
+  /**
+   * The name of the plugin that created the report
+   */
+  readonly pluginName: string;
+}
+
 
 /**
  * The report emitted by the plugin after evaluation.
@@ -98,7 +108,7 @@ export class PolicyValidationReportFormatter {
   }
 
 
-  public formatPrettyPrinted(reps: report.NamedValidationPluginReport[]): string {
+  public formatPrettyPrinted(reps: NamedValidationPluginReport[]): string {
     const json = this.formatJson(reps);
     const output = [json.title];
 
@@ -157,7 +167,7 @@ export class PolicyValidationReportFormatter {
     return output.join(os.EOL);
   }
 
-  public formatJson(reps: report.NamedValidationPluginReport[]): PolicyValidationReportJson {
+  public formatJson(reps: NamedValidationPluginReport[]): PolicyValidationReportJson {
     return {
       title: 'Validation Report',
       pluginReports: reps

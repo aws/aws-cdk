@@ -197,8 +197,4 @@ class ValidationPlugin implements IPolicyValidationPlugin {
       violations: [],
     };
   }
-
-  isReady(): boolean {
-    return true;
-  }
 }

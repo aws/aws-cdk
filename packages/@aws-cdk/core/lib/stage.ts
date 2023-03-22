@@ -176,7 +176,7 @@ export class Stage extends Construct {
     this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
 
     if (props.policyValidation) {
-      this.validationPlugins = props.policyValidation;
+      this.policyValidation = props.policyValidation;
     }
   }
 

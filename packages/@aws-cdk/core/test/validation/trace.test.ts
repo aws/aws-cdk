@@ -6,34 +6,37 @@ import { ReportTrace } from '../../lib/validation/private/trace';
 describe('ReportTrace', () => {
   test('trace includes location when CDK_DEBUG=true', () => {
     // GIVEN
-    process.env.CDK_DEBUG = 'true';
-    const app = new core.App({
-      treeMetadata: true,
-    });
-    const stack = new MyStack(app, 'MyStack');
-    app.synth();
-    const tree = new ConstructTree(app);
+    try {
+      process.env.CDK_DEBUG = 'true';
+      const app = new core.App({
+        treeMetadata: true,
+      });
+      const stack = new MyStack(app, 'MyStack');
+      app.synth();
+      const tree = new ConstructTree(app);
 
-    // WHEN
-    const trace = new ReportTrace(tree);
-    const formatted = trace.formatJson(stack.constructPath);
+      // WHEN
+      const trace = new ReportTrace(tree);
+      const formatted = trace.formatJson(stack.constructPath);
 
-    // THEN
-    expect(formatted).toEqual({
-      id: 'MyStack',
-      library: expect.stringMatching(/.*Stack/),
-      libraryVersion: '0.0.0',
-      location: expect.stringMatching(/Object.<anonymous> \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
-      path: 'MyStack',
-      child: {
-        id: 'MyConstruct',
-        library: 'constructs.Construct',
-        libraryVersion: expect.any(String),
-        location: expect.stringMatching(/new MyStack \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
-        path: 'MyStack/MyConstruct',
-      },
-    });
-    process.env.CDK_DEBUG = '';
+      // THEN
+      expect(formatted).toEqual({
+        id: 'MyStack',
+        library: expect.stringMatching(/.*Stack/),
+        libraryVersion: '0.0.0',
+        location: expect.stringMatching(/Object.<anonymous> \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
+        path: 'MyStack',
+        child: {
+          id: 'MyConstruct',
+          library: 'constructs.Construct',
+          libraryVersion: expect.any(String),
+          location: expect.stringMatching(/new MyStack \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
+          path: 'MyStack/MyConstruct',
+        },
+      });
+    } finally {
+      process.env.CDK_DEBUG = '';
+    }
   });
 
   test('trace does not include location when CDK_DEBUG=false', () => {
@@ -64,7 +67,6 @@ describe('ReportTrace', () => {
         path: 'MyStack/MyConstruct',
       },
     });
-    process.env.CDK_DEBUG = '';
   });
 });
 

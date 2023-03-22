@@ -52,7 +52,7 @@ function addValidationPluginInfo(stack: Stack, allConstructInfos: ConstructInfo[
       done = true;
     }
     if (stage) {
-      allConstructInfos.push(...stage.validationPlugins.map(
+      allConstructInfos.push(...stage.policyValidation.map(
         plugin => {
           return {
             fqn: `validation.${plugin.name}`,

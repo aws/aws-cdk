@@ -94,7 +94,7 @@ export class TreeMetadata extends Construct {
    */
   public _getNodeBranch(constructPath: string): Node | undefined {
     if (!this._tree) {
-      throw new Error('tree has not been created yet!');
+      throw new Error(`attempting to get node branch for ${constructPath}, but the tree has not been created yet!`);
     }
     const tree = this._tree[constructPath];
     const newTree: Node = {

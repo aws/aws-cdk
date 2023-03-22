@@ -39,8 +39,12 @@ export interface ConstructTrace {
   readonly libraryVersion?: string;
 
   /**
-   * The line from the stack trace that contains the location
-   * in the source file where the construct is defined
+   * If `CDK_DEBUG` is set to true, then this will show
+   * the line from the stack trace that contains the location
+   * in the source file where the construct is defined.
+   *
+   * If `CDK_DEBUG` is not set then this will instruct the user
+   * to run with `--debug` if they would like the location
    *
    * @default - undefined if the construct comes from a library
    * and the location would point to node_modules
@@ -94,18 +98,12 @@ export class ConstructTree {
    * @param constructPath construct path
    * @returns ConstructTrace if available
    */
-  public getTraceFromCache(constructPath: string): ConstructTrace | undefined {
-    return this._traceCache.get(constructPath);
-  }
-
-  /**
-   * Add a ConstructTrace for a specific construct to the trace cache
-   *
-   * @param constructPath construct path
-   * @param trace the ConstructTrace
-   */
-  public setTraceCache(constructPath: string, trace: ConstructTrace): void {
-    this._traceCache.set(constructPath, trace);
+  public getTrace(constructPath: string, trace?: ConstructTrace): ConstructTrace | undefined {
+    const constructTrace = this._traceCache.get(constructPath);
+    if (!constructTrace && trace) {
+      this._traceCache.set(constructPath, trace);
+    }
+    return constructTrace ?? trace;
   }
 
   /**
@@ -115,7 +113,7 @@ export class ConstructTree {
    * @returns the TreeMetadata Node
    */
   public getTreeNode(path: string): Node | undefined {
-    return this.treeMetadata.getNodeBranch(path);
+    return this.treeMetadata._getNodeBranch(path);
   }
 
   /**

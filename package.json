@@ -111,8 +111,6 @@
       "@aws-cdk/cloudformation-include/yaml/**",
       "@aws-cdk/core/@balena/dockerignore",
       "@aws-cdk/core/@balena/dockerignore/**",
-      "@aws-cdk/core/cross-spawn",
-      "@aws-cdk/core/cross-spawn/**",
       "@aws-cdk/core/fs-extra",
       "@aws-cdk/core/fs-extra/**",
       "@aws-cdk/core/ignore",
