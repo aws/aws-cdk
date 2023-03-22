@@ -2051,6 +2051,30 @@ test('add price-capacity-optimized', () => {
   });
 });
 
+test('ssm permissions adds right managed policy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+    vpc: mockVpc(stack),
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
+    ssmSessionPermissions: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':iam::aws:policy/AmazonSSMManagedInstanceCore',
+        ]],
+      },
+    ],
+  });
+});
 
 function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
