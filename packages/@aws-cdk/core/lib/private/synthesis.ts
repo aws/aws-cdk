@@ -14,7 +14,7 @@ import { FeatureFlags } from '../feature-flags';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
-import { IPolicyValidationPlugin } from '../validation';
+import { IPolicyValidationPluginBeta1 } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
@@ -92,7 +92,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
   if (!App.isApp(root)) return;
   const hash = computeChecksumOfFolder(outdir);
   const assemblies = getAssemblies(root, assembly);
-  const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
+  const templatePathsByPlugin: Map<IPolicyValidationPluginBeta1, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
     if (Stage.isStage(construct)) {
       for (const plugin of construct.policyValidation) {

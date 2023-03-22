@@ -1321,12 +1321,12 @@ will be printed to the console.
 ### For application developers
 
 To use one or more validation plugins in your application, use the
-`policyValidation` property of `Stage`:
+`policyValidationBeta1` property of `Stage`:
 
 ```ts
 // globally for the entire app (an app is a stage)
 const app = new App({
-  policyValidation: [
+  policyValidationBeta1: [
     // These hypothetical classes implement IValidationPlugin:
     new ThirdPartyPluginX(), 
     new ThirdPartyPluginY(),
@@ -1335,7 +1335,7 @@ const app = new App({
 
 // only apply to a particular stage
 const prodStage = new Stage(app, 'ProdStage', {
-  policyValidation: [...],
+  policyValidationBeta1: [...],
 });
 ```
 

@@ -5,7 +5,7 @@ import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-con
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
 import { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
-import { IPolicyValidationPlugin } from './validation/validation';
+import { IPolicyValidationPluginBeta1 } from './validation/validation';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
@@ -125,7 +125,7 @@ export interface AppProps {
    *
    * @default - no validation plugins
    */
-  readonly policyValidation?: IPolicyValidationPlugin[];
+  readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 }
 
 /**
@@ -167,7 +167,7 @@ export class App extends Stage {
   constructor(props: AppProps = {}) {
     super(undefined as any, '', {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
-      policyValidation: props.policyValidation,
+      policyValidationBeta1: props.policyValidationBeta1,
     });
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });

@@ -22,7 +22,7 @@ afterEach(() => {
 describe('validations', () => {
   test('validation failure', () => {
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
@@ -71,7 +71,7 @@ describe('validations', () => {
 
   test('validation success', () => {
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('test-plugin', []),
         new FakePlugin('test-plugin2', []),
         new FakePlugin('test-plugin3', []),
@@ -114,7 +114,7 @@ Policy Validation Report Summary
 
   test('multiple stacks', () => {
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
@@ -152,7 +152,7 @@ Policy Validation Report Summary
 
   test('multiple stages', () => {
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('test-plugin1', [{
           description: 'do something',
           ruleName: 'test-rule1',
@@ -165,7 +165,7 @@ Policy Validation Report Summary
       ],
     });
     const stage1 = new core.Stage(app, 'Stage1', {
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('test-plugin2', [{
           description: 'do something',
           ruleName: 'test-rule2',
@@ -178,7 +178,7 @@ Policy Validation Report Summary
       ],
     });
     const stage2 = new core.Stage(app, 'Stage2', {
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('test-plugin3', [{
           description: 'do something',
           ruleName: 'test-rule3',
@@ -191,7 +191,7 @@ Policy Validation Report Summary
       ],
     });
     const stage3 = new core.Stage(stage2, 'Stage3', {
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('test-plugin4', [{
           description: 'do something',
           ruleName: 'test-rule4',
@@ -229,7 +229,6 @@ Policy Validation Report Summary
     }).toThrow(/Validation failed/);
 
     const report = consoleErrorMock.mock.calls[0][0];
-    // const report = consoleErrorMock.mock.calls;
     // Assuming the rest of the report's content is checked by another test
     expect(report).toEqual(`Validation Report
 -----------------
@@ -374,7 +373,7 @@ Policy Validation Report Summary
       };
     });
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         {
           name: 'test-plugin',
           validate: mockValidate,
@@ -383,7 +382,7 @@ Policy Validation Report Summary
     });
     const stage1 = new core.Stage(app, 'Stage1', { });
     const stage2 = new core.Stage(app, 'Stage2', {
-      policyValidation: [
+      policyValidationBeta1: [
         {
           name: 'test-plugin2',
           validate: mockValidate,
@@ -438,7 +437,7 @@ Policy Validation Report Summary
       };
     });
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         {
           name: 'test-plugin',
           validate: mockValidate,
@@ -483,7 +482,7 @@ Policy Validation Report Summary
 
   test('multiple constructs', () => {
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
@@ -510,7 +509,7 @@ Policy Validation Report Summary
 
   test('multiple plugins', () => {
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('plugin1', [{
           description: 'do something',
           ruleName: 'rule-1',
@@ -607,7 +606,7 @@ ${table([
 
   test('multiple plugins with mixed results', () => {
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('plugin1', []),
         new FakePlugin('plugin2', [{
           description: 'do another thing',
@@ -671,7 +670,7 @@ ${table([
 
   test('plugin throws an error', () => {
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         // This plugin will throw an error
         new BrokenPlugin(),
 
@@ -707,7 +706,7 @@ ${table([
 
   test('plugin tries to modify a template', () => {
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         new RoguePlugin(),
       ],
     });
@@ -725,7 +724,7 @@ ${table([
 
   test('JSON format', () => {
     const app = new core.App({
-      policyValidation: [
+      policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
           ruleName: 'test-rule',
@@ -803,7 +802,7 @@ ${table([
   });
 });
 
-class FakePlugin implements core.IPolicyValidationPlugin {
+class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   // public readonly name = 'test-plugin';
 
   constructor(
@@ -818,7 +817,7 @@ class FakePlugin implements core.IPolicyValidationPlugin {
   }
 }
 
-class RoguePlugin implements core.IPolicyValidationPlugin {
+class RoguePlugin implements core.IPolicyValidationPluginBeta1 {
   public readonly name = 'rogue-plugin';
 
   validate(context: core.IPolicyValidationContext): PolicyValidationPluginReport {
@@ -831,7 +830,7 @@ class RoguePlugin implements core.IPolicyValidationPlugin {
   }
 }
 
-class BrokenPlugin implements core.IPolicyValidationPlugin {
+class BrokenPlugin implements core.IPolicyValidationPluginBeta1 {
   public readonly name = 'broken-plugin';
 
   validate(_context: core.IPolicyValidationContext): PolicyValidationPluginReport {

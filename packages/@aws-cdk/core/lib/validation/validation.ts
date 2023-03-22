@@ -30,7 +30,7 @@ import { PolicyValidationPluginReport } from './report';
  *    }
  * }
  */
-export interface IPolicyValidationPlugin {
+export interface IPolicyValidationPluginBeta1 {
   /**
    * The name of the plugin that will be displayed in the validation
    * report
