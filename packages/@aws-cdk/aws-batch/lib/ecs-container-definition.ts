@@ -125,7 +125,7 @@ export interface IEcsContainerDefinition {
   readonly cpu: number;
   readonly memoryMiB: number;
   readonly command?: string[];
-  readonly environments?: Array<{ [key:string]: string }>;
+  readonly environment?: { [key:string]: string };
   readonly executionRole?: iam.IRole;
   readonly jobRole?: iam.IRole;
   readonly linuxParameters?: LinuxParameters;
@@ -142,7 +142,7 @@ export interface IEcsContainerDefinition {
 export interface EcsContainerDefinitionProps {
   readonly command?: string[];
   readonly memoryMiB: number;
-  readonly environments?: Array<{ [key:string]: string }>;
+  readonly environment?: { [key:string]: string };
   readonly image: ecs.ContainerImage;
   readonly jobRole?: iam.IRole;
   readonly executionRole?: iam.IRole;
@@ -161,7 +161,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   readonly cpu: number;
   readonly memoryMiB: number;
   readonly command?: string[];
-  readonly environments?: Array<{ [key:string]: string }>;
+  readonly environment?: { [key:string]: string };
   readonly jobRole?: iam.IRole;
   readonly executionRole?: iam.IRole;
   readonly linuxParameters?: LinuxParameters;
@@ -180,7 +180,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.image = props.image;
     this.cpu = props.cpu;
     this.command = props.command;
-    this.environments = props.environments;
+    this.environment = props.environment;
     this.jobRole = props.jobRole;
     this.executionRole = props.executionRole ?? new iam.Role(this, 'ExecutionRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
@@ -207,7 +207,10 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     return {
       image: this.imageConfig.imageName,
       command: this.command,
-      environment: this.environments,
+      environment: Object.keys(this.environment ?? {}).map((envKey) => ({
+        name: envKey,
+        value: (this.environment ?? {})[envKey],
+      })),
       jobRoleArn: this.jobRole?.roleArn,
       executionRoleArn: this.executionRole?.roleArn,
       linuxParameters: this.linuxParameters && this.linuxParameters.renderBatchLinuxParameters(),
@@ -295,6 +298,9 @@ export interface IEcsEc2ContainerDefinition extends IEcsContainerDefinition {
 }
 
 export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionProps {
+  /**
+   * @default false
+   */
   readonly privileged?: boolean;
   readonly ulimits?: Ulimit[];
 }

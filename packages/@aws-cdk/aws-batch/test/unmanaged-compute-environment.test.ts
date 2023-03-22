@@ -19,7 +19,6 @@ const defaultExpectedProps: CfnComputeEnvironmentProps = {
 };
 
 let stack = new Stack();
-
 const pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
 
 test('default props', () => {
