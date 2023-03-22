@@ -1,6 +1,19 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Duration, Token, ContextProvider, Arn, ArnFormat } from '@aws-cdk/core';
+import {
+  Arn,
+  ArnFormat,
+  ContextProvider,
+  Duration,
+  FeatureFlags,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  ResourceProps,
+  Stack,
+  Token,
+} from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Alias } from './alias';
@@ -60,6 +73,16 @@ export interface IKey extends IResource {
    * Grant encryption and decryption permissions using this key to the given principal
    */
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant permissions to generating MACs to the given principal
+   */
+  grantGenerateMac(grantee: iam.IGrantable): iam.Grant
+
+  /**
+   * Grant permissions to verifying MACs to the given principal
+   */
+  grantVerifyMac(grantee: iam.IGrantable): iam.Grant
 }
 
 abstract class KeyBase extends Resource implements IKey {
@@ -197,9 +220,6 @@ abstract class KeyBase extends Resource implements IKey {
    * Grant permissions to generating MACs to the given principal
    */
   public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
-    if (!(this.node.defaultChild as CfnKey).keySpec?.startsWith('HMAC')) {
-      throw new Error('grantGenerateMac can only be used with HMAC keys');
-    }
     return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
   }
 
@@ -207,9 +227,6 @@ abstract class KeyBase extends Resource implements IKey {
    * Grant permissions to verifying MACs to the given principal
    */
   public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
-    if (!(this.node.defaultChild as CfnKey).keySpec?.startsWith('HMAC')) {
-      throw new Error('grantVerifyMac can only be used with HMAC keys');
-    }
     return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
   }
 

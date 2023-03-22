@@ -1140,23 +1140,54 @@ describe('HMAC', () => {
     });
   });
 
-  test('throws error if grantGenerateMac is called on a key with incorrect usage', () => {
-    const key = new kms.Key(stack, 'Key', {
-      keySpec: KeySpec.RSA_4096,
-    });
+  test('grant generate mac policy for imported key', () => {
+    const keyArn = 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012';
+    const key = kms.Key.fromKeyArn(
+      stack,
+      'Key',
+      keyArn,
+    );
     const user = new iam.User(stack, 'User');
 
-    expect(() => key.grantGenerateMac(user)).toThrow('grantGenerateMac can only be used with HMAC keys');
+    key.grantGenerateMac(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:GenerateMac',
+            Effect: 'Allow',
+            Resource: keyArn,
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
   });
 
-  test('throws error if grantVerifyMac is called on a key with incorrect usage', () => {
-    const key = new kms.Key(stack, 'Key', {
-      keySpec: KeySpec.ECC_NIST_P384,
-      keyUsage: KeyUsage.SIGN_VERIFY,
-    });
+  test('grant verify mac policy for imported key', () => {
+    const keyArn = 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012';
+    const key = kms.Key.fromKeyArn(
+      stack,
+      'Key',
+      keyArn,
+    );
     const user = new iam.User(stack, 'User');
 
-    expect(() => key.grantVerifyMac(user)).toThrow('grantVerifyMac can only be used with HMAC keys');
+    key.grantVerifyMac(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:VerifyMac',
+            Effect: 'Allow',
+            Resource: keyArn,
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
   });
 });
 
