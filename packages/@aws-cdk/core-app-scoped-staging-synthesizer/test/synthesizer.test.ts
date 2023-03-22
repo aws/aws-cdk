@@ -150,7 +150,7 @@ describe(AppScopedStagingSynthesizer, () => {
     const location = stack.synthesizer.addDockerImageAsset({
       directoryName: '.',
       sourceHash: 'abcdef',
-      uniqueId: 'abcdef',
+      assetName: 'abcdef',
     });
 
     // THEN - we have a fixed asset location
@@ -171,13 +171,13 @@ describe(AppScopedStagingSynthesizer, () => {
     const location1 = stack.synthesizer.addDockerImageAsset({
       directoryName: '.',
       sourceHash: 'abcdef',
-      uniqueId: 'abcdef',
+      assetName: 'abcdef',
     });
 
     const location2 = stack.synthesizer.addDockerImageAsset({
       directoryName: './hello',
       sourceHash: 'abcdefg',
-      uniqueId: 'abcdefg',
+      assetName: 'abcdefg',
     });
 
     // THEN - images have different asset locations
@@ -189,13 +189,13 @@ describe(AppScopedStagingSynthesizer, () => {
     const location1 = stack.synthesizer.addDockerImageAsset({
       directoryName: '.',
       sourceHash: 'abcdef',
-      uniqueId: 'abcdef',
+      assetName: 'abcdef',
     });
 
     const location2 = stack.synthesizer.addDockerImageAsset({
       directoryName: './hello',
       sourceHash: 'abcdefg',
-      uniqueId: 'abcdef',
+      assetName: 'abcdef',
     });
 
     // THEN - images share same ecr repo

@@ -244,12 +244,12 @@ export interface DockerImageAssetSource {
 
   /**
    * Unique identifier of the docker image asset and its potential revisions.
-   * Required if using Bootstrap v3.
+   * Required if using AppScopedStagingSynthesizer.
    *
-   * @default - no unique id
+   * @default - no asset name
    */
-  readonly uniqueId?: string;
-  
+  readonly assetName?: string;
+
   /*
    * Cache from options to pass to the `docker build` command.
    *

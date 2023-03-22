@@ -161,7 +161,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       throw new Error('Cannot call getFilePublishingRoleArn before createFilePublishingRole');
     }
     return Stack.of(this).formatArn({
-      partition: 'aws', // TODO: token partition doesn't work
+      partition: '${AWS::Partition}', // TODO: token partition doesn't work
       region: '', // iam is global
       service: 'iam',
       resource: 'role',
@@ -218,69 +218,8 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   private createBucketKey(): kms.IKey {
     const bucketKeyId = 'BucketKey';
     const key = this.node.tryFindChild(bucketKeyId) as kms.IKey ?? new kms.Key(this, bucketKeyId, {
-      alias: 'StagingBucketKey',
-      policy: new iam.PolicyDocument({
-        statements: [
-          new iam.PolicyStatement({
-            actions: [
-              'kms:Create*',
-              'kms:Describe*',
-              'kms:Enable*',
-              'kms:List*',
-              'kms:Put*',
-              'kms:Update*',
-              'kms:Revoke*',
-              'kms:Disable*',
-              'kms:Get*',
-              'kms:Delete*',
-              'kms:ScheduleKeyDeletion',
-              'kms:CancelKeyDeletion',
-              'kms:GenerateDataKey',
-              'kms:TagResource',
-              'kms:UntagResource',
-            ],
-            resources: ['*'],
-            principals: [
-              new iam.AccountPrincipal(this.account),
-            ],
-            effect: iam.Effect.ALLOW,
-          }),
-          new iam.PolicyStatement({
-            actions: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
-            resources: ['*'],
-            principals: [
-              new iam.AnyPrincipal(),
-            ],
-            conditions: {
-              StringEquals: {
-                'kms:CallerAccount': this.account,
-                'kms:ViaService': `s3.${this.partition}.amazonaws.com`,
-              },
-            },
-            effect: iam.Effect.ALLOW,
-          }),
-          new iam.PolicyStatement({
-            actions: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
-            resources: ['*'],
-            principals: [
-              new iam.ArnPrincipal(this.getFilePublishingRoleArn()),
-            ],
-            effect: iam.Effect.ALLOW,
-          }),
-        ],
-      }),
+      // TODO add alias
+      admins: [new iam.AccountPrincipal(this.account)],
     });
     return key;
   }
@@ -297,61 +236,15 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     const role = this.createFilePublishingRole();
     // Create the KMS key that the bucket depends on
     const key = this.createBucketKey();
-    key.node.addDependency(role);
-    const keyArn = Stack.of(this).formatArn({
-      service: 'kms',
-      resource: 'key',
-      resourceName: 'StagingBucketKey', // TODO change name
-      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-    });
 
     // Create the bucket once the dependencies have been created
-    new s3.Bucket(this, bucketId, {
+    const bucket = new s3.Bucket(this, bucketId, {
       bucketName: stagingBucketName,
       removalPolicy: RemovalPolicy.RETAIN,
       encryption: s3.BucketEncryption.KMS,
       encryptionKey: key,
     });
-    const bucketArn = Stack.of(this).formatArn({
-      region: '',
-      account: '',
-      service: 's3',
-      resource: 'bucket',
-      resourceName: stagingBucketName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-
-    // Add policy to bucket role. Need to use computed arn
-    // so we don't add a circular dependency
-    role.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        's3:GetObject*',
-        's3:GetBucket*',
-        's3:GetEncryptionConfiguration',
-        's3:List*',
-        's3:DeleteObject*',
-        's3:PutObject*',
-        's3:Abort*',
-      ],
-      resources: [
-        bucketArn,
-        `${bucketArn}/*`,
-      ],
-      effect: iam.Effect.ALLOW,
-    }));
-
-    // Need to use computed arn so we don't add a circular dependency.
-    role.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'kms:Decrypt',
-        'kms:DescribeKey',
-        'kms:Encrypt',
-        'kms:ReEncrypt*',
-        'kms:GenerateDataKey*',
-      ],
-      resources: [keyArn],
-      effect: iam.Effect.ALLOW,
-    }));
+    bucket.grantReadWrite(role);
 
     return stagingBucketName;
   }
@@ -360,15 +253,15 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
    * Returns the well-known name of the repo
    */
   private getCreateRepo(asset: DockerImageAssetSource): string {
-    if (!asset.uniqueId) {
+    if (!asset.assetName) {
       throw new Error('Assets synthesized with AppScopedStagingSynthesizer must include a \'uniqueId\' in the asset source definition.');
     }
 
-    const repoName = `${asset.uniqueId}`.replace('.', '-'); // TODO: actually sanitize
-    if (this.stagingRepos[asset.uniqueId] === undefined) {
-      this.stagingRepos[asset.uniqueId] = new ecr.Repository(this, repoName, {
+    const repoName = `${asset.assetName}`.replace('.', '-'); // TODO: actually sanitize
+    if (this.stagingRepos[asset.assetName] === undefined) {
+      this.stagingRepos[asset.assetName] = new ecr.Repository(this, repoName, {
         repositoryName: repoName,
-        lifecycleRules: this.repositoryLifecycleRules[asset.uniqueId],
+        lifecycleRules: this.repositoryLifecycleRules[asset.assetName],
       });
     }
     return repoName;
