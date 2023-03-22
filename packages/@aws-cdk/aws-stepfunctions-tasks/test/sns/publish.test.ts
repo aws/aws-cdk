@@ -1,7 +1,7 @@
 import * as sns from '@aws-cdk/aws-sns';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { SnsPublish, MessageAttributeDataType, MessageAttribute } from '../../lib/sns/publish';
+import { SnsPublish, SnsMessageAttributeDataType, SnsMessageAttribute } from '../../lib/sns/publish';
 
 describe('Publish', () => {
 
@@ -60,11 +60,11 @@ describe('Publish', () => {
         },
         binary: {
           value: 'a2345',
-          dataType: MessageAttributeDataType.BINARY,
+          dataType: SnsMessageAttributeDataType.BINARY,
         },
         binaryNumberIsString: {
           value: 123456987,
-          dataType: MessageAttributeDataType.BINARY,
+          dataType: SnsMessageAttributeDataType.BINARY,
         },
         taskInput: {
           value: sfn.TaskInput.fromJsonPathAt('$$.StateMachine.Name'),
@@ -136,34 +136,34 @@ describe('Publish', () => {
   });
   describe('invalid message attribute configurations', () => {
     // GIVEN
-    const attributes: MessageAttribute[] = [
+    const attributes: SnsMessageAttribute[] = [
       {
         value: 2,
-        dataType: MessageAttributeDataType.STRING,
+        dataType: SnsMessageAttributeDataType.STRING,
       },
       {
         value: 'foo',
-        dataType: MessageAttributeDataType.NUMBER,
+        dataType: SnsMessageAttributeDataType.NUMBER,
       },
       {
         value: 'foo',
-        dataType: MessageAttributeDataType.STRING_ARRAY,
+        dataType: SnsMessageAttributeDataType.STRING_ARRAY,
       },
       {
         value: ['foo', undefined, 2, true],
-        dataType: MessageAttributeDataType.STRING_ARRAY,
+        dataType: SnsMessageAttributeDataType.STRING_ARRAY,
       },
       {
         value: ['foo', { bar: 2 }, 2, true],
-        dataType: MessageAttributeDataType.STRING_ARRAY,
+        dataType: SnsMessageAttributeDataType.STRING_ARRAY,
       },
       {
         value: false,
-        dataType: MessageAttributeDataType.STRING_ARRAY,
+        dataType: SnsMessageAttributeDataType.STRING_ARRAY,
       },
       {
         value: false,
-        dataType: MessageAttributeDataType.NUMBER,
+        dataType: SnsMessageAttributeDataType.NUMBER,
       },
     ];
     attributes.forEach((a) => {

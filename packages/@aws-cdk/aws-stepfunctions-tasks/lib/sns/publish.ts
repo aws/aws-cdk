@@ -10,7 +10,7 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  *
  * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
  */
-export enum MessageAttributeDataType {
+export enum SnsMessageAttributeDataType {
   /**
    * Strings are Unicode with UTF-8 binary encoding
    */
@@ -43,7 +43,7 @@ export enum MessageAttributeDataType {
  *
  * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html
  */
-export interface MessageAttribute {
+export interface SnsMessageAttribute {
   /**
    * The value of the attribute
    */
@@ -55,7 +55,7 @@ export interface MessageAttribute {
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
    * @default determined by type inspection if possible, fallback is String
    */
-  readonly dataType?: MessageAttributeDataType
+  readonly dataType?: SnsMessageAttributeDataType
 }
 
 /**
@@ -86,7 +86,7 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html
    * @default {}
    */
-  readonly messageAttributes?: { [key: string]: MessageAttribute };
+  readonly messageAttributes?: { [key: string]: SnsMessageAttribute };
 
   /**
    * Send different messages for each transport protocol.
@@ -176,7 +176,7 @@ interface MessageAttributeValue {
   BinaryValue?: string;
 }
 
-function renderMessageAttributes(attributes?: { [key: string]: MessageAttribute }): any {
+function renderMessageAttributes(attributes?: { [key: string]: SnsMessageAttribute }): any {
   if (attributes === undefined) { return undefined; }
   const renderedAttributes: { [key: string]: MessageAttributeValue } = {};
   Object.entries(attributes).map(([key, val]) => {
@@ -185,44 +185,44 @@ function renderMessageAttributes(attributes?: { [key: string]: MessageAttribute 
   return sfn.TaskInput.fromObject(renderedAttributes).value;
 }
 
-function renderMessageAttributeValue(attribute: MessageAttribute): MessageAttributeValue {
+function renderMessageAttributeValue(attribute: SnsMessageAttribute): MessageAttributeValue {
   const dataType = attribute.dataType;
   if (attribute.value instanceof sfn.TaskInput) {
     return {
-      DataType: dataType ?? MessageAttributeDataType.STRING,
-      StringValue: dataType !== MessageAttributeDataType.BINARY ? attribute.value.value : undefined,
-      BinaryValue: dataType === MessageAttributeDataType.BINARY ? attribute.value.value : undefined,
+      DataType: dataType ?? SnsMessageAttributeDataType.STRING,
+      StringValue: dataType !== SnsMessageAttributeDataType.BINARY ? attribute.value.value : undefined,
+      BinaryValue: dataType === SnsMessageAttributeDataType.BINARY ? attribute.value.value : undefined,
     };
   }
 
-  if (dataType === MessageAttributeDataType.BINARY) {
+  if (dataType === SnsMessageAttributeDataType.BINARY) {
     return { DataType: dataType, BinaryValue: `${attribute.value}` };
   }
 
   if (Token.isUnresolved(attribute.value)) {
-    return { DataType: dataType ?? MessageAttributeDataType.STRING, StringValue: attribute.value };
+    return { DataType: dataType ?? SnsMessageAttributeDataType.STRING, StringValue: attribute.value };
   }
 
   validateMessageAttribute(attribute);
   if (Array.isArray(attribute.value)) {
-    return { DataType: MessageAttributeDataType.STRING_ARRAY, StringValue: JSON.stringify(attribute.value) };
+    return { DataType: SnsMessageAttributeDataType.STRING_ARRAY, StringValue: JSON.stringify(attribute.value) };
   }
   const value = attribute.value;
   if (typeof value === 'number') {
-    return { DataType: MessageAttributeDataType.NUMBER, StringValue: `${value}` };
+    return { DataType: SnsMessageAttributeDataType.NUMBER, StringValue: `${value}` };
   } else {
-    return { DataType: MessageAttributeDataType.STRING, StringValue: `${value}` };
+    return { DataType: SnsMessageAttributeDataType.STRING, StringValue: `${value}` };
   }
 }
 
-function validateMessageAttribute(attribute: MessageAttribute): void {
+function validateMessageAttribute(attribute: SnsMessageAttribute): void {
   const dataType = attribute.dataType;
   const value = attribute.value;
   if (dataType === undefined) {
     return;
   }
   if (Array.isArray(value)) {
-    if (dataType !== MessageAttributeDataType.STRING_ARRAY) {
+    if (dataType !== SnsMessageAttributeDataType.STRING_ARRAY) {
       throw new Error(`Requested SNS message attribute type was ${dataType} but ${value} was of type Array`);
     }
     const validArrayTypes = ['string', 'boolean', 'number'];
@@ -240,16 +240,16 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
       if (sfn.JsonPath.isEncodedJsonPath(attribute.value)) {
         return;
       }
-      if (dataType === MessageAttributeDataType.STRING ||
-        dataType === MessageAttributeDataType.BINARY) {
+      if (dataType === SnsMessageAttributeDataType.STRING ||
+        dataType === SnsMessageAttributeDataType.BINARY) {
         return;
       }
       throw error;
     case 'number':
-      if (dataType === MessageAttributeDataType.NUMBER) { return; }
+      if (dataType === SnsMessageAttributeDataType.NUMBER) { return; }
       throw error;
     case 'boolean':
-      if (dataType === MessageAttributeDataType.STRING) { return; }
+      if (dataType === SnsMessageAttributeDataType.STRING) { return; }
       throw error;
     default:
       throw error;

@@ -238,7 +238,7 @@ describe('SqsSendMessage', () => {
 
   test('send message with message attributes', () => {
     // GIVEN
-    const encodedData = new Buffer('some data to be base64 encoded').toString('base64');
+    const encodedData = Buffer.from('some data to be base64 encoded', 'base64').toString();
 
     // WHEN
     const task = new SqsSendMessage(stack, 'Send', {
