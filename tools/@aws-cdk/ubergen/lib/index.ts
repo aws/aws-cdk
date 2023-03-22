@@ -469,7 +469,7 @@ function hasL2s(library: LibraryReference) {
   try {
     const sourceFiles = fs.readdirSync(path.join(library.root, 'lib')).filter(n => n.endsWith('.ts') && !n.endsWith('.d.ts'));
     return sourceFiles.some(n => n !== 'index.ts' && !n.includes('.generated.'));
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') { return false; }
 
     throw e;

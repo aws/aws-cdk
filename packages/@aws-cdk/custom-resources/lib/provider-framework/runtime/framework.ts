@@ -151,7 +151,7 @@ function parseJsonPayload(payload: any): any {
   const text = payload.toString();
   try {
     return JSON.parse(text);
-  } catch (e) {
+  } catch {
     throw new Error(`return values from user-handlers must be JSON objects. got: "${text}"`);
   }
 }
