@@ -146,7 +146,7 @@ export class PolicyValidationReportFormatter {
           output.push(`    - Creation Stack:\n\t${this.reportTrace.formatPrettyPrinted(construct.constructPath)}`);
           output.push(`    - Resource ID: ${construct.resourceLogicalId}`);
           if (construct.locations) {
-            output.push('    - Locations:');
+            output.push('    - Template Locations:');
             for (const location of construct.locations) {
               output.push(`      > ${location}`);
             }

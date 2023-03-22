@@ -123,6 +123,178 @@ describe('validations', () => {
     expect(report).not.toContain('- Template Path: /path/to/stack2.template.json');
   });
 
+  test('multiple stages', () => {
+    const app = new core.App({
+      policyValidation: [
+        new FakePlugin('test-plugin1', [{
+          description: 'do something',
+          ruleName: 'test-rule1',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'DefaultResource1',
+            templatePath: '/path/to/stack1.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stage1 = new core.Stage(app, 'Stage1', {
+      policyValidation: [
+        new FakePlugin('test-plugin2', [{
+          description: 'do something',
+          ruleName: 'test-rule2',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'DefaultResource1',
+            templatePath: '/path/to/stack1.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stage2 = new core.Stage(app, 'Stage2', {
+      policyValidation: [
+        new FakePlugin('test-plugin3', [{
+          description: 'do something',
+          ruleName: 'test-rule3',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'DefaultResource2',
+            templatePath: '/path/to/stack2.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack1 = new core.Stack(stage1, 'stack1');
+    new core.CfnResource(stack1, 'DefaultResource1', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    const stack2 = new core.Stack(stage2, 'stack2');
+    new core.CfnResource(stack2, 'DefaultResource2', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    expect(() => {
+      app.synth();
+    }).toThrow(/Validation failed/);
+
+    const report = consoleErrorMock.mock.calls[0][0];
+    // Assuming the rest of the report's content is checked by another test
+    expect(report).toEqual(`Validation Report
+-----------------
+
+(Summary)
+
+╔════════╤══════════════╗
+║ Status │ failure      ║
+╟────────┼──────────────╢
+║ Plugin │ test-plugin2 ║
+╚════════╧══════════════╝
+
+
+(Violations)
+
+${reset(red(bright('test-rule2 (1 occurrences)')))}
+
+  Occurrences:
+
+    - Construct Path: Stage1/stack1/DefaultResource1
+    - Template Path: /path/to/stack1.template.json
+    - Creation Stack:
+\t└──  Stage1 (Stage1)
+\t     │ Library: @aws-cdk/core.Stage
+\t     │ Library Version: 0.0.0
+\t     │ Location: Run with '--debug' to include location info
+\t     └──  stack1 (Stage1/stack1)
+\t          │ Library: @aws-cdk/core.Stack
+\t          │ Library Version: 0.0.0
+\t          │ Location: Run with '--debug' to include location info
+\t          └──  DefaultResource1 (Stage1/stack1/DefaultResource1)
+\t               │ Library: @aws-cdk/core.CfnResource
+\t               │ Library Version: 0.0.0
+\t               │ Location: Run with '--debug' to include location info
+    - Resource ID: DefaultResource1
+    - Template Locations:
+      > test-location
+
+  Description: do something
+
+(Summary)
+
+╔════════╤══════════════╗
+║ Status │ failure      ║
+╟────────┼──────────────╢
+║ Plugin │ test-plugin3 ║
+╚════════╧══════════════╝
+
+
+(Violations)
+
+${reset(red(bright('test-rule3 (1 occurrences)')))}
+
+  Occurrences:
+
+    - Construct Path: Stage2/stack2/DefaultResource2
+    - Template Path: /path/to/stack2.template.json
+    - Creation Stack:
+\t└──  Stage2 (Stage2)
+\t     │ Library: @aws-cdk/core.Stage
+\t     │ Library Version: 0.0.0
+\t     │ Location: Run with '--debug' to include location info
+\t     └──  stack2 (Stage2/stack2)
+\t          │ Library: @aws-cdk/core.Stack
+\t          │ Library Version: 0.0.0
+\t          │ Location: Run with '--debug' to include location info
+\t          └──  DefaultResource2 (Stage2/stack2/DefaultResource2)
+\t               │ Library: @aws-cdk/core.CfnResource
+\t               │ Library Version: 0.0.0
+\t               │ Location: Run with '--debug' to include location info
+    - Resource ID: DefaultResource2
+    - Template Locations:
+      > test-location
+
+  Description: do something
+
+(Summary)
+
+╔════════╤══════════════╗
+║ Status │ failure      ║
+╟────────┼──────────────╢
+║ Plugin │ test-plugin1 ║
+╚════════╧══════════════╝
+
+
+(Violations)
+
+${reset(red(bright('test-rule1 (1 occurrences)')))}
+
+  Occurrences:
+
+    - Construct Path: Stage1/stack1/DefaultResource1
+    - Template Path: /path/to/stack1.template.json
+    - Creation Stack:
+\t└──  Stage1 (Stage1)
+\t     │ Library: @aws-cdk/core.Stage
+\t     │ Library Version: 0.0.0
+\t     │ Location: Run with '--debug' to include location info
+\t     └──  stack1 (Stage1/stack1)
+\t          │ Library: @aws-cdk/core.Stack
+\t          │ Library Version: 0.0.0
+\t          │ Location: Run with '--debug' to include location info
+\t          └──  DefaultResource1 (Stage1/stack1/DefaultResource1)
+\t               │ Library: @aws-cdk/core.CfnResource
+\t               │ Library Version: 0.0.0
+\t               │ Location: Run with '--debug' to include location info
+    - Resource ID: DefaultResource1
+    - Template Locations:
+      > test-location
+
+  Description: do something`);
+  });
+
   test('multiple constructs', () => {
     const app = new core.App({
       policyValidation: [
@@ -215,7 +387,7 @@ ${reset(red(bright('rule-1 (1 occurrences)')))}
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
     - Resource ID: Fake
-    - Locations:
+    - Template Locations:
       > test-location
 
   Description: do something
@@ -247,7 +419,70 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
 \t          │ Library Version: 0.0.0
 \t          │ Location: Run with '--debug' to include location info
     - Resource ID: Fake
-    - Locations:
+    - Template Locations:
+      > test-location
+
+  Description: do another thing`);
+  });
+
+  test('multiple plugins with mixed results', () => {
+    const app = new core.App({
+      policyValidation: [
+        new FakePlugin('plugin1', []),
+        new FakePlugin('plugin2', [{
+          description: 'do another thing',
+          ruleName: 'rule-2',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/stack.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    expect(() => {
+      app.synth();
+    }).toThrow(/Validation failed/);
+
+    const report = consoleErrorMock.mock.calls[0][0];
+    expect(report).toEqual(`Validation Report
+-----------------
+
+(Summary)
+
+╔════════╤═════════╗
+║ Status │ failure ║
+╟────────┼─────────╢
+║ Plugin │ plugin2 ║
+╚════════╧═════════╝
+
+
+(Violations)
+
+${reset(red(bright('rule-2 (1 occurrences)')))}
+
+  Occurrences:
+
+    - Construct Path: Default/Fake
+    - Template Path: /path/to/stack.template.json
+    - Creation Stack:
+\t└──  Default (Default)
+\t     │ Library: @aws-cdk/core.Stack
+\t     │ Library Version: 0.0.0
+\t     │ Location: Run with '--debug' to include location info
+\t     └──  Fake (Default/Fake)
+\t          │ Library: @aws-cdk/core.CfnResource
+\t          │ Library Version: 0.0.0
+\t          │ Location: Run with '--debug' to include location info
+    - Resource ID: Fake
+    - Template Locations:
       > test-location
 
   Description: do another thing`);
@@ -453,7 +688,7 @@ const validationReport = (data: ValidationReportData) => {
     '    - Creation Stack:',
     `${data.creationStack ?? 'Construct trace not available. Rerun with `--debug` to see trace information'}`,
     `    - Resource ID: ${data.resourceLogicalId}`,
-    '    - Locations:',
+    '    - Template Locations:',
     '      > test-location',
     '',
     '  Description: test recommendation',

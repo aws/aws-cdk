@@ -1304,13 +1304,13 @@ For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/
 
 ## Policy Validation
 
-If you or your organization use any policy validation tool, such as
+If you or your organization use (or would like to use) any policy validation tool, such as
 [CloudFormation
 Guard](https://docs.aws.amazon.com/cfn-guard/latest/ug/what-is-guard.html) or
 [OPA](https://www.openpolicyagent.org/), to define constraints on your
-CloudFormation template, you can integrate them with the CDK at synthesis time.
+CloudFormation template, you can incorporate them into the CDK application.
 By using the appropriate plugin, you can make the CDK application check the
-generated CloudFormation template against your policies immediately after
+generated CloudFormation templates against your policies immediately after
 synthesis. If there are any violations, the synthesis will fail and a report
 will be printed to the console.
 
@@ -1321,12 +1321,12 @@ will be printed to the console.
 ### For application developers
 
 To use one or more validation plugins in your application, use the
-`validationPlugins` property of `Stage`:
+`policyValidation` property of `Stage`:
 
 ```ts
 // globally for the entire app (an app is a stage)
 const app = new App({
-  validationPlugins: [
+  policyValidation: [
     // These hypothetical classes implement IValidationPlugin:
     new ThirdPartyPluginX(), 
     new ThirdPartyPluginY(),
@@ -1335,7 +1335,7 @@ const app = new App({
 
 // only apply to a particular stage
 const prodStage = new Stage(app, 'ProdStage', {
-  validationPlugins: [...],
+  policyValidation: [...],
 });
 ```
 
@@ -1351,8 +1351,9 @@ validation.
 > secure to use.
 
 By default, the report will be printed in a human readable format. If you want a
-report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
-via the CLI or passing it directly to the application:
+report in JSON format, enable it using the `@aws-cdk/core:validationReportJson` context 
+via the CLI, passing it directly to the application, or via the
+`cdk.context.json` file:
 
 ```ts
 const app = new App({ 

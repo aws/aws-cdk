@@ -65,23 +65,29 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 }
 
 function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly) {
+  if (!App.isApp(root)) return;
   const hash = computeChecksumOfFolder(outdir);
 
   const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
-  visit(root, 'post', construct => {
+  visitAssemblies(root, 'post', construct => {
     if (Stage.isStage(construct)) {
       for (const plugin of construct.policyValidation) {
         if (!templatePathsByPlugin.has(plugin)) {
           templatePathsByPlugin.set(plugin, []);
         }
-        templatePathsByPlugin.get(plugin)!.push(...assembly.stacks.map(stack => stack.templateFullPath));
+        let assemblyToUse;
+        if (!App.isApp(construct)) {
+          assemblyToUse = assembly.getNestedAssembly(construct.artifactId);
+        } else {
+          assemblyToUse = assembly;
+        }
+        templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacks.map(stack => stack.templateFullPath));
       }
     }
   });
 
   const reports: NamedValidationPluginReport[] = [];
   for (const [plugin, paths] of templatePathsByPlugin.entries()) {
-
     try {
       const report = plugin.validate({ templatePaths: paths });
       reports.push({ ...report, pluginName: plugin.name });
@@ -313,6 +319,24 @@ function validateTree(root: IConstruct) {
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
     throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+  }
+}
+
+/**
+ * Visit the given construct tree in either pre or post order, stopping at Assemblies
+ */
+function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
+  if (order === 'pre') {
+    cb(root);
+  }
+
+  for (const child of root.node.children) {
+    if (!Stage.isStage(child)) { continue; }
+    visit(child, order, cb);
+  }
+
+  if (order === 'post') {
+    cb(root);
   }
 }
 

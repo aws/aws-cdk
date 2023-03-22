@@ -93,8 +93,8 @@ describe('MetadataResource', () => {
     });
     const stack2 = new Stack(stage2, 'Stack2', { stackName: 'stack1' });
 
-    expect(stackAnalytics(stage1, stack1.stackName)).toMatch(/validation.{plugin11,plugin1}/);
-    expect(stackAnalytics(stage2, stack2.stackName)).toMatch(/validation.{plugin12,plugin1}/);
+    expect(stackAnalytics(stage1, stack1.stackName)).toMatch(/policyValidation.{plugin11,plugin1}/);
+    expect(stackAnalytics(stage2, stack2.stackName)).toMatch(/policyValidation.{plugin12,plugin1}/);
   });
 
   function stackAnalytics(stage: Stage = app, stackName: string = 'Stack') {

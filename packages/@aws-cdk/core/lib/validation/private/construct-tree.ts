@@ -1,4 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
+import { App } from '../../app';
 import { CfnResource } from '../../cfn-resource';
 import { TreeMetadata, Node } from '../../private/tree-metadata';
 import { Stack } from '../../stack';
@@ -69,7 +70,11 @@ export class ConstructTree {
   constructor(
     private readonly root: IConstruct,
   ) {
-    this.treeMetadata = this.root.node.tryFindChild('Tree') as TreeMetadata;
+    if (App.isApp(this.root)) {
+      this.treeMetadata = this.root.node.tryFindChild('Tree') as TreeMetadata;
+    } else {
+      this.treeMetadata = App.of(this.root)?.node.tryFindChild('Tree') as TreeMetadata;
+    }
     this._constructByPath.set(this.root.node.path, root);
     // do this once at the start so we don't have to traverse
     // the entire tree everytime we want to find a nested node
