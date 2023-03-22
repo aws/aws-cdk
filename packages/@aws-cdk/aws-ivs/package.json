@@ -40,9 +40,7 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-ivs.ChannelProps",
       "props-physical-name:@aws-cdk/aws-ivs.StreamKeyProps",
-      "props-physical-name:@aws-cdk/aws-ivs.PlaybackKeyPairProps",
       "from-method:@aws-cdk/aws-ivs.StreamKey",
       "from-method:@aws-cdk/aws-ivs.PlaybackKeyPair"
     ]
