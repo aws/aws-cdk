@@ -21,7 +21,6 @@ describe(AppScopedStagingSynthesizer, () => {
 
   beforeEach(() => {
     app = new App({
-      appId: APP_ID,
       defaultStackSynthesizer: new TestAppScopedStagingSynthesizer(),
     });
     stack = new Stack(app, 'Stack', {
@@ -69,7 +68,6 @@ describe(AppScopedStagingSynthesizer, () => {
 
   test('stack template is in the asset manifest - environment tokens', () => {
     const app2 = new App({
-      appId: APP_ID,
       defaultStackSynthesizer: new TestAppScopedStagingSynthesizer(),
     });
     const accountToken = Token.asString('111111111111');
@@ -251,8 +249,8 @@ describe(AppScopedStagingSynthesizer, () => {
 describe('Custom Roles on AppScopedStagingSynthesizer', () => {
   test('Can supply different roles', () => {
     const app = new App({
-      appId: APP_ID,
       defaultStackSynthesizer: new AppScopedStagingSynthesizer({
+        appId: APP_ID,
         bootstrapRoles: {
           cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
           lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
@@ -304,6 +302,7 @@ function last<A>(xs?: A[]): A | undefined {
 class TestAppScopedStagingSynthesizer extends AppScopedStagingSynthesizer {
   public constructor(props: Partial<AppScopedStagingSynthesizerProps> = {}) {
     super({
+      appId: props.appId ?? APP_ID,
       bootstrapRoles: {
         cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
         deploymentActionRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),

@@ -53,6 +53,11 @@ export interface IStagingStack extends IConstruct {
  */
 export interface DefaultStagingStackProps extends StackProps {
   /**
+   * App id
+   */
+  readonly appId: string;
+
+  /**
    * Explicit name for the staging bucket
    *
    * @default - a well-known name unique to this app/env.
@@ -73,6 +78,9 @@ export interface DefaultStagingStackProps extends StackProps {
    */
   readonly dockerAssetPublishingRole?: BootstrapRole;
 
+  /**
+   * Repository lifecycle rules (not fully implemented)
+   */
   readonly repositoryLifecycleRules?: StagingRepoLifecycleRule[];
 }
 
@@ -122,11 +130,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       synthesizer: new BootstraplessSynthesizer(),
     });
 
-    if (scope._appId === undefined) {
-      throw new Error('DefaultStagingStack can only be used on Apps with a user-specified appId, but no appId found.');
-    }
-
-    this.appId = scope._appId;
+    this.appId = props.appId;
     this.dependencyStack = this;
 
     this.stagingBucketName = props.stagingBucketName;

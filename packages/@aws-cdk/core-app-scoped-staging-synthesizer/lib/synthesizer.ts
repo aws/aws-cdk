@@ -59,6 +59,11 @@ export interface BootstrapRoles {
  */
 export interface AppScopedStagingSynthesizerProps {
   /**
+   * App identifier that is unique to the app and used in the resource names of the Staging Stack.
+   */
+  readonly appId: string;
+
+  /**
    * Bring a custom staging stack into the app.
    *
    * @default - default staging stack
@@ -77,7 +82,7 @@ export interface AppScopedStagingSynthesizerProps {
  * App Scoped Staging Stack Synthesizer
  */
 export class AppScopedStagingSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer {
-  constructor(private readonly props: AppScopedStagingSynthesizerProps = {}) {
+  constructor(private readonly props: AppScopedStagingSynthesizerProps) {
     super();
 
     for (const key in props) {
@@ -143,11 +148,13 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   private readonly deploymentActionRoleArn?: string;
   private readonly fileAssetPublishingRole?: BootstrapRole;
   private readonly dockerAssetPublishingRole?: BootstrapRole;
+  private readonly appId: string;
 
-  constructor(private readonly stack: Stack, props: AppScopedStagingSynthesizerProps = {}) {
+  constructor(private readonly stack: Stack, props: AppScopedStagingSynthesizerProps) {
     super();
     super.bind(stack);
 
+    this.appId = props.appId;
     this.lookupRoleArn = props.bootstrapRoles?.lookupRole?.roleArn;
     this.cloudFormationExecutionRoleArn = props.bootstrapRoles?.cloudFormationExecutionRole?.roleArn;
     this.deploymentActionRoleArn = props.bootstrapRoles?.deploymentActionRole?.roleArn;
@@ -166,9 +173,10 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   }
 
   private getCreateStagingStack(app: App, env: Environment): IStagingStack {
-    const stackName = `StagingStack${app._appId}`;
+    const stackName = `StagingStack${this.appId}`;
     const stackId = 'StagingStack';
     const stagingStack = app.node.tryFindChild(stackId) as IStagingStack ?? new DefaultStagingStack(app, stackId, {
+      appId: this.appId,
       env,
       stackName,
       fileAssetPublishingRole: this.fileAssetPublishingRole,
