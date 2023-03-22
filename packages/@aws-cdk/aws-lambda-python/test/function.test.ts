@@ -47,7 +47,7 @@ beforeEach(() => {
 
 test('PythonFunction with defaults', () => {
   new PythonFunction(stack, 'handler', {
-    entry: 'test/lambda-handler',
+    entry: path.join(__dirname, 'lambda-handler'),
     runtime: Runtime.PYTHON_3_8,
   });
 
@@ -62,7 +62,7 @@ test('PythonFunction with defaults', () => {
 
 test('PythonFunction with index in a subdirectory', () => {
   new PythonFunction(stack, 'handler', {
-    entry: 'test/lambda-handler-sub',
+    entry: path.join(__dirname, 'lambda-handler-sub'),
     index: 'inner/custom_index.py',
     handler: 'custom_handler',
     runtime: Runtime.PYTHON_3_8,
@@ -79,7 +79,7 @@ test('PythonFunction with index in a subdirectory', () => {
 
 test('PythonFunction with index in a nested subdirectory', () => {
   new PythonFunction(stack, 'handler', {
-    entry: 'test/lambda-handler-sub-nested',
+    entry: path.join(__dirname, 'lambda-handler-sub-nested'),
     index: 'inner/inner2/custom_index.py',
     handler: 'custom_handler',
     runtime: Runtime.PYTHON_3_8,
@@ -96,7 +96,7 @@ test('PythonFunction with index in a nested subdirectory', () => {
 
 test('throws when index is not py', () => {
   expect(() => new PythonFunction(stack, 'Fn', {
-    entry: 'test/lambda-handler',
+    entry: path.join(__dirname, 'lambda-handler'),
     index: 'index.js',
     runtime: Runtime.PYTHON_3_8,
   })).toThrow(/Only Python \(\.py\) index files are supported/);
@@ -111,21 +111,21 @@ test('throws when entry does not exist', () => {
 
 test('throws with the wrong runtime family', () => {
   expect(() => new PythonFunction(stack, 'handler1', {
-    entry: 'test/lambda-handler',
+    entry: path.join(__dirname, 'lambda-handler'),
     runtime: Runtime.NODEJS_14_X,
   })).toThrow(/Only `PYTHON` runtimes are supported/);
 });
 
 test('allows specifying hash type', () => {
   new PythonFunction(stack, 'source1', {
-    entry: 'test/lambda-handler-nodeps',
+    entry: path.join(__dirname, 'lambda-handler-nodeps'),
     index: 'index.py',
     handler: 'handler',
     runtime: Runtime.PYTHON_3_8,
   });
 
   new PythonFunction(stack, 'source2', {
-    entry: 'test/lambda-handler-nodeps',
+    entry: path.join(__dirname, 'lambda-handler-nodeps'),
     index: 'index.py',
     handler: 'handler',
     runtime: Runtime.PYTHON_3_8,
@@ -133,7 +133,7 @@ test('allows specifying hash type', () => {
   });
 
   new PythonFunction(stack, 'output', {
-    entry: 'test/lambda-handler-nodeps',
+    entry: path.join(__dirname, 'lambda-handler-nodeps'),
     index: 'index.py',
     handler: 'handler',
     runtime: Runtime.PYTHON_3_8,
@@ -141,7 +141,7 @@ test('allows specifying hash type', () => {
   });
 
   new PythonFunction(stack, 'custom', {
-    entry: 'test/lambda-handler-nodeps',
+    entry: path.join(__dirname, 'lambda-handler-nodeps'),
     index: 'index.py',
     handler: 'handler',
     runtime: Runtime.PYTHON_3_8,

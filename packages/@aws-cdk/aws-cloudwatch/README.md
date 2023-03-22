@@ -697,3 +697,18 @@ new cloudwatch.Row(widgetA, widgetB);
 
 You can add a widget after object instantiation with the method
 `addWidget()`.
+
+### Interval duration for dashboard
+
+Interval duration for metrics in dashboard. You can specify `defaultInterval` with
+the relative time(eg. 7 days) as `cdk.Duration.days(7)`.
+
+```ts
+import * as cw from '@aws-cdk/aws-cloudwatch';
+
+const dashboard = new cw.Dashboard(stack, 'Dash', {
+  defaultInterval: cdk.Duration.days(7),
+});
+```
+
+Here, the dashboard would show the metrics for the last 7 days.

@@ -39,8 +39,7 @@ describe('Application', () => {
       description: description,
     });
 
-    Template.fromStack(stack).hasOutput('MyApplicationApplicationManagerUrlB79EF34D', {});
-    expect(application.applicationManagerUrl?.value).toContain('AWS_AppRegistry_Application-testApplication');
+    expect(application.applicationManagerUrl).toContain('AWS_AppRegistry_Application-testApplication');
     Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
       Description: description,
     });
@@ -161,6 +160,31 @@ describe('Application', () => {
       });
     }),
 
+    test('associate new attribute group', () => {
+      application.addAttributeGroup('AttributeGroup', {
+        attributeGroupName: 'AttributeGroupName',
+        attributes: {},
+        description: 'Description for Attribute Group',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
+        Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
+        AttributeGroup: { 'Fn::GetAtt': ['MyApplicationAttributeGroup0BD166B6', 'Id'] },
+      });
+
+      Template.fromStack(stack).templateMatches({
+        Resources: {
+          MyApplicationAttributeGroup0BD166B6: {
+            Type: 'AWS::ServiceCatalogAppRegistry::AttributeGroup',
+            Properties: {
+              Name: 'AttributeGroupName',
+              Attributes: {},
+            },
+          },
+        },
+      });
+    }),
+
     test('duplicate attribute group association are idempotent', () => {
       const attributeGroup = new appreg.AttributeGroup(stack, 'AttributeGroup', {
         attributeGroupName: 'attributeGroupName',
@@ -256,7 +280,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'RAMSharee6e0e560e6f8',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -270,7 +294,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'RAMSharee6e0e560e6f8',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -286,7 +310,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'RAMSharee6e0e560e6f8',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -302,7 +326,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'RAMSharee6e0e560e6f8',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -317,7 +341,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'RAMSharee6e0e560e6f8',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -332,7 +356,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'RAMSharee6e0e560e6f8',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation'],
