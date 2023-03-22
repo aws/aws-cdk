@@ -3,6 +3,14 @@ import * as core from '../../lib';
 import { ConstructTree } from '../../lib/validation/private/construct-tree';
 import { ReportTrace } from '../../lib/validation/private/trace';
 
+beforeEach(() => {
+  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+});
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
 describe('ReportTrace', () => {
   test('trace includes location when CDK_DEBUG=true', () => {
     // GIVEN

@@ -18,6 +18,8 @@ import { IPolicyValidationPlugin } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
+const POLICY_VALIDATION_FILE_PATH = 'policy-validation.json';
+
 /**
  * Options for `synthesize()`
  */
@@ -105,6 +107,10 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
   });
 
   const reports: NamedValidationPluginReport[] = [];
+  if (templatePathsByPlugin.size > 0) {
+    // eslint-disable-next-line no-console
+    console.log('Performing Policy Validations\n');
+  }
   for (const [plugin, paths] of templatePathsByPlugin.entries()) {
     try {
       const report = plugin.validate({ templatePaths: paths });
@@ -124,8 +130,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
     }
   }
 
-  const failed = reports.some(r => !r.success);
-  if (failed) {
+  if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
     const formatJson = FeatureFlags.of(root).isEnabled(cxapi.VALIDATION_REPORT_JSON) ?? false;
@@ -134,14 +139,18 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
       : formatter.formatPrettyPrinted(reports);
 
     if (formatJson) {
-      // eslint-disable-next-line no-console
-      console.log(JSON.stringify(output, undefined, 2));
+      fs.writeFileSync(path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH), JSON.stringify(output, undefined, 2));
     } else {
       // eslint-disable-next-line no-console
       console.error(output);
     }
-
+  }
+  const failed = reports.some(r => !r.success);
+  if (failed) {
     throw new Error('Validation failed. See the validation report above for details');
+  } else {
+    // eslint-disable-next-line no-console
+    console.log('Policy Validation Successful!');
   }
 }
 

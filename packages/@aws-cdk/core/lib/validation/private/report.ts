@@ -112,17 +112,25 @@ export class PolicyValidationReportFormatter {
   public formatPrettyPrinted(reps: NamedValidationPluginReport[]): string {
     const json = this.formatJson(reps);
     const output = [json.title];
-
     output.push('-'.repeat(json.title.length));
+
     json.pluginReports.forEach(plugin => {
       output.push('');
-      output.push('(Summary)');
-      output.push('');
       output.push(table([
-        ['Status', plugin.summary.status],
-        ['Plugin', plugin.summary.pluginName],
-        ...Object.entries(plugin.summary.metadata ?? {}),
-      ]));
+        [`Plugin: ${plugin.summary.pluginName}`],
+        [`Status: ${plugin.summary.status}`],
+      ], {
+        header: { content: 'Plugin Report' },
+        singleLine: true,
+        columns: [{
+          paddingLeft: 3,
+          paddingRight: 3,
+        }],
+      }));
+      if (plugin.summary.metadata) {
+        output.push('');
+        output.push(`Metadata: \n\t${Object.entries(plugin.summary.metadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`);
+      }
 
       if (plugin.violations.length > 0) {
         output.push('');
@@ -162,8 +170,15 @@ export class PolicyValidationReportFormatter {
           output.push(`  Rule Metadata: \n\t${Object.entries(violation.ruleMetadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`);
         }
       });
-
     });
+
+    output.push('');
+    output.push('Policy Validation Report Summary');
+    output.push('');
+    output.push(table([
+      ['Plugin', 'Status'],
+      ...reps.map(rep => [rep.pluginName, rep.success ? 'success' : 'failure']),
+    ], { }));
 
     return output.join(os.EOL);
   }

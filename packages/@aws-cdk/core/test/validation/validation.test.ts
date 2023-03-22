@@ -1,6 +1,8 @@
 /* eslint-disable quote-props */
 import * as fs from 'fs';
+import * as path from 'path';
 import { Construct } from 'constructs';
+import { table } from 'table';
 import * as core from '../../lib';
 import { PolicyValidationPluginReport, PolicyViolation } from '../../lib';
 
@@ -71,6 +73,8 @@ describe('validations', () => {
     const app = new core.App({
       policyValidation: [
         new FakePlugin('test-plugin', []),
+        new FakePlugin('test-plugin2', []),
+        new FakePlugin('test-plugin3', []),
       ],
     });
     const stack = new core.Stack(app);
@@ -83,6 +87,29 @@ describe('validations', () => {
     expect(() => {
       app.synth();
     }).not.toThrow(/Validation failed/);
+    expect(consoleLogMock.mock.calls).toEqual([
+      [
+        expect.stringMatching(/Performing Policy Validations/),
+      ],
+      [
+        expect.stringMatching(/Policy Validation Successful!/),
+      ],
+    ]);
+    expect(consoleErrorMock.mock.calls[0][0]).toEqual(`Validation Report
+-----------------
+
+Policy Validation Report Summary
+
+╔══════════════╤═════════╗
+║ Plugin       │ Status  ║
+╟──────────────┼─────────╢
+║ test-plugin  │ success ║
+╟──────────────┼─────────╢
+║ test-plugin2 │ success ║
+╟──────────────┼─────────╢
+║ test-plugin3 │ success ║
+╚══════════════╧═════════╝
+`);
   });
 
   test('multiple stacks', () => {
@@ -207,14 +234,7 @@ describe('validations', () => {
     expect(report).toEqual(`Validation Report
 -----------------
 
-(Summary)
-
-╔════════╤══════════════╗
-║ Status │ failure      ║
-╟────────┼──────────────╢
-║ Plugin │ test-plugin2 ║
-╚════════╧══════════════╝
-
+${generateTable('test-plugin2', 'failure')}
 
 (Violations)
 
@@ -243,14 +263,7 @@ ${reset(red(bright('test-rule2 (1 occurrences)')))}
 
   Description: do something
 
-(Summary)
-
-╔════════╤══════════════╗
-║ Status │ failure      ║
-╟────────┼──────────────╢
-║ Plugin │ test-plugin4 ║
-╚════════╧══════════════╝
-
+${generateTable('test-plugin4', 'failure')}
 
 (Violations)
 
@@ -279,14 +292,7 @@ ${reset(red(bright('test-rule4 (1 occurrences)')))}
 
   Description: do something
 
-(Summary)
-
-╔════════╤══════════════╗
-║ Status │ failure      ║
-╟────────┼──────────────╢
-║ Plugin │ test-plugin3 ║
-╚════════╧══════════════╝
-
+${generateTable('test-plugin3', 'failure')}
 
 (Violations)
 
@@ -315,14 +321,7 @@ ${reset(red(bright('test-rule3 (1 occurrences)')))}
 
   Description: do something
 
-(Summary)
-
-╔════════╤══════════════╗
-║ Status │ failure      ║
-╟────────┼──────────────╢
-║ Plugin │ test-plugin1 ║
-╚════════╧══════════════╝
-
+${generateTable('test-plugin1', 'failure')}
 
 (Violations)
 
@@ -349,7 +348,22 @@ ${reset(red(bright('test-rule1 (1 occurrences)')))}
     - Template Locations:
       > test-location
 
-  Description: do something`);
+  Description: do something
+
+Policy Validation Report Summary
+
+╔══════════════╤═════════╗
+║ Plugin       │ Status  ║
+╟──────────────┼─────────╢
+║ test-plugin2 │ failure ║
+╟──────────────┼─────────╢
+║ test-plugin4 │ failure ║
+╟──────────────┼─────────╢
+║ test-plugin3 │ failure ║
+╟──────────────┼─────────╢
+║ test-plugin1 │ failure ║
+╚══════════════╧═════════╝
+`);
   });
 
   test('multiple stages, multiple plugins', () => {
@@ -532,14 +546,7 @@ ${reset(red(bright('test-rule1 (1 occurrences)')))}
     expect(report).toEqual(`Validation Report
 -----------------
 
-(Summary)
-
-╔════════╤═════════╗
-║ Status │ failure ║
-╟────────┼─────────╢
-║ Plugin │ plugin1 ║
-╚════════╧═════════╝
-
+${generateTable('plugin1', 'failure')}
 
 (Violations)
 
@@ -564,14 +571,7 @@ ${reset(red(bright('rule-1 (1 occurrences)')))}
 
   Description: do something
 
-(Summary)
-
-╔════════╤═════════╗
-║ Status │ failure ║
-╟────────┼─────────╢
-║ Plugin │ plugin2 ║
-╚════════╧═════════╝
-
+${generateTable('plugin2', 'failure')}
 
 (Violations)
 
@@ -594,7 +594,15 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     - Template Locations:
       > test-location
 
-  Description: do another thing`);
+  Description: do another thing
+
+Policy Validation Report Summary
+
+${table([
+    ['Plugin', 'Status'],
+    ['plugin1', 'failure'],
+    ['plugin2', 'failure'],
+  ], { })}`);
   });
 
   test('multiple plugins with mixed results', () => {
@@ -627,14 +635,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     expect(report).toEqual(`Validation Report
 -----------------
 
-(Summary)
-
-╔════════╤═════════╗
-║ Status │ failure ║
-╟────────┼─────────╢
-║ Plugin │ plugin2 ║
-╚════════╧═════════╝
-
+${generateTable('plugin2', 'failure')}
 
 (Violations)
 
@@ -657,7 +658,15 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     - Template Locations:
       > test-location
 
-  Description: do another thing`);
+  Description: do another thing
+
+Policy Validation Report Summary
+
+${table([
+    ['Plugin', 'Status'],
+    ['plugin1', 'success'],
+    ['plugin2', 'failure'],
+  ])}`);
   });
 
   test('plugin throws an error', () => {
@@ -692,8 +701,8 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
     }).toThrow(/Validation failed/);
 
     const report = consoleErrorMock.mock.calls[0][0];
-    expect(report).toContain('║ error  │ Validation plugin \'broken-plugin\' failed: Something went wrong ║');
-    expect(report).toContain('║ Plugin │ test-plugin ║');
+    expect(report).toContain('error: Validation plugin \'broken-plugin\' failed: Something went wrong');
+    expect(report).toContain(generateTable('test-plugin', 'failure'));
   });
 
   test('plugin tries to modify a template', () => {
@@ -743,9 +752,7 @@ ${reset(red(bright('rule-2 (1 occurrences)')))}
       app.synth();
     }).toThrow(/Validation failed/);
 
-    const report = consoleLogMock.mock.calls[0][0];
-    expect(consoleLogMock.mock.calls.length).toEqual(1);
-    expect(consoleLogMock.mock.calls[0].length).toEqual(1);
+    const report = fs.readFileSync(path.join(app.outdir, 'policy-validation.json')).toString('utf-8');
     expect(JSON.parse(report)).toEqual(expect.objectContaining({
       title: 'Validation Report',
       pluginReports: [
@@ -842,19 +849,31 @@ interface ValidationReportData {
   ruleMetadata?: { [key: string]: string };
 }
 
+function generateTable(pluginName: string, status: string): string {
+  return table([
+    [`Plugin: ${pluginName}`],
+    [`Status: ${status}`],
+  ], {
+    header: { content: 'Plugin Report' },
+    singleLine: true,
+    columns: [{
+      paddingLeft: 3,
+      paddingRight: 3,
+    }],
+  });
+}
+
 const validationReport = (data: ValidationReportData) => {
   const title = reset(red(bright(`${data.title} (1 occurrences)`)));
   return [
     'Validation Report',
     '-----------------',
     '',
-    '(Summary)',
-    '',
-    '╔════════╤═════════════╗',
-    '║ Status │ failure     ║',
-    '╟────────┼─────────────╢',
-    '║ Plugin │ test-plugin ║',
-    '╚════════╧═════════════╝',
+    '╔═════════════════════════╗',
+    '║      Plugin Report      ║',
+    '║   Plugin: test-plugin   ║',
+    '║   Status: failure       ║',
+    '╚═════════════════════════╝',
     '',
     '',
     '(Violations)',
@@ -874,6 +893,15 @@ const validationReport = (data: ValidationReportData) => {
     '',
     '  Description: test recommendation',
     ...data.ruleMetadata ? [`  Rule Metadata: \n\t${Object.entries(data.ruleMetadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`] : [],
+    '',
+    'Policy Validation Report Summary',
+    '',
+    '╔═════════════╤═════════╗',
+    '║ Plugin      │ Status  ║',
+    '╟─────────────┼─────────╢',
+    '║ test-plugin │ failure ║',
+    '╚═════════════╧═════════╝',
+    '',
 
   ].join('\n');
 };
