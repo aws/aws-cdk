@@ -118,13 +118,6 @@ export interface AppProps {
    * @default - A `DefaultStackSynthesizer` with default settings
    */
   readonly defaultStackSynthesizer?: IReusableStackSynthesizer;
-
-  /**
-   * A unique identifier for the app.
-   *
-   * @default - no identifier
-   */
-  readonly appId?: string;
 }
 
 /**
@@ -158,13 +151,6 @@ export class App extends Stage {
    * @internal
    */
   public readonly _treeMetadata: boolean;
-
-  /**
-   * Id of the app
-   *
-   * @internal
-   */
-  public readonly _appId?: string;
 
   /**
    * Initializes a CDK application.
