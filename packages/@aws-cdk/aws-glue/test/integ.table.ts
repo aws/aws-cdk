@@ -95,6 +95,14 @@ new glue.Table(stack, 'MyPartitionFilteredTable', {
   enablePartitionFiltering: true,
 });
 
+new glue.Table(stack, 'MyTableWithCustomLocation', {
+  database,
+  tableName: 'custom_location_table',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+  externalDataLocation: 'default_db.public.test',
+});
+
 const user = new iam.User(stack, 'MyUser');
 csvTable.grantReadWrite(user);
 encryptedTable.grantReadWrite(user);

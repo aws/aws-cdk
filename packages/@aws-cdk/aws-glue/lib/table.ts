@@ -191,6 +191,15 @@ export interface TableProps {
    * @default - No connection
    */
   readonly connection?: IConnection;
+
+  /**
+   * The data source location of the glue table, (e.g. `default_db.public.example` for Redshift).
+   *
+   * If this property is set, it will override both `bucket` and `s3Prefix`.
+   *
+   * @default - No outsourced data source location
+   */
+  readonly externalDataLocation?: string;
 }
 
 /**
@@ -236,7 +245,7 @@ export class Table extends Resource implements ITable {
   /**
    * The type of encryption enabled for the table.
    */
-  public readonly encryption: TableEncryption;
+  public readonly encryption?: TableEncryption;
 
   /**
    * The KMS key used to secure the data if `encryption` is set to `CSE-KMS` or `SSE-KMS`. Otherwise, `undefined`.
@@ -246,12 +255,12 @@ export class Table extends Resource implements ITable {
   /**
    * S3 bucket in which the table's data resides.
    */
-  public readonly bucket: s3.IBucket;
+  public readonly bucket?: s3.IBucket;
 
   /**
    * S3 Key Prefix under which this table's files are stored in S3.
    */
-  public readonly s3Prefix: string;
+  public readonly s3Prefix?: string;
 
   /**
    * Name of this table.
@@ -289,6 +298,11 @@ export class Table extends Resource implements ITable {
   public readonly connection?: IConnection;
 
   /**
+   * The location of the tables' data.
+   */
+  readonly location?: string;
+
+  /**
    * Partition indexes must be created one at a time. To avoid
    * race conditions, we store the resource and add dependencies
    * each time a new partition index is created.
@@ -305,18 +319,23 @@ export class Table extends Resource implements ITable {
 
     this.database = props.database;
     this.dataFormat = props.dataFormat;
-    this.s3Prefix = props.s3Prefix ?? '';
+    this.connection = props.connection;
 
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
 
     this.compressed = props.compressed ?? false;
-    const { bucket, encryption, encryptionKey } = createBucket(this, props);
-    this.bucket = bucket;
-    this.encryption = encryption;
-    this.encryptionKey = encryptionKey;
-    this.connection = props.connection;
+    if (props.externalDataLocation) {
+      this.location = props.externalDataLocation;
+    } else {
+      this.s3Prefix = props.s3Prefix ?? '';
+      const { bucket, encryption, encryptionKey } = createBucket(this, props);
+      this.bucket = bucket;
+      this.encryption = encryption;
+      this.encryptionKey = encryptionKey;
+      this.location = `s3://${bucket.bucketName}/${this.s3Prefix}`;
+    }
 
     const tableResource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,
@@ -336,7 +355,7 @@ export class Table extends Resource implements ITable {
           'connectionName': props.connection?.connectionName,
         },
         storageDescriptor: {
-          location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
+          location: this.location,
           compressed: this.compressed,
           storedAsSubDirectories: props.storedAsSubDirectories ?? false,
           columns: renderColumns(props.columns),
@@ -438,7 +457,8 @@ export class Table extends Resource implements ITable {
    *
    * @param grantee the principal
    */
-  public grantRead(grantee: iam.IGrantable): iam.Grant {
+  public grantRead(grantee: iam.IGrantable): iam.Grant | undefined {
+    if (!this.bucket) return;
     const ret = this.grant(grantee, readPermissions);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
     this.bucket.grantRead(grantee, this.getS3PrefixForGrant());
@@ -450,7 +470,8 @@ export class Table extends Resource implements ITable {
    *
    * @param grantee the principal
    */
-  public grantWrite(grantee: iam.IGrantable): iam.Grant {
+  public grantWrite(grantee: iam.IGrantable): iam.Grant | undefined {
+    if (!this.bucket) return;
     const ret = this.grant(grantee, writePermissions);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
     this.bucket.grantWrite(grantee, this.getS3PrefixForGrant());
@@ -462,7 +483,8 @@ export class Table extends Resource implements ITable {
    *
    * @param grantee the principal
    */
-  public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
+  public grantReadWrite(grantee: iam.IGrantable): iam.Grant | undefined {
+    if (!this.bucket) return;
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
     this.bucket.grantReadWrite(grantee, this.getS3PrefixForGrant());
