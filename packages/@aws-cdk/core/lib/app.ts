@@ -173,8 +173,6 @@ export class App extends Stage {
       this.node.setContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER, props.defaultStackSynthesizer);
     }
 
-    this._appId = props.appId;
-
     const analyticsReporting = props.analyticsReporting ?? props.runtimeInfo;
 
     if (analyticsReporting !== undefined) {
