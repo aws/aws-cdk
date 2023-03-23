@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.198.0](https://github.com/aws/aws-cdk/compare/v1.197.0...v1.198.0) (2023-03-22)
+
+
+### Bug Fixes
+
+* **WAFv2:** add patch to revert struct names ([#24703](https://github.com/aws/aws-cdk/issues/24703)) ([e03d8b8](https://github.com/aws/aws-cdk/commit/e03d8b882c612b61760a3bf712fcd16f1de7220b)), closes [/github.com/aws/aws-cdk/commit/affe040c8443be074822254d1e75a28b264cd801#diff-827a2fd012e049c7ccedffa0360c12e7d967a173f36b8150de73ef6adc42ee4cL175-L357](https://github.com/aws//github.com/aws/aws-cdk/commit/affe040c8443be074822254d1e75a28b264cd801/issues/diff-827a2fd012e049c7ccedffa0360c12e7d967a173f36b8150de73ef6adc42ee4cL175-L357)
+
 ## [1.197.0](https://github.com/aws/aws-cdk/compare/v1.196.0...v1.197.0) (2023-03-14)
 
 ## [1.196.0](https://github.com/aws/aws-cdk/compare/v1.195.0...v1.196.0) (2023-03-08)
