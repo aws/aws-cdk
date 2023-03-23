@@ -241,9 +241,14 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
        },
-       "/74653439b9519529c1fb8a39798512658c60ee855257c9fb246e87b08ebe14c1.json"
+       "/f4e67f8a6a717c5dd8a20be0c2dcbfa4809c307f3ec3513be25001d192773b12.json"
       ]
      ]
+    },
+    "Parameters": {
+     "referencetocdkdynamodbglobal20191121TableB640876BRef": {
+      "Ref": "TableCD117FA1"
+     }
     }
    },
    "UpdateReplacePolicy": "Delete",
