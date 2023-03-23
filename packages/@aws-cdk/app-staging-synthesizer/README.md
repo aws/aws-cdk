@@ -88,7 +88,7 @@ Staging Stack to store its resources. To use this kind of synthesizer, use
 
 ```ts
 import { App } from 'aws-cdk-lib';
-import { AppStagingSynthesizer } from '@aws-cdk/core-app-scoped-staging-synthesizer';
+import { AppStagingSynthesizer } from '@aws-cdk/app-staging-synthesizer';
 
 const app = new App({
   defaultSynthesizer: AppStagingSynthesizer.stackPerEnv({
@@ -105,13 +105,20 @@ is deployed to.
 
 ```ts
 import { App } from 'aws-cdk-lib';
-import { AppStagingSynthesizer } from '@aws-cdk/core-app-scoped-staging-synthesizer';
+import { AppStagingSynthesizer } from '@aws-cdk/app-staging-synthesizer';
 
 const app = new App({
   defaultSynthesizer: AppStagingSynthesizer.customFactory({
-    createStack() {
-      return new CustomStagingStack({ appId: 'my-app-id' }),
+    stagingStackFactory: {
+      stagingStackFactory(boundStack: Stack) {
+        const app = App.of(boundStack);
+        if (!App.isApp(app)) {
+          throw new Error(`Stack ${boundStack.stackName} must be part of an App`);
+        }
+        return new CustomStagingStack(app, 'StagingStack', { appId: 'my-app-id' }),
+      },
     },
+    oncePerEnv: true, // by default
   }),
 });
 ```
@@ -124,7 +131,7 @@ If you need to pass in an existing stack as the Staging Stack to the CDK App, us
 
 ```ts
 import { App, Stack } from 'aws-cdk-lib';
-import { AppStagingSynthesizer, IStagingStack } from '@aws-cdk/core-app-scoped-staging-synthesizer';
+import { AppStagingSynthesizer, IStagingStack } from '@aws-cdk/app-staging-synthesizer';
 
 class CustomStagingStack implements IStagingStack {
   // ...
@@ -148,7 +155,7 @@ used to upload the asset to s3.
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
-import { AppStagingSynthesizer } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
+import { AppStagingSynthesizer } from 'aws-cdk-lib/app-staging-synthesizer';
 
 const app = new App({
   defaultSynthesizer: new AppStagingSynthesizer.stackPerEnv({appId: 'my-app-id'}),
@@ -176,7 +183,7 @@ if all you need is to supply custom roles (and not change anything else in the `
 
 ```ts
 import { App } from 'aws-cdk-lib';
-import { AppStagingSynthesizer, BootstrapRole } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
+import { AppStagingSynthesizer, BootstrapRole } from 'aws-cdk-lib/app-staging-synthesizer';
 
 const app = new App({
   defaultSynthesizer: new AppStagingSynthesizer.stackFromEnv({

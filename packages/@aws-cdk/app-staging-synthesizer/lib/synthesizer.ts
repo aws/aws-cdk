@@ -1,12 +1,12 @@
 import {
   App,
-  Arn,
   AssetManifestBuilder,
+  BOOTSTRAP_QUALIFIER_CONTEXT,
   DockerImageAssetLocation,
   DockerImageAssetSource,
   FileAssetLocation,
   FileAssetSource,
-  IBoundStackSynthesizer,
+  IBoundStackSynthesizer as IBoundAppStagingSynthesizer,
   IReusableStackSynthesizer,
   ISynthesisSession,
   Stack,
@@ -17,32 +17,15 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
 
 export class BootstrapRole {
-  // public abstract arn(stack: Stack) {
-  //   // stack.formatArn
-  // }
-  public static default() {
-    return new BootstrapRole('default');
+  public static CLI_CREDENTIALS() {
+    return new BootstrapRole(undefined);
   }
 
   public static fromRoleArn(arn: string) {
     return new BootstrapRole(arn);
   }
 
-  public static fromRoleName(name: string) {
-    // wont work
-    const arn = Arn.format({
-      resource: 'role',
-      service: 'iam',
-      resourceName: name,
-    });
-    return new BootstrapRole(arn);
-  }
-
-  private constructor(public readonly roleArn: string) {}
-
-  public get roleName() {
-    return this.roleArn.split('/')[1];
-  }
+  private constructor(public readonly roleArn: string | undefined) {}
 }
 
 export interface BootstrapRoles {
@@ -79,6 +62,16 @@ export interface StackPerEnvProps {
    * @default - no custom roles
    */
   readonly bootstrapRoles?: BootstrapRoles;
+
+  /**
+   * Qualifier to disambiguate multiple environments in the same account
+   *
+   * You can use this and leave the other naming properties empty if you have deployed
+   * the bootstrap environment with standard names but only different qualifiers.
+   *
+   * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DEFAULT_QUALIFIER`
+   */
+  readonly qualifier?: string;
 }
 
 /**
@@ -121,6 +114,16 @@ interface AppStagingSynthesizerProps {
    * @default - no custom roles
    */
   readonly bootstrapRoles?: BootstrapRoles;
+
+  /**
+   * Qualifier to disambiguate multiple environments in the same account
+   *
+   * You can use this and leave the other naming properties empty if you have deployed
+   * the bootstrap environment with standard names but only different qualifiers.
+   *
+   * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DEFAULT_QUALIFIER`
+   */
+  readonly qualifier?: string;
 }
 
 /**
@@ -137,7 +140,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
     function validateNoToken<A extends keyof StackPerEnvProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
-        throw new Error(`AppScopedStagingSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
+        throw new Error(`AppStagingSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
           '${Qualifier}',
           cxapi.EnvironmentPlaceholders.CURRENT_REGION,
           cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
@@ -190,8 +193,8 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
   /**
    * Returns a version of the synthesizer bound to a stack.
    */
-  public reusableBind(stack: Stack): IBoundStackSynthesizer {
-    return new BoundStagingStackSynthesizer(stack, this.props);
+  public reusableBind(stack: Stack): IBoundAppStagingSynthesizer {
+    return new BoundAppStagingSynthesizer(stack, this.props);
   }
 
   /**
@@ -223,22 +226,57 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
   }
 }
 
-class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundStackSynthesizer {
+class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppStagingSynthesizer {
+  /**
+   * Default ARN qualifier
+   */
+  public static readonly DEFAULT_QUALIFIER = 'hnb659fds';
+
+  /**
+   * Default CloudFormation role ARN.
+   */
+  public static readonly DEFAULT_CLOUDFORMATION_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}';
+
+  /**
+   * Default deploy role ARN.
+   */
+  public static readonly DEFAULT_DEPLOY_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}';
+
+  /**
+   * Default lookup role ARN for missing values.
+   */
+  public static readonly DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
+
   private stagingStack: IStagingStack;
   private assetManifest = new AssetManifestBuilder();
   private readonly lookupRoleArn?: string;
   private readonly cloudFormationExecutionRoleArn?: string;
   private readonly deploymentActionRoleArn?: string;
+  private readonly qualifier: string;
 
   constructor(stack: Stack, props: AppStagingSynthesizerProps) {
     super();
     super.bind(stack);
 
-    this.lookupRoleArn = props.bootstrapRoles?.lookupRole?.roleArn;
-    this.cloudFormationExecutionRoleArn = props.bootstrapRoles?.cloudFormationExecutionRole?.roleArn;
-    this.deploymentActionRoleArn = props.bootstrapRoles?.deploymentActionRole?.roleArn;
+    this.qualifier = props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? BoundAppStagingSynthesizer.DEFAULT_QUALIFIER;
+
+    // Roles are implemented this way because roleArn could be undefined, signifying that we are
+    // to use cli credentials instead.
+    this.lookupRoleArn = props.bootstrapRoles?.lookupRole ?
+      props.bootstrapRoles.lookupRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN;
+    this.cloudFormationExecutionRoleArn = props.bootstrapRoles?.cloudFormationExecutionRole ?
+      props.bootstrapRoles.cloudFormationExecutionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN;
+    this.deploymentActionRoleArn = props.bootstrapRoles?.deploymentActionRole ?
+      props.bootstrapRoles.deploymentActionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN;
 
     this.stagingStack = props.stagingStackFactory.stagingStackFactory(stack);
+  }
+
+  /**
+   * The qualifier used to bootstrap this stack
+   */
+  public get bootstrapQualifier(): string | undefined {
+    return this.qualifier;
   }
 
   public synthesize(session: ISynthesisSession): void {
