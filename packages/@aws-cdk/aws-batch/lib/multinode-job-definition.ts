@@ -16,17 +16,18 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
   readonly containers: MultiNodeContainer[];
 
   /**
+   * The instance type that this job definition will run
+   */
+  readonly instanceType: ec2.InstanceType;
+
+  /**
    * The index of the main node in this job.
    * The main node is responsible for orchestration.
    *
    * @default 0
    */
-  readonly mainNode: number;
+  readonly mainNode?: number;
 
-  /**
-   * The instance type that this job definition will run
-   */
-  readonly instanceType: ec2.InstanceType;
 }
 
 /**
@@ -67,7 +68,7 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
    *
    * @default 0
    */
-  readonly mainNode: number;
+  readonly mainNode?: number;
 
   /**
    * The instance type that this job definition
@@ -78,8 +79,8 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
 
 export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiNodeJobDefinition {
   readonly containers: MultiNodeContainer[];
-  readonly mainNode: number;
   readonly instanceType: ec2.InstanceType;
+  readonly mainNode?: number;
 
   constructor(scope: Construct, id: string, props: MultiNodeJobDefinitionProps) {
     super(scope, id, props);
@@ -92,7 +93,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
       ...this.resourceProps,
       type: 'multinode',
       nodeProperties: {
-        mainNode: this.mainNode,
+        mainNode: this.mainNode ?? 0,
         nodeRangeProperties: Lazy.any({
           produce: () => this.containers.map((container) => ({
             targetNodes: container.startNode + ':' + container.endNode,

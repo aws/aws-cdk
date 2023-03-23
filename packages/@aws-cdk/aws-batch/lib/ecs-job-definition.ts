@@ -1,4 +1,3 @@
-import * as ecs from '@aws-cdk/aws-ecs';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
@@ -28,7 +27,6 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
 
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
   readonly containerDefinition?: IEcsContainerDefinition
-  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 
   constructor(scope: Construct, id: string, props?: EcsJobDefinitionProps) {
     super(scope, id, props);
