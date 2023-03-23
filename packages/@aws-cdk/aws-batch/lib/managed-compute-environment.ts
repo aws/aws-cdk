@@ -505,7 +505,14 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
-          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
+          produce: () => {
+            const instances = renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses);
+            if (instances.length === 0) {
+              throw new Error('oh no! The list is empty!');
+            }
+
+            return instances;
+          },
         }),
         type: this.spot ? 'SPOT' : 'EC2',
         spotIamFleetRole: this.spotFleetRole?.roleArn,
@@ -781,7 +788,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
     if (this.allocationStrategy === AllocationStrategy.BEST_FIT) {
-      throw new Error(`ManagedEc2EksComputeEnvironment '${id}' invalid allocation strategy 'AllocationStrategy.BEST_FIT'`);
+      throw new Error(`ManagedEc2EksComputeEnvironment '${id}' uses invalid allocation strategy 'AllocationStrategy.BEST_FIT'`);
     }
     this.spotBidPercentage = props.spotBidPercentage;
     this.spotFleetRole = props.spotFleetRole ?? (this.spot ? createSpotFleetRole(this) : undefined);
