@@ -20,8 +20,8 @@ async function rebootClusterIfRequired(clusterId: string, parameterGroupName: st
     if (['pending-reboot', 'apply-deferred', 'apply-error'].includes(status)) {
       try {
         await redshift.rebootCluster({ ClusterIdentifier: clusterId }).promise();
-      } catch (err) {
-        if ((err as any).code === 'InvalidClusterState') {
+      } catch (err: any) {
+        if (err.code === 'InvalidClusterState') {
           return await executeActionForStatus(status, 30000);
         } else {
           throw err;

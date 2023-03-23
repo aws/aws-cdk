@@ -602,3 +602,26 @@ test('cause replacement from s3 asset in userdata', () => {
     }),
   }));
 });
+
+test('ssm permissions adds right managed policy', () => {
+  // WHEN
+  new Instance(stack, 'InstanceOne', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    ssmSessionPermissions: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':iam::aws:policy/AmazonSSMManagedInstanceCore',
+        ]],
+      },
+    ],
+  });
+});
+
