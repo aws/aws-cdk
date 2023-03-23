@@ -6,7 +6,7 @@ import { AppScopedStagingSynthesizer } from '../lib';
 const app = new App();
 
 const stack = new Stack(app, 'app-scoped-staging-test', {
-  synthesizer: new AppScopedStagingSynthesizer({ appId: 'app-id' }),
+  synthesizer: AppScopedStagingSynthesizer.stackPerEnv({ appId: 'app-id' }),
   env: {
     account: '489318732371',
     region: 'us-east-2',

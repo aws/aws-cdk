@@ -4,7 +4,6 @@ import {
   AssetManifestBuilder,
   DockerImageAssetLocation,
   DockerImageAssetSource,
-  Environment,
   FileAssetLocation,
   FileAssetSource,
   IBoundStackSynthesizer,
@@ -50,28 +49,74 @@ export interface BootstrapRoles {
   readonly cloudFormationExecutionRole?: BootstrapRole;
   readonly deploymentActionRole?: BootstrapRole;
   readonly lookupRole?: BootstrapRole;
+}
+
+export interface StagingRoles {
   readonly fileAssetPublishingRole?: BootstrapRole;
   readonly dockerAssetPublishingRole?: BootstrapRole;
 }
 
 /**
- * New stack synthesizer properties
+ * Properties for stackPerEnv static method
  */
-export interface AppScopedStagingSynthesizerProps {
+export interface StackPerEnvProps {
   /**
    * App identifier that is unique to the app and used in the resource names of the Staging Stack.
    */
   readonly appId: string;
 
   /**
-   * Bring a custom staging stack into the app.
+   * Custom roles to bring into the staging stack.
    *
-   * @default - default staging stack
+   * @default - no custom roles
    */
-  readonly stagingStack?: IStagingStack;
+  readonly stagingRoles?: StagingRoles;
 
   /**
-   * Custom roles
+   * Custom bootstrap roles that have permissions to interact with CloudFormation
+   * on your behalf.
+   *
+   * @default - no custom roles
+   */
+  readonly bootstrapRoles?: BootstrapRoles;
+}
+
+/**
+ * Staging Stack Factory interface.
+ *
+ * The function included in this class will be called by the synthesizer
+ * to create or reference an IStagingStack that has the necessary
+ * staging resources for the Stack.
+ */
+export interface IStagingStackFactory {
+  stagingStackFactory(boundStack: Stack): IStagingStack;
+}
+
+/**
+ * Properties for customFactory static method
+ */
+export interface CustomFactoryProps extends AppScopedStagingSynthesizerProps {
+  /**
+   * Include rules that create a new Staging Stack per environment.
+   *
+   * @default true
+   */
+  oncePerEnv: boolean;
+}
+
+/**
+ * Internal properties for AppScopedStagingSynthesizer
+ */
+interface AppScopedStagingSynthesizerProps {
+  /**
+   * A factory method that creates an IStagingStack when given the stack the
+   * synthesizer is binding.
+   */
+  readonly stagingStackFactory: IStagingStackFactory;
+
+  /**
+   * Custom bootstrap roles that have permissions to interact with CloudFormation
+   * on your behalf.
    *
    * @default - no custom roles
    */
@@ -82,16 +127,14 @@ export interface AppScopedStagingSynthesizerProps {
  * App Scoped Staging Stack Synthesizer
  */
 export class AppScopedStagingSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer {
-  constructor(private readonly props: AppScopedStagingSynthesizerProps) {
-    super();
-
+  public static stackPerEnv(props: StackPerEnvProps) {
     for (const key in props) {
       if (props.hasOwnProperty(key)) {
-        validateNoToken(key as keyof AppScopedStagingSynthesizerProps);
+        validateNoToken(key as keyof StackPerEnvProps);
       }
     }
 
-    function validateNoToken<A extends keyof AppScopedStagingSynthesizerProps>(key: A) {
+    function validateNoToken<A extends keyof StackPerEnvProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
         throw new Error(`AppScopedStagingSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
@@ -102,6 +145,46 @@ export class AppScopedStagingSynthesizer extends StackSynthesizer implements IRe
         ].join(', '));
       }
     }
+
+    return new AppScopedStagingSynthesizer({
+      bootstrapRoles: props.bootstrapRoles,
+      stagingStackFactory: {
+        stagingStackFactory(boundStack: Stack) {
+          const app = App.of(boundStack);
+          if (!App.isApp(app)) {
+            throw new Error(`Stack ${boundStack.stackName} must be part of an App`);
+          }
+
+          let stackId = 'StagingStack';
+          if (!Token.isUnresolved(boundStack.account) && !Token.isUnresolved(boundStack.region)) {
+            stackId = stackId + boundStack.account + boundStack.region;
+          }
+
+          const stackName = `StagingStack${props.appId}`;
+          const stagingStack = app.node.tryFindChild(stackId) as IStagingStack ?? new DefaultStagingStack(app, stackId, {
+            appId: props.appId,
+            env: {
+              account: boundStack.account,
+              region: boundStack.region,
+            },
+            stackName,
+            fileAssetPublishingRole: props.stagingRoles?.fileAssetPublishingRole,
+            dockerAssetPublishingRole: props.stagingRoles?.dockerAssetPublishingRole,
+          });
+          boundStack.addDependency(stagingStack.dependencyStack, 'stack depends on the staging stack for staging resources');
+
+          return stagingStack;
+        },
+      },
+    });
+  }
+
+  public static customFactory(props: CustomFactoryProps) {
+    return new AppScopedStagingSynthesizer(props);
+  }
+
+  private constructor(private readonly props: AppScopedStagingSynthesizerProps) {
+    super();
   }
 
   /**
@@ -146,45 +229,16 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   private readonly lookupRoleArn?: string;
   private readonly cloudFormationExecutionRoleArn?: string;
   private readonly deploymentActionRoleArn?: string;
-  private readonly fileAssetPublishingRole?: BootstrapRole;
-  private readonly dockerAssetPublishingRole?: BootstrapRole;
-  private readonly appId: string;
 
-  constructor(private readonly stack: Stack, props: AppScopedStagingSynthesizerProps) {
+  constructor(stack: Stack, props: AppScopedStagingSynthesizerProps) {
     super();
     super.bind(stack);
 
-    this.appId = props.appId;
     this.lookupRoleArn = props.bootstrapRoles?.lookupRole?.roleArn;
     this.cloudFormationExecutionRoleArn = props.bootstrapRoles?.cloudFormationExecutionRole?.roleArn;
     this.deploymentActionRoleArn = props.bootstrapRoles?.deploymentActionRole?.roleArn;
-    this.fileAssetPublishingRole = props.bootstrapRoles?.fileAssetPublishingRole;
-    this.dockerAssetPublishingRole = props.bootstrapRoles?.dockerAssetPublishingRole;
 
-    const app = App.of(stack);
-    if (!App.isApp(app)) {
-      throw new Error(`Stack ${stack.stackName} must be part of an App`);
-    }
-
-    this.stagingStack = props.stagingStack ?? this.getCreateStagingStack(app, {
-      account: stack.account,
-      region: stack.region,
-    });
-  }
-
-  private getCreateStagingStack(app: App, env: Environment): IStagingStack {
-    const stackName = `StagingStack${this.appId}`;
-    const stackId = 'StagingStack';
-    const stagingStack = app.node.tryFindChild(stackId) as IStagingStack ?? new DefaultStagingStack(app, stackId, {
-      appId: this.appId,
-      env,
-      stackName,
-      fileAssetPublishingRole: this.fileAssetPublishingRole,
-      dockerAssetPublishingRole: this.dockerAssetPublishingRole,
-    });
-    this.stack.addDependency(stagingStack.dependencyStack, 'reason');
-
-    return stagingStack;
+    this.stagingStack = props.stagingStackFactory.stagingStackFactory(stack);
   }
 
   public synthesize(session: ISynthesisSession): void {

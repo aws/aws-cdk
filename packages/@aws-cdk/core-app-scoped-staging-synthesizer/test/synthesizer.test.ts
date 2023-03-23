@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App, Stack, CfnResource, FileAssetPackaging, Aws, FileAssetSource, DockerImageAssetSource, Token } from '@aws-cdk/core';
+import { App, Stack, CfnResource, FileAssetPackaging, Token } from '@aws-cdk/core';
 import { evaluateCFN } from '@aws-cdk/core/test/evaluate-cfn';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AppScopedStagingSynthesizer, AppScopedStagingSynthesizerProps, BootstrapRole, DockerAssetInfo, FileAssetInfo, IStagingStack } from '../lib';
+import { AppScopedStagingSynthesizer, BootstrapRole, StackPerEnvProps } from '../lib';
 
 const CFN_CONTEXT = {
   'AWS::Region': 'the_region',
@@ -21,7 +21,7 @@ describe(AppScopedStagingSynthesizer, () => {
 
   beforeEach(() => {
     app = new App({
-      defaultStackSynthesizer: new TestAppScopedStagingSynthesizer(),
+      defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv(),
     });
     stack = new Stack(app, 'Stack', {
       env: {
@@ -60,7 +60,7 @@ describe(AppScopedStagingSynthesizer, () => {
           bucketName: `cdk-000000000000-us-east-1-${APP_ID.toLocaleLowerCase()}`,
           objectKey: templateObjectKey,
           region: 'us-east-1',
-          assumeRoleArn: `arn:${Aws.PARTITION}:iam::000000000000:role/cdk-file-publishing-role-us-east-1-${APP_ID}`,
+          assumeRoleArn: `arn:\${AWS::Partition}:iam::000000000000:role/cdk-file-publishing-role-us-east-1-${APP_ID}`,
         },
       },
     });
@@ -68,7 +68,7 @@ describe(AppScopedStagingSynthesizer, () => {
 
   test('stack template is in the asset manifest - environment tokens', () => {
     const app2 = new App({
-      defaultStackSynthesizer: new TestAppScopedStagingSynthesizer(),
+      defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv(),
     });
     const accountToken = Token.asString('111111111111');
     const regionToken = Token.asString('us-east-2');
@@ -107,7 +107,7 @@ describe(AppScopedStagingSynthesizer, () => {
           bucketName: `cdk-111111111111-us-east-2-${APP_ID.toLocaleLowerCase()}`,
           objectKey: templateObjectKey,
           region: 'us-east-2',
-          assumeRoleArn: `arn:${Aws.PARTITION}:iam::111111111111:role/cdk-file-publishing-role-us-east-2-${APP_ID}`,
+          assumeRoleArn: `arn:\${AWS::Partition}:iam::111111111111:role/cdk-file-publishing-role-us-east-2-${APP_ID}`,
         },
       },
     });
@@ -202,40 +202,6 @@ describe(AppScopedStagingSynthesizer, () => {
     expect(evalCFN(location1.repositoryName)).toEqual(evalCFN(location2.repositoryName));
   });
 
-  test('throws when App uses DefaultStagingStack and does not have appId', () => {
-    const app2 = new App({
-      defaultStackSynthesizer: new TestAppScopedStagingSynthesizer(),
-    });
-    expect(() => new Stack(app2, 'Stack')).toThrowError('DefaultStagingStack can only be used on Apps with a user-specified appId, but no appId found.');
-  });
-
-  test('does not throw when App does not have appId and does not use DefaultStagingStack', () => {
-    class TestStagingStack extends Stack implements IStagingStack {
-      readonly appId = 'appId';
-      readonly stagingRepos = {};
-      readonly dependencyStack = this;
-      addFile(_asset: FileAssetSource): FileAssetInfo {
-        return {
-          assumeRoleArn: 'assumeRoleArn',
-          bucketName: 'bucketName',
-        };
-      }
-      addDockerImage(_asset: DockerImageAssetSource): DockerAssetInfo {
-        return {
-          assumeRoleArn: 'assumeRoleArn',
-          repoName: 'repoName',
-        };
-      }
-    }
-
-    const app2 = new App({
-      defaultStackSynthesizer: new TestAppScopedStagingSynthesizer({
-        stagingStack: new TestStagingStack(),
-      }),
-    });
-    expect(() => new Stack(app2, 'Stack')).not.toThrow();
-  });
-
   /**
   * Evaluate a possibly string-containing value the same way CFN would do
   *
@@ -249,12 +215,14 @@ describe(AppScopedStagingSynthesizer, () => {
 describe('Custom Roles on AppScopedStagingSynthesizer', () => {
   test('Can supply different roles', () => {
     const app = new App({
-      defaultStackSynthesizer: new AppScopedStagingSynthesizer({
+      defaultStackSynthesizer: AppScopedStagingSynthesizer.stackPerEnv({
         appId: APP_ID,
         bootstrapRoles: {
           cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
           lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
           deploymentActionRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
+        },
+        stagingRoles: {
           fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
           dockerAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
         },
@@ -299,9 +267,9 @@ function last<A>(xs?: A[]): A | undefined {
   return xs ? xs[xs.length - 1] : undefined;
 }
 
-class TestAppScopedStagingSynthesizer extends AppScopedStagingSynthesizer {
-  public constructor(props: Partial<AppScopedStagingSynthesizerProps> = {}) {
-    super({
+class TestAppScopedStagingSynthesizer {
+  public static stackPerEnv(props: Partial<StackPerEnvProps> = {}): AppScopedStagingSynthesizer {
+    return AppScopedStagingSynthesizer.stackPerEnv({
       appId: props.appId ?? APP_ID,
       bootstrapRoles: {
         cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
