@@ -22,6 +22,7 @@ import {
   Operation,
   CfnTable,
 } from '../lib';
+import { ReplicaProvider } from '../lib/replica-provider';
 
 jest.mock('@aws-cdk/custom-resources');
 
@@ -563,6 +564,66 @@ test('if an encryption key is included, encrypt/decrypt permissions are added to
           ],
         },
       }]),
+    },
+  });
+});
+
+test('replica-handler permission check', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const provider = ReplicaProvider.getOrCreate(stack, {
+    tableName: 'test',
+    regions: ['eu-central-1', 'eu-west-1'],
+  });
+
+  // THEN
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': 'iam:CreateServiceLinkedRole',
+          'Effect': 'Allow',
+          'Resource': {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':role/aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication',
+              ],
+            ],
+          },
+        },
+        {
+          'Action': 'dynamodb:DescribeLimits',
+          'Effect': 'Allow',
+          'Resource': '*',
+        },
+        {
+          'Action': [
+            'dynamodb:DeleteTable',
+            'dynamodb:DeleteTableReplica',
+          ],
+          'Effect': 'Allow',
+          'Resource': [
+            {
+              'Fn::Join': ['', ['arn:aws:dynamodb:eu-central-1:', { Ref: 'AWS::AccountId' }, ':table/test']],
+            },
+            {
+              'Fn::Join': ['', ['arn:aws:dynamodb:eu-west-1:', { Ref: 'AWS::AccountId' }, ':table/test']],
+            },
+          ],
+        },
+      ],
     },
   });
 });
@@ -3194,3 +3255,46 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
     ],
   });
 }
+
+describe('deletionProtectionEnabled', () => {
+  test.each([
+    [true],
+    [false],
+  ])('gets passed to table', (state) => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      deletionProtection: state,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      DeletionProtectionEnabled: state,
+    });
+  });
+
+  test('is not passed when not set', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', Match.objectLike({
+      DeletionProtectionEnabled: Match.absent(),
+    }));
+  });
+});
+
