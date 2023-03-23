@@ -489,9 +489,11 @@ export interface TableProps {
   /**
    * The user-supplied properties for the description of the physical storage of this table. These properties help describe the format of the data that is stored within the crawled data sources.
    *
+   * The key/value pairs that are allowed to be submitted are not limited, however their functionality is not guaranteed.
+   *
    * Some keys will be auto-populated by glue crawlers, however, you can override them by specifying the key and value in this property.
    *
-   * The key/value pairs that are allowed to be submitted are not limited, however their functionality is not guaranteed.
+   * @see https://docs.aws.amazon.com/glue/latest/dg/table-properties-crawler.html
    *
    * @example
    *
