@@ -228,7 +228,6 @@ new glue.Table(this, 'MyTable', {
 Glue tables can be configured to contain user-defined properties, to describe the physical storage of table data, through the `storageParameters` property:
 
 ```ts
-declare const myBucket: s3.Bucket;
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
   storageParameters: [
