@@ -258,7 +258,7 @@ export class SDK implements ISDK {
   public async forceCredentialRetrieval() {
     try {
       await this._credentials.getPromise();
-    } catch (e) {
+    } catch (e: any) {
       if (isUnrecoverableAwsError(e)) {
         throw e;
       }

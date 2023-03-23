@@ -60,6 +60,45 @@
        "Action": "dynamodb:DescribeLimits",
        "Effect": "Allow",
        "Resource": "*"
+      },
+      {
+       "Action": [
+        "dynamodb:DeleteTable",
+        "dynamodb:DeleteTableReplica"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:dynamodb:eu-west-3:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:dynamodb:us-east-2:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref"
+           }
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -257,7 +296,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+     "S3Key": "e1c44c46b1daa364ad4e38dbc77e6fe7714ea5fbf40251a924e8c34281aa2eda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -394,7 +433,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+     "S3Key": "e1c44c46b1daa364ad4e38dbc77e6fe7714ea5fbf40251a924e8c34281aa2eda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -528,7 +567,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+     "S3Key": "e1c44c46b1daa364ad4e38dbc77e6fe7714ea5fbf40251a924e8c34281aa2eda.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -697,6 +736,11 @@
      "Arn"
     ]
    }
+  }
+ },
+ "Parameters": {
+  "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref": {
+   "Type": "String"
   }
  }
 }
