@@ -421,8 +421,8 @@ class CodeStarConnectionSource extends CodePipelineSource {
   private readonly owner: string;
   private readonly repo: string;
 
-  constructor(repoString: string, readonly branch: string, readonly props: ConnectionSourceOptions) {
-    super(repoString);
+  constructor(repoString: string, readonly branch: string, readonly props: ConnectionSourceOptions, id?: string) {
+    super(id?? repoString);
 
     const parts = repoString.split('/');
     if (Token.isUnresolved(repoString) || parts.length !== 2) {
