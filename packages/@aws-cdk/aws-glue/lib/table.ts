@@ -345,25 +345,36 @@ export enum ColumnCountMismatchHandlingAction {
   DROP_ROW = 'DROP_ROW',
 }
 
-/**
- * A property of the Storage Descriptor.
- */
-export interface StorageParameter {
+interface BaseStorageParameter {
   /**
    * The key of the property. If you want to use a custom key, use `StorageParameters.custom()`.
    */
   readonly key: StorageParameters;
+}
 
+/**
+ * A property of the Storage Descriptor.
+ */
+export interface CustomStorageParameter extends BaseStorageParameter {
   /**
-   * The value of the property. There are enums that are available for some of the values, or you can assign your own.
+   * The value of the property.
+   */
+  readonly value: string;
+}
+
+/**
+ * A property of the Storage Descriptor, but with a value provided by the CDK.
+ */
+export interface StorageParameter extends BaseStorageParameter {
+  /**
+   * The value of the property. This is a pre-defined value.
    */
   readonly value: ColumnCountMismatchHandlingAction
   | CompressionType
   | InvalidCharHandlingAction
   | NumericOverflowHandlingAction
   | SurplusBytesHandlingAction
-  | SurplusCharHandlingAction
-  | string;
+  | SurplusCharHandlingAction;
 }
 
 export interface TableAttributes {
@@ -503,7 +514,7 @@ export interface TableProps {
    *
    * @default - The parameter is not defined
    */
-  readonly storageParameters?: StorageParameter[];
+  readonly storageParameters?: (StorageParameter | CustomStorageParameter)[];
 }
 
 /**
@@ -599,7 +610,7 @@ export class Table extends Resource implements ITable {
   /**
    * The tables' storage descriptor properties.
    */
-  public readonly storageDescriptor?: StorageParameter[];
+  public readonly storageDescriptor?: (StorageParameter | CustomStorageParameter)[];
 
   /**
    * Partition indexes must be created one at a time. To avoid

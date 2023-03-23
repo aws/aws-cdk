@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/553f4bc301289a3e09b1cd03c07892e4c62da6b35d057a57fe1613c230c27ef6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eddae78388dd938d03998219503a0c3e6662678efa97b8099af7c02290533da6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -91,6 +91,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPartitionFilteredTable324BA27A"
+          }
+        ],
+        "/aws-cdk-glue/MyTableWithStorageDescriptorParameters/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTableWithStorageDescriptorParametersTable1A347345"
           }
         ],
         "/aws-cdk-glue/MyUser/Resource": [

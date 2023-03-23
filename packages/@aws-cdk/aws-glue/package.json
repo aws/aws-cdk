@@ -163,13 +163,7 @@
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.PARQUET",
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.ORC",
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.value",
-      "events-method-signature:@aws-cdk/aws-glue.Job.onStateChange",
-      "no-unused-type:@aws-cdk/aws-glue.ColumnCountMismatchHandlingAction",
-      "no-unused-type:@aws-cdk/aws-glue.CompressionType",
-      "no-unused-type:@aws-cdk/aws-glue.InvalidCharHandlingAction",
-      "no-unused-type:@aws-cdk/aws-glue.NumericOverflowHandlingAction",
-      "no-unused-type:@aws-cdk/aws-glue.SurplusBytesHandlingAction",
-      "no-unused-type:@aws-cdk/aws-glue.SurplusCharHandlingAction"
+      "events-method-signature:@aws-cdk/aws-glue.Job.onStateChange"
     ]
   },
   "awscdkio": {
