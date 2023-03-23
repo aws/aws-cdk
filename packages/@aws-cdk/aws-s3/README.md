@@ -12,7 +12,7 @@
 
 <!--END STABILITY BANNER-->
 
-Define an unencrypted S3 bucket.
+Define an S3 bucket.
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyFirstBucket');
