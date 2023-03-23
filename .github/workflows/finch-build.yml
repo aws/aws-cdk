@@ -1,0 +1,58 @@
+name: finch-build
+on:
+  workflow_dispatch: {}
+  pull_request: {}
+  schedule:
+    - cron:  '42 2 * * 1-5'
+#concurrency:
+#  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+#  cancel-in-progress: true
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest-xl]
+        container-client: [finch]
+        include:
+          - os: aws-cdk_ubuntu-latest_16-core
+            container-client: docker
+    runs-on: ${{ matrix.os }}
+    permissions:
+      checks: write
+    env:
+      CI: "true"
+      CDK_DOCKER: ${{ matrix.container-client }}
+      NODE_OPTIONS: "--max-old-space-size=6144"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Setup ${{ matrix.container-client }}
+        if: matrix.container-client == 'finch'
+        run: |-
+          mkdir -p ~/.finch
+          echo "cpus: 1" >> ~/.finch/finch.yaml
+          echo "memory: 2GiB" >> ~/.finch/finch.yaml
+          cat ~/.finch/finch.yaml
+          brew install --cask finch
+          finch vm init
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: build
+        run: ./build.sh --ci --no-bail --skip-test
+      - name: test
+        run: npx lerna run test --stream --no-progress --skip-nx-cache --no-sort --no-bail --concurrency=6
+      - name: Test Report
+        uses: phoenix-actions/test-reporting@v8
+        if: success() || failure()    # always run, especially if the tests failed
+        with:
+          name: Publish Test Report
+          path: 'packages/**/coverage/junit.xml,tools/**/coverage/junit.xml'
+          reporter: jest-junit
+          list-suites: 'failed'
+          list-tests: 'failed'
+          max-annotations: '50'
