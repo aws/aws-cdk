@@ -1,4 +1,4 @@
-import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from './batch.generated';
 
@@ -148,10 +148,12 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
       fairsharePolicy: {
         computeReservation: this.computeReservation,
         shareDecaySeconds: this.shareDecay?.toSeconds(),
-        shareDistribution: this.shares?.map((share) => ({
-          shareIdentifier: share.shareIdentifier,
-          weightFactor: share.weightFactor,
-        })),
+        shareDistribution: Lazy.any({
+          produce: () => this.shares?.map((share) => ({
+            shareIdentifier: share.shareIdentifier,
+            weightFactor: share.weightFactor,
+          })),
+        }),
       },
       name: this.name,
     });
