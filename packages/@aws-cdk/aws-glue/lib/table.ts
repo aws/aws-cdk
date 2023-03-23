@@ -175,180 +175,195 @@ export enum StorageParameters {
  * This list is not exhaustive, use the `custom` method to add custom parameters.
  */
 export namespace StorageParameters {
+  export function custom(key: string): StorageParameters {
+    return key as StorageParameters;
+  }
+}
+
+/**
+ * The compression type used by `StorageParameters.COMPRESSION_TYPE`.
+ */
+export enum CompressionType {
+  /**
+   * No compression.
+   */
+  NONE = 'none',
 
   /**
-   * The compression type used by `StorageParameters.COMPRESSION_TYPE`.
+   * Burrows-Wheeler compression.
    */
-  export enum CompressionType {
-    /**
-     * No compression.
-     */
-    NONE = 'none',
-
-    /**
-     * Burrows-Wheeler compression.
-     */
-    BZIP2 = 'bzip2',
-
-    /**
-     * Deflate compression.
-     */
-    GZIP = 'gzip',
-
-    /**
-     * Compression algorithm focused on high compression and decompression speeds, rather than the maximum possible compression.
-     */
-    SNAPPY = 'snappy',
-  }
+  BZIP2 = 'bzip2',
 
   /**
-   * The action to assign to `StorageParameters.INVALID_CHAR_HANDLING`.
+   * Deflate compression.
    */
-  export enum InvalidCharHandlingAction {
-    /**
-     * Doesn't perform invalid character handling.
-     */
-    DISABLED = 'DISABLED',
-
-    /**
-     * Cancels queries that return data containing invalid UTF-8 values.
-     */
-    FAIL = 'FAIL',
-
-    /**
-     * Replaces invalid UTF-8 values with null.
-     */
-    SET_TO_NULL = 'SET_TO_NULL',
-
-    /**
-     * Replaces each value in the row with null.
-     */
-    DROP_ROW = 'DROP_ROW',
-
-    /**
-     * Replaces the invalid character with the replacement character you specify using `StorageParameters.REPLACEMENT_CHAR`.
-     */
-    REPLACE = 'REPLACE',
-  }
+  GZIP = 'gzip',
 
   /**
-   * The action to assign to `StorageParameters.COLUMN_COUNT_MISMATCH_HANDLING`.
+   * Compression algorithm focused on high compression and decompression speeds, rather than the maximum possible compression.
    */
-  export enum NumericOverflowHandlingAction {
-    /**
-     * Invalid character handling is turned off.
-     */
-    DISABLED = 'DISABLED',
+  SNAPPY = 'snappy',
+}
 
-    /**
-     * Cancel the query when the data includes invalid characters.
-     */
-    FAIL = 'FAIL',
-
-    /**
-     * Set invalid characters to null.
-     */
-    SET_TO_NULL = 'SET_TO_NULL',
-
-    /**
-     * Set each value in the row to null.
-     */
-    DROP_ROW = 'DROP_ROW',
-  }
+/**
+ * The action to assign to `INVALID_CHAR_HANDLING`.
+ */
+export enum InvalidCharHandlingAction {
+  /**
+   * Doesn't perform invalid character handling.
+   */
+  DISABLED = 'DISABLED',
 
   /**
-   * The action to assign to `StorageParameters.COLUMN_COUNT_MISMATCH_HANDLING`.
+   * Cancels queries that return data containing invalid UTF-8 values.
    */
-  export enum SurplusBytesHandlingAction {
-    /**
-     * Replaces data that exceeds the column width with null.
-     */
-    SET_TO_NULL = 'SET_TO_NULL',
-
-    /**
-     * Doesn't perform surplus byte handling.
-     */
-    DISABLED = 'DISABLED',
-
-    /**
-     * Cancels queries that return data exceeding the column width.
-     */
-    FAIL = 'FAIL',
-
-    /**
-     * Drop all rows that contain data exceeding column width.
-     */
-    DROP_ROW = 'DROP_ROW',
-
-    /**
-     * Removes the characters that exceed the maximum number of characters defined for the column.
-     */
-    TRUNCATE = 'TRUNCATE',
-  }
+  FAIL = 'FAIL',
 
   /**
-   * The action to assign to `StorageParameters.COLUMN_COUNT_MISMATCH_HANDLING`.
+   * Replaces invalid UTF-8 values with null.
    */
-  export enum SurplusCharHandlingAction {
-    /**
-     * Replaces data that exceeds the column width with null.
-     */
-    SET_TO_NULL = 'SET_TO_NULL',
-
-    /**
-     * Doesn't perform surplus character handling.
-     */
-    DISABLED = 'DISABLED',
-
-    /**
-     * Cancels queries that return data exceeding the column width.
-     */
-    FAIL = 'FAIL',
-
-    /**
-     * Replaces each value in the row with null.
-     */
-    DROP_ROW = 'DROP_ROW',
-
-    /**
-     * Removes the characters that exceed the maximum number of characters defined for the column.
-     */
-    TRUNCATE = 'TRUNCATE',
-  }
+  SET_TO_NULL = 'SET_TO_NULL',
 
   /**
-   * The action to assign to `StorageParameters.COLUMN_COUNT_MISMATCH_HANDLING`.
+   * Replaces each value in the row with null.
    */
-  export enum ColumnCountMismatchHandlingAction {
-    /**
-     * Column count mismatch handling is turned off.
-     */
-    DISABLED = 'DISABLED',
-
-    /**
-     * Fail the query if the column count mismatch is detected.
-     */
-    FAIL = 'FAIL',
-
-    /**
-     * Fill missing values with NULL and ignore the additional values in each row.
-     */
-    SET_TO_NULL = 'SET_TO_NULL',
-
-    /**
-     * Drop all rows that contain column count mismatch error from the scan.
-     */
-    DROP_ROW = 'DROP_ROW',
-  }
+  DROP_ROW = 'DROP_ROW',
 
   /**
-   * A custom storage parameter.
-   *
-   * @param key the key of the parameter
+   * Replaces the invalid character with the replacement character you specify using `REPLACEMENT_CHAR`.
    */
-  export function custom(key: string): string {
-    return key;
-  }
+  REPLACE = 'REPLACE',
+}
+
+/**
+ * The action to assign to `COLUMN_COUNT_MISMATCH_HANDLING`.
+ */
+export enum NumericOverflowHandlingAction {
+  /**
+   * Invalid character handling is turned off.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * Cancel the query when the data includes invalid characters.
+   */
+  FAIL = 'FAIL',
+
+  /**
+   * Set invalid characters to null.
+   */
+  SET_TO_NULL = 'SET_TO_NULL',
+
+  /**
+   * Set each value in the row to null.
+   */
+  DROP_ROW = 'DROP_ROW',
+}
+
+/**
+ * The action to assign to `COLUMN_COUNT_MISMATCH_HANDLING`.
+ */
+export enum SurplusBytesHandlingAction {
+  /**
+   * Replaces data that exceeds the column width with null.
+   */
+  SET_TO_NULL = 'SET_TO_NULL',
+
+  /**
+   * Doesn't perform surplus byte handling.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * Cancels queries that return data exceeding the column width.
+   */
+  FAIL = 'FAIL',
+
+  /**
+   * Drop all rows that contain data exceeding column width.
+   */
+  DROP_ROW = 'DROP_ROW',
+
+  /**
+   * Removes the characters that exceed the maximum number of characters defined for the column.
+   */
+  TRUNCATE = 'TRUNCATE',
+}
+
+/**
+ * The action to assign to `COLUMN_COUNT_MISMATCH_HANDLING`.
+ */
+export enum SurplusCharHandlingAction {
+  /**
+   * Replaces data that exceeds the column width with null.
+   */
+  SET_TO_NULL = 'SET_TO_NULL',
+
+  /**
+   * Doesn't perform surplus character handling.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * Cancels queries that return data exceeding the column width.
+   */
+  FAIL = 'FAIL',
+
+  /**
+   * Replaces each value in the row with null.
+   */
+  DROP_ROW = 'DROP_ROW',
+
+  /**
+   * Removes the characters that exceed the maximum number of characters defined for the column.
+   */
+  TRUNCATE = 'TRUNCATE',
+}
+
+/**
+ * The action to assign to `COLUMN_COUNT_MISMATCH_HANDLING`.
+ */
+export enum ColumnCountMismatchHandlingAction {
+  /**
+   * Column count mismatch handling is turned off.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * Fail the query if the column count mismatch is detected.
+   */
+  FAIL = 'FAIL',
+
+  /**
+   * Fill missing values with NULL and ignore the additional values in each row.
+   */
+  SET_TO_NULL = 'SET_TO_NULL',
+
+  /**
+   * Drop all rows that contain column count mismatch error from the scan.
+   */
+  DROP_ROW = 'DROP_ROW',
+}
+
+/**
+ * A property of the Storage Descriptor.
+ */
+export interface StorageParameter {
+  /**
+   * The key of the property. If you want to use a custom key, use `StorageParameters.custom()`.
+   */
+  readonly key: StorageParameters;
+
+  /**
+   * The value of the property. There are enums that are available for some of the values, or you can assign your own.
+   */
+  readonly value: ColumnCountMismatchHandlingAction
+  | CompressionType
+  | InvalidCharHandlingAction
+  | NumericOverflowHandlingAction
+  | SurplusBytesHandlingAction
+  | SurplusCharHandlingAction
+  | string;
 }
 
 export interface TableAttributes {
@@ -471,23 +486,24 @@ export interface TableProps {
    *
    *    declare const glueDatabase: glue.IDatabase;
    *    const table = new glue.Table(this, 'Table', {
+   *      storageParameters: [
+   *          { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: '1' },
+   *          { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.CompressionType.GZIP },
+   *          { key: glue.StorageParameters.custom('foo'), value: 'bar' }, // Will have no effect
+   *          { key: glue.StorageParameters.custom('separatorChar'), value: ',' }, // Will describe the separator char used in the data
+   *      ],
+   *      // ...
    *      database: glueDatabase,
    *      columns: [{
    *          name: 'col1',
    *          type: glue.Schema.STRING,
    *      }],
    *      dataFormat: glue.DataFormat.CSV,
-   *      storageParameters: {
-   *          glue.StorageParameters.SKIP_HEADER_LINE_COUNT: '1',
-   *          glue.StorageParameters.COMPRESSION_TYPE: glue.StorageParameters.CompressionType.GZIP,
-   *          glue.StorageParameters.custom('foo'): 'bar', // Will have no effect
-   *          glue.StorageParameters.custom('separatorChar'): ',', // Will describe the separator char used in the data
-   *      },
    *    });
    *
    * @default - The parameter is not defined
    */
-  readonly storageParameters?: { [key: string]: any };
+  readonly storageParameters?: StorageParameter[];
 }
 
 /**
@@ -581,6 +597,11 @@ export class Table extends Resource implements ITable {
   public readonly partitionIndexes?: PartitionIndex[];
 
   /**
+   * The tables' storage descriptor properties.
+   */
+  public readonly storageDescriptor?: StorageParameter[];
+
+  /**
    * Partition indexes must be created one at a time. To avoid
    * race conditions, we store the resource and add dependencies
    * each time a new partition index is created.
@@ -602,6 +623,7 @@ export class Table extends Resource implements ITable {
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
+    this.storageDescriptor = props.storageParameters;
 
     this.compressed = props.compressed ?? false;
     const { bucket, encryption, encryptionKey } = createBucket(this, props);
@@ -635,7 +657,10 @@ export class Table extends Resource implements ITable {
           serdeInfo: {
             serializationLibrary: props.dataFormat.serializationLibrary.className,
           },
-          parameters: props.storageParameters,
+          parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
+            acc[param.key] = param.value;
+            return acc;
+          }, {} as { [key: string]: string }) : undefined,
         },
 
         tableType: 'EXTERNAL_TABLE',

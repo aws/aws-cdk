@@ -100,13 +100,20 @@ new glue.Table(stack, 'MyPartitionFilteredTable', {
   columns,
   dataFormat: glue.DataFormat.JSON,
   enablePartitionFiltering: true,
-  storageParameters: {
-    [glue.StorageParameters.custom('separatorChar')]: ',',
-    [glue.StorageParameters.SKIP_HEADER_LINE_COUNT]: '1',
-    [glue.StorageParameters.COMPRESSION_TYPE]: glue.StorageParameters.CompressionType.GZIP,
-    [glue.StorageParameters.INVALID_CHAR_HANDLING]: glue.StorageParameters.InvalidCharHandlingAction.DISABLED,
-    [glue.StorageParameters.custom('foo')]: 'bar',
-  },
+});
+
+new glue.Table(stack, 'MyTableWithStorageDescriptorParameters', {
+  database,
+  bucket,
+  tableName: 'table_with_storage_descriptor_parameters',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+  storageParameters: [
+    { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: '1' },
+    { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.CompressionType.GZIP },
+    { key: glue.StorageParameters.custom('foo'), value: 'bar' }, // Will have no effect
+    { key: glue.StorageParameters.custom('separatorChar'), value: ',' }, // Will describe the separator char used in the data
+  ],
 });
 
 const user = new iam.User(stack, 'MyUser');
