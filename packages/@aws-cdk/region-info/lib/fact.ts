@@ -122,6 +122,12 @@ export class FactName {
   public static readonly CDK_METADATA_RESOURCE_AVAILABLE = 'cdk:metadata-resource:available';
 
   /**
+   * Whether Amazon ECR Public is available or not. The value is a boolean
+   * modelled as `YES` or `NO`.
+   */
+  public static readonly ECR_PUBLIC_AVAILABLE = 'aws:ecr-public:available';
+
+  /**
    * Whether the given region is an opt-in region or not. The value is a boolean
    * modelled as `YES` or `NO`.
    */

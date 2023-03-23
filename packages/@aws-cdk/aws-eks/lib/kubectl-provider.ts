@@ -7,6 +7,8 @@ import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
 import { Construct, IConstruct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
+import { EcrPublicAvailable } from './private/service-available';
+
 
 /**
  * Properties for a KubectlProvider
@@ -166,9 +168,11 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     );
 
     // For OCI helm chart public ECR authorization.
-    this.handlerRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticContainerRegistryPublicReadOnly'),
-    );
+    if (EcrPublicAvailable(Stack.of(this).region)) {
+      this.handlerRole.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticContainerRegistryPublicReadOnly'),
+      );
+    };
 
     // allow this handler to assume the kubectl role
     cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');

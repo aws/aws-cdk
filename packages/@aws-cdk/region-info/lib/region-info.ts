@@ -71,6 +71,13 @@ export class RegionInfo {
   }
 
   /**
+   * Whether Amazon ECR Public is available in this region or not.
+   */
+  public get ecrPublicAvailable(): boolean {
+    return Fact.find(this.name, FactName.ECR_PUBLIC_AVAILABLE) === 'YES';
+  }
+
+  /**
    * Whether the given region is an opt-in region
    */
   public get isOptInRegion(): boolean {

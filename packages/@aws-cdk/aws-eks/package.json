@@ -119,6 +119,7 @@
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
     "constructs": "^10.0.0",
     "semver": "^7.3.8",
     "yaml": "1.10.2"
@@ -141,6 +142,7 @@
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0"
   },
