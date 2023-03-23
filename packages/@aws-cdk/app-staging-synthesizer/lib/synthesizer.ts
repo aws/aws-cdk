@@ -95,7 +95,7 @@ export interface IStagingStackFactory {
 /**
  * Properties for customFactory static method
  */
-export interface CustomFactoryProps extends AppScopedStagingSynthesizerProps {
+export interface CustomFactoryProps extends AppStagingSynthesizerProps {
   /**
    * Include rules that create a new Staging Stack per environment.
    *
@@ -105,9 +105,9 @@ export interface CustomFactoryProps extends AppScopedStagingSynthesizerProps {
 }
 
 /**
- * Internal properties for AppScopedStagingSynthesizer
+ * Internal properties for AppStagingSynthesizer
  */
-interface AppScopedStagingSynthesizerProps {
+interface AppStagingSynthesizerProps {
   /**
    * A factory method that creates an IStagingStack when given the stack the
    * synthesizer is binding.
@@ -124,9 +124,9 @@ interface AppScopedStagingSynthesizerProps {
 }
 
 /**
- * App Scoped Staging Stack Synthesizer
+ * App Staging Synthesizer
  */
-export class AppScopedStagingSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer {
+export class AppStagingSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer {
   public static stackPerEnv(props: StackPerEnvProps) {
     for (const key in props) {
       if (props.hasOwnProperty(key)) {
@@ -146,7 +146,7 @@ export class AppScopedStagingSynthesizer extends StackSynthesizer implements IRe
       }
     }
 
-    return new AppScopedStagingSynthesizer({
+    return new AppStagingSynthesizer({
       bootstrapRoles: props.bootstrapRoles,
       stagingStackFactory: {
         stagingStackFactory(boundStack: Stack) {
@@ -180,10 +180,10 @@ export class AppScopedStagingSynthesizer extends StackSynthesizer implements IRe
   }
 
   public static customFactory(props: CustomFactoryProps) {
-    return new AppScopedStagingSynthesizer(props);
+    return new AppStagingSynthesizer(props);
   }
 
-  private constructor(private readonly props: AppScopedStagingSynthesizerProps) {
+  private constructor(private readonly props: AppStagingSynthesizerProps) {
     super();
   }
 
@@ -230,7 +230,7 @@ class BoundStagingStackSynthesizer extends StackSynthesizer implements IBoundSta
   private readonly cloudFormationExecutionRoleArn?: string;
   private readonly deploymentActionRoleArn?: string;
 
-  constructor(stack: Stack, props: AppScopedStagingSynthesizerProps) {
+  constructor(stack: Stack, props: AppStagingSynthesizerProps) {
     super();
     super.bind(stack);
 

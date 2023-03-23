@@ -19,7 +19,7 @@ This library includes constructs aimed at replacing the current model of bootstr
 greater control of the bootstrap experience to the CDK user. The important constructs in this library
 are the `IStagingStack`, a framework for an app-level bootstrap stack that handles file assets and
 docker assets and the `DefaultStagingStack`, which is a works-out-of-the-box implementation of the
-interface. Additionally, there is an `AppScopedStagingSynthesizer` that will synthesize CDK applications
+interface. Additionally, there is an `AppStagingSynthesizer` that will synthesize CDK applications
 built with this new model of bootstrapping.
 
 ## Bootstrap Model
@@ -74,24 +74,24 @@ benefits:
 
 ## Synthesizer
 
-To use this library, supply the `AppScopedStagingSynthesizer` in as the default synthesizer to the app.
+To use this library, supply the `AppStagingSynthesizer` in as the default synthesizer to the app.
 This will ensure that a Staging Stack will be created next to the CDK App to hold the staging resources.
 
-`AppScopedStagingSynthesizer` comes with static methods covering the use-cases for the synthesizer. 
+`AppStagingSynthesizer` comes with static methods covering the use-cases for the synthesizer. 
 
 ### Using the Default Staging Stack per Environment
 
 The most common use case will be to use the built-in `DefaultStagingStack` on a per-environment basis.
 That means that in each environment the CDK App is deployed to, the synthesizer will create a
 Staging Stack to store its resources. To use this kind of synthesizer, use
-`AppScopedStagingSynthesizer.stackPerEnv()`.
+`AppStagingSynthesizer.stackPerEnv()`.
 
 ```ts
 import { App } from 'aws-cdk-lib';
-import { AppScopedStagingSynthesizer } from '@aws-cdk/core-app-scoped-staging-synthesizer';
+import { AppStagingSynthesizer } from '@aws-cdk/core-app-scoped-staging-synthesizer';
 
 const app = new App({
-  defaultSynthesizer: AppScopedStagingSynthesizer.stackPerEnv({
+  defaultSynthesizer: AppStagingSynthesizer.stackPerEnv({
     appId: 'my-app-id',
   }),
 });
@@ -99,16 +99,16 @@ const app = new App({
 
 ### Using a Custom Staging Stack per Environment
 
-To use a custom stack, but still on a per-environment basis, use `AppScopedStagingSynthesizer.customFactory()`.
+To use a custom stack, but still on a per-environment basis, use `AppStagingSynthesizer.customFactory()`.
 This has the benefit of providing a custom Staging Stack that can be created in every environment the CDK App
 is deployed to.
 
 ```ts
 import { App } from 'aws-cdk-lib';
-import { AppScopedStagingSynthesizer } from '@aws-cdk/core-app-scoped-staging-synthesizer';
+import { AppStagingSynthesizer } from '@aws-cdk/core-app-scoped-staging-synthesizer';
 
 const app = new App({
-  defaultSynthesizer: AppScopedStagingSynthesizer.customFactory({
+  defaultSynthesizer: AppStagingSynthesizer.customFactory({
     createStack() {
       return new CustomStagingStack({ appId: 'my-app-id' }),
     },
@@ -119,19 +119,19 @@ const app = new App({
 ### Using an Existing Staging Stack
 
 If you need to pass in an existing stack as the Staging Stack to the CDK App, use
-`AppScopedStagingSynthesizer.customStack()`. Make sure that the custom stack you provide implements
+`AppStagingSynthesizer.customStack()`. Make sure that the custom stack you provide implements
 `IStagingStack`.
 
 ```ts
 import { App, Stack } from 'aws-cdk-lib';
-import { AppScopedStagingSynthesizer, IStagingStack } from '@aws-cdk/core-app-scoped-staging-synthesizer';
+import { AppStagingSynthesizer, IStagingStack } from '@aws-cdk/core-app-scoped-staging-synthesizer';
 
 class CustomStagingStack implements IStagingStack {
   // ...
 }
 
 const app = new App({
-  defaultSynthesizer: AppScopedStagingSynthesizer.customStack(new CustomStagingStack(this, 'StagingStack')),
+  defaultSynthesizer: AppStagingSynthesizer.customStack(new CustomStagingStack(this, 'StagingStack')),
 });
 ```
 
@@ -140,7 +140,7 @@ const app = new App({
 > The Default Staging Stack is being actively worked on right now and currently does not support image assets.
 
 The default Staging Stack includes all the staging resources necessary for CDK Assets. The below example
-is of a CDK App using the `AppScopedStagingSynthesizer` and creating a file asset for the Lambda Function
+is of a CDK App using the `AppStagingSynthesizer` and creating a file asset for the Lambda Function
 source code. As part of the `DefaultStagingStack`, an s3 bucket and iam role will be created that will be
 used to upload the asset to s3.
 
@@ -148,10 +148,10 @@ used to upload the asset to s3.
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
-import { AppScopedStagingSynthesizer } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
+import { AppStagingSynthesizer } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
 
 const app = new App({
-  defaultSynthesizer: new AppScopedStagingSynthesizer.stackPerEnv({appId: 'my-app-id'}),
+  defaultSynthesizer: new AppStagingSynthesizer.stackPerEnv({appId: 'my-app-id'}),
 });
 
 const stack = new Stack(app, 'my-stack');
@@ -176,10 +176,10 @@ if all you need is to supply custom roles (and not change anything else in the `
 
 ```ts
 import { App } from 'aws-cdk-lib';
-import { AppScopedStagingSynthesizer, BootstrapRole } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
+import { AppStagingSynthesizer, BootstrapRole } from 'aws-cdk-lib/core-app-scoped-staging-synthesizer';
 
 const app = new App({
-  defaultSynthesizer: new AppScopedStagingSynthesizer.stackFromEnv({
+  defaultSynthesizer: new AppStagingSynthesizer.stackFromEnv({
     appId: 'my-app-id',
     roles: {
       cloudFormationExecutionRole: BoostrapRole.fromRoleArn('arn'),

@@ -1,12 +1,12 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-import { AppScopedStagingSynthesizer } from '../lib';
+import { AppStagingSynthesizer } from '../lib';
 
 const app = new App();
 
 const stack = new Stack(app, 'app-scoped-staging-test', {
-  synthesizer: AppScopedStagingSynthesizer.stackPerEnv({ appId: 'app-id' }),
+  synthesizer: AppStagingSynthesizer.stackPerEnv({ appId: 'app-id' }),
   env: {
     account: '489318732371',
     region: 'us-east-2',

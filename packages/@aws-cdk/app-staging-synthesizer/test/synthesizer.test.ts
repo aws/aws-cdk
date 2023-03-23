@@ -3,7 +3,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Stack, CfnResource, FileAssetPackaging, Token } from '@aws-cdk/core';
 import { evaluateCFN } from '@aws-cdk/core/test/evaluate-cfn';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AppScopedStagingSynthesizer, BootstrapRole, StackPerEnvProps } from '../lib';
+import { AppStagingSynthesizer, BootstrapRole, StackPerEnvProps } from '../lib';
 
 const CFN_CONTEXT = {
   'AWS::Region': 'the_region',
@@ -15,7 +15,7 @@ const CLOUDFORMATION_EXECUTION_ROLE = 'role';
 const DEPLOY_ACTION_ROLE = 'role';
 const LOOKUP_ROLE = 'role';
 
-describe(AppScopedStagingSynthesizer, () => {
+describe(AppStagingSynthesizer, () => {
   let app: App;
   let stack: Stack;
 
@@ -215,7 +215,7 @@ describe(AppScopedStagingSynthesizer, () => {
 describe('Custom Roles on AppScopedStagingSynthesizer', () => {
   test('Can supply different roles', () => {
     const app = new App({
-      defaultStackSynthesizer: AppScopedStagingSynthesizer.stackPerEnv({
+      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
         appId: APP_ID,
         bootstrapRoles: {
           cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
@@ -268,8 +268,8 @@ function last<A>(xs?: A[]): A | undefined {
 }
 
 class TestAppScopedStagingSynthesizer {
-  public static stackPerEnv(props: Partial<StackPerEnvProps> = {}): AppScopedStagingSynthesizer {
-    return AppScopedStagingSynthesizer.stackPerEnv({
+  public static stackPerEnv(props: Partial<StackPerEnvProps> = {}): AppStagingSynthesizer {
+    return AppStagingSynthesizer.stackPerEnv({
       appId: props.appId ?? APP_ID,
       bootstrapRoles: {
         cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
