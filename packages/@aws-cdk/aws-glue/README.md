@@ -225,7 +225,23 @@ new glue.Table(this, 'MyTable', {
 });
 ```
 
-By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
+However, if your data will not reside in a S3 bucket, you can use the `externalDataLocation` property to point to the data location:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+  externalDataLocation: 'default_db_public_example', // A table in Redshift
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+Using `externalDataLocation` will override the `bucket` and `s3Prefix` properties.
 
 ### Partition Keys
 
@@ -417,6 +433,25 @@ new glue.Table(this, 'MyTable', {
 ```
 
 *Note: you cannot provide a `Bucket` when creating the `Table` if you wish to use server-side encryption (`KMS`, `KMS_MANAGED` or `S3_MANAGED`)*.
+
+### Glue Connections
+
+Glue connections allow external data connections to third party databases and data warehouses. However, these connections can also be assigned to Glue Tables, allowing you to query external data sources using the Glue Data Catalog. The `connection` property of the `Table` class allows you to specify a Glue Connection to be associated with the table.
+
+```ts
+declare const myConnection: glue.Connection;
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+  connection: myConnection,
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
 
 ## Types
 
