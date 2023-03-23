@@ -1624,7 +1624,7 @@ export class Table extends TableBase {
       throw new Error('`replicationRegions` cannot include the region where this stack is deployed.');
     }
 
-    const provider = ReplicaProvider.getOrCreate(this, { timeout });
+    const provider = ReplicaProvider.getOrCreate(this, { tableName: this.tableName, regions, timeout });
 
     // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
     // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
