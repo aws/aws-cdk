@@ -1,8 +1,8 @@
-import { IAspect, Stack, Stage, Annotations } from '@aws-cdk/core';
+import { IAspect, Stack, Stage, Annotations, Names } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 import { IApplication } from '../application';
 import { ApplicationAssociator } from '../application-associator';
-import { SharePermission } from '../common';
+import { hashValues, SharePermission } from '../common';
 import { isRegionUnresolved, isAccountUnresolved } from '../private/utils';
 
 export interface StackAssociatorBaseProps {
@@ -112,7 +112,9 @@ abstract class StackAssociatorBase implements IAspect {
 
     if (node.account != this.application.env.account && !this.sharedAccounts.has(node.account)) {
       if (this.associateCrossAccountStacks) {
-        this.application.shareApplication({
+        const shareId = `ApplicationShare${hashValues(Names.nodeUniqueId(this.application.node), Names.nodeUniqueId(node.node))}`;
+        this.application.shareApplication(shareId, {
+          name: shareId,
           accounts: [node.account],
           sharePermission: SharePermission.ALLOW_ACCESS,
         });
