@@ -300,6 +300,40 @@ describe('Boostrap Roles', () => {
     const firstFile: any = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
     expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn');
   });
+
+  test('can specify using current cli credentials instead', () => {
+    // GIVEN
+    const app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+        appId: APP_ID,
+        bootstrapRoles: {
+          cloudFormationExecutionRole: BootstrapRole.cliCredentials(),
+          lookupRole: BootstrapRole.cliCredentials(),
+          deploymentActionRole: BootstrapRole.cliCredentials(),
+        },
+      }),
+    });
+    const stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    const stackArtifact = asm.getStackArtifact('Stack');
+
+    // Bootstrapped roles are undefined, which means current credentials are used
+    expect(stackArtifact.cloudFormationExecutionRoleArn).toBeUndefined();
+    expect(stackArtifact.lookupRole).toBeUndefined();
+    expect(stackArtifact.assumeRoleArn).toBeUndefined();
+  });
 });
 
 function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {
