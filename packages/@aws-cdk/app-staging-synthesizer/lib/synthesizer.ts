@@ -17,7 +17,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
 
 export class BootstrapRole {
-  public static CLI_CREDENTIALS() {
+  public static cliCredentials() {
     return new BootstrapRole(undefined);
   }
 
@@ -94,7 +94,7 @@ export interface CustomFactoryProps extends AppStagingSynthesizerProps {
    *
    * @default true
    */
-  oncePerEnv: boolean;
+  // oncePerEnv: boolean;
 }
 
 /**

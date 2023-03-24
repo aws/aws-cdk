@@ -212,8 +212,9 @@ describe(AppStagingSynthesizer, () => {
   }
 });
 
-describe('Custom Roles on AppScopedStagingSynthesizer', () => {
-  test('Can supply different roles', () => {
+describe('Boostrap Roles', () => {
+  test('Can supply existing arns for bootstrapped roles', () => {
+    // GIVEN
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
         appId: APP_ID,
@@ -222,13 +223,8 @@ describe('Custom Roles on AppScopedStagingSynthesizer', () => {
           lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
           deploymentActionRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
         },
-        stagingRoles: {
-          fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
-          dockerAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
-        },
       }),
     });
-
     const stack = new Stack(app, 'Stack', {
       env: {
         account: '000000000000',
@@ -245,16 +241,41 @@ describe('Custom Roles on AppScopedStagingSynthesizer', () => {
     // THEN
     const stackArtifact = asm.getStackArtifact('Stack');
 
-    // CloudFormation roles are as advertised
+    // Bootstrapped roles are as advertised
     expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual(CLOUDFORMATION_EXECUTION_ROLE);
     expect(stackArtifact.lookupRole).toEqual({ arn: LOOKUP_ROLE });
     expect(stackArtifact.assumeRoleArn).toEqual(DEPLOY_ACTION_ROLE);
+  });
 
+  test('can supply existing arns for staging roles', () => {
+    // GIVEN
+    const app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+        appId: APP_ID,
+        stagingRoles: {
+          fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
+        },
+      }),
+    });
+    const stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    // Staging roles are as advertised
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
     expect(manifestArtifact).toBeDefined();
     const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
     const firstFile: any = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
-
     expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn');
   });
 });

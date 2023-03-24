@@ -131,8 +131,8 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   public readonly dependencyStack: Stack;
   public readonly appId: string;
   private readonly stagingBucketName?: string;
-  private fileAssetPublishingRole?: BootstrapRole;
-  private dockerAssetPublishingRole?: BootstrapRole;
+  private fileAssetPublishingRoleArn?: string;
+  private dockerAssetPublishingRoleArn?: string;
   private readonly repositoryLifecycleRules: Record<string, ecr.LifecycleRule[]>;
 
   constructor(scope: App, id: string, props: DefaultStagingStackProps) {
@@ -145,10 +145,18 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     this.dependencyStack = this;
 
     this.stagingBucketName = props.stagingBucketName;
-    this.fileAssetPublishingRole = props.fileAssetPublishingRole;
-    this.dockerAssetPublishingRole = props.dockerAssetPublishingRole;
+    this.fileAssetPublishingRoleArn = props.fileAssetPublishingRole ? this.validateStagingRole(props.fileAssetPublishingRole).roleArn : undefined;
+    this.dockerAssetPublishingRoleArn = props.dockerAssetPublishingRole ?
+      this.validateStagingRole(props.dockerAssetPublishingRole).roleArn : undefined;
     this.repositoryLifecycleRules = this.processLifecycleRules(props.repositoryLifecycleRules ?? []);
     this.stagingRepos = {};
+  }
+
+  private validateStagingRole(stagingRole: BootstrapRole) {
+    if (stagingRole.roleArn === undefined) {
+      throw new Error('fileAssetPublishingRole and dockerAssetPublishingRole cannot be specified as cliCredentials(). Please supply an arn to reference an existing IAM role.');
+    }
+    return stagingRole;
   }
 
   private processLifecycleRules(rules: StagingRepoLifecycleRule[]) {
@@ -168,8 +176,8 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
    * Returns the file publishing role arn
    */
   private getFilePublishingRoleArn(): string {
-    if (this.fileAssetPublishingRole) {
-      return this.fileAssetPublishingRole.roleArn;
+    if (this.fileAssetPublishingRoleArn) {
+      return this.fileAssetPublishingRoleArn;
     }
     const role = this.node.tryFindChild('CdkFilePublishingRole') as iam.Role;
     if (role === undefined) {
@@ -201,8 +209,8 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
    * Returns the well-known name of the image publishing role
    */
   private getCreateImagePublishingRole() {
-    if (this.dockerAssetPublishingRole) {
-      return this.dockerAssetPublishingRole.roleArn;
+    if (this.dockerAssetPublishingRoleArn) {
+      return this.dockerAssetPublishingRoleArn;
     }
 
     const roleId = 'CdkDockerAssetPublishingRole';
