@@ -1,10 +1,12 @@
 /* eslint-disable jest/no-commented-out-tests */
 import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App, Stack, CfnResource, FileAssetPackaging, Token } from '@aws-cdk/core';
+import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, FileAssetSource, DockerImageAssetSource } from '@aws-cdk/core';
 import { evaluateCFN } from '@aws-cdk/core/test/evaluate-cfn';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AppStagingSynthesizer, BootstrapRole, StackPerEnvProps } from '../lib';
+import { AppStagingSynthesizer, BootstrapRole, FileAssetInfo, ImageAssetInfo, IStagingStack, StackPerEnvProps } from '../lib';
+import { Repository } from '@aws-cdk/aws-ecr';
+import { Bucket } from '@aws-cdk/aws-s3';
 
 const CFN_CONTEXT = {
   'AWS::Region': 'the_region',
@@ -144,6 +146,23 @@ describe(AppStagingSynthesizer, () => {
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
   });
 
+  test('adding multiple files only creates one bucket', () => {
+    // WHEN
+    const location1 = stack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'abcdef',
+    });
+    const location2 = stack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'zyxwvu',
+    });
+
+    // THEN - assets have the same location
+    expect(evalCFN(location1.bucketName)).toEqual(evalCFN(location2.bucketName));
+  });
+
   // test('add docker image asset', () => {
   //   // WHEN
   //   const location = stack.synthesizer.addDockerImageAsset({
@@ -225,6 +244,14 @@ describe(AppStagingSynthesizer, () => {
     });
   });
 
+  test('throws if synthesizer props have tokens', () => {
+    expect(() => new App({
+      defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+        appId: Lazy.string({ produce: () => 'appId' }),
+      }),
+    })).toThrowError(/AppStagingSynthesizer property 'appId' cannot contain tokens;/);
+  });
+
   /**
   * Evaluate a possibly string-containing value the same way CFN would do
   *
@@ -302,7 +329,7 @@ describe('Boostrap Roles', () => {
     expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn');
   });
 
-  test('can specify using current cli credentials instead', () => {
+  test('bootstrap roles can be specified as current cli credentials instead', () => {
     // GIVEN
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
@@ -334,6 +361,19 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.cloudFormationExecutionRoleArn).toBeUndefined();
     expect(stackArtifact.lookupRole).toBeUndefined();
     expect(stackArtifact.assumeRoleArn).toBeUndefined();
+  });
+
+  test('staging roles cannot be specified as cli credentials', () => {
+    const app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+        appId: APP_ID,
+        stagingRoles: {
+          fileAssetPublishingRole: BootstrapRole.cliCredentials(),
+        },
+      }),
+    });
+
+    expect(() => new Stack(app, 'Stack')).toThrowError('fileAssetPublishingRole and dockerAssetPublishingRole cannot be specified as cliCredentials(). Please supply an arn to reference an existing IAM role.');
   });
 });
 
