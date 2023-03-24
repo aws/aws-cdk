@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dea8441064e2b7f93a29d086bcfc92bbdd9b163aed56cc08208f3ec941e96441.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9edc695bcf99b9665e27b91d2c39d3819718e24703d3d23554a29e1c3e0dd0f3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -171,256 +171,124 @@
             "data": "vpcVPCGW7984C166"
           }
         ],
-        "/batch-stack/EFS/Resource": [
+        "/batch-stack/minimalPropsFargate/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EFSF3301CFD"
+            "data": "minimalPropsFargateSecurityGroupA8D5CDD1"
           }
         ],
-        "/batch-stack/EFS/EfsSecurityGroup/Resource": [
+        "/batch-stack/minimalPropsFargate/minimalPropsFargate": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EFSEfsSecurityGroup56F189CE"
+            "data": "minimalPropsFargate8E9B9556"
           }
         ],
-        "/batch-stack/EFS/EfsSecurityGroup/from batchstackbatchdemandcomputeenvlaunchtemplateResourceSecurityGroup0D129865:2049": [
+        "/batch-stack/maximalPropsFargate/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EFSEfsSecurityGroupfrombatchstackbatchdemandcomputeenvlaunchtemplateResourceSecurityGroup0D1298652049B175033E"
+            "data": "maximalPropsFargateSecurityGroup94D64250"
           }
         ],
-        "/batch-stack/EFS/EfsSecurityGroup/from batchstackbatchspotcomputeenvResourceSecurityGroup729D2DBD:2049": [
+        "/batch-stack/maximalPropsFargate/maximalPropsFargate": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EFSEfsSecurityGroupfrombatchstackbatchspotcomputeenvResourceSecurityGroup729D2DBD2049CEAD960B"
+            "data": "maximalPropsFargateA2E688D8"
           }
         ],
-        "/batch-stack/EFS/EfsSecurityGroup/from batchstackbatchdemandcomputeenvlaunchtemplate2ResourceSecurityGroup3ED06424:2049": [
+        "/batch-stack/minimalPropsEc2/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EFSEfsSecurityGroupfrombatchstackbatchdemandcomputeenvlaunchtemplate2ResourceSecurityGroup3ED06424204916919BCC"
+            "data": "minimalPropsEc2SecurityGroup50CBE4DC"
           }
         ],
-        "/batch-stack/EFS/EfsSecurityGroup/from batchstackbatchfargatecomputeenvResourceSecurityGroup32BE704C:2049": [
+        "/batch-stack/minimalPropsEc2/InstanceProfileRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EFSEfsSecurityGroupfrombatchstackbatchfargatecomputeenvResourceSecurityGroup32BE704C2049F5D69397"
+            "data": "minimalPropsEc2InstanceProfileRole1B9873C1"
           }
         ],
-        "/batch-stack/EFS/EfsSecurityGroup/from batchstackbatchfargatespotcomputeenvResourceSecurityGroup86E388C1:2049": [
+        "/batch-stack/minimalPropsEc2/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EFSEfsSecurityGroupfrombatchstackbatchfargatespotcomputeenvResourceSecurityGroup86E388C12049304E0F7C"
+            "data": "minimalPropsEc2InstanceProfile635FB12D"
           }
         ],
-        "/batch-stack/EFS/EfsMountTarget1": [
+        "/batch-stack/minimalPropsEc2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EFSEfsMountTarget1674E914B"
+            "data": "minimalPropsEc200AECC55"
           }
         ],
-        "/batch-stack/EFS/EfsMountTarget2": [
+        "/batch-stack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EFSEfsMountTarget2A889DFBF"
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/batch-stack/EFSAccessPoint/Resource": [
+        "/batch-stack/placementGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EFSAccessPointA847C4A5"
+            "data": "placementGroupD973C950"
           }
         ],
-        "/batch-stack/DefaultJobRole/Resource": [
+        "/batch-stack/launchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DefaultJobRole72A01394"
+            "data": "launchTemplateDEE5742D"
           }
         ],
-        "/batch-stack/DefaultJobRole/DefaultPolicy/Resource": [
+        "/batch-stack/LaunchTemplate/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DefaultJobRoleDefaultPolicyDA586FA5"
+            "data": "LaunchTemplateSecurityGroup02438453"
           }
         ],
-        "/batch-stack/ec2-launch-template": [
+        "/batch-stack/LaunchTemplate/InstanceProfileRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ec2launchtemplate"
+            "data": "LaunchTemplateInstanceProfileRole037F2415"
           }
         ],
-        "/batch-stack/batch-demand-compute-env-launch-template/Resource-Security-Group/Resource": [
+        "/batch-stack/LaunchTemplate/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "batchdemandcomputeenvlaunchtemplateResourceSecurityGroup23599B84"
+            "data": "LaunchTemplateInstanceProfile81A7EF12"
           }
         ],
-        "/batch-stack/batch-demand-compute-env-launch-template/Ecs-Instance-Role/Resource": [
+        "/batch-stack/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "batchdemandcomputeenvlaunchtemplateEcsInstanceRole24D4E799"
+            "data": "LaunchTemplate04EC5460"
           }
         ],
-        "/batch-stack/batch-demand-compute-env-launch-template/Instance-Profile": [
+        "/batch-stack/SpotFleetRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "batchdemandcomputeenvlaunchtemplateInstanceProfile2DEC3A97"
+            "data": "SpotFleetRole6D4F7558"
           }
         ],
-        "/batch-stack/batch-demand-compute-env-launch-template/Resource-Service-Instance-Role/Resource": [
+        "/batch-stack/SpotEc2/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "batchdemandcomputeenvlaunchtemplateResourceServiceInstanceRole76AD99CC"
+            "data": "SpotEc2SecurityGroup1225E163"
           }
         ],
-        "/batch-stack/batch-demand-compute-env-launch-template/Resource": [
+        "/batch-stack/SpotEc2/InstanceProfileRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "batchdemandcomputeenvlaunchtemplateF8A5B233"
+            "data": "SpotEc2InstanceProfileRoleBA254130"
           }
         ],
-        "/batch-stack/batch-spot-compute-env/Resource-Security-Group/Resource": [
+        "/batch-stack/SpotEc2/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "batchspotcomputeenvResourceSecurityGroup07B09BF9"
+            "data": "SpotEc2InstanceProfileD921ABA1"
           }
         ],
-        "/batch-stack/batch-spot-compute-env/Ecs-Instance-Role/Resource": [
+        "/batch-stack/SpotEc2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "batchspotcomputeenvEcsInstanceRoleE976826B"
-          }
-        ],
-        "/batch-stack/batch-spot-compute-env/Instance-Profile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchspotcomputeenvInstanceProfileFA613AC2"
-          }
-        ],
-        "/batch-stack/batch-spot-compute-env/Resource-Service-Instance-Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchspotcomputeenvResourceServiceInstanceRole8B0DF5A7"
-          }
-        ],
-        "/batch-stack/batch-spot-compute-env/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchspotcomputeenv2CE4DFD9"
-          }
-        ],
-        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource-Security-Group/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchdemandcomputeenvlaunchtemplate2ResourceSecurityGroupBEA8DDD5"
-          }
-        ],
-        "/batch-stack/batch-demand-compute-env-launch-template-2/Ecs-Instance-Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchdemandcomputeenvlaunchtemplate2EcsInstanceRoleEE146754"
-          }
-        ],
-        "/batch-stack/batch-demand-compute-env-launch-template-2/Instance-Profile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchdemandcomputeenvlaunchtemplate2InstanceProfileC5A36CBC"
-          }
-        ],
-        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource-Service-Instance-Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchdemandcomputeenvlaunchtemplate2ResourceServiceInstanceRole41CADAC1"
-          }
-        ],
-        "/batch-stack/batch-demand-compute-env-launch-template-2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchdemandcomputeenvlaunchtemplate2E12D5CBC"
-          }
-        ],
-        "/batch-stack/batch-job-queue/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchjobqueueE3C528F2"
-          }
-        ],
-        "/batch-stack/batch-fargate-compute-env/Resource-Security-Group/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchfargatecomputeenvResourceSecurityGroupE2963776"
-          }
-        ],
-        "/batch-stack/batch-fargate-compute-env/Resource-Service-Instance-Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchfargatecomputeenvResourceServiceInstanceRole94D7AA5F"
-          }
-        ],
-        "/batch-stack/batch-fargate-compute-env/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchfargatecomputeenvE9C3FCA4"
-          }
-        ],
-        "/batch-stack/batch-fargate-spot-compute-env/Resource-Security-Group/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchfargatespotcomputeenvResourceSecurityGroup923D2390"
-          }
-        ],
-        "/batch-stack/batch-fargate-spot-compute-env/Resource-Service-Instance-Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchfargatespotcomputeenvResourceServiceInstanceRole6462BFB0"
-          }
-        ],
-        "/batch-stack/batch-fargate-spot-compute-env/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchfargatespotcomputeenv374749B0"
-          }
-        ],
-        "/batch-stack/batch-job-fargate-queue/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchjobfargatequeue5A12983E"
-          }
-        ],
-        "/batch-stack/batch-job-repo/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchjobrepo4C508C51"
-          }
-        ],
-        "/batch-stack/batch-job-def-from-ecr/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchjobdeffromecrE0E30DAD"
-          }
-        ],
-        "/batch-stack/batch-secret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchsecret7CD5E4C6"
-          }
-        ],
-        "/batch-stack/execution-role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "executionroleD9A39BE6"
-          }
-        ],
-        "/batch-stack/execution-role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "executionroleDefaultPolicy497F11A3"
-          }
-        ],
-        "/batch-stack/batch-job-def-fargate/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "batchjobdeffargate7FE30059"
+            "data": "SpotEc2A0470C83"
           }
         ],
         "/batch-stack/BootstrapVersion": [
@@ -438,19 +306,19 @@
       },
       "displayName": "batch-stack"
     },
-    "BatchWithEFSTestDefaultTestDeployAssert0F887B55.assets": {
+    "BatchManagedComputeEnvironmentTestDefaultTestDeployAssertD4528F80.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "BatchWithEFSTestDefaultTestDeployAssert0F887B55.assets.json",
+        "file": "BatchManagedComputeEnvironmentTestDefaultTestDeployAssertD4528F80.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "BatchWithEFSTestDefaultTestDeployAssert0F887B55": {
+    "BatchManagedComputeEnvironmentTestDefaultTestDeployAssertD4528F80": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "BatchWithEFSTestDefaultTestDeployAssert0F887B55.template.json",
+        "templateFile": "BatchManagedComputeEnvironmentTestDefaultTestDeployAssertD4528F80.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -458,7 +326,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "BatchWithEFSTestDefaultTestDeployAssert0F887B55.assets"
+          "BatchManagedComputeEnvironmentTestDefaultTestDeployAssertD4528F80.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -467,23 +335,23 @@
         }
       },
       "dependencies": [
-        "BatchWithEFSTestDefaultTestDeployAssert0F887B55.assets"
+        "BatchManagedComputeEnvironmentTestDefaultTestDeployAssertD4528F80.assets"
       ],
       "metadata": {
-        "/BatchWithEFSTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/BatchManagedComputeEnvironmentTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/BatchWithEFSTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/BatchManagedComputeEnvironmentTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "BatchWithEFSTest/DefaultTest/DeployAssert"
+      "displayName": "BatchManagedComputeEnvironmentTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

@@ -1,4 +1,4 @@
-import { IResource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnPlacementGroup } from './ec2.generated';
 
@@ -17,6 +17,11 @@ export interface IPlacementGroup extends IResource {
    * Determines how this placement group launches instances
    */
   strategy?: PlacementGroupStrategy;
+
+  /**
+   * @attribute
+   */
+  readonly placementGroupName: string;
 }
 
 export interface PlacementGroupProps {
@@ -39,8 +44,8 @@ export interface PlacementGroupProps {
 }
 
 export enum PlacementGroupSpreadLevel {
-  HOST = 'Host',
-  RACK = 'Rack',
+  HOST = 'host',
+  RACK = 'rack',
 }
 
 export enum PlacementGroupStrategy {
@@ -49,7 +54,7 @@ export enum PlacementGroupStrategy {
   SPREAD = 'spread',
 }
 
-export class PlacementGroup extends Construct {
+export class PlacementGroup extends Resource implements IPlacementGroup {
   /**
    * The number of partitions. Valid only when Strategy is set to partition.
    */
@@ -65,6 +70,8 @@ export class PlacementGroup extends Construct {
    */
   strategy?: PlacementGroupStrategy;
 
+  public readonly placementGroupName: string;
+
   constructor(scope: Construct, id: string, props?: PlacementGroupProps) {
     super(scope, id);
 
@@ -72,8 +79,34 @@ export class PlacementGroup extends Construct {
     this.spreadLevel = props?.spreadLevel;
     this.strategy = props?.strategy;
 
-    new CfnPlacementGroup(this, 'Resource', {
+    if (this.partitions && this.strategy) {
+      if (this.strategy !== PlacementGroupStrategy.PARTITION) {
+        throw new Error(`PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`);
+      }
+    } else if (this.partitions && !this.strategy) {
+      this.strategy = PlacementGroupStrategy.PARTITION;
+    }
 
+    if (this.spreadLevel) {
+      if (!this.strategy) {
+        this.strategy = PlacementGroupStrategy.SPREAD;
+      }
+      if (this.strategy !== PlacementGroupStrategy.SPREAD) {
+        throw new Error(`PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`);
+      }
+    }
+
+    const resource = new CfnPlacementGroup(this, 'Resource', {
+      partitionCount: this.partitions,
+      spreadLevel: this.spreadLevel,
+      strategy: this.strategy,
     });
+
+    this.placementGroupName = this.getResourceArnAttribute(resource.attrGroupName, {
+      service: 'batch',
+      resource: 'compute-environment',
+      resourceName: this.physicalName,
+    });
+
   }
 }

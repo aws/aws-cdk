@@ -418,7 +418,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       ComputeResources: {
         ...defaultComputeResources,
         PlacementGroup: {
-          foo: 'bar',
+          'Fn::GetAtt': ['myPlacementGroup2E94D14E', 'GroupName'],
         },
       },
     });

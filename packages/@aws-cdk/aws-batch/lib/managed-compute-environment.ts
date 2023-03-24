@@ -7,6 +7,10 @@ import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 
 
+/**
+ * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
+ * meet the requirements of the jobs executing in this ComputeEnvironment.
+ */
 export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.IConnectable {
   /**
    * The maximum vCpus this `ManagedComputeEnvironment` can scale up to.
@@ -520,6 +524,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
             imageType: image.imageType ?? EcsMachineImageType.ECS_AL2,
           };
         }),
+        placementGroup: this.placementGroup?.placementGroupName,
       },
     });
 
@@ -826,6 +831,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
             imageType: image.imageType ?? EksMachineImageType.EKS_AL2,
           };
         }),
+        placementGroup: this.placementGroup?.placementGroupName,
       },
     });
 

@@ -17,15 +17,12 @@ new FargateComputeEnvironment(stack, 'minimalPropsFargate', {
 new FargateComputeEnvironment(stack, 'maximalPropsFargate', {
   vpc,
   maxvCpus: 512,
-  name: 'FargateCEName',
+  name: 'maxPropsFargateCE',
   replaceComputeEnvironment: true,
   spot: true,
   terminateOnUpdate: true,
   updateTimeout: Duration.minutes(30),
   updateToLatestImageVersion: false,
-  serviceRole: new Role(stack, 'ServiceRole', {
-    assumedBy: new ServicePrincipal('batch.amazonaws.com'),
-  }),
 });
 
 new ManagedEc2EcsComputeEnvironment(stack, 'minimalPropsEc2', {
@@ -45,6 +42,7 @@ new ManagedEc2EcsComputeEnvironment(stack, 'LaunchTemplate', {
   maxvCpus: 512,
   replaceComputeEnvironment: true,
   terminateOnUpdate: false,
+  placementGroup: new ec2.PlacementGroup(stack, 'placementGroup'),
   updateTimeout: Duration.hours(1),
   launchTemplate: new LaunchTemplate(stack, 'launchTemplate'),
 });

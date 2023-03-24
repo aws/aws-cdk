@@ -1,12 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as eks from '@aws-cdk/aws-eks';
-import { ArnPrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Stack, Duration } from '@aws-cdk/core';
-import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
-import * as batch from '../lib';
-import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, PlacementGroup, PlacementGroupSpreadLevel, PlacementGroupStrategy } from '../lib';
-import { CfnComputeEnvironmentProps } from '../lib/batch.generated';
+import { Stack } from '@aws-cdk/core';
+import { PlacementGroup, PlacementGroupSpreadLevel, PlacementGroupStrategy } from '../lib';
 
 
 test('can configure empty placement group', () => {
@@ -20,7 +14,7 @@ test('can configure empty placement group', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::PlacementGroup', {});
 });
 
-test('only spcifiying partitions => strategy is PARTITION', () => {
+test('only specifying partitions => strategy is PARTITION', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -31,8 +25,23 @@ test('only spcifiying partitions => strategy is PARTITION', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::PlacementGroup', {
-    Partitions: 5,
-    PlacementGroupStrategy: PlacementGroupStrategy.PARTITION,
+    PartitionCount: 5,
+    Strategy: PlacementGroupStrategy.PARTITION,
+  });
+});
+
+test('only specifying spreadLevel => strategy is SPREAD', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new PlacementGroup(stack, 'placementgroup', {
+    spreadLevel: PlacementGroupSpreadLevel.HOST,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::PlacementGroup', {
+    Strategy: PlacementGroupStrategy.SPREAD,
   });
 });
 
@@ -47,7 +56,7 @@ test('placement group respects spreadLevel', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::PlacementGroup', {
-    PlacementGroupSpreadLevel: PlacementGroupSpreadLevel.HOST,
+    SpreadLevel: PlacementGroupSpreadLevel.HOST,
   });
 });
 
@@ -61,7 +70,7 @@ test('placement group respects strategy', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::PlacementGroup', {
-    PlacementGroupStrategy: PlacementGroupStrategy.SPREAD,
+    Strategy: PlacementGroupStrategy.SPREAD,
   });
 });
 
@@ -85,4 +94,25 @@ test('placement group throws if the SPREAD strategy is used with partitions', ()
     spreadLevel: PlacementGroupSpreadLevel.HOST,
     strategy: PlacementGroupStrategy.SPREAD,
   })).toThrow(/PlacementGroup 'placementgroup' can only specify 'partitions' with the 'PARTITION' strategy/);
+});
+
+test('placement group throws if the SPREAD strategy is used with partitions', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  expect(() => new PlacementGroup(stack, 'placementgroup', {
+    partitions: 5,
+    spreadLevel: PlacementGroupSpreadLevel.HOST,
+    strategy: PlacementGroupStrategy.SPREAD,
+  })).toThrow(/PlacementGroup 'placementgroup' can only specify 'partitions' with the 'PARTITION' strategy/);
+});
+
+test('placement group throws if spreadLevel is used without the SPREAD strategy', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  expect(() => new PlacementGroup(stack, 'placementgroup', {
+    spreadLevel: PlacementGroupSpreadLevel.HOST,
+    strategy: PlacementGroupStrategy.CLUSTER,
+  })).toThrow(/PlacementGroup 'placementgroup' can only specify 'spreadLevel' with the 'SPREAD' strategy/);
 });

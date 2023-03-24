@@ -137,7 +137,7 @@ export interface IEcsContainerDefinition {
   readonly gpu?: number;
   readonly secrets?: secretsmanager.Secret[];
   readonly user?: string;
-  readonly volumes?: EcsVolume[];
+  readonly volumes: EcsVolume[];
 
   renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty;
 }
@@ -176,7 +176,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   readonly gpu?: number;
   readonly secrets?: secretsmanager.Secret[];
   readonly user?: string;
-  readonly volumes?: EcsVolume[];
+  readonly volumes: EcsVolume[];
 
   private readonly imageConfig: ecs.ContainerImageConfig;
 
@@ -200,6 +200,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, {
         ...this as any,
+        // TS!
         taskDefinition: {
           obtainExecutionRole: () => this.executionRole,
         },
@@ -209,7 +210,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.gpu = props.gpu;
     this.secrets = props.secrets;
     this.user = props.user;
-    this.volumes = props.volumes;
+    this.volumes = props.volumes ?? [];
 
     this.imageConfig = props.image.bind(this, this as any);
   }
@@ -241,7 +242,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
           sourceVolume: volume.name,
         };
       }),
-      volumes: this.volumes?.map((volume) => {
+      volumes: this.volumes.map((volume) => {
         if (EfsVolume.isEfsVolume(volume)) {
           return {
             name: volume.name,
@@ -271,8 +272,9 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     };
   }
 
-  //addUlimit(...Ulimit[])
-  //addMountedVolume(..EcsVolume[])
+  addVolume(volume: EcsVolume): void {
+    this.volumes.push(volume);
+  }
 
   private renderResourceRequirements() {
     const resourceRequirements = [];
@@ -337,18 +339,18 @@ export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionPr
 
 export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase {
   readonly privileged?: boolean;
-  readonly ulimits?: Ulimit[];
+  readonly ulimits: Ulimit[];
 
   constructor(scope: Construct, id: string, props: EcsEc2ContainerDefinitionProps) {
     super(scope, id, props);
     this.privileged = props.privileged;
-    this.ulimits = props.ulimits;
+    this.ulimits = props.ulimits ?? [];
   }
 
   public renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       ...super.renderContainerDefinition(),
-      ulimits: this.ulimits?.map((ulimit) => ({
+      ulimits: this.ulimits.map((ulimit) => ({
         hardLimit: ulimit.hardLimit,
         name: ulimit.name,
         softLimit: ulimit.softLimit,
@@ -356,6 +358,10 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase {
       privileged: this.privileged,
     };
   };
+
+  addUlimit(ulimit: Ulimit): void {
+    this.ulimits.push(ulimit);
+  }
 }
 
 export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition {
