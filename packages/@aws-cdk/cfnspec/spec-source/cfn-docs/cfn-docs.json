@@ -5622,7 +5622,12 @@
     },
     "AWS::AutoScaling::AutoScalingGroup": {
       "attributes": {
-        "Ref": "When the logical ID of this resource is provided to the `Ref` intrinsic function, `Ref` returns the resource name. For example: `mystack-myasgroup-NT5EUXTNTXXD` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+        "LaunchConfigurationName": "",
+        "LaunchTemplateSpecification": "",
+        "MixedInstancesPolicy": "",
+        "PlacementGroup": "",
+        "Ref": "When the logical ID of this resource is provided to the `Ref` intrinsic function, `Ref` returns the resource name. For example: `mystack-myasgroup-NT5EUXTNTXXD` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) .",
+        "VPCZoneIdentifier": ""
       },
       "description": "The `AWS::AutoScaling::AutoScalingGroup` resource defines an Amazon EC2 Auto Scaling group, which is a collection of Amazon EC2 instances that are treated as a logical grouping for the purposes of automatic scaling and management.\n\nFor more information about Amazon EC2 Auto Scaling, see the [Amazon EC2 Auto Scaling User Guide](https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html) .\n\n> Amazon EC2 Auto Scaling configures instances launched as part of an Auto Scaling group using either a [launch template](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html) or a launch configuration. We strongly recommend that you do not use launch configurations. They do not provide full functionality for Amazon EC2 Auto Scaling or Amazon EC2. For more information, see [Launch configurations](https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-configurations.html) in the *Amazon EC2 Auto Scaling User Guide* .",
       "properties": {
@@ -6469,7 +6474,7 @@
       "properties": {
         "AllocationStrategy": "The allocation strategy to use for the compute resource if not enough instances of the best fitting instance type can be allocated. This might be because of availability of the instance type in the Region or [Amazon EC2 service limits](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html) . For more information, see [Allocation strategies](https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html) in the *AWS Batch User Guide* .\n\nWhen updating a compute environment, changing the allocation strategy requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* . `BEST_FIT` is not supported when updating a compute environment.\n\n> This parameter isn't applicable to jobs that are running on Fargate resources, and shouldn't be specified. \n\n- **BEST_FIT (default)** - AWS Batch selects an instance type that best fits the needs of the jobs with a preference for the lowest-cost instance type. If additional instances of the selected instance type aren't available, AWS Batch waits for the additional instances to be available. If there aren't enough instances available, or if the user is reaching [Amazon EC2 service limits](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html) then additional jobs aren't run until the currently running jobs have completed. This allocation strategy keeps costs lower but can limit scaling. If you are using Spot Fleets with `BEST_FIT` then the Spot Fleet IAM role must be specified.\n- **BEST_FIT_PROGRESSIVE** - AWS Batch will select additional instance types that are large enough to meet the requirements of the jobs in the queue, with a preference for instance types with a lower cost per unit vCPU. If additional instances of the previously selected instance types aren't available, AWS Batch will select new instance types.\n- **SPOT_CAPACITY_OPTIMIZED** - AWS Batch will select one or more instance types that are large enough to meet the requirements of the jobs in the queue, with a preference for instance types that are less likely to be interrupted. This allocation strategy is only available for Spot Instance compute resources.\n\nWith both `BEST_FIT_PROGRESSIVE` and `SPOT_CAPACITY_OPTIMIZED` allocation strategies using On-Demand or Spot Instances, and the `BEST_FIT` strategy using Spot Instances, AWS Batch might need to go above `maxvCpus` to meet your capacity requirements. In this event, AWS Batch never exceeds `maxvCpus` by more than a single instance.",
         "BidPercentage": "The maximum percentage that a Spot Instance price can be when compared with the On-Demand price for that instance type before instances are launched. For example, if your maximum percentage is 20%, the Spot price must be less than 20% of the current On-Demand price for that Amazon EC2 instance. You always pay the lowest (market) price and never more than your maximum percentage. For most use cases, we recommend leaving this field empty.\n\nWhen updating a compute environment, changing the bid percentage requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it.",
-        "DesiredvCpus": "The desired number of Amazon EC2 vCPUS in the compute environment. AWS Batch modifies this value between the minimum and maximum values based on job queue demand.\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it. > AWS Batch doesn't support changing the desired number of vCPUs of an existing compute environment. Don't specify this parameter for compute environments using Amazon EKS clusters. > When you update the `desiredvCpus` setting, the value must be between the `minvCpus` and `maxvCpus` values.\n> \n> Additionally, the updated `desiredvCpus` value must be greater than or equal to the current `desiredvCpus` value. For more information, see [test](https://docs.aws.amazon.com/batch/latest/userguide/error-desired-vcpus-update.html) in the *AWS Batch User Guide* .",
+        "DesiredvCpus": "The desired number of Amazon EC2 vCPUS in the compute environment. AWS Batch modifies this value between the minimum and maximum values based on job queue demand.\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it. > AWS Batch doesn't support changing the desired number of vCPUs of an existing compute environment. Don't specify this parameter for compute environments using Amazon EKS clusters. > When you update the `desiredvCpus` setting, the value must be between the `minvCpus` and `maxvCpus` values.\n> \n> Additionally, the updated `desiredvCpus` value must be greater than or equal to the current `desiredvCpus` value. For more information, see [Troubleshooting AWS Batch](https://docs.aws.amazon.com/batch/latest/userguide/troubleshooting.html#error-desired-vcpus-update) in the *AWS Batch User Guide* .",
         "Ec2Configuration": "Provides information used to select Amazon Machine Images (AMIs) for EC2 instances in the compute environment. If `Ec2Configuration` isn't specified, the default is `ECS_AL2` .\n\nWhen updating a compute environment, changing this setting requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* . To remove the EC2 configuration and any custom AMI ID specified in `imageIdOverride` , set this value to an empty string.\n\nOne or two values can be provided.\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it.",
         "Ec2KeyPair": "The Amazon EC2 key pair that's used for instances launched in the compute environment. You can use this key pair to log in to your instances with SSH. To remove the Amazon EC2 key pair, set this value to an empty string.\n\nWhen updating a compute environment, changing the EC2 key pair requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it.",
         "ImageId": "The Amazon Machine Image (AMI) ID used for instances launched in the compute environment. This parameter is overridden by the `imageIdOverride` member of the `Ec2Configuration` structure. To remove the custom AMI ID and use the default AMI ID, set this value to an empty string.\n\nWhen updating a compute environment, changing the AMI ID requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it. > The AMI that you choose for a compute environment must match the architecture of the instance types that you intend to use for that compute environment. For example, if your compute environment uses A1 instance types, the compute resource AMI that you choose must support ARM instances. Amazon ECS vends both x86 and ARM versions of the Amazon ECS-optimized Amazon Linux 2 AMI. For more information, see [Amazon ECS-optimized Amazon Linux 2 AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html#ecs-optimized-ami-linux-variants.html) in the *Amazon Elastic Container Service Developer Guide* .",
@@ -13610,6 +13615,7 @@
     "AWS::DocDBElastic::Cluster": {
       "attributes": {
         "ClusterArn": "",
+        "ClusterEndpoint": "",
         "Ref": ""
       },
       "description": "Creates a new Amazon DocumentDB elastic cluster and returns its cluster structure.",
@@ -31415,7 +31421,7 @@
       "properties": {
         "SlotToElicit": "If the dialog action is `ElicitSlot` , defines the slot to elicit from the user.",
         "SuppressNextMessage": "When true the next message for the intent is not used.",
-        "Type": "The action that the bot should execute."
+        "Type": "The action that the bot should execute. Valid values are `ElicitIntent` , `StartIntent` , `ElicitSlot` , `EvaluateConditional` , `InvokeDialogCodeHook` , `ConfirmIntent` , `FulfillIntent` , `CloseIntent` , and `EndConversation` ."
       }
     },
     "AWS::Lex::Bot.DialogCodeHookInvocationSetting": {
@@ -37739,7 +37745,9 @@
         "EngineVersion": "The version of OpenSearch to use. The value must be in the format `OpenSearch_X.Y` or `Elasticsearch_X.Y` . If not specified, the latest version of OpenSearch is used. For information about the versions that OpenSearch Service supports, see [Supported versions of OpenSearch and Elasticsearch](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version) in the *Amazon OpenSearch Service Developer Guide* .\n\nIf you set the [EnableVersionUpgrade](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeopensearchdomain) update policy to `true` , you can update `EngineVersion` without interruption. When `EnableVersionUpgrade` is set to `false` , or is not specified, updating `EngineVersion` results in [replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement) .",
         "LogPublishingOptions": "An object with one or more of the following keys: `SEARCH_SLOW_LOGS` , `ES_APPLICATION_LOGS` , `INDEX_SLOW_LOGS` , `AUDIT_LOGS` , depending on the types of logs you want to publish. Each key needs a valid `LogPublishingOption` value. For the full syntax, see the [examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--examples) .",
         "NodeToNodeEncryptionOptions": "Specifies whether node-to-node encryption is enabled. See [Node-to-node encryption for Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ntn.html) .",
+        "OffPeakWindowOptions": "Options for a domain's off-peak window, during which OpenSearch Service can perform mandatory configuration changes on the domain.",
         "SnapshotOptions": "*DEPRECATED* . The automated snapshot configuration for the OpenSearch Service domain indexes.",
+        "SoftwareUpdateOptions": "Options for configuring service software updates for a domain.",
         "Tags": "An arbitrary set of tags (key\u2013value pairs) to associate with the OpenSearch Service domain.",
         "VPCOptions": "The virtual private cloud (VPC) configuration for the OpenSearch Service domain. For more information, see [Launching your Amazon OpenSearch Service domains within a VPC](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/vpc.html) in the *Amazon OpenSearch Service Developer Guide* .\n\nIf you remove this entity altogether, along with its associated properties, it causes a replacement. You might encounter this scenario if you're updating your security configuration from a VPC to a public endpoint."
       }
@@ -37844,6 +37852,21 @@
         "Enabled": "Specifies to enable or disable node-to-node encryption on the domain. Required if you enable fine-grained access control in [AdvancedSecurityOptionsInput](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-advancedsecurityoptionsinput.html) ."
       }
     },
+    "AWS::OpenSearchService::Domain.OffPeakWindow": {
+      "attributes": {},
+      "description": "A custom 10-hour, low-traffic window during which OpenSearch Service can perform mandatory configuration changes on the domain. These actions can include scheduled service software updates and blue/green Auto-Tune enhancements. OpenSearch Service will schedule these actions during the window that you specify. If you don't specify a window start time, it defaults to 10:00 P.M. local time.",
+      "properties": {
+        "WindowStartTime": "The desired start time for an off-peak maintenance window."
+      }
+    },
+    "AWS::OpenSearchService::Domain.OffPeakWindowOptions": {
+      "attributes": {},
+      "description": "Off-peak window settings for the domain.",
+      "properties": {
+        "Enabled": "Specifies whether off-peak window settings are enabled for the domain.",
+        "OffPeakWindow": "Off-peak window settings for the domain."
+      }
+    },
     "AWS::OpenSearchService::Domain.SAMLOptions": {
       "attributes": {},
       "description": "Container for information about the SAML configuration for OpenSearch Dashboards.",
@@ -37878,12 +37901,27 @@
         "AutomatedSnapshotStartHour": "The hour in UTC during which the service takes an automated daily snapshot of the indexes in the OpenSearch Service domain. For example, if you specify 0, OpenSearch Service takes an automated snapshot everyday between midnight and 1 am. You can specify a value between 0 and 23."
       }
     },
+    "AWS::OpenSearchService::Domain.SoftwareUpdateOptions": {
+      "attributes": {},
+      "description": "Options for configuring service software updates for a domain.",
+      "properties": {
+        "AutoSoftwareUpdateEnabled": "Specifies whether automatic service software updates are enabled for the domain."
+      }
+    },
     "AWS::OpenSearchService::Domain.VPCOptions": {
       "attributes": {},
       "description": "The virtual private cloud (VPC) configuration for the OpenSearch Service domain. For more information, see [Launching your Amazon OpenSearch Service domains using a VPC](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/vpc.html) in the *Amazon OpenSearch Service Developer Guide* .",
       "properties": {
         "SecurityGroupIds": "The list of security group IDs that are associated with the VPC endpoints for the domain. If you don't provide a security group ID, OpenSearch Service uses the default security group for the VPC. To learn more, see [Security groups for your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html) in the *Amazon VPC User Guide* .",
         "SubnetIds": "Provide one subnet ID for each Availability Zone that your domain uses. For example, you must specify three subnet IDs for a three-AZ domain. To learn more, see [VPCs and subnets](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html) in the *Amazon VPC User Guide* .\n\nIf you specify more than one subnet, you must also configure `ZoneAwarenessEnabled` and `ZoneAwarenessConfig` within [ClusterConfig](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-clusterconfig.html) , otherwise you'll see the error \"You must specify exactly one subnet\" during template creation."
+      }
+    },
+    "AWS::OpenSearchService::Domain.WindowStartTime": {
+      "attributes": {},
+      "description": "A custom start time for the off-peak window, in Coordinated Universal Time (UTC). The window length will always be 10 hours, so you can't specify an end time. For example, if you specify 11:00 P.M. UTC as a start time, the end time will automatically be set to 9:00 A.M.",
+      "properties": {
+        "Hours": "The start hour of the window in Coordinated Universal Time (UTC), using 24-hour time. For example, 17 refers to 5:00 P.M. UTC. The minimum value is 0 and the maximum value is 23.",
+        "Minutes": "The start minute of the window, in UTC. The minimum value is 0 and the maximum value is 59."
       }
     },
     "AWS::OpenSearchService::Domain.ZoneAwarenessConfig": {
@@ -42592,14 +42630,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
-        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -42607,18 +42645,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "The tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -42627,7 +42665,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -42637,15 +42675,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -43190,8 +43228,6 @@
         "HostVPCId": "The ID of the VPC that you want to create the resolver endpoint in.",
         "IpAddressCount": "The number of IP addresses that the resolver endpoint can use for DNS queries.",
         "Name": "The name that you assigned to the resolver endpoint when you created the endpoint.",
-        "OutpostArn": "",
-        "PreferredInstanceType": "",
         "Ref": "`Ref` returns the `ResolverEndpoint` object.",
         "ResolverEndpointId": "The ID of the resolver endpoint.",
         "ResolverEndpointType": "For the endpoint type you can choose either IPv4, IPv6. or dual-stack. A dual-stack endpoint means that it will resolve via both IPv4 and IPv6. If you choose either IPv4 or IPv6, this endpoint type is applied to all IP addresses."
@@ -43201,8 +43237,6 @@
         "Direction": "Indicates whether the Resolver endpoint allows inbound or outbound DNS queries:\n\n- `INBOUND` : allows DNS queries to your VPC from your network\n- `OUTBOUND` : allows DNS queries from your VPC to your network",
         "IpAddresses": "The subnets and IP addresses in your VPC that DNS queries originate from (for outbound endpoints) or that you forward DNS queries to (for inbound endpoints). The subnet ID uniquely identifies a VPC.",
         "Name": "A friendly name that lets you easily find a configuration in the Resolver dashboard in the Route 53 console.",
-        "OutpostArn": "",
-        "PreferredInstanceType": "",
         "ResolverEndpointType": "The Resolver endpoint IP address type.",
         "SecurityGroupIds": "The ID of one or more security groups that control access to this VPC. The security group must include one or more inbound rules (for inbound endpoints) or outbound rules (for outbound endpoints). Inbound and outbound rules must allow TCP and UDP access. For inbound access, open port 53. For outbound access, open the port that you're using for DNS queries on your network.",
         "Tags": "Route 53 Resolver doesn't support updating tags through CloudFormation."
@@ -44072,6 +44106,9 @@
     },
     "AWS::S3ObjectLambda::AccessPoint": {
       "attributes": {
+        "Alias": "The alias of the Object Lambda Access Point.",
+        "Alias.Status": "The status of the Object Lambda Access Point alias. Valid Values: `PROVISIONING` | `READY` .",
+        "Alias.Value": "The alias name value of the Object Lambda Access Point. For example: `myolap-1a4n8yjrb3kda96f67zwrwiiuse1a--ol-s3` .",
         "Arn": "Specifies the ARN for the Object Lambda Access Point.",
         "CreationDate": "The date and time when the specified Object Lambda Access Point was created.",
         "PolicyStatus": "",
@@ -44087,6 +44124,14 @@
       "properties": {
         "Name": "The name of this access point.",
         "ObjectLambdaConfiguration": "A configuration used when creating an Object Lambda Access Point."
+      }
+    },
+    "AWS::S3ObjectLambda::AccessPoint.Alias": {
+      "attributes": {},
+      "description": "The alias of an Object Lambda Access Point. For more information, see [How to use a bucket-style alias for your S3 bucket Object Lambda Access Point](https://docs.aws.amazon.com/AmazonS3/latest/userguide/olap-use.html#ol-access-points-alias) .",
+      "properties": {
+        "Status": "The status of the Object Lambda Access Point alias. If the status is `PROVISIONING` , the Object Lambda Access Point is provisioning the alias and the alias is not ready for use yet. If the status is `READY` , the Object Lambda Access Point alias is successfully provisioned and ready for use.",
+        "Value": "The alias value of the Object Lambda Access Point."
       }
     },
     "AWS::S3ObjectLambda::AccessPoint.AwsLambda": {
