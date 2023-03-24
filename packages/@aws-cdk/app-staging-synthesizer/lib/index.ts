@@ -1,2 +1,2 @@
 export * from './default-staging-stack';
-export * from './synthesizer';
+export * from './app-staging-synthesizer';

@@ -15,7 +15,7 @@ import {
   StackProps,
 } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
-import { BootstrapRole } from './synthesizer';
+import { BootstrapRole } from './app-staging-synthesizer';
 
 export interface FileAssetInfo {
   readonly bucketName: string;
