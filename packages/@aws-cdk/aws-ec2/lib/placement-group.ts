@@ -32,6 +32,8 @@ export interface PlacementGroupProps {
 
   /**
    * Determines how this placement group launches instances
+   *
+   * @default PlacementGroupStrategy.CLUSTER
    */
   readonly strategy?: PlacementGroupStrategy;
 }

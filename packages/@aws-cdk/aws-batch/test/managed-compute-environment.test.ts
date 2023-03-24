@@ -404,13 +404,12 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  /*test('respects placement group', () => {
+  test('respects placement group', () => {
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
       vpc,
-      launchTemplate: new LaunchTemplate(stack, 'launchTemplate'),
-      placementGroup: new PlacementGroup(stack, 'myPlacementGroup'),
+      placementGroup: new ec2.PlacementGroup(stack, 'myPlacementGroup'),
     });
 
     // THEN
@@ -424,7 +423,6 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       },
     });
   });
-  */
 
   test('respects replaceComputeEnvironment', () => {
     // WHEN
@@ -591,19 +589,17 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  /*
   test('throws when no instance types are provided', () => {
-    const ce = new ComputeEnvironment(stack, 'MyCE', {
+    new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
       useOptimalInstanceClasses: false,
       vpc,
     });
 
-    expect(stack.resolve(ce).toThrow(/foo/));
-
-    //expect(Template.fromStack(stack)).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'useOptimalInstanceClasses: false' without adding any instance classes or types/);
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow(/Specifies 'useOptimalInstanceClasses: false' without specifying any instance types or classes/);
   });
-  */
 
   test('throws error when AllocationStrategy.SPOT_CAPACITY_OPTIMIZED is used without specfiying spot', () => {
     // THEN

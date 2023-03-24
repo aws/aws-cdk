@@ -505,14 +505,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
-          produce: () => {
-            const instances = renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses);
-            if (instances.length === 0) {
-              throw new Error('oh no! The list is empty!');
-            }
-
-            return instances;
-          },
+          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
         }),
         type: this.spot ? 'SPOT' : 'EC2',
         spotIamFleetRole: this.spotFleetRole?.roleArn,
@@ -535,6 +528,8 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       resource: 'compute-environment',
       resourceName: this.physicalName,
     });
+
+    this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
@@ -544,6 +539,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   public addInstanceClass (instanceClass: ec2.InstanceClass): void {
     this.instanceClasses.push(instanceClass);
   }
+
 }
 
 interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
@@ -838,6 +834,8 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
       resource: 'compute-environment',
       resourceName: this.physicalName,
     });
+
+    this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
@@ -919,6 +917,14 @@ function determineAllocationStrategy(id: string, allocationStrategy?: Allocation
   }
 
   return result;
+}
+
+function validateInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
+  if (renderInstances(types, classes, useOptimalInstanceClasses).length === 0) {
+    return ["Specifies 'useOptimalInstanceClasses: false' without specifying any instance types or classes"];
+  }
+
+  return [];
 }
 
 function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: number, spotFleetRole?: iam.IRole) {
