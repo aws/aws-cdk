@@ -530,6 +530,21 @@ describe('Batch Compute Environment', () => {
       });
     });
 
+    describe('with zero max vcpu value provided', () => {
+      test('should deny less than 1', () => {
+        // THEN
+        throws(() => {
+          // WHEN
+          new batch.ComputeEnvironment(stack, 'test-compute-env', {
+            computeResources: {
+              vpc,
+              maxvCpus: 0,
+            },
+          });
+        });
+      });
+    });
+
     describe('with no instance role specified', () => {
       test('should generate a role for me', () => {
         // WHEN

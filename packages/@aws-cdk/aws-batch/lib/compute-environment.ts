@@ -403,7 +403,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
         ec2KeyPair: props.computeResources.ec2KeyPair,
         imageId: props.computeResources.image && props.computeResources.image.getImage(this).imageId,
         launchTemplate: props.computeResources.launchTemplate,
-        maxvCpus: props.computeResources.maxvCpus || 256,
+        maxvCpus: props.computeResources.maxvCpus ?? 256,
         placementGroup: props.computeResources.placementGroup,
         securityGroupIds: this.getSecurityGroupIds(useLaunchTemplateNetworkInterface),
         spotIamFleetRole: spotFleetRole?.roleArn,
@@ -428,7 +428,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
               }).roleName],
             }).attrArn,
           instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
-          minvCpus: props.computeResources.minvCpus || 0,
+          minvCpus: props.computeResources.minvCpus ?? 0,
         } : {}),
       };
     }
@@ -480,6 +480,14 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment,
     }
 
     if (props.computeResources) {
+
+      if (props.computeResources.maxvCpus) {
+        // maxvCpus cannot be less than 1
+        if (props.computeResources.maxvCpus < 1) {
+          throw new Error('Maximum vCpus for a batch compute environment cannot be less than 1');
+        }
+      }
+
       if (isFargate) {
         // VALIDATE FOR FARGATE
 
