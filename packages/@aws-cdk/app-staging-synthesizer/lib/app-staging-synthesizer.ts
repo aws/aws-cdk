@@ -14,30 +14,8 @@ import {
   Token,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { BootstrapRoles, StagingRoles } from './bootstrap-roles';
 import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
-
-export class BootstrapRole {
-  public static cliCredentials() {
-    return new BootstrapRole(undefined);
-  }
-
-  public static fromRoleArn(arn: string) {
-    return new BootstrapRole(arn);
-  }
-
-  private constructor(public readonly roleArn: string | undefined) {}
-}
-
-export interface BootstrapRoles {
-  readonly cloudFormationExecutionRole?: BootstrapRole;
-  readonly deploymentActionRole?: BootstrapRole;
-  readonly lookupRole?: BootstrapRole;
-}
-
-export interface StagingRoles {
-  readonly fileAssetPublishingRole?: BootstrapRole;
-  readonly dockerAssetPublishingRole?: BootstrapRole;
-}
 
 /**
  * Properties for stackPerEnv static method
@@ -195,7 +173,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
             },
             stackName,
             fileAssetPublishingRole: props.stagingRoles?.fileAssetPublishingRole,
-            dockerAssetPublishingRole: props.stagingRoles?.dockerAssetPublishingRole,
+            imageAssetPublishingRole: props.stagingRoles?.dockerAssetPublishingRole,
           });
           boundStack.addDependency(stagingStack.dependencyStack, 'stack depends on the staging stack for staging resources');
 
@@ -337,14 +315,16 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
   /**
    * Add a docker image asset to the manifest.
    */
-  public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    const { repoName, assumeRoleArn } = this.stagingStack.addDockerImage(asset);
+  public addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
+    // TODO: implement
+    throw new Error('Support for Docker Image Assets in AppStagingSynthesizer is not yet implemented. This construct is being actively worked on.');
+    // const { repoName, assumeRoleArn } = this.stagingStack.addDockerImage(asset);
 
-    const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
-      repositoryName: repoName,
-      role: { assumeRoleArn },
-      // TODO: more props
-    });
-    return this.cloudFormationLocationFromDockerImageAsset(location);
+    // const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
+    //   repositoryName: repoName,
+    //   role: { assumeRoleArn },
+    //   // TODO: more props
+    // });
+    // return this.cloudFormationLocationFromDockerImageAsset(location);
   }
 }

@@ -4,9 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
   App,
-  Arn,
   ArnFormat,
-  Aws,
   BootstraplessSynthesizer,
   DockerImageAssetSource,
   FileAssetSource,
@@ -15,26 +13,42 @@ import {
   StackProps,
 } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
-import { BootstrapRole } from './app-staging-synthesizer';
+import { BootstrapRole } from './bootstrap-roles';
 
+/**
+ * Information returned by the Staging Stack for each file asset.
+ */
 export interface FileAssetInfo {
+  /**
+   * The name of the staging bucket
+   */
   readonly bucketName: string;
+
+  /**
+   * The arn to assume (fileAssetPublishingRole)
+   */
   readonly assumeRoleArn: string;
 }
 
-export interface DockerAssetInfo {
+/**
+ * Information returned by the Staging Stack for each image asset
+ */
+export interface ImageAssetInfo {
+  /**
+   * The name of the staging repository
+   */
   readonly repoName: string;
+
+  /**
+   * The arn to assume (imageAssetPublishingRole)
+   */
   readonly assumeRoleArn: string;
 }
+
 /**
  * Information on how a Staging Stack should look.
  */
 export interface IStagingStack extends IConstruct {
-  /**
-   * App level unique identifier
-   */
-  readonly appId: string;
-
   /**
    * The app-scoped, environment-keyed bucket created in this staging stack.
    */
@@ -46,17 +60,20 @@ export interface IStagingStack extends IConstruct {
    */
   readonly stagingRepos: Record<string, ecr.Repository>;
 
+  /**
+   * The stack to add dependencies to.
+   */
   readonly dependencyStack: Stack;
 
   /**
-   * // TODO
+   * Return staging resource information for a file asset.
    */
   addFile(asset: FileAssetSource): FileAssetInfo;
 
   /**
-   * // TODO
+   * Return staging resource information for a docker asset.
    */
-  addDockerImage(asset: DockerImageAssetSource): DockerAssetInfo;
+  addDockerImage(asset: DockerImageAssetSource): ImageAssetInfo;
 }
 
 /**
@@ -64,7 +81,7 @@ export interface IStagingStack extends IConstruct {
  */
 export interface DefaultStagingStackProps extends StackProps {
   /**
-   * App id
+   * The unique id of the app that the staging stack is scoped to.
    */
   readonly appId: string;
 
@@ -87,18 +104,18 @@ export interface DefaultStagingStackProps extends StackProps {
    *
    * @default - a well-known name unique to this app/env.
    */
-  readonly dockerAssetPublishingRole?: BootstrapRole;
+  readonly imageAssetPublishingRole?: BootstrapRole;
 
   /**
    * Repository lifecycle rules (not fully implemented)
    */
-  readonly repositoryLifecycleRules?: StagingRepoLifecycleRule[];
+  // readonly repositoryLifecycleRules?: StagingRepoLifecycleRule[];
 }
 
-export interface StagingRepoLifecycleRule {
-  readonly lifecycleRules: ecr.LifecycleRule[];
-  readonly assets: string[];
-}
+// export interface StagingRepoLifecycleRule {
+//   readonly lifecycleRules: ecr.LifecycleRule[];
+//   readonly assets: string[];
+// }
 
 /**
  * A default Staging Stack
@@ -114,7 +131,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   /**
    * Default asset publishing role name for docker (ECR) assets.
    */
-  private get DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_NAME() {
+  private get DEFAULT_IMAGE_ASSET_PUBISHING_ROLE_NAME() {
     return `cdk-asset-publishing-role-${this.region}-${this.appId}`.slice(0, 63);
   }
 
@@ -128,12 +145,18 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
    */
   public readonly stagingRepos: Record<string, ecr.Repository>;
 
+  /**
+   * The stack to add dependencies to.
+   */
   public readonly dependencyStack: Stack;
-  public readonly appId: string;
+
+  private readonly appId: string;
   private readonly stagingBucketName?: string;
-  private fileAssetPublishingRoleArn?: string;
-  private dockerAssetPublishingRoleArn?: string;
-  private readonly repositoryLifecycleRules: Record<string, ecr.LifecycleRule[]>;
+  private readonly fileAssetPublishingRoleArn?: string;
+  private readonly fileAssetPublishingRoleId = 'CdkFilePublishingRole';
+  private readonly imageAssetPublishingRoleArn?: string;
+  private readonly imageAssetPublishingRoleId = 'CdkImagePublishingRole';
+  // private readonly repositoryLifecycleRules: Record<string, ecr.LifecycleRule[]>;
 
   constructor(scope: App, id: string, props: DefaultStagingStackProps) {
     super(scope, id, {
@@ -146,9 +169,9 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
 
     this.stagingBucketName = props.stagingBucketName;
     this.fileAssetPublishingRoleArn = props.fileAssetPublishingRole ? this.validateStagingRole(props.fileAssetPublishingRole).roleArn : undefined;
-    this.dockerAssetPublishingRoleArn = props.dockerAssetPublishingRole ?
-      this.validateStagingRole(props.dockerAssetPublishingRole).roleArn : undefined;
-    this.repositoryLifecycleRules = this.processLifecycleRules(props.repositoryLifecycleRules ?? []);
+    this.imageAssetPublishingRoleArn = props.imageAssetPublishingRole ?
+      this.validateStagingRole(props.imageAssetPublishingRole).roleArn : undefined;
+    // this.repositoryLifecycleRules = this.processLifecycleRules(props.repositoryLifecycleRules ?? []);
     this.stagingRepos = {};
   }
 
@@ -159,32 +182,29 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     return stagingRole;
   }
 
-  private processLifecycleRules(rules: StagingRepoLifecycleRule[]) {
-    const ruleMap: Record<string, ecr.LifecycleRule[]> = {};
-    for (const rule of rules) {
-      for (const asset of rule.assets) {
-        if (ruleMap[asset] === undefined) {
-          ruleMap[asset] = [];
-        }
-        ruleMap[asset].push(...rule.lifecycleRules);
-      }
-    }
-    return ruleMap;
-  }
+  // private processLifecycleRules(rules: StagingRepoLifecycleRule[]) {
+  //   const ruleMap: Record<string, ecr.LifecycleRule[]> = {};
+  //   for (const rule of rules) {
+  //     for (const asset of rule.assets) {
+  //       if (ruleMap[asset] === undefined) {
+  //         ruleMap[asset] = [];
+  //       }
+  //       ruleMap[asset].push(...rule.lifecycleRules);
+  //     }
+  //   }
+  //   return ruleMap;
+  // }
 
-  /**
-   * Returns the file publishing role arn
-   */
   private getFilePublishingRoleArn(): string {
     if (this.fileAssetPublishingRoleArn) {
       return this.fileAssetPublishingRoleArn;
     }
-    const role = this.node.tryFindChild('CdkFilePublishingRole') as iam.Role;
+    const role = this.node.tryFindChild(this.fileAssetPublishingRoleId) as iam.Role;
     if (role === undefined) {
       throw new Error('Cannot call getFilePublishingRoleArn before createFilePublishingRole');
     }
     return Stack.of(this).formatArn({
-      partition: '${AWS::Partition}', // TODO: token partition doesn't work
+      partition: '${AWS::Partition}',
       region: '', // iam is global
       service: 'iam',
       resource: 'role',
@@ -193,55 +213,46 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     });
   }
 
-  /**
-   * Creates the file publishing role
-   */
   private createFilePublishingRole() {
     const roleName = this.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME;
-    const role = new iam.Role(this, 'CdkFilePublishingRole', {
-      roleName: roleName,
+    const role = new iam.Role(this, this.fileAssetPublishingRoleId, {
+      roleName,
       assumedBy: new iam.AccountPrincipal(this.account),
     });
     return role;
   }
 
-  /**
-   * Returns the well-known name of the image publishing role
-   */
-  private getCreateImagePublishingRole() {
-    if (this.dockerAssetPublishingRoleArn) {
-      return this.dockerAssetPublishingRoleArn;
+  private getImagePublishingRoleArn(): string {
+    if (this.imageAssetPublishingRoleArn) {
+      return this.imageAssetPublishingRoleArn;
     }
-
-    const roleId = 'CdkDockerAssetPublishingRole';
-    const roleName = this.DEFAULT_DOCKER_ASSET_PUBISHING_ROLE_NAME;
-
-    const createIamRole = () => {
-      const role = new iam.Role(this, roleId, {
-        roleName: roleName,
-        assumedBy: new iam.ServicePrincipal('sts.amazonaws.com'),
-      });
-      role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
-      return role;
-    };
-
-    this.node.tryFindChild(roleId) as iam.Role ?? createIamRole();
-
-    return Arn.format({
-      partition: this.partition ?? Aws.PARTITION,
-      account: this.account ?? Aws.ACCOUNT_ID,
-      region: this.region ?? Aws.REGION,
+    const role = this.node.tryFindChild(this.imageAssetPublishingRoleId) as iam.Role;
+    if (role === undefined) {
+      throw new Error('Cannot call getImagePublishingRoleArn before createImagePublishingRole');
+    }
+    return Stack.of(this).formatArn({
+      partition: '${AWS::{artition}',
+      region: '', // iam is global
       service: 'iam',
       resource: 'role',
-      resourceName: roleName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: this.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
+  }
+
+  private createImagePublishingRole() {
+    const roleName = this.DEFAULT_IMAGE_ASSET_PUBISHING_ROLE_NAME;
+    const role = new iam.Role(this, this.imageAssetPublishingRoleId, {
+      roleName,
+      assumedBy: new iam.AccountPrincipal(this.account),
+    });
+    return role;
   }
 
   private createBucketKey(): kms.IKey {
     const bucketKeyId = 'BucketKey';
     const key = this.node.tryFindChild(bucketKeyId) as kms.IKey ?? new kms.Key(this, bucketKeyId, {
-      // TODO add alias
+      alias: `CdkStagingBucketKey${this.account}-${this.region}-${this.appId}`,
       admins: [new iam.AccountPrincipal(this.account)],
     });
     return key;
@@ -280,11 +291,16 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       throw new Error('Assets synthesized with AppScopedStagingSynthesizer must include a \'uniqueId\' in the asset source definition.');
     }
 
+    // Create image publishing role if it doesn't exist
+    this.node.tryFindChild(this.imageAssetPublishingRoleId) as iam.Role ?? this.createImagePublishingRole();
+
+    // TODO: grant permissions to the role
+
     const repoName = `${asset.assetName}`.replace('.', '-'); // TODO: actually sanitize
     if (this.stagingRepos[asset.assetName] === undefined) {
       this.stagingRepos[asset.assetName] = new ecr.Repository(this, repoName, {
         repositoryName: repoName,
-        lifecycleRules: this.repositoryLifecycleRules[asset.assetName],
+        // lifecycleRules: this.repositoryLifecycleRules[asset.assetName],
       });
     }
     return repoName;
@@ -297,10 +313,10 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     };
   }
 
-  public addDockerImage(asset: DockerImageAssetSource): DockerAssetInfo {
+  public addDockerImage(asset: DockerImageAssetSource): ImageAssetInfo {
     return {
       repoName: this.getCreateRepo(asset),
-      assumeRoleArn: this.getCreateImagePublishingRole(),
+      assumeRoleArn: this.getImagePublishingRoleArn(),
     };
   }
 }
