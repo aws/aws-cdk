@@ -94,7 +94,7 @@ export interface CustomFactoryProps extends AppStagingSynthesizerProps {
    *
    * @default true
    */
-  // oncePerEnv: boolean;
+  oncePerEnv: boolean;
 }
 
 /**
@@ -159,8 +159,31 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
           }
 
           let stackId = 'StagingStack';
+          // Ensure we do not have a scenario where the App includes BOTH
+          // environment-agnostic stacks and set environment stacks.
+          const incompatibleEnvErrorMessage = [
+            'AppStagingSynthesizer cannot synthesize CDK Apps with BOTH environment-agnostic stacks and set environment stacks.',
+            'Please either specify environments for all stacks or no stacks in the CDK App.',
+          ].join('\n');
+          const addEnvMetadata = (agnostic: boolean) => {
+            if (app.node.metadata.filter((m) => m.type === 'cdk-env').length === 0) {
+              app.node.addMetadata('cdk-env', agnostic ? 'agnostic': 'non-agnostic');
+            }
+          };
+
           if (!Token.isUnresolved(boundStack.account) && !Token.isUnresolved(boundStack.region)) {
+            // Stack has specified account and region
             stackId = stackId + boundStack.account + boundStack.region;
+            if (app.node.metadata.filter((m) => m.type === 'cdk-env' && m.data === 'agnostic').length >= 1) {
+              throw new Error(incompatibleEnvErrorMessage);
+            }
+            addEnvMetadata(false);
+          } else {
+            // Stack is environment agnostic
+            if (app.node.metadata.filter((m) => m.type === 'cdk-env' && m.data === 'non-agnostic').length >= 1) {
+              throw new Error(incompatibleEnvErrorMessage);
+            }
+            addEnvMetadata(true);
           }
 
           const stackName = `StagingStack${props.appId}`;

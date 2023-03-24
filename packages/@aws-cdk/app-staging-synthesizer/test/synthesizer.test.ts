@@ -202,6 +202,28 @@ describe(AppStagingSynthesizer, () => {
     expect(evalCFN(location1.repositoryName)).toEqual(evalCFN(location2.repositoryName));
   });
 
+  describe('environment specifics', () => {
+    test('throws if App includes env-agnostic and specific env stacks', () => {
+      // GIVEN - App with Stack with specific environment
+
+      // THEN - Expect environment agnostic stack to fail
+      expect(() => new Stack(app, 'NoEnvStack')).toThrowError('AppStagingSynthesizer cannot synthesize CDK Apps with BOTH environment-agnostic stacks and set environment stacks.\nPlease either specify environments for all stacks or no stacks in the CDK App.');
+    });
+
+    test('metadata for cdk-env is only added once on the app', () => {
+      // GIVEN - Additional App with specific environment
+      new Stack(app, 'EnvStack', {
+        env: {
+          account: '000000000000',
+          region: 'us-west-2',
+        },
+      });
+
+      // THEN - We only add the env metadata once
+      expect(app.node.metadata.filter((m) => m.type === 'cdk-env').length).toEqual(1);
+    });
+  });
+
   /**
   * Evaluate a possibly string-containing value the same way CFN would do
   *
