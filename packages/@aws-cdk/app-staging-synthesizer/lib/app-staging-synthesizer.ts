@@ -72,7 +72,7 @@ export interface CustomFactoryProps extends AppStagingSynthesizerProps {
    *
    * @default true
    */
-  oncePerEnv: boolean;
+  // oncePerEnv: boolean;
 }
 
 /**
@@ -108,6 +108,10 @@ interface AppStagingSynthesizerProps {
  * App Staging Synthesizer
  */
 export class AppStagingSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer {
+  /**
+   * Use the Default Staging Stack as the Staging Stack for this Synthesizer, and
+   * create a new Staging Stack per environment this App is deployed in.
+   */
   public static stackPerEnv(props: StackPerEnvProps) {
     for (const key in props) {
       if (props.hasOwnProperty(key)) {
@@ -183,8 +187,28 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
     });
   }
 
+  /**
+   * Supply your own stagingStackFactory method for creating an IStagingStack when
+   * a stack is bound to the synthesizer.
+   *
+   * By default, `oncePerEnv = true`, which means that a new instance of the IStagingStack
+   * will be created in new environments. Set `oncePerEnv = false` to turn off that behavior.
+   */
   public static customFactory(props: CustomFactoryProps) {
     return new AppStagingSynthesizer(props);
+  }
+
+  /**
+   * Supply a specific stack to be used as the Staging Stack for this App.
+   */
+  public static customDecider(stack: IStagingStack) {
+    return new AppStagingSynthesizer({
+      stagingStackFactory: {
+        stagingStackFactory(_boundStack: Stack) {
+          return stack;
+        },
+      },
+    });
   }
 
   private constructor(private readonly props: AppStagingSynthesizerProps) {
