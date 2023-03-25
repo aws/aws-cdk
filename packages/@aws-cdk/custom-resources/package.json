@@ -96,6 +96,7 @@
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
     "@aws-sdk/client-s3": "^3.295.0",
     "@aws-sdk/credential-providers": "^3.295.0",
     "@types/aws-lambda": "^8.10.111",
@@ -118,6 +119,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
     "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -129,6 +131,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {

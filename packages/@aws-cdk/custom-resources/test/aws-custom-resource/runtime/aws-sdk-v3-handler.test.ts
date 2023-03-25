@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as S3 from '@aws-sdk/client-s3';
 import { PhysicalResourceId } from '../../../lib';
-import { handler } from '../../../lib/aws-custom-resource/runtime/index';
+import { handler } from '../../../lib/aws-custom-resource/runtime/aws-sdk-v3-handler';
 
 /* eslint-disable no-console */
 console.log = jest.fn();

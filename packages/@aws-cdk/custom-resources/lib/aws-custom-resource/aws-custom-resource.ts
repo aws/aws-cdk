@@ -5,10 +5,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { Annotations } from '@aws-cdk/core';
+import { Annotations, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
+import { lambdaLatestRuntime } from '../private/service-available';
 
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
@@ -409,7 +410,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
         exclude: ['*.ts'],
       }),
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambdaLatestRuntime(Stack.of(this).region),
       handler: 'index.handler',
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
