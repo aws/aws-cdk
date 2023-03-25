@@ -1750,7 +1750,9 @@ new ec2.Instance(this, 'Instance1', {
 
 ## Managed Prefix Lists
 
-The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
+Create and manage customer-managed prefix lists. If you don't specify anything in this construct, it will manage IPv4 addresses.
+
+You can also create an empty Prefix List with only the maximum number of entries specified, as shown in the following code. If nothing is specified, maxEntries=1.
 
 ```ts
 new ec2.PrefixList(stack, 'EmptyPrefixList', {
@@ -1767,6 +1769,9 @@ new ec2.PrefixList(stack, 'PrefixList', {
     { cidr: '10.0.0.2/32', description: 'sample1' },
   ],
 ```
+
+For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html)
+
 
 ## Connecting to your instances using SSM Session Manager
 
