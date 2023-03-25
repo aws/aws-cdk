@@ -86,6 +86,7 @@
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/triggers": "0.0.0",
+    "@aws-sdk/client-s3": "^3.295.0",
     "@types/jest": "^27.5.2",
     "delay": "5.0.0",
     "esbuild": "^0.17.11"
