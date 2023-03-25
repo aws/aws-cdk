@@ -101,7 +101,7 @@ export class PrefixList extends PrefixListBase {
    * The Name of the Prefix List
    *
    */
-  public readonly name: string;
+  public readonly prefixListName: string;
 
   /**
    * The ARN of the Prefix List
@@ -141,7 +141,7 @@ export class PrefixList extends PrefixListBase {
       };
     };
 
-    this.name = props?.prefixListName || id;
+    this.prefixListName = props?.prefixListName || id;
 
     if (!props?.maxEntries && !props?.entries) {
       throw new Error('Set maxEntries or enrties.');
@@ -150,7 +150,7 @@ export class PrefixList extends PrefixListBase {
     const prefixList = new CfnPrefixList(this, 'PrefixList', {
       addressFamily: props.addressFamily || AddressFamily.IP_V4,
       maxEntries: props.maxEntries || props.entries!.length,
-      prefixListName: this.name,
+      prefixListName: this.prefixListName,
       entries: props.entries || [],
     });
 
