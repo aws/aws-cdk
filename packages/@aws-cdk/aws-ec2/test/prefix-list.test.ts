@@ -70,7 +70,7 @@ describe('prefix list', () => {
     expect(() => {
       new PrefixList(stack, 'prefix-list', {
         maxEntries: 100,
-        prefixListName: 'ThesupercalifragilisticexpialidociouswordisusedtodescribesomethingthatisextraordinarilygoodItwaspopularizedinthemovieMaryPoppinswhichwasreleasedin1964ThewordismadeupofacombinationofLatinandGreekrootsandithassincebecomeapartofpopularcultureWhileitmaybe difficulttospellitisafunwordtosayandcanbeusedtoimpressyourfriendsSothenexttimeyouwanttodescribesomethingasamazingtryusingthewordsupercalifragilisticexpialidocious',
+        prefixListName: 'a'.repeat(256),
       });
     }).toThrow('Lengths exceeding 255 characters cannot be set.');
   });
