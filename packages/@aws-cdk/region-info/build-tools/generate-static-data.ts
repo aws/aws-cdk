@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import {
   APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS,
   ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS, EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS, ADOT_LAMBDA_LAYER_ARNS,
+  LAMBDA_LATEST_RUNTIME,
 } from './fact-tables';
 import {
   AWS_REGIONS,
@@ -102,6 +103,10 @@ async function main(): Promise<void> {
           );
         }
       }
+    }
+    for (const runtumeFamily in LAMBDA_LATEST_RUNTIME) {
+      const value = LAMBDA_LATEST_RUNTIME[runtumeFamily][region] ?? LAMBDA_LATEST_RUNTIME[runtumeFamily].default;
+      registerFact(region, ['lambdaLatestRuntime', runtumeFamily], value);
     }
   }
   lines.push('  }');

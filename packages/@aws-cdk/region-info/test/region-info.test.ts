@@ -1,4 +1,4 @@
-import { CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '../build-tools/fact-tables';
+import { CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, LAMBDA_LATEST_RUNTIME } from '../build-tools/fact-tables';
 import { FactName, RegionInfo } from '../lib';
 import { AWS_REGIONS, AWS_SERVICES } from '../lib/aws-entities';
 
@@ -10,6 +10,7 @@ test('built-in data is correct', () => {
     const servicePrincipals: { [service: string]: string | undefined } = {};
     const lambdaInsightsVersions: { [service: string]: string | undefined } = {};
     const lambdaInsightsArmVersions: { [service: string]: string | undefined } = {};
+    const lambdaLatestRuntimes: { [runtimeFamily: string]: string | undefined } = {};
 
     AWS_SERVICES.forEach(service => servicePrincipals[service] = region.servicePrincipal(service));
 
@@ -20,6 +21,9 @@ test('built-in data is correct', () => {
         lambdaInsightsArmVersions[version] = region.cloudwatchLambdaInsightsArn(version, 'arm64');
       }
     };
+    for (const runtimeFamily in LAMBDA_LATEST_RUNTIME) {
+      lambdaLatestRuntimes[runtimeFamily] = region.lambdaLatestRuntime(runtimeFamily);
+    }
 
     snapshot[name] = {
       cdkMetadataResourceAvailable: region.cdkMetadataResourceAvailable,
@@ -30,6 +34,7 @@ test('built-in data is correct', () => {
       servicePrincipals,
       lambdaInsightsVersions,
       lambdaInsightsArmVersions,
+      lambdaLatestRuntimes,
     };
   }
   expect(snapshot).toMatchSnapshot();

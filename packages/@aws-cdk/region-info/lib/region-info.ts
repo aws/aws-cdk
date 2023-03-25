@@ -178,4 +178,13 @@ export class RegionInfo {
   public adotLambdaLayerArn(type: string, version: string, architecture: string): string | undefined {
     return Fact.find(this.name, FactName.adotLambdaLayer(type, version, architecture));
   }
+
+  /**
+   * The lambda latest runtime for runtime family.
+   * @param runtimeFamily the lambda runtime family (e.g NODEJS, JAVA... and more)
+   * @returns The lambda latest runtime (e.g nodejs18.x)
+   */
+  public lambdaLatestRuntime(runtimeFamily: string): string | undefined {
+    return Fact.find(this.name, FactName.lambdaLatestRuntime(runtimeFamily));
+  }
 }

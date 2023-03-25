@@ -172,6 +172,13 @@ export class FactName {
   public static readonly FIREHOSE_CIDR_BLOCK = 'firehoseCidrBlock';
 
   /**
+   * The lambda latest runtime for runtime family.
+   */
+  public static lambdaLatestRuntime(runtimeFamily: string) {
+    return `lambda-latest-runtime:${runtimeFamily}`;
+  }
+
+  /**
    * The ARN of CloudWatch Lambda Insights for a version (e.g. 1.0.98.0)
    */
   public static cloudwatchLambdaInsightsVersion(version: string, arch?: string) {

@@ -1234,3 +1234,34 @@ export const ADOT_LAMBDA_LAYER_ARNS: { [key: string]: any } = {
   PYTHON_SDK: ADOT_LAMBDA_LAYER_PYTHON_SDK_ARNS,
   GENERIC: ADOT_LAMBDA_LAYER_GENERIC_ARNS,
 };
+
+export const LAMBDA_LATEST_RUNTIME: { [runtimeFamily: string]: any } = {
+  NODEJS: {
+    'default': 'nodejs18.x',
+    'me-central-1': 'nodejs16.x',
+    'eu-central-2': 'nodejs16.x',
+    'eu-south-2': 'nodejs16.x',
+    'us-gov-east-1': 'nodejs16.x',
+    'us-gov-west-1': 'nodejs16.x',
+    'cn-north-1': 'nodejs16.x',
+    'cn-northwest-1': 'nodejs16.x',
+  },
+  PYTHON: {
+    default: 'python3.9',
+  },
+  JAVA: {
+    default: 'java11',
+  },
+  DOTNET_CORE: {
+    default: 'dotnet6',
+  },
+  GO: {
+    default: 'go1.x',
+  },
+  RUBY: {
+    default: 'ruby2.7',
+  },
+  OTHER: {
+    default: 'provided.al2',
+  },
+};
