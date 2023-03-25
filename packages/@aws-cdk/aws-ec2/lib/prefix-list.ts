@@ -141,7 +141,7 @@ export class PrefixList extends PrefixListBase {
       };
     };
 
-    this.prefixListName = props?.prefixListName || id;
+    this.prefixListName = this.physicalName;
 
     if (!props?.maxEntries && !props?.entries) {
       throw new Error('Set maxEntries or enrties.');
