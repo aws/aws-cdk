@@ -375,7 +375,7 @@ test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/@aws-sdk/client-s3';
 
   // Symlink to normal SDK to be able to call mockClient()
-  await fs.ensureDir('/tmp/node_modules');
+  await fs.ensureDir('/tmp/node_modules/@aws-sdk');
   await fs.symlink(require.resolve('@aws-sdk/client-s3'), tmpPath);
 
   const localAwsSdk: typeof S3 = await import(tmpPath);
