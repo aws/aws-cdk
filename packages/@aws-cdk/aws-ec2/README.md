@@ -1748,12 +1748,12 @@ new ec2.Instance(this, 'Instance1', {
 });
 ```
 
-## Managed prefix lists
+## Managed Prefix Lists
 
 The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
 
 ```ts
-new ec2.PrefixList(stack, 'empty-prefix-list', {
+new ec2.PrefixList(stack, 'EmptyPrefixList', {
   maxEntries: 100,
 });
 ```
@@ -1761,11 +1761,12 @@ new ec2.PrefixList(stack, 'empty-prefix-list', {
 `maxEntries` can also be omitted as follows. In this case `maxEntries: 2`, will be set.
 
 ```ts
-new ec2.PrefixList(stack, 'prefix-list', {
+new ec2.PrefixList(stack, 'PrefixList', {
   entries: [
     { cidr: '10.0.0.1/32' },
     { cidr: '10.0.0.2/32', description: 'sample1' },
   ],
+```
 
 ## Connecting to your instances using SSM Session Manager
 
