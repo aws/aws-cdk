@@ -107,7 +107,7 @@ export class PrefixList extends PrefixListBase {
    * The ARN of the Prefix List
    *
    */
-  public readonly arn: string;
+  public readonly prefixListArn: string;
 
   /**
    * The OwnerId of the Prefix List
@@ -155,7 +155,7 @@ export class PrefixList extends PrefixListBase {
     });
 
     this.prefixListId = prefixList.attrPrefixListId;
-    this.arn = prefixList.attrArn;
+    this.prefixListArn = prefixList.attrArn;
     this.ownerId = prefixList.attrOwnerId;
     this.version = prefixList.attrVersion;
     this.addressFamily = prefixList.addressFamily;
