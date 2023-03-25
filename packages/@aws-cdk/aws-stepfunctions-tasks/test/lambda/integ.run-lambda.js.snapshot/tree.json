@@ -16,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "aws-stepfunctions-tasks-run-lambda-integ/submitJobLambda/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-stepfunctions-tasks-run-lambda-integ/submitJobLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-run-lambda-integ/submitJobLambda/ServiceRole/Resource",
@@ -107,6 +115,14 @@
                 "id": "ServiceRole",
                 "path": "aws-stepfunctions-tasks-run-lambda-integ/checkJobStateLambda/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-stepfunctions-tasks-run-lambda-integ/checkJobStateLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-run-lambda-integ/checkJobStateLambda/ServiceRole/Resource",
@@ -222,6 +238,14 @@
                 "id": "Role",
                 "path": "aws-stepfunctions-tasks-run-lambda-integ/StateMachine/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-tasks-run-lambda-integ/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-stepfunctions-tasks-run-lambda-integ/StateMachine/Role/Resource",
@@ -409,7 +433,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.237"
         }
       }
     },

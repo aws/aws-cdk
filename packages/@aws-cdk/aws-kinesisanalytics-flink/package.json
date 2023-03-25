@@ -76,6 +76,7 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1"
@@ -83,6 +84,7 @@
   "dependencies": {
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
@@ -97,6 +99,7 @@
   "peerDependencies": {
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
@@ -112,7 +115,8 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kinesisanalytics-flink.ApplicationProps"
+      "props-physical-name:@aws-cdk/aws-kinesisanalytics-flink.ApplicationProps",
+      "no-unused-type:@aws-cdk/aws-kinesisanalytics-flink.PropertyGroups"
     ]
   },
   "stability": "experimental",

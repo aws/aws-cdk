@@ -5,6 +5,13 @@
   "description": "Event targets for Amazon EventBridge",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*"
+      ]
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "targets": {
@@ -89,7 +96,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "aws-sdk": "^2.1211.0",
+    "aws-sdk": "^2.1329.0",
     "aws-sdk-mock": "5.6.0",
     "jest": "^27.5.1"
   },

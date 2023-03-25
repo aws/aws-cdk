@@ -234,10 +234,10 @@ abstract class PrincipalAdapter extends PrincipalBase {
 
   public get policyFragment(): PrincipalPolicyFragment { return this.wrapped.policyFragment; }
 
-  addToPolicy(statement: PolicyStatement): boolean {
+  public addToPolicy(statement: PolicyStatement): boolean {
     return this.wrapped.addToPolicy(statement);
   }
-  addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     return this.wrapped.addToPrincipalPolicy(statement);
   }
 
@@ -737,7 +737,7 @@ export class SamlConsolePrincipal extends SamlPrincipal {
     super(samlProvider, {
       ...conditions,
       StringEquals: {
-        'SAML:aud': cdk.Aws.PARTITION==='aws-cn'? 'https://signin.amazonaws.cn/saml': `https://signin.${cdk.Aws.URL_SUFFIX}/saml`,
+        'SAML:aud': cdk.Aws.PARTITION==='aws-cn'? 'https://signin.amazonaws.cn/saml': 'https://signin.aws.amazon.com/saml',
       },
     });
   }

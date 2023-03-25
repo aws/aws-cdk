@@ -1,9 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
-import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
+import * as codepipeline from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -269,10 +269,9 @@ function validate(construct: IConstruct): string[] {
   try {
     (construct.node.root as cdk.App).synth();
     return [];
-  } catch (e) {
-    const err = e as any; // coerce unknown to any
+  } catch (err: any) {
     if (!('message' in err) || !err.message.startsWith('Validation failed')) {
-      throw e;
+      throw err;
     }
     return err.message.split('\n').slice(1);
   }

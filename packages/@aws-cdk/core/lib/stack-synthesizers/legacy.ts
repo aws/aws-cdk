@@ -1,13 +1,13 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { assertBound } from './_shared';
+import { StackSynthesizer } from './stack-synthesizer';
+import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
-import { assertBound } from './_shared';
-import { StackSynthesizer } from './stack-synthesizer';
-import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker
@@ -148,6 +148,8 @@ export class LegacyStackSynthesizer extends StackSynthesizer implements IReusabl
         networkMode: asset.networkMode,
         platform: asset.platform,
         outputs: asset.dockerOutputs,
+        cacheFrom: asset.dockerCacheFrom,
+        cacheTo: asset.dockerCacheTo,
       };
 
       this.boundStack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);

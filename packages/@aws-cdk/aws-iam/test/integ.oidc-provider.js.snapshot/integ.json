@@ -1,14 +1,12 @@
 {
-  "version": "21.0.0",
+  "version": "30.0.0",
   "testCases": {
-    "integ.oidc-provider": {
+    "iodc-provider-test/DefaultTest": {
       "stacks": [
         "oidc-provider-integ-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "iodc-provider-test/DefaultTest/DeployAssert",
+      "assertionStackName": "iodcprovidertestDefaultTestDeployAssert2D70E37E"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

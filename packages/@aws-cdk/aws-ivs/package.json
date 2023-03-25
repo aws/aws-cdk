@@ -40,9 +40,7 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-ivs.ChannelProps",
       "props-physical-name:@aws-cdk/aws-ivs.StreamKeyProps",
-      "props-physical-name:@aws-cdk/aws-ivs.PlaybackKeyPairProps",
       "from-method:@aws-cdk/aws-ivs.StreamKey",
       "from-method:@aws-cdk/aws-ivs.PlaybackKeyPair"
     ]
@@ -95,6 +93,7 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2"

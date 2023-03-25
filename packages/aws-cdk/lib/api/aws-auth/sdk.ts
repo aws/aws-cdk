@@ -1,10 +1,10 @@
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
-import { traceMethods } from '../../util/tracing';
 import { debug, trace } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
 import { Account } from './sdk-provider';
+import { traceMethods } from '../../util/tracing';
 
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.
 // It's not part of the public API, but it's also unlikely to go away.
@@ -14,6 +14,7 @@ import { Account } from './sdk-provider';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 const regionUtil = require('aws-sdk/lib/region_config');
+require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 /* eslint-enable @typescript-eslint/no-require-imports */
 
 if (!regionUtil.getEndpointSuffix) {
@@ -257,7 +258,7 @@ export class SDK implements ISDK {
   public async forceCredentialRetrieval() {
     try {
       await this._credentials.getPromise();
-    } catch (e) {
+    } catch (e: any) {
       if (isUnrecoverableAwsError(e)) {
         throw e;
       }

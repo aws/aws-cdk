@@ -16,8 +16,8 @@ import {
   monoRepoRoot,
 } from './util';
 
-const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
+const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 
 /**
  * Verify that the package name matches the directory name
@@ -57,7 +57,6 @@ export class PublishConfigTagIsRequired extends ValidationRule {
 
   // The list of packages that are publicly published in both v1 and v2.
   private readonly SHARED_PACKAGES = [
-    '@aws-cdk/assert',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
@@ -1510,28 +1509,6 @@ export class ConstructsDependency extends ValidationRule {
 }
 
 /**
- * Packages must depend on 'assert-internal', not on '@aws-cdk/assert'
- */
-export class AssertDependency extends ValidationRule {
-  public readonly name = 'assert/assert-dependency';
-
-  public validate(pkg: PackageJson) {
-    const devDeps = pkg.json.devDependencies ?? {};
-
-    if ('@aws-cdk/assert' in devDeps) {
-      pkg.report({
-        ruleName: this.name,
-        message: 'Package should depend on \'@aws-cdk/assert-internal\', not on \'@aws-cdk/assert\'',
-        fix: () => {
-          pkg.json.devDependencies['@aws-cdk/assert-internal'] = pkg.json.devDependencies['@aws-cdk/assert'];
-          delete pkg.json.devDependencies['@aws-cdk/assert'];
-        },
-      });
-    }
-  }
-}
-
-/**
  * Do not announce new versions of AWS CDK modules in awscdk.io because it is very very spammy
  * and actually causes the @awscdkio twitter account to be blocked.
  *
@@ -1646,7 +1623,6 @@ export class UbergenPackageVisibility extends ValidationRule {
   // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly v2PublicPackages = [
-    '@aws-cdk/assert',
     '@aws-cdk/cfnspec',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',

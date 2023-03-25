@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { INetworkListener } from './network-listener';
 import {
   BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
@@ -8,7 +9,6 @@ import {
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { parseLoadBalancerFullName, parseTargetGroupFullName, validateNetworkProtocol } from '../shared/util';
-import { INetworkListener } from './network-listener';
 
 /**
  * Properties for a new Network Target Group
@@ -236,11 +236,12 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
     const healthCheck: HealthCheck = this.healthCheck || {};
 
-    const allowedIntervals = [10, 30];
+    const lowHealthCheckInterval = 5;
+    const highHealthCheckInterval = 300;
     if (healthCheck.interval) {
       const seconds = healthCheck.interval.toSeconds();
-      if (!cdk.Token.isUnresolved(seconds) && !allowedIntervals.includes(seconds)) {
-        ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`);
+      if (!cdk.Token.isUnresolved(seconds) && (seconds < lowHealthCheckInterval || seconds > highHealthCheckInterval)) {
+        ret.push(`Health check interval '${seconds}' not supported. Must be between ${lowHealthCheckInterval} and ${highHealthCheckInterval}.`);
       }
     }
 

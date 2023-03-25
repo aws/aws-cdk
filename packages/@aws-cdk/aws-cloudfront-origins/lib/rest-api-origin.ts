@@ -6,7 +6,7 @@ import { validateSecondsInRangeOrUndefined } from './private/utils';
 /**
  * Properties for an Origin for an API Gateway REST API.
  */
-export interface RestApiOriginProps extends cloudfront.OriginOptions {
+export interface RestApiOriginProps extends cloudfront.OriginProps {
   /**
    * Specifies how long, in seconds, CloudFront waits for a response from the origin, also known as the origin response timeout.
    * The valid range is from 1 to 180 seconds, inclusive.
@@ -40,7 +40,7 @@ export class RestApiOrigin extends cloudfront.OriginBase {
     // Splitting on '/' gives: ['https', '', '<rest-api-id>.execute-api.<region>.amazonaws.com', '<stage>']
     // The element at index 2 is the domain name, the element at index 3 is the stage name
     super(cdk.Fn.select(2, cdk.Fn.split('/', restApi.url)), {
-      originPath: `/${cdk.Fn.select(3, cdk.Fn.split('/', restApi.url))}`,
+      originPath: props.originPath ?? `/${cdk.Fn.select(3, cdk.Fn.split('/', restApi.url))}`,
       ...props,
     });
 

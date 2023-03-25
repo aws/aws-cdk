@@ -92,19 +92,30 @@ function transformPackages(): void {
         const gitIgnoreContents = fs.readFileSync(source);
         fs.outputFileSync(destination, Buffer.concat([gitIgnoreContents, Buffer.from('\n*\n')]));
       } else if (sourceFileName === '.eslintrc.js') {
-        // Change the default configuration of the import/no-extraneous-dependencies rule
-        // (as the unstable packages don't use direct dependencies,
-        // but instead a combination of devDependencies + peerDependencies)
+        // We need to change some eslint rules
+        // Unstable packages are generated and it's not required for them to strictly follow our code style guide
         const esLintRcLines = fs.readFileSync(source).toString().split('\n');
         const resultFileLines = [];
         for (const line of esLintRcLines) {
-          resultFileLines.push(line);
-          // put our new line right after the parserOptions.project setting line,
+          // put our new lines right after the parserOptions.project setting line,
           // as some files export a copy of this object,
           // in which case putting it at the end doesn't work
+          resultFileLines.push(line);
           if (line.startsWith('baseConfig.parserOptions.project')) {
-            resultFileLines.push("\nbaseConfig.rules['import/no-extraneous-dependencies'] = ['error', " +
-              '{ devDependencies: true, peerDependencies: true } ];\n');
+            // Add some extra whitespace before our rule changes
+            resultFileLines.push('');
+
+            // Change the default of the import/no-extraneous-dependencies rule:
+            // Unstable packages don't use direct dependencies, but instead a combination of devDependencies + peerDependencies
+            resultFileLines.push("baseConfig.rules['import/no-extraneous-dependencies'] = ['error', " +
+              '{ devDependencies: true, peerDependencies: true } ];');
+            // Disable the import/order rule:
+            // Imports of the unstable packages are rewritten from an ordered source
+            // It's not required and therefore reasonable to ensure order after the imports are rewritten
+            resultFileLines.push("baseConfig.rules['import/order'] = 'off';");
+
+            // Add some extra whitespace at the end
+            resultFileLines.push('');
           }
         }
         fs.outputFileSync(destination, resultFileLines.join('\n'));
@@ -264,10 +275,6 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
       case '@aws-cdk/core':
         devDependencies['aws-cdk-lib'] = pkg.version;
         break;
-      case '@aws-cdk/assert-internal':
-      case '@aws-cdk/assert':
-        devDependencies['@aws-cdk/assert'] = packageJson.devDependencies[v1DevDependency];
-        break;
       default:
         if (alphaPackages[v1DevDependency]) {
           alphaDevDependencies[alphaPackages[v1DevDependency]] = packageJson.version;
@@ -329,7 +336,7 @@ function packageIsAlpha(pkg: any): boolean {
     return false;
   }
   // we're only interested in '@aws-cdk/' packages,
-  // and those that are JSII-enabled (so no @aws-cdk/assert)
+  // and those that are JSII-enabled
   // Also, don't re-transform already alpha-ed packages
   return pkg.name.startsWith('@aws-cdk/') && !!pkg.get('jsii') && !pkg.name.endsWith('-alpha');
 }

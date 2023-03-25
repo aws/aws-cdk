@@ -204,7 +204,9 @@
    "DependsOn": [
     "StateMachineRoleDefaultPolicyDA5F7DA8",
     "StateMachineRole543B9670"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

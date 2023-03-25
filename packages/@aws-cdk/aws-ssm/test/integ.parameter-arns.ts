@@ -1,5 +1,5 @@
-/* eslint-disable max-len */
 import { App, CfnOutput, CfnParameter, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as ssm from '../lib';
 
 const app = new App();
@@ -22,4 +22,6 @@ for (const p of params) {
   new CfnOutput(stack, `${p.node.id}Arn`, { value: p.parameterArn });
 }
 
-app.synth();
+new IntegTest(app, 'cdk-integ-ssm-parameter-arns', {
+  testCases: [stack],
+});

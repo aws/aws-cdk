@@ -166,6 +166,60 @@ below).
 > happen to know the Metric you want to alarm on makes sense as a rate
 > (`Average`) you can always choose to change the statistic.
 
+### Available Aggregation Statistics
+
+For your metrics aggregation, you can use the following statistics:
+
+| Statistic                |    Short format     |                 Long format                  | Factory name         |
+| ------------------------ | :-----------------: | :------------------------------------------: | -------------------- |
+| SampleCount (n)          |         ❌          |                      ❌                      | `Stats.SAMPLE_COUNT` |
+| Average (avg)            |         ❌          |                      ❌                      | `Stats.AVERAGE`      |
+| Sum                      |         ❌          |                      ❌                      | `Stats.SUM`          |
+| Minimum (min)            |         ❌          |                      ❌                      | `Stats.MINIMUM`      |
+| Maximum (max)            |         ❌          |                      ❌                      | `Stats.MAXIMUM`      |
+| Interquartile mean (IQM) |         ❌          |                      ❌                      | `Stats.IQM`          |
+| Percentile (p)           |        `p99`        |                      ❌                      | `Stats.p(99)`        |
+| Winsorized mean (WM)     | `wm99` = `WM(:99%)` | `WM(x:y) \| WM(x%:y%) \| WM(x%:) \| WM(:y%)` | `Stats.wm(10, 90)`   |
+| Trimmed count (TC)       | `tc99` = `TC(:99%)` | `TC(x:y) \| TC(x%:y%) \| TC(x%:) \| TC(:y%)` | `Stats.tc(10, 90)`   |
+| Trimmed sum (TS)         | `ts99` = `TS(:99%)` | `TS(x:y) \| TS(x%:y%) \| TS(x%:) \| TS(:y%)` | `Stats.ts(10, 90)`   |
+| Percentile rank (PR)     |         ❌          |        `PR(x:y) \| PR(x:) \| PR(:y)`         | `Stats.pr(10, 5000)` |
+
+The most common values are provided in the `cloudwatch.Stats` class. You can provide any string if your statistic is not in the class.
+
+Read more at [CloudWatch statistics definitions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html).
+
+```ts
+new cloudwatch.Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensionsMap: {
+    HostedZoneId: hostedZone.hostedZoneId
+  },
+  statistic: cloudwatch.Stats.SAMPLE_COUNT,
+  period: cloudwatch.Duration.minutes(5)
+});
+
+new cloudwatch.Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensionsMap: {
+    HostedZoneId: hostedZone.hostedZoneId
+  },
+  statistic: cloudwatch.Stats.p(99),
+  period: cloudwatch.Duration.minutes(5)
+});
+
+new cloudwatch.Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensionsMap: {
+    HostedZoneId: hostedZone.hostedZoneId
+  },
+  statistic: 'TS(7.5%:90%)',
+  period: cloudwatch.Duration.minutes(5)
+});
+```
+
 ### Labels
 
 Metric labels are displayed in the legend of graphs that include the metrics.
@@ -643,3 +697,18 @@ new cloudwatch.Row(widgetA, widgetB);
 
 You can add a widget after object instantiation with the method
 `addWidget()`.
+
+### Interval duration for dashboard
+
+Interval duration for metrics in dashboard. You can specify `defaultInterval` with
+the relative time(eg. 7 days) as `cdk.Duration.days(7)`.
+
+```ts
+import * as cw from '@aws-cdk/aws-cloudwatch';
+
+const dashboard = new cw.Dashboard(stack, 'Dash', {
+  defaultInterval: cdk.Duration.days(7),
+});
+```
+
+Here, the dashboard would show the metrics for the last 7 days.
