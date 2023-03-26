@@ -109,6 +109,20 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default Duration.hours(1)
    */
   readonly timeout?: Duration;
+
+  /**
+   * Information about CloudWatch logs for the build project.
+   *
+   * @default - Default CloudWatch logging setting
+   */
+  readonly cloudWatchLogging?: CloudWatchLoggingOption;
+
+  /**
+   * Information about S3 logs for the build project.
+   *
+   * @default - Disable S3 logging setting
+   */
+  readonly s3logging?: S3LoggingOptions;
 }
 
 /**
@@ -208,7 +222,7 @@ export class CodeBuildStep extends ShellStep {
   /**
    * Information about S3 logs for the build project.
    *
-   * @default - Default S3 logging setting
+   * @default - Disable S3 logging setting
    */
   readonly s3logging?: S3LoggingOptions;
 
@@ -231,6 +245,8 @@ export class CodeBuildStep extends ShellStep {
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
     this.timeout = props.timeout;
+    this.cloudWatchLogging = props.cloudWatchLogging;
+    this.s3logging = props.s3logging;
   }
 
   /**
